@@ -1,6 +1,7 @@
 import { createLocalSlateTestClient, expectSlateContract } from '@slates/test';
 import { describe, expect, it } from 'vitest';
 import { provider } from './index';
+import { googleCalendarActionScopes } from './scopes';
 
 describe('google-calendar provider contract', () => {
   it('exposes the expected provider, tool, trigger, and auth surface', async () => {
@@ -49,6 +50,26 @@ describe('google-calendar provider contract', () => {
 
     expect(contract.actions).toHaveLength(13);
     expect(Object.keys(contract.configSchema.properties ?? {})).toEqual([]);
+
+    let expectedScopes = {
+      create_event: googleCalendarActionScopes.createEvent,
+      list_events: googleCalendarActionScopes.listEvents,
+      get_event: googleCalendarActionScopes.getEvent,
+      update_event: googleCalendarActionScopes.updateEvent,
+      delete_event: googleCalendarActionScopes.deleteEvent,
+      quick_add_event: googleCalendarActionScopes.quickAddEvent,
+      list_calendars: googleCalendarActionScopes.listCalendars,
+      manage_calendar: googleCalendarActionScopes.manageCalendar,
+      find_free_busy: googleCalendarActionScopes.findFreeBusy,
+      manage_sharing: googleCalendarActionScopes.manageSharing,
+      get_colors: googleCalendarActionScopes.getColors,
+      event_changes: googleCalendarActionScopes.eventChanges,
+      calendar_list_changes: googleCalendarActionScopes.calendarListChanges
+    };
+
+    for (let [actionId, scopes] of Object.entries(expectedScopes)) {
+      expect(contract.actions.find(action => action.id === actionId)?.scopes).toEqual(scopes);
+    }
 
     let oauth = await client.getAuthMethod('oauth');
     expect(oauth.authenticationMethod.type).toBe('auth.oauth');

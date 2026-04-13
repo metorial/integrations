@@ -4,6 +4,14 @@ import type { SlateSpecification } from '../specification/specification';
 
 export type SlateActionType = 'tool' | 'trigger';
 
+export interface SlateActionScopeClause {
+  OR: string[];
+}
+
+export interface SlateActionScopes {
+  AND: SlateActionScopeClause[];
+}
+
 export interface SlateActionParameters {
   key: string;
   name: string;
@@ -16,6 +24,7 @@ export interface SlateActionParameters {
     [key: string]: boolean | undefined;
   };
   metadata?: Record<string, any>;
+  scopes?: SlateActionScopes;
 }
 
 export type SlateToolInvocationHandler<
@@ -187,5 +196,9 @@ export abstract class SlateAction<
 
   get metadata() {
     return this._params.metadata;
+  }
+
+  get scopes() {
+    return this._params.scopes;
   }
 }

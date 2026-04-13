@@ -1,6 +1,7 @@
 import {
   SlatesNotifications,
   SlatesParticipant,
+  SlatesProtocolVersion,
   SlatesRequests,
   SlatesResponses
 } from '@slates/proto';
@@ -10,7 +11,7 @@ export type SlatesProtocolMessage = SlatesNotifications | SlatesRequests;
 export type SlatesProtocolResponse = SlatesNotifications | SlatesResponses;
 
 export interface SlatesClientState {
-  protocol: 'slates@2026-01-01';
+  protocol: SlatesProtocolVersion;
   participants: SlatesParticipant[];
   config: SlatesJsonObject | null;
   auth: {

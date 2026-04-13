@@ -1,11 +1,12 @@
 import z from 'zod';
 import { slatesParticipant } from '../types';
+import { SLATES_PROTOCOL_VERSION } from '../version';
 
 export let slatesMessageHelloNotification = z.object({
   jsonrpc: z.literal('2.0'),
   method: z.literal('slates/hello'),
   params: z.object({
-    protocol: z.literal('slates@2026-01-01')
+    protocol: z.literal(SLATES_PROTOCOL_VERSION)
   })
 });
 

@@ -1,5 +1,9 @@
 import { badRequestError, preconditionFailedError, ServiceError } from '@lowerdeck/error';
-import { createSlatesProviderProtoHandler, type SlatesParticipant } from '@slates/proto';
+import {
+  createSlatesProviderProtoHandler,
+  SLATES_PROTOCOL_VERSION,
+  type SlatesParticipant
+} from '@slates/proto';
 import {
   runWithContext,
   type Slate,
@@ -170,7 +174,7 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
       getContextBasic();
 
       return {
-        protocol: 'slates@2026-01-01',
+        protocol: SLATES_PROTOCOL_VERSION,
         provider: {
           type: 'provider',
           id: slate.spec.key,
@@ -274,7 +278,8 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
 
         return {
           output: callbackRes.output,
-          input: callbackRes.input
+          input: callbackRes.input,
+          scopes: callbackRes.scopes
         };
       }
 

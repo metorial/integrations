@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleCalendarClient } from '../lib/client';
+import { googleCalendarActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -15,6 +16,7 @@ export let quickAddEvent = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleCalendarActionScopes.quickAddEvent)
   .input(
     z.object({
       calendarId: z

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleCalendarClient } from '../lib/client';
+import { googleCalendarActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -20,6 +21,7 @@ Use the **action** field to select the operation.`,
     readOnly: false
   }
 })
+  .scopes(googleCalendarActionScopes.manageCalendar)
   .input(
     z.object({
       action: z

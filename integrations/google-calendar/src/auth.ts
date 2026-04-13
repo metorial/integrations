@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleCalendarScopes } from './scopes';
 
 let googleAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -26,97 +27,97 @@ export let auth = SlateAuth.create()
       {
         title: 'Full Access',
         description: 'See, edit, share, and permanently delete all accessible calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar'
+        scope: googleCalendarScopes.calendar
       },
       {
         title: 'Read Only',
         description: 'Read-only access to all accessible calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar.readonly'
+        scope: googleCalendarScopes.calendarReadonly
       },
       {
         title: 'Events',
         description: 'View and edit events on all calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar.events'
+        scope: googleCalendarScopes.calendarEvents
       },
       {
         title: 'Events Read Only',
         description: 'View events on all calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar.events.readonly'
+        scope: googleCalendarScopes.calendarEventsReadonly
       },
       {
         title: 'Owned Events',
         description: 'Manage events only on calendars the user owns.',
-        scope: 'https://www.googleapis.com/auth/calendar.events.owned'
+        scope: googleCalendarScopes.calendarEventsOwned
       },
       {
         title: 'Owned Events Read Only',
         description: 'View events only on calendars the user owns.',
-        scope: 'https://www.googleapis.com/auth/calendar.events.owned.readonly'
+        scope: googleCalendarScopes.calendarEventsOwnedReadonly
       },
       {
         title: 'Free/Busy (Events)',
         description: 'View availability on accessible calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar.events.freebusy'
+        scope: googleCalendarScopes.calendarEventsFreebusy
       },
       {
         title: 'Public Events Read Only',
         description: 'View events on public calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar.events.public.readonly'
+        scope: googleCalendarScopes.calendarEventsPublicReadonly
       },
       {
         title: 'Free/Busy',
         description: 'View free/busy availability only.',
-        scope: 'https://www.googleapis.com/auth/calendar.freebusy'
+        scope: googleCalendarScopes.calendarFreebusy
       },
       {
         title: 'Settings Read Only',
         description: 'View Calendar settings.',
-        scope: 'https://www.googleapis.com/auth/calendar.settings.readonly'
+        scope: googleCalendarScopes.calendarSettingsReadonly
       },
       {
         title: 'Calendars',
         description: 'See/change calendar properties and create secondary calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar.calendars'
+        scope: googleCalendarScopes.calendarCalendars
       },
       {
         title: 'Calendars Read Only',
         description: 'View calendar properties (title, description, timezone, etc.).',
-        scope: 'https://www.googleapis.com/auth/calendar.calendars.readonly'
+        scope: googleCalendarScopes.calendarCalendarsReadonly
       },
       {
         title: 'Calendar List',
         description: 'See, add, and remove subscribed calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar.calendarlist'
+        scope: googleCalendarScopes.calendarCalendarList
       },
       {
         title: 'Calendar List Read Only',
         description: 'View the list of subscribed calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar.calendarlist.readonly'
+        scope: googleCalendarScopes.calendarCalendarListReadonly
       },
       {
         title: 'ACLs',
         description: 'View and change sharing permissions on owned calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar.acls'
+        scope: googleCalendarScopes.calendarAcls
       },
       {
         title: 'ACLs Read Only',
         description: 'View sharing permissions on owned calendars.',
-        scope: 'https://www.googleapis.com/auth/calendar.acls.readonly'
+        scope: googleCalendarScopes.calendarAclsReadonly
       },
       {
         title: 'App Created',
         description: 'Manage secondary calendars and their events (app-created only).',
-        scope: 'https://www.googleapis.com/auth/calendar.app.created'
+        scope: googleCalendarScopes.calendarAppCreated
       },
       {
         title: 'User Profile',
         description: 'View basic profile information.',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleCalendarScopes.userInfoProfile
       },
       {
         title: 'User Email',
         description: 'View email address.',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleCalendarScopes.userInfoEmail
       }
     ],
 
@@ -155,13 +156,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

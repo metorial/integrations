@@ -1,4 +1,5 @@
 import z from 'zod';
+import { SLATES_PROTOCOL_VERSION } from '../version';
 
 export let slatesMessageProviderIdentifyRequest = z.object({
   jsonrpc: z.literal('2.0'),
@@ -15,7 +16,7 @@ export let slatesMessageProviderIdentifyResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
   result: z.object({
-    protocol: z.literal('slates@2026-01-01'),
+    protocol: z.literal(SLATES_PROTOCOL_VERSION),
     provider: z.object({
       type: z.literal('provider'),
       id: z.string(),

@@ -1,5 +1,6 @@
 import { createLocalSlateTestClient, expectSlateError } from '@slates/test';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { googleCalendarScopes } from './scopes';
 
 let oauthPost = vi.fn();
 let profileGet = vi.fn();
@@ -79,7 +80,8 @@ describe('google-calendar auth contract', () => {
       data: {
         access_token: 'access-token',
         refresh_token: 'refresh-token',
-        expires_in: 3600
+        expires_in: 3600,
+        scope: `${googleCalendarScopes.calendar} ${googleCalendarScopes.userInfoEmail}`
       }
     });
 
@@ -114,6 +116,10 @@ describe('google-calendar auth contract', () => {
       token: 'access-token',
       refreshToken: 'refresh-token'
     });
+    expect(callbackResult.scopes).toEqual([
+      googleCalendarScopes.calendar,
+      googleCalendarScopes.userInfoEmail
+    ]);
     expect(Date.parse(String(callbackResult.output.expiresAt))).toBeGreaterThan(Date.now());
 
     oauthPost.mockResolvedValueOnce({

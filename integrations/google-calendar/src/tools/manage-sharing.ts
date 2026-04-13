@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleCalendarClient } from '../lib/client';
+import { googleCalendarActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -18,6 +19,7 @@ export let manageSharing = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleCalendarActionScopes.manageSharing)
   .input(
     z.object({
       action: z.enum(['list', 'grant', 'update', 'revoke']).describe('Operation to perform'),

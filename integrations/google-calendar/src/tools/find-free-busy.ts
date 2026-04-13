@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleCalendarClient } from '../lib/client';
+import { googleCalendarActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,6 +17,7 @@ export let findFreeBusy = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleCalendarActionScopes.findFreeBusy)
   .input(
     z.object({
       timeMin: z.string().describe('Start of the time range to query (RFC3339 format)'),

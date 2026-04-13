@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleCalendarClient } from '../lib/client';
+import { googleCalendarActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -36,6 +37,7 @@ Can also be used to **move an event** to a different calendar by specifying dest
     readOnly: false
   }
 })
+  .scopes(googleCalendarActionScopes.updateEvent)
   .input(
     z.object({
       calendarId: z

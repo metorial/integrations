@@ -89,6 +89,13 @@ let createDemoSlate = () => {
         token: z.string()
       })
     )
+    .scopes({
+      AND: [
+        {
+          OR: ['scope:echo', 'scope:echo:admin']
+        }
+      ]
+    })
     .handleInvocation(async ctx => ({
       output: {
         greeting: `${ctx.config.prefix} ${ctx.input.name}`,
@@ -118,6 +125,13 @@ describe('@slates/client local transport', () => {
     let actions = await client.listTools();
     expect(actions).toHaveLength(1);
     expect(actions[0]!.id).toBe('echo');
+    expect(actions[0]!.scopes).toEqual({
+      AND: [
+        {
+          OR: ['scope:echo', 'scope:echo:admin']
+        }
+      ]
+    });
 
     let configSchema = await client.getConfigSchema();
     expect(configSchema.schema.properties.prefix.type).toBe('string');

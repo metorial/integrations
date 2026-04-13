@@ -31,7 +31,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@slates/provider": "^1.0.0-rc.6"
+    "@slates/provider": "workspace:*"
   },
   "devDependencies": {
     "microbundle": "^0.15.1",

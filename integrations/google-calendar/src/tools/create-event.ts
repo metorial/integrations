@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleCalendarClient } from '../lib/client';
+import { googleCalendarActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -51,6 +52,7 @@ Use **"primary"** as the calendarId to create events on the user's primary calen
     readOnly: false
   }
 })
+  .scopes(googleCalendarActionScopes.createEvent)
   .input(
     z.object({
       calendarId: z

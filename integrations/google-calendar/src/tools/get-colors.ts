@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleCalendarClient } from '../lib/client';
+import { googleCalendarActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let getColors = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleCalendarActionScopes.getColors)
   .input(z.object({}))
   .output(
     z.object({

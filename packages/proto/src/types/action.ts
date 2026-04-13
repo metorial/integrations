@@ -1,5 +1,13 @@
 import z from 'zod';
 
+export let slatesActionScopeClause = z.object({
+  OR: z.array(z.string()).min(1)
+});
+
+export let slatesActionScopes = z.object({
+  AND: z.array(slatesActionScopeClause).min(1)
+});
+
 export let slatesActionBase = z.object({
   id: z.string(),
 
@@ -14,6 +22,7 @@ export let slatesActionBase = z.object({
     })
     .optional(),
   metadata: z.record(z.string(), z.any()).optional(),
+  scopes: slatesActionScopes.optional(),
 
   inputSchema: z.record(z.string(), z.any()),
   outputSchema: z.record(z.string(), z.any())
@@ -46,3 +55,4 @@ export let slatesAction = z.union([slatesActionTool, slatesActionTrigger]);
 export type SlatesAction = z.infer<typeof slatesAction>;
 export type SlatesActionTool = z.infer<typeof slatesActionTool>;
 export type SlatesActionTrigger = z.infer<typeof slatesActionTrigger>;
+export type SlatesActionScopes = z.infer<typeof slatesActionScopes>;

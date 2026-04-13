@@ -1,5 +1,6 @@
 import { SlateTrigger } from 'slates';
 import { GoogleCalendarClient } from '../lib/client';
+import { googleCalendarActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let eventChanges = SlateTrigger.create(spec, {
   description:
     'Triggers when events on a specified calendar are created, updated, or deleted. Uses Google Calendar push notifications (webhooks) with automatic sync token-based change detection.'
 })
+  .scopes(googleCalendarActionScopes.eventChanges)
   .input(
     z.object({
       changeType: z

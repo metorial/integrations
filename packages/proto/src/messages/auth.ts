@@ -196,7 +196,8 @@ export let slatesMessageAuthAuthorizationCallbackHandleResponse = z.object({
   id: z.string(),
   result: z.object({
     output: z.record(z.string(), z.any()),
-    input: z.record(z.string(), z.any()).optional()
+    input: z.record(z.string(), z.any()).optional(),
+    scopes: z.array(z.string()).optional()
   })
 });
 

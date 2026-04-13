@@ -97,6 +97,7 @@ export let mapAction = <ConfigType extends {}, AuthType extends {}>(
     constraints: a.constraints,
     tags: a.tags,
     metadata: a.metadata,
+    scopes: a.scopes,
 
     inputSchema: toJsonSchema(a.inputSchema),
     outputSchema: toJsonSchema(a.outputSchema)

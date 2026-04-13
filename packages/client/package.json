@@ -16,17 +16,18 @@
   "source": "src/index.ts",
   "exports": {
     "types": "./dist/index.d.ts",
-    "import": "./dist/index.js",
-    "default": "./dist/index.js"
+    "require": "./dist/index.cjs",
+    "import": "./dist/index.module.js",
+    "default": "./dist/index.module.js"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.module.js",
   "types": "dist/index.d.ts",
-  "unpkg": "./dist/index.js",
+  "unpkg": "./dist/index.module.js",
   "scripts": {
     "test": "vitest run --passWithNoTests",
     "lint": "prettier src/**/*.ts --check",
-    "build": "tsc",
+    "build": "tsup --config ../../tsup.packages.config.ts --external async_hooks",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

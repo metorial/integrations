@@ -4,6 +4,7 @@ import type { SlateSpecification } from '../specification/specification';
 import type {
   SlateAction,
   SlateActionCreateParameters,
+  SlateActionScopes,
   SlateActionParameters,
   SlateActionParametersTool,
   SlateActionParametersTrigger,
@@ -16,6 +17,7 @@ import type {
   SlateTriggerWebhookAutoUnregistrationHandler,
   SlateTriggerWebhookRequestHandler
 } from './action';
+import { validateScopes } from './scopes';
 
 export class SlateActionBuilder<
   Type extends SlateActionType,
@@ -29,6 +31,7 @@ export class SlateActionBuilder<
   #authSchema: z.ZodType<AuthType>;
   #inputSchema: z.ZodType<InputType> | null = null;
   #outputSchema: z.ZodType<OutputType> | null = null;
+  #scopes: SlateActionScopes | undefined;
 
   #toolParams: SlateActionParametersTool<ConfigType, AuthType, InputType, OutputType> | null =
     null;
@@ -63,6 +66,14 @@ export class SlateActionBuilder<
   ): SlateActionBuilder<Type, ConfigType, AuthType, InputType, NewOutputType, Result> {
     this.#outputSchema = schema as any;
     return this as any;
+  }
+
+  scopes(
+    scopes: SlateActionScopes
+  ): SlateActionBuilder<Type, ConfigType, AuthType, InputType, OutputType, Result> {
+    validateScopes(scopes);
+    this.#scopes = scopes;
+    return this;
   }
 
   handleInvocation(
@@ -123,6 +134,11 @@ export class SlateActionBuilder<
   }
 
   build() {
+    let scopes = this.#scopes ?? this.params.scopes;
+    if (scopes) {
+      validateScopes(scopes);
+    }
+
     if (!this.#inputSchema) {
       throw new SlateDeclarationError('Input schema is not defined');
     }
@@ -138,6 +154,7 @@ export class SlateActionBuilder<
 
     return this.factory({
       ...this.params,
+      scopes,
       configSchema: this.#configSchema,
       authSchema: this.#authSchema,
       inputSchema: this.#inputSchema,

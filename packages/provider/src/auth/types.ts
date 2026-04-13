@@ -53,6 +53,7 @@ export type SlateAuthWithOauth<
   }) => Promise<{
     output: OutputType;
     input?: InputType;
+    scopes?: string[];
   }>;
 
   handleTokenRefresh?: (ctx: {

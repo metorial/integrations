@@ -1,4 +1,5 @@
 import {
+  SLATES_PROTOCOL_VERSION,
   SlateAuthenticationMethod,
   SlatesAction,
   SlatesParticipant,
@@ -25,7 +26,7 @@ export class SlatesProtocolClient {
   constructor(opts: SlatesProtocolClientOptions) {
     this.transport = opts.transport;
     this.state = {
-      protocol: 'slates@2026-01-01',
+      protocol: SLATES_PROTOCOL_VERSION,
       participants: opts.participants ?? createDefaultParticipants(),
       config: opts.state?.config ?? null,
       auth: opts.state?.auth ?? null,
@@ -262,7 +263,11 @@ export class SlatesProtocolClient {
     clientSecret: string;
     scopes: string[];
     callbackState?: Record<string, any>;
-  }) {
+  }): Promise<{
+    output: Record<string, any>;
+    input?: Record<string, any>;
+    scopes?: string[];
+  }> {
     return this.request('slates/auth.authorization_callback.handle', d);
   }
 

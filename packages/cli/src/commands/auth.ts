@@ -56,7 +56,9 @@ export let addOAuthCredentials = async (
     clientSecret?: string;
   }
 ): Promise<SlatesOAuthCredentialRecord> => {
-  let { store, client } = await createIntegrationClientContext({ integration: opts.integration });
+  let { store, client } = await createIntegrationClientContext({
+    integration: opts.integration
+  });
   let authMethod = await chooseAuthMethod({
     client,
     authMethodId: opts.authMethodId,
@@ -311,6 +313,7 @@ let runAuthSetup = async (opts: AuthSetupOptions): Promise<SlatesStoredAuth> => 
 
     output = authOutput.output;
     finalInput = authOutput.input ?? finalInput;
+    scopes = authOutput.scopes ?? scopes;
 
     let profileInfo = authMethod.capabilities.getProfile?.enabled
       ? await client.getAuthProfile({
