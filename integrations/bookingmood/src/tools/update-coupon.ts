@@ -3,33 +3,34 @@ import { BookingmoodClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateCoupon = SlateTool.create(
-  spec,
-  {
-    name: 'Update Coupon',
-    key: 'update_coupon',
-    description: `Updates an existing coupon. Modify the code, description, discount definition, scope, stackability, or quota.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateCoupon = SlateTool.create(spec, {
+  name: 'Update Coupon',
+  key: 'update_coupon',
+  description: `Updates an existing coupon. Modify the code, description, discount definition, scope, stackability, or quota.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    couponId: z.string().describe('UUID of the coupon to update'),
-    code: z.string().optional().describe('New coupon code'),
-    description: z.string().optional().describe('New description'),
-    scope: z.enum(['global', 'product', 'service', 'rent']).optional().describe('New scope'),
-    definition: z.any().optional().describe('New price expression'),
-    stackable: z.boolean().optional().describe('Whether coupon can be combined'),
-    quota: z.number().nullable().optional().describe('New usage limit'),
-  }))
-  .output(z.object({
-    couponId: z.string().describe('UUID of the updated coupon'),
-    code: z.string().describe('Updated coupon code'),
-    updatedAt: z.string().describe('Last update timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      couponId: z.string().describe('UUID of the coupon to update'),
+      code: z.string().optional().describe('New coupon code'),
+      description: z.string().optional().describe('New description'),
+      scope: z.enum(['global', 'product', 'service', 'rent']).optional().describe('New scope'),
+      definition: z.any().optional().describe('New price expression'),
+      stackable: z.boolean().optional().describe('Whether coupon can be combined'),
+      quota: z.number().nullable().optional().describe('New usage limit')
+    })
+  )
+  .output(
+    z.object({
+      couponId: z.string().describe('UUID of the updated coupon'),
+      code: z.string().describe('Updated coupon code'),
+      updatedAt: z.string().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BookingmoodClient(ctx.auth.token);
 
     let data: Record<string, any> = {};
@@ -46,9 +47,9 @@ export let updateCoupon = SlateTool.create(
       output: {
         couponId: result.id,
         code: result.code,
-        updatedAt: result.updated_at,
+        updatedAt: result.updated_at
       },
-      message: `Coupon **${result.code}** updated.`,
+      message: `Coupon **${result.code}** updated.`
     };
   })
   .build();

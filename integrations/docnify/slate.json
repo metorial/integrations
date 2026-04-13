@@ -2,11 +2,7 @@
   "name": "@metorial/docnify",
   "version": "0.1.1",
   "description": "Create, send, and manage electronic document signatures. Create documents from templates, add recipients, and send documents for signing. Monitor document lifecycle events including creation, individual recipient signatures, and full completion when all recipients have signed.",
-  "categories": [
-    "document-processing",
-    "legal-and-compliance",
-    "task-and-project-management"
-  ],
+  "categories": ["document-processing", "legal-and-compliance", "task-and-project-management"],
   "skills": [
     "create document from template",
     "add document recipients",

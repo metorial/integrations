@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getRecord,
@@ -11,11 +10,9 @@ import {
   getRelatedRecords,
   listObjects,
   listObjectFields,
-  getPicklistValues,
+  getPicklistValues
 } from './tools';
-import { recordChanged,
-  inboundWebhook,
-} from './triggers';
+import { recordChanged, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     getRelatedRecords,
     listObjects,
     listObjectFields,
-    getPicklistValues,
+    getPicklistValues
   ],
-  triggers: [
-    inboundWebhook,
-    recordChanged,
-  ],
+  triggers: [inboundWebhook, recordChanged]
 });

@@ -3,47 +3,74 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageApplication = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Application',
-    key: 'manage_application',
-    description: `Create, update, delete, publish, clone, or fork an Appsmith application. Provides full lifecycle management for applications within workspaces.`,
-    instructions: [
-      'To create: set action to "create", provide workspaceId and name.',
-      'To update: set action to "update", provide applicationId and fields to change.',
-      'To delete: set action to "delete", provide applicationId.',
-      'To publish: set action to "publish", provide applicationId.',
-      'To clone: set action to "clone", provide applicationId (clones within same workspace).',
-      'To fork: set action to "fork", provide applicationId and targetWorkspaceId.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'publish', 'clone', 'fork']).describe('The action to perform.'),
-    applicationId: z.string().optional().describe('Application ID. Required for update, delete, publish, clone, and fork.'),
-    workspaceId: z.string().optional().describe('Workspace ID. Required for create.'),
-    targetWorkspaceId: z.string().optional().describe('Target workspace ID for fork action.'),
-    name: z.string().optional().describe('Application name. Required for create, optional for update.'),
-    isPublic: z.boolean().optional().describe('Whether the application should be publicly accessible (for update).'),
-    color: z.string().optional().describe('Theme color for the application (for create).'),
-    icon: z.string().optional().describe('Icon identifier for the application (for create).'),
-  }))
-  .output(z.object({
-    applicationId: z.string().optional().describe('Application ID.'),
-    name: z.string().optional().describe('Application name.'),
-    slug: z.string().optional().describe('Application URL slug.'),
-    isPublic: z.boolean().optional().describe('Whether the application is publicly accessible.'),
-    deleted: z.boolean().optional().describe('Whether the application was deleted.'),
-    published: z.boolean().optional().describe('Whether the application was published.'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageApplication = SlateTool.create(spec, {
+  name: 'Manage Application',
+  key: 'manage_application',
+  description: `Create, update, delete, publish, clone, or fork an Appsmith application. Provides full lifecycle management for applications within workspaces.`,
+  instructions: [
+    'To create: set action to "create", provide workspaceId and name.',
+    'To update: set action to "update", provide applicationId and fields to change.',
+    'To delete: set action to "delete", provide applicationId.',
+    'To publish: set action to "publish", provide applicationId.',
+    'To clone: set action to "clone", provide applicationId (clones within same workspace).',
+    'To fork: set action to "fork", provide applicationId and targetWorkspaceId.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'publish', 'clone', 'fork'])
+        .describe('The action to perform.'),
+      applicationId: z
+        .string()
+        .optional()
+        .describe('Application ID. Required for update, delete, publish, clone, and fork.'),
+      workspaceId: z.string().optional().describe('Workspace ID. Required for create.'),
+      targetWorkspaceId: z
+        .string()
+        .optional()
+        .describe('Target workspace ID for fork action.'),
+      name: z
+        .string()
+        .optional()
+        .describe('Application name. Required for create, optional for update.'),
+      isPublic: z
+        .boolean()
+        .optional()
+        .describe('Whether the application should be publicly accessible (for update).'),
+      color: z.string().optional().describe('Theme color for the application (for create).'),
+      icon: z.string().optional().describe('Icon identifier for the application (for create).')
+    })
+  )
+  .output(
+    z.object({
+      applicationId: z.string().optional().describe('Application ID.'),
+      name: z.string().optional().describe('Application name.'),
+      slug: z.string().optional().describe('Application URL slug.'),
+      isPublic: z
+        .boolean()
+        .optional()
+        .describe('Whether the application is publicly accessible.'),
+      deleted: z.boolean().optional().describe('Whether the application was deleted.'),
+      published: z.boolean().optional().describe('Whether the application was published.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
-    let { action, applicationId, workspaceId, targetWorkspaceId, name, isPublic, color, icon } = ctx.input;
+    let {
+      action,
+      applicationId,
+      workspaceId,
+      targetWorkspaceId,
+      name,
+      isPublic,
+      color,
+      icon
+    } = ctx.input;
 
     if (action === 'create') {
       if (!workspaceId) throw new Error('Workspace ID is required to create an application.');
@@ -54,9 +81,9 @@ export let manageApplication = SlateTool.create(
           applicationId: app.id,
           name: app.name,
           slug: app.slug,
-          isPublic: app.isPublic,
+          isPublic: app.isPublic
         },
-        message: `Created application **${app.name}** (ID: ${app.id}).`,
+        message: `Created application **${app.name}** (ID: ${app.id}).`
       };
     }
 
@@ -72,9 +99,9 @@ export let manageApplication = SlateTool.create(
           applicationId: app.id,
           name: app.name,
           slug: app.slug,
-          isPublic: app.isPublic,
+          isPublic: app.isPublic
         },
-        message: `Updated application **${app.name}**.`,
+        message: `Updated application **${app.name}**.`
       };
     }
 
@@ -82,7 +109,7 @@ export let manageApplication = SlateTool.create(
       await client.deleteApplication(applicationId);
       return {
         output: { applicationId, deleted: true },
-        message: `Deleted application ${applicationId}.`,
+        message: `Deleted application ${applicationId}.`
       };
     }
 
@@ -90,7 +117,7 @@ export let manageApplication = SlateTool.create(
       await client.publishApplication(applicationId);
       return {
         output: { applicationId, published: true },
-        message: `Published application ${applicationId}.`,
+        message: `Published application ${applicationId}.`
       };
     }
 
@@ -100,22 +127,23 @@ export let manageApplication = SlateTool.create(
         output: {
           applicationId: app.id,
           name: app.name,
-          slug: app.slug,
+          slug: app.slug
         },
-        message: `Cloned application. New application: **${app.name}** (ID: ${app.id}).`,
+        message: `Cloned application. New application: **${app.name}** (ID: ${app.id}).`
       };
     }
 
     if (action === 'fork') {
-      if (!targetWorkspaceId) throw new Error('Target workspace ID is required for fork action.');
+      if (!targetWorkspaceId)
+        throw new Error('Target workspace ID is required for fork action.');
       let app = await client.forkApplication(applicationId, targetWorkspaceId);
       return {
         output: {
           applicationId: app.id,
           name: app.name,
-          slug: app.slug,
+          slug: app.slug
         },
-        message: `Forked application to workspace ${targetWorkspaceId}. New application: **${app.name}** (ID: ${app.id}).`,
+        message: `Forked application to workspace ${targetWorkspaceId}. New application: **${app.name}** (ID: ${app.id}).`
       };
     }
 

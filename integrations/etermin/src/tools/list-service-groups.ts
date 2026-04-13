@@ -3,25 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listServiceGroups = SlateTool.create(
-  spec,
-  {
-    name: 'List Service Groups',
-    key: 'list_service_groups',
-    description: `Retrieve all service groups (categories) from eTermin. Service groups organize bookable services into categories. Use the group IDs when creating or filtering services.`,
-    tags: {
-      readOnly: true,
-    },
+export let listServiceGroups = SlateTool.create(spec, {
+  name: 'List Service Groups',
+  key: 'list_service_groups',
+  description: `Retrieve all service groups (categories) from eTermin. Service groups organize bookable services into categories. Use the group IDs when creating or filtering services.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    serviceGroups: z.array(z.record(z.string(), z.any())).describe('List of service group records'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      serviceGroups: z
+        .array(z.record(z.string(), z.any()))
+        .describe('List of service group records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       publicKey: ctx.auth.publicKey,
-      privateKey: ctx.auth.privateKey,
+      privateKey: ctx.auth.privateKey
     });
 
     let result = await client.listServiceGroups();
@@ -30,6 +31,7 @@ export let listServiceGroups = SlateTool.create(
 
     return {
       output: { serviceGroups },
-      message: `Found **${serviceGroups.length}** service group(s).`,
+      message: `Found **${serviceGroups.length}** service group(s).`
     };
-  }).build();
+  })
+  .build();

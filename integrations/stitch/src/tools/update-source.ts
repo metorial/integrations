@@ -3,41 +3,54 @@ import { StitchConnectClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateSource = SlateTool.create(
-  spec,
-  {
-    name: 'Update Source',
-    key: 'update_source',
-    description: `Updates an existing data source's configuration. Can modify display name, connection properties, replication schedule, and pause/resume the source. The source type cannot be changed after creation.`,
-    tags: {
-      destructive: false,
-    },
+export let updateSource = SlateTool.create(spec, {
+  name: 'Update Source',
+  key: 'update_source',
+  description: `Updates an existing data source's configuration. Can modify display name, connection properties, replication schedule, and pause/resume the source. The source type cannot be changed after creation.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    sourceId: z.number().describe('ID of the source to update'),
-    displayName: z.string().optional().describe('New display name'),
-    properties: z.record(z.string(), z.any()).optional().describe('Updated connection properties'),
-    paused: z.boolean().optional().describe('Set to true to pause replication, false to resume'),
-    schedule: z.object({
-      type: z.enum(['interval', 'cron']).optional().describe('Schedule type'),
-      intervalInMinutes: z.number().optional().describe('Replication frequency in minutes (for interval type)'),
-      cronExpression: z.string().optional().describe('Cron expression (for cron type)'),
-      anchorTime: z.string().optional().describe('ISO 8601 anchor time for scheduling'),
-    }).optional().describe('Replication schedule configuration'),
-  }))
-  .output(z.object({
-    sourceId: z.number().describe('ID of the updated source'),
-    type: z.string().describe('Source type'),
-    name: z.string().nullable().describe('Updated display name'),
-    updatedAt: z.string().nullable().describe('ISO 8601 timestamp of the update'),
-    reportCard: z.any().optional().describe('Updated configuration status'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sourceId: z.number().describe('ID of the source to update'),
+      displayName: z.string().optional().describe('New display name'),
+      properties: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Updated connection properties'),
+      paused: z
+        .boolean()
+        .optional()
+        .describe('Set to true to pause replication, false to resume'),
+      schedule: z
+        .object({
+          type: z.enum(['interval', 'cron']).optional().describe('Schedule type'),
+          intervalInMinutes: z
+            .number()
+            .optional()
+            .describe('Replication frequency in minutes (for interval type)'),
+          cronExpression: z.string().optional().describe('Cron expression (for cron type)'),
+          anchorTime: z.string().optional().describe('ISO 8601 anchor time for scheduling')
+        })
+        .optional()
+        .describe('Replication schedule configuration')
+    })
+  )
+  .output(
+    z.object({
+      sourceId: z.number().describe('ID of the updated source'),
+      type: z.string().describe('Source type'),
+      name: z.string().nullable().describe('Updated display name'),
+      updatedAt: z.string().nullable().describe('ISO 8601 timestamp of the update'),
+      reportCard: z.any().optional().describe('Updated configuration status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StitchConnectClient({
       token: ctx.auth.token,
       region: ctx.config.region,
-      clientId: ctx.config.clientId,
+      clientId: ctx.config.clientId
     });
 
     let body: Record<string, any> = {};
@@ -71,8 +84,9 @@ export let updateSource = SlateTool.create(
         type: source.type,
         name: source.display_name || source.name || null,
         updatedAt: source.updated_at || null,
-        reportCard: source.report_card,
+        reportCard: source.report_card
       },
-      message: `Updated source **${source.display_name || source.name || source.id}**.`,
+      message: `Updated source **${source.display_name || source.name || source.id}**.`
     };
-  }).build();
+  })
+  .build();

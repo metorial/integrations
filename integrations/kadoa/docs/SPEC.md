@@ -19,6 +19,7 @@ All API endpoints are authenticated using an API key. The API key is passed via 
 ```
 
 To obtain an API key:
+
 1. Log in to the Kadoa dashboard
 2. Navigate to **Settings > General**
 3. Click **Generate API Key**

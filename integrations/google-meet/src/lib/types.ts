@@ -10,11 +10,20 @@ export interface SpaceConfig {
     presentRestriction?: 'RESTRICTION_TYPE_UNSPECIFIED' | 'HOSTS_ONLY' | 'NO_RESTRICTION';
     defaultJoinAsViewerType?: 'DEFAULT_JOIN_AS_VIEWER_TYPE_UNSPECIFIED' | 'ON' | 'OFF';
   };
-  attendanceReportGenerationType?: 'ATTENDANCE_REPORT_GENERATION_TYPE_UNSPECIFIED' | 'GENERATE_REPORT' | 'DO_NOT_GENERATE';
+  attendanceReportGenerationType?:
+    | 'ATTENDANCE_REPORT_GENERATION_TYPE_UNSPECIFIED'
+    | 'GENERATE_REPORT'
+    | 'DO_NOT_GENERATE';
   artifactConfig?: {
-    recordingConfig?: { autoRecordingGeneration?: 'AUTO_GENERATION_TYPE_UNSPECIFIED' | 'ON' | 'OFF' };
-    transcriptionConfig?: { autoTranscriptionGeneration?: 'AUTO_GENERATION_TYPE_UNSPECIFIED' | 'ON' | 'OFF' };
-    smartNotesConfig?: { autoSmartNotesGeneration?: 'AUTO_GENERATION_TYPE_UNSPECIFIED' | 'ON' | 'OFF' };
+    recordingConfig?: {
+      autoRecordingGeneration?: 'AUTO_GENERATION_TYPE_UNSPECIFIED' | 'ON' | 'OFF';
+    };
+    transcriptionConfig?: {
+      autoTranscriptionGeneration?: 'AUTO_GENERATION_TYPE_UNSPECIFIED' | 'ON' | 'OFF';
+    };
+    smartNotesConfig?: {
+      autoSmartNotesGeneration?: 'AUTO_GENERATION_TYPE_UNSPECIFIED' | 'ON' | 'OFF';
+    };
   };
 }
 

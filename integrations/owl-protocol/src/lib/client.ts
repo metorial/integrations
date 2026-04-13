@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://contracts-api.owlprotocol.xyz/api',
+  baseURL: 'https://contracts-api.owlprotocol.xyz/api'
 });
 
 export class OwlClient {
@@ -14,8 +14,8 @@ export class OwlClient {
   private get headers() {
     return {
       'x-api-key': this.token,
-      'accept': 'application/json',
-      'content-type': 'application/json',
+      accept: 'application/json',
+      'content-type': 'application/json'
     };
   }
 
@@ -32,7 +32,7 @@ export class OwlClient {
     contractImageSuffix?: string;
   }) {
     let response = await api.post('/project/collection/deploy', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -76,8 +76,8 @@ export class OwlClient {
       params: {
         chainId: params.chainId,
         address: params.contractAddress,
-        tokenId: params.tokenId,
-      },
+        tokenId: params.tokenId
+      }
     });
     return response.data;
   }
@@ -88,14 +88,18 @@ export class OwlClient {
     tokenId: string;
     metadata: Record<string, unknown>;
   }) {
-    let response = await api.patch('/project/token', {
-      chainId: params.chainId,
-      address: params.contractAddress,
-      tokenId: params.tokenId,
-      metadata: params.metadata,
-    }, {
-      headers: this.headers,
-    });
+    let response = await api.patch(
+      '/project/token',
+      {
+        chainId: params.chainId,
+        address: params.contractAddress,
+        tokenId: params.tokenId,
+        metadata: params.metadata
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -114,7 +118,7 @@ export class OwlClient {
     if (params.contractAddress) body.address = params.contractAddress;
 
     let response = await api.post('/project/tokenTemplate', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -122,40 +126,37 @@ export class OwlClient {
   async getTokenTemplate(params: { templateId: string }) {
     let response = await api.get('/project/tokenTemplate', {
       headers: this.headers,
-      params: { id: params.templateId },
+      params: { id: params.templateId }
     });
     return response.data;
   }
 
   async listTokenTemplates() {
     let response = await api.get('/project/tokenTemplate', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async patchTokenTemplate(params: {
-    templateId: string;
-    metadata: Record<string, unknown>;
-  }) {
-    let response = await api.patch('/project/tokenTemplate', {
-      id: params.templateId,
-      metadata: params.metadata,
-    }, {
-      headers: this.headers,
-    });
+  async patchTokenTemplate(params: { templateId: string; metadata: Record<string, unknown> }) {
+    let response = await api.patch(
+      '/project/tokenTemplate',
+      {
+        id: params.templateId,
+        metadata: params.metadata
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   // ─── Project User Endpoints ─────────────────────────────────────
 
-  async createUser(params: {
-    email: string;
-    fullName?: string;
-    externalId?: string;
-  }) {
+  async createUser(params: { email: string; fullName?: string; externalId?: string }) {
     let response = await api.post('/project/projectUser', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -168,7 +169,7 @@ export class OwlClient {
   }) {
     let response = await api.get('/project/projectUser', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -176,23 +177,20 @@ export class OwlClient {
   async listUsers() {
     let response = await api.get('/project/projectUser', {
       headers: this.headers,
-      params: { list: true },
+      params: { list: true }
     });
     return response.data;
   }
 
   // ─── Contract Metadata Endpoints ────────────────────────────────
 
-  async getContractMetadata(params: {
-    chainId: number;
-    contractAddress: string;
-  }) {
+  async getContractMetadata(params: { chainId: number; contractAddress: string }) {
     let response = await api.get('/project/contractMetadata', {
       headers: this.headers,
       params: {
         chainId: params.chainId,
-        address: params.contractAddress,
-      },
+        address: params.contractAddress
+      }
     });
     return response.data;
   }
@@ -202,20 +200,24 @@ export class OwlClient {
     contractAddress: string;
     metadata: Record<string, unknown>;
   }) {
-    let response = await api.patch('/project/contractMetadata', {
-      chainId: params.chainId,
-      address: params.contractAddress,
-      ...params.metadata,
-    }, {
-      headers: this.headers,
-    });
+    let response = await api.patch(
+      '/project/contractMetadata',
+      {
+        chainId: params.chainId,
+        address: params.contractAddress,
+        ...params.metadata
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async listContractsMetadata() {
     let response = await api.get('/project/contractMetadata', {
       headers: this.headers,
-      params: { list: true },
+      params: { list: true }
     });
     return response.data;
   }
@@ -223,9 +225,13 @@ export class OwlClient {
   // ─── Auth Check ─────────────────────────────────────────────────
 
   async checkAuth() {
-    let response = await api.post('/auth', {}, {
-      headers: this.headers,
-    });
+    let response = await api.post(
+      '/auth',
+      {},
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 }

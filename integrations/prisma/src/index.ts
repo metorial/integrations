@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listWorkspaces,
@@ -14,11 +13,9 @@ import {
   createConnection,
   deleteConnection,
   getDatabaseBackups,
-  getDatabaseUsage,
+  getDatabaseUsage
 } from './tools';
-import { databaseChanges,
-  inboundWebhook,
-} from './triggers';
+import { databaseChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,10 +32,7 @@ export let provider = Slate.create({
     createConnection,
     deleteConnection,
     getDatabaseBackups,
-    getDatabaseUsage,
+    getDatabaseUsage
   ],
-  triggers: [
-    inboundWebhook,
-    databaseChanges,
-  ],
+  triggers: [inboundWebhook, databaseChanges]
 });

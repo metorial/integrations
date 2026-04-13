@@ -37,14 +37,18 @@ export class SnapchatClient {
   }
 
   async getOrganization(organizationId: string) {
-    let response = await adsApi.get(`/organizations/${organizationId}`, { headers: this.headers });
+    let response = await adsApi.get(`/organizations/${organizationId}`, {
+      headers: this.headers
+    });
     return response.data.organizations?.[0]?.organization;
   }
 
   // ── Ad Accounts ──
 
   async listAdAccounts(organizationId: string) {
-    let response = await adsApi.get(`/organizations/${organizationId}/adaccounts`, { headers: this.headers });
+    let response = await adsApi.get(`/organizations/${organizationId}/adaccounts`, {
+      headers: this.headers
+    });
     return response.data.adaccounts?.map((a: any) => a.adaccount) ?? [];
   }
 
@@ -56,7 +60,9 @@ export class SnapchatClient {
   // ── Campaigns ──
 
   async listCampaigns(adAccountId: string) {
-    let response = await adsApi.get(`/adaccounts/${adAccountId}/campaigns`, { headers: this.headers });
+    let response = await adsApi.get(`/adaccounts/${adAccountId}/campaigns`, {
+      headers: this.headers
+    });
     return response.data.campaigns?.map((c: any) => c.campaign) ?? [];
   }
 
@@ -66,16 +72,24 @@ export class SnapchatClient {
   }
 
   async createCampaign(adAccountId: string, campaignData: Record<string, any>) {
-    let response = await adsApi.post(`/adaccounts/${adAccountId}/campaigns`, {
-      campaigns: [campaignData]
-    }, { headers: this.headers });
+    let response = await adsApi.post(
+      `/adaccounts/${adAccountId}/campaigns`,
+      {
+        campaigns: [campaignData]
+      },
+      { headers: this.headers }
+    );
     return response.data.campaigns?.[0]?.campaign;
   }
 
   async updateCampaign(adAccountId: string, campaignData: Record<string, any>) {
-    let response = await adsApi.put(`/adaccounts/${adAccountId}/campaigns`, {
-      campaigns: [campaignData]
-    }, { headers: this.headers });
+    let response = await adsApi.put(
+      `/adaccounts/${adAccountId}/campaigns`,
+      {
+        campaigns: [campaignData]
+      },
+      { headers: this.headers }
+    );
     return response.data.campaigns?.[0]?.campaign;
   }
 
@@ -87,7 +101,9 @@ export class SnapchatClient {
   // ── Ad Squads ──
 
   async listAdSquads(campaignId: string) {
-    let response = await adsApi.get(`/campaigns/${campaignId}/adsquads`, { headers: this.headers });
+    let response = await adsApi.get(`/campaigns/${campaignId}/adsquads`, {
+      headers: this.headers
+    });
     return response.data.adsquads?.map((a: any) => a.adsquad) ?? [];
   }
 
@@ -97,16 +113,24 @@ export class SnapchatClient {
   }
 
   async createAdSquad(campaignId: string, adSquadData: Record<string, any>) {
-    let response = await adsApi.post(`/campaigns/${campaignId}/adsquads`, {
-      adsquads: [adSquadData]
-    }, { headers: this.headers });
+    let response = await adsApi.post(
+      `/campaigns/${campaignId}/adsquads`,
+      {
+        adsquads: [adSquadData]
+      },
+      { headers: this.headers }
+    );
     return response.data.adsquads?.[0]?.adsquad;
   }
 
   async updateAdSquad(campaignId: string, adSquadData: Record<string, any>) {
-    let response = await adsApi.put(`/campaigns/${campaignId}/adsquads`, {
-      adsquads: [adSquadData]
-    }, { headers: this.headers });
+    let response = await adsApi.put(
+      `/campaigns/${campaignId}/adsquads`,
+      {
+        adsquads: [adSquadData]
+      },
+      { headers: this.headers }
+    );
     return response.data.adsquads?.[0]?.adsquad;
   }
 
@@ -128,16 +152,24 @@ export class SnapchatClient {
   }
 
   async createAd(adSquadId: string, adData: Record<string, any>) {
-    let response = await adsApi.post(`/adsquads/${adSquadId}/ads`, {
-      ads: [adData]
-    }, { headers: this.headers });
+    let response = await adsApi.post(
+      `/adsquads/${adSquadId}/ads`,
+      {
+        ads: [adData]
+      },
+      { headers: this.headers }
+    );
     return response.data.ads?.[0]?.ad;
   }
 
   async updateAd(adSquadId: string, adData: Record<string, any>) {
-    let response = await adsApi.put(`/adsquads/${adSquadId}/ads`, {
-      ads: [adData]
-    }, { headers: this.headers });
+    let response = await adsApi.put(
+      `/adsquads/${adSquadId}/ads`,
+      {
+        ads: [adData]
+      },
+      { headers: this.headers }
+    );
     return response.data.ads?.[0]?.ad;
   }
 
@@ -149,7 +181,9 @@ export class SnapchatClient {
   // ── Creatives ──
 
   async listCreatives(adAccountId: string) {
-    let response = await adsApi.get(`/adaccounts/${adAccountId}/creatives`, { headers: this.headers });
+    let response = await adsApi.get(`/adaccounts/${adAccountId}/creatives`, {
+      headers: this.headers
+    });
     return response.data.creatives?.map((c: any) => c.creative) ?? [];
   }
 
@@ -159,23 +193,33 @@ export class SnapchatClient {
   }
 
   async createCreative(adAccountId: string, creativeData: Record<string, any>) {
-    let response = await adsApi.post(`/adaccounts/${adAccountId}/creatives`, {
-      creatives: [creativeData]
-    }, { headers: this.headers });
+    let response = await adsApi.post(
+      `/adaccounts/${adAccountId}/creatives`,
+      {
+        creatives: [creativeData]
+      },
+      { headers: this.headers }
+    );
     return response.data.creatives?.[0]?.creative;
   }
 
   async updateCreative(adAccountId: string, creativeData: Record<string, any>) {
-    let response = await adsApi.put(`/adaccounts/${adAccountId}/creatives`, {
-      creatives: [creativeData]
-    }, { headers: this.headers });
+    let response = await adsApi.put(
+      `/adaccounts/${adAccountId}/creatives`,
+      {
+        creatives: [creativeData]
+      },
+      { headers: this.headers }
+    );
     return response.data.creatives?.[0]?.creative;
   }
 
   // ── Media ──
 
   async listMedia(adAccountId: string) {
-    let response = await adsApi.get(`/adaccounts/${adAccountId}/media`, { headers: this.headers });
+    let response = await adsApi.get(`/adaccounts/${adAccountId}/media`, {
+      headers: this.headers
+    });
     return response.data.media?.map((m: any) => m.media) ?? [];
   }
 
@@ -185,16 +229,22 @@ export class SnapchatClient {
   }
 
   async createMedia(adAccountId: string, mediaData: Record<string, any>) {
-    let response = await adsApi.post(`/adaccounts/${adAccountId}/media`, {
-      media: [mediaData]
-    }, { headers: this.headers });
+    let response = await adsApi.post(
+      `/adaccounts/${adAccountId}/media`,
+      {
+        media: [mediaData]
+      },
+      { headers: this.headers }
+    );
     return response.data.media?.[0]?.media;
   }
 
   // ── Audience Segments ──
 
   async listSegments(adAccountId: string) {
-    let response = await adsApi.get(`/adaccounts/${adAccountId}/segments`, { headers: this.headers });
+    let response = await adsApi.get(`/adaccounts/${adAccountId}/segments`, {
+      headers: this.headers
+    });
     return response.data.segments?.map((s: any) => s.segment) ?? [];
   }
 
@@ -204,16 +254,24 @@ export class SnapchatClient {
   }
 
   async createSegment(adAccountId: string, segmentData: Record<string, any>) {
-    let response = await adsApi.post(`/adaccounts/${adAccountId}/segments`, {
-      segments: [segmentData]
-    }, { headers: this.headers });
+    let response = await adsApi.post(
+      `/adaccounts/${adAccountId}/segments`,
+      {
+        segments: [segmentData]
+      },
+      { headers: this.headers }
+    );
     return response.data.segments?.[0]?.segment;
   }
 
   async updateSegment(adAccountId: string, segmentData: Record<string, any>) {
-    let response = await adsApi.put(`/adaccounts/${adAccountId}/segments`, {
-      segments: [segmentData]
-    }, { headers: this.headers });
+    let response = await adsApi.put(
+      `/adaccounts/${adAccountId}/segments`,
+      {
+        segments: [segmentData]
+      },
+      { headers: this.headers }
+    );
     return response.data.segments?.[0]?.segment;
   }
 
@@ -223,7 +281,9 @@ export class SnapchatClient {
   }
 
   async addUsersToSegment(segmentId: string, userData: Record<string, any>) {
-    let response = await adsApi.post(`/segments/${segmentId}/users`, userData, { headers: this.headers });
+    let response = await adsApi.post(`/segments/${segmentId}/users`, userData, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -244,27 +304,37 @@ export class SnapchatClient {
   // ── Conversions API ──
 
   async sendConversionEvents(pixelOrAppId: string, events: any[]) {
-    let response = await conversionsApi.post(`/${pixelOrAppId}/events`, {
-      data: events
-    }, {
-      headers: this.headers
-    });
+    let response = await conversionsApi.post(
+      `/${pixelOrAppId}/events`,
+      {
+        data: events
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async validateConversionEvents(pixelOrAppId: string, events: any[]) {
-    let response = await conversionsApi.post(`/${pixelOrAppId}/events/validate`, {
-      data: events
-    }, {
-      headers: this.headers
-    });
+    let response = await conversionsApi.post(
+      `/${pixelOrAppId}/events/validate`,
+      {
+        data: events
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   // ── Pixels ──
 
   async listPixels(adAccountId: string) {
-    let response = await adsApi.get(`/adaccounts/${adAccountId}/pixels`, { headers: this.headers });
+    let response = await adsApi.get(`/adaccounts/${adAccountId}/pixels`, {
+      headers: this.headers
+    });
     return response.data.pixels?.map((p: any) => p.pixel) ?? [];
   }
 
@@ -274,28 +344,38 @@ export class SnapchatClient {
   }
 
   async createPixel(adAccountId: string, pixelData: Record<string, any>) {
-    let response = await adsApi.post(`/adaccounts/${adAccountId}/pixels`, {
-      pixels: [pixelData]
-    }, { headers: this.headers });
+    let response = await adsApi.post(
+      `/adaccounts/${adAccountId}/pixels`,
+      {
+        pixels: [pixelData]
+      },
+      { headers: this.headers }
+    );
     return response.data.pixels?.[0]?.pixel;
   }
 
   // ── Funding Sources ──
 
   async listFundingSources(organizationId: string) {
-    let response = await adsApi.get(`/organizations/${organizationId}/fundingsources`, { headers: this.headers });
+    let response = await adsApi.get(`/organizations/${organizationId}/fundingsources`, {
+      headers: this.headers
+    });
     return response.data.fundingsources?.map((f: any) => f.fundingsource) ?? [];
   }
 
   // ── Public Profiles ──
 
   async getMyProfile() {
-    let response = await profileApi.get('/public_profiles/my_profile', { headers: this.headers });
+    let response = await profileApi.get('/public_profiles/my_profile', {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async listPublicProfiles(organizationId: string) {
-    let response = await profileApi.get(`/organizations/${organizationId}/public_profiles`, { headers: this.headers });
+    let response = await profileApi.get(`/organizations/${organizationId}/public_profiles`, {
+      headers: this.headers
+    });
     return response.data;
   }
 }

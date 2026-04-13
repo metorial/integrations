@@ -3,34 +3,41 @@ import { GumroadClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSale = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Sale',
-    key: 'manage_sale',
-    description: `Mark a sale as shipped or refund a sale. Supports partial refunds by specifying an amount in cents.`,
-    instructions: [
-      'Use "mark_as_shipped" to mark a physical product sale as shipped, optionally providing a tracking URL.',
-      'Use "refund" to process a full or partial refund. Omit amountCents for a full refund.',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let manageSale = SlateTool.create(spec, {
+  name: 'Manage Sale',
+  key: 'manage_sale',
+  description: `Mark a sale as shipped or refund a sale. Supports partial refunds by specifying an amount in cents.`,
+  instructions: [
+    'Use "mark_as_shipped" to mark a physical product sale as shipped, optionally providing a tracking URL.',
+    'Use "refund" to process a full or partial refund. Omit amountCents for a full refund.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['mark_as_shipped', 'refund']).describe('Action to perform on the sale'),
-    saleId: z.string().describe('The sale ID to manage'),
-    trackingUrl: z.string().optional().describe('Shipment tracking URL (for mark_as_shipped)'),
-    amountCents: z.number().optional().describe('Refund amount in cents. Omit for full refund. (for refund)'),
-  }))
-  .output(z.object({
-    saleId: z.string().describe('The managed sale ID'),
-    productName: z.string().optional().describe('Product name'),
-    refunded: z.boolean().optional().describe('Whether the sale is refunded'),
-    shipped: z.boolean().optional().describe('Whether the sale is marked as shipped'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['mark_as_shipped', 'refund']).describe('Action to perform on the sale'),
+      saleId: z.string().describe('The sale ID to manage'),
+      trackingUrl: z
+        .string()
+        .optional()
+        .describe('Shipment tracking URL (for mark_as_shipped)'),
+      amountCents: z
+        .number()
+        .optional()
+        .describe('Refund amount in cents. Omit for full refund. (for refund)')
+    })
+  )
+  .output(
+    z.object({
+      saleId: z.string().describe('The managed sale ID'),
+      productName: z.string().optional().describe('Product name'),
+      refunded: z.boolean().optional().describe('Whether the sale is refunded'),
+      shipped: z.boolean().optional().describe('Whether the sale is marked as shipped')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GumroadClient({ token: ctx.auth.token });
     let { action, saleId } = ctx.input;
 
@@ -41,7 +48,7 @@ export let manageSale = SlateTool.create(
           saleId: sale.id || saleId,
           productName: sale.product_name || undefined,
           shipped: true,
-          refunded: sale.refunded,
+          refunded: sale.refunded
         },
         message: `Marked sale **${saleId}** as shipped.${ctx.input.trackingUrl ? ` Tracking: ${ctx.input.trackingUrl}` : ''}`
       };
@@ -54,7 +61,7 @@ export let manageSale = SlateTool.create(
           saleId: sale.id || saleId,
           productName: sale.product_name || undefined,
           refunded: true,
-          shipped: sale.shipped,
+          shipped: sale.shipped
         },
         message: `Refunded sale **${saleId}**.${ctx.input.amountCents ? ` Amount: ${ctx.input.amountCents} cents.` : ' Full refund.'}`
       };

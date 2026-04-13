@@ -301,8 +301,8 @@ export class Client {
       baseURL: params.baseUrl.replace(/\/+$/, ''),
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -332,7 +332,9 @@ export class Client {
   }
 
   async getCourse(courseId: string): Promise<BlackboardCourse> {
-    let response = await this.http.get(`/learn/api/public/v3/courses/${encodeURIComponent(courseId)}`);
+    let response = await this.http.get(
+      `/learn/api/public/v3/courses/${encodeURIComponent(courseId)}`
+    );
     return response.data;
   }
 
@@ -356,21 +358,27 @@ export class Client {
     return response.data;
   }
 
-  async updateCourse(courseId: string, data: {
-    name?: string;
-    description?: string;
-    termId?: string;
-    availability?: {
-      available?: string;
-      duration?: { type?: string; start?: string; end?: string };
-    };
-    enrollment?: {
-      type?: string;
-      accessCode?: string;
-    };
-    allowGuests?: boolean;
-  }): Promise<BlackboardCourse> {
-    let response = await this.http.patch(`/learn/api/public/v3/courses/${encodeURIComponent(courseId)}`, data);
+  async updateCourse(
+    courseId: string,
+    data: {
+      name?: string;
+      description?: string;
+      termId?: string;
+      availability?: {
+        available?: string;
+        duration?: { type?: string; start?: string; end?: string };
+      };
+      enrollment?: {
+        type?: string;
+        accessCode?: string;
+      };
+      allowGuests?: boolean;
+    }
+  ): Promise<BlackboardCourse> {
+    let response = await this.http.patch(
+      `/learn/api/public/v3/courses/${encodeURIComponent(courseId)}`,
+      data
+    );
     return response.data;
   }
 
@@ -402,7 +410,9 @@ export class Client {
   }
 
   async getUser(userId: string): Promise<BlackboardUser> {
-    let response = await this.http.get(`/learn/api/public/v1/users/${encodeURIComponent(userId)}`);
+    let response = await this.http.get(
+      `/learn/api/public/v1/users/${encodeURIComponent(userId)}`
+    );
     return response.data;
   }
 
@@ -412,7 +422,14 @@ export class Client {
     externalId?: string;
     dataSourceId?: string;
     availability?: { available?: string };
-    name?: { given?: string; family?: string; middle?: string; other?: string; suffix?: string; title?: string };
+    name?: {
+      given?: string;
+      family?: string;
+      middle?: string;
+      other?: string;
+      suffix?: string;
+      title?: string;
+    };
     contact?: { email?: string; institutionEmail?: string };
     institutionRoleIds?: string[];
     systemRoleIds?: string[];
@@ -421,18 +438,31 @@ export class Client {
     return response.data;
   }
 
-  async updateUser(userId: string, data: {
-    userName?: string;
-    password?: string;
-    externalId?: string;
-    dataSourceId?: string;
-    availability?: { available?: string };
-    name?: { given?: string; family?: string; middle?: string; other?: string; suffix?: string; title?: string };
-    contact?: { email?: string; institutionEmail?: string };
-    institutionRoleIds?: string[];
-    systemRoleIds?: string[];
-  }): Promise<BlackboardUser> {
-    let response = await this.http.patch(`/learn/api/public/v1/users/${encodeURIComponent(userId)}`, data);
+  async updateUser(
+    userId: string,
+    data: {
+      userName?: string;
+      password?: string;
+      externalId?: string;
+      dataSourceId?: string;
+      availability?: { available?: string };
+      name?: {
+        given?: string;
+        family?: string;
+        middle?: string;
+        other?: string;
+        suffix?: string;
+        title?: string;
+      };
+      contact?: { email?: string; institutionEmail?: string };
+      institutionRoleIds?: string[];
+      systemRoleIds?: string[];
+    }
+  ): Promise<BlackboardUser> {
+    let response = await this.http.patch(
+      `/learn/api/public/v1/users/${encodeURIComponent(userId)}`,
+      data
+    );
     return response.data;
   }
 
@@ -442,14 +472,17 @@ export class Client {
 
   // ── Memberships ──────────────────────────────────────
 
-  async listCourseMemberships(courseId: string, options?: {
-    offset?: number;
-    limit?: number;
-    role?: string;
-    availability?: string;
-    modified?: string;
-    modifiedCompare?: string;
-  }): Promise<PaginatedResponse<BlackboardMembership>> {
+  async listCourseMemberships(
+    courseId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+      role?: string;
+      availability?: string;
+      modified?: string;
+      modifiedCompare?: string;
+    }
+  ): Promise<PaginatedResponse<BlackboardMembership>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -457,20 +490,29 @@ export class Client {
     if (options?.availability) params['availability.available'] = options.availability;
     if (options?.modified) params.modified = options.modified;
     if (options?.modifiedCompare) params.modifiedCompare = options.modifiedCompare;
-    let response = await this.http.get(`/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/users`, { params });
+    let response = await this.http.get(
+      `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/users`,
+      { params }
+    );
     return response.data;
   }
 
   async getCourseMembership(courseId: string, userId: string): Promise<BlackboardMembership> {
-    let response = await this.http.get(`/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/users/${encodeURIComponent(userId)}`);
+    let response = await this.http.get(
+      `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/users/${encodeURIComponent(userId)}`
+    );
     return response.data;
   }
 
-  async createCourseMembership(courseId: string, userId: string, data: {
-    dataSourceId?: string;
-    availability?: { available?: string };
-    courseRoleId?: string;
-  }): Promise<BlackboardMembership> {
+  async createCourseMembership(
+    courseId: string,
+    userId: string,
+    data: {
+      dataSourceId?: string;
+      availability?: { available?: string };
+      courseRoleId?: string;
+    }
+  ): Promise<BlackboardMembership> {
     let response = await this.http.put(
       `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/users/${encodeURIComponent(userId)}`,
       data
@@ -478,11 +520,15 @@ export class Client {
     return response.data;
   }
 
-  async updateCourseMembership(courseId: string, userId: string, data: {
-    dataSourceId?: string;
-    availability?: { available?: string };
-    courseRoleId?: string;
-  }): Promise<BlackboardMembership> {
+  async updateCourseMembership(
+    courseId: string,
+    userId: string,
+    data: {
+      dataSourceId?: string;
+      availability?: { available?: string };
+      courseRoleId?: string;
+    }
+  ): Promise<BlackboardMembership> {
     let response = await this.http.patch(
       `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/users/${encodeURIComponent(userId)}`,
       data
@@ -491,37 +537,55 @@ export class Client {
   }
 
   async deleteCourseMembership(courseId: string, userId: string): Promise<void> {
-    await this.http.delete(`/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/users/${encodeURIComponent(userId)}`);
+    await this.http.delete(
+      `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/users/${encodeURIComponent(userId)}`
+    );
   }
 
-  async listUserMemberships(userId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardMembership>> {
+  async listUserMemberships(
+    userId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardMembership>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
-    let response = await this.http.get(`/learn/api/public/v1/users/${encodeURIComponent(userId)}/courses`, { params });
+    let response = await this.http.get(
+      `/learn/api/public/v1/users/${encodeURIComponent(userId)}/courses`,
+      { params }
+    );
     return response.data;
   }
 
   // ── Content ──────────────────────────────────────────
 
-  async listCourseContent(courseId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardContent>> {
+  async listCourseContent(
+    courseId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardContent>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
-    let response = await this.http.get(`/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/contents`, { params });
+    let response = await this.http.get(
+      `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/contents`,
+      { params }
+    );
     return response.data;
   }
 
-  async listContentChildren(courseId: string, contentId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardContent>> {
+  async listContentChildren(
+    courseId: string,
+    contentId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardContent>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -539,19 +603,22 @@ export class Client {
     return response.data;
   }
 
-  async createContent(courseId: string, data: {
-    parentId?: string;
-    title: string;
-    body?: string;
-    description?: string;
-    position?: number;
-    contentHandler?: { id: string; url?: string };
-    availability?: {
-      available?: string;
-      allowGuests?: boolean;
-      adaptiveRelease?: { start?: string; end?: string };
-    };
-  }): Promise<BlackboardContent> {
+  async createContent(
+    courseId: string,
+    data: {
+      parentId?: string;
+      title: string;
+      body?: string;
+      description?: string;
+      position?: number;
+      contentHandler?: { id: string; url?: string };
+      availability?: {
+        available?: string;
+        allowGuests?: boolean;
+        adaptiveRelease?: { start?: string; end?: string };
+      };
+    }
+  ): Promise<BlackboardContent> {
     let parentPath = data.parentId
       ? `/contents/${encodeURIComponent(data.parentId)}/children`
       : '/contents';
@@ -562,17 +629,21 @@ export class Client {
     return response.data;
   }
 
-  async updateContent(courseId: string, contentId: string, data: {
-    title?: string;
-    body?: string;
-    description?: string;
-    position?: number;
-    availability?: {
-      available?: string;
-      allowGuests?: boolean;
-      adaptiveRelease?: { start?: string; end?: string };
-    };
-  }): Promise<BlackboardContent> {
+  async updateContent(
+    courseId: string,
+    contentId: string,
+    data: {
+      title?: string;
+      body?: string;
+      description?: string;
+      position?: number;
+      availability?: {
+        available?: string;
+        allowGuests?: boolean;
+        adaptiveRelease?: { start?: string; end?: string };
+      };
+    }
+  ): Promise<BlackboardContent> {
     let response = await this.http.patch(
       `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/contents/${encodeURIComponent(contentId)}`,
       data
@@ -588,14 +659,20 @@ export class Client {
 
   // ── Grade Columns ────────────────────────────────────
 
-  async listGradeColumns(courseId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardGradeColumn>> {
+  async listGradeColumns(
+    courseId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardGradeColumn>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
-    let response = await this.http.get(`/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/gradebook/columns`, { params });
+    let response = await this.http.get(
+      `/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/gradebook/columns`,
+      { params }
+    );
     return response.data;
   }
 
@@ -606,22 +683,25 @@ export class Client {
     return response.data;
   }
 
-  async createGradeColumn(courseId: string, data: {
-    name: string;
-    displayName?: string;
-    description?: string;
-    externalId?: string;
-    externalGrade?: boolean;
-    score?: { possible: number };
-    availability?: { available?: string };
-    grading?: {
-      type?: string;
-      due?: string;
-      attemptsAllowed?: number;
-      scoringModel?: string;
-      schemaId?: string;
-    };
-  }): Promise<BlackboardGradeColumn> {
+  async createGradeColumn(
+    courseId: string,
+    data: {
+      name: string;
+      displayName?: string;
+      description?: string;
+      externalId?: string;
+      externalGrade?: boolean;
+      score?: { possible: number };
+      availability?: { available?: string };
+      grading?: {
+        type?: string;
+        due?: string;
+        attemptsAllowed?: number;
+        scoringModel?: string;
+        schemaId?: string;
+      };
+    }
+  ): Promise<BlackboardGradeColumn> {
     let response = await this.http.post(
       `/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/gradebook/columns`,
       data
@@ -629,22 +709,26 @@ export class Client {
     return response.data;
   }
 
-  async updateGradeColumn(courseId: string, columnId: string, data: {
-    name?: string;
-    displayName?: string;
-    description?: string;
-    externalId?: string;
-    externalGrade?: boolean;
-    score?: { possible: number };
-    availability?: { available?: string };
-    grading?: {
-      type?: string;
-      due?: string;
-      attemptsAllowed?: number;
-      scoringModel?: string;
-      schemaId?: string;
-    };
-  }): Promise<BlackboardGradeColumn> {
+  async updateGradeColumn(
+    courseId: string,
+    columnId: string,
+    data: {
+      name?: string;
+      displayName?: string;
+      description?: string;
+      externalId?: string;
+      externalGrade?: boolean;
+      score?: { possible: number };
+      availability?: { available?: string };
+      grading?: {
+        type?: string;
+        due?: string;
+        attemptsAllowed?: number;
+        scoringModel?: string;
+        schemaId?: string;
+      };
+    }
+  ): Promise<BlackboardGradeColumn> {
     let response = await this.http.patch(
       `/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/gradebook/columns/${encodeURIComponent(columnId)}`,
       data
@@ -660,10 +744,14 @@ export class Client {
 
   // ── Grades ───────────────────────────────────────────
 
-  async listColumnGrades(courseId: string, columnId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardGrade>> {
+  async listColumnGrades(
+    courseId: string,
+    columnId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardGrade>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -674,20 +762,29 @@ export class Client {
     return response.data;
   }
 
-  async getGrade(courseId: string, columnId: string, userId: string): Promise<BlackboardGrade> {
+  async getGrade(
+    courseId: string,
+    columnId: string,
+    userId: string
+  ): Promise<BlackboardGrade> {
     let response = await this.http.get(
       `/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/gradebook/columns/${encodeURIComponent(columnId)}/users/${encodeURIComponent(userId)}`
     );
     return response.data;
   }
 
-  async updateGrade(courseId: string, columnId: string, userId: string, data: {
-    text?: string;
-    score?: number;
-    notes?: string;
-    feedback?: string;
-    exempt?: boolean;
-  }): Promise<BlackboardGrade> {
+  async updateGrade(
+    courseId: string,
+    columnId: string,
+    userId: string,
+    data: {
+      text?: string;
+      score?: number;
+      notes?: string;
+      feedback?: string;
+      exempt?: boolean;
+    }
+  ): Promise<BlackboardGrade> {
     let response = await this.http.patch(
       `/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/gradebook/columns/${encodeURIComponent(columnId)}/users/${encodeURIComponent(userId)}`,
       data
@@ -695,10 +792,14 @@ export class Client {
     return response.data;
   }
 
-  async listUserGrades(courseId: string, userId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardGrade>> {
+  async listUserGrades(
+    courseId: string,
+    userId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardGrade>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -711,10 +812,13 @@ export class Client {
 
   // ── Announcements ────────────────────────────────────
 
-  async listCourseAnnouncements(courseId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardAnnouncement>> {
+  async listCourseAnnouncements(
+    courseId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardAnnouncement>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -725,22 +829,28 @@ export class Client {
     return response.data;
   }
 
-  async getCourseAnnouncement(courseId: string, announcementId: string): Promise<BlackboardAnnouncement> {
+  async getCourseAnnouncement(
+    courseId: string,
+    announcementId: string
+  ): Promise<BlackboardAnnouncement> {
     let response = await this.http.get(
       `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/announcements/${encodeURIComponent(announcementId)}`
     );
     return response.data;
   }
 
-  async createCourseAnnouncement(courseId: string, data: {
-    title: string;
-    body: string;
-    availability?: {
-      duration?: { type?: string; start?: string; end?: string };
-    };
-    showAtLogin?: boolean;
-    showInCourses?: boolean;
-  }): Promise<BlackboardAnnouncement> {
+  async createCourseAnnouncement(
+    courseId: string,
+    data: {
+      title: string;
+      body: string;
+      availability?: {
+        duration?: { type?: string; start?: string; end?: string };
+      };
+      showAtLogin?: boolean;
+      showInCourses?: boolean;
+    }
+  ): Promise<BlackboardAnnouncement> {
     let response = await this.http.post(
       `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/announcements`,
       data
@@ -748,15 +858,19 @@ export class Client {
     return response.data;
   }
 
-  async updateCourseAnnouncement(courseId: string, announcementId: string, data: {
-    title?: string;
-    body?: string;
-    availability?: {
-      duration?: { type?: string; start?: string; end?: string };
-    };
-    showAtLogin?: boolean;
-    showInCourses?: boolean;
-  }): Promise<BlackboardAnnouncement> {
+  async updateCourseAnnouncement(
+    courseId: string,
+    announcementId: string,
+    data: {
+      title?: string;
+      body?: string;
+      availability?: {
+        duration?: { type?: string; start?: string; end?: string };
+      };
+      showAtLogin?: boolean;
+      showInCourses?: boolean;
+    }
+  ): Promise<BlackboardAnnouncement> {
     let response = await this.http.patch(
       `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/announcements/${encodeURIComponent(announcementId)}`,
       data
@@ -783,10 +897,13 @@ export class Client {
 
   // ── Assignments ──────────────────────────────────────
 
-  async listAssignments(courseId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardAssignment>> {
+  async listAssignments(
+    courseId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardAssignment>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -806,11 +923,15 @@ export class Client {
 
   // ── Attempts (Assignment Submissions) ────────────────
 
-  async listColumnAttempts(courseId: string, columnId: string, options?: {
-    offset?: number;
-    limit?: number;
-    userId?: string;
-  }): Promise<PaginatedResponse<BlackboardAttempt>> {
+  async listColumnAttempts(
+    courseId: string,
+    columnId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+      userId?: string;
+    }
+  ): Promise<PaginatedResponse<BlackboardAttempt>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -822,23 +943,32 @@ export class Client {
     return response.data;
   }
 
-  async getAttempt(courseId: string, columnId: string, attemptId: string): Promise<BlackboardAttempt> {
+  async getAttempt(
+    courseId: string,
+    columnId: string,
+    attemptId: string
+  ): Promise<BlackboardAttempt> {
     let response = await this.http.get(
       `/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/gradebook/columns/${encodeURIComponent(columnId)}/attempts/${encodeURIComponent(attemptId)}`
     );
     return response.data;
   }
 
-  async updateAttempt(courseId: string, columnId: string, attemptId: string, data: {
-    status?: string;
-    score?: number;
-    text?: string;
-    notes?: string;
-    feedback?: string;
-    exempt?: boolean;
-    studentComments?: string;
-    studentSubmission?: string;
-  }): Promise<BlackboardAttempt> {
+  async updateAttempt(
+    courseId: string,
+    columnId: string,
+    attemptId: string,
+    data: {
+      status?: string;
+      score?: number;
+      text?: string;
+      notes?: string;
+      feedback?: string;
+      exempt?: boolean;
+      studentComments?: string;
+      studentSubmission?: string;
+    }
+  ): Promise<BlackboardAttempt> {
     let response = await this.http.patch(
       `/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/gradebook/columns/${encodeURIComponent(columnId)}/attempts/${encodeURIComponent(attemptId)}`,
       data
@@ -848,10 +978,13 @@ export class Client {
 
   // ── Groups ───────────────────────────────────────────
 
-  async listCourseGroups(courseId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardGroup>> {
+  async listCourseGroups(
+    courseId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardGroup>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -869,17 +1002,20 @@ export class Client {
     return response.data;
   }
 
-  async createCourseGroup(courseId: string, data: {
-    name: string;
-    externalId?: string;
-    description?: string;
-    availability?: { available?: string };
-    enrollment?: {
-      type?: string;
-      limit?: number;
-      signupSheet?: { name?: string; description?: string; showMembers?: boolean };
-    };
-  }): Promise<BlackboardGroup> {
+  async createCourseGroup(
+    courseId: string,
+    data: {
+      name: string;
+      externalId?: string;
+      description?: string;
+      availability?: { available?: string };
+      enrollment?: {
+        type?: string;
+        limit?: number;
+        signupSheet?: { name?: string; description?: string; showMembers?: boolean };
+      };
+    }
+  ): Promise<BlackboardGroup> {
     let response = await this.http.post(
       `/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/groups`,
       data
@@ -887,17 +1023,21 @@ export class Client {
     return response.data;
   }
 
-  async updateCourseGroup(courseId: string, groupId: string, data: {
-    name?: string;
-    externalId?: string;
-    description?: string;
-    availability?: { available?: string };
-    enrollment?: {
-      type?: string;
-      limit?: number;
-      signupSheet?: { name?: string; description?: string; showMembers?: boolean };
-    };
-  }): Promise<BlackboardGroup> {
+  async updateCourseGroup(
+    courseId: string,
+    groupId: string,
+    data: {
+      name?: string;
+      externalId?: string;
+      description?: string;
+      availability?: { available?: string };
+      enrollment?: {
+        type?: string;
+        limit?: number;
+        signupSheet?: { name?: string; description?: string; showMembers?: boolean };
+      };
+    }
+  ): Promise<BlackboardGroup> {
     let response = await this.http.patch(
       `/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/groups/${encodeURIComponent(groupId)}`,
       data
@@ -911,10 +1051,14 @@ export class Client {
     );
   }
 
-  async listGroupMembers(courseId: string, groupId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardMembership>> {
+  async listGroupMembers(
+    courseId: string,
+    groupId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardMembership>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -925,7 +1069,11 @@ export class Client {
     return response.data;
   }
 
-  async addGroupMember(courseId: string, groupId: string, userId: string): Promise<BlackboardMembership> {
+  async addGroupMember(
+    courseId: string,
+    groupId: string,
+    userId: string
+  ): Promise<BlackboardMembership> {
     let response = await this.http.put(
       `/learn/api/public/v2/courses/${encodeURIComponent(courseId)}/groups/${encodeURIComponent(groupId)}/users/${encodeURIComponent(userId)}`,
       {}
@@ -953,16 +1101,21 @@ export class Client {
   }
 
   async getTerm(termId: string): Promise<BlackboardTerm> {
-    let response = await this.http.get(`/learn/api/public/v1/terms/${encodeURIComponent(termId)}`);
+    let response = await this.http.get(
+      `/learn/api/public/v1/terms/${encodeURIComponent(termId)}`
+    );
     return response.data;
   }
 
   // ── Attendance ───────────────────────────────────────
 
-  async listAttendanceMeetings(courseId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardAttendanceMeeting>> {
+  async listAttendanceMeetings(
+    courseId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardAttendanceMeeting>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -973,11 +1126,14 @@ export class Client {
     return response.data;
   }
 
-  async createAttendanceMeeting(courseId: string, data: {
-    start?: string;
-    end?: string;
-    title?: string;
-  }): Promise<BlackboardAttendanceMeeting> {
+  async createAttendanceMeeting(
+    courseId: string,
+    data: {
+      start?: string;
+      end?: string;
+      title?: string;
+    }
+  ): Promise<BlackboardAttendanceMeeting> {
     let response = await this.http.post(
       `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/meetings`,
       data
@@ -985,10 +1141,14 @@ export class Client {
     return response.data;
   }
 
-  async listAttendanceRecords(courseId: string, meetingId: string, options?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<BlackboardAttendanceRecord>> {
+  async listAttendanceRecords(
+    courseId: string,
+    meetingId: string,
+    options?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<BlackboardAttendanceRecord>> {
     let params: Record<string, string> = {};
     if (options?.offset !== undefined) params.offset = String(options.offset);
     if (options?.limit !== undefined) params.limit = String(options.limit);
@@ -999,9 +1159,14 @@ export class Client {
     return response.data;
   }
 
-  async updateAttendanceRecord(courseId: string, meetingId: string, userId: string, data: {
-    status: string;
-  }): Promise<BlackboardAttendanceRecord> {
+  async updateAttendanceRecord(
+    courseId: string,
+    meetingId: string,
+    userId: string,
+    data: {
+      status: string;
+    }
+  ): Promise<BlackboardAttendanceRecord> {
     let response = await this.http.patch(
       `/learn/api/public/v1/courses/${encodeURIComponent(courseId)}/meetings/${encodeURIComponent(meetingId)}/users/${encodeURIComponent(userId)}`,
       data

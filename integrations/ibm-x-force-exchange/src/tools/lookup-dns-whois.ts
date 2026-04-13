@@ -3,55 +3,81 @@ import { XForceClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let lookupDnsWhois = SlateTool.create(
-  spec,
-  {
-    name: 'Lookup DNS & WHOIS',
-    key: 'lookup_dns_whois',
-    description: `Retrieve DNS records and/or WHOIS registration information for a domain, IP address, or URL.
+export let lookupDnsWhois = SlateTool.create(spec, {
+  name: 'Lookup DNS & WHOIS',
+  key: 'lookup_dns_whois',
+  description: `Retrieve DNS records and/or WHOIS registration information for a domain, IP address, or URL.
 DNS results include A, AAAA, MX, TXT, and other record types. WHOIS results include registrant information, creation/expiration dates, and registrar details.`,
-    instructions: [
-      'Provide a domain name, IP address, or URL.',
-      'By default both DNS and WHOIS are returned. Set includeDns or includeWhois to false to skip one.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Provide a domain name, IP address, or URL.',
+    'By default both DNS and WHOIS are returned. Set includeDns or includeWhois to false to skip one.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Domain name, IP address, or URL to look up'),
-    includeDns: z.boolean().optional().describe('Include DNS records (default: true)'),
-    includeWhois: z.boolean().optional().describe('Include WHOIS registration data (default: true)'),
-  }))
-  .output(z.object({
-    query: z.string().describe('The queried domain/IP/URL'),
-    dns: z.object({
-      records: z.array(z.object({
-        type: z.string().optional().describe('DNS record type (A, AAAA, MX, CNAME, etc.)'),
-        value: z.string().optional().describe('Record value'),
-      })).optional().describe('DNS records found'),
-      passiveDns: z.array(z.object({
-        value: z.string().optional().describe('IP or domain value'),
-        type: z.string().optional().describe('Record type'),
-        firstSeen: z.string().optional().describe('First seen date'),
-        lastSeen: z.string().optional().describe('Last seen date'),
-      })).optional().describe('Passive DNS records'),
-    }).optional().describe('DNS lookup results'),
-    whois: z.object({
-      registrarName: z.string().optional().describe('Registrar name'),
-      createdDate: z.string().optional().describe('Domain creation date'),
-      updatedDate: z.string().optional().describe('Domain last updated date'),
-      expiresDate: z.string().optional().describe('Domain expiration date'),
-      registrant: z.record(z.string(), z.any()).optional().describe('Registrant contact information'),
-      nameServers: z.array(z.string()).optional().describe('Name servers'),
-      status: z.array(z.string()).optional().describe('Domain status codes'),
-    }).optional().describe('WHOIS registration results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Domain name, IP address, or URL to look up'),
+      includeDns: z.boolean().optional().describe('Include DNS records (default: true)'),
+      includeWhois: z
+        .boolean()
+        .optional()
+        .describe('Include WHOIS registration data (default: true)')
+    })
+  )
+  .output(
+    z.object({
+      query: z.string().describe('The queried domain/IP/URL'),
+      dns: z
+        .object({
+          records: z
+            .array(
+              z.object({
+                type: z
+                  .string()
+                  .optional()
+                  .describe('DNS record type (A, AAAA, MX, CNAME, etc.)'),
+                value: z.string().optional().describe('Record value')
+              })
+            )
+            .optional()
+            .describe('DNS records found'),
+          passiveDns: z
+            .array(
+              z.object({
+                value: z.string().optional().describe('IP or domain value'),
+                type: z.string().optional().describe('Record type'),
+                firstSeen: z.string().optional().describe('First seen date'),
+                lastSeen: z.string().optional().describe('Last seen date')
+              })
+            )
+            .optional()
+            .describe('Passive DNS records')
+        })
+        .optional()
+        .describe('DNS lookup results'),
+      whois: z
+        .object({
+          registrarName: z.string().optional().describe('Registrar name'),
+          createdDate: z.string().optional().describe('Domain creation date'),
+          updatedDate: z.string().optional().describe('Domain last updated date'),
+          expiresDate: z.string().optional().describe('Domain expiration date'),
+          registrant: z
+            .record(z.string(), z.any())
+            .optional()
+            .describe('Registrant contact information'),
+          nameServers: z.array(z.string()).optional().describe('Name servers'),
+          status: z.array(z.string()).optional().describe('Domain status codes')
+        })
+        .optional()
+        .describe('WHOIS registration results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new XForceClient({
       token: ctx.auth.token,
-      password: ctx.auth.password,
+      password: ctx.auth.password
     });
 
     let includeDns = ctx.input.includeDns !== false;
@@ -83,7 +109,10 @@ DNS results include A, AAAA, MX, TXT, and other record types. WHOIS results incl
         }
         if (dnsData.TXT) {
           for (let r of dnsData.TXT) {
-            records.push({ type: 'TXT', value: typeof r === 'string' ? r : Array.isArray(r) ? r.join('') : r.record });
+            records.push({
+              type: 'TXT',
+              value: typeof r === 'string' ? r : Array.isArray(r) ? r.join('') : r.record
+            });
           }
         }
 
@@ -91,7 +120,7 @@ DNS results include A, AAAA, MX, TXT, and other record types. WHOIS results incl
           value: p.value,
           type: p.recordType,
           firstSeen: p.first,
-          lastSeen: p.last,
+          lastSeen: p.last
         }));
 
         result.dns = { records, passiveDns: passive };
@@ -114,13 +143,15 @@ DNS results include A, AAAA, MX, TXT, and other record types. WHOIS results incl
           createdDate: whoisData.createdDate,
           updatedDate: whoisData.updatedDate,
           expiresDate: whoisData.expiresDate,
-          registrant: registrant ? {
-            name: registrant.name,
-            organization: registrant.organization,
-            country: registrant.country,
-          } : undefined,
+          registrant: registrant
+            ? {
+                name: registrant.name,
+                organization: registrant.organization,
+                country: registrant.country
+              }
+            : undefined,
           nameServers: whoisData.nameServers,
-          status: whoisData.status,
+          status: whoisData.status
         };
         parts.push('WHOIS data');
       } catch (e: any) {
@@ -130,6 +161,7 @@ DNS results include A, AAAA, MX, TXT, and other record types. WHOIS results incl
 
     return {
       output: result,
-      message: `Lookup for **${ctx.input.query}**: ${parts.join(', ') || 'no data'}`,
+      message: `Lookup for **${ctx.input.query}**: ${parts.join(', ') || 'no data'}`
     };
-  }).build();
+  })
+  .build();

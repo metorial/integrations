@@ -3,15 +3,15 @@ import { createAxios } from 'slates';
 type AxiosInstance = ReturnType<typeof createAxios>;
 
 let suggestionsAxios = createAxios({
-  baseURL: 'https://suggestions.dadata.ru/suggestions/api/4_1/rs',
+  baseURL: 'https://suggestions.dadata.ru/suggestions/api/4_1/rs'
 });
 
 let cleanerAxios = createAxios({
-  baseURL: 'https://cleaner.dadata.ru/api/v1',
+  baseURL: 'https://cleaner.dadata.ru/api/v1'
 });
 
 let profileAxios = createAxios({
-  baseURL: 'https://dadata.ru/api/v2',
+  baseURL: 'https://dadata.ru/api/v2'
 });
 
 export interface ClientConfig {
@@ -29,15 +29,15 @@ export class SuggestionsClient {
   private get headers() {
     return {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Token ${this.config.token}`,
+      Accept: 'application/json',
+      Authorization: `Token ${this.config.token}`
     };
   }
 
   private get headersWithSecret() {
     return {
       ...this.headers,
-      'X-Secret': this.config.secretKey || '',
+      'X-Secret': this.config.secretKey || ''
     };
   }
 
@@ -57,10 +57,10 @@ export class SuggestionsClient {
     if (params.language) body.language = params.language;
     if (params.locations) body.locations = params.locations;
     if (params.locationsGeo) {
-      body.locations_geo = params.locationsGeo.map((g) => ({
+      body.locations_geo = params.locationsGeo.map(g => ({
         lat: g.lat,
         lon: g.lon,
-        radius_meters: g.radiusMeters,
+        radius_meters: g.radiusMeters
       }));
     }
     if (params.locationsBoost) body.locations_boost = params.locationsBoost;
@@ -135,27 +135,35 @@ export class SuggestionsClient {
     return response.data;
   }
 
-  async suggestOutward(entity: string, params: {
-    query: string;
-    count?: number;
-    filters?: Record<string, unknown>[];
-  }) {
+  async suggestOutward(
+    entity: string,
+    params: {
+      query: string;
+      count?: number;
+      filters?: Record<string, unknown>[];
+    }
+  ) {
     let body: Record<string, unknown> = { query: params.query };
     if (params.count) body.count = params.count;
     if (params.filters) body.filters = params.filters;
 
-    let response = await this.axios.post(`/suggest/${entity}`, body, { headers: this.headers });
+    let response = await this.axios.post(`/suggest/${entity}`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
-  async findById(entity: string, params: {
-    query: string;
-    count?: number;
-    kpp?: string;
-    branchType?: string;
-    type?: string;
-    language?: string;
-  }) {
+  async findById(
+    entity: string,
+    params: {
+      query: string;
+      count?: number;
+      kpp?: string;
+      branchType?: string;
+      type?: string;
+      language?: string;
+    }
+  ) {
     let body: Record<string, unknown> = { query: params.query };
     if (params.count) body.count = params.count;
     if (params.kpp) body.kpp = params.kpp;
@@ -163,20 +171,20 @@ export class SuggestionsClient {
     if (params.type) body.type = params.type;
     if (params.language) body.language = params.language;
 
-    let response = await this.axios.post(`/findById/${entity}`, body, { headers: this.headers });
+    let response = await this.axios.post(`/findById/${entity}`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
-  async findAffiliated(params: {
-    query: string;
-    count?: number;
-    scope?: string[];
-  }) {
+  async findAffiliated(params: { query: string; count?: number; scope?: string[] }) {
     let body: Record<string, unknown> = { query: params.query };
     if (params.count) body.count = params.count;
     if (params.scope) body.scope = params.scope;
 
-    let response = await this.axios.post('/findAffiliated/party', body, { headers: this.headers });
+    let response = await this.axios.post('/findAffiliated/party', body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -192,14 +200,13 @@ export class SuggestionsClient {
     if (params.radiusMeters) body.radius_meters = params.radiusMeters;
     if (params.language) body.language = params.language;
 
-    let response = await this.axios.post('/geolocate/address', body, { headers: this.headers });
+    let response = await this.axios.post('/geolocate/address', body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
-  async iplocateAddress(params: {
-    ip?: string;
-    language?: string;
-  }) {
+  async iplocateAddress(params: { ip?: string; language?: string }) {
     let body: Record<string, unknown> = {};
     if (params.ip) body.ip = params.ip;
     if (params.language) body.language = params.language;
@@ -209,9 +216,13 @@ export class SuggestionsClient {
   }
 
   async findCompanyByEmail(params: { query: string }) {
-    let response = await this.axios.post('/findByEmail/company', { query: params.query }, {
-      headers: this.headersWithSecret,
-    });
+    let response = await this.axios.post(
+      '/findByEmail/company',
+      { query: params.query },
+      {
+        headers: this.headersWithSecret
+      }
+    );
     return response.data;
   }
 }
@@ -226,9 +237,9 @@ export class CleanerClient {
   private get headers() {
     return {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Token ${this.config.token}`,
-      'X-Secret': this.config.secretKey || '',
+      Accept: 'application/json',
+      Authorization: `Token ${this.config.token}`,
+      'X-Secret': this.config.secretKey || ''
     };
   }
 
@@ -253,12 +264,16 @@ export class CleanerClient {
   }
 
   async cleanPassport(value: string) {
-    let response = await this.axios.post('/clean/passport', [value], { headers: this.headers });
+    let response = await this.axios.post('/clean/passport', [value], {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async cleanBirthdate(value: string) {
-    let response = await this.axios.post('/clean/birthdate', [value], { headers: this.headers });
+    let response = await this.axios.post('/clean/birthdate', [value], {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -278,9 +293,9 @@ export class ProfileClient {
   private get headers() {
     return {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Token ${this.config.token}`,
-      'X-Secret': this.config.secretKey || '',
+      Accept: 'application/json',
+      Authorization: `Token ${this.config.token}`,
+      'X-Secret': this.config.secretKey || ''
     };
   }
 

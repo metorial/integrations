@@ -19,6 +19,7 @@ To obtain an API key:
 The API is available to all customers on the Enterprise plan and above, as well as all those who have booked the API add-on.
 
 **Example request header:**
+
 ```
 X-API-KEY: your-api-key-here
 Accept: application/json

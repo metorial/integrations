@@ -12,13 +12,13 @@ import type {
   UniOneTag,
   UniOneProject,
   UniOneSystemInfo,
-  UniOneValidationResult,
+  UniOneValidationResult
 } from './types';
 
 let BASE_URLS: Record<string, string> = {
   auto: 'https://api.unione.io/en/transactional/api/v1',
   eu1: 'https://eu1.unione.io/en/transactional/api/v1',
-  us1: 'https://us1.unione.io/en/transactional/api/v1',
+  us1: 'https://us1.unione.io/en/transactional/api/v1'
 };
 
 export class Client {
@@ -28,7 +28,7 @@ export class Client {
     let baseURL = BASE_URLS[config.datacenter ?? 'auto'] ?? BASE_URLS['auto'];
 
     this.axios = createAxios({
-      baseURL,
+      baseURL
     });
 
     this.axios.defaults.headers.common['X-API-KEY'] = config.token;
@@ -50,7 +50,7 @@ export class Client {
     let response = await this.axios.post('/email/subscribe.json', {
       from_email: params.fromEmail,
       from_name: params.fromName,
-      to_email: params.toEmail,
+      to_email: params.toEmail
     });
     return response.data;
   }
@@ -59,24 +59,31 @@ export class Client {
 
   async validateEmail(email: string): Promise<UniOneValidationResult> {
     let response = await this.axios.post('/email-validation/single.json', {
-      email,
+      email
     });
     return response.data;
   }
 
   // ── Templates ───────────────────────────────────
 
-  async setTemplate(template: UniOneTemplate): Promise<{ status: string; template: UniOneTemplate }> {
+  async setTemplate(
+    template: UniOneTemplate
+  ): Promise<{ status: string; template: UniOneTemplate }> {
     let response = await this.axios.post('/template/set.json', { template });
     return response.data;
   }
 
-  async getTemplate(templateId: string): Promise<{ status: string; template: UniOneTemplate }> {
+  async getTemplate(
+    templateId: string
+  ): Promise<{ status: string; template: UniOneTemplate }> {
     let response = await this.axios.post('/template/get.json', { id: templateId });
     return response.data;
   }
 
-  async listTemplates(params?: { limit?: number; offset?: number }): Promise<{ status: string; templates: UniOneTemplateListItem[] }> {
+  async listTemplates(params?: {
+    limit?: number;
+    offset?: number;
+  }): Promise<{ status: string; templates: UniOneTemplateListItem[] }> {
     let response = await this.axios.post('/template/list.json', params ?? {});
     return response.data;
   }
@@ -126,9 +133,7 @@ export class Client {
     return response.data;
   }
 
-  async deleteSuppression(params: {
-    email: string;
-  }): Promise<{ status: string }> {
+  async deleteSuppression(params: { email: string }): Promise<{ status: string }> {
     let response = await this.axios.post('/suppression/delete.json', params);
     return response.data;
   }
@@ -141,7 +146,9 @@ export class Client {
   }
 
   async validateVerificationRecord(domain: string): Promise<{ status: string }> {
-    let response = await this.axios.post('/domain/validate-verification-record.json', { domain });
+    let response = await this.axios.post('/domain/validate-verification-record.json', {
+      domain
+    });
     return response.data;
   }
 
@@ -162,12 +169,16 @@ export class Client {
 
   // ── Webhooks ────────────────────────────────────
 
-  async setWebhook(webhook: UniOneWebhookConfig): Promise<{ status: string; object: UniOneWebhookInfo }> {
+  async setWebhook(
+    webhook: UniOneWebhookConfig
+  ): Promise<{ status: string; object: UniOneWebhookInfo }> {
     let response = await this.axios.post('/webhook/set.json', webhook);
     return response.data;
   }
 
-  async getWebhook(webhookUrl: string): Promise<{ status: string; object: UniOneWebhookInfo }> {
+  async getWebhook(
+    webhookUrl: string
+  ): Promise<{ status: string; object: UniOneWebhookInfo }> {
     let response = await this.axios.post('/webhook/get.json', { url: webhookUrl });
     return response.data;
   }
@@ -193,7 +204,7 @@ export class Client {
   }): Promise<{ status: string; dump_id: number }> {
     let body: Record<string, unknown> = {
       start_time: params.startTime,
-      end_time: params.endTime,
+      end_time: params.endTime
     };
     if (params.limit !== undefined) body['limit'] = params.limit;
     if (params.allEvents !== undefined) body['all_events'] = params.allEvents ? 1 : 0;

@@ -3,24 +3,25 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listVersionsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Versions',
-    key: 'list_versions',
-    description: `List all versions (releases) in a project. Returns version names, descriptions, dates, and statuses.`,
-    tags: {
-      readOnly: true,
-    },
+export let listVersionsTool = SlateTool.create(spec, {
+  name: 'List Versions',
+  key: 'list_versions',
+  description: `List all versions (releases) in a project. Returns version names, descriptions, dates, and statuses.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.number().describe('The project ID'),
-  }))
-  .output(z.object({
-    versions: z.array(z.any()).describe('List of versions/releases'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.number().describe('The project ID')
+    })
+  )
+  .output(
+    z.object({
+      versions: z.array(z.any()).describe('List of versions/releases')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let response = await client.listVersions(ctx.input.projectId);
 
@@ -28,31 +29,32 @@ export let listVersionsTool = SlateTool.create(
 
     return {
       output: { versions },
-      message: `Found **${versions.length}** version(s).`,
+      message: `Found **${versions.length}** version(s).`
     };
   })
   .build();
 
-export let createVersionTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Version',
-    key: 'create_version',
-    description: `Create a new version (release) in a project. Versions help organize work into release milestones.`,
-  }
-)
-  .input(z.object({
-    projectId: z.number().describe('The project ID'),
-    name: z.string().describe('Version name'),
-    description: z.string().optional().describe('Version description'),
-    startDate: z.string().optional().describe('Start date (ISO 8601)'),
-    releaseDate: z.string().optional().describe('Target release date (ISO 8601)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the version was created'),
-    raw: z.any().optional().describe('Full response data'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createVersionTool = SlateTool.create(spec, {
+  name: 'Create Version',
+  key: 'create_version',
+  description: `Create a new version (release) in a project. Versions help organize work into release milestones.`
+})
+  .input(
+    z.object({
+      projectId: z.number().describe('The project ID'),
+      name: z.string().describe('Version name'),
+      description: z.string().optional().describe('Version description'),
+      startDate: z.string().optional().describe('Start date (ISO 8601)'),
+      releaseDate: z.string().optional().describe('Target release date (ISO 8601)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the version was created'),
+      raw: z.any().optional().describe('Full response data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.createVersion({
@@ -60,7 +62,7 @@ export let createVersionTool = SlateTool.create(
       name: ctx.input.name,
       description: ctx.input.description,
       startDate: ctx.input.startDate,
-      releaseDate: ctx.input.releaseDate,
+      releaseDate: ctx.input.releaseDate
     });
 
     if (response.code !== '0') {
@@ -69,30 +71,31 @@ export let createVersionTool = SlateTool.create(
 
     return {
       output: { success: true, raw: response.data },
-      message: `Created version **"${ctx.input.name}"**.`,
+      message: `Created version **"${ctx.input.name}"**.`
     };
   })
   .build();
 
-export let updateVersionTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Version',
-    key: 'update_version',
-    description: `Update a version's name, description, or dates.`,
-  }
-)
-  .input(z.object({
-    versionId: z.number().describe('The version ID to update'),
-    name: z.string().optional().describe('New version name'),
-    description: z.string().optional().describe('New version description'),
-    startDate: z.string().optional().describe('New start date (ISO 8601)'),
-    releaseDate: z.string().optional().describe('New release date (ISO 8601)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the update succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateVersionTool = SlateTool.create(spec, {
+  name: 'Update Version',
+  key: 'update_version',
+  description: `Update a version's name, description, or dates.`
+})
+  .input(
+    z.object({
+      versionId: z.number().describe('The version ID to update'),
+      name: z.string().optional().describe('New version name'),
+      description: z.string().optional().describe('New version description'),
+      startDate: z.string().optional().describe('New start date (ISO 8601)'),
+      releaseDate: z.string().optional().describe('New release date (ISO 8601)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the update succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.updateVersion({
@@ -100,7 +103,7 @@ export let updateVersionTool = SlateTool.create(
       name: ctx.input.name,
       description: ctx.input.description,
       startDate: ctx.input.startDate,
-      releaseDate: ctx.input.releaseDate,
+      releaseDate: ctx.input.releaseDate
     });
 
     if (response.code !== '0') {
@@ -109,29 +112,30 @@ export let updateVersionTool = SlateTool.create(
 
     return {
       output: { success: true },
-      message: `Updated version **#${ctx.input.versionId}**.`,
+      message: `Updated version **#${ctx.input.versionId}**.`
     };
   })
   .build();
 
-export let deleteVersionTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Version',
-    key: 'delete_version',
-    description: `Delete a version from a project.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteVersionTool = SlateTool.create(spec, {
+  name: 'Delete Version',
+  key: 'delete_version',
+  description: `Delete a version from a project.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    versionId: z.number().describe('The version ID to delete'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      versionId: z.number().describe('The version ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.deleteVersion(ctx.input.versionId);
@@ -142,27 +146,30 @@ export let deleteVersionTool = SlateTool.create(
 
     return {
       output: { success: true },
-      message: `Deleted version **#${ctx.input.versionId}**.`,
+      message: `Deleted version **#${ctx.input.versionId}**.`
     };
   })
   .build();
 
-export let manageVersionLifecycleTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Version Lifecycle',
-    key: 'manage_version_lifecycle',
-    description: `Change a version's lifecycle status. Supports releasing, cancelling a release, archiving, and unarchiving a version.`,
-  }
-)
-  .input(z.object({
-    versionId: z.number().describe('The version ID'),
-    action: z.enum(['release', 'cancel_release', 'archive', 'unarchive']).describe('Lifecycle action to perform'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageVersionLifecycleTool = SlateTool.create(spec, {
+  name: 'Manage Version Lifecycle',
+  key: 'manage_version_lifecycle',
+  description: `Change a version's lifecycle status. Supports releasing, cancelling a release, archiving, and unarchiving a version.`
+})
+  .input(
+    z.object({
+      versionId: z.number().describe('The version ID'),
+      action: z
+        .enum(['release', 'cancel_release', 'archive', 'unarchive'])
+        .describe('Lifecycle action to perform')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response;
@@ -187,7 +194,7 @@ export let manageVersionLifecycleTool = SlateTool.create(
 
     return {
       output: { success: true },
-      message: `Performed **${ctx.input.action}** on version #${ctx.input.versionId}.`,
+      message: `Performed **${ctx.input.action}** on version #${ctx.input.versionId}.`
     };
   })
   .build();

@@ -16,7 +16,7 @@ let issueSchema = z.object({
   importanceScore: z.number().describe('Importance score'),
   url: z.string().describe('Issue URL'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last updated timestamp'),
+  updatedAt: z.string().describe('Last updated timestamp')
 });
 
 export let listIssues = SlateTool.create(spec, {
@@ -24,20 +24,29 @@ export let listIssues = SlateTool.create(spec, {
   key: 'list_issues',
   description: `List issues from the public portal. Issues represent individual work items within projects that customers can view and upvote.`,
   tags: {
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    workspaceId: z.string().optional().describe('Workspace ID (uses config workspace if not provided)'),
-    language: z.string().optional().describe('Language code for localized content'),
-  }))
-  .output(z.object({
-    issues: z.array(issueSchema).describe('List of portal issues'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      workspaceId: z
+        .string()
+        .optional()
+        .describe('Workspace ID (uses config workspace if not provided)'),
+      language: z.string().optional().describe('Language code for localized content')
+    })
+  )
+  .output(
+    z.object({
+      issues: z.array(issueSchema).describe('List of portal issues')
+    })
+  )
+  .handleInvocation(async ctx => {
     let workspaceId = ctx.input.workspaceId || ctx.config.workspaceId;
     if (!workspaceId) {
-      throw new Error('workspaceId is required. Provide it in the input or set it in the config.');
+      throw new Error(
+        'workspaceId is required. Provide it in the input or set it in the config.'
+      );
     }
 
     let client = new Client({ token: ctx.auth.token });
@@ -56,11 +65,12 @@ export let listIssues = SlateTool.create(spec, {
       importanceScore: i.importanceScore ?? 0,
       url: i.url,
       createdAt: i.createdAt,
-      updatedAt: i.updatedAt,
+      updatedAt: i.updatedAt
     }));
 
     return {
       output: { issues },
-      message: `Found **${issues.length}** portal issues.`,
+      message: `Found **${issues.length}** portal issues.`
     };
-  }).build();
+  })
+  .build();

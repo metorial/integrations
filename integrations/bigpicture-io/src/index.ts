@@ -6,5 +6,5 @@ import { companyEnriched } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [enrichCompany, resolveIp],
-  triggers: [companyEnriched],
+  triggers: [companyEnriched]
 });

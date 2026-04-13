@@ -3,37 +3,47 @@ import { GristClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let rowChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Row Changes',
-    key: 'row_changes',
-    description: 'Triggers when rows are added or updated in a Grist table. Receives the changed row data via webhook.',
-  },
-)
-  .input(z.object({
-    eventType: z.enum(['add', 'update']).describe('Type of row change'),
-    eventId: z.string().describe('Unique event identifier'),
-    documentId: z.string().describe('Document ID'),
-    tableId: z.string().describe('Table ID'),
-    rows: z.array(z.object({
-      recordId: z.number().describe('Row/record ID'),
-      fields: z.record(z.string(), z.any()).describe('Row field values'),
-    })).describe('Changed rows'),
-  }))
-  .output(z.object({
-    documentId: z.string().describe('Document ID'),
-    tableId: z.string().describe('Table ID'),
-    rows: z.array(z.object({
-      recordId: z.number().describe('Row/record ID'),
-      fields: z.record(z.string(), z.any()).describe('Row field values'),
-    })).describe('Changed rows'),
-  }))
+export let rowChanges = SlateTrigger.create(spec, {
+  name: 'Row Changes',
+  key: 'row_changes',
+  description:
+    'Triggers when rows are added or updated in a Grist table. Receives the changed row data via webhook.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['add', 'update']).describe('Type of row change'),
+      eventId: z.string().describe('Unique event identifier'),
+      documentId: z.string().describe('Document ID'),
+      tableId: z.string().describe('Table ID'),
+      rows: z
+        .array(
+          z.object({
+            recordId: z.number().describe('Row/record ID'),
+            fields: z.record(z.string(), z.any()).describe('Row field values')
+          })
+        )
+        .describe('Changed rows')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('Document ID'),
+      tableId: z.string().describe('Table ID'),
+      rows: z
+        .array(
+          z.object({
+            recordId: z.number().describe('Row/record ID'),
+            fields: z.record(z.string(), z.any()).describe('Row field values')
+          })
+        )
+        .describe('Changed rows')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GristClient({
         token: ctx.auth.token,
-        serverUrl: ctx.auth.serverUrl,
+        serverUrl: ctx.auth.serverUrl
       });
 
       // We need a document ID and table ID to register webhooks.
@@ -50,17 +60,17 @@ export let rowChanges = SlateTrigger.create(
       // We'll parse documentId and tableId from state or use a convention.
 
       return {
-        registrationDetails: {},
+        registrationDetails: {}
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       // If we stored a webhookId during registration, we can clean it up
       let details = ctx.input.registrationDetails;
       if (details?.webhookId && details?.documentId) {
         let client = new GristClient({
           token: ctx.auth.token,
-          serverUrl: ctx.auth.serverUrl,
+          serverUrl: ctx.auth.serverUrl
         });
         try {
           await client.deleteWebhook(details.documentId, details.webhookId);
@@ -72,7 +82,7 @@ export let rowChanges = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -106,7 +116,7 @@ export let rowChanges = SlateTrigger.create(
         let { id, ...fields } = row;
         return {
           recordId: id as number,
-          fields,
+          fields
         };
       });
 
@@ -119,25 +129,28 @@ export let rowChanges = SlateTrigger.create(
       let eventType: 'add' | 'update' = 'add';
 
       return {
-        inputs: [{
-          eventType,
-          eventId,
-          documentId,
-          tableId,
-          rows,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId,
+            documentId,
+            tableId,
+            rows
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `row.${ctx.input.eventType}`,
         id: ctx.input.eventId,
         output: {
           documentId: ctx.input.documentId,
           tableId: ctx.input.tableId,
-          rows: ctx.input.rows,
-        },
+          rows: ctx.input.rows
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

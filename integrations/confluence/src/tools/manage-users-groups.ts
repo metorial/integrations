@@ -10,14 +10,16 @@ export let getCurrentUser = SlateTool.create(spec, {
   tags: { readOnly: true }
 })
   .input(z.object({}))
-  .output(z.object({
-    accountId: z.string().optional(),
-    displayName: z.string().optional(),
-    email: z.string().optional(),
-    accountType: z.string().optional(),
-    profilePicturePath: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      accountId: z.string().optional(),
+      displayName: z.string().optional(),
+      email: z.string().optional(),
+      accountType: z.string().optional(),
+      profilePicturePath: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let user = await client.getCurrentUser();
 
@@ -40,18 +42,24 @@ export let listGroups = SlateTool.create(spec, {
   description: `List Confluence groups with pagination support.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    limit: z.number().optional().default(25).describe('Maximum number of groups to return'),
-    start: z.number().optional().describe('Offset for pagination')
-  }))
-  .output(z.object({
-    groups: z.array(z.object({
-      groupName: z.string(),
-      groupId: z.string().optional()
-    })),
-    totalSize: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      limit: z.number().optional().default(25).describe('Maximum number of groups to return'),
+      start: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      groups: z.array(
+        z.object({
+          groupName: z.string(),
+          groupId: z.string().optional()
+        })
+      ),
+      totalSize: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let response = await client.getGroups({
       limit: ctx.input.limit,
@@ -76,21 +84,27 @@ export let getGroupMembers = SlateTool.create(spec, {
   description: `List all members of a Confluence group by group name.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    groupName: z.string().describe('The group name to list members for'),
-    limit: z.number().optional().default(25).describe('Maximum number of members to return'),
-    start: z.number().optional().describe('Offset for pagination')
-  }))
-  .output(z.object({
-    members: z.array(z.object({
-      accountId: z.string().optional(),
-      displayName: z.string().optional(),
-      email: z.string().optional(),
-      accountType: z.string().optional()
-    })),
-    totalSize: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      groupName: z.string().describe('The group name to list members for'),
+      limit: z.number().optional().default(25).describe('Maximum number of members to return'),
+      start: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      members: z.array(
+        z.object({
+          accountId: z.string().optional(),
+          displayName: z.string().optional(),
+          email: z.string().optional(),
+          accountType: z.string().optional()
+        })
+      ),
+      totalSize: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let response = await client.getGroupMembers(ctx.input.groupName, {
       limit: ctx.input.limit,

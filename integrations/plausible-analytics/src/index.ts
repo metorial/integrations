@@ -19,7 +19,7 @@ import {
   listGuests,
   inviteGuest,
   removeGuest,
-  listTeams,
+  listTeams
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -45,9 +45,7 @@ export let provider = Slate.create({
     listGuests,
     inviteGuest,
     removeGuest,
-    listTeams,
+    listTeams
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });
