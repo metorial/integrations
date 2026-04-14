@@ -1,6 +1,6 @@
 {
   "name": "@slates/proto",
-  "version": "1.0.0-rc.6",
+  "version": "1.0.0-rc.7",
   "publishConfig": {
     "access": "public"
   },
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "microbundle": "^0.15.1",
-    "@slates/tsconfig": "^1.0.0",
+    "@slates/tsconfig": "1.0.0-rc.1",
     "typescript": "5.8.2",
     "vitest": "^3.1.2"
   }

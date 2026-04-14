@@ -1,6 +1,6 @@
 {
   "name": "@slates/client",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -31,12 +31,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@slates/proto": "workspace:*",
-    "@slates/provider": "workspace:*",
-    "@slates/provider-handler": "workspace:*"
+    "@slates/proto": "1.0.0-rc.7",
+    "@slates/provider": "1.0.0-rc.8",
+    "@slates/provider-handler": "1.0.0-rc.7"
   },
   "devDependencies": {
-    "@slates/tsconfig": "workspace:*",
+    "@slates/tsconfig": "1.0.0-rc.1",
     "typescript": "5.8.2",
     "vitest": "^3.1.2"
   }

@@ -21,6 +21,8 @@ type CliOptions = {
 };
 
 const INTEGRATIONS_DIRECTORY = path.resolve(import.meta.dir, '..', 'integrations');
+const REGISTRY_RETRY_ATTEMPTS = 5;
+const REGISTRY_RETRY_BASE_DELAY_MS = 2_000;
 const HELP_TEXT = `
 Usage:
   bun scripts/get-updated-integrations.ts [--filter <pattern>]
@@ -181,7 +183,7 @@ async function filterUnpublishedIntegrations(
 
 async function hasPublishedVersion(integration: IntegrationPackage): Promise<boolean> {
   const spec = `${integration.name}@${integration.version}`;
-  const result = await $`npm view ${spec} version --json --loglevel=error`.quiet().nothrow();
+  const result = await npmViewWithRetries(spec);
 
   if (result.exitCode === 0) {
     console.error(`Published already: ${spec}`);
@@ -198,6 +200,43 @@ async function hasPublishedVersion(integration: IntegrationPackage): Promise<boo
   throw new Error(
     `Failed to query npm for ${spec}: ${stderr || `exit code ${result.exitCode}`}`
   );
+}
+
+async function npmViewWithRetries(spec: string) {
+  for (let attempt = 1; attempt <= REGISTRY_RETRY_ATTEMPTS; attempt += 1) {
+    const result = await $`npm view ${spec} version --json --loglevel=error`.quiet().nothrow();
+    const stderr = new TextDecoder().decode(result.stderr).trim();
+
+    if (!isRateLimitError(stderr)) {
+      return result;
+    }
+
+    if (attempt === REGISTRY_RETRY_ATTEMPTS) {
+      return result;
+    }
+
+    const delayMs = getRetryDelayMs(attempt);
+    console.error(
+      `npm rate limit while checking ${spec}. Retrying in ${delayMs}ms (${attempt}/${REGISTRY_RETRY_ATTEMPTS})...`
+    );
+    await sleep(delayMs);
+  }
+
+  throw new Error(`Retry loop exited unexpectedly for ${spec}.`);
+}
+
+function isRateLimitError(stderr: string): boolean {
+  return stderr.includes('E429') || stderr.includes('429 Too Many Requests');
+}
+
+function getRetryDelayMs(attempt: number): number {
+  return REGISTRY_RETRY_BASE_DELAY_MS * 2 ** (attempt - 1);
+}
+
+function sleep(delayMs: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(resolve, delayMs);
+  });
 }
 
 async function mainWithErrorHandling() {
