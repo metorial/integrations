@@ -1,6 +1,8 @@
 import { createLocalSlateTestClient } from '@slates/test';
-import { vi } from 'vitest';
+import { expect, vi } from 'vitest';
 import { provider } from '../index';
+
+(globalThis as typeof globalThis & { expect?: typeof expect }).expect = expect;
 
 let googleClientMocks = vi.hoisted(() => ({
   listEvents: vi.fn(),

@@ -20,6 +20,7 @@ import {
   handleSlateTriggerWebhook,
   loadSlatesRuntimeContext,
   mapSlateTriggerEvent,
+  pollSlateTriggerEvents,
   registerSlateTriggerWebhook,
   unregisterSlateTriggerWebhook
 } from './index';
@@ -176,10 +177,41 @@ let createDemoSlate = () => {
     })
     .build();
 
+  let pollEcho = SlateTrigger.create(spec, {
+    key: 'poll_echo',
+    name: 'Poll Echo'
+  })
+    .input(
+      z.object({
+        value: z.string()
+      })
+    )
+    .output(
+      z.object({
+        echoed: z.string()
+      })
+    )
+    .polling({
+      pollEvents: async ctx => ({
+        inputs: ctx.input.state?.seen ? [] : [{ value: 'poll-value' }],
+        updatedState: {
+          seen: true
+        }
+      }),
+      handleEvent: async ctx => ({
+        type: 'demo.poll',
+        id: `poll-${ctx.input.value}`,
+        output: {
+          echoed: ctx.input.value
+        }
+      })
+    })
+    .build();
+
   return Slate.create({
     spec,
     tools: [echo, fail],
-    triggers: [webhookEcho]
+    triggers: [webhookEcho, pollEcho]
   });
 };
 
@@ -248,13 +280,16 @@ describe('@slates/test', () => {
         description: 'A tiny test slate'
       },
       toolIds: ['echo', 'fail'],
-      triggerIds: ['webhook_echo'],
+      triggerIds: ['webhook_echo', 'poll_echo'],
       authMethodIds: ['token_auth'],
       tools: [
         { id: 'echo', readOnly: false, destructive: false },
         { id: 'fail', readOnly: false, destructive: false }
       ],
-      triggers: [{ id: 'webhook_echo', invocationType: 'webhook' }]
+      triggers: [
+        { id: 'webhook_echo', invocationType: 'webhook' },
+        { id: 'poll_echo', invocationType: 'polling' }
+      ]
     });
 
     expect(contract.configSchema.properties.prefix.type).toBe('string');
@@ -356,5 +391,54 @@ describe('@slates/test', () => {
         }),
       { code: 'internal.unexpected', kind: 'internal', status: 500 }
     );
+  });
+
+  it('wraps trigger polling flows', async () => {
+    let client = createLocalSlateTestClient({
+      slate: createDemoSlate(),
+      state: {
+        config: {
+          prefix: 'Hi'
+        },
+        auth: {
+          authenticationMethodId: 'token_auth',
+          output: {
+            token: 'secret-token'
+          }
+        }
+      }
+    });
+
+    let initialPoll = await pollSlateTriggerEvents({
+      client,
+      triggerId: 'poll_echo'
+    });
+    expect(initialPoll).toMatchObject({
+      inputs: [{ value: 'poll-value' }],
+      updatedState: {
+        seen: true
+      }
+    });
+
+    let mapped = await mapSlateTriggerEvent({
+      client,
+      triggerId: 'poll_echo',
+      input: initialPoll.inputs[0]!,
+      type: 'demo.poll',
+      output: {
+        echoed: 'poll-value'
+      }
+    });
+    expect(mapped.id).toBe('poll-poll-value');
+
+    let repeatedPoll = await pollSlateTriggerEvents({
+      client,
+      triggerId: 'poll_echo',
+      state: initialPoll.updatedState
+    });
+    expect(repeatedPoll.inputs).toEqual([]);
+    expect(repeatedPoll.updatedState).toEqual({
+      seen: true
+    });
   });
 });

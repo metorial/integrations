@@ -15,10 +15,18 @@
   "type": "module",
   "source": "src/index.ts",
   "exports": {
-    "types": "./dist/index.d.ts",
-    "require": "./dist/index.cjs",
-    "import": "./dist/index.module.js",
-    "default": "./dist/index.module.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.module.js",
+      "default": "./dist/index.module.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "require": "./dist/config.cjs",
+      "import": "./dist/config.module.js",
+      "default": "./dist/config.module.js"
+    }
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.module.js",
@@ -27,7 +35,7 @@
   "scripts": {
     "test": "vitest run --passWithNoTests",
     "lint": "prettier src/**/*.ts --check",
-    "build": "tsup --config ../../tsup.packages.config.ts --external async_hooks",
+    "build": "tsup --config tsup.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -6,7 +6,7 @@ import {
   createIntegrationClientContext,
   openIntegrationStore
 } from '../lib/context';
-import { chooseScopes, createOAuthCallbackListener, openBrowser } from '../lib/oauth';
+import { chooseScopes, createOAuthCallbackListener, printBrowserUrl } from '../lib/oauth';
 import {
   parseJsonObject,
   parseList,
@@ -293,7 +293,7 @@ let runAuthSetup = async (opts: AuthSetupOptions): Promise<SlatesStoredAuth> => 
     callbackState = authorizationUrl.callbackState ?? null;
     finalInput = authorizationUrl.input ?? authInput;
 
-    await openBrowser(authorizationUrl.authorizationUrl);
+    printBrowserUrl(authorizationUrl.authorizationUrl);
     let callbackResult = await callback.wait();
     if (callbackResult.state !== callback.state) {
       throw new Error('OAuth state mismatch.');
