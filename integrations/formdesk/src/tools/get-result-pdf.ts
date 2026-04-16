@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createBase64Attachment, SlateTool } from 'slates';
 import { FormdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -6,7 +6,7 @@ import { z } from 'zod';
 export let getResultPdf = SlateTool.create(spec, {
   name: 'Get Result PDF',
   key: 'get_result_pdf',
-  description: `Generates and retrieves a PDF document from a form result entry. Supports configurable paper size, orientation, scaling, margins, and optional password protection. Returns the PDF as base64-encoded data.`,
+  description: `Generates and retrieves a PDF document from a form result entry. Supports configurable paper size, orientation, scaling, margins, and optional password protection. Returns the PDF as an attachment.`,
   tags: {
     readOnly: true
   }
@@ -29,7 +29,6 @@ export let getResultPdf = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      pdfContentBase64: z.string().describe('Base64-encoded PDF file content'),
       contentType: z.string().describe('MIME type of the PDF')
     })
   )
@@ -55,9 +54,9 @@ export let getResultPdf = SlateTool.create(spec, {
 
     return {
       output: {
-        pdfContentBase64: result.content,
         contentType: result.contentType
       },
+      attachments: [createBase64Attachment(result.content, result.contentType)],
       message: `Successfully generated PDF for result **${ctx.input.resultId}**.`
     };
   })

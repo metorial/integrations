@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createBase64Attachment, SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -19,8 +19,7 @@ export let downloadAuditTrail = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      agreementId: z.string().describe('ID of the agreement'),
-      auditTrailBase64: z.string().describe('Base64-encoded PDF content of the audit trail')
+      agreementId: z.string().describe('ID of the agreement')
     })
   )
   .handleInvocation(async ctx => {
@@ -42,9 +41,9 @@ export let downloadAuditTrail = SlateTool.create(spec, {
 
     return {
       output: {
-        agreementId: ctx.input.agreementId,
-        auditTrailBase64: base64
+        agreementId: ctx.input.agreementId
       },
+      attachments: [createBase64Attachment(base64, 'application/pdf')],
       message: `Downloaded audit trail PDF for agreement \`${ctx.input.agreementId}\`.`
     };
   });

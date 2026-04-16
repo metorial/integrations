@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createBase64Attachment, SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
@@ -7,7 +7,7 @@ import { z } from 'zod';
 export let getAttachment = SlateTool.create(spec, {
   name: 'Get Attachment',
   key: 'get_attachment',
-  description: `Download an email attachment by its ID. Returns the base64-encoded file data and size. Use the attachment IDs from the message's attachments list.`,
+  description: `Download an email attachment by its ID. Returns the attachment as a file attachment plus its size. Use the attachment IDs from the message's attachments list.`,
   tags: {
     readOnly: true
   }
@@ -21,8 +21,7 @@ export let getAttachment = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      size: z.number().describe('Attachment size in bytes.'),
-      data: z.string().describe('Base64url-encoded attachment data.')
+      size: z.number().describe('Attachment size in bytes.')
     })
   )
   .handleInvocation(async ctx => {
@@ -32,12 +31,17 @@ export let getAttachment = SlateTool.create(spec, {
     });
 
     let attachment = await client.getAttachment(ctx.input.messageId, ctx.input.attachmentId);
+    let normalizedData = attachment.data.replace(/-/g, '+').replace(/_/g, '/');
+    let padding = normalizedData.length % 4;
+    if (padding > 0) {
+      normalizedData = normalizedData.padEnd(normalizedData.length + (4 - padding), '=');
+    }
 
     return {
       output: {
-        size: attachment.size,
-        data: attachment.data
+        size: attachment.size
       },
+      attachments: [createBase64Attachment(normalizedData)],
       message: `Downloaded attachment (**${attachment.size}** bytes).`
     };
   });
