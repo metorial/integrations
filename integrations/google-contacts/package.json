@@ -13,7 +13,7 @@
     "zod": "^4.2"
   },
   "devDependencies": {
-    "@slates/test": "1.0.0-rc.2",
+    "@slates/test": "1.0.0-rc.3",
     "typescript": "^5",
     "vitest": "^3.1.2"
   },

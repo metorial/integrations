@@ -32,8 +32,8 @@
   },
   "dependencies": {
     "@lowerdeck/testing-tools": "latest",
-    "@slates/client": "1.0.0-rc.2",
-    "@slates/profiles": "1.0.0-rc.2"
+    "@slates/client": "1.0.0-rc.3",
+    "@slates/profiles": "1.0.0-rc.3"
   },
   "devDependencies": {
     "@slates/provider": "1.0.0-rc.9",
