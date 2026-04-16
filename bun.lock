@@ -13625,6 +13625,19 @@
         "@types/node": "^22.15.3",
       },
     },
+    "test-integrations/test-no-auth": {
+      "name": "@slates-integrations/test-no-auth",
+      "version": "0.1.0-rc.1",
+      "dependencies": {
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.8",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
   },
   "packages": {
     "@babel/code-frame": ["@babel/code-frame@7.29.0", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.28.5", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw=="],
@@ -16000,6 +16013,8 @@
     "@slates-integrations/templated": ["@slates-integrations/templated@workspace:integrations/templated"],
 
     "@slates-integrations/terraform-cloud": ["@slates-integrations/terraform-cloud@workspace:integrations/terraform-cloud"],
+
+    "@slates-integrations/test-no-auth": ["@slates-integrations/test-no-auth@workspace:test-integrations/test-no-auth"],
 
     "@slates-integrations/textcortex": ["@slates-integrations/textcortex@workspace:integrations/textcortex"],
 

@@ -6,6 +6,7 @@ on:
   #     - main
   #   paths:
   #     - 'integrations/**/package.json'
+  #     - 'test-integrations/**/package.json'
   #     - 'scripts/get-updated-integrations.ts'
   #     - '.github/workflows/publish-integrations.yml'
   workflow_dispatch:

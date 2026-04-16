@@ -20,7 +20,10 @@ type CliOptions = {
   filters: string[];
 };
 
-const INTEGRATIONS_DIRECTORY = path.resolve(import.meta.dir, '..', 'integrations');
+const INTEGRATION_ROOTS = [
+  path.resolve(import.meta.dir, '..', 'integrations'),
+  path.resolve(import.meta.dir, '..', 'test-integrations')
+] as const;
 const REGISTRY_RETRY_ATTEMPTS = 5;
 const REGISTRY_RETRY_BASE_DELAY_MS = 2_000;
 const HELP_TEXT = `
@@ -107,38 +110,38 @@ function splitFilters(value: string): string[] {
 }
 
 async function getIntegrationPackages(): Promise<IntegrationPackage[]> {
-  const directoryEntries = await readdir(INTEGRATIONS_DIRECTORY, { withFileTypes: true });
-  const packages = await Promise.all(
-    directoryEntries
-      .filter(entry => entry.isDirectory())
-      .map(async entry => {
-        const packageJsonPath = path.join(INTEGRATIONS_DIRECTORY, entry.name, 'package.json');
-        const packageJsonRaw = await readFile(packageJsonPath, 'utf8');
-        const packageJson = JSON.parse(packageJsonRaw) as {
-          name?: string;
-          private?: boolean;
-          version?: string;
-        };
+  const packages: IntegrationPackage[] = [];
 
-        if (packageJson.private) {
-          return null;
-        }
+  for (const root of INTEGRATION_ROOTS) {
+    const directoryEntries = await readdir(root, { withFileTypes: true });
+    const rootSegment = path.basename(root);
 
-        if (!packageJson.name || !packageJson.version) {
-          throw new Error(`Missing name or version in ${packageJsonPath}.`);
-        }
+    for (const entry of directoryEntries.filter(e => e.isDirectory())) {
+      const packageJsonPath = path.join(root, entry.name, 'package.json');
+      const packageJsonRaw = await readFile(packageJsonPath, 'utf8');
+      const packageJson = JSON.parse(packageJsonRaw) as {
+        name?: string;
+        private?: boolean;
+        version?: string;
+      };
 
-        return {
-          directory: path.posix.join('integrations', entry.name),
-          name: packageJson.name,
-          version: packageJson.version
-        } satisfies IntegrationPackage;
-      })
-  );
+      if (packageJson.private) {
+        continue;
+      }
 
-  return packages.filter(
-    (integration): integration is IntegrationPackage => integration !== null
-  );
+      if (!packageJson.name || !packageJson.version) {
+        throw new Error(`Missing name or version in ${packageJsonPath}.`);
+      }
+
+      packages.push({
+        directory: path.posix.join(rootSegment, entry.name),
+        name: packageJson.name,
+        version: packageJson.version
+      });
+    }
+  }
+
+  return packages;
 }
 
 function matchesAnyFilter(packageName: string, filters: string[]): boolean {

@@ -45,7 +45,10 @@ type ManifestUpdate = {
 
 const ROOT_DIRECTORY = path.resolve(import.meta.dir, '..');
 const PACKAGES_DIRECTORY = path.join(ROOT_DIRECTORY, 'packages');
-const INTEGRATIONS_DIRECTORY = path.join(ROOT_DIRECTORY, 'integrations');
+const INTEGRATION_DIRECTORIES = [
+  path.join(ROOT_DIRECTORY, 'integrations'),
+  path.join(ROOT_DIRECTORY, 'test-integrations')
+] as const;
 const DEPENDENCY_SECTIONS: DependencySection[] = [
   'dependencies',
   'devDependencies',
@@ -241,10 +244,19 @@ async function getWorkspacePackages(): Promise<WorkspacePackage[]> {
 }
 
 async function getManifestTargets(): Promise<Array<{ directory: string; kind: 'package' | 'integration' }>> {
-  const [packageEntries, integrationEntries] = await Promise.all([
+  const [packageEntries, ...integrationEntryLists] = await Promise.all([
     readdir(PACKAGES_DIRECTORY, { withFileTypes: true }),
-    readdir(INTEGRATIONS_DIRECTORY, { withFileTypes: true })
+    ...INTEGRATION_DIRECTORIES.map(dir => readdir(dir, { withFileTypes: true }))
   ]);
+
+  const integrationTargets = INTEGRATION_DIRECTORIES.flatMap((dir, index) =>
+    integrationEntryLists[index]
+      .filter(entry => entry.isDirectory())
+      .map(entry => ({
+        directory: path.join(dir, entry.name),
+        kind: 'integration' as const
+      }))
+  );
 
   return [
     ...packageEntries
@@ -253,12 +265,7 @@ async function getManifestTargets(): Promise<Array<{ directory: string; kind: 'p
         directory: path.join(PACKAGES_DIRECTORY, entry.name),
         kind: 'package' as const
       })),
-    ...integrationEntries
-      .filter(entry => entry.isDirectory())
-      .map(entry => ({
-        directory: path.join(INTEGRATIONS_DIRECTORY, entry.name),
-        kind: 'integration' as const
-      }))
+    ...integrationTargets
   ].sort((left, right) => left.directory.localeCompare(right.directory));
 }
 
