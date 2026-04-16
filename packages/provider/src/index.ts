@@ -1,4 +1,5 @@
 export * from './action';
+export * from './action/attachment';
 export * from './auth';
 export * from './axios';
 export * from './config';
