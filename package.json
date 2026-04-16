@@ -6,6 +6,7 @@
     "format": "prettier --write .",
     "integrations:format": "prettier --write \"integrations/**/*\" --ignore-unknown",
     "integrations:cli": "bun packages/cli/src/cli.ts",
+    "integrations:update-package-versions": "bun scripts/update-integration-package-versions.ts",
     "packages:build": "turbo run build --filter=./packages/*",
     "integrations:build:inner": "turbo run build --concurrency=1 --ui=stream --filter=./integrations/*",
     "integrations:build": "bun run packages:build && bun run integrations:build:inner"

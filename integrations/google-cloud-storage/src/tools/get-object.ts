@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createTextAttachment, SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
@@ -7,7 +7,7 @@ import { z } from 'zod';
 export let getObject = SlateTool.create(spec, {
   name: 'Get Object',
   key: 'get_object',
-  description: `Get an object's metadata and optionally download its content from a Cloud Storage bucket. By default only returns metadata; set **includeContent** to true to download the object's data as text.`,
+  description: `Get an object's metadata and optionally download its content from a Cloud Storage bucket. By default only returns metadata; set **includeContent** to true to return the object's data as an attachment.`,
   constraints: [
     'Content download works best with text-based objects. Binary data may not be fully represented.'
   ],
@@ -41,11 +41,7 @@ export let getObject = SlateTool.create(spec, {
       customMetadata: z.record(z.string(), z.string()).optional(),
       temporaryHold: z.boolean().optional(),
       eventBasedHold: z.boolean().optional(),
-      retentionExpiresAt: z.string().optional(),
-      content: z
-        .string()
-        .optional()
-        .describe('Object content (only if includeContent was true)')
+      retentionExpiresAt: z.string().optional()
     })
   )
   .handleInvocation(async ctx => {
@@ -79,9 +75,12 @@ export let getObject = SlateTool.create(spec, {
         customMetadata: metadata.metadata,
         temporaryHold: metadata.temporaryHold,
         eventBasedHold: metadata.eventBasedHold,
-        retentionExpiresAt: metadata.retentionExpirationTime,
-        content
+        retentionExpiresAt: metadata.retentionExpirationTime
       },
+      attachments:
+        content !== undefined
+          ? [createTextAttachment(content, metadata.contentType || undefined)]
+          : undefined,
       message: `Retrieved object **${metadata.name}** from bucket **${metadata.bucket}** (${metadata.size} bytes, ${metadata.contentType}).${content !== undefined ? ' Content included.' : ''}`
     };
   })

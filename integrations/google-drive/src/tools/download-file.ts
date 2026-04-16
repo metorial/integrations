@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createBase64Attachment, SlateTool } from 'slates';
 import { GoogleDriveClient, MAX_DRIVE_DOWNLOAD_BYTES } from '../lib/client';
 import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
@@ -7,9 +7,9 @@ import { z } from 'zod';
 export let downloadFileTool = SlateTool.create(spec, {
   name: 'Download File',
   key: 'download_file',
-  description: `Download a **non–Google Workspace** file from Drive as bytes (see output for encoding). For Docs, Sheets, or Slides, use **Export File** instead.`,
+  description: `Download a **non–Google Workspace** file from Drive as an attachment. For Docs, Sheets, or Slides, use **Export File** instead.`,
   instructions: [
-    'Decode `contentBase64` to bytes after the call. For UTF-8 text files, decode base64 then interpret as UTF-8 string.',
+    'The downloaded file is returned in the response attachments.',
     'Google sets `mimeType` from the download response when present (may include a charset suffix).'
   ],
   constraints: [
@@ -29,9 +29,6 @@ export let downloadFileTool = SlateTool.create(spec, {
   .output(
     z.object({
       fileId: z.string().describe('ID of the downloaded file'),
-      contentBase64: z
-        .string()
-        .describe('Raw file bytes, standard base64 (not a data URL prefix)'),
       byteLength: z.number().describe('Byte length of the decoded file'),
       mimeType: z
         .string()
@@ -46,11 +43,11 @@ export let downloadFileTool = SlateTool.create(spec, {
     return {
       output: {
         fileId: ctx.input.fileId,
-        contentBase64,
         byteLength,
         mimeType
       },
-      message: `Downloaded file \`${ctx.input.fileId}\` (${byteLength} bytes as base64).${mimeType ? ` MIME: \`${mimeType}\`.` : ''}`
+      attachments: [createBase64Attachment(contentBase64, mimeType)],
+      message: `Downloaded file \`${ctx.input.fileId}\` (${byteLength} bytes).${mimeType ? ` MIME: \`${mimeType}\`.` : ''}`
     };
   })
   .build();

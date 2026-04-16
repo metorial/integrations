@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type { SlateContext } from '../context';
 import type { SlateSpecification } from '../specification/specification';
+import type { SlateAttachment } from './attachment';
 
 export type SlateActionType = 'tool' | 'trigger';
 
@@ -35,6 +36,7 @@ export type SlateToolInvocationHandler<
 > = (context: SlateContext<ConfigType, AuthType, InputType>) => Promise<{
   output: OutputType;
   message: string;
+  attachments?: SlateAttachment[];
 }>;
 
 export type SlateTriggerMappingHandler<

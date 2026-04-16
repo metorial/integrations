@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createBase64Attachment, SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -6,7 +6,7 @@ import { z } from 'zod';
 export let downloadDocument = SlateTool.create(spec, {
   name: 'Download Document',
   key: 'download_document',
-  description: `Downloads a document from a DocuSign envelope as base64-encoded content. Can download individual documents by ID, all documents combined, or list available documents in the envelope.`,
+  description: `Downloads a document from a DocuSign envelope as an attachment. Can download individual documents by ID, all documents combined, or list available documents in the envelope.`,
   instructions: [
     'Use documentId "combined" to download all documents merged into a single PDF.',
     'Use documentId "certificate" to download the certificate of completion.',
@@ -46,10 +46,6 @@ export let downloadDocument = SlateTool.create(spec, {
         )
         .optional()
         .describe('List of available documents in the envelope'),
-      documentBase64: z
-        .string()
-        .optional()
-        .describe('Base64-encoded document content (when downloading)'),
       documentId: z.string().optional().describe('ID of the downloaded document'),
       documentName: z.string().optional().describe('Name of the downloaded document')
     })
@@ -91,10 +87,10 @@ export let downloadDocument = SlateTool.create(spec, {
     return {
       output: {
         documents,
-        documentBase64,
         documentId: targetId,
         documentName: docName
       },
+      attachments: [createBase64Attachment(documentBase64, 'application/pdf')],
       message: `Downloaded document "**${docName}**" from envelope ${ctx.input.envelopeId}.`
     };
   })

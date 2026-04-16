@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createBase64Attachment, SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
 import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
@@ -13,7 +13,7 @@ export let exportFileTool = SlateTool.create(spec, {
     'Google Docs support: PDF, DOCX, TXT, HTML, RTF, ODT, EPUB.',
     'Google Sheets support: PDF, XLSX, CSV, TSV, ODS.',
     'Google Slides support: PDF, PPTX, ODP, TXT.',
-    'Output is **base64** (`contentBase64`) so binary exports (PDF, XLSX, …) and Google’s varying `Content-Type` headers work reliably through JSON-only transports.'
+    'The exported file is returned in the response attachments.'
   ],
   tags: {
     readOnly: true
@@ -32,7 +32,6 @@ export let exportFileTool = SlateTool.create(spec, {
     z.object({
       fileId: z.string(),
       exportMimeType: z.string(),
-      contentBase64: z.string().describe('Exported file bytes as standard base64'),
       byteLength: z.number().describe('Byte length of the decoded export'),
       mimeType: z
         .string()
@@ -51,11 +50,11 @@ export let exportFileTool = SlateTool.create(spec, {
       output: {
         fileId: ctx.input.fileId,
         exportMimeType: ctx.input.exportMimeType,
-        contentBase64,
         byteLength,
         mimeType
       },
-      message: `Exported file \`${ctx.input.fileId}\` as \`${ctx.input.exportMimeType}\` (${byteLength} bytes as base64).${mimeType ? ` MIME: \`${mimeType}\`.` : ''}`
+      attachments: [createBase64Attachment(contentBase64, mimeType)],
+      message: `Exported file \`${ctx.input.fileId}\` as \`${ctx.input.exportMimeType}\` (${byteLength} bytes).${mimeType ? ` MIME: \`${mimeType}\`.` : ''}`
     };
   })
   .build();
