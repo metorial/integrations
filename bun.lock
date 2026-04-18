@@ -13625,8 +13625,47 @@
         "@types/node": "^22.15.3",
       },
     },
+    "test-integrations/test-errors": {
+      "name": "@slates-integrations/test-errors",
+      "version": "0.1.0-rc.1",
+      "dependencies": {
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.8",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "test-integrations/test-http": {
+      "name": "@slates-integrations/test-http",
+      "version": "0.1.0-rc.1",
+      "dependencies": {
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.8",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
     "test-integrations/test-no-auth": {
       "name": "@slates-integrations/test-no-auth",
+      "version": "0.1.0-rc.2",
+      "dependencies": {
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.8",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "test-integrations/test-oauth": {
+      "name": "@slates-integrations/test-oauth",
       "version": "0.1.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
@@ -16014,7 +16053,13 @@
 
     "@slates-integrations/terraform-cloud": ["@slates-integrations/terraform-cloud@workspace:integrations/terraform-cloud"],
 
+    "@slates-integrations/test-errors": ["@slates-integrations/test-errors@workspace:test-integrations/test-errors"],
+
+    "@slates-integrations/test-http": ["@slates-integrations/test-http@workspace:test-integrations/test-http"],
+
     "@slates-integrations/test-no-auth": ["@slates-integrations/test-no-auth@workspace:test-integrations/test-no-auth"],
+
+    "@slates-integrations/test-oauth": ["@slates-integrations/test-oauth@workspace:test-integrations/test-oauth"],
 
     "@slates-integrations/textcortex": ["@slates-integrations/textcortex@workspace:integrations/textcortex"],
 
