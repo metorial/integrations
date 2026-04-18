@@ -99,7 +99,7 @@ export let updateFunction = SlateTool.create(spec, {
     }
 
     let updateMaskFields: string[] = [];
-    let body: Record<string, any> = {};
+    let body: Record<string, any> = { name };
 
     if (ctx.input.description !== undefined) {
       body['description'] = ctx.input.description;

@@ -80,8 +80,16 @@ export let updateSpaceTool = SlateTool.create(spec, {
       updateMaskFields.push('config.moderation');
     }
     if (ctx.input.moderationRestrictions) {
-      configUpdate.moderationRestrictions = ctx.input.moderationRestrictions;
-      updateMaskFields.push('config.moderationRestrictions');
+      let moderationRestrictions = Object.fromEntries(
+        Object.entries(ctx.input.moderationRestrictions).filter(([, value]) => value !== undefined)
+      );
+
+      if (Object.keys(moderationRestrictions).length > 0) {
+        configUpdate.moderationRestrictions = moderationRestrictions;
+        for (let field of Object.keys(moderationRestrictions)) {
+          updateMaskFields.push(`config.moderationRestrictions.${field}`);
+        }
+      }
     }
     if (ctx.input.autoRecording) {
       configUpdate.artifactConfig = configUpdate.artifactConfig || {};
@@ -105,6 +113,10 @@ export let updateSpaceTool = SlateTool.create(spec, {
         autoSmartNotesGeneration: ctx.input.autoSmartNotes
       };
       updateMaskFields.push('config.artifactConfig.smartNotesConfig.autoSmartNotesGeneration');
+    }
+
+    if (updateMaskFields.length === 0) {
+      throw new Error('At least one updatable field must be provided.');
     }
 
     let space = await client.updateSpace(

@@ -75,7 +75,14 @@ export let updateCourse = SlateTool.create(spec, {
     );
 
     return {
-      output: course,
+      output: {
+        courseId: course.id,
+        name: course.name,
+        section: course.section,
+        courseState: course.courseState,
+        alternateLink: course.alternateLink,
+        updateTime: course.updateTime
+      },
       message: `Updated course **${course.name}**. Fields changed: ${maskParts.join(', ')}.`
     };
   })

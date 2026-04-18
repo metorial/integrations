@@ -136,11 +136,13 @@ export let createFunction = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    let region = ctx.input.location || ctx.config.region;
     let client = new Client({
       token: ctx.auth.token,
       projectId: ctx.config.projectId,
-      region: ctx.input.location || ctx.config.region
+      region
     });
+    let functionName = `projects/${ctx.config.projectId}/locations/${region}/functions/${ctx.input.functionId}`;
 
     let source: Record<string, any> = {};
     if (ctx.input.sourceUploadUrl) {
@@ -189,6 +191,7 @@ export let createFunction = SlateTool.create(spec, {
       serviceConfig['allTrafficOnLatestRevision'] = ctx.input.allTrafficOnLatestRevision;
 
     let body: Record<string, any> = {
+      name: functionName,
       buildConfig,
       serviceConfig
     };

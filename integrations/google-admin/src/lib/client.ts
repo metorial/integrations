@@ -20,6 +20,28 @@ let licensingApi = createAxios({
   baseURL: 'https://licensing.googleapis.com/apps/licensing/v1/product'
 });
 
+let mapUserOrderBy = (orderBy?: string) => {
+  switch (orderBy) {
+    case 'email':
+      return 'EMAIL';
+    case 'familyName':
+      return 'FAMILY_NAME';
+    case 'givenName':
+      return 'GIVEN_NAME';
+    default:
+      return orderBy;
+  }
+};
+
+let mapGroupOrderBy = (orderBy?: string) => {
+  switch (orderBy) {
+    case 'email':
+      return 'EMAIL';
+    default:
+      return orderBy;
+  }
+};
+
 export class Client {
   private headers: Record<string, string>;
   private customerId: string;
@@ -60,7 +82,7 @@ export class Client {
         query: params.query,
         maxResults: params.maxResults || 100,
         pageToken: params.pageToken,
-        orderBy: params.orderBy,
+        orderBy: mapUserOrderBy(params.orderBy),
         sortOrder: params.sortOrder,
         showDeleted: params.showDeleted ? 'true' : undefined,
         projection: params.projection || 'full'
@@ -195,12 +217,12 @@ export class Client {
       headers: this.headers,
       params: {
         customer: !params.domain && !params.userKey ? this.customerId : undefined,
-        domain: params.domain,
+        domain: params.domain || this.config.domain,
         userKey: params.userKey,
         query: params.query,
         maxResults: params.maxResults || 200,
         pageToken: params.pageToken,
-        orderBy: params.orderBy,
+        orderBy: mapGroupOrderBy(params.orderBy),
         sortOrder: params.sortOrder
       }
     });
@@ -900,14 +922,20 @@ export class Client {
   async listLicenseAssignments(
     productId: string,
     customerId: string,
+    skuId?: string,
     params: {
       maxResults?: number;
       pageToken?: string;
     } = {}
   ) {
-    let response = await licensingApi.get(`/${productId}/sku/all/users/${customerId}`, {
+    let path = skuId
+      ? `/${productId}/sku/${encodeURIComponent(skuId)}/users`
+      : `/${productId}/users`;
+
+    let response = await licensingApi.get(path, {
       headers: this.headers,
       params: {
+        customerId,
         maxResults: params.maxResults || 100,
         pageToken: params.pageToken
       }
