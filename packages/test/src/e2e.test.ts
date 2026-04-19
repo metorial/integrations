@@ -364,6 +364,83 @@ describe('@slates/test e2e framework', () => {
     ).toThrow('fixtures validation failed');
   });
 
+  it('fails early when required provider config is missing', async () => {
+    let baseSpec = createTestSpec('configured-slate');
+    let spec = SlateSpecification.create({
+      key: 'configured-slate',
+      name: 'configured-slate',
+      config: SlateConfig.create(
+        z.object({
+          projectId: z.string()
+        })
+      ),
+      auth: baseSpec.auth
+    });
+
+    let listItems = SlateTool.create(spec, {
+      name: 'List Items',
+      key: 'list_items',
+      description: 'Lists items.',
+      tags: {
+        readOnly: true
+      }
+    })
+      .input(z.object({}))
+      .output(
+        z.object({
+          items: z.array(
+            z.object({
+              itemId: z.string(),
+              name: z.string()
+            })
+          )
+        })
+      )
+      .handleInvocation(async () => ({
+        output: {
+          items: [{ itemId: 'item-1', name: 'Item 1' }]
+        }
+      }))
+      .build();
+
+    let provider = Slate.create({
+      spec,
+      tools: [listItems],
+      triggers: []
+    });
+
+    let client = createLocalSlateTestClient({
+      slate: provider,
+      state: {
+        auth: {
+          authenticationMethodId: 'token_auth',
+          output: {
+            token: 'secret-token'
+          }
+        }
+      }
+    });
+
+    try {
+      await createSlateToolE2EEngine({
+        provider,
+        client,
+        profile: {
+          ...createProfile(),
+          config: null
+        } as any
+      });
+      throw new Error('Expected missing config to fail engine creation.');
+    } catch (error) {
+      let message = error instanceof Error ? error.message : String(error);
+      expect(message).toContain(
+        'Missing or invalid provider config for live E2E tools (configured-slate).'
+      );
+      expect(message).toContain('projectId');
+      expect(message).toContain('configured-slate config set');
+    }
+  });
+
   it('resolves fixture-backed dependencies before generic resource creation', async () => {
     let { provider } = createCrudSlate();
     let engine = await createSlateToolE2EEngine({

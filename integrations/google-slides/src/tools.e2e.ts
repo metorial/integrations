@@ -41,6 +41,14 @@ let deleteDriveFile = async (token: string, fileId: string) => {
     return;
   }
 
+  if (response.status === 401 || response.status === 403) {
+    console.log(
+      `[google-slides e2e] Skipping presentation cleanup: Drive file delete is ` +
+        `best-effort and the current auth could not delete ${fileId}.`
+    );
+    return;
+  }
+
   if (!response.ok) {
     throw new Error(
       `Drive file delete failed with ${response.status}: ${await response.text()}`

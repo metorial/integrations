@@ -166,6 +166,27 @@ export let validateWithSchema = <T>(
   throw new Error(`${label} validation failed${details ? `: ${details}` : '.'}`);
 };
 
+let validateProfileConfig = (
+  provider: LocalSlate,
+  profile: SlatesProfileRecord
+) => {
+  let rawConfig =
+    profile.config ??
+    provider.spec.config.handlers.getDefaultConfig?.() ??
+    {};
+  let result = provider.spec.configSchema.safeParse(rawConfig);
+  if (result.success) {
+    return result.data as Record<string, any>;
+  }
+
+  let details = formatValidationIssues(result.error as ValidationFailure['error']);
+  throw new Error(
+    `Missing or invalid provider config for live E2E tools (${provider.spec.key}). ` +
+      `Run \`bun run integrations:cli -- ${provider.spec.key} config set\`.` +
+      (details ? ` Details: ${details}` : '')
+  );
+};
+
 export let parseE2EFixtures = <T>(
   schema: SlateValidationSchema<T> | undefined,
   rawFixtures: unknown
@@ -659,6 +680,9 @@ export let createSlateToolE2EEngine = async <
   let accessStack: Set<string>[] = [];
 
   let fixtures = parseE2EFixtures(integration.fixturesSchema, d.fixturesRaw ?? {});
+  let normalizedProfileConfig = validateProfileConfig(d.provider, d.profile);
+  d.client.setConfig(normalizedProfileConfig);
+  d.profile.config = normalizedProfileConfig;
   let runId = createRunId(d.provider.spec.key);
   let auth = (Object.values(d.profile.auth)[0]?.output ?? {}) as Record<string, any>;
   let resourceDefs = Object.fromEntries(
@@ -1520,6 +1544,7 @@ export let runSlateToolE2ESuite = <
   provider: LocalSlate;
   integration?: SlateToolE2EIntegration<Fixtures, Helpers>;
   suiteName?: string;
+  timeoutMs?: number;
 }) => {
   let suiteName = d.suiteName ?? `${d.provider.spec.key} live tool e2e`;
   let tools = d.provider.actions.filter(action => action.type === 'tool') as LocalTool[];
@@ -1541,18 +1566,18 @@ export let runSlateToolE2ESuite = <
       });
 
       await engine.runBeforeSuite();
-    });
+    }, d.timeoutMs);
 
     afterAll(async () => {
       if (engine) {
         await engine.runAfterSuite();
       }
-    });
+    }, d.timeoutMs);
 
     it('covers every discovered tool', () => {
       let expect = getVitestExpect();
       expect(engine.uncoveredTools).toEqual([]);
-    });
+    }, d.timeoutMs);
 
     for (let tool of tools) {
       let scenarios = listToolScenarioDefinitions(tool, d.integration);
@@ -1561,7 +1586,7 @@ export let runSlateToolE2ESuite = <
           scenarios.length === 1 ? tool.key : `${tool.key} #${index + 1}`;
         it(scenario.name ?? fallbackName, async () => {
           await engine.runScenario(tool.key, index);
-        });
+        }, d.timeoutMs);
       }
     }
   });

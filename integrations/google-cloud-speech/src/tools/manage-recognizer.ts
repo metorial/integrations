@@ -19,7 +19,11 @@ export let createRecognizer = SlateTool.create(spec, {
       recognizerId: z
         .string()
         .describe('Unique ID for the recognizer (lowercase letters, numbers, hyphens).'),
-      displayName: z.string().optional().describe('Human-readable display name.'),
+      displayName: z
+        .string()
+        .max(63)
+        .optional()
+        .describe('Human-readable display name. Maximum 63 characters.'),
       model: z
         .string()
         .describe(
@@ -161,7 +165,11 @@ export let updateRecognizer = SlateTool.create(spec, {
   .input(
     z.object({
       recognizerId: z.string().describe('ID of the recognizer to update.'),
-      displayName: z.string().optional().describe('New display name.'),
+      displayName: z
+        .string()
+        .max(63)
+        .optional()
+        .describe('New display name. Maximum 63 characters.'),
       model: z.string().optional().describe('New recognition model.'),
       languageCodes: z.array(z.string()).optional().describe('New language codes.')
     })

@@ -2,6 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 import { googleTasksScopes } from './scopes';
 
+let googleAuth = createAxios({
+  baseURL: 'https://oauth2.googleapis.com'
+});
+
+let googleApi = createAxios({
+  baseURL: 'https://www.googleapis.com'
+});
+
 export let auth = SlateAuth.create()
   .output(
     z.object({
@@ -25,6 +33,16 @@ export let auth = SlateAuth.create()
         title: 'Read Only',
         description: 'View your tasks.',
         scope: googleTasksScopes.tasksReadonly
+      },
+      {
+        title: 'User Profile',
+        description: 'View your basic Google profile information',
+        scope: googleTasksScopes.userinfoProfile
+      },
+      {
+        title: 'User Email',
+        description: 'View your Google account email address',
+        scope: googleTasksScopes.userinfoEmail
       }
     ],
 
@@ -45,19 +63,17 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let api = createAxios({});
-
-      let response = await api.post(
-        'https://oauth2.googleapis.com/token',
-        {
+      let response = await googleAuth.post(
+        '/token',
+        new URLSearchParams({
           code: ctx.code,
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           redirect_uri: ctx.redirectUri,
           grant_type: 'authorization_code'
-        },
+        }).toString(),
         {
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
 
@@ -85,18 +101,16 @@ export let auth = SlateAuth.create()
         throw new Error('No refresh token available');
       }
 
-      let api = createAxios({});
-
-      let response = await api.post(
-        'https://oauth2.googleapis.com/token',
-        {
+      let response = await googleAuth.post(
+        '/token',
+        new URLSearchParams({
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           refresh_token: ctx.output.refreshToken,
           grant_type: 'refresh_token'
-        },
+        }).toString(),
         {
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
 
@@ -121,20 +135,34 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let api = createAxios({
-        headers: { Authorization: `Bearer ${ctx.output.token}` }
-      });
+      let canReadProfile =
+        ctx.scopes.includes(googleTasksScopes.userinfoProfile) ||
+        ctx.scopes.includes(googleTasksScopes.userinfoEmail);
 
-      let response = await api.get('https://www.googleapis.com/oauth2/v2/userinfo');
-      let data = response.data;
+      if (!canReadProfile) {
+        return {
+          profile: null
+        };
+      }
 
-      return {
-        profile: {
-          id: data.id,
-          email: data.email,
-          name: data.name,
-          imageUrl: data.picture
-        }
-      };
+      try {
+        let response = await googleApi.get('/oauth2/v2/userinfo', {
+          headers: { Authorization: `Bearer ${ctx.output.token}` }
+        });
+        let data = response.data;
+
+        return {
+          profile: {
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            imageUrl: data.picture
+          }
+        };
+      } catch {
+        return {
+          profile: null
+        };
+      }
     }
   });

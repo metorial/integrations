@@ -148,9 +148,23 @@ describe('google-cloud-storage auth contract', () => {
       authenticationMethodId: 'oauth',
       output: { token: 'profile-token' },
       input: {},
-      scopes: []
+      scopes: [googleCloudStorageScopes.userinfoEmail]
     });
 
     expect(result.profile?.email).toBe('storage@example.com');
+  });
+
+  it('skips profile lookup cleanly when userinfo scopes were not granted', async () => {
+    let client = await loadProviderClient();
+
+    let result = await client.getAuthProfile({
+      authenticationMethodId: 'oauth',
+      output: { token: 'profile-token' },
+      input: {},
+      scopes: [googleCloudStorageScopes.devstorageReadOnly]
+    });
+
+    expect(result.profile).toBeNull();
+    expect(profileGet).not.toHaveBeenCalled();
   });
 });

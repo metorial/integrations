@@ -43,6 +43,16 @@ export let auth = SlateAuth.create()
         title: 'Cloud Platform',
         description: 'View and manage data across all Google Cloud services',
         scope: googleCloudStorageScopes.cloudPlatform
+      },
+      {
+        title: 'User Profile',
+        description: 'View your basic Google profile information',
+        scope: googleCloudStorageScopes.userinfoProfile
+      },
+      {
+        title: 'User Email',
+        description: 'View your Google account email address',
+        scope: googleCloudStorageScopes.userinfoEmail
       }
     ],
 
@@ -129,20 +139,36 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
-      let response = await googleApi.get('/oauth2/v2/userinfo', {
-        headers: { Authorization: `Bearer ${ctx.output.token}` }
-      });
+      let canReadProfile =
+        ctx.scopes.includes(googleCloudStorageScopes.userinfoProfile) ||
+        ctx.scopes.includes(googleCloudStorageScopes.userinfoEmail);
 
-      let data = response.data;
+      if (!canReadProfile) {
+        return {
+          profile: null
+        };
+      }
 
-      return {
-        profile: {
-          id: data.id,
-          email: data.email,
-          name: data.name,
-          imageUrl: data.picture
-        }
-      };
+      try {
+        let response = await googleApi.get('/oauth2/v2/userinfo', {
+          headers: { Authorization: `Bearer ${ctx.output.token}` }
+        });
+
+        let data = response.data;
+
+        return {
+          profile: {
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            imageUrl: data.picture
+          }
+        };
+      } catch {
+        return {
+          profile: null
+        };
+      }
     }
   })
   .addServiceAccountAuth({

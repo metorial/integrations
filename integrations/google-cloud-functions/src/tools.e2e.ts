@@ -140,17 +140,19 @@ let getLocation = (ctx: ToolE2EContext) => {
 };
 
 let createFunctionId = (ctx: ToolE2EContext, label: string) => {
-  let value = `${label}-${ctx.runId}-${Math.random().toString(36).slice(2, 8)}`
-    .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
+  let labelToken =
+    label
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '')
+      .slice(0, 6) || 'func';
+  let runToken = crc32(Buffer.from(ctx.runId, 'utf8')).toString(16).padStart(8, '0');
+  let randomToken = Math.random().toString(36).slice(2, 8);
+  let value = `${labelToken}-${runToken}-${randomToken}`;
 
   if (!/^[a-z]/.test(value)) {
     value = `f-${value}`;
   }
 
-  value = value.slice(0, 63).replace(/-+$/g, '');
   while (value.length < 4) {
     value = `${value}x`;
   }

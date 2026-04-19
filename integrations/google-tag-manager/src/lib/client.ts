@@ -43,6 +43,26 @@ export class GtmClient {
     };
   }
 
+  private compactObject<T extends object>(value: T): T {
+    return Object.fromEntries(
+      Object.entries(value).filter(([, entry]) => entry !== undefined)
+    ) as T;
+  }
+
+  private pickDefined<T extends object, K extends keyof T>(
+    value: T,
+    keys: readonly K[]
+  ): Partial<Pick<T, K>> {
+    let output: Partial<Pick<T, K>> = {};
+    for (let key of keys) {
+      let entry = value[key];
+      if (entry !== undefined) {
+        output[key] = entry;
+      }
+    }
+    return output;
+  }
+
   // ========== Accounts ==========
 
   async listAccounts(pageToken?: string): Promise<ListAccountsResponse> {
@@ -111,11 +131,24 @@ export class GtmClient {
     containerId: string,
     data: Partial<GtmContainer>
   ): Promise<GtmContainer> {
+    let existing = await this.getContainer(accountId, containerId);
+    let payload = this.compactObject({
+      ...this.pickDefined(existing, [
+        'name',
+        'domainName',
+        'notes',
+        'usageContext',
+        'fingerprint',
+        'taggingServerUrls'
+      ]),
+      ...data
+    });
     let response = await gtmAxios.put(
       `/accounts/${accountId}/containers/${containerId}`,
-      data,
+      payload,
       {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
+        params: payload.fingerprint ? { fingerprint: payload.fingerprint } : undefined
       }
     );
     return response.data;
@@ -194,11 +227,17 @@ export class GtmClient {
     workspaceId: string,
     data: Partial<GtmWorkspace>
   ): Promise<GtmWorkspace> {
+    let existing = await this.getWorkspace(accountId, containerId, workspaceId);
+    let payload = this.compactObject({
+      ...this.pickDefined(existing, ['name', 'description', 'fingerprint']),
+      ...data
+    });
     let response = await gtmAxios.put(
       `/accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}`,
-      data,
+      payload,
       {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
+        params: payload.fingerprint ? { fingerprint: payload.fingerprint } : undefined
       }
     );
     return response.data;
@@ -224,7 +263,7 @@ export class GtmClient {
   ): Promise<GtmWorkspaceStatus> {
     let response = await gtmAxios.post(
       `/accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}:sync`,
-      null,
+      {},
       {
         headers: this.getHeaders()
       }
@@ -304,11 +343,32 @@ export class GtmClient {
     tagId: string,
     data: Partial<GtmTag>
   ): Promise<GtmTag> {
+    let existing = await this.getTag(accountId, containerId, workspaceId, tagId);
+    let payload = this.compactObject({
+      ...this.pickDefined(existing, [
+        'name',
+        'type',
+        'firingTriggerId',
+        'blockingTriggerId',
+        'notes',
+        'scheduleStartMs',
+        'scheduleEndMs',
+        'parameter',
+        'fingerprint',
+        'parentFolderId',
+        'paused',
+        'priority',
+        'tagFiringOption',
+        'consentSettings'
+      ]),
+      ...data
+    });
     let response = await gtmAxios.put(
       `/accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/tags/${tagId}`,
-      data,
+      payload,
       {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
+        params: payload.fingerprint ? { fingerprint: payload.fingerprint } : undefined
       }
     );
     return response.data;
@@ -336,7 +396,7 @@ export class GtmClient {
   ): Promise<GtmTag> {
     let response = await gtmAxios.post(
       `/accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/tags/${tagId}:revert`,
-      null,
+      {},
       {
         headers: this.getHeaders()
       }
@@ -402,11 +462,36 @@ export class GtmClient {
     triggerId: string,
     data: Partial<GtmTrigger>
   ): Promise<GtmTrigger> {
+    let existing = await this.getTrigger(
+      accountId,
+      containerId,
+      workspaceId,
+      triggerId
+    );
+    let payload = this.compactObject({
+      ...this.pickDefined(existing, [
+        'name',
+        'type',
+        'customEventFilter',
+        'filter',
+        'autoEventFilter',
+        'eventName',
+        'waitForTags',
+        'checkValidation',
+        'waitForTagsTimeout',
+        'parameter',
+        'fingerprint',
+        'parentFolderId',
+        'notes'
+      ]),
+      ...data
+    });
     let response = await gtmAxios.put(
       `/accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/triggers/${triggerId}`,
-      data,
+      payload,
       {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
+        params: payload.fingerprint ? { fingerprint: payload.fingerprint } : undefined
       }
     );
     return response.data;
@@ -484,11 +569,30 @@ export class GtmClient {
     variableId: string,
     data: Partial<GtmVariable>
   ): Promise<GtmVariable> {
+    let existing = await this.getVariable(
+      accountId,
+      containerId,
+      workspaceId,
+      variableId
+    );
+    let payload = this.compactObject({
+      ...this.pickDefined(existing, [
+        'name',
+        'type',
+        'notes',
+        'parameter',
+        'fingerprint',
+        'parentFolderId',
+        'formatValue'
+      ]),
+      ...data
+    });
     let response = await gtmAxios.put(
       `/accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/variables/${variableId}`,
-      data,
+      payload,
       {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
+        params: payload.fingerprint ? { fingerprint: payload.fingerprint } : undefined
       }
     );
     return response.data;
@@ -536,7 +640,7 @@ export class GtmClient {
   ): Promise<GtmBuiltInVariable[]> {
     let response = await gtmAxios.post(
       `/accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/built_in_variables`,
-      null,
+      {},
       {
         headers: this.getHeaders(),
         params: { type: types }
@@ -610,7 +714,7 @@ export class GtmClient {
   ): Promise<GtmPublishResponse> {
     let response = await gtmAxios.post(
       `/accounts/${accountId}/containers/${containerId}/versions/${versionId}:publish`,
-      null,
+      {},
       {
         headers: this.getHeaders()
       }
@@ -720,11 +824,24 @@ export class GtmClient {
     environmentId: string,
     data: Partial<GtmEnvironment>
   ): Promise<GtmEnvironment> {
+    let existing = await this.getEnvironment(accountId, containerId, environmentId);
+    let payload = this.compactObject({
+      ...this.pickDefined(existing, [
+        'name',
+        'description',
+        'enableDebug',
+        'url',
+        'containerVersionId',
+        'fingerprint'
+      ]),
+      ...data
+    });
     let response = await gtmAxios.put(
       `/accounts/${accountId}/containers/${containerId}/environments/${environmentId}`,
-      data,
+      payload,
       {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
+        params: payload.fingerprint ? { fingerprint: payload.fingerprint } : undefined
       }
     );
     return response.data;
@@ -750,7 +867,7 @@ export class GtmClient {
   ): Promise<GtmEnvironment> {
     let response = await gtmAxios.post(
       `/accounts/${accountId}/containers/${containerId}/environments/${environmentId}:reauthorize`,
-      null,
+      {},
       {
         headers: this.getHeaders()
       }
@@ -819,11 +936,17 @@ export class GtmClient {
     folderId: string,
     data: Partial<GtmFolder>
   ): Promise<GtmFolder> {
+    let existing = await this.getFolder(accountId, containerId, workspaceId, folderId);
+    let payload = this.compactObject({
+      ...this.pickDefined(existing, ['name', 'notes', 'fingerprint']),
+      ...data
+    });
     let response = await gtmAxios.put(
       `/accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/folders/${folderId}`,
-      data,
+      payload,
       {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
+        params: payload.fingerprint ? { fingerprint: payload.fingerprint } : undefined
       }
     );
     return response.data;
@@ -854,7 +977,7 @@ export class GtmClient {
     if (pageToken) params.pageToken = pageToken;
     let response = await gtmAxios.post(
       `/accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/folders/${folderId}:entities`,
-      null,
+      {},
       {
         headers: this.getHeaders(),
         params
@@ -876,7 +999,7 @@ export class GtmClient {
   ): Promise<void> {
     await gtmAxios.post(
       `/accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/folders/${folderId}:move_entities_to_folder`,
-      null,
+      {},
       {
         headers: this.getHeaders(),
         params: entities
@@ -931,9 +1054,14 @@ export class GtmClient {
     userPermissionId: string,
     data: Partial<GtmUserPermission>
   ): Promise<GtmUserPermission> {
+    let existing = await this.getUserPermission(accountId, userPermissionId);
+    let payload = this.compactObject({
+      ...this.pickDefined(existing, ['emailAddress', 'accountAccess', 'containerAccess']),
+      ...data
+    });
     let response = await gtmAxios.put(
       `/accounts/${accountId}/user_permissions/${userPermissionId}`,
-      data,
+      payload,
       {
         headers: this.getHeaders()
       }

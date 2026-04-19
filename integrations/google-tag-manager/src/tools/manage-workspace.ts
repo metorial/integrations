@@ -135,7 +135,15 @@ export let manageWorkspace = SlateTool.create(spec, {
 
     if (action === 'sync') {
       let syncResult = await client.syncWorkspace(accountId, containerId, workspaceId);
-      let hasMergeConflicts = (syncResult.mergeConflict || []).length > 0;
+      let mergeConflict = (syncResult as {
+        mergeConflict?: unknown;
+        syncStatus?: { mergeConflict?: boolean };
+      }).mergeConflict;
+      let hasMergeConflicts = Array.isArray(mergeConflict)
+        ? mergeConflict.length > 0
+        : (syncResult as { syncStatus?: { mergeConflict?: boolean } }).syncStatus
+              ?.mergeConflict === true ||
+          mergeConflict === true;
       return {
         output: { hasMergeConflicts } as any,
         message: hasMergeConflicts

@@ -77,8 +77,8 @@ export interface LabelAnnotation {
 }
 
 export interface BoundingPoly {
-  vertices: Array<{ x: number; y: number }>;
-  normalizedVertices?: Array<{ x: number; y: number }>;
+  vertices: Array<{ x?: number; y?: number }>;
+  normalizedVertices?: Array<{ x?: number; y?: number }>;
 }
 
 export interface LocalizedObjectAnnotation {
