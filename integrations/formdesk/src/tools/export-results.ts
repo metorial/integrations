@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createBase64Attachment, SlateTool } from 'slates';
 import { FormdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -6,7 +6,7 @@ import { z } from 'zod';
 export let exportResults = SlateTool.create(spec, {
   name: 'Export Form Results',
   key: 'export_results',
-  description: `Exports form results to a file in various formats: Excel, CSV, XML, dBase, FoxPro, or plain text. Returns the file content as base64-encoded data. Supports the same date and status filters as the result listing tool.`,
+  description: `Exports form results to a file in various formats: Excel, CSV, XML, dBase, FoxPro, or plain text. Returns the file as an attachment. Supports the same date and status filters as the result listing tool.`,
   constraints: [
     'API credits consumed equals the number of entries exported (minimum 1 credit).'
   ],
@@ -54,7 +54,6 @@ export let exportResults = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      fileContentBase64: z.string().describe('Base64-encoded file content of the export'),
       contentType: z.string().describe('MIME type of the exported file'),
       creditsUsed: z
         .string()
@@ -86,10 +85,10 @@ export let exportResults = SlateTool.create(spec, {
 
     return {
       output: {
-        fileContentBase64: result.content,
         contentType: result.contentType,
         creditsUsed: result.credits ? String(result.credits) : undefined
       },
+      attachments: [createBase64Attachment(result.content, result.contentType)],
       message: `Successfully exported results from form "${ctx.input.formName}" as **${ctx.input.format}**.`
     };
   })

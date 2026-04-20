@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@metorial/integrations-root",
@@ -4519,11 +4520,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5205,11 +5206,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5267,11 +5268,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5281,11 +5282,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5295,11 +5296,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5309,25 +5310,25 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
     },
     "integrations/google-calendar": {
       "name": "@slates-integrations/google-calendar",
-      "version": "0.2.0-rc.1",
+      "version": "0.2.0-rc.2",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5337,11 +5338,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5351,11 +5352,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5365,11 +5366,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5379,11 +5380,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5393,11 +5394,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5407,11 +5408,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5421,11 +5422,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5435,11 +5436,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5449,11 +5450,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5463,11 +5464,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5477,11 +5478,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5491,11 +5492,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5505,11 +5506,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5519,11 +5520,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5533,11 +5534,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5547,11 +5548,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5561,11 +5562,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -13219,11 +13220,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -13233,11 +13234,11 @@
       "version": "0.2.0-rc.1",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "workspace:*",
+        "slates": "1.0.0-rc.8",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "workspace:*",
+        "@slates/test": "1.0.0-rc.3",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -13496,44 +13497,44 @@
     },
     "packages/cli": {
       "name": "@slates/cli",
-      "version": "1.0.0-rc.1",
+      "version": "1.0.0-rc.2",
       "bin": "./src/cli.ts",
       "dependencies": {
         "@inquirer/prompts": "^7.4.0",
-        "@slates/client": "workspace:*",
-        "@slates/profiles": "workspace:*",
+        "@slates/client": "1.0.0-rc.3",
+        "@slates/profiles": "1.0.0-rc.3",
         "sade": "^1.8.1",
       },
       "devDependencies": {
-        "@slates/tsconfig": "workspace:*",
+        "@slates/tsconfig": "1.0.0-rc.1",
         "typescript": "5.8.2",
         "vitest": "^3.1.2",
       },
     },
     "packages/client": {
       "name": "@slates/client",
-      "version": "1.0.0-rc.1",
+      "version": "1.0.0-rc.3",
       "dependencies": {
-        "@slates/proto": "workspace:*",
-        "@slates/provider": "workspace:*",
-        "@slates/provider-handler": "workspace:*",
+        "@slates/proto": "1.0.0-rc.8",
+        "@slates/provider": "1.0.0-rc.9",
+        "@slates/provider-handler": "1.0.0-rc.8",
       },
       "devDependencies": {
-        "@slates/tsconfig": "workspace:*",
+        "@slates/tsconfig": "1.0.0-rc.1",
         "typescript": "5.8.2",
         "vitest": "^3.1.2",
       },
     },
     "packages/profiles": {
       "name": "@slates/profiles",
-      "version": "1.0.0-rc.1",
+      "version": "1.0.0-rc.3",
       "dependencies": {
-        "@slates/client": "workspace:*",
-        "@slates/proto": "workspace:*",
+        "@slates/client": "1.0.0-rc.3",
+        "@slates/proto": "1.0.0-rc.8",
       },
       "devDependencies": {
-        "@slates/provider": "workspace:*",
-        "@slates/tsconfig": "workspace:*",
+        "@slates/provider": "1.0.0-rc.9",
+        "@slates/tsconfig": "1.0.0-rc.1",
         "typescript": "5.8.2",
         "vitest": "^3.1.2",
         "zod": "^4.2.1",
@@ -13541,7 +13542,7 @@
     },
     "packages/proto": {
       "name": "@slates/proto",
-      "version": "1.0.0-rc.6",
+      "version": "1.0.0-rc.8",
       "dependencies": {
         "@lowerdeck/emitter": "^1.0.4",
         "@lowerdeck/error": "^1.1.0",
@@ -13550,7 +13551,7 @@
         "zod": "^4.2.1",
       },
       "devDependencies": {
-        "@slates/tsconfig": "^1.0.0",
+        "@slates/tsconfig": "1.0.0-rc.1",
         "microbundle": "^0.15.1",
         "typescript": "5.8.2",
         "vitest": "^3.1.2",
@@ -13558,7 +13559,7 @@
     },
     "packages/provider": {
       "name": "@slates/provider",
-      "version": "1.0.0-rc.7",
+      "version": "1.0.0-rc.9",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@toon-format/toon": "^2.1.0",
@@ -13566,7 +13567,7 @@
         "zod": "^4.2.1",
       },
       "devDependencies": {
-        "@slates/tsconfig": "^1.0.0",
+        "@slates/tsconfig": "1.0.0-rc.1",
         "microbundle": "^0.15.1",
         "typescript": "5.8.2",
         "vitest": "^3.1.2",
@@ -13574,15 +13575,15 @@
     },
     "packages/provider-handler": {
       "name": "@slates/provider-handler",
-      "version": "1.0.0-rc.6",
+      "version": "1.0.0-rc.8",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
-        "@slates/proto": "workspace:*",
-        "@slates/provider": "workspace:*",
+        "@slates/proto": "1.0.0-rc.8",
+        "@slates/provider": "1.0.0-rc.9",
         "zod": "^4.2.1",
       },
       "devDependencies": {
-        "@slates/tsconfig": "^1.0.0",
+        "@slates/tsconfig": "1.0.0-rc.1",
         "microbundle": "^0.15.1",
         "typescript": "5.8.2",
         "vitest": "^3.1.2",
@@ -13590,12 +13591,12 @@
     },
     "packages/slates": {
       "name": "slates",
-      "version": "1.0.0-rc.6",
+      "version": "1.0.0-rc.8",
       "dependencies": {
-        "@slates/provider": "workspace:*",
+        "@slates/provider": "1.0.0-rc.9",
       },
       "devDependencies": {
-        "@slates/tsconfig": "^1.0.0",
+        "@slates/tsconfig": "1.0.0-rc.1",
         "microbundle": "^0.15.1",
         "typescript": "5.8.2",
         "vitest": "^3.1.2",
@@ -13603,15 +13604,15 @@
     },
     "packages/test": {
       "name": "@slates/test",
-      "version": "1.0.0-rc.1",
+      "version": "1.0.0-rc.3",
       "dependencies": {
         "@lowerdeck/testing-tools": "latest",
-        "@slates/client": "workspace:*",
-        "@slates/profiles": "workspace:*",
+        "@slates/client": "1.0.0-rc.3",
+        "@slates/profiles": "1.0.0-rc.3",
       },
       "devDependencies": {
-        "@slates/provider": "workspace:*",
-        "@slates/tsconfig": "workspace:*",
+        "@slates/provider": "1.0.0-rc.9",
+        "@slates/tsconfig": "1.0.0-rc.1",
         "typescript": "5.8.2",
         "vitest": "^3.1.2",
         "zod": "^4.2",
@@ -13619,9 +13620,61 @@
     },
     "packages/tsconfig": {
       "name": "@slates/tsconfig",
-      "version": "1.0.0",
+      "version": "1.0.0-rc.1",
       "dependencies": {
         "@types/node": "^22.15.3",
+      },
+    },
+    "test-integrations/test-errors": {
+      "name": "@slates-integrations/test-errors",
+      "version": "0.1.0-rc.1",
+      "dependencies": {
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.8",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "test-integrations/test-http": {
+      "name": "@slates-integrations/test-http",
+      "version": "0.1.0-rc.1",
+      "dependencies": {
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.8",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "test-integrations/test-no-auth": {
+      "name": "@slates-integrations/test-no-auth",
+      "version": "0.1.0-rc.2",
+      "dependencies": {
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.8",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "test-integrations/test-oauth": {
+      "name": "@slates-integrations/test-oauth",
+      "version": "0.1.0-rc.1",
+      "dependencies": {
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.8",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
   },
@@ -15999,6 +16052,14 @@
     "@slates-integrations/templated": ["@slates-integrations/templated@workspace:integrations/templated"],
 
     "@slates-integrations/terraform-cloud": ["@slates-integrations/terraform-cloud@workspace:integrations/terraform-cloud"],
+
+    "@slates-integrations/test-errors": ["@slates-integrations/test-errors@workspace:test-integrations/test-errors"],
+
+    "@slates-integrations/test-http": ["@slates-integrations/test-http@workspace:test-integrations/test-http"],
+
+    "@slates-integrations/test-no-auth": ["@slates-integrations/test-no-auth@workspace:test-integrations/test-no-auth"],
+
+    "@slates-integrations/test-oauth": ["@slates-integrations/test-oauth@workspace:test-integrations/test-oauth"],
 
     "@slates-integrations/textcortex": ["@slates-integrations/textcortex@workspace:integrations/textcortex"],
 

@@ -36,17 +36,24 @@ let isWithinRoot = (rootDir: string, targetPath: string) => {
 
 let resolveIntegrationDir = async (input: string, cwd: string) => {
   let rootDir = resolveSlatesCliRoot(cwd);
-  let namedPath = path.join(rootDir, 'integrations', input);
+  let integrationRoots = [
+    path.join(rootDir, 'integrations'),
+    path.join(rootDir, 'test-integrations')
+  ];
+
   if (!input.includes(path.sep) && !input.includes('/')) {
-    if (await pathExists(path.join(namedPath, 'package.json'))) {
-      return { rootDir, dirPath: namedPath };
+    for (let root of integrationRoots) {
+      let namedPath = path.join(root, input);
+      if (await pathExists(path.join(namedPath, 'package.json'))) {
+        return { rootDir, dirPath: namedPath };
+      }
     }
   }
 
   let candidate = path.resolve(cwd, input);
   if (!(await pathExists(path.join(candidate, 'package.json')))) {
     throw new Error(
-      `Could not resolve integration "${input}". Pass an integration name from \`integrations/\` or a relative path to an integration directory.`
+      `Could not resolve integration "${input}". Pass an integration name from \`integrations/\` or \`test-integrations/\`, or a relative path to an integration directory.`
     );
   }
 
@@ -103,32 +110,41 @@ export let resolveIntegration = async (
 export let listWorkspaceIntegrations = async (opts: { cwd?: string } = {}) => {
   let cwd = opts.cwd ?? process.cwd();
   let rootDir = resolveSlatesCliRoot(cwd);
-  let integrationsDir = path.join(rootDir, 'integrations');
+  let integrationRoots = [
+    path.join(rootDir, 'integrations'),
+    path.join(rootDir, 'test-integrations')
+  ];
 
-  if (!(await pathExists(integrationsDir))) {
-    return [];
+  let integrations: WorkspaceIntegrationSummary[] = [];
+
+  for (let integrationsDir of integrationRoots) {
+    if (!(await pathExists(integrationsDir))) {
+      continue;
+    }
+
+    let entries = await readdir(integrationsDir, { withFileTypes: true });
+    let chunk = await Promise.all(
+      entries
+        .filter(entry => entry.isDirectory())
+        .map(async entry => {
+          let dirPath = path.join(integrationsDir, entry.name);
+          if (!(await pathExists(path.join(dirPath, 'package.json')))) {
+            return null;
+          }
+
+          return {
+            rootDir,
+            dirPath,
+            relativeDir: toPosixPath(path.relative(rootDir, dirPath)),
+            name: entry.name
+          } satisfies WorkspaceIntegrationSummary;
+        })
+    );
+
+    integrations.push(
+      ...chunk.filter((integration): integration is WorkspaceIntegrationSummary => integration !== null)
+    );
   }
 
-  let entries = await readdir(integrationsDir, { withFileTypes: true });
-  let integrations = await Promise.all(
-    entries
-      .filter(entry => entry.isDirectory())
-      .map(async entry => {
-        let dirPath = path.join(integrationsDir, entry.name);
-        if (!(await pathExists(path.join(dirPath, 'package.json')))) {
-          return null;
-        }
-
-        return {
-          rootDir,
-          dirPath,
-          relativeDir: toPosixPath(path.relative(rootDir, dirPath)),
-          name: entry.name
-        } satisfies WorkspaceIntegrationSummary;
-      })
-  );
-
-  return integrations
-    .filter((integration): integration is WorkspaceIntegrationSummary => integration !== null)
-    .sort((a, b) => a.name.localeCompare(b.name));
+  return integrations.sort((a, b) => a.relativeDir.localeCompare(b.relativeDir));
 };

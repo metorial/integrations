@@ -6,6 +6,7 @@ on:
   #     - main
   #   paths:
   #     - 'integrations/**/package.json'
+  #     - 'test-integrations/**/package.json'
   #     - 'scripts/get-updated-integrations.ts'
   #     - '.github/workflows/publish-integrations.yml'
   workflow_dispatch:
@@ -37,7 +38,7 @@ jobs:
           bun-version: 1.2.15
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Discover unpublished integration versions
         id: discover
@@ -87,7 +88,7 @@ jobs:
           bun-version: 1.2.15
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Build integration package
         run: bunx turbo run build --filter="${{ matrix.name }}"

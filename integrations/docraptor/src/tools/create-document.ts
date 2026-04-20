@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createBase64Attachment, SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { baseDocumentInputSchema } from '../lib/schemas';
@@ -7,7 +7,7 @@ import { z } from 'zod';
 export let createDocument = SlateTool.create(spec, {
   name: 'Create Document',
   key: 'create_document',
-  description: `Synchronously converts HTML/CSS/JavaScript content into a PDF or Excel (XLS/XLSX) document. Returns the generated document as base64-encoded content. Content can be provided as inline HTML or by referencing a URL. For large or complex documents that may take longer than 60 seconds, use asynchronous document creation instead.`,
+  description: `Synchronously converts HTML/CSS/JavaScript content into a PDF or Excel (XLS/XLSX) document. Returns the generated document as an attachment. Content can be provided as inline HTML or by referencing a URL. For large or complex documents that may take longer than 60 seconds, use asynchronous document creation instead.`,
   instructions: [
     'Either documentContent or documentUrl must be provided, but not both.',
     'For Excel files (xls/xlsx), input must be valid XML rather than arbitrary HTML.',
@@ -15,7 +15,7 @@ export let createDocument = SlateTool.create(spec, {
   ],
   constraints: [
     'Synchronous requests have a 60-second timeout.',
-    'The response is a base64-encoded binary document.'
+    'The response document is returned in the response attachments.'
   ],
   tags: {
     destructive: false,
@@ -25,7 +25,6 @@ export let createDocument = SlateTool.create(spec, {
   .input(baseDocumentInputSchema)
   .output(
     z.object({
-      contentBase64: z.string().describe('The generated document encoded as a base64 string.'),
       contentLengthBytes: z.number().describe('Size of the generated document in bytes.')
     })
   )
@@ -39,12 +38,18 @@ export let createDocument = SlateTool.create(spec, {
       test: testMode,
       princeOptions: ctx.input.princeOptions ?? undefined
     });
+    let mimeType =
+      ctx.input.documentType === 'pdf'
+        ? 'application/pdf'
+        : ctx.input.documentType === 'xlsx'
+          ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          : 'application/vnd.ms-excel';
 
     return {
       output: {
-        contentBase64: result.content,
         contentLengthBytes: result.contentLength
       },
+      attachments: [createBase64Attachment(result.content, mimeType)],
       message: `Successfully created ${ctx.input.documentType.toUpperCase()} document${ctx.input.name ? ` "${ctx.input.name}"` : ''}${testMode ? ' (test mode)' : ''}. Size: ${result.contentLength} bytes.`
     };
   })

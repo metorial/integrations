@@ -1,4 +1,5 @@
 import {
+  createTextAttachment,
   Slate,
   SlateAuth,
   SlateConfig,
@@ -122,6 +123,53 @@ let createDemoSlate = () => {
     })
     .build();
 
+  let attachmentEcho = SlateTool.create(spec, {
+    key: 'attachment_echo',
+    name: 'Attachment Echo',
+    tags: {
+      readOnly: true
+    }
+  })
+    .input(
+      z.object({
+        mimeType: z.string().optional()
+      })
+    )
+    .output(
+      z.object({
+        size: z.number()
+      })
+    )
+    .handleInvocation(async ctx => ({
+      output: {
+        size: 5
+      },
+      message: 'attached',
+      attachments: [createTextAttachment('hello', ctx.input.mimeType)]
+    }))
+    .build();
+
+  let downloadLink = SlateTool.create(spec, {
+    key: 'download_link',
+    name: 'Download Link',
+    tags: {
+      readOnly: true
+    }
+  })
+    .input(z.object({}))
+    .output(
+      z.object({
+        downloadUrl: z.string()
+      })
+    )
+    .handleInvocation(async () => ({
+      output: {
+        downloadUrl: 'https://example.com/files/demo.txt'
+      },
+      message: 'linked'
+    }))
+    .build();
+
   let webhookEcho = SlateTrigger.create(spec, {
     key: 'webhook_echo',
     name: 'Webhook Echo'
@@ -210,8 +258,8 @@ let createDemoSlate = () => {
 
   return Slate.create({
     spec,
-    tools: [echo, fail],
-    triggers: [webhookEcho, pollEcho]
+    tools: [echo, fail, attachmentEcho, downloadLink],
+    triggers: [webhookEcho]
   });
 };
 
@@ -279,12 +327,14 @@ describe('@slates/test', () => {
         name: 'Demo Slate',
         description: 'A tiny test slate'
       },
-      toolIds: ['echo', 'fail'],
-      triggerIds: ['webhook_echo', 'poll_echo'],
+      toolIds: ['echo', 'fail', 'attachment_echo', 'download_link'],
+      triggerIds: ['webhook_echo'],
       authMethodIds: ['token_auth'],
       tools: [
         { id: 'echo', readOnly: false, destructive: false },
-        { id: 'fail', readOnly: false, destructive: false }
+        { id: 'fail', readOnly: false, destructive: false },
+        { id: 'attachment_echo', readOnly: true, destructive: false },
+        { id: 'download_link', readOnly: true, destructive: false }
       ],
       triggers: [
         { id: 'webhook_echo', invocationType: 'webhook' },
@@ -305,6 +355,30 @@ describe('@slates/test', () => {
         token: 'secret-token'
       }
     });
+
+    let attachmentResult = await client.invokeTool('attachment_echo', {
+      mimeType: 'text/plain'
+    });
+    expect(attachmentResult.attachments).toEqual([
+      {
+        mimeType: 'text/plain',
+        content: {
+          type: 'content',
+          encoding: 'utf-8',
+          content: 'hello'
+        }
+      }
+    ]);
+
+    let downloadResult = await client.invokeTool('download_link', {});
+    expect(downloadResult.attachments).toEqual([
+      {
+        content: {
+          type: 'url',
+          url: 'https://example.com/files/demo.txt'
+        }
+      }
+    ]);
   });
 
   it('wraps trigger webhook flows and error assertions', async () => {

@@ -4,10 +4,11 @@
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "format": "prettier --write .",
-    "integrations:format": "prettier --write \"integrations/**/*\" --ignore-unknown",
+    "integrations:format": "prettier --write \"integrations/**/*\" \"test-integrations/**/*\" --ignore-unknown",
     "integrations:cli": "bun packages/cli/src/cli.ts",
+    "integrations:update-package-versions": "bun scripts/update-integration-package-versions.ts",
     "packages:build": "turbo run build --filter=./packages/*",
-    "integrations:build:inner": "turbo run build --concurrency=1 --ui=stream --filter=./integrations/*",
+    "integrations:build:inner": "turbo run build --concurrency=1 --ui=stream --filter=./integrations/* --filter=./test-integrations/*",
     "integrations:build": "bun run packages:build && bun run integrations:build:inner"
   },
   "devDependencies": {
@@ -24,7 +25,8 @@
   "packageManager": "bun@1.2.15",
   "workspaces": [
     "packages/*",
-    "integrations/*"
+    "integrations/*",
+    "test-integrations/*"
   ],
   "dependencies": {
     "@types/bun": "^1.3.12"

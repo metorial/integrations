@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createTextAttachment, SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -6,7 +6,7 @@ import { z } from 'zod';
 export let downloadBlob = SlateTool.create(spec, {
   name: 'Download Blob',
   key: 'download_blob',
-  description: `Download the content of a blob. Supports partial content retrieval using byte range requests. Returns the blob content as text along with metadata.`,
+  description: `Download the content of a blob. Supports partial content retrieval using byte range requests. Returns the blob as an attachment along with metadata.`,
   instructions: [
     'Binary content will be returned as-is and may not be human-readable.',
     'Use range parameters for large blobs to download specific byte ranges.'
@@ -27,7 +27,6 @@ export let downloadBlob = SlateTool.create(spec, {
     z.object({
       containerName: z.string().describe('Container the blob belongs to'),
       blobName: z.string().describe('Name of the downloaded blob'),
-      content: z.string().describe('Content of the blob'),
       contentType: z.string().describe('MIME content type'),
       contentLength: z.number().describe('Size of the returned content in bytes'),
       metadata: z.record(z.string(), z.string()).describe('User-defined metadata')
@@ -50,11 +49,11 @@ export let downloadBlob = SlateTool.create(spec, {
       output: {
         containerName: ctx.input.containerName,
         blobName: ctx.input.blobName,
-        content: result.content,
         contentType: result.contentType,
         contentLength: result.contentLength,
         metadata: result.metadata
       },
+      attachments: [createTextAttachment(result.content, result.contentType || undefined)],
       message: `Downloaded blob **${ctx.input.blobName}** from container **${ctx.input.containerName}** (${result.contentLength} bytes, ${result.contentType}).`
     };
   })

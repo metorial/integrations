@@ -72,7 +72,25 @@ export let slatesMessageActionInvokeResponse = z.object({
   id: z.string(),
   result: withRequestTraces({
     output: z.record(z.string(), z.any()),
-    message: z.string().optional()
+    message: z.string().optional(),
+    attachments: z
+      .array(
+        z.object({
+          mimeType: z.string().optional(),
+          content: z.union([
+            z.object({
+              type: z.literal('url'),
+              url: z.string()
+            }),
+            z.object({
+              type: z.literal('content'),
+              encoding: z.union([z.literal('base64'), z.literal('utf-8')]),
+              content: z.string()
+            })
+          ])
+        })
+      )
+      .optional()
   })
 });
 

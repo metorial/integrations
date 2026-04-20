@@ -7,6 +7,7 @@ import {
 import {
   runWithContext,
   type Slate,
+  type SlateAttachment,
   SlateContext,
   SlateLogger,
   type SlateLogListener
@@ -20,6 +21,70 @@ let isRecord = (value: unknown): value is Record<string, unknown> =>
 
 let getObjectKeyCount = (value: unknown) =>
   isRecord(value) ? Object.keys(value).length : undefined;
+
+let DOWNLOAD_ATTACHMENT_URL_KEYS = new Set([
+  'downloadUrl',
+  'fileUrl',
+  'temporaryDownloadUrl',
+  'webContentLink'
+]);
+
+let isAttachmentUrl = (value: string) => /^[a-z][a-z0-9+.-]*:\/\//i.test(value);
+
+let collectOutputUrlAttachments = (
+  value: unknown,
+  seen = new Set<string>()
+): SlateAttachment[] => {
+  if (Array.isArray(value)) {
+    return value.flatMap(item => collectOutputUrlAttachments(item, seen));
+  }
+
+  if (!isRecord(value)) {
+    return [];
+  }
+
+  let attachments: SlateAttachment[] = [];
+
+  for (let [key, nestedValue] of Object.entries(value)) {
+    if (
+      DOWNLOAD_ATTACHMENT_URL_KEYS.has(key) &&
+      typeof nestedValue === 'string' &&
+      nestedValue.length > 0 &&
+      isAttachmentUrl(nestedValue) &&
+      !seen.has(nestedValue)
+    ) {
+      seen.add(nestedValue);
+      attachments.push({
+        content: {
+          type: 'url',
+          url: nestedValue
+        }
+      });
+      continue;
+    }
+
+    attachments.push(...collectOutputUrlAttachments(nestedValue, seen));
+  }
+
+  return attachments;
+};
+
+let mergeAttachments = (
+  explicitAttachments: SlateAttachment[] | undefined,
+  output: unknown
+): SlateAttachment[] | undefined => {
+  let attachments = [...(explicitAttachments ?? [])];
+  let seen = new Set(attachments.map(attachment => JSON.stringify(attachment)));
+
+  for (let attachment of collectOutputUrlAttachments(output)) {
+    let key = JSON.stringify(attachment);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    attachments.push(attachment);
+  }
+
+  return attachments.length > 0 ? attachments : undefined;
+};
 
 let toErrorMetadata = (error: unknown) => {
   if (error instanceof Error) {
@@ -684,13 +749,18 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
           onSuccess: result => ({
             hasMessage: !!result.message,
             actionResultMessage: result.message,
-            outputKeyCount: getObjectKeyCount(result.output)
+            outputKeyCount: getObjectKeyCount(result.output),
+            attachmentCount: result.attachments?.length
           })
         },
         () => runWithContext(context, () => action.handleInvocation(context))
       );
 
-      return withRequestTraces(context, { output: res.output, message: res.message });
+      return withRequestTraces(context, {
+        output: res.output,
+        message: res.message,
+        attachments: mergeAttachments(res.attachments, res.output)
+      });
     });
 
     manager.onRequest('slates/action.trigger.map_event', async ({ params }) => {
