@@ -37,7 +37,7 @@ jobs:
           bun-version: 1.2.15
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Discover unpublished package versions
         id: discover
@@ -80,7 +80,7 @@ jobs:
           bun-version: 1.2.15
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Run package builds
         run: bunx turbo run build --filter="./packages/*"
@@ -117,7 +117,7 @@ jobs:
           bun-version: 1.2.15
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Build package
         if: ${{ matrix.hasBuildScript }}
