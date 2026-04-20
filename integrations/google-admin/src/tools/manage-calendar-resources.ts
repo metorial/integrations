@@ -85,7 +85,7 @@ export let manageCalendarResources = SlateTool.create(spec, {
     });
 
     let mapResource = (r: any) => ({
-      calendarResourceId: r.resourceId,
+      calendarResourceId: r.resourceId ?? r.calendarResourceId,
       resourceName: r.resourceName,
       resourceType: r.resourceType,
       resourceDescription: r.resourceDescription,
@@ -142,7 +142,9 @@ export let manageCalendarResources = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      let updateData: Record<string, any> = {};
+      let updateData: Record<string, any> = {
+        resourceId: ctx.input.calendarResourceId
+      };
       if (ctx.input.resourceName) updateData.resourceName = ctx.input.resourceName;
       if (ctx.input.resourceType) updateData.resourceType = ctx.input.resourceType;
       if (ctx.input.resourceDescription !== undefined)
