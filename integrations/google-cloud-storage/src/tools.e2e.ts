@@ -10,6 +10,14 @@ type GoogleCloudStorageFixtures = {
   notificationTopic?: string;
 };
 
+let BUCKET_NAME_MIN_LENGTH = 3;
+let BUCKET_NAME_MAX_LENGTH = 63;
+let BUCKET_NAME_SUFFIX_MAX_LENGTH = 40;
+let LIFECYCLE_DELETE_AGE_DAYS = 30;
+let LIFECYCLE_TRANSITION_AGE_DAYS = 10;
+let LIST_OBJECTS_PAGE_SIZE = 1000;
+let SUITE_RUN_LABEL_MAX_LENGTH = 30;
+
 let sanitizeName = (value: string) =>
   value
     .toLowerCase()
@@ -18,9 +26,11 @@ let sanitizeName = (value: string) =>
     .replace(/-+/g, '-');
 
 let bucketNameForRun = (runId: string) => {
-  let suffix = sanitizeName(runId).slice(-40) || 'run';
-  let bucketName = `slates-gcs-${suffix}`.slice(0, 63).replace(/-+$/g, '');
-  return bucketName.length >= 3 ? bucketName : `${bucketName}000`.slice(0, 3);
+  let suffix = sanitizeName(runId).slice(-BUCKET_NAME_SUFFIX_MAX_LENGTH) || 'run';
+  let bucketName = `slates-gcs-${suffix}`.slice(0, BUCKET_NAME_MAX_LENGTH).replace(/-+$/g, '');
+  return bucketName.length >= BUCKET_NAME_MIN_LENGTH
+    ? bucketName
+    : `${bucketName}000`.slice(0, BUCKET_NAME_MIN_LENGTH);
 };
 
 let objectNameForRun = (runId: string, label: string) => `e2e/${sanitizeName(runId)}/${label}`;
@@ -52,12 +62,12 @@ let getBucketIamMember = (ctx: {
 
 let lifecycleDeleteRule = {
   action: { type: 'Delete' as const },
-  condition: { age: 30 }
+  condition: { age: LIFECYCLE_DELETE_AGE_DAYS }
 };
 
 let lifecycleTransitionRule = {
   action: { type: 'SetStorageClass' as const, storageClass: 'NEARLINE' },
-  condition: { age: 10 }
+  condition: { age: LIFECYCLE_TRANSITION_AGE_DAYS }
 };
 
 let emptyBucket = async (ctx: ToolE2EContext<GoogleCloudStorageFixtures>, bucketName: string) => {
@@ -68,7 +78,7 @@ let emptyBucket = async (ctx: ToolE2EContext<GoogleCloudStorageFixtures>, bucket
     let listed = await ctx.invokeTool('list_objects', {
       bucketName,
       includeVersions: true,
-      maxResults: 1000,
+      maxResults: LIST_OBJECTS_PAGE_SIZE,
       pageToken
     });
 
@@ -217,7 +227,7 @@ export let googleCloudStorageToolE2E = defineSlateToolE2EIntegration<GoogleCloud
       run: async ctx => {
         let bucket = ctx.resource('bucket');
         let bucketName = String(bucket.bucketName);
-        let suiteRunLabel = sanitizeName(ctx.runId).slice(-30) || 'run';
+        let suiteRunLabel = sanitizeName(ctx.runId).slice(-SUITE_RUN_LABEL_MAX_LENGTH) || 'run';
 
         await ctx.invokeTool('manage_bucket', {
           action: 'update',

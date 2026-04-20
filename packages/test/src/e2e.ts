@@ -39,6 +39,8 @@ export interface CleanupTask {
   run(): Promise<void>;
 }
 
+export type ToolInvocationResult = Awaited<ReturnType<SlatesTestClient['invokeTool']>>;
+
 export interface TrackedSlateToolResource {
   name: string;
   value: Record<string, any>;
@@ -82,7 +84,7 @@ export interface ToolE2EContext<Fixtures = Record<string, any>, Helpers = unknow
   runId: string;
   fixtures: Fixtures;
   helpers: Helpers;
-  invokeTool(toolId: string, input: Record<string, any>): Promise<{ output: Record<string, any> }>;
+  invokeTool(toolId: string, input: Record<string, any>): Promise<ToolInvocationResult>;
   getTool(toolId: string): LocalTool;
   resource(name: string): Record<string, any>;
   listResources(name?: string): TrackedSlateToolResource[];
@@ -684,7 +686,11 @@ export let createSlateToolE2EEngine = async <
   d.client.setConfig(normalizedProfileConfig);
   d.profile.config = normalizedProfileConfig;
   let runId = createRunId(d.provider.spec.key);
-  let auth = (Object.values(d.profile.auth)[0]?.output ?? {}) as Record<string, any>;
+  let getCurrentAuth = () =>
+    (d.client.state.auth?.output ?? Object.values(d.profile.auth)[0]?.output ?? {}) as Record<
+      string,
+      any
+    >;
   let resourceDefs = Object.fromEntries(
     Object.entries(integration.resources ?? {}).map(([name, value]) => [
       normalizeResourceName(name),
@@ -729,11 +735,13 @@ export let createSlateToolE2EEngine = async <
     );
   };
 
-  let context = {
+  let context: Omit<ToolE2EContext<Fixtures, Helpers>, 'helpers'> & { helpers: Helpers } = {
     integrationKey: d.provider.spec.key,
     client: d.client,
     profile: d.profile,
-    auth,
+    get auth() {
+      return getCurrentAuth();
+    },
     runId,
     fixtures,
     invokeTool: async (toolId: string, input: Record<string, any>) => {
@@ -741,7 +749,7 @@ export let createSlateToolE2EEngine = async <
       let parsedInput = validateWithSchema(tool.inputSchema, input, `${toolId} input`);
       let result = await d.client.invokeTool(toolId, parsedInput as Record<string, any>);
       validateWithSchema(tool.outputSchema, result.output, `${toolId} output`);
-      return result as { output: Record<string, any> };
+      return result as ToolInvocationResult;
     },
     getTool: (toolId: string) => findTool(tools, toolId),
     resource: (name: string) => {
@@ -779,15 +787,12 @@ export let createSlateToolE2EEngine = async <
     registerCleanup,
     namespaced: (label: string) => `${runId} ${label}`,
     helpers: undefined as Helpers
-  } satisfies Omit<ToolE2EContext<Fixtures, Helpers>, 'helpers'> & { helpers: Helpers };
+  };
 
   let helpers = integration.createHelpers
     ? await integration.createHelpers(context)
     : ({} as Helpers);
-  context = {
-    ...context,
-    helpers
-  };
+  context.helpers = helpers;
 
   let findToolByOperation = (
     operation: 'create' | 'get' | 'update' | 'delete' | 'list' | 'search',

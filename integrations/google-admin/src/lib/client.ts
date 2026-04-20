@@ -20,6 +20,10 @@ let licensingApi = createAxios({
   baseURL: 'https://licensing.googleapis.com/apps/licensing/v1/product'
 });
 
+let dataTransferApi = createAxios({
+  baseURL: 'https://admin.googleapis.com/admin/datatransfer/v1'
+});
+
 let mapUserOrderBy = (orderBy?: string) => {
   switch (orderBy) {
     case 'email':
@@ -1084,10 +1088,7 @@ export class Client {
       pageToken?: string;
     } = {}
   ) {
-    let transferApi = createAxios({
-      baseURL: 'https://admin.googleapis.com/admin/datatransfer/v1'
-    });
-    let response = await transferApi.get('/transfers', {
+    let response = await dataTransferApi.get('/transfers', {
       headers: this.headers,
       params: {
         oldOwnerUserId: params.oldOwnerUserId,
@@ -1111,30 +1112,21 @@ export class Client {
       }>;
     }>;
   }) {
-    let transferApi = createAxios({
-      baseURL: 'https://admin.googleapis.com/admin/datatransfer/v1'
-    });
-    let response = await transferApi.post('/transfers', transferData, {
+    let response = await dataTransferApi.post('/transfers', transferData, {
       headers: this.headers
     });
     return response.data;
   }
 
   async getDataTransfer(transferId: string) {
-    let transferApi = createAxios({
-      baseURL: 'https://admin.googleapis.com/admin/datatransfer/v1'
-    });
-    let response = await transferApi.get(`/transfers/${transferId}`, {
+    let response = await dataTransferApi.get(`/transfers/${transferId}`, {
       headers: this.headers
     });
     return response.data;
   }
 
   async listDataTransferApplications() {
-    let transferApi = createAxios({
-      baseURL: 'https://admin.googleapis.com/admin/datatransfer/v1'
-    });
-    let response = await transferApi.get('/applications', {
+    let response = await dataTransferApi.get('/applications', {
       headers: this.headers
     });
     return response.data;

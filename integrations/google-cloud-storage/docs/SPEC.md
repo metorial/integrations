@@ -14,7 +14,7 @@ Google recommends OAuth 2.0 authentication for interacting with the Google Cloud
 
 **Endpoints:**
 
-- Authorization: `https://accounts.google.com/o/oauth2/auth`
+- Authorization: `https://accounts.google.com/o/oauth2/v2/auth`
 - Token: `https://accounts.google.com/o/oauth2/token`
 
 **Scopes:**

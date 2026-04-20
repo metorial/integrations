@@ -1,10 +1,13 @@
 import { defineSlateToolE2EIntegration, runSlateToolE2ESuite } from '@slates/test';
 import { provider } from './index';
 
-let createTimedRange = (daysFromNow: number, durationMinutes = 45) => {
+let DEFAULT_EVENT_START_HOUR_UTC = 15;
+let DEFAULT_EVENT_DURATION_MINUTES = 45;
+
+let createTimedRange = (daysFromNow: number, durationMinutes = DEFAULT_EVENT_DURATION_MINUTES) => {
   let start = new Date();
   start.setUTCDate(start.getUTCDate() + daysFromNow);
-  start.setUTCHours(15, 0, 0, 0);
+  start.setUTCHours(DEFAULT_EVENT_START_HOUR_UTC, 0, 0, 0);
 
   let end = new Date(start);
   end.setUTCMinutes(end.getUTCMinutes() + durationMinutes);

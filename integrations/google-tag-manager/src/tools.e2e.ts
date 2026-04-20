@@ -100,6 +100,12 @@ let skipOnQuotaExceeded = async (
   }
 };
 
+let logQuotaSkip = (label: string) => {
+  console.log(
+    `[google-tag-manager e2e] Skipping ${label}: Google Tag Manager per-user API quota was exceeded for this run.`
+  );
+};
+
 let ignoreCleanupError = async (run: () => Promise<void>) => {
   try {
     await run();
@@ -377,15 +383,22 @@ export let googleTagManagerToolE2E = defineSlateToolE2EIntegration<
           typeof prepared?.workspaceId === 'string' &&
           typeof prepared?.folderId === 'string'
         ) {
-          await ignoreCleanupError(async () => {
-            await ctx.invokeTool('manage_folder', {
-              action: 'delete',
-              accountId: prepared.accountId,
-              containerId: prepared.containerId,
-              workspaceId: prepared.workspaceId,
-              folderId: prepared.folderId
+          try {
+            await ignoreCleanupError(async () => {
+              await ctx.invokeTool('manage_folder', {
+                action: 'delete',
+                accountId: prepared.accountId,
+                containerId: prepared.containerId,
+                workspaceId: prepared.workspaceId,
+                folderId: prepared.folderId
+              });
             });
-          });
+          } catch (error) {
+            let message = normalizeError(error);
+            if (!message.includes('returned an error response for your request')) {
+              throw error;
+            }
+          }
         }
       },
       'cleanup:google-tag-manager-folder'
@@ -521,38 +534,51 @@ export let googleTagManagerToolE2E = defineSlateToolE2EIntegration<
         let accountId = String(container.accountId);
         let containerId = String(container.containerId);
 
-        let createdWorkspace = await ctx.invokeTool('manage_workspace', {
-          action: 'create',
-          accountId,
-          containerId,
-          name: createGtmName(ctx.runId, 'version-workspace'),
-          description: createGtmNote(ctx.runId, 'Created')
-        });
-        let workspace = createdWorkspace.output.workspace ?? {};
-        let workspaceId = requireString(
-          workspace.workspaceId,
-          'manage_workspace create for version'
-        );
+        try {
+          let createdWorkspace = await ctx.invokeTool('manage_workspace', {
+            action: 'create',
+            accountId,
+            containerId,
+            name: createGtmName(ctx.runId, 'version-workspace'),
+            description: createGtmNote(ctx.runId, 'Created')
+          });
+          let workspace = createdWorkspace.output.workspace ?? {};
+          let workspaceId = requireString(
+            workspace.workspaceId,
+            'manage_workspace create for version'
+          );
 
-        let createdVersion = await ctx.invokeTool('manage_version', {
-          action: 'create',
-          accountId,
-          containerId,
-          workspaceId,
-          name: createGtmName(ctx.runId, 'version'),
-          notes: createGtmNote(ctx.runId, 'Created')
-        });
-        let version = createdVersion.output.version ?? {};
-        return {
-          ...version,
-          accountId,
-          containerId,
-          containerVersionId: requireString(
-            version.containerVersionId,
-            'manage_version create'
-          ),
-          versionWorkspaceId: workspaceId
-        };
+          let createdVersion = await ctx.invokeTool('manage_version', {
+            action: 'create',
+            accountId,
+            containerId,
+            workspaceId,
+            name: createGtmName(ctx.runId, 'version'),
+            notes: createGtmNote(ctx.runId, 'Created')
+          });
+          let version = createdVersion.output.version ?? {};
+          return {
+            ...version,
+            accountId,
+            containerId,
+            containerVersionId: requireString(
+              version.containerVersionId,
+              'manage_version create'
+            ),
+            versionWorkspaceId: workspaceId
+          };
+        } catch (error) {
+          if (!isQuotaExceededError(error)) {
+            throw error;
+          }
+
+          return {
+            accountId,
+            containerId,
+            failure:
+              'Google Tag Manager per-user API quota was exceeded before a disposable version could be created.'
+          };
+        }
       },
       cleanup: {
         kind: 'delete',
@@ -560,31 +586,26 @@ export let googleTagManagerToolE2E = defineSlateToolE2EIntegration<
           if (
             typeof value.accountId === 'string' &&
             typeof value.containerId === 'string' &&
-            typeof value.containerVersionId === 'string'
-          ) {
-            await ignoreCleanupError(async () => {
-              await ctx.invokeTool('manage_version', {
-                action: 'delete',
-                accountId: value.accountId,
-                containerId: value.containerId,
-                versionId: value.containerVersionId
-              });
-            });
-          }
-
-          if (
-            typeof value.accountId === 'string' &&
-            typeof value.containerId === 'string' &&
             typeof value.versionWorkspaceId === 'string'
           ) {
-            await ignoreCleanupError(async () => {
-              await ctx.invokeTool('manage_workspace', {
-                action: 'delete',
-                accountId: value.accountId,
-                containerId: value.containerId,
-                workspaceId: value.versionWorkspaceId
+            try {
+              await ignoreCleanupError(async () => {
+                await ctx.invokeTool('manage_workspace', {
+                  action: 'delete',
+                  accountId: value.accountId,
+                  containerId: value.containerId,
+                  workspaceId: value.versionWorkspaceId
+                });
               });
-            });
+            } catch (error) {
+              let message = normalizeError(error);
+              if (
+                !message.includes('experienced an internal error') &&
+                !message.includes('returned an error response for your request')
+              ) {
+                throw error;
+              }
+            }
           }
         }
       }
@@ -902,6 +923,10 @@ export let googleTagManagerToolE2E = defineSlateToolE2EIntegration<
       run: async ctx => {
         await skipOnQuotaExceeded(ctx, 'manage_version', async () => {
           let version = ctx.resource('version');
+          if (typeof version.failure === 'string') {
+            logQuotaSkip('manage_version');
+            return;
+          }
           let accountId = String(version.accountId);
           let containerId = String(version.containerId);
           let versionId = String(version.containerVersionId);
@@ -1045,16 +1070,22 @@ export let googleTagManagerToolE2E = defineSlateToolE2EIntegration<
             variableIds: [String(ctx.resource('variable').variableId)]
           });
 
-          let entities = await ctx.invokeTool('manage_folder', {
-            action: 'list_entities',
-            accountId,
-            containerId,
-            workspaceId,
-            folderId
-          });
-          if ((entities.output.entities?.tagCount ?? 0) < 1) {
-            throw new Error('manage_folder list_entities did not report any moved tags.');
+          for (let attempt = 0; attempt < 5; attempt += 1) {
+            let entities = await ctx.invokeTool('manage_folder', {
+              action: 'list_entities',
+              accountId,
+              containerId,
+              workspaceId,
+              folderId
+            });
+            if ((entities.output.entities?.tagCount ?? 0) >= 1) {
+              return;
+            }
+
+            await wait(1000 * (attempt + 1));
           }
+
+          throw new Error('manage_folder list_entities did not report any moved tags.');
         });
       }
     },

@@ -1,6 +1,22 @@
 import { defineSlateToolE2EIntegration, runSlateToolE2ESuite } from '@slates/test';
 import { provider } from './index';
 
+let GOOGLE_DRIVE_RETRY_ATTEMPTS = 5;
+let SHARED_DRIVE_REQUEST_ID_MAX_LENGTH = 64;
+let DOC_SEED_RETRY_BASE_DELAY_MS = 500;
+let EVENTUAL_CONSISTENCY_RETRY_BASE_DELAY_MS = 1000;
+let DRIVE_LIST_PAGE_SIZE = 25;
+type DriveAttachmentContent =
+  | {
+      type: 'content';
+      encoding: 'base64' | 'utf-8';
+      content: string;
+    }
+  | {
+      type: 'url';
+      url: string;
+    };
+
 let wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 let escapeDriveQueryValue = (value: string) =>
@@ -11,10 +27,10 @@ let createSharedDriveRequestId = (runId: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-    .slice(0, 64);
+    .slice(0, SHARED_DRIVE_REQUEST_ID_MAX_LENGTH);
 
 let seedGoogleDocContent = async (token: string, fileId: string, text: string) => {
-  for (let attempt = 0; attempt < 5; attempt += 1) {
+  for (let attempt = 0; attempt < GOOGLE_DRIVE_RETRY_ATTEMPTS; attempt += 1) {
     let response = await fetch(
       `https://docs.googleapis.com/v1/documents/${encodeURIComponent(fileId)}:batchUpdate`,
       {
@@ -43,8 +59,11 @@ let seedGoogleDocContent = async (token: string, fileId: string, text: string) =
     }
 
     let body = await response.text();
-    if ((response.status === 404 || response.status >= 500) && attempt < 4) {
-      await wait(500 * (attempt + 1));
+    if (
+      (response.status === 404 || response.status >= 500) &&
+      attempt < GOOGLE_DRIVE_RETRY_ATTEMPTS - 1
+    ) {
+      await wait(DOC_SEED_RETRY_BASE_DELAY_MS * (attempt + 1));
       continue;
     }
 
@@ -287,10 +306,10 @@ export let googleDriveToolE2E = defineSlateToolE2EIntegration({
         let fileId = String(file.fileId);
         let name = escapeDriveQueryValue(String(file.name));
 
-        for (let attempt = 0; attempt < 5; attempt += 1) {
+        for (let attempt = 0; attempt < GOOGLE_DRIVE_RETRY_ATTEMPTS; attempt += 1) {
           let result = await ctx.invokeTool('search_files', {
             query: `name = '${name}' and trashed = false`,
-            pageSize: 25
+            pageSize: DRIVE_LIST_PAGE_SIZE
           });
 
           if (
@@ -301,7 +320,7 @@ export let googleDriveToolE2E = defineSlateToolE2EIntegration({
             return;
           }
 
-          await wait(1000 * (attempt + 1));
+          await wait(EVENTUAL_CONSISTENCY_RETRY_BASE_DELAY_MS * (attempt + 1));
         }
 
         throw new Error(`search_files did not return file ${fileId}.`);
@@ -326,7 +345,16 @@ export let googleDriveToolE2E = defineSlateToolE2EIntegration({
           fileId: String(file.fileId)
         });
 
-        let content = Buffer.from(result.output.contentBase64, 'base64').toString('utf8');
+        let attachment = (
+          result as {
+            attachments?: Array<{ content: DriveAttachmentContent }>;
+          }
+        ).attachments?.[0]?.content;
+        if (attachment?.type !== 'content' || attachment.encoding !== 'base64') {
+          throw new Error('download_file did not return a base64 attachment.');
+        }
+
+        let content = Buffer.from(attachment.content, 'base64').toString('utf8');
         if (content !== String(file.content)) {
           throw new Error('download_file did not return the expected content.');
         }
@@ -341,12 +369,12 @@ export let googleDriveToolE2E = defineSlateToolE2EIntegration({
           | {
               output: {
                 fileId?: string;
-                contentBase64?: string;
               };
+              attachments?: Array<{ content: DriveAttachmentContent }>;
             }
           | undefined;
 
-        for (let attempt = 0; attempt < 5; attempt += 1) {
+        for (let attempt = 0; attempt < GOOGLE_DRIVE_RETRY_ATTEMPTS; attempt += 1) {
           try {
             result = await ctx.invokeTool('export_file', {
               fileId: String(file.fileId),
@@ -355,10 +383,13 @@ export let googleDriveToolE2E = defineSlateToolE2EIntegration({
             break;
           } catch (error) {
             let message = getErrorMessage(error);
-            if (!message.includes('Internal Server Error') || attempt === 4) {
+            if (
+              !message.includes('Internal Server Error') ||
+              attempt === GOOGLE_DRIVE_RETRY_ATTEMPTS - 1
+            ) {
               throw error;
             }
-            await wait(1000 * (attempt + 1));
+            await wait(EVENTUAL_CONSISTENCY_RETRY_BASE_DELAY_MS * (attempt + 1));
           }
         }
 
@@ -366,9 +397,12 @@ export let googleDriveToolE2E = defineSlateToolE2EIntegration({
           throw new Error('export_file returned an unexpected fileId.');
         }
 
-        let exportedText = Buffer.from(String(result.output.contentBase64), 'base64').toString(
-          'utf8'
-        );
+        let attachment = result.attachments?.[0]?.content;
+        if (attachment?.type !== 'content' || attachment.encoding !== 'base64') {
+          throw new Error('export_file did not return a base64 attachment.');
+        }
+
+        let exportedText = Buffer.from(attachment.content, 'base64').toString('utf8');
 
         if (!exportedText.includes(String(file.seededText).trim())) {
           throw new Error('export_file did not include the seeded document content.');
@@ -469,10 +503,10 @@ export let googleDriveToolE2E = defineSlateToolE2EIntegration({
           let driveId = String(drive.driveId);
           let name = escapeDriveQueryValue(String(drive.name));
 
-          for (let attempt = 0; attempt < 5; attempt += 1) {
+          for (let attempt = 0; attempt < GOOGLE_DRIVE_RETRY_ATTEMPTS; attempt += 1) {
             let result = await ctx.invokeTool('list_shared_drives', {
               query: `name contains '${name}'`,
-              pageSize: 25
+              pageSize: DRIVE_LIST_PAGE_SIZE
             });
 
             if (
@@ -483,7 +517,7 @@ export let googleDriveToolE2E = defineSlateToolE2EIntegration({
               return;
             }
 
-            await wait(1000 * (attempt + 1));
+            await wait(EVENTUAL_CONSISTENCY_RETRY_BASE_DELAY_MS * (attempt + 1));
           }
 
           throw new Error(`list_shared_drives did not return drive ${driveId}.`);

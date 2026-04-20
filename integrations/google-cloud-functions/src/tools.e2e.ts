@@ -18,6 +18,12 @@ type GoogleCloudFunctionsFunction = {
   operationName?: string;
 };
 
+let GOOGLE_CLOUD_FUNCTIONS_E2E_TIMEOUT_MS = 10 * 60 * 1000;
+let CRC32_POLYNOMIAL = 0xedb88320;
+let ZIP_LOCAL_FILE_HEADER_SIGNATURE = 0x04034b50;
+let ZIP_CENTRAL_DIRECTORY_HEADER_SIGNATURE = 0x02014b50;
+let ZIP_END_OF_CENTRAL_DIRECTORY_SIGNATURE = 0x06054b50;
+
 let sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 let crc32Table = (() => {
@@ -25,7 +31,7 @@ let crc32Table = (() => {
   for (let index = 0; index < table.length; index += 1) {
     let value = index;
     for (let bit = 0; bit < 8; bit += 1) {
-      value = (value & 1) === 0 ? value >>> 1 : (value >>> 1) ^ 0xedb88320;
+      value = (value & 1) === 0 ? value >>> 1 : (value >>> 1) ^ CRC32_POLYNOMIAL;
     }
     table[index] = value >>> 0;
   }
@@ -63,7 +69,7 @@ let createZipArchive = (files: Record<string, string>) => {
     let checksum = crc32(data);
 
     let localHeader = Buffer.alloc(30 + pathBytes.length);
-    localHeader.writeUInt32LE(0x04034b50, 0);
+    localHeader.writeUInt32LE(ZIP_LOCAL_FILE_HEADER_SIGNATURE, 0);
     localHeader.writeUInt16LE(20, 4);
     localHeader.writeUInt16LE(0, 6);
     localHeader.writeUInt16LE(0, 8);
@@ -77,7 +83,7 @@ let createZipArchive = (files: Record<string, string>) => {
     pathBytes.copy(localHeader, 30);
 
     let centralHeader = Buffer.alloc(46 + pathBytes.length);
-    centralHeader.writeUInt32LE(0x02014b50, 0);
+    centralHeader.writeUInt32LE(ZIP_CENTRAL_DIRECTORY_HEADER_SIGNATURE, 0);
     centralHeader.writeUInt16LE(20, 4);
     centralHeader.writeUInt16LE(20, 6);
     centralHeader.writeUInt16LE(0, 8);
@@ -103,7 +109,7 @@ let createZipArchive = (files: Record<string, string>) => {
 
   let centralDirectory = Buffer.concat(centralParts);
   let endOfCentralDirectory = Buffer.alloc(22);
-  endOfCentralDirectory.writeUInt32LE(0x06054b50, 0);
+  endOfCentralDirectory.writeUInt32LE(ZIP_END_OF_CENTRAL_DIRECTORY_SIGNATURE, 0);
   endOfCentralDirectory.writeUInt16LE(0, 4);
   endOfCentralDirectory.writeUInt16LE(0, 6);
   endOfCentralDirectory.writeUInt16LE(centralParts.length, 8);
@@ -416,5 +422,5 @@ export let googleCloudFunctionsToolE2E = defineSlateToolE2EIntegration({
 runSlateToolE2ESuite({
   provider,
   integration: googleCloudFunctionsToolE2E,
-  timeoutMs: 10 * 60 * 1000
+  timeoutMs: GOOGLE_CLOUD_FUNCTIONS_E2E_TIMEOUT_MS
 });

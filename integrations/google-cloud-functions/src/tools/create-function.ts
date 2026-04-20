@@ -142,7 +142,7 @@ export let createFunction = SlateTool.create(spec, {
       projectId: ctx.config.projectId,
       region
     });
-    let functionName = `projects/${ctx.config.projectId}/locations/${region}/functions/${ctx.input.functionId}`;
+    let functionName = client.functionName(ctx.input.functionId);
 
     let source: Record<string, any> = {};
     if (ctx.input.sourceUploadUrl) {

@@ -153,16 +153,42 @@ export let manageFolder = SlateTool.create(spec, {
     }
 
     // move_entities
-    await client.moveEntitiesToFolder(accountId, containerId, workspaceId, folderId, {
-      tagId: ctx.input.tagIds,
-      triggerId: ctx.input.triggerIds,
-      variableId: ctx.input.variableIds
-    });
+    let targetFolderId = folderId === '0' ? undefined : folderId;
+    let movedCount = 0;
 
-    let movedCount =
-      (ctx.input.tagIds?.length || 0) +
-      (ctx.input.triggerIds?.length || 0) +
-      (ctx.input.variableIds?.length || 0);
+    if (folderId === '0') {
+      await client.moveEntitiesToFolder(accountId, containerId, workspaceId, folderId, {
+        tagId: ctx.input.tagIds,
+        triggerId: ctx.input.triggerIds,
+        variableId: ctx.input.variableIds
+      });
+      movedCount =
+        (ctx.input.tagIds?.length || 0) +
+        (ctx.input.triggerIds?.length || 0) +
+        (ctx.input.variableIds?.length || 0);
+    } else {
+      for (let tagId of ctx.input.tagIds ?? []) {
+        await client.updateTag(accountId, containerId, workspaceId, tagId, {
+          parentFolderId: targetFolderId
+        });
+        movedCount += 1;
+      }
+
+      for (let triggerId of ctx.input.triggerIds ?? []) {
+        await client.updateTrigger(accountId, containerId, workspaceId, triggerId, {
+          parentFolderId: targetFolderId
+        });
+        movedCount += 1;
+      }
+
+      for (let variableId of ctx.input.variableIds ?? []) {
+        await client.updateVariable(accountId, containerId, workspaceId, variableId, {
+          parentFolderId: targetFolderId
+        });
+        movedCount += 1;
+      }
+    }
+
     return {
       output: { folder: { folderId } } as any,
       message: `Moved **${movedCount}** entity/entities into folder \`${folderId}\``

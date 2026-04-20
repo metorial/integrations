@@ -8,7 +8,7 @@ type GoogleClassroomFixtures = {
 };
 
 type GoogleClassroomHelpers = {
-  client: ClassroomClient;
+  getClient(): ClassroomClient;
 };
 
 let wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -123,7 +123,7 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
     studentUserId: z.string().optional()
   }),
   createHelpers: ctx => ({
-    client: new ClassroomClient({ token: String(ctx.auth.token) })
+    getClient: () => new ClassroomClient({ token: String(ctx.auth.token) })
   }),
   resources: {
     student: {
@@ -152,7 +152,7 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
         run: async (ctx, value) => {
           if (typeof value.courseId === 'string') {
             try {
-              await ctx.helpers.client.deleteCourse(value.courseId);
+              await ctx.helpers.getClient().deleteCourse(value.courseId);
             } catch (error) {
               if (
                 !isNotFoundError(error) &&
@@ -195,7 +195,7 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
         kind: 'delete',
         run: async (ctx, value) => {
           if (value.courseId && value.userId) {
-            await ctx.helpers.client.removeStudent(
+            await ctx.helpers.getClient().removeStudent(
               String(value.courseId),
               String(value.userId)
             );
@@ -237,7 +237,7 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
         kind: 'delete',
         run: async (ctx, value) => {
           if (typeof value.invitationId === 'string') {
-            await ctx.helpers.client.deleteInvitation(value.invitationId);
+            await ctx.helpers.getClient().deleteInvitation(value.invitationId);
           }
         }
       }
@@ -268,7 +268,7 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
         run: async (ctx, value) => {
           if (value.courseId && value.courseWorkId) {
             try {
-              await ctx.helpers.client.deleteCourseWork(
+              await ctx.helpers.getClient().deleteCourseWork(
                 String(value.courseId),
                 String(value.courseWorkId)
               );
@@ -307,7 +307,7 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
         kind: 'delete',
         run: async (ctx, value) => {
           if (value.courseId && value.announcementId) {
-            await ctx.helpers.client.deleteAnnouncement(
+            await ctx.helpers.getClient().deleteAnnouncement(
               String(value.courseId),
               String(value.announcementId)
             );
@@ -338,7 +338,7 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
         kind: 'delete',
         run: async (ctx, value) => {
           if (value.courseId && value.topicId) {
-            await ctx.helpers.client.deleteTopic(
+            await ctx.helpers.getClient().deleteTopic(
               String(value.courseId),
               String(value.topicId)
             );
@@ -381,7 +381,7 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
         kind: 'delete',
         run: async (ctx, value) => {
           if (value.courseId && value.courseWorkMaterialId) {
-            await ctx.helpers.client.deleteCourseWorkMaterial(
+            await ctx.helpers.getClient().deleteCourseWorkMaterial(
               String(value.courseId),
               String(value.courseWorkMaterialId)
             );
@@ -422,7 +422,7 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
         kind: 'delete',
         run: async (ctx, value) => {
           if (value.studentId && value.invitationId) {
-            await ctx.helpers.client.patchGuardianInvitation(
+            await ctx.helpers.getClient().patchGuardianInvitation(
               String(value.studentId),
               String(value.invitationId),
               'COMPLETE'
@@ -457,7 +457,7 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
         kind: 'delete',
         run: async (ctx, value) => {
           if (value.courseId && value.courseWorkId && value.rubricId) {
-            await ctx.helpers.client.deleteRubric(
+            await ctx.helpers.getClient().deleteRubric(
               String(value.courseId),
               String(value.courseWorkId),
               String(value.rubricId)
@@ -627,7 +627,9 @@ export let googleClassroomToolE2E = defineSlateToolE2EIntegration<
             action: 'list',
             userId: studentId
           });
-          submission = list.output.submissions?.find(candidate => candidate.userId === studentId);
+          submission = list.output.submissions?.find(
+            (candidate: Record<string, any>) => candidate.userId === studentId
+          );
           if (submission?.submissionId) {
             break;
           }

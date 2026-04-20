@@ -4,12 +4,20 @@ import {
   type ToolE2EContext
 } from '@slates/test';
 import { readFile } from 'node:fs/promises';
-import { GooglePhotosLibraryClient, GooglePhotosPickerClient } from './lib/client';
 import { provider } from './index';
 
 type GooglePhotosHelpers = {
-  libraryClient: GooglePhotosLibraryClient;
-  pickerClient: GooglePhotosPickerClient;
+  uploadBytes(
+    fileContent: string | Uint8Array | ArrayBuffer,
+    mimeType: string
+  ): Promise<string>;
+  updateAlbum(
+    albumId: string,
+    updates: { title?: string; coverPhotoMediaItemId?: string }
+  ): Promise<void>;
+  removeMediaItemsFromAlbum(albumId: string, mediaItemIds: string[]): Promise<void>;
+  updateMediaItem(mediaItemId: string, description: string): Promise<void>;
+  deletePickerSession(sessionId: string): Promise<void>;
   state: {
     album?: Record<string, any>;
     mediaItem?: Record<string, any>;
@@ -18,6 +26,9 @@ type GooglePhotosHelpers = {
   };
 };
 
+let PHOTOS_LIBRARY_BASE_URL = 'https://photoslibrary.googleapis.com/v1';
+let PHOTOS_PICKER_BASE_URL = 'https://photospicker.googleapis.com/v1';
+let PHOTOS_UPLOAD_URL = `${PHOTOS_LIBRARY_BASE_URL}/uploads`;
 let MANAGED_PREFIX = 'slates-e2e:google-photos:';
 let SEED_MEDIA_ATTEMPTS = [
   {
@@ -66,6 +77,31 @@ let getMediaItemOrSkip = (
 let normalizeError = (error: unknown) =>
   error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
 
+let getGooglePhotosError = async (response: Response) => {
+  let body = await response.text();
+  return body ? `${response.status}: ${body}` : `${response.status} ${response.statusText}`;
+};
+
+let googlePhotosRequest = async (
+  token: string,
+  url: string,
+  init: RequestInit = {}
+) => {
+  let headers = new Headers(init.headers);
+  headers.set('Authorization', `Bearer ${token}`);
+
+  let response = await fetch(url, {
+    ...init,
+    headers
+  });
+
+  if (!response.ok) {
+    throw new Error(`Google Photos request failed with ${await getGooglePhotosError(response)}`);
+  }
+
+  return response;
+};
+
 let ignoreNotFound = async (run: () => Promise<void>) => {
   try {
     await run();
@@ -82,15 +118,85 @@ let createUploadToken = async (
   helpers: GooglePhotosHelpers,
   assetUrl: URL,
   mimeType: string
-) => await helpers.libraryClient.uploadBytes(await readFile(assetUrl), mimeType);
+) => await helpers.uploadBytes(await readFile(assetUrl), mimeType);
 
 export let googlePhotosToolE2E = defineSlateToolE2EIntegration<
   Record<string, any>,
   GooglePhotosHelpers
 >({
   createHelpers: ctx => ({
-    libraryClient: new GooglePhotosLibraryClient(ctx.auth.token),
-    pickerClient: new GooglePhotosPickerClient(ctx.auth.token),
+    uploadBytes: async (fileContent, mimeType) => {
+      let response = await googlePhotosRequest(String(ctx.auth.token), PHOTOS_UPLOAD_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'X-Goog-Upload-Content-Type': mimeType,
+          'X-Goog-Upload-Protocol': 'raw'
+        },
+        body: fileContent
+      });
+      return (await response.text()).trim();
+    },
+    updateAlbum: async (albumId, updates) => {
+      let updateMask = Object.entries(updates)
+        .filter(([, value]) => value !== undefined)
+        .map(([key]) => key)
+        .join(',');
+
+      await googlePhotosRequest(
+        String(ctx.auth.token),
+        `${PHOTOS_LIBRARY_BASE_URL}/albums/${albumId}?updateMask=${encodeURIComponent(updateMask)}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: albumId,
+            ...updates
+          })
+        }
+      );
+    },
+    removeMediaItemsFromAlbum: async (albumId, mediaItemIds) => {
+      await googlePhotosRequest(
+        String(ctx.auth.token),
+        `${PHOTOS_LIBRARY_BASE_URL}/albums/${albumId}:batchRemoveMediaItems`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            mediaItemIds
+          })
+        }
+      );
+    },
+    updateMediaItem: async (mediaItemId, description) => {
+      await googlePhotosRequest(
+        String(ctx.auth.token),
+        `${PHOTOS_LIBRARY_BASE_URL}/mediaItems/${mediaItemId}?updateMask=description`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            description
+          })
+        }
+      );
+    },
+    deletePickerSession: async sessionId => {
+      await googlePhotosRequest(
+        String(ctx.auth.token),
+        `${PHOTOS_PICKER_BASE_URL}/sessions/${sessionId}`,
+        {
+          method: 'DELETE'
+        }
+      );
+    },
     state: {}
   }),
   beforeSuite: async ctx => {
@@ -108,7 +214,7 @@ export let googlePhotosToolE2E = defineSlateToolE2EIntegration<
           return;
         }
 
-        await ctx.helpers.libraryClient.updateAlbum(preparedAlbum.albumId, {
+        await ctx.helpers.updateAlbum(preparedAlbum.albumId, {
           title: `${MANAGED_PREFIX}stale ${preparedAlbum.albumId}`.slice(0, 500)
         });
       },
@@ -171,7 +277,7 @@ export let googlePhotosToolE2E = defineSlateToolE2EIntegration<
             typeof preparedMediaItem?.mediaItemId === 'string'
           ) {
             try {
-              await ctx.helpers.libraryClient.removeMediaItemsFromAlbum(preparedAlbum.albumId, [
+              await ctx.helpers.removeMediaItemsFromAlbum(preparedAlbum.albumId, [
                 preparedMediaItem.mediaItemId
               ]);
             } catch {}
@@ -181,7 +287,7 @@ export let googlePhotosToolE2E = defineSlateToolE2EIntegration<
             return;
           }
 
-          await ctx.helpers.libraryClient.updateMediaItem(
+          await ctx.helpers.updateMediaItem(
             preparedMediaItem.mediaItemId,
             CLEANUP_MEDIA_DESCRIPTION
           );
@@ -215,7 +321,7 @@ export let googlePhotosToolE2E = defineSlateToolE2EIntegration<
         }
 
         await ignoreNotFound(async () => {
-          await ctx.helpers.pickerClient.deleteSession(preparedPickerSession.sessionId);
+          await ctx.helpers.deletePickerSession(preparedPickerSession.sessionId);
         });
       },
       'cleanup:google-photos-picker-session'
@@ -336,7 +442,8 @@ export let googlePhotosToolE2E = defineSlateToolE2EIntegration<
 
         if (
           !result.output.mediaItems.some(
-            candidate => candidate.mediaItemId === String(mediaItem.mediaItemId)
+            (candidate: Record<string, any>) =>
+              candidate.mediaItemId === String(mediaItem.mediaItemId)
           )
         ) {
           throw new Error('search_media_items did not return the tracked media item.');

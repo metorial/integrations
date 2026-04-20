@@ -1,4 +1,8 @@
-import axios, { type AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
+
+let PHOTOS_LIBRARY_BASE_URL = 'https://photoslibrary.googleapis.com/v1';
+let PHOTOS_PICKER_BASE_URL = 'https://photospicker.googleapis.com/v1';
+let PHOTOS_UPLOAD_URL = `${PHOTOS_LIBRARY_BASE_URL}/uploads`;
 
 export interface AlbumResponse {
   id: string;
@@ -85,11 +89,11 @@ export interface EnrichmentItem {
 }
 
 export class GooglePhotosLibraryClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
-    this.axios = axios.create({
-      baseURL: 'https://photoslibrary.googleapis.com/v1',
+    this.axios = createAxios({
+      baseURL: PHOTOS_LIBRARY_BASE_URL,
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -229,7 +233,7 @@ export class GooglePhotosLibraryClient {
     mimeType: string
   ): Promise<string> {
     let response = await this.axios.post(
-      'https://photoslibrary.googleapis.com/v1/uploads',
+      PHOTOS_UPLOAD_URL,
       fileContent,
       {
         headers: {
@@ -281,11 +285,11 @@ export class GooglePhotosLibraryClient {
 }
 
 export class GooglePhotosPickerClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
-    this.axios = axios.create({
-      baseURL: 'https://photospicker.googleapis.com/v1',
+    this.axios = createAxios({
+      baseURL: PHOTOS_PICKER_BASE_URL,
       headers: {
         Authorization: `Bearer ${token}`
       }

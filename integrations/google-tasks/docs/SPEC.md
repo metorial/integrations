@@ -16,7 +16,7 @@ Google Tasks API uses **OAuth 2.0** exclusively for authentication, as it access
 
 **OAuth 2.0 Endpoints:**
 
-- Authorization endpoint: `https://accounts.google.com/o/oauth2/auth`
+- Authorization endpoint: `https://accounts.google.com/o/oauth2/v2/auth`
 - Token endpoint: `https://oauth2.googleapis.com/token`
 
 **Required Credentials:**

@@ -35,7 +35,7 @@ export let updateCourse = SlateTool.create(spec, {
       courseState: z.string().optional().describe('State of the course'),
       alternateLink: z.string().optional().describe('URL to the course in Classroom'),
       updateTime: z.string().optional().describe('When the course was last updated')
-    })
+    }).passthrough()
   )
   .handleInvocation(async ctx => {
     let client = new ClassroomClient({ token: ctx.auth.token });
@@ -76,12 +76,8 @@ export let updateCourse = SlateTool.create(spec, {
 
     return {
       output: {
-        courseId: course.id,
-        name: course.name,
-        section: course.section,
-        courseState: course.courseState,
-        alternateLink: course.alternateLink,
-        updateTime: course.updateTime
+        ...course,
+        courseId: course.id
       },
       message: `Updated course **${course.name}**. Fields changed: ${maskParts.join(', ')}.`
     };
