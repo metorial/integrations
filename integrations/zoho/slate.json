@@ -17,5 +17,6 @@
     "bulk data import and export",
     "subscribe to event webhooks"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho.png",
+  "version": "0.1.2"
 }

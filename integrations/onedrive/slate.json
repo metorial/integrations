@@ -17,5 +17,6 @@
     "access file previews and thumbnails",
     "manage drive storage quota"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/one-drive.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/one-drive.svg",
+  "version": "0.1.2"
 }

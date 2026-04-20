@@ -23,7 +23,9 @@ export let manageListItems = SlateTool.create(spec, {
   instructions: [
     'Set **action** to "get", "list", "create", "update", or "delete".',
     'When creating or updating, pass **fields** as a key-value object matching the list column names.',
-    'When listing, use **filter** for OData filter expressions (e.g. "fields/Status eq \'Active\'") and **orderBy** for sorting.'
+    'When listing, use **filter** for OData filter expressions (e.g. "fields/Status eq \'Active\'") and **orderBy** for sorting.',
+    'For pagination, set **top** to limit page size. If the response includes **nextLink**, pass it as **skipToken** in the next request to get the next page (do not use $skip — SharePoint Lists API does not support it).',
+    'SharePoint requires columns referenced in **filter** or **orderBy** to be indexed. If a query fails with "Field X cannot be referenced in filter or orderby as it is not indexed", either index the column in SharePoint (Site Settings → List settings → Indexed columns) or retry with **allowUnindexedQuery: true** to send the "Prefer: HonorNonIndexedQueriesWarningMayFailRandomly" header (may fail on lists with >5000 items).'
   ],
   constraints: ['Maximum of 5000 items can be returned in a single list request.'],
   tags: {
@@ -52,10 +54,18 @@ export let manageListItems = SlateTool.create(spec, {
         .number()
         .optional()
         .describe('Maximum number of items to return (for list action)'),
-      skip: z
-        .number()
+      skipToken: z
+        .string()
         .optional()
-        .describe('Number of items to skip for pagination (for list action)')
+        .describe(
+          "Pagination token from a previous response's **nextLink** field; pass this instead of repeating filter/orderBy/top to fetch the next page."
+        ),
+      allowUnindexedQuery: z
+        .boolean()
+        .optional()
+        .describe(
+          'Set true to send "Prefer: HonorNonIndexedQueriesWarningMayFailRandomly" — lets you filter/orderBy on non-indexed columns. May fail on lists with >5000 items. Prefer indexing the column in SharePoint instead.'
+        )
     })
   )
   .output(
@@ -71,12 +81,27 @@ export let manageListItems = SlateTool.create(spec, {
         .boolean()
         .optional()
         .describe('Whether the item was deleted (for delete action)'),
-      totalCount: z.number().optional().describe('Number of items returned (for list action)')
+      totalCount: z.number().optional().describe('Number of items returned (for list action)'),
+      nextLink: z
+        .string()
+        .optional()
+        .describe('Pagination token — pass as **skipToken** to get the next page')
     })
   )
   .handleInvocation(async ctx => {
     let client = new SharePointClient(ctx.auth.token);
-    let { action, siteId, listId, itemId, fields, filter, orderBy, top, skip } = ctx.input;
+    let {
+      action,
+      siteId,
+      listId,
+      itemId,
+      fields,
+      filter,
+      orderBy,
+      top,
+      skipToken,
+      allowUnindexedQuery
+    } = ctx.input;
 
     let mapItem = (item: any) => ({
       itemId: item.id,
@@ -99,17 +124,41 @@ export let manageListItems = SlateTool.create(spec, {
       }
 
       case 'list': {
-        let data = await client.listListItems(siteId, listId, {
-          expand: 'fields',
-          filter,
-          orderby: orderBy,
-          top,
-          skip
-        });
+        let data: any;
+        try {
+          data = await client.listListItems(siteId, listId, {
+            expand: 'fields',
+            filter,
+            orderby: orderBy,
+            top,
+            skipToken,
+            allowUnindexedQuery
+          });
+        } catch (err: any) {
+          let apiMsg =
+            err?.response?.data?.error?.message ?? err?.response?.data?.message ?? '';
+          let combined = `${err?.message || ''} ${apiMsg}`;
+          let notIndexed = /is not indexed|HonorNonIndexedQueriesWarningMayFailRandomly/i.test(
+            combined
+          );
+          if (notIndexed && !allowUnindexedQuery) {
+            let fieldMatch = combined.match(/Field '([^']+)'/);
+            let fieldName = fieldMatch?.[1];
+            let status = err?.response?.status;
+            let baseMsg = `HTTP ${status ?? 400}: ${apiMsg || err?.message || 'Unindexed column referenced in filter/orderby'}`;
+            throw new Error(
+              `${baseMsg}\n\nTo resolve, either:\n` +
+                `  1. Index the column${fieldName ? ` '${fieldName}'` : ''} in SharePoint: Site Settings → List settings → Indexed columns → Create a new index. This is the recommended long-term fix.\n` +
+                `  2. Retry this tool with **allowUnindexedQuery: true** to send the "Prefer: HonorNonIndexedQueriesWarningMayFailRandomly" header. Works for lists with <5000 items; may fail on larger lists.`
+            );
+          }
+          throw err;
+        }
         let items = (data.value || []).map(mapItem);
+        let nextLink: string | undefined = data['@odata.nextLink'];
         return {
-          output: { items, totalCount: items.length },
-          message: `Found **${items.length}** item(s) in the list.`
+          output: { items, totalCount: items.length, nextLink },
+          message: `Found **${items.length}** item(s) in the list.${nextLink ? ' More pages available.' : ''}`
         };
       }
 

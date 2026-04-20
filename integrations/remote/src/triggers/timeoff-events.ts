@@ -41,7 +41,7 @@ export let timeoffEvents = SlateTrigger.create(spec, {
     autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        environment: ctx.config.environment ?? 'production'
+        environment: ctx.auth.environment ?? 'production'
       });
 
       let result = await client.createWebhookCallback(
@@ -61,7 +61,7 @@ export let timeoffEvents = SlateTrigger.create(spec, {
     autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        environment: ctx.config.environment ?? 'production'
+        environment: ctx.auth.environment ?? 'production'
       });
 
       await client.deleteWebhookCallback(ctx.input.registrationDetails.callbackId);

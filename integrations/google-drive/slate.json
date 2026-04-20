@@ -18,5 +18,6 @@
     "monitor file changes",
     "create and organize folders"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/google-drive.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/google-drive.svg",
+  "version": "0.1.6"
 }

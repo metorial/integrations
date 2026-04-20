@@ -11,7 +11,15 @@ export class JiraClient {
   private serviceDesk: AxiosInstance;
 
   constructor(config: JiraClientConfig) {
-    let authHeader = `Bearer ${config.token}`;
+    // Detect basic-auth tokens (base64 of "email:token") vs OAuth bearer tokens.
+    let isBasic = false;
+    try {
+      let decoded = atob(config.token);
+      if (decoded.includes(':')) isBasic = true;
+    } catch {
+      // not valid base64 → treat as bearer
+    }
+    let authHeader = isBasic ? `Basic ${config.token}` : `Bearer ${config.token}`;
 
     this.jira = createAxios({
       baseURL: `https://api.atlassian.com/ex/jira/${config.cloudId}/rest/api/3`,

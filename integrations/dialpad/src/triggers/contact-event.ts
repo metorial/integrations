@@ -41,7 +41,7 @@ export let contactEventTrigger = SlateTrigger.create(spec, {
     autoRegisterWebhook: async ctx => {
       let client = new DialpadClient({
         token: ctx.auth.token,
-        environment: ctx.config.environment
+        environment: ctx.auth.environment
       });
 
       let webhook = await client.createWebhook({
@@ -63,7 +63,7 @@ export let contactEventTrigger = SlateTrigger.create(spec, {
     autoUnregisterWebhook: async ctx => {
       let client = new DialpadClient({
         token: ctx.auth.token,
-        environment: ctx.config.environment
+        environment: ctx.auth.environment
       });
 
       let details = ctx.input.registrationDetails as {

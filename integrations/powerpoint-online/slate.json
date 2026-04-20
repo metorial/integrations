@@ -16,5 +16,6 @@
     "subscribe to file change notifications",
     "copy move and delete files"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/powerpoint-online.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/powerpoint-online.png",
+  "version": "0.1.2"
 }

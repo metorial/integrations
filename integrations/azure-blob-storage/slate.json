@@ -16,5 +16,6 @@
     "configure immutable storage",
     "subscribe to blob events"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/azure-blob-storage.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/azure-blob-storage.png",
+  "version": "0.1.2"
 }

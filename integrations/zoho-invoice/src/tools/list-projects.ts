@@ -55,7 +55,7 @@ export let listProjects = SlateTool.create(spec, {
     let client = new Client({
       token: ctx.auth.token,
       organizationId: ctx.config.organizationId,
-      region: ctx.config.region
+      region: ctx.auth.region
     });
 
     let params: Record<string, any> = {};

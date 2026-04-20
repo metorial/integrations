@@ -50,7 +50,9 @@ export let search = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new SharePointClient(ctx.auth.token);
-    let entityTypes = ctx.input.entityTypes || ['driveItem', 'listItem', 'list', 'site'];
+    let entityTypes = ctx.input.entityTypes?.length
+      ? ctx.input.entityTypes
+      : ['driveItem', 'listItem', 'list', 'site'];
 
     let data = await client.search(
       ctx.input.query,

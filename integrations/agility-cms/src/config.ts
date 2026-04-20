@@ -11,10 +11,6 @@ export let config = SlateConfig.create(
     locale: z
       .string()
       .default('en-us')
-      .describe('Default locale code for content operations (e.g., "en-us", "fr-ca").'),
-    region: z
-      .enum(['usa', 'usa2', 'canada', 'europe', 'australia'])
-      .default('usa')
-      .describe('Hosting region of your Agility CMS instance. Determines the API base URL.')
+      .describe('Default locale code for content operations (e.g., "en-us", "fr-ca").')
   })
 );

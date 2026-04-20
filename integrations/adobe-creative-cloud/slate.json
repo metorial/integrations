@@ -17,5 +17,6 @@
     "receive asset change webhooks",
     "generate and expand with Firefly AI"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/adobe.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/adobe.svg",
+  "version": "0.1.3"
 }

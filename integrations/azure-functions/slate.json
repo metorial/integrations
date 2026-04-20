@@ -17,5 +17,6 @@
     "swap deployment slots",
     "manage CORS and auth settings"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/azure-functions.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/azure-functions.png",
+  "version": "0.1.2"
 }

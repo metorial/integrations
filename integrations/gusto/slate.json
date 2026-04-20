@@ -17,5 +17,6 @@
     "handle wage garnishments",
     "generate payroll reports"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/gusto.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/gusto.svg",
+  "version": "0.1.2"
 }

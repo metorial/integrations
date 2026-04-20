@@ -44,7 +44,7 @@ export let listGroups = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
+      instanceUrl: ctx.auth.instanceUrl
     });
 
     let groups = await client.listGroups({

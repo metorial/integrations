@@ -17,5 +17,6 @@
     "automate cadence enrollment",
     "subscribe to record notifications"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-crm.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-crm.svg",
+  "version": "0.1.2"
 }

@@ -78,7 +78,7 @@ export let managePostingTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
+    let client = new Client({ token: ctx.auth.token, environment: ctx.auth.environment });
 
     let body: Record<string, any> = {};
     if (ctx.input.text) body.text = ctx.input.text;

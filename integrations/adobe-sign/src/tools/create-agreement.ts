@@ -121,7 +121,7 @@ export let createAgreement = SlateTool.create(spec, {
     let client = new Client({
       token: ctx.auth.token,
       apiBaseUrl: ctx.auth.apiBaseUrl,
-      shard: ctx.config.shard
+      shard: ctx.auth.shard
     });
 
     let result = await client.createAgreement({

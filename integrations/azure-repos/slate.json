@@ -16,5 +16,6 @@
     "manage PR comments and votes",
     "receive repo webhook events"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/azure-repos.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/azure-repos.png",
+  "version": "0.1.2"
 }

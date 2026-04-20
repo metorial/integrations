@@ -31,7 +31,7 @@ export let listPostingsTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
+    let client = new Client({ token: ctx.auth.token, environment: ctx.auth.environment });
 
     let params: Record<string, any> = {};
     if (ctx.input.state) params.state = ctx.input.state;

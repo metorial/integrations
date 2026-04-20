@@ -14,7 +14,7 @@ export let getPullRequestTool = SlateTool.create(spec, {
   .input(
     z.object({
       repoSlug: z.string().describe('Repository slug'),
-      pullRequestId: z.number().describe('Pull request ID')
+      pullRequestId: z.coerce.number().describe('Pull request ID')
     })
   )
   .output(

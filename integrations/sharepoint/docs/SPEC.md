@@ -37,7 +37,7 @@ Key SharePoint-related scopes for Microsoft Graph include:
 
 - `Sites.Read.All`, `Sites.ReadWrite.All`, `Sites.Manage.All`, `Sites.FullControl.All`
 - `Files.Read.All`, `Files.ReadWrite.All`
-- `Lists.Read.All`, `Lists.ReadWrite.All`
+- `User.Read`, `offline_access`
 - `Sites.Selected` — restricts an application's access to specific site collections. Now lists, list items, folders, and files are also supported, and all Selected scopes support delegated and application modes.
 
 Application permissions typically require admin consent. Access tokens generated for Microsoft Graph resources are not valid for the SharePoint REST API — use the correct audience (`https://graph.microsoft.com` vs. `https://{tenant}.sharepoint.com`) depending on which API you call.

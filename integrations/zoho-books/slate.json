@@ -16,5 +16,6 @@
     "manage chart of accounts",
     "multi-currency support"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-books.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-books.svg",
+  "version": "0.1.2"
 }

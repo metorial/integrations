@@ -16,5 +16,6 @@
     "manage users and roles",
     "monitor candidate webhooks"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/lever.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/lever.png",
+  "version": "0.1.2"
 }

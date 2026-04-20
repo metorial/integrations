@@ -181,7 +181,9 @@ export let updateBlogPost = SlateTool.create(spec, {
       blogPostId: z.string().describe('The blog post ID to update'),
       title: z.string().optional().describe('New title'),
       body: z.string().optional().describe('New body in Confluence storage format'),
-      versionNumber: z.number().describe('Current version number (will be incremented)'),
+      versionNumber: z.coerce
+        .number()
+        .describe('Current version number (will be incremented)'),
       status: z.enum(['current', 'draft']).optional().describe('New status')
     })
   )

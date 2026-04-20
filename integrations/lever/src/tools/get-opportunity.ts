@@ -24,7 +24,7 @@ export let getOpportunityTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
+    let client = new Client({ token: ctx.auth.token, environment: ctx.auth.environment });
 
     let params: Record<string, any> = {};
     if (ctx.input.expand) params.expand = ctx.input.expand;

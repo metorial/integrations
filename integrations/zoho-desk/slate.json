@@ -18,5 +18,6 @@
     "configure webhook notifications",
     "manage departments"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-desk.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-desk.svg",
+  "version": "0.1.2"
 }

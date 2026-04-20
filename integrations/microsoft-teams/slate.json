@@ -17,5 +17,6 @@
     "send activity feed notifications",
     "access call recordings and transcripts"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/microsoft-teams.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/microsoft-teams.svg",
+  "version": "0.1.2"
 }

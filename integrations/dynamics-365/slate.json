@@ -17,5 +17,6 @@
     "receive webhook notifications",
     "manage leads and opportunities"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/Dynamics%20365%20Icon.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/Dynamics%20365%20Icon.svg",
+  "version": "0.1.2"
 }

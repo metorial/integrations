@@ -25,7 +25,7 @@ export let datasourceEvents = SlateTrigger.create(spec, {
     autoRegisterWebhook: async ctx => {
       let client = new StoryblokClient({
         token: ctx.auth.token,
-        region: ctx.config.region,
+        region: ctx.auth.region,
         spaceId: ctx.config.spaceId
       });
 
@@ -46,7 +46,7 @@ export let datasourceEvents = SlateTrigger.create(spec, {
     autoUnregisterWebhook: async ctx => {
       let client = new StoryblokClient({
         token: ctx.auth.token,
-        region: ctx.config.region,
+        region: ctx.auth.region,
         spaceId: ctx.config.spaceId
       });
 

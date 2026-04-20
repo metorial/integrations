@@ -42,7 +42,7 @@ export let updateAgreementState = SlateTool.create(spec, {
     let client = new Client({
       token: ctx.auth.token,
       apiBaseUrl: ctx.auth.apiBaseUrl,
-      shard: ctx.config.shard
+      shard: ctx.auth.shard
     });
 
     await client.updateAgreementState(ctx.input.agreementId, ctx.input.state, {

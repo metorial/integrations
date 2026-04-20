@@ -84,7 +84,7 @@ export let browseRepository = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
+      instanceUrl: ctx.auth.instanceUrl
     });
 
     switch (ctx.input.action) {

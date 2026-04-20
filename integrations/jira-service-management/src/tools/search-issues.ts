@@ -61,7 +61,7 @@ Use JQL syntax like \`project = "KEY" AND status = "Open"\` or \`assignee = curr
   .handleInvocation(async ctx => {
     let client = new JiraClient({
       token: ctx.auth.token,
-      cloudId: ctx.config.cloudId
+      cloudId: ctx.auth.cloudId
     });
 
     let result = await client.searchIssues(

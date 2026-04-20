@@ -13,5 +13,6 @@
     "send drafts or instant replies",
     "subscribe to mailbox change notifications"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/superhuman.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/superhuman.png",
+  "version": "0.1.3"
 }

@@ -18,5 +18,6 @@
     "version file history",
     "move and copy files"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/sharepoint-icon.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/sharepoint-icon.svg",
+  "version": "0.1.11"
 }

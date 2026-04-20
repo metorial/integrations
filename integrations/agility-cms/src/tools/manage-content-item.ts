@@ -47,7 +47,7 @@ export let manageContentItem = SlateTool.create(spec, {
       token: ctx.auth.token,
       guid: ctx.config.guid,
       locale: ctx.input.locale || ctx.config.locale,
-      region: ctx.config.region
+      region: ctx.auth.region
     });
 
     if (ctx.input.operation === 'delete') {

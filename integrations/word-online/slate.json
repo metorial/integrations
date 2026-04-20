@@ -17,5 +17,6 @@
     "generate document previews",
     "subscribe to change notifications"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/workspace.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/workspace.png",
+  "version": "0.1.2"
 }

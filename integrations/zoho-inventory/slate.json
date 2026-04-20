@@ -17,5 +17,6 @@
     "process customer payments",
     "handle credit notes and refunds"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-inventory.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-inventory.svg",
+  "version": "0.1.2"
 }

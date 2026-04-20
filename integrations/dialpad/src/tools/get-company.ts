@@ -24,7 +24,7 @@ export let getCompanyTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new DialpadClient({
       token: ctx.auth.token,
-      environment: ctx.config.environment
+      environment: ctx.auth.environment
     });
 
     let company = await client.getCompany();

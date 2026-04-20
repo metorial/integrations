@@ -17,5 +17,6 @@
     "create and edit wiki pages",
     "manage security permissions"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/azure-devops.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/azure-devops.png",
+  "version": "0.1.2"
 }

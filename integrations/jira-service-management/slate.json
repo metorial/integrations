@@ -17,5 +17,6 @@
     "create and search issues",
     "manage on-call schedules"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/jira.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/jira.svg",
+  "version": "0.1.2"
 }

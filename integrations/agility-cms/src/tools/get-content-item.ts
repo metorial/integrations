@@ -45,7 +45,7 @@ export let getContentItem = SlateTool.create(spec, {
       token: ctx.auth.token,
       guid: ctx.config.guid,
       locale: ctx.input.locale || ctx.config.locale,
-      region: ctx.config.region,
+      region: ctx.auth.region,
       apiType: ctx.input.apiType
     });
 

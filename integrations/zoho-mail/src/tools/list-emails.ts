@@ -69,7 +69,7 @@ export let listEmails = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      domain: ctx.config.dataCenterDomain
+      domain: ctx.auth.dataCenterDomain
     });
 
     let messages = await client.listMessages(ctx.input.accountId, {

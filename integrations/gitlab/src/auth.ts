@@ -1,101 +1,109 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
-export let auth = SlateAuth.create()
-  .output(
-    z.object({
-      token: z.string(),
-      refreshToken: z.string().optional(),
-      expiresAt: z.string().optional(),
-      instanceUrl: z.string().optional()
-    })
-  )
-  .addOauth({
-    type: 'auth.oauth',
-    name: 'GitLab OAuth',
-    key: 'gitlab_oauth',
+let outputSchema = z.object({
+  token: z.string(),
+  refreshToken: z.string().optional(),
+  expiresAt: z.string().optional(),
+  instanceUrl: z.string()
+});
 
-    inputSchema: z.object({
-      instanceUrl: z
-        .string()
-        .optional()
-        .describe(
-          'GitLab instance URL (e.g. https://gitlab.example.com). Leave empty for GitLab.com.'
-        )
-    }),
+type AuthOutput = z.infer<typeof outputSchema>;
 
-    scopes: [
-      {
-        title: 'API',
-        description:
-          'Complete read/write access to the API, including all groups, projects, registries, and packages',
-        scope: 'api'
-      },
-      {
-        title: 'Read API',
-        description: 'Read-only access to the API',
-        scope: 'read_api'
-      },
-      {
-        title: 'Read User',
-        description: "Read-only access to the authenticated user's profile",
-        scope: 'read_user'
-      },
-      {
-        title: 'Read Repository',
-        description: 'Read-only access to repositories via Git-over-HTTP',
-        scope: 'read_repository'
-      },
-      {
-        title: 'Write Repository',
-        description: 'Read-write access to repositories via Git-over-HTTP',
-        scope: 'write_repository'
-      },
-      {
-        title: 'Read Registry',
-        description: 'Read-only access to container registry images',
-        scope: 'read_registry'
-      },
-      {
-        title: 'Write Registry',
-        description: 'Write access to container registry images',
-        scope: 'write_registry'
-      },
-      {
-        title: 'Create Runner',
-        description: 'Permission to create runners',
-        scope: 'create_runner'
-      },
-      {
-        title: 'Manage Runner',
-        description: 'Permission to manage runners',
-        scope: 'manage_runner'
-      },
-      {
-        title: 'AI Features',
-        description: 'Access to GitLab Duo AI-related endpoints',
-        scope: 'ai_features'
-      },
-      {
-        title: 'OpenID',
-        description:
-          'Authenticate via OpenID Connect; read-only access to profile and group memberships',
-        scope: 'openid'
-      },
-      {
-        title: 'Profile',
-        description: 'Read-only access to user profile via OpenID Connect',
-        scope: 'profile'
-      },
-      {
-        title: 'Email',
-        description: "Read-only access to the user's primary email via OpenID Connect",
-        scope: 'email'
-      }
-    ],
+let scopes = [
+  {
+    title: 'API',
+    description:
+      'Complete read/write access to the API, including all groups, projects, registries, and packages',
+    scope: 'api'
+  },
+  { title: 'Read API', description: 'Read-only access to the API', scope: 'read_api' },
+  {
+    title: 'Read User',
+    description: "Read-only access to the authenticated user's profile",
+    scope: 'read_user'
+  },
+  {
+    title: 'Read Repository',
+    description: 'Read-only access to repositories via Git-over-HTTP',
+    scope: 'read_repository'
+  },
+  {
+    title: 'Write Repository',
+    description: 'Read-write access to repositories via Git-over-HTTP',
+    scope: 'write_repository'
+  },
+  {
+    title: 'Read Registry',
+    description: 'Read-only access to container registry images',
+    scope: 'read_registry'
+  },
+  {
+    title: 'Write Registry',
+    description: 'Write access to container registry images',
+    scope: 'write_registry'
+  },
+  {
+    title: 'Create Runner',
+    description: 'Permission to create runners',
+    scope: 'create_runner'
+  },
+  {
+    title: 'Manage Runner',
+    description: 'Permission to manage runners',
+    scope: 'manage_runner'
+  },
+  {
+    title: 'AI Features',
+    description: 'Access to GitLab Duo AI-related endpoints',
+    scope: 'ai_features'
+  },
+  {
+    title: 'OpenID',
+    description:
+      'Authenticate via OpenID Connect; read-only access to profile and group memberships',
+    scope: 'openid'
+  },
+  {
+    title: 'Profile',
+    description: 'Read-only access to user profile via OpenID Connect',
+    scope: 'profile'
+  },
+  {
+    title: 'Email',
+    description: "Read-only access to the user's primary email via OpenID Connect",
+    scope: 'email'
+  }
+];
 
-    getAuthorizationUrl: async ctx => {
-      let baseUrl = ctx.input.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com';
+function normalizeBaseUrl(url: string) {
+  return url.replace(/\/+$/, '');
+}
+
+function createGitlabOauth(opts: {
+  name: string;
+  key: string;
+  hardcodedInstanceUrl: string | null;
+}) {
+  let inputSchema = opts.hardcodedInstanceUrl
+    ? z.object({})
+    : z.object({
+        instanceUrl: z
+          .string()
+          .describe('Your self-hosted GitLab instance URL (e.g. https://gitlab.example.com).')
+      });
+
+  return {
+    type: 'auth.oauth' as const,
+    name: opts.name,
+    key: opts.key,
+    scopes,
+    inputSchema,
+
+    getAuthorizationUrl: async (ctx: any) => {
+      let baseUrl = opts.hardcodedInstanceUrl
+        ? opts.hardcodedInstanceUrl
+        : normalizeBaseUrl(ctx.input.instanceUrl);
 
       let params = new URLSearchParams({
         client_id: ctx.clientId,
@@ -107,18 +115,16 @@ export let auth = SlateAuth.create()
 
       return {
         url: `${baseUrl}/oauth/authorize?${params.toString()}`,
-        input: {
-          instanceUrl: ctx.input.instanceUrl
-        }
+        input: opts.hardcodedInstanceUrl ? {} : { instanceUrl: ctx.input.instanceUrl }
       };
     },
 
-    handleCallback: async ctx => {
-      let baseUrl = ctx.input.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com';
+    handleCallback: async (ctx: any) => {
+      let baseUrl = opts.hardcodedInstanceUrl
+        ? opts.hardcodedInstanceUrl
+        : normalizeBaseUrl(ctx.input.instanceUrl);
 
-      let oauthAxios = createAxios({
-        baseURL: baseUrl
-      });
+      let oauthAxios = createAxios({ baseURL: baseUrl });
 
       let response = await oauthAxios.post(
         '/oauth/token',
@@ -129,11 +135,7 @@ export let auth = SlateAuth.create()
           grant_type: 'authorization_code',
           redirect_uri: ctx.redirectUri
         }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
       );
 
       let data = response.data;
@@ -146,21 +148,21 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          instanceUrl: ctx.input.instanceUrl
+          instanceUrl: baseUrl
         }
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let baseUrl = ctx.input.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com';
+      let baseUrl = ctx.output.instanceUrl
+        ? normalizeBaseUrl(ctx.output.instanceUrl)
+        : opts.hardcodedInstanceUrl || 'https://gitlab.com';
 
-      let oauthAxios = createAxios({
-        baseURL: baseUrl
-      });
+      let oauthAxios = createAxios({ baseURL: baseUrl });
 
       let response = await oauthAxios.post(
         '/oauth/token',
@@ -170,11 +172,7 @@ export let auth = SlateAuth.create()
           refresh_token: ctx.output.refreshToken,
           grant_type: 'refresh_token'
         }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
       );
 
       let data = response.data;
@@ -187,35 +185,18 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
-          instanceUrl: ctx.output.instanceUrl
+          instanceUrl: baseUrl
         }
       };
     },
 
-    getProfile: async (ctx: {
-      output: {
-        token: string;
-        refreshToken?: string;
-        expiresAt?: string;
-        instanceUrl?: string;
-      };
-      input: { instanceUrl?: string };
-      scopes: string[];
-    }) => {
-      let baseUrl = ctx.output.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com';
-
-      let apiAxios = createAxios({
-        baseURL: `${baseUrl}/api/v4`
-      });
-
+    getProfile: async (ctx: { output: AuthOutput; input: any; scopes: string[] }) => {
+      let baseUrl = normalizeBaseUrl(ctx.output.instanceUrl);
+      let apiAxios = createAxios({ baseURL: `${baseUrl}/api/v4` });
       let response = await apiAxios.get('/user', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
-
       let data = response.data;
-
       return {
         profile: {
           id: String(data.id),
@@ -227,54 +208,50 @@ export let auth = SlateAuth.create()
         }
       };
     }
-  })
-  .addTokenAuth({
-    type: 'auth.token',
-    name: 'Personal Access Token',
-    key: 'personal_access_token',
+  };
+}
 
-    inputSchema: z.object({
-      token: z.string().describe('GitLab personal, project, or group access token'),
-      instanceUrl: z
-        .string()
-        .optional()
-        .describe(
-          'GitLab instance URL (e.g. https://gitlab.example.com). Leave empty for GitLab.com.'
-        )
-    }),
+function createGitlabPat(opts: {
+  name: string;
+  key: string;
+  hardcodedInstanceUrl: string | null;
+}) {
+  let inputSchema = opts.hardcodedInstanceUrl
+    ? z.object({
+        token: z.string().describe('GitLab personal, project, or group access token')
+      })
+    : z.object({
+        token: z.string().describe('GitLab personal, project, or group access token'),
+        instanceUrl: z
+          .string()
+          .describe('Your self-hosted GitLab instance URL (e.g. https://gitlab.example.com).')
+      });
 
-    getOutput: async ctx => {
+  return {
+    type: 'auth.token' as const,
+    name: opts.name,
+    key: opts.key,
+    inputSchema,
+
+    getOutput: async (ctx: any) => {
+      let instanceUrl = opts.hardcodedInstanceUrl
+        ? opts.hardcodedInstanceUrl
+        : normalizeBaseUrl(ctx.input.instanceUrl);
       return {
         output: {
           token: ctx.input.token,
-          instanceUrl: ctx.input.instanceUrl
+          instanceUrl
         }
       };
     },
 
-    getProfile: async (ctx: {
-      output: {
-        token: string;
-        refreshToken?: string;
-        expiresAt?: string;
-        instanceUrl?: string;
-      };
-      input: { token: string; instanceUrl?: string };
-    }) => {
-      let baseUrl = ctx.output.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com';
-
-      let apiAxios = createAxios({
-        baseURL: `${baseUrl}/api/v4`
-      });
-
+    getProfile: async (ctx: { output: AuthOutput; input: any }) => {
+      let baseUrl = normalizeBaseUrl(ctx.output.instanceUrl);
+      let apiAxios = createAxios({ baseURL: `${baseUrl}/api/v4` });
       let response = await apiAxios.get('/user', {
-        headers: {
-          'PRIVATE-TOKEN': ctx.output.token
-        }
+        headers: { 'PRIVATE-TOKEN': ctx.output.token }
       });
-
       let data = response.data;
-
       return {
         profile: {
           id: String(data.id),
@@ -286,4 +263,36 @@ export let auth = SlateAuth.create()
         }
       };
     }
-  });
+  };
+}
+
+export let auth = SlateAuth.create()
+  .output(outputSchema)
+  .addOauth(
+    createGitlabOauth({
+      name: 'GitLab.com',
+      key: 'oauth_gitlab_com',
+      hardcodedInstanceUrl: 'https://gitlab.com'
+    })
+  )
+  .addOauth(
+    createGitlabOauth({
+      name: 'Self-Hosted',
+      key: 'oauth_self_hosted',
+      hardcodedInstanceUrl: null
+    })
+  )
+  .addTokenAuth(
+    createGitlabPat({
+      name: 'Personal Access Token (GitLab.com)',
+      key: 'pat_gitlab_com',
+      hardcodedInstanceUrl: 'https://gitlab.com'
+    })
+  )
+  .addTokenAuth(
+    createGitlabPat({
+      name: 'Personal Access Token (Self-Hosted)',
+      key: 'pat_self_hosted',
+      hardcodedInstanceUrl: null
+    })
+  );

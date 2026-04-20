@@ -18,5 +18,6 @@
     "deliver content via API",
     "manage datasource entries"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/storyblok.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/storyblok.svg",
+  "version": "0.1.2"
 }

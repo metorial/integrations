@@ -17,5 +17,6 @@
     "configure taxes and currencies",
     "manage items and price lists"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-invoice.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-invoice.svg",
+  "version": "0.1.2"
 }

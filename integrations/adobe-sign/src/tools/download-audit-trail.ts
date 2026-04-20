@@ -26,7 +26,7 @@ export let downloadAuditTrail = SlateTool.create(spec, {
     let client = new Client({
       token: ctx.auth.token,
       apiBaseUrl: ctx.auth.apiBaseUrl,
-      shard: ctx.config.shard
+      shard: ctx.auth.shard
     });
 
     let data = await client.getAgreementAuditTrail(ctx.input.agreementId);

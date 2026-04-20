@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 let outputSchema = z.object({
   token: z.string(),
-  cloudId: z.string(),
+  cloudId: z.string().describe('Jira Cloud site ID'),
   refreshToken: z.string().optional(),
   expiresAt: z.string().optional()
 });
@@ -57,6 +57,26 @@ export let auth = SlateAuth.create()
         title: 'Read Me',
         description: 'Read profile information for the authenticated user.',
         scope: 'read:me'
+      },
+      {
+        title: 'Read Boards and Sprints',
+        description: 'View boards, backlogs, sprints, and related items in Jira Software.',
+        scope: 'read:board-scope:jira-software'
+      },
+      {
+        title: 'Read Sprints',
+        description: 'Read sprint data from Jira Software.',
+        scope: 'read:sprint:jira-software'
+      },
+      {
+        title: 'Manage Sprints',
+        description: 'Create, update, and move issues to sprints.',
+        scope: 'write:sprint:jira-software'
+      },
+      {
+        title: 'Read Projects',
+        description: 'Read project data in Jira.',
+        scope: 'read:project:jira'
       }
     ],
 
@@ -178,27 +198,35 @@ export let auth = SlateAuth.create()
         .describe(
           'API token generated from https://id.atlassian.com/manage-profile/security/api-tokens'
         ),
-      cloudId: z
+      domain: z
         .string()
-        .describe(
-          'Your Jira Cloud ID. Found at https://your-domain.atlassian.net/_edge/tenant_info'
-        )
+        .describe('Your Atlassian domain (e.g., "mycompany" for mycompany.atlassian.net)')
     }),
 
     getOutput: async ctx => {
       let basicToken = btoa(`${ctx.input.email}:${ctx.input.token}`);
 
+      let tenantInfo = await createAxios().get(
+        `https://${ctx.input.domain}.atlassian.net/_edge/tenant_info`
+      );
+      let cloudId = (tenantInfo.data as { cloudId?: string }).cloudId;
+      if (!cloudId) {
+        throw new Error(
+          `Could not resolve cloudId for domain "${ctx.input.domain}". Verify the domain is correct (e.g., "mycompany" for mycompany.atlassian.net).`
+        );
+      }
+
       return {
         output: {
           token: basicToken,
-          cloudId: ctx.input.cloudId
+          cloudId
         }
       };
     },
 
     getProfile: async (ctx: {
       output: AuthOutput;
-      input: { email: string; token: string; cloudId: string };
+      input: { email: string; token: string; domain: string };
     }) => {
       let http = createAxios({
         baseURL: `https://api.atlassian.com/ex/jira/${ctx.output.cloudId}/rest/api/3`,

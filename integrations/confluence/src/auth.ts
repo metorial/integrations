@@ -9,7 +9,7 @@ export let auth = SlateAuth.create()
       token: z.string(),
       refreshToken: z.string().optional(),
       expiresAt: z.string().optional(),
-      cloudId: z.string().optional()
+      cloudId: z.string().describe('Confluence Cloud site ID').optional()
     })
   )
   .addOauth({
@@ -92,6 +92,66 @@ export let auth = SlateAuth.create()
         title: 'Offline Access',
         description: 'Enable refresh tokens for long-lived access',
         scope: 'offline_access'
+      },
+      {
+        title: 'Read Pages (v2)',
+        description: 'Read pages via the Confluence v2 API',
+        scope: 'read:page:confluence'
+      },
+      {
+        title: 'Write Pages (v2)',
+        description: 'Create and update pages via the Confluence v2 API',
+        scope: 'write:page:confluence'
+      },
+      {
+        title: 'Read Spaces (v2)',
+        description: 'Read spaces via the Confluence v2 API',
+        scope: 'read:space:confluence'
+      },
+      {
+        title: 'Read Content (v2)',
+        description: 'Read content including blog posts via the Confluence v2 API',
+        scope: 'read:content:confluence'
+      },
+      {
+        title: 'Write Content (v2)',
+        description: 'Create and update content via the Confluence v2 API',
+        scope: 'write:content:confluence'
+      },
+      {
+        title: 'Read Comments (v2)',
+        description: 'Read comments via the Confluence v2 API',
+        scope: 'read:comment:confluence'
+      },
+      {
+        title: 'Write Comments (v2)',
+        description: 'Create and delete comments via the Confluence v2 API',
+        scope: 'write:comment:confluence'
+      },
+      {
+        title: 'Read Attachments (v2)',
+        description: 'Read attachments via the Confluence v2 API',
+        scope: 'read:attachment:confluence'
+      },
+      {
+        title: 'Read Content Metadata (v2)',
+        description: 'Read content metadata including properties via the Confluence v2 API',
+        scope: 'read:content-details:confluence'
+      },
+      {
+        title: 'Delete Pages (v2)',
+        description: 'Delete pages via the Confluence v2 API',
+        scope: 'delete:page:confluence'
+      },
+      {
+        title: 'Delete Content (v2)',
+        description: 'Delete content including blog posts via the Confluence v2 API',
+        scope: 'delete:content:confluence'
+      },
+      {
+        title: 'Delete Comments (v2)',
+        description: 'Delete comments via the Confluence v2 API',
+        scope: 'delete:comment:confluence'
       }
     ],
 
@@ -231,9 +291,21 @@ export let auth = SlateAuth.create()
 
     getOutput: async (ctx: { input: { email: string; token: string; domain: string } }) => {
       let credentials = btoa(`${ctx.input.email}:${ctx.input.token}`);
+
+      let tenantInfo = await ax.get(
+        `https://${ctx.input.domain}.atlassian.net/_edge/tenant_info`
+      );
+      let cloudId = (tenantInfo.data as { cloudId?: string }).cloudId;
+      if (!cloudId) {
+        throw new Error(
+          `Could not resolve cloudId for domain "${ctx.input.domain}". Verify the domain is correct (e.g., "mycompany" for mycompany.atlassian.net).`
+        );
+      }
+
       return {
         output: {
-          token: credentials
+          token: credentials,
+          cloudId
         }
       };
     },

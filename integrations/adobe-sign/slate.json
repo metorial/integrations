@@ -18,5 +18,6 @@
     "export form field data",
     "manage users and groups"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/docusign.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/docusign.svg",
+  "version": "0.1.3"
 }

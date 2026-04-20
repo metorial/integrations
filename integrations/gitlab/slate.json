@@ -17,5 +17,6 @@
     "search code and issues",
     "configure webhooks"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/gitlab.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/gitlab.svg",
+  "version": "0.1.2"
 }

@@ -271,18 +271,29 @@ export class SharePointClient {
       top?: number;
       filter?: string;
       orderby?: string;
-      skip?: number;
+      skipToken?: string;
+      allowUnindexedQuery?: boolean;
     }
   ) {
+    let headers: Record<string, string> = {};
+    if (params?.allowUnindexedQuery) {
+      headers['Prefer'] = 'HonorNonIndexedQueriesWarningMayFailRandomly';
+    }
+
+    if (params?.skipToken) {
+      let response = await this.http.get(params.skipToken, { headers });
+      return response.data as any;
+    }
+
     let queryParams: any = {};
     if (params?.expand) queryParams.$expand = params.expand;
     if (params?.top) queryParams.$top = params.top;
     if (params?.filter) queryParams.$filter = params.filter;
     if (params?.orderby) queryParams.$orderby = params.orderby;
-    if (params?.skip) queryParams.$skip = params.skip;
 
     let response = await this.http.get(`/sites/${siteId}/lists/${listId}/items`, {
-      params: queryParams
+      params: queryParams,
+      headers
     });
     return response.data as any;
   }

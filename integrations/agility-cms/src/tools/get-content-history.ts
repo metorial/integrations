@@ -37,7 +37,7 @@ export let getContentHistory = SlateTool.create(spec, {
       token: ctx.auth.token,
       guid: ctx.config.guid,
       locale: ctx.input.locale || ctx.config.locale,
-      region: ctx.config.region
+      region: ctx.auth.region
     });
 
     let history = await client.getContentHistory(ctx.input.contentId, {

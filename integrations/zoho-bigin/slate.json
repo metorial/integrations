@@ -16,5 +16,6 @@
     "subscribe to record notifications",
     "upsert records"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-bigin.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-bigin.svg",
+  "version": "0.1.2"
 }

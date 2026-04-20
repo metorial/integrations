@@ -16,5 +16,6 @@
     "manage webhooks",
     "manage URL redirections"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/agility-cms.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/agility-cms.png",
+  "version": "0.1.3"
 }

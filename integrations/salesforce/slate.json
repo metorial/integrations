@@ -17,5 +17,6 @@
     "search across objects",
     "manage org metadata"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/salesforce.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/salesforce.svg",
+  "version": "0.1.2"
 }

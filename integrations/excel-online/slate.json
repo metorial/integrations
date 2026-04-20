@@ -17,5 +17,6 @@
     "manage workbook sessions",
     "subscribe to file changes"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/Excel.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/Excel.png",
+  "version": "0.1.2"
 }

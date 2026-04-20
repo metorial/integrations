@@ -48,7 +48,7 @@ export let manageCallCenterTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new DialpadClient({
       token: ctx.auth.token,
-      environment: ctx.config.environment
+      environment: ctx.auth.environment
     });
 
     let { action, callCenterId, officeId, name, description } = ctx.input;
