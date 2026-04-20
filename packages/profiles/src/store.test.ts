@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'fs/promises';
+import { access, mkdir, mkdtemp, rm, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import path from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -55,7 +55,52 @@ describe('@slates/profiles store', () => {
     expect(reopenedProfile.config).toEqual({ prefix: 'Hello' });
     expect(reopened.getAuth(profile.id, 'token_auth')?.output).toEqual({ token: 'abc' });
     expect(reopened.scope?.key).toBe('integrations/demo');
+    expect(reopened.cliDir).toBe(path.join(cwd, '.slates-cli'));
     expect(reopened.storePath).toBe(path.join(cwd, '.slates-cli', 'profiles', 'integrations', 'demo', 'store.json'));
+  });
+
+  it('opens an external scoped store with a separate logical root', async () => {
+    let workspaceRoot = await createTempDir();
+    let storageRoot = await createTempDir();
+    let storePath = path.join(
+      storageRoot,
+      '.slates-cli',
+      'profiles',
+      'integrations',
+      'demo',
+      'store.json'
+    );
+
+    let store = await SlatesCliStore.open({
+      storePath,
+      rootDir: workspaceRoot
+    });
+
+    let profile = store.upsertProfile({
+      name: 'Demo',
+      target: {
+        type: 'local',
+        entry: 'integrations/demo/src/index.ts',
+        exportName: 'provider'
+      }
+    });
+    store.setCurrentProfile(profile.id);
+    await store.save();
+
+    let reopened = await SlatesCliStore.open({
+      storePath,
+      rootDir: workspaceRoot
+    });
+
+    expect(reopened.rootDir).toBe(workspaceRoot);
+    expect(reopened.cliDir).toBe(path.join(storageRoot, '.slates-cli'));
+    expect(reopened.scope?.key).toBe('integrations/demo');
+    expect(reopened.getProfile()?.target.entry).toBe('integrations/demo/src/index.ts');
+
+    await expect(access(path.join(storageRoot, '.slates-cli', '.gitignore'))).resolves.toBeUndefined();
+    await expect(access(path.join(workspaceRoot, '.slates-cli'))).rejects.toMatchObject({
+      code: 'ENOENT'
+    });
   });
 
   it('migrates matching legacy profiles into an integration-scoped store', async () => {
@@ -180,6 +225,62 @@ export let provider = Slate.create({
 
     expect(provider.provider.id).toBe('demo');
     expect(provider.provider.name).toBe('Demo Slate');
+  });
+
+  it('resolves profile entry paths against the store root when the store lives elsewhere', async () => {
+    let workspaceRoot = await createTempDir();
+    let storageRoot = await createTempDir();
+    let entry = path.join(workspaceRoot, 'integrations', 'demo-slate.mjs');
+    await mkdir(path.dirname(entry), { recursive: true });
+    await writeFile(
+      entry,
+      `
+import { Slate, SlateAuth, SlateConfig, SlateSpecification } from '@slates/provider';
+import { z } from 'zod';
+
+let config = SlateConfig.create(z.object({})).getDefaultConfig(() => ({}));
+let auth = SlateAuth.create();
+
+export let provider = Slate.create({
+  spec: SlateSpecification.create({
+    key: 'external-demo',
+    name: 'External Demo',
+    description: 'Store root resolution test',
+    config,
+    auth
+  }),
+  tools: [],
+  triggers: []
+});
+`,
+      'utf-8'
+    );
+
+    let store = await SlatesCliStore.open({
+      storePath: path.join(
+        storageRoot,
+        '.slates-cli',
+        'profiles',
+        'integrations',
+        'demo',
+        'store.json'
+      ),
+      rootDir: workspaceRoot
+    });
+    let profile = store.upsertProfile({
+      name: 'Demo',
+      target: {
+        type: 'local',
+        entry: 'integrations/demo-slate.mjs',
+        exportName: 'provider'
+      }
+    });
+
+    let client = await createSlatesClientFromProfile(profile, { store });
+    let provider = await client.identify();
+
+    expect(provider.provider.id).toBe('external-demo');
+    expect(provider.provider.name).toBe('External Demo');
   });
 
   it('stores OAuth client credentials per integration', async () => {

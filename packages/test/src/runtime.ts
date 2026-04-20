@@ -15,6 +15,7 @@ export interface SlatesRuntimeContext {
   integration: string | null;
   profileId: string | null;
   profile: SlatesProfileRecord | null;
+  rootDir: string;
   storePath: string;
   cliDir: string;
 }
@@ -55,23 +56,31 @@ export let loadSlatesRuntimeContext = async (
     let parsed = JSON.parse(raw) as {
       integration?: string | null;
       profileId: string | null;
+      rootDir?: string;
       storePath: string;
       cliDir: string;
     };
-    let store = await openSlatesCliStore({ storePath: parsed.storePath });
+    let store = await openSlatesCliStore({
+      storePath: parsed.storePath,
+      rootDir: parsed.rootDir ?? process.env.SLATES_STORE_ROOT_DIR
+    });
     let profile = store.getProfile(opts.profile ?? parsed.profileId ?? null);
 
     return {
       integration: parsed.integration ?? store.scope?.key ?? null,
       profileId: profile?.id ?? parsed.profileId ?? null,
       profile,
+      rootDir: parsed.rootDir ?? store.rootDir,
       storePath: parsed.storePath,
       cliDir: parsed.cliDir
     };
   }
 
   let store = process.env.SLATES_STORE_PATH
-    ? await openSlatesCliStore({ storePath: process.env.SLATES_STORE_PATH })
+    ? await openSlatesCliStore({
+        storePath: process.env.SLATES_STORE_PATH,
+        rootDir: process.env.SLATES_STORE_ROOT_DIR
+      })
     : await openSlatesCliStore({ cwd: opts.cwd });
   let profileId = opts.profile ?? process.env.SLATES_PROFILE_ID ?? null;
   let profile = store.getProfile(profileId);
@@ -80,6 +89,7 @@ export let loadSlatesRuntimeContext = async (
     integration: process.env.SLATES_INTEGRATION ?? store.scope?.key ?? null,
     profileId: profile?.id ?? null,
     profile,
+    rootDir: store.rootDir,
     storePath: store.storePath,
     cliDir: store.dirPath
   };
@@ -104,7 +114,10 @@ export let createSlatesTestClient = async (
     throw new Error('No Slates profile is available for the current test context.');
   }
 
-  let store = await openSlatesCliStore({ storePath: context.storePath });
+  let store = await openSlatesCliStore({
+    storePath: context.storePath,
+    rootDir: context.rootDir
+  });
   return createSlatesClientFromProfile(context.profile, { cwd: opts.cwd, store });
 };
 
