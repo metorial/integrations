@@ -249,6 +249,10 @@ export class HubSpotClient {
     return response.data;
   }
 
+  async deleteProperty(objectType: string, propertyName: string): Promise<void> {
+    await this.http.delete(`/crm/v3/properties/${objectType}/${propertyName}`);
+  }
+
   // ── Pipelines ──
 
   async listPipelines(objectType: string): Promise<any> {

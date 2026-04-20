@@ -14,6 +14,21 @@ let workspaceOutputSchema = z.object({
   tagManagerUrl: z.string().optional().describe('URL to the GTM UI')
 });
 
+type MergeConflictAwareResult = {
+  mergeConflict?: unknown;
+  syncStatus?: {
+    mergeConflict?: boolean;
+  };
+};
+
+let detectMergeConflict = (result: MergeConflictAwareResult) => {
+  if (Array.isArray(result.mergeConflict)) {
+    return result.mergeConflict.length > 0;
+  }
+
+  return result.syncStatus?.mergeConflict === true || result.mergeConflict === true;
+};
+
 export let manageWorkspace = SlateTool.create(spec, {
   name: 'Manage Workspace',
   key: 'manage_workspace',
@@ -135,7 +150,7 @@ export let manageWorkspace = SlateTool.create(spec, {
 
     if (action === 'sync') {
       let syncResult = await client.syncWorkspace(accountId, containerId, workspaceId);
-      let hasMergeConflicts = (syncResult.mergeConflict || []).length > 0;
+      let hasMergeConflicts = detectMergeConflict(syncResult as MergeConflictAwareResult);
       return {
         output: { hasMergeConflicts } as any,
         message: hasMergeConflicts
@@ -158,7 +173,7 @@ export let manageWorkspace = SlateTool.create(spec, {
               ? 'folder'
               : 'other'
     }));
-    let hasMergeConflicts = (statusResult.mergeConflict || []).length > 0;
+    let hasMergeConflicts = detectMergeConflict(statusResult as MergeConflictAwareResult);
 
     return {
       output: { changes, hasMergeConflicts } as any,

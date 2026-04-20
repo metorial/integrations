@@ -18,6 +18,28 @@ let matrixElementSchema = z.object({
   condition: z.string().optional().describe('Route condition')
 });
 
+let normalizeElementStatus = (status: unknown) => {
+  if (typeof status === 'string') {
+    return status;
+  }
+
+  if (!status || typeof status !== 'object') {
+    return undefined;
+  }
+
+  let record = status as Record<string, unknown>;
+
+  if (typeof record.message === 'string' && record.message.length > 0) {
+    return record.message;
+  }
+
+  if (typeof record.code === 'number' || typeof record.code === 'string') {
+    return String(record.code);
+  }
+
+  return undefined;
+};
+
 export let computeRouteMatrixTool = SlateTool.create(spec, {
   name: 'Compute Route Matrix',
   key: 'compute_route_matrix',
@@ -75,9 +97,7 @@ export let computeRouteMatrixTool = SlateTool.create(spec, {
       destinationIndex: el.destinationIndex as number,
       duration: el.duration as string | undefined,
       distanceMeters: el.distanceMeters as number | undefined,
-      status:
-        ((el.status as Record<string, unknown>)?.code as string | undefined) ||
-        (el.status as string | undefined),
+      status: normalizeElementStatus(el.status),
       condition: el.condition as string | undefined
     }));
 

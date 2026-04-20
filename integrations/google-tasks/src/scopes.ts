@@ -2,7 +2,9 @@ import { anyOf } from 'slates';
 
 export let googleTasksScopes = {
   tasks: 'https://www.googleapis.com/auth/tasks',
-  tasksReadonly: 'https://www.googleapis.com/auth/tasks.readonly'
+  tasksReadonly: 'https://www.googleapis.com/auth/tasks.readonly',
+  userinfoProfile: 'https://www.googleapis.com/auth/userinfo.profile',
+  userinfoEmail: 'https://www.googleapis.com/auth/userinfo.email'
 } as const;
 
 let tasksRead = anyOf(googleTasksScopes.tasks, googleTasksScopes.tasksReadonly);

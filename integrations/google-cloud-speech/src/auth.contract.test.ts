@@ -129,7 +129,7 @@ describe('google-cloud-speech auth contract', () => {
 
     profileGet.mockResolvedValueOnce({
       data: {
-        sub: 'user-123',
+        id: 'user-123',
         email: 'speech@example.com',
         name: 'Speech User',
         picture: 'https://example.com/avatar.png'
@@ -149,5 +149,19 @@ describe('google-cloud-speech auth contract', () => {
       name: 'Speech User',
       imageUrl: 'https://example.com/avatar.png'
     });
+  });
+
+  it('skips profile lookup when userinfo scopes were not granted', async () => {
+    let client = await loadProviderClient();
+
+    let result = await client.getAuthProfile({
+      authenticationMethodId: 'google_oauth',
+      output: { token: 'profile-token' },
+      input: {},
+      scopes: [googleCloudSpeechScopes.cloudPlatform]
+    });
+
+    expect(profileGet).not.toHaveBeenCalled();
+    expect(result.profile).toBeNull();
   });
 });

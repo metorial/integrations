@@ -324,29 +324,41 @@ export class SlidesClient {
     text: string
   ): Promise<any> {
     let page = await this.getPage(presentationId, slideObjectId);
-    let notesId = page.slideProperties?.notesPage?.notesProperties?.speakerNotesObjectId;
+    let notesPage = page.slideProperties?.notesPage;
+    let notesId = notesPage?.notesProperties?.speakerNotesObjectId;
 
     if (!notesId) {
       throw new Error('Speaker notes object not found for this slide.');
     }
 
-    let requests: any[] = [
-      {
+    let notesElement = notesPage?.pageElements?.find(
+      (element: { objectId?: string }) => element.objectId === notesId
+    );
+    let existingText =
+      notesElement?.shape?.text?.textElements
+        ?.map((textElement: { textRun?: { content?: string } }) => textElement.textRun?.content ?? '')
+        .join('') ?? '';
+
+    let requests: any[] = [];
+
+    if (existingText.trim().length > 0) {
+      requests.push({
         deleteText: {
           objectId: notesId,
           textRange: {
             type: 'ALL'
           }
         }
-      },
-      {
-        insertText: {
-          objectId: notesId,
-          text,
-          insertionIndex: 0
-        }
+      });
+    }
+
+    requests.push({
+      insertText: {
+        objectId: notesId,
+        text,
+        insertionIndex: 0
       }
-    ];
+    });
 
     return this.batchUpdate(presentationId, requests);
   }

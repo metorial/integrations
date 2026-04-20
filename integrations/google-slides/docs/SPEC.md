@@ -12,7 +12,7 @@ Google Slides API supports two authentication methods:
 
 OAuth 2.0: Whenever your application requests private user data, it must send an OAuth 2.0 token along with the request. Your application must use OAuth 2.0 to authorize requests. No other authorization protocols are supported.
 
-- **Authorization endpoint:** `https://accounts.google.com/o/oauth2/auth`
+- **Authorization endpoint:** `https://accounts.google.com/o/oauth2/v2/auth`
 - **Token endpoint:** `https://oauth2.googleapis.com/token`
 - When you create your application, you register it using the Google API Console. Google then provides information you'll need later, such as a client ID and a client secret.
 

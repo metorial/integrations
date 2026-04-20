@@ -29,6 +29,16 @@ export let auth = SlateAuth.create()
         description:
           'Full access to Google Cloud Platform resources including Speech-to-Text and Text-to-Speech APIs',
         scope: googleCloudSpeechScopes.cloudPlatform
+      },
+      {
+        title: 'User Profile',
+        description: 'View your basic Google profile information',
+        scope: googleCloudSpeechScopes.userinfoProfile
+      },
+      {
+        title: 'User Email',
+        description: 'View your Google account email address',
+        scope: googleCloudSpeechScopes.userinfoEmail
       }
     ],
 
@@ -133,27 +143,43 @@ export let auth = SlateAuth.create()
       input: Record<string, never>;
       scopes: string[];
     }) => {
-      let response = await profileAxios.get('/oauth2/v3/userinfo', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let canReadProfile =
+        ctx.scopes.includes(googleCloudSpeechScopes.userinfoProfile) ||
+        ctx.scopes.includes(googleCloudSpeechScopes.userinfoEmail);
 
-      let data = response.data as {
-        sub?: string;
-        email?: string;
-        name?: string;
-        picture?: string;
-      };
+      if (!canReadProfile) {
+        return {
+          profile: null
+        };
+      }
 
-      return {
-        profile: {
-          id: data.sub,
-          email: data.email,
-          name: data.name,
-          imageUrl: data.picture
-        }
-      };
+      try {
+        let response = await profileAxios.get('/oauth2/v2/userinfo', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+
+        let data = response.data as {
+          id?: string;
+          email?: string;
+          name?: string;
+          picture?: string;
+        };
+
+        return {
+          profile: {
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            imageUrl: data.picture
+          }
+        };
+      } catch {
+        return {
+          profile: null
+        };
+      }
     }
   })
   .addTokenAuth({

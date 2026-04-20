@@ -1,10 +1,5 @@
 import { SlateTool } from 'slates';
-import {
-  GoogleDocsClient,
-  Document,
-  StructuralElement,
-  ParagraphElement
-} from '../lib/client';
+import { GoogleDocsClient, Document, StructuralElement } from '../lib/client';
 import { googleDocsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -115,14 +110,26 @@ export let getDocument = SlateTool.create(spec, {
     }> = [];
 
     if (document.namedRanges) {
-      for (let [name, range] of Object.entries(document.namedRanges)) {
-        if (range.ranges && range.ranges.length > 0) {
-          for (let r of range.ranges) {
+      for (let [name, entry] of Object.entries(document.namedRanges)) {
+        let ranges = entry.namedRanges ?? [];
+
+        for (let range of ranges) {
+          if (range.ranges && range.ranges.length > 0) {
+            for (let r of range.ranges) {
+              namedRanges.push({
+                namedRangeId: range.namedRangeId,
+                name: range.name ?? entry.name ?? name,
+                startIndex: r.startIndex,
+                endIndex: r.endIndex
+              });
+            }
+            continue;
+          }
+
+          if (range.namedRangeId || range.name || name) {
             namedRanges.push({
               namedRangeId: range.namedRangeId,
-              name: range.name,
-              startIndex: r.startIndex,
-              endIndex: r.endIndex
+              name: range.name ?? entry.name ?? name
             });
           }
         }

@@ -52,6 +52,10 @@ export let updateContactGroup = SlateTool.create(spec, {
       resourceName: z
         .string()
         .describe('Resource name of the contact group (e.g., "contactGroups/abc123")'),
+      etag: z
+        .string()
+        .optional()
+        .describe('ETag/fingerprint for concurrency control. Omit to use the latest server copy.'),
       name: z.string().describe('New name for the contact group'),
       clientData: z
         .array(customFieldSchema)
@@ -62,9 +66,17 @@ export let updateContactGroup = SlateTool.create(spec, {
   .output(contactGroupSchema)
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
+    let etag = ctx.input.etag;
+
+    if (!etag) {
+      let current = await client.getContactGroup(ctx.input.resourceName);
+      etag = current.etag;
+    }
+
     let result = await client.updateContactGroup(
       ctx.input.resourceName,
       ctx.input.name,
+      etag,
       ctx.input.clientData
     );
     let group = formatContactGroup(result);

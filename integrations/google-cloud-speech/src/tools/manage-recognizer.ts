@@ -4,6 +4,8 @@ import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let RECOGNIZER_DISPLAY_NAME_MAX_LENGTH = 63;
+
 export let createRecognizer = SlateTool.create(spec, {
   name: 'Create Recognizer',
   key: 'create_recognizer',
@@ -19,7 +21,13 @@ export let createRecognizer = SlateTool.create(spec, {
       recognizerId: z
         .string()
         .describe('Unique ID for the recognizer (lowercase letters, numbers, hyphens).'),
-      displayName: z.string().optional().describe('Human-readable display name.'),
+      displayName: z
+        .string()
+        .max(RECOGNIZER_DISPLAY_NAME_MAX_LENGTH)
+        .optional()
+        .describe(
+          `Human-readable display name. Maximum ${RECOGNIZER_DISPLAY_NAME_MAX_LENGTH} characters.`
+        ),
       model: z
         .string()
         .describe(
@@ -161,7 +169,13 @@ export let updateRecognizer = SlateTool.create(spec, {
   .input(
     z.object({
       recognizerId: z.string().describe('ID of the recognizer to update.'),
-      displayName: z.string().optional().describe('New display name.'),
+      displayName: z
+        .string()
+        .max(RECOGNIZER_DISPLAY_NAME_MAX_LENGTH)
+        .optional()
+        .describe(
+          `New display name. Maximum ${RECOGNIZER_DISPLAY_NAME_MAX_LENGTH} characters.`
+        ),
       model: z.string().optional().describe('New recognition model.'),
       languageCodes: z.array(z.string()).optional().describe('New language codes.')
     })

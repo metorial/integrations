@@ -153,6 +153,10 @@ export let contactOutputSchema = z.object({
 
 export let contactGroupSchema = z.object({
   resourceName: z.string().describe('Unique resource name (e.g., contactGroups/abc123)'),
+  etag: z
+    .string()
+    .optional()
+    .describe('ETag/fingerprint for concurrency control, required when updating'),
   name: z.string().optional().describe('Display name of the group'),
   formattedName: z.string().optional().describe('Formatted name of the group'),
   groupType: z
@@ -193,6 +197,7 @@ export let formatContact = (person: any) => {
 export let formatContactGroup = (group: any) => {
   return {
     resourceName: group.resourceName,
+    etag: group.etag,
     name: group.name,
     formattedName: group.formattedName,
     groupType: group.groupType,

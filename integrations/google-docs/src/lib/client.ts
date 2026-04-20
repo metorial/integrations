@@ -12,7 +12,7 @@ export interface Document {
   revisionId?: string;
   suggestionsViewMode?: string;
   inlineObjects?: Record<string, InlineObject>;
-  namedRanges?: Record<string, NamedRange>;
+  namedRanges?: Record<string, NamedRanges>;
 }
 
 export interface DocumentBody {
@@ -334,6 +334,11 @@ export interface NamedRange {
   namedRangeId?: string;
   name?: string;
   ranges?: Range[];
+}
+
+export interface NamedRanges {
+  name?: string;
+  namedRanges?: NamedRange[];
 }
 
 export interface Range {

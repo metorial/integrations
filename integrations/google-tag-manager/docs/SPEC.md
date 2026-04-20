@@ -17,7 +17,7 @@ Applications must use OAuth 2.0 to authorize requests to the Tag Manager API. Va
 
 - You need to obtain credentials, i.e., client ID and client secret, by creating a project in the Google Developers Console.
 
-**Authorization endpoint:** `https://accounts.google.com/o/oauth2/auth`
+**Authorization endpoint:** `https://accounts.google.com/o/oauth2/v2/auth`
 **Token endpoint:** `https://oauth2.googleapis.com/token`
 
 **Service Accounts:** A Google service account is used as a way to provide access to your data to support server to server interactions. For service accounts, click Create credentials > Service account key. Choose whether to download the service account's public/private key as a standard P12 file, or as a JSON file that can be loaded by a Google API client library. The service account email must be granted access to the relevant GTM account or container.

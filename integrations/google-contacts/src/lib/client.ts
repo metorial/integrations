@@ -1,6 +1,6 @@
-import { createAxios } from 'slates';
+import axios from 'axios';
 
-let api = createAxios({
+let api = axios.create({
   baseURL: 'https://people.googleapis.com/v1/'
 });
 
@@ -189,6 +189,7 @@ export class Client {
   async updateContactGroup(
     resourceName: string,
     name: string,
+    etag?: string,
     clientData?: Array<{ key: string; value: string }>
   ) {
     let response = await api.put(
@@ -196,11 +197,14 @@ export class Client {
       {
         contactGroup: {
           name,
+          etag,
           clientData
-        },
-        updateGroupFields: 'name,clientData'
+        }
       },
       {
+        params: {
+          updateGroupFields: 'name,clientData'
+        },
         headers: this.headers
       }
     );
@@ -280,13 +284,18 @@ export class Client {
     sources: string[];
     readMask?: string;
   }) {
+    let searchParams = new URLSearchParams();
+    searchParams.set('pageSize', String(params.pageSize || 100));
+    if (params.pageToken) {
+      searchParams.set('pageToken', params.pageToken);
+    }
+    for (let source of params.sources) {
+      searchParams.append('sources', source);
+    }
+    searchParams.set('readMask', params.readMask || DEFAULT_PERSON_FIELDS);
+
     let response = await api.get('people:listDirectoryPeople', {
-      params: {
-        pageSize: params.pageSize || 100,
-        pageToken: params.pageToken,
-        sources: params.sources,
-        readMask: params.readMask || DEFAULT_PERSON_FIELDS
-      },
+      params: searchParams,
       headers: this.headers
     });
     return response.data;
@@ -299,14 +308,19 @@ export class Client {
     sources: string[];
     readMask?: string;
   }) {
+    let searchParams = new URLSearchParams();
+    searchParams.set('query', params.query);
+    searchParams.set('pageSize', String(params.pageSize || 30));
+    if (params.pageToken) {
+      searchParams.set('pageToken', params.pageToken);
+    }
+    for (let source of params.sources) {
+      searchParams.append('sources', source);
+    }
+    searchParams.set('readMask', params.readMask || DEFAULT_PERSON_FIELDS);
+
     let response = await api.get('people:searchDirectoryPeople', {
-      params: {
-        query: params.query,
-        pageSize: params.pageSize || 30,
-        pageToken: params.pageToken,
-        sources: params.sources,
-        readMask: params.readMask || DEFAULT_PERSON_FIELDS
-      },
+      params: searchParams,
       headers: this.headers
     });
     return response.data;
