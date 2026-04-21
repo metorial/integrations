@@ -15,6 +15,7 @@ You need to register an app in your Azure Active Directory, obtain the Client ID
 - **Tenant ID**: Identifies the Microsoft Entra ID tenant (directory).
 - **Client ID** (Application ID): Identifies the registered application.
 - **Client Secret** or **Certificate**: Used to authenticate the application.
+- **Redirect URI for local CLI auth**: `http://localhost:45873/callback`
 
 ### OAuth 2.0 Flows
 

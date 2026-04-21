@@ -1,4 +1,5 @@
 import { confirm, select } from '@inquirer/prompts';
+import { normalizeMicrosoftRedirectUriForIntegration } from '@slates/oauth-microsoft';
 import { SlatesOAuthCredentialRecord, SlatesStoredAuth } from '@slates/profiles';
 import {
   chooseAuthMethod,
@@ -263,7 +264,11 @@ let runAuthSetup = async (opts: AuthSetupOptions): Promise<SlatesStoredAuth> => 
 
   if (authMethod.type === 'auth.oauth') {
     let callback = await createOAuthCallbackListener();
-    console.log(`OAuth redirect URL: ${callback.redirectUri}`);
+    let redirectUri = normalizeMicrosoftRedirectUriForIntegration(
+      opts.integration,
+      callback.redirectUri
+    );
+    console.log(`OAuth redirect URL: ${redirectUri}`);
 
     let resolvedOAuthCredentials = await chooseOAuthCredentialsForSetup({
       store,
@@ -282,7 +287,7 @@ let runAuthSetup = async (opts: AuthSetupOptions): Promise<SlatesStoredAuth> => 
 
     let authorizationUrl = await client.getAuthorizationUrl({
       authenticationMethodId: authMethod.id,
-      redirectUri: callback.redirectUri,
+      redirectUri,
       state: callback.state,
       input: authInput,
       clientId,
@@ -303,7 +308,7 @@ let runAuthSetup = async (opts: AuthSetupOptions): Promise<SlatesStoredAuth> => 
       authenticationMethodId: authMethod.id,
       code: callbackResult.code,
       state: callbackResult.state,
-      redirectUri: callback.redirectUri,
+      redirectUri,
       input: finalInput,
       clientId,
       clientSecret,
