@@ -132,9 +132,13 @@ describe('google-docs tool behavior', () => {
       },
       namedRanges: {
         customerName: {
-          namedRangeId: 'range-1',
-          name: 'customerName',
-          ranges: [{ startIndex: 1, endIndex: 6 }]
+          namedRanges: [
+            {
+              namedRangeId: 'range-1',
+              name: 'customerName',
+              ranges: [{ startIndex: 1, endIndex: 6 }]
+            }
+          ]
         }
       }
     });

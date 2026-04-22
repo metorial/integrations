@@ -1,66 +1,52 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
-export let auth = SlateAuth.create()
-  .output(
-    z.object({
-      token: z.string(),
-      refreshToken: z.string().optional(),
-      expiresAt: z.string().optional()
-    })
-  )
-  .addOauth({
-    type: 'auth.oauth',
-    name: 'Microsoft Entra ID (OAuth 2.0)',
-    key: 'entra_oauth',
+let scopes = [
+  {
+    title: 'Azure Storage Full Access',
+    description:
+      'Full access to Azure Storage resources including blobs, containers, queues, tables, and files',
+    scope: 'https://storage.azure.com/.default'
+  },
+  {
+    title: 'User Profile',
+    description: 'Read your basic profile information',
+    scope: 'openid'
+  },
+  {
+    title: 'Offline Access',
+    description: 'Maintain access with a refresh token',
+    scope: 'offline_access'
+  }
+];
 
-    scopes: [
-      {
-        title: 'Azure Storage Full Access',
-        description:
-          'Full access to Azure Storage resources including blobs, containers, queues, tables, and files',
-        scope: 'https://storage.azure.com/.default'
-      },
-      {
-        title: 'User Profile',
-        description: 'Read your basic profile information',
-        scope: 'openid'
-      },
-      {
-        title: 'Offline Access',
-        description: 'Maintain access with a refresh token',
-        scope: 'offline_access'
-      }
-    ],
+function createMicrosoftOauth(name: string, key: string, tenant: string) {
+  return {
+    type: 'auth.oauth' as const,
+    name,
+    key,
+    scopes,
 
-    inputSchema: z.object({
-      tenantId: z.string().describe('Azure AD Tenant ID')
-    }),
-
-    getAuthorizationUrl: async ctx => {
-      let tenantId = ctx.input.tenantId;
-      let scopes = ctx.scopes.join(' ');
+    getAuthorizationUrl: async (ctx: any) => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
         redirect_uri: ctx.redirectUri,
-        scope: scopes,
+        scope: ctx.scopes.join(' '),
         state: ctx.state,
         response_mode: 'query'
       });
 
       return {
-        url: `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?${params.toString()}`,
-        input: { tenantId }
+        url: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async ctx => {
-      let tenantId = ctx.input.tenantId;
+    handleCallback: async (ctx: any) => {
       let http = createAxios();
 
       let response = await http.post(
-        `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+        `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`,
         new URLSearchParams({
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
@@ -76,7 +62,7 @@ export let auth = SlateAuth.create()
         }
       );
 
-      let data = response.data;
+      let data = response.data as any;
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -86,21 +72,19 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        },
-        input: { tenantId }
+        }
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let tenantId = ctx.input.tenantId;
       let http = createAxios();
 
       let response = await http.post(
-        `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+        `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`,
         new URLSearchParams({
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
@@ -115,7 +99,7 @@ export let auth = SlateAuth.create()
         }
       );
 
-      let data = response.data;
+      let data = response.data as any;
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -125,11 +109,22 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
           expiresAt
-        },
-        input: { tenantId }
+        }
       };
     }
-  })
+  };
+}
+
+export let auth = SlateAuth.create()
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
+  .addOauth(createMicrosoftOauth('Work & Personal', 'oauth_common', 'common'))
+  .addOauth(createMicrosoftOauth('Work Only', 'oauth_organizations', 'organizations'))
   .addCustomAuth({
     type: 'auth.custom',
     name: 'SAS Token',

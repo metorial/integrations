@@ -1,61 +1,48 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
-export let auth = SlateAuth.create()
-  .output(
-    z.object({
-      token: z.string(),
-      refreshToken: z.string().optional(),
-      expiresAt: z.string().optional(),
-      tenantId: z.string().optional()
-    })
-  )
-  .addOauth({
-    type: 'auth.oauth',
-    name: 'Microsoft Entra ID OAuth',
-    key: 'entra_oauth',
+let scopes = [
+  {
+    title: 'Code Read',
+    description:
+      'Read source code, metadata about commits, branches, and other version control artifacts.',
+    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code'
+  },
+  {
+    title: 'Code Read & Write',
+    description: 'Read, update, and delete source code; create and manage pull requests.',
+    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_write'
+  },
+  {
+    title: 'Code Manage',
+    description: 'Full repository management including creating/deleting repositories.',
+    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_manage'
+  },
+  {
+    title: 'Code Full',
+    description: 'Full access to all source code operations.',
+    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_full'
+  },
+  {
+    title: 'Code Status',
+    description: 'Read and write commit and pull request status.',
+    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_status'
+  },
+  {
+    title: 'Profile',
+    description: 'Read user profile information.',
+    scope: '499b84ac-1321-427f-aa17-267ca6975798/user_impersonation'
+  }
+];
 
-    scopes: [
-      {
-        title: 'Code Read',
-        description:
-          'Read source code, metadata about commits, branches, and other version control artifacts.',
-        scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code'
-      },
-      {
-        title: 'Code Read & Write',
-        description: 'Read, update, and delete source code; create and manage pull requests.',
-        scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_write'
-      },
-      {
-        title: 'Code Manage',
-        description: 'Full repository management including creating/deleting repositories.',
-        scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_manage'
-      },
-      {
-        title: 'Code Full',
-        description: 'Full access to all source code operations.',
-        scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_full'
-      },
-      {
-        title: 'Code Status',
-        description: 'Read and write commit and pull request status.',
-        scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_status'
-      },
-      {
-        title: 'Profile',
-        description: 'Read user profile information.',
-        scope: '499b84ac-1321-427f-aa17-267ca6975798/user_impersonation'
-      }
-    ],
+function createMicrosoftOauth(name: string, key: string, tenant: string) {
+  return {
+    type: 'auth.oauth' as const,
+    name,
+    key,
+    scopes,
 
-    inputSchema: z.object({
-      tenantId: z
-        .string()
-        .describe('Microsoft Entra tenant ID associated with the Azure DevOps organization')
-    }),
-
-    getAuthorizationUrl: async ctx => {
+    getAuthorizationUrl: async (ctx: any) => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
@@ -65,14 +52,13 @@ export let auth = SlateAuth.create()
       });
 
       return {
-        url: `https://login.microsoftonline.com/${ctx.input.tenantId}/oauth2/v2.0/authorize?${params.toString()}`,
-        input: ctx.input
+        url: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async ctx => {
+    handleCallback: async (ctx: any) => {
       let http = createAxios({
-        baseURL: `https://login.microsoftonline.com/${ctx.input.tenantId}/oauth2/v2.0`
+        baseURL: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0`
       });
 
       let response = await http.post(
@@ -102,20 +88,18 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
-          tenantId: ctx.input.tenantId
-        },
-        input: ctx.input
+            : undefined
+        }
       };
     },
 
-    handleTokenRefresh: async ctx => {
-      if (!ctx.output.refreshToken || !ctx.input.tenantId) {
-        return { output: ctx.output, input: ctx.input };
+    handleTokenRefresh: async (ctx: any) => {
+      if (!ctx.output.refreshToken) {
+        return { output: ctx.output };
       }
 
       let http = createAxios({
-        baseURL: `https://login.microsoftonline.com/${ctx.input.tenantId}/oauth2/v2.0`
+        baseURL: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0`
       });
 
       let response = await http.post(
@@ -144,18 +128,12 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
-          tenantId: ctx.input.tenantId
-        },
-        input: ctx.input
+            : undefined
+        }
       };
     },
 
-    getProfile: async (ctx: {
-      output: { token: string };
-      input: { tenantId: string };
-      scopes: string[];
-    }) => {
+    getProfile: async (ctx: any) => {
       let http = createAxios({
         baseURL: 'https://app.vssps.visualstudio.com/_apis',
         headers: {
@@ -178,7 +156,19 @@ export let auth = SlateAuth.create()
         }
       };
     }
-  })
+  };
+}
+
+export let auth = SlateAuth.create()
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
+  .addOauth(createMicrosoftOauth('Work & Personal', 'oauth_common', 'common'))
+  .addOauth(createMicrosoftOauth('Work Only', 'oauth_organizations', 'organizations'))
   .addTokenAuth({
     type: 'auth.token',
     name: 'Personal Access Token',

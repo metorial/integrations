@@ -78,7 +78,10 @@ export let listItemChanges = SlateTrigger.create(spec, {
       if (!state?.initialized) {
         let updatedKnown: Record<string, string> = {};
         for (let item of items) {
-          updatedKnown[item.id] = item.lastModifiedDateTime || '';
+          let isDeleted = item.deleted !== undefined || item['@removed'] !== undefined;
+          if (!isDeleted) {
+            updatedKnown[item.id] = item.lastModifiedDateTime || '';
+          }
         }
         return {
           inputs: [],
@@ -105,7 +108,7 @@ export let listItemChanges = SlateTrigger.create(spec, {
       let updatedKnown = { ...knownItems };
 
       for (let item of items) {
-        let isDeleted = item['@removed'] !== undefined;
+        let isDeleted = item.deleted !== undefined || item['@removed'] !== undefined;
 
         if (isDeleted) {
           if (knownItems[item.id]) {

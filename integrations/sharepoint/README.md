@@ -2,6 +2,10 @@
 
 Manage SharePoint sites, document libraries, lists, and files. Create, read, update, and delete lists and list items with custom columns. Upload, download, move, copy, and version files in document libraries. Search across sites, files, folders, lists, and list items using Microsoft Search. Manage permissions at site, list, and item levels with granular access control. Define and manage content types and site columns. Subscribe to webhooks for list and library change notifications. Retrieve site properties and search for sites across Microsoft 365.
 
+## Authentication
+
+When registering the OAuth app in Microsoft Entra ID for local CLI auth, use `http://localhost:45873/callback` as the redirect URI.
+
 ## Tools
 
 ### Get Content Types

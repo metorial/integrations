@@ -43,7 +43,7 @@ export let manageUserTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
+    let client = new Client({ token: ctx.auth.token, environment: ctx.auth.environment });
 
     if (ctx.input.action === 'deactivate') {
       if (!ctx.input.userId) throw new Error('userId is required for deactivate action');

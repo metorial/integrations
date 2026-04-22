@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { SharePointClient } from '../lib/client';
 import { spec } from '../spec';
+import { oneOfRequiredError } from './errors';
 import { z } from 'zod';
 
 let driveOutputSchema = z.object({
@@ -71,7 +72,10 @@ export let getDrive = SlateTool.create(spec, {
     }
 
     if (!ctx.input.siteId) {
-      throw new Error('Provide either siteId or driveId.');
+      throw oneOfRequiredError('One of siteId or driveId must be provided.', [
+        'siteId',
+        'driveId'
+      ]);
     }
 
     if (ctx.input.listAll) {

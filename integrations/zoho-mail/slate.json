@@ -18,5 +18,6 @@
     "manage mail policies and anti-spam",
     "retrieve audit and SMTP logs"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-mail.svg"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/zoho-mail.svg",
+  "version": "0.1.2"
 }

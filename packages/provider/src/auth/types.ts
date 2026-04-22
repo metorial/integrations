@@ -16,6 +16,7 @@ export type SlateAuthWithOauth<
   scopes: {
     title: string;
     description?: string;
+    defaultChecked?: boolean;
     scope: string;
   }[];
 

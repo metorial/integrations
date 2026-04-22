@@ -20,7 +20,7 @@ export let listCountries = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment ?? 'production'
+      environment: ctx.auth.environment ?? 'production'
     });
 
     let result = await client.listCountries();

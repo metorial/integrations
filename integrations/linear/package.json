@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "bunx @vercel/ncc build src/index.ts -o dist -m -s",
+    "test": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

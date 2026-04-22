@@ -18,5 +18,6 @@
     "upload employment documents",
     "configure webhooks for events"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/remote.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/remote.png",
+  "version": "0.1.2"
 }

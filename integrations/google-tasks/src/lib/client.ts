@@ -128,13 +128,13 @@ export class GoogleTasksClient {
   }
 
   async moveTask(taskListId: string, taskId: string, params?: MoveTaskParams): Promise<Task> {
-    let response = await this.api.post(`/lists/${taskListId}/tasks/${taskId}/move`, null, {
+    let response = await this.api.post(`/lists/${taskListId}/tasks/${taskId}/move`, {}, {
       params
     });
     return response.data;
   }
 
   async clearCompletedTasks(taskListId: string): Promise<void> {
-    await this.api.post(`/lists/${taskListId}/clear`);
+    await this.api.post(`/lists/${taskListId}/clear`, {});
   }
 }

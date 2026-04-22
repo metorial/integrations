@@ -14,7 +14,8 @@ export let auth = SlateAuth.create()
     z.object({
       token: z.string(),
       refreshToken: z.string().optional(),
-      expiresAt: z.string().optional()
+      expiresAt: z.string().optional(),
+      cloudId: z.string().describe('Jira Cloud site ID')
     })
   )
   .addOauth({
@@ -106,11 +107,17 @@ export let auth = SlateAuth.create()
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
 
+      let resources = await apiAxios.get('/oauth/token/accessible-resources', {
+        headers: { Authorization: `Bearer ${data.access_token}` }
+      });
+      let cloudId = (resources.data as Array<{ id: string }>)?.[0]?.id ?? '';
+
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt
+          expiresAt,
+          cloudId
         }
       };
     },
@@ -132,13 +139,14 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt
+          expiresAt,
+          cloudId: ctx.output.cloudId
         }
       };
     },
 
     getProfile: async (ctx: {
-      output: { token: string; refreshToken?: string; expiresAt?: string };
+      output: { token: string; refreshToken?: string; expiresAt?: string; cloudId: string };
       input: {};
       scopes: string[];
     }) => {
@@ -168,28 +176,38 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       email: z.string().describe('Your Atlassian account email address'),
       token: z.string().describe('API token generated from Atlassian account settings'),
-      siteDomain: z
+      domain: z
         .string()
-        .describe('Your Atlassian site domain (e.g., "yoursite" from yoursite.atlassian.net)')
+        .describe('Your Atlassian domain (e.g., "mycompany" for mycompany.atlassian.net)')
     }),
 
-    getOutput: async (ctx: {
-      input: { email: string; token: string; siteDomain: string };
-    }) => {
+    getOutput: async (ctx: { input: { email: string; token: string; domain: string } }) => {
       let credentials = btoa(`${ctx.input.email}:${ctx.input.token}`);
+
+      let tenantInfo = await createAxios().get(
+        `https://${ctx.input.domain}.atlassian.net/_edge/tenant_info`
+      );
+      let cloudId = (tenantInfo.data as { cloudId?: string }).cloudId;
+      if (!cloudId) {
+        throw new Error(
+          `Could not resolve cloudId for domain "${ctx.input.domain}". Verify the domain is correct (e.g., "mycompany" for mycompany.atlassian.net).`
+        );
+      }
+
       return {
         output: {
-          token: credentials
+          token: credentials,
+          cloudId
         }
       };
     },
 
     getProfile: async (ctx: {
-      output: { token: string; refreshToken?: string; expiresAt?: string };
-      input: { email: string; token: string; siteDomain: string };
+      output: { token: string; cloudId: string; refreshToken?: string; expiresAt?: string };
+      input: { email: string; token: string; domain: string };
     }) => {
       let ax = createAxios({
-        baseURL: `https://${ctx.input.siteDomain}.atlassian.net`
+        baseURL: `https://${ctx.input.domain}.atlassian.net`
       });
 
       let response = await ax.get('/rest/api/3/myself', {

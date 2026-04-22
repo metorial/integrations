@@ -49,7 +49,7 @@ export let manageIssue = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
+      instanceUrl: ctx.auth.instanceUrl
     });
 
     let issue: any;

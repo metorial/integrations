@@ -43,6 +43,8 @@ export let createCourse = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new ClassroomClient({ token: ctx.auth.token });
+    let ownerId = ctx.input.ownerId ?? 'me';
+    let courseState = ctx.input.courseState ?? 'PROVISIONED';
 
     let course = await client.createCourse({
       name: ctx.input.name,
@@ -50,12 +52,20 @@ export let createCourse = SlateTool.create(spec, {
       descriptionHeading: ctx.input.descriptionHeading,
       description: ctx.input.description,
       room: ctx.input.room,
-      ownerId: ctx.input.ownerId,
-      courseState: ctx.input.courseState
+      ownerId,
+      courseState
     });
 
     return {
-      output: course,
+      output: {
+        courseId: course.id,
+        name: course.name,
+        section: course.section,
+        courseState: course.courseState,
+        alternateLink: course.alternateLink,
+        enrollmentCode: course.enrollmentCode,
+        creationTime: course.creationTime
+      },
       message: `Created course **${course.name}** with ID \`${course.id}\`.`
     };
   })

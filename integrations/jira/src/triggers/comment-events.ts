@@ -40,7 +40,7 @@ export let commentEventsTrigger = SlateTrigger.create(spec, {
     autoRegisterWebhook: async ctx => {
       let client = new JiraClient({
         token: ctx.auth.token,
-        cloudId: ctx.config.cloudId,
+        cloudId: ctx.auth.cloudId,
         refreshToken: ctx.auth.refreshToken
       });
 
@@ -58,7 +58,7 @@ export let commentEventsTrigger = SlateTrigger.create(spec, {
     autoUnregisterWebhook: async ctx => {
       let client = new JiraClient({
         token: ctx.auth.token,
-        cloudId: ctx.config.cloudId,
+        cloudId: ctx.auth.cloudId,
         refreshToken: ctx.auth.refreshToken
       });
 

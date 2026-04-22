@@ -4,6 +4,20 @@ import { spec } from '../spec';
 import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
+let classroomApiErrorMessage = (error: unknown, fallback: string) => {
+  let message = (error as { response?: { data?: { error?: { message?: string } } } })?.response
+    ?.data?.error?.message;
+  if (typeof message === 'string' && message.length > 0) {
+    return message;
+  }
+
+  if (error instanceof Error && error.message.length > 0) {
+    return error.message;
+  }
+
+  return fallback;
+};
+
 export let deleteCourse = SlateTool.create(spec, {
   name: 'Delete Course',
   key: 'delete_course',
@@ -25,8 +39,30 @@ export let deleteCourse = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new ClassroomClient({ token: ctx.auth.token });
+    try {
+      await client.deleteCourse(ctx.input.courseId);
+    } catch (error) {
+      let message = classroomApiErrorMessage(error, 'Failed to delete course.');
+      if (!message.includes('Precondition check failed')) {
+        throw new Error(message);
+      }
 
-    await client.deleteCourse(ctx.input.courseId);
+      try {
+        await client.updateCourse(
+          ctx.input.courseId,
+          { courseState: 'ARCHIVED' },
+          'courseState'
+        );
+      } catch (archiveError) {
+        throw new Error(classroomApiErrorMessage(archiveError, message));
+      }
+
+      try {
+        await client.deleteCourse(ctx.input.courseId);
+      } catch (deleteError) {
+        throw new Error(classroomApiErrorMessage(deleteError, message));
+      }
+    }
 
     return {
       output: { success: true },

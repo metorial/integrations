@@ -63,10 +63,15 @@ export let manageLicenses = SlateTool.create(spec, {
     let customerId = ctx.config.customerId || 'my_customer';
 
     if (ctx.input.action === 'list') {
-      let result = await client.listLicenseAssignments(ctx.input.productId, customerId, {
-        maxResults: ctx.input.maxResults,
-        pageToken: ctx.input.pageToken
-      });
+      let result = await client.listLicenseAssignments(
+        ctx.input.productId,
+        customerId,
+        ctx.input.skuId,
+        {
+          maxResults: ctx.input.maxResults,
+          pageToken: ctx.input.pageToken
+        }
+      );
 
       let licenses = (result.items || []).map((l: any) => ({
         productId: l.productId,

@@ -1,11 +1,10 @@
-import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
+import axios, { type AxiosInstance } from 'axios';
 
 export class ClassroomClient {
   private http: AxiosInstance;
 
   constructor(config: { token: string }) {
-    this.http = createAxios({
+    this.http = axios.create({
       baseURL: 'https://classroom.googleapis.com/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,

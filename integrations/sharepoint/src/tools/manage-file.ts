@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { SharePointClient } from '../lib/client';
 import { spec } from '../spec';
+import { oneOfRequiredError } from './errors';
 import { z } from 'zod';
 
 let fileOutputSchema = z.object({
@@ -101,7 +102,11 @@ export let manageFile = SlateTool.create(spec, {
         .describe('List of files and folders (for list action)'),
       downloadUrl: z.string().optional().describe('Direct download URL (for download action)'),
       deleted: z.boolean().optional().describe('Whether the item was deleted'),
-      copied: z.boolean().optional().describe('Whether the copy was initiated')
+      copied: z.boolean().optional().describe('Whether the copy was initiated'),
+      copyMonitorUrl: z
+        .string()
+        .optional()
+        .describe('Monitor URL returned by Microsoft Graph for async copy operations')
     })
   )
   .handleInvocation(async ctx => {
@@ -144,7 +149,10 @@ export let manageFile = SlateTool.create(spec, {
         } else if (itemId) {
           item = await client.getDriveItem(driveId, itemId);
         } else {
-          throw new Error('Provide either itemId or itemPath for get action.');
+          throw oneOfRequiredError(
+            'For get action, one of itemId or itemPath must be provided.',
+            ['itemId', 'itemPath']
+          );
         }
         return {
           output: { file: mapItem(item) },
@@ -215,7 +223,7 @@ export let manageFile = SlateTool.create(spec, {
         if (!itemId) throw new Error('itemId is required for copy.');
         if (!destinationFolderId) throw new Error('destinationFolderId is required for copy.');
         let targetDrive = destinationDriveId || driveId;
-        await client.copyDriveItem(
+        let copy = await client.copyDriveItem(
           driveId,
           itemId,
           targetDrive,
@@ -223,7 +231,10 @@ export let manageFile = SlateTool.create(spec, {
           fileName
         );
         return {
-          output: { copied: true },
+          output: {
+            copied: true,
+            copyMonitorUrl: copy.copyMonitorUrl
+          },
           message: `Copy initiated for item \`${itemId}\`.`
         };
       }

@@ -138,6 +138,16 @@ export class SlackClient {
     return { scheduledMessageId: data.scheduled_message_id, postAt: data.post_at };
   }
 
+  async deleteScheduledMessage(params: {
+    channel: string;
+    scheduledMessageId: string;
+  }): Promise<void> {
+    await this.call('chat.deleteScheduledMessage', {
+      channel: params.channel,
+      scheduled_message_id: params.scheduledMessageId
+    });
+  }
+
   async getPermalink(params: { channel: string; messageTs: string }): Promise<string> {
     let data = await this.get<SlackResponse & { permalink: string }>('chat.getPermalink', {
       channel: params.channel,

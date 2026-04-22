@@ -335,6 +335,20 @@ export class LinearClient {
     return data.cycleUpdate;
   }
 
+  async deleteCycle(cycleId: string) {
+    let data = await this.query(
+      `
+      mutation CycleDelete($id: String!) {
+        cycleDelete(id: $id) {
+          success
+        }
+      }
+    `,
+      { id: cycleId }
+    );
+    return data.cycleDelete;
+  }
+
   async getCycle(cycleId: string) {
     let data = await this.query(
       `

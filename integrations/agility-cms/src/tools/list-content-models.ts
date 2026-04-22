@@ -35,7 +35,7 @@ export let listContentModels = SlateTool.create(spec, {
       token: ctx.auth.token,
       guid: ctx.config.guid,
       locale: ctx.config.locale,
-      region: ctx.config.region
+      region: ctx.auth.region
     });
 
     let models =

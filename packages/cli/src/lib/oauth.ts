@@ -1,10 +1,7 @@
 import { checkbox } from '@inquirer/prompts';
-import { execFile } from 'child_process';
 import { randomUUID } from 'crypto';
 import { createServer } from 'http';
-import { promisify } from 'util';
 
-let execFileAsync = promisify(execFile);
 let DEFAULT_OAUTH_CALLBACK_PORT = 45873;
 
 export let chooseScopes = async (
@@ -21,27 +18,16 @@ export let chooseScopes = async (
     choices: authMethod.scopes.map((scope: any) => ({
       name: `${scope.title} (${scope.id})`,
       value: scope.id,
-      checked: initialScopes.length > 0 ? initialScopes.includes(scope.id) : true
+      checked:
+        initialScopes.length > 0
+          ? initialScopes.includes(scope.id)
+          : scope.defaultChecked ?? true
     }))
   })) as string[];
 };
 
-export let openBrowser = async (url: string) => {
-  try {
-    if (process.platform === 'darwin') {
-      await execFileAsync('open', [url]);
-      return;
-    }
-
-    if (process.platform === 'win32') {
-      await execFileAsync('cmd', ['/c', 'start', '', url]);
-      return;
-    }
-
-    await execFileAsync('xdg-open', [url]);
-  } catch {
-    console.log(`Open this URL in your browser:\n${url}`);
-  }
+export let printBrowserUrl = (url: string) => {
+  console.log(`Open this URL in your browser:\n${url}`);
 };
 
 export let createOAuthCallbackListener = async () => {

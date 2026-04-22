@@ -1,5 +1,21 @@
 import { createAxios } from 'slates';
 
+let trimSlashes = (value: string) => value.replace(/^\/+|\/+$/g, '');
+
+let buildRootUploadPath = (driveId: string, parentPath: string, fileName: string) => {
+  let normalizedParentPath = trimSlashes(parentPath);
+  let relativePath = normalizedParentPath
+    ? `${normalizedParentPath}/${fileName}`
+    : fileName;
+  return `/drives/${driveId}/root:/${relativePath}:/content`;
+};
+
+let getLocationHeader = (headers: any) =>
+  headers?.location ??
+  headers?.Location ??
+  headers?.get?.('location') ??
+  headers?.get?.('Location');
+
 export class SharePointClient {
   private http: ReturnType<typeof createAxios>;
 
@@ -77,12 +93,19 @@ export class SharePointClient {
   }
 
   async getDriveItemByPath(driveId: string, itemPath: string) {
-    let response = await this.http.get(`/drives/${driveId}/root:/${itemPath}`);
+    let normalizedPath = trimSlashes(itemPath);
+    let response = await this.http.get(
+      normalizedPath ? `/drives/${driveId}/root:/${normalizedPath}` : `/drives/${driveId}/root`
+    );
     return response.data as any;
   }
 
   async createFolder(driveId: string, parentId: string, name: string) {
-    let response = await this.http.post(`/drives/${driveId}/items/${parentId}/children`, {
+    let path =
+      parentId === 'root'
+        ? `/drives/${driveId}/root/children`
+        : `/drives/${driveId}/items/${parentId}/children`;
+    let response = await this.http.post(path, {
       name,
       folder: {},
       '@microsoft.graph.conflictBehavior': 'rename'
@@ -96,13 +119,9 @@ export class SharePointClient {
     fileName: string,
     content: string
   ) {
-    let response = await this.http.put(
-      `/drives/${driveId}/root:/${parentPath}/${fileName}:/content`,
-      content,
-      {
-        headers: { 'Content-Type': 'application/octet-stream' }
-      }
-    );
+    let response = await this.http.put(buildRootUploadPath(driveId, parentPath, fileName), content, {
+      headers: { 'Content-Type': 'application/octet-stream' }
+    });
     return response.data as any;
   }
 
@@ -167,7 +186,9 @@ export class SharePointClient {
       body.name = newName;
     }
     let response = await this.http.post(`/drives/${driveId}/items/${itemId}/copy`, body);
-    return response.data as any;
+    return {
+      copyMonitorUrl: getLocationHeader(response.headers)
+    };
   }
 
   async renameDriveItem(driveId: string, itemId: string, newName: string) {
@@ -271,18 +292,29 @@ export class SharePointClient {
       top?: number;
       filter?: string;
       orderby?: string;
-      skip?: number;
+      skipToken?: string;
+      allowUnindexedQuery?: boolean;
     }
   ) {
+    let headers: Record<string, string> = {};
+    if (params?.allowUnindexedQuery) {
+      headers['Prefer'] = 'HonorNonIndexedQueriesWarningMayFailRandomly';
+    }
+
+    if (params?.skipToken) {
+      let response = await this.http.get(params.skipToken, { headers });
+      return response.data as any;
+    }
+
     let queryParams: any = {};
     if (params?.expand) queryParams.$expand = params.expand;
     if (params?.top) queryParams.$top = params.top;
     if (params?.filter) queryParams.$filter = params.filter;
     if (params?.orderby) queryParams.$orderby = params.orderby;
-    if (params?.skip) queryParams.$skip = params.skip;
 
     let response = await this.http.get(`/sites/${siteId}/lists/${listId}/items`, {
-      params: queryParams
+      params: queryParams,
+      headers
     });
     return response.data as any;
   }

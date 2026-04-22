@@ -46,7 +46,7 @@ export let manageContentModel = SlateTool.create(spec, {
       token: ctx.auth.token,
       guid: ctx.config.guid,
       locale: ctx.config.locale,
-      region: ctx.config.region
+      region: ctx.auth.region
     });
 
     switch (ctx.input.operation) {

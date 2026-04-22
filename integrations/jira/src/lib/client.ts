@@ -99,19 +99,19 @@ export class JiraClient {
   async searchIssues(
     jql: string,
     params?: {
-      startAt?: number;
+      nextPageToken?: string;
       maxResults?: number;
       fields?: string[];
-      expand?: string[];
     }
   ): Promise<any> {
-    let response = await this.api.post('/search', {
+    let body: Record<string, unknown> = {
       jql,
-      startAt: params?.startAt ?? 0,
-      maxResults: params?.maxResults ?? 50,
-      fields: params?.fields,
-      expand: params?.expand
-    });
+      maxResults: params?.maxResults ?? 50
+    };
+    if (params?.nextPageToken) body.nextPageToken = params.nextPageToken;
+    if (params?.fields?.length) body.fields = params.fields;
+
+    let response = await this.api.post('/search/jql', body);
     return response.data;
   }
 
@@ -280,7 +280,7 @@ export class JiraClient {
 
   async createSprint(sprint: {
     name: string;
-    boardId: number;
+    originBoardId: number;
     startDate?: string;
     endDate?: string;
     goal?: string;

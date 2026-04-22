@@ -56,11 +56,16 @@ export let resolveSlatesCliRoot = (cwd: string = process.cwd()) => {
   }
 };
 
+let resolveSlatesCliDirFromRoot = (rootDir: string) => path.join(rootDir, CLI_DIR_NAME);
+
+let resolveSlatesCliProfilesDirFromRoot = (rootDir: string) =>
+  path.join(resolveSlatesCliDirFromRoot(rootDir), PROFILES_DIR_NAME);
+
 export let resolveSlatesCliDir = (cwd: string = process.cwd()) =>
-  path.join(resolveSlatesCliRoot(cwd), CLI_DIR_NAME);
+  resolveSlatesCliDirFromRoot(resolveSlatesCliRoot(cwd));
 
 export let resolveSlatesCliProfilesDir = (cwd: string = process.cwd()) =>
-  path.join(resolveSlatesCliDir(cwd), PROFILES_DIR_NAME);
+  resolveSlatesCliProfilesDirFromRoot(resolveSlatesCliRoot(cwd));
 
 let normalizeScopeKey = (scopeKey: string) =>
   path.posix.normalize(scopeKey.replace(/\\/g, '/')).replace(/^\.?\//, '');
@@ -72,7 +77,7 @@ let splitScopeKey = (scopeKey: string) =>
     .filter(segment => segment !== '.' && segment !== '..');
 
 let resolveScopedStoreDir = (rootDir: string, scopeKey: string) =>
-  path.join(resolveSlatesCliProfilesDir(rootDir), ...splitScopeKey(scopeKey));
+  path.join(resolveSlatesCliProfilesDirFromRoot(rootDir), ...splitScopeKey(scopeKey));
 
 let resolveScopedStorePath = (rootDir: string, scopeKey: string) =>
   path.join(resolveScopedStoreDir(rootDir, scopeKey), STORE_FILE_NAME);
@@ -91,7 +96,7 @@ let inferRootDirFromStorePath = (storePath: string) => {
 };
 
 let resolveScopeKeyFromStorePath = (rootDir: string, storePath: string) => {
-  let profilesDir = resolveSlatesCliProfilesDir(rootDir);
+  let profilesDir = resolveSlatesCliProfilesDirFromRoot(rootDir);
   let relativeDir = path.relative(profilesDir, path.dirname(storePath));
   if (!relativeDir || relativeDir.startsWith('..') || path.isAbsolute(relativeDir)) {
     return null;
@@ -138,7 +143,7 @@ let loadMigratedLegacyStore = async (
   rootDir: string,
   scopeKey: string
 ): Promise<SlatesCliStoreData> => {
-  let legacyStorePath = path.join(resolveSlatesCliDir(rootDir), STORE_FILE_NAME);
+  let legacyStorePath = path.join(resolveSlatesCliDirFromRoot(rootDir), STORE_FILE_NAME);
   let legacy = await readStoreData<SlatesLegacyCliStoreData>(legacyStorePath);
   if (!legacy) {
     return createEmptyStore();
@@ -166,6 +171,7 @@ let loadMigratedLegacyStore = async (
 export class SlatesCliStore {
   constructor(
     readonly rootDir: string,
+    readonly cliDir: string,
     readonly dirPath: string,
     readonly storePath: string,
     readonly scope: SlatesCliStoreScope | null,
@@ -173,14 +179,15 @@ export class SlatesCliStore {
   ) {}
 
   static async open(
-    opts: { cwd?: string; scope?: SlatesCliStoreScope; storePath?: string } = {}
+    opts: { cwd?: string; rootDir?: string; scope?: SlatesCliStoreScope; storePath?: string } = {}
   ) {
-    let rootDir = opts.storePath
+    let storageRootDir = opts.storePath
       ? inferRootDirFromStorePath(opts.storePath)
       : resolveSlatesCliRoot(opts.cwd);
-    let cliDir = resolveSlatesCliDir(rootDir);
+    let rootDir = opts.rootDir ?? storageRootDir;
+    let cliDir = resolveSlatesCliDirFromRoot(storageRootDir);
     let scopeKey = opts.storePath
-      ? resolveScopeKeyFromStorePath(rootDir, opts.storePath)
+      ? resolveScopeKeyFromStorePath(storageRootDir, opts.storePath)
       : opts.scope?.key
         ? normalizeScopeKey(opts.scope.key)
         : null;
@@ -207,6 +214,8 @@ export class SlatesCliStore {
           profiles: parsed.profiles ?? {},
           oauthCredentials: parsed.oauthCredentials ?? {}
         }
+      : opts.storePath
+        ? createEmptyStore()
       : scopeKey
         ? await loadMigratedLegacyStore(rootDir, scopeKey)
         : createEmptyStore();
@@ -217,6 +226,7 @@ export class SlatesCliStore {
 
     return new SlatesCliStore(
       rootDir,
+      cliDir,
       dirPath,
       storePath,
       scopeKey ? { key: scopeKey, name: opts.scope?.name } : null,
@@ -226,8 +236,8 @@ export class SlatesCliStore {
 
   async save() {
     await ensureDir(this.dirPath);
-    await ensureDir(resolveSlatesCliDir(this.rootDir));
-    await ensureGitIgnore(resolveSlatesCliDir(this.rootDir));
+    await ensureDir(this.cliDir);
+    await ensureGitIgnore(this.cliDir);
     await writeFile(this.storePath, JSON.stringify(this.data, null, 2) + '\n', 'utf-8');
   }
 

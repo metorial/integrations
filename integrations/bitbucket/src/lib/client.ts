@@ -4,10 +4,14 @@ export class Client {
   private api: ReturnType<typeof createAxios>;
 
   constructor(private params: { token: string; workspace: string }) {
+    let authorization = params.token.startsWith('Basic ')
+      ? params.token
+      : `Bearer ${params.token}`;
+
     this.api = createAxios({
       baseURL: 'https://api.bitbucket.org/2.0',
       headers: {
-        Authorization: `Bearer ${params.token}`,
+        Authorization: authorization,
         'Content-Type': 'application/json'
       }
     });
@@ -630,7 +634,8 @@ export class Client {
   }
 
   async createProject(body: Record<string, any>) {
-    let response = await this.api.post(`/workspaces/${this.params.workspace}/projects`, body);
+    // Trailing slash matches Bitbucket docs; some workspaces return 400 without it.
+    let response = await this.api.post(`/workspaces/${this.params.workspace}/projects/`, body);
     return response.data;
   }
 

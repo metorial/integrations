@@ -41,7 +41,7 @@ export let updateContactTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
+    let client = new Client({ token: ctx.auth.token, environment: ctx.auth.environment });
 
     let hasUpdates =
       ctx.input.name ||

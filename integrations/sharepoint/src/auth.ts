@@ -1,98 +1,78 @@
+import { normalizeMicrosoftRedirectUri } from '@slates/oauth-microsoft';
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
-export let auth = SlateAuth.create()
-  .output(
-    z.object({
-      token: z.string(),
-      refreshToken: z.string().optional(),
-      expiresAt: z.string().optional(),
-      tenantId: z.string().optional()
-    })
-  )
-  .addOauth({
-    type: 'auth.oauth',
-    name: 'Microsoft OAuth',
-    key: 'microsoft_oauth',
+let scopes = [
+  {
+    title: 'Sites Read',
+    description: 'Read items in all site collections',
+    scope: 'Sites.Read.All'
+  },
+  {
+    title: 'Sites Read Write',
+    description: 'Read and write items in all site collections',
+    scope: 'Sites.ReadWrite.All'
+  },
+  {
+    title: 'Sites Manage',
+    description: 'Create, edit, and delete items and lists in all site collections',
+    scope: 'Sites.Manage.All'
+  },
+  {
+    title: 'Sites Full Control',
+    description: 'Full control of all site collections',
+    scope: 'Sites.FullControl.All'
+  },
+  {
+    title: 'Files Read',
+    description: 'Read all files that user can access',
+    scope: 'Files.Read.All'
+  },
+  {
+    title: 'Files Read Write',
+    description: 'Read and write all files that user can access',
+    scope: 'Files.ReadWrite.All'
+  },
+  {
+    title: 'User Read',
+    description: 'Read user profile',
+    scope: 'User.Read'
+  },
+  {
+    title: 'Offline Access',
+    description:
+      'Maintain access to data you have given it access to (enables refresh tokens)',
+    scope: 'offline_access'
+  }
+];
 
-    scopes: [
-      {
-        title: 'Sites Read',
-        description: 'Read items in all site collections',
-        scope: 'Sites.Read.All'
-      },
-      {
-        title: 'Sites Read Write',
-        description: 'Read and write items in all site collections',
-        scope: 'Sites.ReadWrite.All'
-      },
-      {
-        title: 'Sites Manage',
-        description: 'Create, edit, and delete items and lists in all site collections',
-        scope: 'Sites.Manage.All'
-      },
-      {
-        title: 'Sites Full Control',
-        description: 'Full control of all site collections',
-        scope: 'Sites.FullControl.All'
-      },
-      {
-        title: 'Files Read',
-        description: 'Read all files that user can access',
-        scope: 'Files.Read.All'
-      },
-      {
-        title: 'Files Read Write',
-        description: 'Read and write all files that user can access',
-        scope: 'Files.ReadWrite.All'
-      },
-      {
-        title: 'Lists Read',
-        description: 'Read items in all lists',
-        scope: 'Lists.Read.All'
-      },
-      {
-        title: 'Lists Read Write',
-        description: 'Read and write items in all lists',
-        scope: 'Lists.ReadWrite.All'
-      },
-      {
-        title: 'User Read',
-        description: 'Read user profile',
-        scope: 'User.Read'
-      },
-      {
-        title: 'Offline Access',
-        description:
-          'Maintain access to data you have given it access to (enables refresh tokens)',
-        scope: 'offline_access'
-      }
-    ],
+function createMicrosoftOauth(name: string, key: string, tenant: string) {
+  return {
+    type: 'auth.oauth' as const,
+    name,
+    key,
+    scopes,
 
-    inputSchema: z.object({
-      tenantId: z.string().describe('Microsoft Entra ID (Azure AD) tenant ID')
-    }),
-
-    getAuthorizationUrl: async ctx => {
+    getAuthorizationUrl: async (ctx: any) => {
+      let redirectUri = normalizeMicrosoftRedirectUri(ctx.redirectUri);
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: redirectUri,
         scope: ctx.scopes.join(' '),
         state: ctx.state,
         response_mode: 'query'
       });
 
-      let tenantId = ctx.input.tenantId || 'common';
-      let url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?${params.toString()}`;
-
-      return { url, input: ctx.input };
+      return {
+        url: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize?${params.toString()}`
+      };
     },
 
-    handleCallback: async ctx => {
-      let tenantId = ctx.input.tenantId || 'common';
+    handleCallback: async (ctx: any) => {
+      let redirectUri = normalizeMicrosoftRedirectUri(ctx.redirectUri);
       let tokenAxios = createAxios({
-        baseURL: `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0`
+        baseURL: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0`
       });
 
       let response = await tokenAxios.post(
@@ -101,7 +81,7 @@ export let auth = SlateAuth.create()
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           code: ctx.code,
-          redirect_uri: ctx.redirectUri,
+          redirect_uri: redirectUri,
           grant_type: 'authorization_code',
           scope: ctx.scopes.join(' ')
         }).toString(),
@@ -120,23 +100,20 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-          tenantId: ctx.input.tenantId
-        },
-        input: ctx.input
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         throw new Error(
           'No refresh token available. Ensure "offline_access" scope is included.'
         );
       }
 
-      let tenantId = ctx.input.tenantId || ctx.output.tenantId || 'common';
       let tokenAxios = createAxios({
-        baseURL: `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0`
+        baseURL: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0`
       });
 
       let response = await tokenAxios.post(
@@ -163,10 +140,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-          tenantId: ctx.output.tenantId
-        },
-        input: ctx.input
+          expiresAt
+        }
       };
     },
 
@@ -189,4 +164,16 @@ export let auth = SlateAuth.create()
         }
       };
     }
-  });
+  };
+}
+
+export let auth = SlateAuth.create()
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
+  .addOauth(createMicrosoftOauth('Work & Personal', 'oauth_common', 'common'))
+  .addOauth(createMicrosoftOauth('Work Only', 'oauth_organizations', 'organizations'));

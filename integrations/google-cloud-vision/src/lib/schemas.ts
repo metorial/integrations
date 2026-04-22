@@ -18,16 +18,16 @@ export let boundingPolySchema = z.object({
   vertices: z
     .array(
       z.object({
-        x: z.number().describe('X coordinate'),
-        y: z.number().describe('Y coordinate')
+        x: z.number().optional().describe('X coordinate'),
+        y: z.number().optional().describe('Y coordinate')
       })
     )
     .describe('Bounding polygon vertices'),
   normalizedVertices: z
     .array(
       z.object({
-        x: z.number().describe('Normalized X coordinate (0-1)'),
-        y: z.number().describe('Normalized Y coordinate (0-1)')
+        x: z.number().optional().describe('Normalized X coordinate (0-1)'),
+        y: z.number().optional().describe('Normalized Y coordinate (0-1)')
       })
     )
     .optional()

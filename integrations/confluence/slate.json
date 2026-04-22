@@ -18,5 +18,6 @@
     "manage content restrictions",
     "track page version history"
   ],
-  "logoUrl": "https://provider-logos.metorial-cdn.com/confluence-logo.png"
+  "logoUrl": "https://provider-logos.metorial-cdn.com/confluence-logo.png",
+  "version": "0.1.3"
 }

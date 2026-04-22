@@ -58,35 +58,48 @@ export let createChart = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new SheetsClient(ctx.auth.token);
     let input = ctx.input;
+    let columnSpan = input.sourceRange.endColumnIndex - input.sourceRange.startColumnIndex;
 
-    let sourceRange = {
+    if (columnSpan < 2) {
+      throw new Error(
+        'sourceRange must include at least two columns: one domain column and one series column.'
+      );
+    }
+
+    let domainRange = {
       sheetId: input.sourceRange.sheetId,
       startRowIndex: input.sourceRange.startRowIndex,
       endRowIndex: input.sourceRange.endRowIndex,
       startColumnIndex: input.sourceRange.startColumnIndex,
-      endColumnIndex: input.sourceRange.endColumnIndex
+      endColumnIndex: input.sourceRange.startColumnIndex + 1
     };
+
+    let seriesRanges = Array.from({ length: columnSpan - 1 }, (_, index) => ({
+      sheetId: input.sourceRange.sheetId,
+      startRowIndex: input.sourceRange.startRowIndex,
+      endRowIndex: input.sourceRange.endRowIndex,
+      startColumnIndex: input.sourceRange.startColumnIndex + index + 1,
+      endColumnIndex: input.sourceRange.startColumnIndex + index + 2
+    }));
 
     let chartSpec: Record<string, any> = {
       title: input.title
     };
 
     if (input.chartType === 'PIE') {
+      if (seriesRanges.length !== 1) {
+        throw new Error(
+          'PIE charts require exactly two columns in sourceRange: one domain column and one value column.'
+        );
+      }
+
       chartSpec.pieChart = {
         legendPosition: input.legendPosition ?? 'BOTTOM_LEGEND',
         domain: {
-          sourceRange: { sources: [sourceRange] }
+          sourceRange: { sources: [domainRange] }
         },
         series: {
-          sourceRange: {
-            sources: [
-              {
-                ...sourceRange,
-                startColumnIndex: sourceRange.startColumnIndex + 1,
-                endColumnIndex: sourceRange.endColumnIndex
-              }
-            ]
-          }
+          sourceRange: { sources: [seriesRanges[0]] }
         }
       };
     } else {
@@ -97,26 +110,18 @@ export let createChart = SlateTool.create(spec, {
         domains: [
           {
             domain: {
-              sourceRange: { sources: [sourceRange] }
+              sourceRange: { sources: [domainRange] }
             }
           }
         ],
-        series: [
-          {
-            series: {
-              sourceRange: {
-                sources: [
-                  {
-                    ...sourceRange,
-                    startColumnIndex: sourceRange.startColumnIndex + 1,
-                    endColumnIndex: sourceRange.endColumnIndex
-                  }
-                ]
-              }
-            },
-            targetAxis: 'LEFT_AXIS'
-          }
-        ]
+        series: seriesRanges.map(range => ({
+          series: {
+            sourceRange: {
+              sources: [range]
+            }
+          },
+          targetAxis: 'LEFT_AXIS'
+        }))
       };
     }
 

@@ -21,7 +21,7 @@ export let updatePage = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('New page body in Confluence storage format (XHTML)'),
-      versionNumber: z
+      versionNumber: z.coerce
         .number()
         .describe('The current version number of the page (will be incremented)'),
       versionMessage: z

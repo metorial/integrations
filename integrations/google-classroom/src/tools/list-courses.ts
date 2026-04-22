@@ -73,7 +73,21 @@ export let listCourses = SlateTool.create(spec, {
       pageToken: ctx.input.pageToken
     });
 
-    let courses = result.courses || [];
+    let courses = (result.courses || []).map((course: Record<string, any>) => ({
+      courseId: course.id,
+      name: course.name,
+      section: course.section,
+      descriptionHeading: course.descriptionHeading,
+      description: course.description,
+      room: course.room,
+      ownerId: course.ownerId,
+      courseState: course.courseState,
+      alternateLink: course.alternateLink,
+      enrollmentCode: course.enrollmentCode,
+      creationTime: course.creationTime,
+      updateTime: course.updateTime,
+      guardiansEnabled: course.guardiansEnabled
+    }));
 
     return {
       output: {

@@ -65,7 +65,7 @@ export let manageExpenses = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment ?? 'production'
+      environment: ctx.auth.environment ?? 'production'
     });
 
     if (ctx.input.action === 'create') {

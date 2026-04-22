@@ -407,7 +407,8 @@ export class ConfluenceClient {
   }
 
   async createPageFooterComment(pageId: string, body: string): Promise<ConfluenceComment> {
-    let response = await this.ax.post(`/api/v2/pages/${pageId}/footer-comments`, {
+    let response = await this.ax.post(`/api/v2/footer-comments`, {
+      pageId,
       body: {
         representation: 'storage',
         value: body
@@ -420,7 +421,8 @@ export class ConfluenceClient {
     blogPostId: string,
     body: string
   ): Promise<ConfluenceComment> {
-    let response = await this.ax.post(`/api/v2/blogposts/${blogPostId}/footer-comments`, {
+    let response = await this.ax.post(`/api/v2/footer-comments`, {
+      blogPostId,
       body: {
         representation: 'storage',
         value: body
@@ -440,8 +442,14 @@ export class ConfluenceClient {
   // ── Labels (v1 API) ──
 
   async getContentLabels(contentId: string): Promise<V1PaginatedResponse<ConfluenceLabel>> {
-    let response = await this.ax.get(`/wiki/rest/api/content/${contentId}/label`);
-    return response.data;
+    let response = await this.ax.get(`/api/v2/pages/${contentId}/labels`);
+    let data = response.data;
+    return {
+      results: data.results || [],
+      start: 0,
+      limit: 200,
+      size: data.results?.length ?? 0
+    };
   }
 
   async addContentLabels(contentId: string, labels: string[]): Promise<ConfluenceLabel[]> {
@@ -591,24 +599,6 @@ export class ConfluenceClient {
     return response.data;
   }
 
-  async getGroupMembers(
-    groupName: string,
-    params: {
-      limit?: number;
-      start?: number;
-    } = {}
-  ): Promise<V1PaginatedResponse<ConfluenceUser>> {
-    let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.start) queryParams['start'] = String(params.start);
-
-    let response = await this.ax.get(
-      `/wiki/rest/api/group/${encodeURIComponent(groupName)}/member`,
-      { params: queryParams }
-    );
-    return response.data;
-  }
-
   // ── Content Version History (v1 API) ──
 
   async getContentVersions(
@@ -620,12 +610,17 @@ export class ConfluenceClient {
   ): Promise<V1PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
     if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.start) queryParams['start'] = String(params.start);
 
-    let response = await this.ax.get(`/wiki/rest/api/content/${contentId}/version`, {
+    let response = await this.ax.get(`/api/v2/pages/${contentId}/versions`, {
       params: queryParams
     });
-    return response.data;
+    let data = response.data;
+    return {
+      results: data.results || [],
+      start: 0,
+      limit: params.limit ?? 10,
+      size: data.results?.length ?? 0
+    };
   }
 
   // ── Webhooks (Cloud REST API) ──

@@ -23,8 +23,30 @@ export class SpeechToTextClient {
     });
   }
 
-  private get recognizerBase() {
-    return `/v2/projects/${this.projectId}/locations/${this.region}`;
+  private recognizerBase(region: string) {
+    return `/v2/projects/${this.projectId}/locations/${region}`;
+  }
+
+  private shouldRetryInGlobal(error: unknown) {
+    let message = error instanceof Error ? error.message : String(error);
+    return (
+      this.region !== 'global' &&
+      message.includes('Expected resource location to be global')
+    );
+  }
+
+  private async withLocationFallback<T>(
+    request: (region: string) => Promise<T>
+  ): Promise<T> {
+    try {
+      return await request(this.region);
+    } catch (error) {
+      if (!this.shouldRetryInGlobal(error)) {
+        throw error;
+      }
+
+      return await request('global');
+    }
   }
 
   async recognize(params: {
@@ -46,69 +68,71 @@ export class SpeechToTextClient {
     encoding?: string;
   }): Promise<RecognizeResponse> {
     let recognizerId = params.recognizerId || '_';
-    let url = `${this.recognizerBase}/recognizers/${recognizerId}:recognize`;
+    return await this.withLocationFallback(async region => {
+      let url = `${this.recognizerBase(region)}/recognizers/${recognizerId}:recognize`;
 
-    let features: Record<string, unknown> = {};
-    if (params.enableAutomaticPunctuation !== undefined) {
-      features.enableAutomaticPunctuation = params.enableAutomaticPunctuation;
-    }
-    if (params.enableWordTimeOffsets !== undefined) {
-      features.enableWordTimeOffsets = params.enableWordTimeOffsets;
-    }
-    if (params.enableWordConfidence !== undefined) {
-      features.enableWordConfidence = params.enableWordConfidence;
-    }
-    if (params.enableSpokenPunctuation !== undefined) {
-      features.enableSpokenPunctuation = params.enableSpokenPunctuation;
-    }
-    if (params.minSpeakerCount !== undefined || params.maxSpeakerCount !== undefined) {
-      features.diarizationConfig = {
-        minSpeakerCount: params.minSpeakerCount,
-        maxSpeakerCount: params.maxSpeakerCount
-      };
-    }
+      let features: Record<string, unknown> = {};
+      if (params.enableAutomaticPunctuation !== undefined) {
+        features.enableAutomaticPunctuation = params.enableAutomaticPunctuation;
+      }
+      if (params.enableWordTimeOffsets !== undefined) {
+        features.enableWordTimeOffsets = params.enableWordTimeOffsets;
+      }
+      if (params.enableWordConfidence !== undefined) {
+        features.enableWordConfidence = params.enableWordConfidence;
+      }
+      if (params.enableSpokenPunctuation !== undefined) {
+        features.enableSpokenPunctuation = params.enableSpokenPunctuation;
+      }
+      if (params.minSpeakerCount !== undefined || params.maxSpeakerCount !== undefined) {
+        features.diarizationConfig = {
+          minSpeakerCount: params.minSpeakerCount,
+          maxSpeakerCount: params.maxSpeakerCount
+        };
+      }
 
-    let adaptation: Record<string, unknown> | undefined;
-    if (params.speechContextPhrases && params.speechContextPhrases.length > 0) {
-      adaptation = {
-        phraseSets: [
-          {
-            inlinePhraseSet: {
-              phrases: params.speechContextPhrases.map(phrase => ({
-                value: phrase,
-                boost: params.phraseBoost ?? 10
-              }))
+      let adaptation: Record<string, unknown> | undefined;
+      if (params.speechContextPhrases && params.speechContextPhrases.length > 0) {
+        adaptation = {
+          phraseSets: [
+            {
+              inlinePhraseSet: {
+                phrases: params.speechContextPhrases.map(phrase => ({
+                  value: phrase,
+                  boost: params.phraseBoost ?? 10
+                }))
+              }
             }
-          }
-        ]
-      };
-    }
+          ]
+        };
+      }
 
-    let configObj: Record<string, unknown> = {};
-    if (params.model) configObj.model = params.model;
-    if (params.languageCodes && params.languageCodes.length > 0) {
-      configObj.languageCodes = params.languageCodes;
-    }
-    if (Object.keys(features).length > 0) configObj.features = features;
-    if (adaptation) configObj.adaptation = adaptation;
+      let configObj: Record<string, unknown> = {};
+      if (params.model) configObj.model = params.model;
+      if (params.languageCodes && params.languageCodes.length > 0) {
+        configObj.languageCodes = params.languageCodes;
+      }
+      if (Object.keys(features).length > 0) configObj.features = features;
+      if (adaptation) configObj.adaptation = adaptation;
 
-    if (params.encoding && params.sampleRateHertz) {
-      configObj.explicitDecodingConfig = {
-        encoding: params.encoding,
-        sampleRateHertz: params.sampleRateHertz,
-        audioChannelCount: params.audioChannelCount ?? 1
-      };
-    } else {
-      configObj.autoDecodingConfig = {};
-    }
+      if (params.encoding && params.sampleRateHertz) {
+        configObj.explicitDecodingConfig = {
+          encoding: params.encoding,
+          sampleRateHertz: params.sampleRateHertz,
+          audioChannelCount: params.audioChannelCount ?? 1
+        };
+      } else {
+        configObj.autoDecodingConfig = {};
+      }
 
-    let body: Record<string, unknown> = {};
-    if (Object.keys(configObj).length > 0) body.config = configObj;
-    if (params.audioContent) body.content = params.audioContent;
-    if (params.audioUri) body.uri = params.audioUri;
+      let body: Record<string, unknown> = {};
+      if (Object.keys(configObj).length > 0) body.config = configObj;
+      if (params.audioContent) body.content = params.audioContent;
+      if (params.audioUri) body.uri = params.audioUri;
 
-    let response = await this.http.post(url, body);
-    return response.data as RecognizeResponse;
+      let response = await this.http.post(url, body);
+      return response.data as RecognizeResponse;
+    });
   }
 
   async batchRecognize(params: {
@@ -124,51 +148,53 @@ export class SpeechToTextClient {
     maxSpeakerCount?: number;
   }): Promise<OperationResponse> {
     let recognizerId = params.recognizerId || '_';
-    let url = `${this.recognizerBase}/recognizers/${recognizerId}:batchRecognize`;
+    return await this.withLocationFallback(async region => {
+      let url = `${this.recognizerBase(region)}/recognizers/${recognizerId}:batchRecognize`;
 
-    let features: Record<string, unknown> = {};
-    if (params.enableAutomaticPunctuation !== undefined) {
-      features.enableAutomaticPunctuation = params.enableAutomaticPunctuation;
-    }
-    if (params.enableWordTimeOffsets !== undefined) {
-      features.enableWordTimeOffsets = params.enableWordTimeOffsets;
-    }
-    if (params.enableWordConfidence !== undefined) {
-      features.enableWordConfidence = params.enableWordConfidence;
-    }
-    if (params.minSpeakerCount !== undefined || params.maxSpeakerCount !== undefined) {
-      features.diarizationConfig = {
-        minSpeakerCount: params.minSpeakerCount,
-        maxSpeakerCount: params.maxSpeakerCount
+      let features: Record<string, unknown> = {};
+      if (params.enableAutomaticPunctuation !== undefined) {
+        features.enableAutomaticPunctuation = params.enableAutomaticPunctuation;
+      }
+      if (params.enableWordTimeOffsets !== undefined) {
+        features.enableWordTimeOffsets = params.enableWordTimeOffsets;
+      }
+      if (params.enableWordConfidence !== undefined) {
+        features.enableWordConfidence = params.enableWordConfidence;
+      }
+      if (params.minSpeakerCount !== undefined || params.maxSpeakerCount !== undefined) {
+        features.diarizationConfig = {
+          minSpeakerCount: params.minSpeakerCount,
+          maxSpeakerCount: params.maxSpeakerCount
+        };
+      }
+
+      let configObj: Record<string, unknown> = {
+        autoDecodingConfig: {}
       };
-    }
+      if (params.model) configObj.model = params.model;
+      if (params.languageCodes && params.languageCodes.length > 0) {
+        configObj.languageCodes = params.languageCodes;
+      }
+      if (Object.keys(features).length > 0) configObj.features = features;
 
-    let configObj: Record<string, unknown> = {
-      autoDecodingConfig: {}
-    };
-    if (params.model) configObj.model = params.model;
-    if (params.languageCodes && params.languageCodes.length > 0) {
-      configObj.languageCodes = params.languageCodes;
-    }
-    if (Object.keys(features).length > 0) configObj.features = features;
+      let files = params.fileUris.map(uri => ({ uri }));
 
-    let files = params.fileUris.map(uri => ({ uri }));
+      let recognitionOutputConfig: Record<string, unknown> = {};
+      if (params.outputUri) {
+        recognitionOutputConfig.gcsOutputConfig = { uri: params.outputUri };
+      } else {
+        recognitionOutputConfig.inlineResponseConfig = {};
+      }
 
-    let recognitionOutputConfig: Record<string, unknown> = {};
-    if (params.outputUri) {
-      recognitionOutputConfig.gcsOutputConfig = { uri: params.outputUri };
-    } else {
-      recognitionOutputConfig.inlineResponseConfig = {};
-    }
+      let body: Record<string, unknown> = {
+        config: configObj,
+        files,
+        recognitionOutputConfig
+      };
 
-    let body: Record<string, unknown> = {
-      config: configObj,
-      files,
-      recognitionOutputConfig
-    };
-
-    let response = await this.http.post(url, body);
-    return response.data as OperationResponse;
+      let response = await this.http.post(url, body);
+      return response.data as OperationResponse;
+    });
   }
 
   async getOperation(operationName: string): Promise<OperationResponse> {
@@ -181,15 +207,17 @@ export class SpeechToTextClient {
     pageToken?: string;
     filter?: string;
   }): Promise<ListOperationsResponse> {
-    let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
-    if (params?.pageToken) queryParams.pageToken = params.pageToken;
-    if (params?.filter) queryParams.filter = params.filter;
+    return await this.withLocationFallback(async region => {
+      let queryParams: Record<string, string> = {};
+      if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+      if (params?.pageToken) queryParams.pageToken = params.pageToken;
+      if (params?.filter) queryParams.filter = params.filter;
 
-    let response = await this.http.get(`${this.recognizerBase}/operations`, {
-      params: queryParams
+      let response = await this.http.get(`${this.recognizerBase(region)}/operations`, {
+        params: queryParams
+      });
+      return response.data as ListOperationsResponse;
     });
-    return response.data as ListOperationsResponse;
   }
 
   async createRecognizer(params: {
@@ -201,61 +229,67 @@ export class SpeechToTextClient {
     enableWordTimeOffsets?: boolean;
     enableWordConfidence?: boolean;
   }): Promise<OperationResponse> {
-    let url = `${this.recognizerBase}/recognizers`;
+    return await this.withLocationFallback(async region => {
+      let url = `${this.recognizerBase(region)}/recognizers`;
 
-    let features: Record<string, unknown> = {};
-    if (params.enableAutomaticPunctuation !== undefined) {
-      features.enableAutomaticPunctuation = params.enableAutomaticPunctuation;
-    }
-    if (params.enableWordTimeOffsets !== undefined) {
-      features.enableWordTimeOffsets = params.enableWordTimeOffsets;
-    }
-    if (params.enableWordConfidence !== undefined) {
-      features.enableWordConfidence = params.enableWordConfidence;
-    }
+      let features: Record<string, unknown> = {};
+      if (params.enableAutomaticPunctuation !== undefined) {
+        features.enableAutomaticPunctuation = params.enableAutomaticPunctuation;
+      }
+      if (params.enableWordTimeOffsets !== undefined) {
+        features.enableWordTimeOffsets = params.enableWordTimeOffsets;
+      }
+      if (params.enableWordConfidence !== undefined) {
+        features.enableWordConfidence = params.enableWordConfidence;
+      }
 
-    let defaultRecognitionConfig: Record<string, unknown> = {
-      autoDecodingConfig: {}
-    };
-    if (params.model) defaultRecognitionConfig.model = params.model;
-    if (params.languageCodes.length > 0) {
-      defaultRecognitionConfig.languageCodes = params.languageCodes;
-    }
-    if (Object.keys(features).length > 0) {
-      defaultRecognitionConfig.features = features;
-    }
+      let defaultRecognitionConfig: Record<string, unknown> = {
+        autoDecodingConfig: {}
+      };
+      if (params.model) defaultRecognitionConfig.model = params.model;
+      if (params.languageCodes.length > 0) {
+        defaultRecognitionConfig.languageCodes = params.languageCodes;
+      }
+      if (Object.keys(features).length > 0) {
+        defaultRecognitionConfig.features = features;
+      }
 
-    let body: Record<string, unknown> = {
-      displayName: params.displayName || params.recognizerId,
-      model: params.model,
-      languageCodes: params.languageCodes,
-      defaultRecognitionConfig
-    };
+      let body: Record<string, unknown> = {
+        displayName: params.displayName || params.recognizerId,
+        model: params.model,
+        languageCodes: params.languageCodes,
+        defaultRecognitionConfig
+      };
 
-    let response = await this.http.post(url, body, {
-      params: { recognizerId: params.recognizerId }
+      let response = await this.http.post(url, body, {
+        params: { recognizerId: params.recognizerId }
+      });
+      return response.data as OperationResponse;
     });
-    return response.data as OperationResponse;
   }
 
   async getRecognizer(recognizerId: string): Promise<RecognizerResource> {
-    let url = `${this.recognizerBase}/recognizers/${recognizerId}`;
-    let response = await this.http.get(url);
-    return response.data as RecognizerResource;
+    return await this.withLocationFallback(async region => {
+      let url = `${this.recognizerBase(region)}/recognizers/${recognizerId}`;
+      let response = await this.http.get(url);
+      return response.data as RecognizerResource;
+    });
   }
 
   async listRecognizers(params?: {
     pageSize?: number;
     pageToken?: string;
   }): Promise<ListRecognizersResponse> {
-    let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
-    if (params?.pageToken) queryParams.pageToken = params.pageToken;
+    return await this.withLocationFallback(async region => {
+      let queryParams: Record<string, string> = {};
+      if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+      if (params?.pageToken) queryParams.pageToken = params.pageToken;
 
-    let response = await this.http.get(`${this.recognizerBase}/recognizers`, {
-      params: queryParams
+      let response = await this.http.get(`${this.recognizerBase(region)}/recognizers`, {
+        params: queryParams
+      });
+      return response.data as ListRecognizersResponse;
     });
-    return response.data as ListRecognizersResponse;
   }
 
   async updateRecognizer(params: {
@@ -264,36 +298,41 @@ export class SpeechToTextClient {
     model?: string;
     languageCodes?: string[];
   }): Promise<OperationResponse> {
-    let url = `${this.recognizerBase}/recognizers/${params.recognizerId}`;
+    return await this.withLocationFallback(async region => {
+      let base = this.recognizerBase(region);
+      let url = `${base}/recognizers/${params.recognizerId}`;
 
-    let body: Record<string, unknown> = {
-      name: `${this.recognizerBase}/recognizers/${params.recognizerId}`
-    };
-    let updateMaskFields: string[] = [];
+      let body: Record<string, unknown> = {
+        name: `${base}/recognizers/${params.recognizerId}`
+      };
+      let updateMaskFields: string[] = [];
 
-    if (params.displayName !== undefined) {
-      body.displayName = params.displayName;
-      updateMaskFields.push('displayName');
-    }
-    if (params.model !== undefined) {
-      body.model = params.model;
-      updateMaskFields.push('model');
-    }
-    if (params.languageCodes !== undefined) {
-      body.languageCodes = params.languageCodes;
-      updateMaskFields.push('languageCodes');
-    }
+      if (params.displayName !== undefined) {
+        body.displayName = params.displayName;
+        updateMaskFields.push('displayName');
+      }
+      if (params.model !== undefined) {
+        body.model = params.model;
+        updateMaskFields.push('model');
+      }
+      if (params.languageCodes !== undefined) {
+        body.languageCodes = params.languageCodes;
+        updateMaskFields.push('languageCodes');
+      }
 
-    let response = await this.http.patch(url, body, {
-      params: { updateMask: updateMaskFields.join(',') }
+      let response = await this.http.patch(url, body, {
+        params: { updateMask: updateMaskFields.join(',') }
+      });
+      return response.data as OperationResponse;
     });
-    return response.data as OperationResponse;
   }
 
   async deleteRecognizer(recognizerId: string): Promise<OperationResponse> {
-    let url = `${this.recognizerBase}/recognizers/${recognizerId}`;
-    let response = await this.http.delete(url);
-    return response.data as OperationResponse;
+    return await this.withLocationFallback(async region => {
+      let url = `${this.recognizerBase(region)}/recognizers/${recognizerId}`;
+      let response = await this.http.delete(url);
+      return response.data as OperationResponse;
+    });
   }
 }
 

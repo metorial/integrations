@@ -11,7 +11,7 @@ export let updateIssueTool = SlateTool.create(spec, {
   .input(
     z.object({
       repoSlug: z.string().describe('Repository slug'),
-      issueId: z.number().describe('Issue ID to update'),
+      issueId: z.coerce.number().describe('Issue ID to update'),
       title: z.string().optional().describe('New title'),
       content: z.string().optional().describe('New body content (Markdown)'),
       status: z

@@ -38,7 +38,7 @@ export let processPayroll = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseUrl: getBaseUrl(ctx.config.environment)
+      baseUrl: getBaseUrl(ctx.auth.environment)
     });
 
     let result: any;

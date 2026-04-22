@@ -45,7 +45,7 @@ describe('google-tasks auth contract', () => {
     });
 
     let url = new URL(result.authorizationUrl);
-    expect(`${url.origin}${url.pathname}`).toBe('https://accounts.google.com/o/oauth2/auth');
+    expect(`${url.origin}${url.pathname}`).toBe('https://accounts.google.com/o/oauth2/v2/auth');
     expect(url.searchParams.get('scope')).toBe(googleTasksScopes.tasksReadonly);
   });
 
@@ -73,16 +73,16 @@ describe('google-tasks auth contract', () => {
     });
 
     expect(oauthPost).toHaveBeenCalledWith(
-      'https://oauth2.googleapis.com/token',
-      expect.objectContaining({
+      '/token',
+      new URLSearchParams({
         code: 'auth-code',
         client_id: 'client-id',
         client_secret: 'client-secret',
         redirect_uri: 'https://example.com/callback',
         grant_type: 'authorization_code'
-      }),
+      }).toString(),
       expect.objectContaining({
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       })
     );
 
@@ -152,15 +152,33 @@ describe('google-tasks auth contract', () => {
         token: 'profile-token'
       },
       input: {},
-      scopes: []
+      scopes: [googleTasksScopes.userinfoProfile]
     });
 
-    expect(profileGet).toHaveBeenCalledWith('https://www.googleapis.com/oauth2/v2/userinfo');
+    expect(profileGet).toHaveBeenCalledWith('/oauth2/v2/userinfo', {
+      headers: { Authorization: 'Bearer profile-token' }
+    });
     expect(result.profile).toEqual({
       id: 'user-123',
       email: 'tasks-test@example.com',
       name: 'Tasks Test User',
       imageUrl: 'https://example.com/avatar.png'
     });
+  });
+
+  it('returns a null profile when userinfo scopes are not granted', async () => {
+    let client = await loadProviderClient();
+
+    let result = await client.getAuthProfile({
+      authenticationMethodId: 'oauth',
+      output: {
+        token: 'profile-token'
+      },
+      input: {},
+      scopes: [googleTasksScopes.tasks]
+    });
+
+    expect(profileGet).not.toHaveBeenCalled();
+    expect(result.profile).toBeNull();
   });
 });

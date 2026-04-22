@@ -287,7 +287,7 @@ export class Client {
     pageToken?: string;
     includeSpamTrash?: boolean;
   }): Promise<{
-    threads: Array<{ id: string; snippet: string; historyId: string }>;
+    threads: Array<{ id: string; snippet?: string; historyId?: string }>;
     nextPageToken?: string;
     resultSizeEstimate: number;
   }> {
@@ -681,8 +681,12 @@ export let extractHeader = (message: GmailMessage, headerName: string): string |
   return header?.value;
 };
 
-export let extractBody = (payload: MessagePart): { text?: string; html?: string } => {
+export let extractBody = (payload?: MessagePart): { text?: string; html?: string } => {
   let result: { text?: string; html?: string } = {};
+
+  if (!payload) {
+    return result;
+  }
 
   if (payload.mimeType === 'text/plain' && payload.body?.data) {
     result.text = atob(payload.body.data.replace(/-/g, '+').replace(/_/g, '/'));
@@ -702,7 +706,7 @@ export let extractBody = (payload: MessagePart): { text?: string; html?: string 
 };
 
 export let extractAttachments = (
-  payload: MessagePart
+  payload?: MessagePart
 ): Array<{
   attachmentId: string;
   filename: string;
@@ -715,6 +719,10 @@ export let extractAttachments = (
     mimeType: string;
     size: number;
   }> = [];
+
+  if (!payload) {
+    return attachments;
+  }
 
   if (payload.filename && payload.body?.attachmentId) {
     attachments.push({
