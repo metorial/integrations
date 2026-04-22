@@ -1,3 +1,4 @@
+import { normalizeMicrosoftRedirectUri } from '@slates/oauth-microsoft';
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
@@ -53,10 +54,11 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
     scopes,
 
     getAuthorizationUrl: async (ctx: any) => {
+      let redirectUri = normalizeMicrosoftRedirectUri(ctx.redirectUri);
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: redirectUri,
         scope: ctx.scopes.join(' '),
         state: ctx.state,
         response_mode: 'query'
@@ -68,6 +70,7 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
     },
 
     handleCallback: async (ctx: any) => {
+      let redirectUri = normalizeMicrosoftRedirectUri(ctx.redirectUri);
       let tokenAxios = createAxios({
         baseURL: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0`
       });
@@ -78,7 +81,7 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           code: ctx.code,
-          redirect_uri: ctx.redirectUri,
+          redirect_uri: redirectUri,
           grant_type: 'authorization_code',
           scope: ctx.scopes.join(' ')
         }).toString(),

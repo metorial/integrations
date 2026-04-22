@@ -3,6 +3,30 @@ import { SharePointClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let getPermissionPrincipal = (permission: any) => {
+  let identities = [
+    permission.grantedToV2,
+    ...(permission.grantedToIdentitiesV2 || []),
+    permission.grantedTo,
+    ...(permission.grantedToIdentities || [])
+  ].filter(Boolean);
+
+  for (let identity of identities) {
+    let principal =
+      identity.user ||
+      identity.siteUser ||
+      identity.group ||
+      identity.siteGroup ||
+      identity.application ||
+      identity.device;
+    if (principal) {
+      return principal;
+    }
+  }
+
+  return null;
+};
+
 let permissionOutputSchema = z.object({
   permissionId: z.string().describe('Permission ID'),
   roles: z
@@ -91,17 +115,24 @@ export let managePermissions = SlateTool.create(spec, {
     let client = new SharePointClient(ctx.auth.token);
     let { action, driveId, itemId } = ctx.input;
 
-    let mapPermission = (p: any) => ({
-      permissionId: p.id,
-      roles: p.roles,
-      grantedTo:
-        p.grantedTo?.user?.displayName || p.grantedToIdentities?.[0]?.user?.displayName,
-      grantedToEmail: p.grantedTo?.user?.email || p.grantedToIdentities?.[0]?.user?.email,
-      linkType: p.link?.type,
-      linkScope: p.link?.scope,
-      linkUrl: p.link?.webUrl,
-      expirationDateTime: p.expirationDateTime
-    });
+    let mapPermission = (p: any) => {
+      let principal = getPermissionPrincipal(p);
+      return {
+        permissionId: p.id,
+        roles: p.roles,
+        grantedTo:
+          principal?.displayName ||
+          principal?.loginName ||
+          principal?.email ||
+          principal?.userPrincipalName ||
+          principal?.id,
+        grantedToEmail: principal?.email || principal?.userPrincipalName,
+        linkType: p.link?.type,
+        linkScope: p.link?.scope,
+        linkUrl: p.link?.webUrl,
+        expirationDateTime: p.expirationDateTime
+      };
+    };
 
     switch (action) {
       case 'list': {
