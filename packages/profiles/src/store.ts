@@ -428,5 +428,10 @@ export class SlatesCliStore {
 }
 
 export let openSlatesCliStore = async (
-  opts: { cwd?: string; scope?: SlatesCliStoreScope; storePath?: string } = {}
+  opts: {
+    cwd?: string;
+    rootDir?: string;
+    scope?: SlatesCliStoreScope;
+    storePath?: string;
+  } = {}
 ) => SlatesCliStore.open(opts);
