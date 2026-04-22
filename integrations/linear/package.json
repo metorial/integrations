@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@types/node": "^20",
-    "slates": "1.0.0-rc.8",
+    "slates": "1.0.0-rc.9",
     "zod": "^4.2"
   },
   "devDependencies": {
     "typescript": "^5"
   },
-  "version": "0.2.0-rc.1"
+  "version": "0.2.0-rc.2"
 }

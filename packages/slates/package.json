@@ -1,6 +1,6 @@
 {
   "name": "slates",
-  "version": "1.0.0-rc.8",
+  "version": "1.0.0-rc.9",
   "publishConfig": {
     "access": "public"
   },
@@ -32,7 +32,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@slates/provider": "1.0.0-rc.9"
+    "@slates/provider": "1.0.0-rc.10"
   },
   "devDependencies": {
     "microbundle": "^0.15.1",
