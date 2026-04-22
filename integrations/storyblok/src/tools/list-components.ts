@@ -31,7 +31,7 @@ export let listComponents = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new StoryblokClient({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.auth.region,
       spaceId: ctx.config.spaceId
     });
 

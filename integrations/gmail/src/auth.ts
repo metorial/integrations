@@ -58,6 +58,7 @@ export let auth = SlateAuth.create()
         title: 'Metadata',
         description:
           'Read metadata including labels, history records, and email headers, but not the body or attachments.',
+        defaultChecked: false,
         scope: gmailScopes.gmailMetadata
       },
       {

@@ -76,6 +76,7 @@ Convert text input into audio data using Google's AI voices. Supports plain text
 The Speech-to-Text v2 API supports full regionalization, allowing customers to invoke transcription models in the Google Cloud Platform region of their choice.
 
 - Enterprise-grade encryption with customer-managed encryption keys for all resources as well as batch transcription.
+- In practice, recognizer-based v2 flows may still require `locations/global` for some projects or accounts. Google’s recognizer examples consistently use `global`, so integrations should treat `global` as the safest default and only rely on regional locations when the target project explicitly supports them.
 
 ### Subtitle/Caption Output
 

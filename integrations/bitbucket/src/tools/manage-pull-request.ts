@@ -16,7 +16,7 @@ Use "merge" with optional merge strategy and close-source-branch settings.`,
   .input(
     z.object({
       repoSlug: z.string().describe('Repository slug'),
-      pullRequestId: z.number().describe('Pull request ID'),
+      pullRequestId: z.coerce.number().describe('Pull request ID'),
       action: z
         .enum([
           'approve',

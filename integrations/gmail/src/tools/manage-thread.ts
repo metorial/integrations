@@ -134,10 +134,24 @@ export let manageThread = SlateTool.create(spec, {
         pageToken: ctx.input.pageToken,
         includeSpamTrash: ctx.input.includeSpamTrash
       });
+      let threads = await Promise.all(
+        result.threads.map(async thread => {
+          if (typeof thread.snippet === 'string' && typeof thread.historyId === 'string') {
+            return thread;
+          }
+
+          let hydrated = await client.getThread(thread.id, 'metadata');
+          return {
+            id: hydrated.id,
+            snippet: hydrated.snippet,
+            historyId: hydrated.historyId
+          };
+        })
+      );
 
       return {
         output: {
-          threads: result.threads.map(t => ({
+          threads: threads.map(t => ({
             threadId: t.id,
             snippet: t.snippet,
             historyId: t.historyId
@@ -145,7 +159,7 @@ export let manageThread = SlateTool.create(spec, {
           nextPageToken: result.nextPageToken,
           resultSizeEstimate: result.resultSizeEstimate
         },
-        message: `Found **${result.resultSizeEstimate}** threads. Returned ${result.threads.length}.`
+        message: `Found **${result.resultSizeEstimate}** threads. Returned ${threads.length}.`
       };
     }
 

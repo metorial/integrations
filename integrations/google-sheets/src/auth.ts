@@ -66,7 +66,7 @@ export let auth = SlateAuth.create()
       });
 
       return {
-        url: `https://accounts.google.com/o/oauth2/auth?${params.toString()}`
+        url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
       };
     },
 

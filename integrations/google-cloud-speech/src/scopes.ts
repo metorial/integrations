@@ -1,7 +1,9 @@
 import { anyOf } from 'slates';
 
 export let googleCloudSpeechScopes = {
-  cloudPlatform: 'https://www.googleapis.com/auth/cloud-platform'
+  cloudPlatform: 'https://www.googleapis.com/auth/cloud-platform',
+  userinfoProfile: 'https://www.googleapis.com/auth/userinfo.profile',
+  userinfoEmail: 'https://www.googleapis.com/auth/userinfo.email'
 } as const;
 
 let speechAccess = anyOf(googleCloudSpeechScopes.cloudPlatform);

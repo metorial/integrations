@@ -101,7 +101,11 @@ describe('google-admin provider contract', () => {
     };
 
     for (let [actionId, scopes] of Object.entries(expectedScopes)) {
-      expect(contract.actions.find(action => action.id === actionId)?.scopes).toEqual(scopes);
+      expect(
+        contract.actions.find(
+          (action: { id?: string; scopes?: unknown }) => action.id === actionId
+        )?.scopes
+      ).toEqual(scopes);
     }
 
     let oauth = await client.getAuthMethod('google_oauth');
@@ -109,7 +113,11 @@ describe('google-admin provider contract', () => {
     expect(oauth.authenticationMethod.capabilities.handleTokenRefresh?.enabled).toBe(true);
     expect(oauth.authenticationMethod.capabilities.getProfile?.enabled).toBe(true);
 
-    let scopeTitles = new Set((oauth.authenticationMethod.scopes ?? []).map(scope => scope.title));
+    let scopeTitles = new Set(
+      (oauth.authenticationMethod.scopes ?? []).map(
+        (scope: { title?: string }) => scope.title
+      )
+    );
     expect(scopeTitles.has('Users (Read Only)')).toBe(true);
     expect(scopeTitles.has('Data Transfer')).toBe(true);
   });

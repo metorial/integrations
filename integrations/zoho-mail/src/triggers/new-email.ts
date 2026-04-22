@@ -46,7 +46,7 @@ export let newEmail = SlateTrigger.create(spec, {
     pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        domain: ctx.config.dataCenterDomain
+        domain: ctx.auth.dataCenterDomain
       });
 
       let state = ctx.input.state || {};

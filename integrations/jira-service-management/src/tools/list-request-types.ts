@@ -59,7 +59,7 @@ export let listRequestTypesTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new JiraClient({
       token: ctx.auth.token,
-      cloudId: ctx.config.cloudId
+      cloudId: ctx.auth.cloudId
     });
 
     let result = await client.getRequestTypes(

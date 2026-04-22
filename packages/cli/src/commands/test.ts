@@ -47,6 +47,7 @@ export let runVitestWithProfile = async (opts: WithProfile & { vitestArgs: strin
       {
         integration: integration.relativeDir,
         profileId: profile.id,
+        rootDir: store.rootDir,
         storePath: store.storePath,
         cliDir: store.dirPath
       },
@@ -64,6 +65,7 @@ export let runVitestWithProfile = async (opts: WithProfile & { vitestArgs: strin
       SLATES_INTEGRATION: integration.relativeDir,
       SLATES_PROFILE_ID: profile.id,
       SLATES_CLI_DIR: store.dirPath,
+      SLATES_STORE_ROOT_DIR: store.rootDir,
       SLATES_STORE_PATH: store.storePath,
       SLATES_TEST_CONTEXT_PATH: contextPath
     }

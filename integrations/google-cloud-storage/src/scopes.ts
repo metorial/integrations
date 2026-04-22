@@ -4,7 +4,9 @@ export let googleCloudStorageScopes = {
   devstorageReadOnly: 'https://www.googleapis.com/auth/devstorage.read_only',
   devstorageReadWrite: 'https://www.googleapis.com/auth/devstorage.read_write',
   devstorageFullControl: 'https://www.googleapis.com/auth/devstorage.full_control',
-  cloudPlatform: 'https://www.googleapis.com/auth/cloud-platform'
+  cloudPlatform: 'https://www.googleapis.com/auth/cloud-platform',
+  userinfoProfile: 'https://www.googleapis.com/auth/userinfo.profile',
+  userinfoEmail: 'https://www.googleapis.com/auth/userinfo.email'
 } as const;
 
 let anyBucketOrObjectRead = anyOf(

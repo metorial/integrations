@@ -15,6 +15,7 @@ You need to register an app in your Azure Active Directory, obtain the Client ID
 - **Tenant ID**: Identifies the Microsoft Entra ID tenant (directory).
 - **Client ID** (Application ID): Identifies the registered application.
 - **Client Secret** or **Certificate**: Used to authenticate the application.
+- **Redirect URI for local CLI auth**: `http://localhost:45873/callback`
 
 ### OAuth 2.0 Flows
 
@@ -37,7 +38,7 @@ Key SharePoint-related scopes for Microsoft Graph include:
 
 - `Sites.Read.All`, `Sites.ReadWrite.All`, `Sites.Manage.All`, `Sites.FullControl.All`
 - `Files.Read.All`, `Files.ReadWrite.All`
-- `Lists.Read.All`, `Lists.ReadWrite.All`
+- `User.Read`, `offline_access`
 - `Sites.Selected` — restricts an application's access to specific site collections. Now lists, list items, folders, and files are also supported, and all Selected scopes support delegated and application modes.
 
 Application permissions typically require admin consent. Access tokens generated for Microsoft Graph resources are not valid for the SharePoint REST API — use the correct audience (`https://graph.microsoft.com` vs. `https://{tenant}.sharepoint.com`) depending on which API you call.

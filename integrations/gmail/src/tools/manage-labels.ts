@@ -76,7 +76,7 @@ export let manageLabels = SlateTool.create(spec, {
     let mapLabel = (l: any) => ({
       labelId: l.id,
       name: l.name,
-      type: l.type,
+      type: l.type ?? 'user',
       messageListVisibility: l.messageListVisibility,
       labelListVisibility: l.labelListVisibility,
       messagesTotal: l.messagesTotal,

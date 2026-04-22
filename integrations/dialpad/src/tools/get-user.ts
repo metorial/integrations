@@ -46,7 +46,7 @@ export let getUserTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new DialpadClient({
       token: ctx.auth.token,
-      environment: ctx.config.environment
+      environment: ctx.auth.environment
     });
 
     let u = await client.getUser(ctx.input.userId);

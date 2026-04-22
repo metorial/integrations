@@ -18,7 +18,7 @@ If you'd like to access spreadsheets on behalf of end users (including yourself)
 
 **OAuth Endpoints:**
 
-- Authorization: `https://accounts.google.com/o/oauth2/auth`
+- Authorization: `https://accounts.google.com/o/oauth2/v2/auth`
 - Token: `https://oauth2.googleapis.com/token`
 
 ### Service Account

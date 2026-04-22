@@ -6,9 +6,9 @@ export let config = SlateConfig.create(
     projectId: z.string().describe('Google Cloud project ID'),
     region: z
       .string()
-      .default('us-central1')
+      .default('global')
       .describe(
-        'Google Cloud region for Speech-to-Text v2 API (e.g. us-central1, europe-west1). Defaults to us-central1.'
+        'Speech-to-Text v2 location. `global` is the safest default for recognizers and inline transcription. Regional locations may be available for specific projects or models.'
       )
   })
 );

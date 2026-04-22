@@ -4,17 +4,23 @@ import { pathToFileURL } from 'url';
 import { resolveSlatesCliRoot, SlatesCliStore } from './store';
 import { SlatesProfileRecord, SlatesStoredAuth } from './types';
 
-let resolveEntryPath = (entry: string, cwd?: string) => {
+let resolveEntryPath = (entry: string, opts: { cwd?: string; rootDir?: string } = {}) => {
   if (path.isAbsolute(entry)) return entry;
-  return path.resolve(resolveSlatesCliRoot(cwd), entry);
+  return path.resolve(opts.rootDir ?? resolveSlatesCliRoot(opts.cwd), entry);
 };
 
-let loadSlateFromProfile = async (profile: SlatesProfileRecord, cwd?: string) => {
+let loadSlateFromProfile = async (
+  profile: SlatesProfileRecord,
+  opts: { cwd?: string; store?: SlatesCliStore } = {}
+) => {
   if (profile.target.type !== 'local') {
     throw new Error(`Unsupported profile target type: ${(profile.target as any).type}`);
   }
 
-  let modulePath = resolveEntryPath(profile.target.entry, cwd);
+  let modulePath = resolveEntryPath(profile.target.entry, {
+    cwd: opts.cwd,
+    rootDir: opts.store?.rootDir
+  });
   let loaded = await import(pathToFileURL(modulePath).href);
   let exportName = profile.target.exportName;
 
@@ -40,7 +46,7 @@ export let createSlatesClientFromProfile = async (
   opts: { cwd?: string; store?: SlatesCliStore } = {}
 ) => {
   let firstAuth = Object.values(profile.auth)[0];
-  let slate = await loadSlateFromProfile(profile, opts.cwd);
+  let slate = await loadSlateFromProfile(profile, opts);
   let client = createSlatesClient({
     transport: createLocalSlateTransport({ slate }),
     state: {

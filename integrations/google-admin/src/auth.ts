@@ -45,11 +45,6 @@ export let auth = SlateAuth.create()
         scope: googleAdminScopes.adminDirectoryUserAliasReadonly
       },
       {
-        title: 'User Security',
-        description: 'Manage user security settings, tokens, and verification codes',
-        scope: googleAdminScopes.adminDirectoryUserSecurity
-      },
-      {
         title: 'Groups (Read/Write)',
         description: 'Full access to manage groups',
         scope: googleAdminScopes.adminDirectoryGroup
@@ -145,16 +140,6 @@ export let auth = SlateAuth.create()
         scope: googleAdminScopes.adminDirectoryResourceCalendarReadonly
       },
       {
-        title: 'User Schemas (Read/Write)',
-        description: 'Manage custom user schemas',
-        scope: googleAdminScopes.adminDirectoryUserschema
-      },
-      {
-        title: 'User Schemas (Read Only)',
-        description: 'View custom user schemas',
-        scope: googleAdminScopes.adminDirectoryUserschemaReadonly
-      },
-      {
         title: 'Audit Reports (Read Only)',
         description: 'View admin audit logs and activity reports',
         scope: googleAdminScopes.adminReportsAuditReadonly
@@ -163,11 +148,6 @@ export let auth = SlateAuth.create()
         title: 'Usage Reports (Read Only)',
         description: 'View usage reports for apps and entities',
         scope: googleAdminScopes.adminReportsUsageReadonly
-      },
-      {
-        title: 'Alert Center',
-        description: 'Manage security alerts and alert feedback',
-        scope: googleAdminScopes.appsAlerts
       },
       {
         title: 'Licensing',

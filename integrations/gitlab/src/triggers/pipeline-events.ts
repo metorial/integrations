@@ -45,7 +45,7 @@ export let pipelineEvents = SlateTrigger.create(spec, {
     autoRegisterWebhook: async ctx => {
       let client = new GitLabClient({
         token: ctx.auth.token,
-        instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
+        instanceUrl: ctx.auth.instanceUrl
       });
 
       let projectId = (ctx as any).state?.projectId;
@@ -77,7 +77,7 @@ export let pipelineEvents = SlateTrigger.create(spec, {
     autoUnregisterWebhook: async ctx => {
       let client = new GitLabClient({
         token: ctx.auth.token,
-        instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
+        instanceUrl: ctx.auth.instanceUrl
       });
 
       let details = ctx.input.registrationDetails as { webhookId: number; projectId: string };

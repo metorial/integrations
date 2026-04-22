@@ -18,11 +18,12 @@ export let searchIssuesTool = SlateTool.create(spec, {
   .input(
     z.object({
       jql: z.string().describe('The JQL query string to search for issues.'),
-      startAt: z
-        .number()
+      nextPageToken: z
+        .string()
         .optional()
-        .default(0)
-        .describe('The index of the first result to return (for pagination).'),
+        .describe(
+          'Pagination token from a previous response. Pass this to get the next page of results.'
+        ),
       maxResults: z
         .number()
         .optional()
@@ -37,8 +38,11 @@ export let searchIssuesTool = SlateTool.create(spec, {
   .output(
     z.object({
       total: z.number().describe('Total number of matching issues.'),
-      startAt: z.number().describe('Index of the first returned result.'),
       maxResults: z.number().describe('Maximum number of results returned.'),
+      nextPageToken: z
+        .string()
+        .optional()
+        .describe('Token to fetch the next page of results. Absent when no more pages.'),
       issues: z
         .array(
           z.object({
@@ -58,12 +62,12 @@ export let searchIssuesTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new JiraClient({
       token: ctx.auth.token,
-      cloudId: ctx.config.cloudId,
+      cloudId: ctx.auth.cloudId,
       refreshToken: ctx.auth.refreshToken
     });
 
     let result = await client.searchIssues(ctx.input.jql, {
-      startAt: ctx.input.startAt,
+      nextPageToken: ctx.input.nextPageToken,
       maxResults: ctx.input.maxResults,
       fields: ctx.input.fields
     });
@@ -82,14 +86,16 @@ export let searchIssuesTool = SlateTool.create(spec, {
       };
     });
 
+    let nextPageToken: string | undefined = result.nextPageToken;
+
     return {
       output: {
-        total: result.total,
-        startAt: result.startAt,
-        maxResults: result.maxResults,
+        total: result.total ?? issues.length,
+        maxResults: result.maxResults ?? ctx.input.maxResults,
+        nextPageToken,
         issues
       },
-      message: `Found **${result.total}** issues matching the query. Returned ${issues.length} results.`
+      message: `Found **${result.total ?? issues.length}** issues matching the query. Returned ${issues.length} results.${nextPageToken ? ' More pages available.' : ''}`
     };
   })
   .build();

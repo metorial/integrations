@@ -1,5 +1,8 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
+
+let PHOTOS_LIBRARY_BASE_URL = 'https://photoslibrary.googleapis.com/v1';
+let PHOTOS_PICKER_BASE_URL = 'https://photospicker.googleapis.com/v1';
+let PHOTOS_UPLOAD_URL = `${PHOTOS_LIBRARY_BASE_URL}/uploads`;
 
 export interface AlbumResponse {
   id: string;
@@ -86,11 +89,11 @@ export interface EnrichmentItem {
 }
 
 export class GooglePhotosLibraryClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.axios = createAxios({
-      baseURL: 'https://photoslibrary.googleapis.com/v1',
+      baseURL: PHOTOS_LIBRARY_BASE_URL,
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -225,9 +228,12 @@ export class GooglePhotosLibraryClient {
 
   // --- Upload ---
 
-  async uploadBytes(fileContent: string, mimeType: string): Promise<string> {
+  async uploadBytes(
+    fileContent: string | Uint8Array | ArrayBuffer,
+    mimeType: string
+  ): Promise<string> {
     let response = await this.axios.post(
-      'https://photoslibrary.googleapis.com/v1/uploads',
+      PHOTOS_UPLOAD_URL,
       fileContent,
       {
         headers: {
@@ -238,7 +244,11 @@ export class GooglePhotosLibraryClient {
         baseURL: ''
       }
     );
-    return response.data;
+    if (typeof response.data === 'string') {
+      return response.data.trim();
+    }
+
+    throw new Error('Google Photos uploads endpoint did not return a string upload token.');
   }
 
   async createMediaItems(
@@ -275,11 +285,11 @@ export class GooglePhotosLibraryClient {
 }
 
 export class GooglePhotosPickerClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.axios = createAxios({
-      baseURL: 'https://photospicker.googleapis.com/v1',
+      baseURL: PHOTOS_PICKER_BASE_URL,
       headers: {
         Authorization: `Bearer ${token}`
       }

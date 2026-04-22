@@ -12,7 +12,7 @@ For inline comments, provide the file path and line number. For multi-line comme
   .input(
     z.object({
       repoSlug: z.string().describe('Repository slug'),
-      pullRequestId: z.number().describe('Pull request ID'),
+      pullRequestId: z.coerce.number().describe('Pull request ID'),
       content: z.string().describe('Comment text (supports Markdown)'),
       filePath: z
         .string()
@@ -21,7 +21,10 @@ For inline comments, provide the file path and line number. For multi-line comme
       line: z.number().optional().describe('Line number for inline comment'),
       fromLine: z.number().optional().describe('Start line for multi-line inline comment'),
       toLine: z.number().optional().describe('End line for multi-line inline comment'),
-      parentCommentId: z.number().optional().describe('Parent comment ID for threaded replies')
+      parentCommentId: z.coerce
+        .number()
+        .optional()
+        .describe('Parent comment ID for threaded replies')
     })
   )
   .output(

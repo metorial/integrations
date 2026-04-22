@@ -28,6 +28,10 @@ Convert text or SSML into natural-sounding speech audio using Google Cloud Text-
 
 Transcribe audio to text using Google Cloud Speech-to-Text (synchronous recognition). Supports inline base64-encoded audio or audio files in Google Cloud Storage. Use for audio files up to 1 minute in duration. Configure language, model, punctuation, word-level details, speaker diarization, and speech adaptation hints.
 
+## Notes
+
+- For Speech-to-Text v2 recognizers and inline transcription, `global` is the safest location default. Google documents v2 resource paths as `projects/{project}/locations/{location}`, but the recognizer examples consistently use `locations/global`, and some projects return API errors if a regional location is used for these flows.
+
 ## License
 
 This integration is licensed under the [FSL-1.1](https://github.com/metorial/metorial-platform/blob/dev/LICENSE).

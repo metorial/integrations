@@ -6,99 +6,77 @@ let getAuthBaseUrl = (environment: string) =>
     ? 'https://account.docusign.com'
     : 'https://account-d.docusign.com';
 
-export let auth = SlateAuth.create()
-  .output(
-    z.object({
-      token: z.string(),
-      refreshToken: z.string().optional(),
-      expiresAt: z.string().optional(),
-      baseUri: z.string().describe('Base URI for API calls, obtained from /oauth/userinfo'),
-      accountId: z.string().describe('DocuSign account ID')
-    })
-  )
-  .addOauth({
-    type: 'auth.oauth',
-    name: 'OAuth',
-    key: 'oauth',
+let scopes = [
+  {
+    title: 'Signature',
+    description:
+      'Access to the eSignature REST API for sending, signing, and managing envelopes',
+    scope: 'signature'
+  },
+  {
+    title: 'Extended',
+    description: 'Extends refresh token lifetime for long-lived integrations',
+    scope: 'extended'
+  },
+  {
+    title: 'OpenID',
+    description: 'OpenID Connect profile access for user information',
+    scope: 'openid'
+  },
+  {
+    title: 'Click Manage',
+    description: 'Manage clickwrap agreements via the Click API',
+    scope: 'click.manage'
+  },
+  {
+    title: 'Click Send',
+    description: 'Send clickwrap agreements via the Click API',
+    scope: 'click.send'
+  },
+  {
+    title: 'Organization Read',
+    description: 'Read organization and admin data via the Admin API',
+    scope: 'organization_read'
+  },
+  {
+    title: 'Rooms Read',
+    description: 'Read access to Rooms API for real estate transactions',
+    scope: 'rooms_read'
+  },
+  {
+    title: 'Rooms Write',
+    description: 'Write access to Rooms API for real estate transactions',
+    scope: 'rooms_write'
+  },
+  {
+    title: 'Impersonation',
+    description: 'Required for JWT Grant to act on behalf of a user',
+    scope: 'impersonation'
+  }
+];
 
-    scopes: [
-      {
-        title: 'Signature',
-        description:
-          'Access to the eSignature REST API for sending, signing, and managing envelopes',
-        scope: 'signature'
-      },
-      {
-        title: 'Extended',
-        description: 'Extends refresh token lifetime for long-lived integrations',
-        scope: 'extended'
-      },
-      {
-        title: 'OpenID',
-        description: 'OpenID Connect profile access for user information',
-        scope: 'openid'
-      },
-      {
-        title: 'Click Manage',
-        description: 'Manage clickwrap agreements via the Click API',
-        scope: 'click.manage'
-      },
-      {
-        title: 'Click Send',
-        description: 'Send clickwrap agreements via the Click API',
-        scope: 'click.send'
-      },
-      {
-        title: 'Organization Read',
-        description: 'Read organization and admin data via the Admin API',
-        scope: 'organization_read'
-      },
-      {
-        title: 'Rooms Read',
-        description: 'Read access to Rooms API for real estate transactions',
-        scope: 'rooms_read'
-      },
-      {
-        title: 'Rooms Write',
-        description: 'Write access to Rooms API for real estate transactions',
-        scope: 'rooms_write'
-      },
-      {
-        title: 'Impersonation',
-        description: 'Required for JWT Grant to act on behalf of a user',
-        scope: 'impersonation'
-      }
-    ],
+function createDocusignOauth(name: string, key: string, environment: 'demo' | 'production') {
+  let authBaseUrl = getAuthBaseUrl(environment);
 
-    inputSchema: z.object({
-      environment: z
-        .enum(['demo', 'production'])
-        .default('demo')
-        .describe('DocuSign environment')
-    }),
+  return {
+    type: 'auth.oauth' as const,
+    name,
+    key,
+    scopes,
 
-    getAuthorizationUrl: async ctx => {
-      let authBaseUrl = getAuthBaseUrl(ctx.input.environment);
-      let scopeStr = ctx.scopes.join(' ');
-
+    getAuthorizationUrl: async (ctx: any) => {
       let params = new URLSearchParams({
         response_type: 'code',
-        scope: scopeStr,
+        scope: ctx.scopes.join(' '),
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         state: ctx.state
       });
-
-      return {
-        url: `${authBaseUrl}/oauth/auth?${params.toString()}`,
-        input: ctx.input
-      };
+      return { url: `${authBaseUrl}/oauth/auth?${params.toString()}` };
     },
 
-    handleCallback: async ctx => {
-      let authBaseUrl = getAuthBaseUrl(ctx.input.environment);
+    handleCallback: async (ctx: any) => {
       let axiosInstance = createAxios({ baseURL: authBaseUrl });
-
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
       let tokenResponse = await axiosInstance.post(
@@ -119,8 +97,7 @@ export let auth = SlateAuth.create()
       let tokenData = tokenResponse.data;
       let accessToken = tokenData.access_token;
       let refreshToken = tokenData.refresh_token;
-      let expiresIn = tokenData.expires_in;
-      let expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+      let expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
 
       let userInfoResponse = await axiosInstance.get('/oauth/userinfo', {
         headers: { Authorization: `Bearer ${accessToken}` }
@@ -140,19 +117,16 @@ export let auth = SlateAuth.create()
           refreshToken,
           expiresAt,
           baseUri: defaultAccount.base_uri,
-          accountId: defaultAccount.account_id
-        },
-        input: ctx.input
+          accountId: defaultAccount.account_id,
+          environment
+        }
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
-
-      let environment = ctx.input.environment || 'demo';
-      let authBaseUrl = getAuthBaseUrl(environment);
       let axiosInstance = createAxios({ baseURL: authBaseUrl });
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
@@ -179,23 +153,18 @@ export let auth = SlateAuth.create()
           refreshToken: tokenData.refresh_token || ctx.output.refreshToken,
           expiresAt,
           baseUri: ctx.output.baseUri,
-          accountId: ctx.output.accountId
-        },
-        input: ctx.input
+          accountId: ctx.output.accountId,
+          environment
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
-      let environment = ctx.input.environment || 'demo';
-      let authBaseUrl = getAuthBaseUrl(environment);
       let axiosInstance = createAxios({ baseURL: authBaseUrl });
-
       let userInfoResponse = await axiosInstance.get('/oauth/userinfo', {
         headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
-
       let userInfo = userInfoResponse.data;
-
       return {
         profile: {
           id: userInfo.sub,
@@ -208,4 +177,19 @@ export let auth = SlateAuth.create()
         }
       };
     }
-  });
+  };
+}
+
+export let auth = SlateAuth.create()
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      baseUri: z.string().describe('Base URI for API calls, obtained from /oauth/userinfo'),
+      accountId: z.string().describe('DocuSign account ID'),
+      environment: z.enum(['demo', 'production'])
+    })
+  )
+  .addOauth(createDocusignOauth('Demo', 'oauth_demo', 'demo'))
+  .addOauth(createDocusignOauth('Production', 'oauth_production', 'production'));

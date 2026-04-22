@@ -25,7 +25,7 @@ export let contactEventsTrigger = SlateTrigger.create(spec, {
   )
   .webhook({
     autoRegisterWebhook: async ctx => {
-      let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
+      let client = new Client({ token: ctx.auth.token, environment: ctx.auth.environment });
 
       let eventTypes = ['contactCreated', 'contactUpdated'];
 
@@ -48,7 +48,7 @@ export let contactEventsTrigger = SlateTrigger.create(spec, {
     },
 
     autoUnregisterWebhook: async ctx => {
-      let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
+      let client = new Client({ token: ctx.auth.token, environment: ctx.auth.environment });
       let webhooks = ctx.input.registrationDetails?.webhooks || [];
 
       for (let wh of webhooks) {

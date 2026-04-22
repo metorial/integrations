@@ -42,7 +42,22 @@ export let getCourse = SlateTool.create(spec, {
     let course = await client.getCourse(ctx.input.courseId);
 
     return {
-      output: course,
+      output: {
+        courseId: course.id,
+        name: course.name,
+        section: course.section,
+        descriptionHeading: course.descriptionHeading,
+        description: course.description,
+        room: course.room,
+        ownerId: course.ownerId,
+        courseState: course.courseState,
+        alternateLink: course.alternateLink,
+        enrollmentCode: course.enrollmentCode,
+        creationTime: course.creationTime,
+        updateTime: course.updateTime,
+        guardiansEnabled: course.guardiansEnabled,
+        calendarId: course.calendarId
+      },
       message: `Retrieved course **${course.name}** (${course.courseState}).`
     };
   })

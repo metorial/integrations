@@ -11,7 +11,7 @@ export let commentOnIssueTool = SlateTool.create(spec, {
   .input(
     z.object({
       repoSlug: z.string().describe('Repository slug'),
-      issueId: z.number().describe('Issue ID'),
+      issueId: z.coerce.number().describe('Issue ID'),
       content: z.string().describe('Comment text (supports Markdown)')
     })
   )

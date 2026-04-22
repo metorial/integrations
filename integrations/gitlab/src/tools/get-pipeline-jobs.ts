@@ -64,7 +64,7 @@ export let getPipelineJobs = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
+      instanceUrl: ctx.auth.instanceUrl
     });
 
     let action = ctx.input.action || (ctx.input.pipelineId ? 'list' : 'get');

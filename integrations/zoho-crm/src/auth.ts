@@ -23,172 +23,155 @@ let apiBaseUrls: Record<string, string> = {
   cn: 'https://www.zohoapis.com.cn'
 };
 
-let getAccountsUrl = (dc: string): string => accountsBaseUrls[dc] ?? accountsBaseUrls['us']!;
-let getApiUrl = (dc: string): string => apiBaseUrls[dc] ?? apiBaseUrls['us']!;
+let scopes = [
+  {
+    title: 'All Modules - Full Access',
+    description: 'Read, create, update, and delete records in all CRM modules',
+    scope: 'ZohoCRM.modules.ALL'
+  },
+  {
+    title: 'Leads - Full Access',
+    description: 'Full access to Leads module',
+    scope: 'ZohoCRM.modules.leads.ALL'
+  },
+  {
+    title: 'Leads - Read',
+    description: 'Read-only access to Leads',
+    scope: 'ZohoCRM.modules.leads.READ'
+  },
+  {
+    title: 'Contacts - Full Access',
+    description: 'Full access to Contacts module',
+    scope: 'ZohoCRM.modules.contacts.ALL'
+  },
+  {
+    title: 'Contacts - Read',
+    description: 'Read-only access to Contacts',
+    scope: 'ZohoCRM.modules.contacts.READ'
+  },
+  {
+    title: 'Accounts - Full Access',
+    description: 'Full access to Accounts module',
+    scope: 'ZohoCRM.modules.accounts.ALL'
+  },
+  {
+    title: 'Accounts - Read',
+    description: 'Read-only access to Accounts',
+    scope: 'ZohoCRM.modules.accounts.READ'
+  },
+  {
+    title: 'Deals - Full Access',
+    description: 'Full access to Deals module',
+    scope: 'ZohoCRM.modules.deals.ALL'
+  },
+  {
+    title: 'Deals - Read',
+    description: 'Read-only access to Deals',
+    scope: 'ZohoCRM.modules.deals.READ'
+  },
+  {
+    title: 'Tasks - Full Access',
+    description: 'Full access to Tasks module',
+    scope: 'ZohoCRM.modules.tasks.ALL'
+  },
+  {
+    title: 'Events - Full Access',
+    description: 'Full access to Events module',
+    scope: 'ZohoCRM.modules.events.ALL'
+  },
+  {
+    title: 'Calls - Full Access',
+    description: 'Full access to Calls module',
+    scope: 'ZohoCRM.modules.calls.ALL'
+  },
+  {
+    title: 'Products - Full Access',
+    description: 'Full access to Products module',
+    scope: 'ZohoCRM.modules.products.ALL'
+  },
+  {
+    title: 'Campaigns - Full Access',
+    description: 'Full access to Campaigns module',
+    scope: 'ZohoCRM.modules.campaigns.ALL'
+  },
+  {
+    title: 'Settings - Full Access',
+    description: 'Full access to CRM settings (fields, layouts, roles, etc.)',
+    scope: 'ZohoCRM.settings.ALL'
+  },
+  {
+    title: 'Settings - Read',
+    description: 'Read-only access to CRM settings',
+    scope: 'ZohoCRM.settings.READ'
+  },
+  {
+    title: 'Notifications - Full Access',
+    description: 'Subscribe to and manage record change notifications',
+    scope: 'ZohoCRM.notifications.ALL'
+  },
+  {
+    title: 'Notifications - Read',
+    description: 'Read notification subscriptions',
+    scope: 'ZohoCRM.notifications.READ'
+  },
+  {
+    title: 'Users - Full Access',
+    description: 'Full access to user management',
+    scope: 'ZohoCRM.users.ALL'
+  },
+  {
+    title: 'Users - Read',
+    description: 'Read-only access to users',
+    scope: 'ZohoCRM.users.READ'
+  },
+  {
+    title: 'Organization - Full Access',
+    description: 'Full access to organization settings',
+    scope: 'ZohoCRM.org.ALL'
+  },
+  {
+    title: 'Organization - Read',
+    description: 'Read-only access to organization',
+    scope: 'ZohoCRM.org.READ'
+  },
+  {
+    title: 'Bulk Operations - Read',
+    description: 'Read bulk operations',
+    scope: 'ZohoCRM.bulk.READ'
+  },
+  {
+    title: 'Bulk Operations - Full Access',
+    description: 'Full access to bulk operations',
+    scope: 'ZohoCRM.bulk.ALL'
+  },
+  {
+    title: 'COQL - Read',
+    description: 'Execute COQL queries for advanced data retrieval',
+    scope: 'ZohoCRM.coql.READ'
+  },
+  {
+    title: 'Files - Full Access',
+    description: 'Upload and download files',
+    scope: 'ZohoCRM.files.ALL'
+  },
+  {
+    title: 'Send Email',
+    description: 'Send emails from CRM',
+    scope: 'ZohoCRM.send_mail.all.CREATE'
+  }
+];
 
-export let auth = SlateAuth.create()
-  .output(
-    z.object({
-      token: z.string(),
-      refreshToken: z.string().optional(),
-      expiresAt: z.string().optional(),
-      apiBaseUrl: z.string(),
-      accountsBaseUrl: z.string()
-    })
-  )
-  .addOauth({
-    type: 'auth.oauth',
-    name: 'OAuth',
-    key: 'oauth',
+function createCrmOauth(name: string, key: string, dc: keyof typeof accountsBaseUrls) {
+  let accountsUrl = accountsBaseUrls[dc]!;
+  let apiUrl = apiBaseUrls[dc]!;
 
-    inputSchema: z.object({
-      dataCenter: z
-        .enum(['us', 'eu', 'in', 'au', 'jp', 'ca', 'sa', 'cn'])
-        .default('us')
-        .describe('Zoho data center region')
-    }),
+  return {
+    type: 'auth.oauth' as const,
+    name,
+    key,
+    scopes,
 
-    scopes: [
-      {
-        title: 'All Modules - Full Access',
-        description: 'Read, create, update, and delete records in all CRM modules',
-        scope: 'ZohoCRM.modules.ALL'
-      },
-      {
-        title: 'Leads - Full Access',
-        description: 'Full access to Leads module',
-        scope: 'ZohoCRM.modules.leads.ALL'
-      },
-      {
-        title: 'Leads - Read',
-        description: 'Read-only access to Leads',
-        scope: 'ZohoCRM.modules.leads.READ'
-      },
-      {
-        title: 'Contacts - Full Access',
-        description: 'Full access to Contacts module',
-        scope: 'ZohoCRM.modules.contacts.ALL'
-      },
-      {
-        title: 'Contacts - Read',
-        description: 'Read-only access to Contacts',
-        scope: 'ZohoCRM.modules.contacts.READ'
-      },
-      {
-        title: 'Accounts - Full Access',
-        description: 'Full access to Accounts module',
-        scope: 'ZohoCRM.modules.accounts.ALL'
-      },
-      {
-        title: 'Accounts - Read',
-        description: 'Read-only access to Accounts',
-        scope: 'ZohoCRM.modules.accounts.READ'
-      },
-      {
-        title: 'Deals - Full Access',
-        description: 'Full access to Deals module',
-        scope: 'ZohoCRM.modules.deals.ALL'
-      },
-      {
-        title: 'Deals - Read',
-        description: 'Read-only access to Deals',
-        scope: 'ZohoCRM.modules.deals.READ'
-      },
-      {
-        title: 'Tasks - Full Access',
-        description: 'Full access to Tasks module',
-        scope: 'ZohoCRM.modules.tasks.ALL'
-      },
-      {
-        title: 'Events - Full Access',
-        description: 'Full access to Events module',
-        scope: 'ZohoCRM.modules.events.ALL'
-      },
-      {
-        title: 'Calls - Full Access',
-        description: 'Full access to Calls module',
-        scope: 'ZohoCRM.modules.calls.ALL'
-      },
-      {
-        title: 'Products - Full Access',
-        description: 'Full access to Products module',
-        scope: 'ZohoCRM.modules.products.ALL'
-      },
-      {
-        title: 'Campaigns - Full Access',
-        description: 'Full access to Campaigns module',
-        scope: 'ZohoCRM.modules.campaigns.ALL'
-      },
-      {
-        title: 'Settings - Full Access',
-        description: 'Full access to CRM settings (fields, layouts, roles, etc.)',
-        scope: 'ZohoCRM.settings.ALL'
-      },
-      {
-        title: 'Settings - Read',
-        description: 'Read-only access to CRM settings',
-        scope: 'ZohoCRM.settings.READ'
-      },
-      {
-        title: 'Notifications - Full Access',
-        description: 'Subscribe to and manage record change notifications',
-        scope: 'ZohoCRM.notifications.ALL'
-      },
-      {
-        title: 'Notifications - Read',
-        description: 'Read notification subscriptions',
-        scope: 'ZohoCRM.notifications.READ'
-      },
-      {
-        title: 'Users - Full Access',
-        description: 'Full access to user management',
-        scope: 'ZohoCRM.users.ALL'
-      },
-      {
-        title: 'Users - Read',
-        description: 'Read-only access to users',
-        scope: 'ZohoCRM.users.READ'
-      },
-      {
-        title: 'Organization - Full Access',
-        description: 'Full access to organization settings',
-        scope: 'ZohoCRM.org.ALL'
-      },
-      {
-        title: 'Organization - Read',
-        description: 'Read-only access to organization',
-        scope: 'ZohoCRM.org.READ'
-      },
-      {
-        title: 'Bulk Operations - Read',
-        description: 'Read bulk operations',
-        scope: 'ZohoCRM.bulk.READ'
-      },
-      {
-        title: 'Bulk Operations - Full Access',
-        description: 'Full access to bulk operations',
-        scope: 'ZohoCRM.bulk.ALL'
-      },
-      {
-        title: 'COQL - Read',
-        description: 'Execute COQL queries for advanced data retrieval',
-        scope: 'ZohoCRM.coql.READ'
-      },
-      {
-        title: 'Files - Full Access',
-        description: 'Upload and download files',
-        scope: 'ZohoCRM.files.ALL'
-      },
-      {
-        title: 'Send Email',
-        description: 'Send emails from CRM',
-        scope: 'ZohoCRM.send_mail.all.CREATE'
-      }
-    ],
-
-    getAuthorizationUrl: async ctx => {
-      let dc = ctx.input.dataCenter || 'us';
-      let accountsUrl = getAccountsUrl(dc);
+    getAuthorizationUrl: async (ctx: any) => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -198,20 +181,11 @@ export let auth = SlateAuth.create()
         state: ctx.state,
         prompt: 'consent'
       });
-
-      return {
-        url: `${accountsUrl}/oauth/v2/auth?${params.toString()}`,
-        input: { dataCenter: dc }
-      };
+      return { url: `${accountsUrl}/oauth/v2/auth?${params.toString()}` };
     },
 
-    handleCallback: async ctx => {
-      let dc = ctx.input.dataCenter || 'us';
-      let accountsUrl = getAccountsUrl(dc);
-      let apiUrl = getApiUrl(dc);
-
+    handleCallback: async (ctx: any) => {
       let http = createAxios({ baseURL: accountsUrl });
-
       let response = await http.post(
         '/oauth/v2/token',
         new URLSearchParams({
@@ -221,14 +195,10 @@ export let auth = SlateAuth.create()
           redirect_uri: ctx.redirectUri,
           grant_type: 'authorization_code'
         }).toString(),
-        {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
       );
-
       let data = response.data as Record<string, any>;
       let expiresAt = new Date(Date.now() + (data.expires_in || 3600) * 1000).toISOString();
-
       return {
         output: {
           token: String(data.access_token),
@@ -236,16 +206,12 @@ export let auth = SlateAuth.create()
           expiresAt,
           apiBaseUrl: apiUrl,
           accountsBaseUrl: accountsUrl
-        },
-        input: { dataCenter: dc }
+        }
       };
     },
 
-    handleTokenRefresh: async ctx => {
-      let accountsUrl = ctx.output.accountsBaseUrl;
-
-      let http = createAxios({ baseURL: accountsUrl });
-
+    handleTokenRefresh: async (ctx: any) => {
+      let http = createAxios({ baseURL: ctx.output.accountsBaseUrl || accountsUrl });
       let response = await http.post(
         '/oauth/v2/token',
         new URLSearchParams({
@@ -254,34 +220,27 @@ export let auth = SlateAuth.create()
           refresh_token: ctx.output.refreshToken || '',
           grant_type: 'refresh_token'
         }).toString(),
-        {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
       );
-
       let data = response.data as Record<string, any>;
       let expiresAt = new Date(Date.now() + (data.expires_in || 3600) * 1000).toISOString();
-
       return {
         output: {
           token: String(data.access_token),
           refreshToken: ctx.output.refreshToken,
           expiresAt,
-          apiBaseUrl: ctx.output.apiBaseUrl,
-          accountsBaseUrl: ctx.output.accountsBaseUrl
+          apiBaseUrl: ctx.output.apiBaseUrl || apiUrl,
+          accountsBaseUrl: ctx.output.accountsBaseUrl || accountsUrl
         }
       };
     },
 
     getProfile: async (ctx: any) => {
-      let http = createAxios({ baseURL: ctx.output.apiBaseUrl });
-
+      let http = createAxios({ baseURL: ctx.output.apiBaseUrl || apiUrl });
       let response = await http.get('/crm/v7/users?type=CurrentUser', {
         headers: { Authorization: `Zoho-oauthtoken ${ctx.output.token}` }
       });
-
       let user = response.data?.users?.[0];
-
       return {
         profile: {
           id: user?.id,
@@ -293,4 +252,24 @@ export let auth = SlateAuth.create()
         }
       };
     }
-  });
+  };
+}
+
+export let auth = SlateAuth.create()
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      apiBaseUrl: z.string(),
+      accountsBaseUrl: z.string()
+    })
+  )
+  .addOauth(createCrmOauth('United States (zohoapis.com)', 'oauth_us', 'us'))
+  .addOauth(createCrmOauth('Europe (zohoapis.eu)', 'oauth_eu', 'eu'))
+  .addOauth(createCrmOauth('India (zohoapis.in)', 'oauth_in', 'in'))
+  .addOauth(createCrmOauth('Australia (zohoapis.com.au)', 'oauth_au', 'au'))
+  .addOauth(createCrmOauth('Japan (zohoapis.jp)', 'oauth_jp', 'jp'))
+  .addOauth(createCrmOauth('Canada (zohoapis.ca)', 'oauth_ca', 'ca'))
+  .addOauth(createCrmOauth('Saudi Arabia (zohoapis.sa)', 'oauth_sa', 'sa'))
+  .addOauth(createCrmOauth('China (zohoapis.com.cn)', 'oauth_cn', 'cn'));

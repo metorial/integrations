@@ -61,6 +61,11 @@ export class Client {
     return `projects/${this.projectId}/locations/${location}`;
   }
 
+  functionName(functionId: string, location?: string): string {
+    let parent = location ? this.parentForLocation(location) : this.parent;
+    return `${parent}/functions/${functionId}`;
+  }
+
   async listFunctions(params?: ListFunctionsParams): Promise<any> {
     let location = params?.allLocations ? '-' : this.region;
     let parent = this.parentForLocation(location);
@@ -87,9 +92,7 @@ export class Client {
   }
 
   async getFunctionByName(functionName: string, location?: string): Promise<any> {
-    let parent = location ? this.parentForLocation(location) : this.parent;
-    let name = `${parent}/functions/${functionName}`;
-    return this.getFunction(name);
+    return this.getFunction(this.functionName(functionName, location));
   }
 
   async createFunction(params: CreateFunctionParams): Promise<any> {
@@ -116,9 +119,7 @@ export class Client {
   }
 
   async deleteFunctionByName(functionName: string, location?: string): Promise<any> {
-    let parent = location ? this.parentForLocation(location) : this.parent;
-    let name = `${parent}/functions/${functionName}`;
-    return this.deleteFunction(name);
+    return this.deleteFunction(this.functionName(functionName, location));
   }
 
   async generateUploadUrl(params?: GenerateUploadUrlParams): Promise<any> {
@@ -133,8 +134,7 @@ export class Client {
   }
 
   async generateDownloadUrl(functionName: string, location?: string): Promise<any> {
-    let parent = location ? this.parentForLocation(location) : this.parent;
-    let name = `${parent}/functions/${functionName}`;
+    let name = this.functionName(functionName, location);
 
     let response = await api.post(
       `/v2/${name}:generateDownloadUrl`,
@@ -145,8 +145,7 @@ export class Client {
   }
 
   async getIamPolicy(functionName: string, location?: string): Promise<any> {
-    let parent = location ? this.parentForLocation(location) : this.parent;
-    let name = `${parent}/functions/${functionName}`;
+    let name = this.functionName(functionName, location);
 
     let response = await api.get(`/v2/${name}:getIamPolicy`, { headers: this.headers });
     return response.data;
@@ -157,8 +156,7 @@ export class Client {
     policy: { bindings: IamPolicyBinding[]; etag?: string },
     location?: string
   ): Promise<any> {
-    let parent = location ? this.parentForLocation(location) : this.parent;
-    let name = `${parent}/functions/${functionName}`;
+    let name = this.functionName(functionName, location);
 
     let response = await api.post(
       `/v2/${name}:setIamPolicy`,
@@ -173,8 +171,7 @@ export class Client {
     permissions: string[],
     location?: string
   ): Promise<any> {
-    let parent = location ? this.parentForLocation(location) : this.parent;
-    let name = `${parent}/functions/${functionName}`;
+    let name = this.functionName(functionName, location);
 
     let response = await api.post(
       `/v2/${name}:testIamPermissions`,

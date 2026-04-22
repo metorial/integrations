@@ -9,6 +9,7 @@ export { getPullRequestTool } from './get-pull-request';
 export { createPullRequestTool } from './create-pull-request';
 export { managePullRequestTool } from './manage-pull-request';
 export { commentOnPullRequestTool } from './comment-on-pull-request';
+export { listPullRequestCommentsTool } from './list-pull-request-comments';
 export { listIssuesTool } from './list-issues';
 export { createIssueTool } from './create-issue';
 export { updateIssueTool } from './update-issue';

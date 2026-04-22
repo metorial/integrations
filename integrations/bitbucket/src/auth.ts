@@ -104,6 +104,11 @@ export let auth = SlateAuth.create()
         params.set('redirect_uri', ctx.redirectUri);
       }
 
+      let scopes = ctx.scopes as string[] | undefined;
+      if (scopes?.length) {
+        params.set('scope', scopes.join(' '));
+      }
+
       return {
         url: `https://bitbucket.org/site/oauth2/authorize?${params.toString()}`
       };
@@ -196,8 +201,16 @@ export let auth = SlateAuth.create()
     key: 'api_token',
 
     inputSchema: z.object({
-      email: z.string().describe('Bitbucket account email address'),
-      token: z.string().describe('Bitbucket API token or app password')
+      email: z
+        .string()
+        .describe(
+          'Basic-auth username: your **Atlassian account email** (Bitbucket → Personal settings → Email aliases) when using an **API token**; your **Bitbucket username** (same settings page) when using an **app password** (deprecated until June 2026).'
+        ),
+      token: z
+        .string()
+        .describe(
+          'Basic-auth password: a **Bitbucket** API token from id.atlassian.com → Security → Create API token **with scopes** → app **Bitbucket** (e.g. grant **Repositories: Write** to create repos), or an app password with matching Bitbucket scopes.'
+        )
     }),
 
     getOutput: async ctx => {
@@ -205,7 +218,8 @@ export let auth = SlateAuth.create()
 
       return {
         output: {
-          token: credentials
+          // Full Authorization header value; Client passes this through (OAuth uses raw bearer token).
+          token: `Basic ${credentials}`
         }
       };
     },
@@ -213,7 +227,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: any) => {
       let response = await api.get('/user', {
         headers: {
-          Authorization: `Basic ${ctx.output.token}`
+          Authorization: ctx.output.token
         }
       });
 

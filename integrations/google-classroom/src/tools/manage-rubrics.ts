@@ -4,6 +4,20 @@ import { spec } from '../spec';
 import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
+let classroomApiErrorMessage = (error: unknown, fallback: string) => {
+  let message = (error as { response?: { data?: { error?: { message?: string } } } })?.response
+    ?.data?.error?.message;
+  if (typeof message === 'string' && message.length > 0) {
+    return message;
+  }
+
+  if (error instanceof Error && error.message.length > 0) {
+    return error.message;
+  }
+
+  return fallback;
+};
+
 let rubricLevelSchema = z.object({
   levelId: z.string().optional().describe('Level ID'),
   title: z
@@ -119,9 +133,14 @@ export let manageRubrics = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.criteria) throw new Error('criteria is required for creating a rubric');
-      let result = await client.createRubric(courseId, courseWorkId, {
-        criteria: ctx.input.criteria
-      });
+      let result;
+      try {
+        result = await client.createRubric(courseId, courseWorkId, {
+          criteria: ctx.input.criteria
+        });
+      } catch (error) {
+        throw new Error(classroomApiErrorMessage(error, 'Failed to create rubric.'));
+      }
       return {
         output: { rubric: mapRubric(result), success: true },
         message: `Created rubric with **${ctx.input.criteria.length}** criteria.`

@@ -16,7 +16,8 @@ export let slatesAuthenticationMethod = z.object({
       z.object({
         id: z.string(),
         title: z.string(),
-        description: z.string().optional()
+        description: z.string().optional(),
+        defaultChecked: z.boolean().optional()
       })
     )
     .optional(),

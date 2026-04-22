@@ -2,35 +2,27 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 import { getBaseUrl } from './lib/regions';
 
-export let auth = SlateAuth.create()
-  .output(
-    z.object({
-      token: z.string()
-    })
-  )
-  .addOauth({
-    type: 'auth.oauth',
-    name: 'Storyblok OAuth',
-    key: 'oauth',
+type Region = 'eu' | 'us' | 'ca' | 'ap' | 'cn';
 
-    scopes: [
-      {
-        title: 'Read Content',
-        description: 'Read content from the space',
-        scope: 'read_content'
-      },
-      {
-        title: 'Write Content',
-        description: 'Write and manage content in the space',
-        scope: 'write_content'
-      }
-    ],
+let scopes = [
+  { title: 'Read Content', description: 'Read content from the space', scope: 'read_content' },
+  {
+    title: 'Write Content',
+    description: 'Write and manage content in the space',
+    scope: 'write_content'
+  }
+];
 
-    inputSchema: z.object({
-      region: z.enum(['eu', 'us', 'ca', 'ap', 'cn']).default('eu').describe('Server region')
-    }),
+function createStoryblokOauth(name: string, key: string, region: Region) {
+  let baseUrl = getBaseUrl(region);
 
-    getAuthorizationUrl: async ctx => {
+  return {
+    type: 'auth.oauth' as const,
+    name,
+    key,
+    scopes,
+
+    getAuthorizationUrl: async (ctx: any) => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
@@ -38,17 +30,11 @@ export let auth = SlateAuth.create()
         state: ctx.state,
         scope: ctx.scopes.join(' ')
       });
-
-      return {
-        url: `https://app.storyblok.com/oauth/authorize?${params.toString()}`,
-        input: ctx.input
-      };
+      return { url: `https://app.storyblok.com/oauth/authorize?${params.toString()}` };
     },
 
-    handleCallback: async ctx => {
-      let baseUrl = getBaseUrl(ctx.input.region);
+    handleCallback: async (ctx: any) => {
       let client = createAxios({ baseURL: baseUrl });
-
       let response = await client.post('/oauth/token', {
         grant_type: 'authorization_code',
         code: ctx.code,
@@ -56,49 +42,26 @@ export let auth = SlateAuth.create()
         client_secret: ctx.clientSecret,
         redirect_uri: ctx.redirectUri
       });
-
-      let data = response.data as {
-        access_token?: string;
-        token_type?: string;
-        error?: string;
-      };
-
+      let data = response.data as { access_token?: string; error?: string };
       if (!data.access_token) {
         throw new Error(`Storyblok OAuth error: ${data.error || 'No access token received'}`);
       }
-
       return {
         output: {
-          token: data.access_token
-        },
-        input: ctx.input
+          token: data.access_token,
+          region
+        }
       };
     },
 
-    getProfile: async (ctx: {
-      output: { token: string };
-      input: { region: string };
-      scopes: string[];
-    }) => {
+    getProfile: async (ctx: any) => {
       let client = createAxios({
-        baseURL: 'https://mapi.storyblok.com/v1',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
+        baseURL: baseUrl,
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
-
       try {
         let response = await client.get('/users/me');
-        let data = response.data as {
-          user?: {
-            id?: number;
-            email?: string;
-            firstname?: string;
-            lastname?: string;
-            avatar?: string;
-          };
-        };
-
+        let data = response.data as { user?: any };
         return {
           profile: {
             id: data.user?.id?.toString(),
@@ -113,48 +76,36 @@ export let auth = SlateAuth.create()
         return { profile: {} };
       }
     }
-  })
-  .addTokenAuth({
-    type: 'auth.token',
-    name: 'Personal Access Token',
-    key: 'personal_access_token',
+  };
+}
 
+function createStoryblokPat(name: string, key: string, region: Region) {
+  let baseUrl = getBaseUrl(region);
+  return {
+    type: 'auth.token' as const,
+    name,
+    key,
     inputSchema: z.object({
       token: z
         .string()
         .describe(
-          'Personal Access Token from My Account → Account Settings → Personal access tokens'
+          'Personal Access Token from My Account > Account Settings > Personal access tokens'
         )
     }),
-
-    getOutput: async ctx => {
-      return {
-        output: {
-          token: ctx.input.token
-        }
-      };
-    },
-
-    getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
+    getOutput: async (ctx: { input: { token: string } }) => ({
+      output: {
+        token: ctx.input.token,
+        region
+      }
+    }),
+    getProfile: async (ctx: any) => {
       let client = createAxios({
-        baseURL: 'https://mapi.storyblok.com/v1',
-        headers: {
-          Authorization: ctx.output.token
-        }
+        baseURL: baseUrl,
+        headers: { Authorization: ctx.output.token }
       });
-
       try {
         let response = await client.get('/users/me');
-        let data = response.data as {
-          user?: {
-            id?: number;
-            email?: string;
-            firstname?: string;
-            lastname?: string;
-            avatar?: string;
-          };
-        };
-
+        let data = response.data as { user?: any };
         return {
           profile: {
             id: data.user?.id?.toString(),
@@ -169,4 +120,23 @@ export let auth = SlateAuth.create()
         return { profile: {} };
       }
     }
-  });
+  };
+}
+
+export let auth = SlateAuth.create()
+  .output(
+    z.object({
+      token: z.string(),
+      region: z.enum(['eu', 'us', 'ca', 'ap', 'cn'])
+    })
+  )
+  .addOauth(createStoryblokOauth('Europe (EU)', 'oauth_eu', 'eu'))
+  .addOauth(createStoryblokOauth('United States (US)', 'oauth_us', 'us'))
+  .addOauth(createStoryblokOauth('Canada (CA)', 'oauth_ca', 'ca'))
+  .addOauth(createStoryblokOauth('Asia-Pacific (AP)', 'oauth_ap', 'ap'))
+  .addOauth(createStoryblokOauth('China (CN)', 'oauth_cn', 'cn'))
+  .addTokenAuth(createStoryblokPat('Personal Access Token (EU)', 'pat_eu', 'eu'))
+  .addTokenAuth(createStoryblokPat('Personal Access Token (US)', 'pat_us', 'us'))
+  .addTokenAuth(createStoryblokPat('Personal Access Token (CA)', 'pat_ca', 'ca'))
+  .addTokenAuth(createStoryblokPat('Personal Access Token (AP)', 'pat_ap', 'ap'))
+  .addTokenAuth(createStoryblokPat('Personal Access Token (CN)', 'pat_cn', 'cn'));
