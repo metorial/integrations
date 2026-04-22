@@ -1,4 +1,5 @@
 import type { AxiosError, AxiosResponse } from 'axios';
+import type { SlateHttpTrace } from '../axios/trace';
 import type { SlateError } from './base';
 
 export type SlateErrorKind =
@@ -45,6 +46,7 @@ export interface SlateErrorResponse {
   provider?: SlateErrorProviderInfo;
   upstream?: SlateErrorUpstreamInfo;
   baggage?: Record<string, unknown>;
+  requestTraces?: SlateHttpTrace[];
 }
 
 export interface SlateErrorInput extends Omit<SlateErrorResponse, 'kind'> {

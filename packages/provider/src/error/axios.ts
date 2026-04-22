@@ -118,7 +118,8 @@ let getProviderDefaults = (): Partial<SlateErrorResponse> => {
     return {
       provider: {
         key: ctx.specification.key
-      }
+      },
+      ...(ctx.getHttpTraces().length > 0 ? { requestTraces: ctx.getHttpTraces() } : {})
     };
   } catch {
     return {};

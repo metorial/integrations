@@ -103,7 +103,8 @@ export let mergeSlateErrorData = (
       ...(override.upstream ?? {})
     }) as SlateErrorUpstreamInfo | undefined,
     baggage: mergeRecords(base.baggage, override.baggage),
-    issues: override.issues ?? base.issues
+    issues: override.issues ?? base.issues,
+    requestTraces: override.requestTraces ?? base.requestTraces
   };
 };
 
@@ -145,7 +146,8 @@ export let normalizeSlateErrorInput = (input: SlateErrorInput): SlateErrorRespon
       ...input.upstream,
       status: input.upstream?.status ?? input.status
     }) as SlateErrorUpstreamInfo | undefined,
-    baggage: cleanRecord(input.baggage)
+    baggage: cleanRecord(input.baggage),
+    requestTraces: input.requestTraces
   };
 };
 

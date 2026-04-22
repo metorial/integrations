@@ -170,6 +170,59 @@ let createTraceSlate = (baseUrl: string) => {
   });
 };
 
+let createTraceErrorSlate = (baseUrl: string) => {
+  let config = SlateConfig.create(z.object({}));
+  let auth = SlateAuth.create<{}>().output(z.object({}));
+
+  let spec = SlateSpecification.create({
+    key: 'trace-error-slate',
+    name: 'Trace Error Slate',
+    description: 'A slate that traces failed HTTP requests',
+    config,
+    auth
+  });
+
+  let traceTool = SlateTool.create(spec, {
+    key: 'trace_http_error',
+    name: 'Trace HTTP Error'
+  })
+    .input(z.object({}))
+    .output(
+      z.object({
+        ok: z.boolean()
+      })
+    )
+    .handleInvocation(async () => {
+      await axios.post(
+        `${baseUrl}/trace-error?client_secret=request-secret`,
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_secret: 'client-secret'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: 'Bearer client-token'
+          }
+        }
+      );
+
+      return {
+        output: {
+          ok: true
+        },
+        message: 'should not reach'
+      };
+    })
+    .build();
+
+  return Slate.create({
+    spec,
+    tools: [traceTool],
+    triggers: []
+  });
+};
+
 let createTriggerTraceSlate = () => {
   let config = SlateConfig.create(z.object({}));
   let auth = SlateAuth.create<{}>().output(z.object({}));
@@ -559,6 +612,58 @@ describe('@slates/client local transport', () => {
       });
       expect(trace?.response?.body?.truncated).toBe(true);
       expect(trace?.response?.body?.text).toContain('"token":"[redacted]"');
+      expect(trace?.response?.body?.text).not.toContain('server-secret');
+    } finally {
+      await new Promise<void>((resolve, reject) => {
+        server.close(error => (error ? reject(error) : resolve()));
+      });
+    }
+  });
+
+  it('returns sanitized request traces on provider errors', async () => {
+    let server = createServer((_req, res) => {
+      res.statusCode = 400;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(
+        JSON.stringify({
+          error: 'invalid_grant',
+          client_secret: 'server-secret'
+        })
+      );
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(0, '127.0.0.1', () => resolve());
+    });
+
+    try {
+      let { port } = server.address() as AddressInfo;
+      let client = createSlatesClient({
+        transport: createLocalSlateTransport({
+          slate: createTraceErrorSlate(`http://127.0.0.1:${port}`)
+        }),
+        state: {
+          config: {}
+        }
+      });
+
+      let error = await client
+        .invokeTool('trace_http_error', {})
+        .then(() => null)
+        .catch(err => err as SlateProtocolError);
+
+      expect(error).toBeInstanceOf(SlateProtocolError);
+      expect(error?.data.code).toBe('upstream.invalid_request');
+      expect(error?.data.requestTraces).toHaveLength(1);
+
+      let trace = error?.data.requestTraces?.[0] as Record<string, any> | undefined;
+      expect(trace?.request.method).toBe('POST');
+      expect(trace?.request.url).not.toContain('request-secret');
+      expect(trace?.request.headers).not.toHaveProperty('authorization');
+      expect(trace?.request.body?.text).toContain('client_secret=[redacted]');
+      expect(trace?.response?.status).toBe(400);
+      expect(trace?.response?.body?.text).toContain('"client_secret":"[redacted]"');
       expect(trace?.response?.body?.text).not.toContain('server-secret');
     } finally {
       await new Promise<void>((resolve, reject) => {

@@ -22,6 +22,7 @@ export interface SlateProtocolErrorResponse {
   provider?: Record<string, unknown>;
   upstream?: Record<string, unknown>;
   baggage?: Record<string, unknown>;
+  requestTraces?: Array<Record<string, unknown>>;
   [key: string]: unknown;
 }
 
