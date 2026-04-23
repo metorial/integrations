@@ -1,5 +1,6 @@
-import { createAxios } from 'slates';
+import { buildMicrosoftGraphUploadBody } from '@slates/oauth-microsoft';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export interface DriveItem {
   id: string;
@@ -195,12 +196,16 @@ export class Client {
     if (opts.conflictBehavior)
       params['@microsoft.graph.conflictBehavior'] = opts.conflictBehavior;
 
-    let response = await this.api.put(basePath, opts.content, {
-      params,
-      headers: {
-        'Content-Type': opts.contentType || 'application/octet-stream'
+    let response = await this.api.put(
+      basePath,
+      buildMicrosoftGraphUploadBody(opts.fileName, opts.content, opts.contentType),
+      {
+        params,
+        headers: {
+          'Content-Type': opts.contentType || 'application/octet-stream'
+        }
       }
-    });
+    );
 
     return response.data;
   }
@@ -483,11 +488,7 @@ export class Client {
 
   // --- Thumbnails ---
 
-  async getThumbnails(opts: {
-    driveId?: string;
-    itemId?: string;
-    itemPath?: string;
-  }): Promise<
+  async getThumbnails(opts: { driveId?: string; itemId?: string; itemPath?: string }): Promise<
     Array<{
       id: string;
       small?: { url: string; width: number; height: number };

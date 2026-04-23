@@ -3,50 +3,86 @@ import { z } from 'zod';
 
 let scopes = [
   { title: 'Profile', description: 'Read user profile', scope: 'vso.profile' },
-  { title: 'Identity', description: 'Read identities and groups', scope: 'vso.identity' },
+  {
+    title: 'Identity',
+    description: 'Read identities and groups',
+    scope: 'vso.identity',
+    defaultChecked: false
+  },
   { title: 'Project Read', description: 'Read projects and teams', scope: 'vso.project' },
   {
     title: 'Project Manage',
     description: 'Create and manage projects',
-    scope: 'vso.project_manage'
+    scope: 'vso.project_manage',
+    defaultChecked: false
   },
   {
     title: 'Work Items Read',
     description: 'Read work items, boards, and queries',
-    scope: 'vso.work'
+    scope: 'vso.work',
+    defaultChecked: false
   },
   {
     title: 'Work Items Write',
     description: 'Create and update work items',
-    scope: 'vso.work_write'
+    scope: 'vso.work_write',
+    defaultChecked: false
   },
   {
     title: 'Work Items Full',
     description: 'Full access to work items including delete',
     scope: 'vso.work_full'
   },
-  { title: 'Code Read', description: 'Read repositories and code', scope: 'vso.code' },
-  { title: 'Code Write', description: 'Read and write repositories', scope: 'vso.code_write' },
+  {
+    title: 'Code Read',
+    description: 'Read repositories and code',
+    scope: 'vso.code',
+    defaultChecked: false
+  },
+  {
+    title: 'Code Write',
+    description: 'Read and write repositories',
+    scope: 'vso.code_write',
+    defaultChecked: false
+  },
   {
     title: 'Code Manage',
     description: 'Full access to code repositories',
     scope: 'vso.code_manage'
   },
-  { title: 'Build Read', description: 'Read build pipelines and results', scope: 'vso.build' },
+  {
+    title: 'Build Read',
+    description: 'Read build pipelines and results',
+    scope: 'vso.build',
+    defaultChecked: false
+  },
   {
     title: 'Build Execute',
     description: 'Read and execute build pipelines',
     scope: 'vso.build_execute'
   },
   {
+    title: 'Wiki Read',
+    description: 'Read Azure DevOps wikis and pages',
+    scope: 'vso.wiki',
+    defaultChecked: false
+  },
+  {
+    title: 'Wiki Write',
+    description: 'Create and update Azure DevOps wikis and pages',
+    scope: 'vso.wiki_write'
+  },
+  {
     title: 'Release Manage',
     description: 'Manage release pipelines',
-    scope: 'vso.release_manage'
+    scope: 'vso.release_manage',
+    defaultChecked: false
   },
   {
     title: 'Service Hooks Write',
     description: 'Create and manage service hook subscriptions',
-    scope: 'vso.hooks_write'
+    scope: 'vso.hooks_write',
+    defaultChecked: false
   }
 ];
 
@@ -65,6 +101,7 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
         response_type: 'code',
         redirect_uri: ctx.redirectUri,
         state: ctx.state,
+        response_mode: 'query',
         scope: [
           ...ctx.scopes.map((s: string) => `${AZURE_DEVOPS_RESOURCE}/${s}`),
           'offline_access'
@@ -105,12 +142,20 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
 
       return {
         output: {
-          token: data.access_token
+          token: data.access_token,
+          refreshToken: data.refresh_token,
+          expiresAt: data.expires_in
+            ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+            : undefined
         }
       };
     },
 
     handleTokenRefresh: async (ctx: any) => {
+      if (!ctx.output.refreshToken) {
+        return { output: ctx.output };
+      }
+
       let axios = createAxios();
 
       let response = await axios.post(
@@ -118,9 +163,12 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
         new URLSearchParams({
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
-          refresh_token: ctx.output.token,
+          refresh_token: ctx.output.refreshToken,
           grant_type: 'refresh_token',
-          scope: `${AZURE_DEVOPS_RESOURCE}/.default offline_access`
+          scope: [
+            ...ctx.scopes.map((s: string) => `${AZURE_DEVOPS_RESOURCE}/${s}`),
+            'offline_access'
+          ].join(' ')
         }).toString(),
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -135,7 +183,11 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
 
       return {
         output: {
-          token: data.access_token
+          token: data.access_token,
+          refreshToken: data.refresh_token ?? ctx.output.refreshToken,
+          expiresAt: data.expires_in
+            ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+            : undefined
         }
       };
     },
@@ -173,7 +225,9 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
 export let auth = SlateAuth.create()
   .output(
     z.object({
-      token: z.string().describe('Access token or PAT for Azure DevOps API')
+      token: z.string().describe('Access token or PAT for Azure DevOps API'),
+      refreshToken: z.string().optional().describe('OAuth refresh token'),
+      expiresAt: z.string().optional().describe('Token expiration timestamp (ISO 8601)')
     })
   )
   .addOauth(createMicrosoftOauth('Work & Personal', 'oauth_common', 'common'))

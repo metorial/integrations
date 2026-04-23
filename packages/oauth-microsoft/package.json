@@ -30,7 +30,11 @@
     "build": "tsup --config ../../tsup.packages.config.ts --external async_hooks",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "slates": "1.0.0-rc.9"
+  },
   "devDependencies": {
+    "@types/node": "^20",
     "@slates/tsconfig": "1.0.0-rc.1",
     "typescript": "5.8.2",
     "vitest": "^3.1.2"

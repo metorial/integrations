@@ -150,6 +150,13 @@ export class AzureDevOpsClient {
     return response.data;
   }
 
+  async deleteRepository(project: string, repositoryId: string): Promise<void> {
+    await this.axios.delete(
+      `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}`,
+      { params: { 'api-version': '7.1' } }
+    );
+  }
+
   // ─── Branches (Refs) ──────────────────────────────────────
 
   async listBranches(project: string, repositoryId: string, filter?: string): Promise<any> {
@@ -410,6 +417,62 @@ export class AzureDevOpsClient {
     return response.data;
   }
 
+  private normalizeWikiPageResponse(
+    responseData: Record<string, any>,
+    eTag?: string
+  ): Record<string, any> {
+    if (responseData.page) {
+      return {
+        ...responseData,
+        eTag: eTag ?? responseData.eTag
+      };
+    }
+
+    let {
+      id,
+      path,
+      content,
+      gitItemPath,
+      subPages,
+      ...rest
+    } = responseData;
+
+    return {
+      ...rest,
+      page: {
+        id,
+        path,
+        content,
+        gitItemPath,
+        subPages
+      },
+      eTag: eTag ?? responseData.eTag
+    };
+  }
+
+  private async getCodeWikiVersion(
+    project: string,
+    wikiIdentifier: string
+  ): Promise<string | null> {
+    let wikis = await this.listWikis(project);
+    let wiki = (wikis.value ?? []).find(
+      (candidate: { id?: string; name?: string; type?: string }) =>
+        candidate.id === wikiIdentifier || candidate.name === wikiIdentifier
+    );
+
+    if (wiki?.type !== 'codeWiki') {
+      return null;
+    }
+
+    let version = (wiki.versions ?? []).find(
+      (candidate: { version?: string }) => typeof candidate.version === 'string'
+    );
+
+    return typeof version?.version === 'string' && version.version.length > 0
+      ? version.version
+      : null;
+  }
+
   async getWikiPage(
     project: string,
     wikiIdentifier: string,
@@ -422,12 +485,22 @@ export class AzureDevOpsClient {
     };
     if (params?.includeContent) query['includeContent'] = 'true';
     if (params?.recursionLevel) query['recursionLevel'] = params.recursionLevel;
+    let version = await this.getCodeWikiVersion(project, wikiIdentifier);
+    if (version) {
+      query['versionDescriptor.version'] = version;
+      query['versionDescriptor.versionType'] = 'branch';
+    }
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/wiki/wikis/${encodeURIComponent(wikiIdentifier)}/pages`,
       { params: query }
     );
-    return response.data;
+    let responseData = response.data as Record<string, any>;
+    let eTag =
+      (response.headers?.etag as string | undefined) ??
+      (response.headers?.ETag as string | undefined) ??
+      responseData.eTag;
+    return this.normalizeWikiPageResponse(responseData, eTag);
   }
 
   async createOrUpdateWikiPage(
@@ -439,13 +512,27 @@ export class AzureDevOpsClient {
   ): Promise<any> {
     let headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (version) headers['If-Match'] = version;
+    let query = new URLSearchParams({
+      path,
+      'api-version': '7.1'
+    });
+    let branchVersion = await this.getCodeWikiVersion(project, wikiIdentifier);
+    if (branchVersion) {
+      query.set('versionDescriptor.version', branchVersion);
+      query.set('versionDescriptor.versionType', 'branch');
+    }
 
     let response = await this.axios.put(
-      `/${encodeURIComponent(project)}/_apis/wiki/wikis/${encodeURIComponent(wikiIdentifier)}/pages?path=${encodeURIComponent(path)}&api-version=7.1`,
+      `/${encodeURIComponent(project)}/_apis/wiki/wikis/${encodeURIComponent(wikiIdentifier)}/pages?${query.toString()}`,
       { content },
       { headers }
     );
-    return response.data;
+    let responseData = response.data as Record<string, any>;
+    let eTag =
+      (response.headers?.etag as string | undefined) ??
+      (response.headers?.ETag as string | undefined) ??
+      responseData.eTag;
+    return this.normalizeWikiPageResponse(responseData, eTag);
   }
 
   // ─── Service Hooks ─────────────────────────────────────────

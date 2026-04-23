@@ -61,12 +61,26 @@ export let versionHistory = SlateTool.create(spec, {
       if (!ctx.input.versionId) {
         throw new Error('versionId is required for restore operation');
       }
-      if (!ctx.input.itemId) {
-        throw new Error('itemId is required for restore operation');
+
+      let itemId = ctx.input.itemId;
+      if (!itemId) {
+        if (!ctx.input.itemPath) {
+          throw new Error('itemId or itemPath is required for restore operation');
+        }
+
+        let item = await client.getItem({
+          itemPath: ctx.input.itemPath,
+          driveId: ctx.input.driveId,
+          siteId: ctx.input.siteId
+        });
+        itemId = item.id;
+      }
+      if (!itemId) {
+        throw new Error('Unable to resolve the file ID for restore operation');
       }
 
       await client.restoreVersion({
-        itemId: ctx.input.itemId,
+        itemId,
         versionId: ctx.input.versionId,
         driveId: ctx.input.driveId,
         siteId: ctx.input.siteId

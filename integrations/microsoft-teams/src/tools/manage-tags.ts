@@ -87,12 +87,14 @@ export let manageTags = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.displayName) throw new Error('displayName is required for create');
+      let initialMemberIds =
+        ctx.input.memberUserIds && ctx.input.memberUserIds.length > 0
+          ? ctx.input.memberUserIds
+          : [String((await client.getMe()).id)];
       let body: any = {
-        displayName: ctx.input.displayName
+        displayName: ctx.input.displayName,
+        members: initialMemberIds.map((uid: string) => ({ userId: uid }))
       };
-      if (ctx.input.memberUserIds && ctx.input.memberUserIds.length > 0) {
-        body.members = ctx.input.memberUserIds.map((uid: string) => ({ userId: uid }));
-      }
       let tag = await client.createTag(ctx.input.teamId, body);
       return {
         output: { tagId: tag.id, success: true },

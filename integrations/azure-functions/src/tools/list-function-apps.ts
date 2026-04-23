@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ArmClient } from '../lib/client';
+import { getFunctionAppVersion } from '../lib/function-app-metadata';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -39,17 +40,24 @@ export let listFunctionApps = SlateTool.create(spec, {
     ctx.info('Listing function apps in resource group: ' + ctx.config.resourceGroupName);
 
     let apps = await client.listFunctionApps();
+    let functionApps = await Promise.all(
+      apps.map(async (app: any) => {
+        let config = await client.getConfiguration(app.name).catch(() => undefined);
 
-    let functionApps = apps.map((app: any) => ({
-      appName: app.name,
-      resourceId: app.id,
-      location: app.location,
-      state: app.properties?.state,
-      defaultHostName: app.properties?.defaultHostName,
-      kind: app.kind,
-      runtimeVersion: app.properties?.siteConfig?.functionsRuntimeScaleMonitoringEnabled,
-      tags: app.tags
-    }));
+        return {
+          appName: app.name,
+          resourceId: app.id,
+          location: app.location,
+          state: app.properties?.state,
+          defaultHostName: app.properties?.defaultHostName,
+          kind: app.kind,
+          runtimeVersion:
+            getFunctionAppVersion(config?.properties) ??
+            getFunctionAppVersion(app.properties?.siteConfig),
+          tags: app.tags
+        };
+      })
+    );
 
     return {
       output: {

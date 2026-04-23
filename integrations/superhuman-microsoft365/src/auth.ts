@@ -1,4 +1,5 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createMicrosoftGraphOauth } from '@slates/oauth-microsoft';
+import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 let scopes = [
@@ -32,129 +33,6 @@ let scopes = [
   { title: 'Email', description: 'Read user email address', scope: 'email' }
 ];
 
-function createMicrosoftOauth(name: string, key: string, tenant: string) {
-  return {
-    type: 'auth.oauth' as const,
-    name,
-    key,
-    scopes,
-
-    getAuthorizationUrl: async (ctx: any) => {
-      let params = new URLSearchParams({
-        client_id: ctx.clientId,
-        response_type: 'code',
-        redirect_uri: ctx.redirectUri,
-        scope: ctx.scopes.join(' '),
-        state: ctx.state,
-        response_mode: 'query'
-      });
-
-      return {
-        url: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize?${params.toString()}`
-      };
-    },
-
-    handleCallback: async (ctx: any) => {
-      let tokenAxios = createAxios({
-        baseURL: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0`
-      });
-
-      let response = await tokenAxios.post(
-        '/token',
-        new URLSearchParams({
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          code: ctx.code,
-          redirect_uri: ctx.redirectUri,
-          grant_type: 'authorization_code',
-          scope: ctx.scopes.join(' ')
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
-      );
-
-      let data = response.data as any;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
-
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt
-        }
-      };
-    },
-
-    handleTokenRefresh: async (ctx: any) => {
-      if (!ctx.output.refreshToken) {
-        throw new Error(
-          'No refresh token available. Ensure offline_access scope is requested.'
-        );
-      }
-
-      let tokenAxios = createAxios({
-        baseURL: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0`
-      });
-
-      let response = await tokenAxios.post(
-        '/token',
-        new URLSearchParams({
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          refresh_token: ctx.output.refreshToken,
-          grant_type: 'refresh_token',
-          scope: ctx.scopes.join(' ')
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
-      );
-
-      let data = response.data as any;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
-
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt
-        }
-      };
-    },
-
-    getProfile: async (ctx: any) => {
-      let graphAxios = createAxios({
-        baseURL: 'https://graph.microsoft.com/v1.0'
-      });
-
-      let response = await graphAxios.get('/me', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
-
-      let user = response.data as any;
-
-      return {
-        profile: {
-          id: user.id,
-          email: user.mail || user.userPrincipalName,
-          name: user.displayName
-        }
-      };
-    }
-  };
-}
-
 export let auth = SlateAuth.create()
   .output(
     z.object({
@@ -163,5 +41,21 @@ export let auth = SlateAuth.create()
       expiresAt: z.string().optional()
     })
   )
-  .addOauth(createMicrosoftOauth('Work & Personal', 'oauth_common', 'common'))
-  .addOauth(createMicrosoftOauth('Work Only', 'oauth_organizations', 'organizations'));
+  .addOauth(
+    createMicrosoftGraphOauth({
+      name: 'Work & Personal',
+      key: 'oauth_common',
+      tenant: 'common',
+      scopes,
+      allowTenantInput: true
+    })
+  )
+  .addOauth(
+    createMicrosoftGraphOauth({
+      name: 'Work Only',
+      key: 'oauth_organizations',
+      tenant: 'organizations',
+      scopes,
+      allowTenantInput: true
+    })
+  );

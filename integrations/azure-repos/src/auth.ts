@@ -1,4 +1,5 @@
 import { SlateAuth, createAxios } from 'slates';
+import { toAzureDevOpsAuthHeader } from './lib/auth';
 import { z } from 'zod';
 
 let scopes = [
@@ -6,12 +7,14 @@ let scopes = [
     title: 'Code Read',
     description:
       'Read source code, metadata about commits, branches, and other version control artifacts.',
-    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code'
+    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code',
+    defaultChecked: false
   },
   {
     title: 'Code Read & Write',
     description: 'Read, update, and delete source code; create and manage pull requests.',
-    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_write'
+    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_write',
+    defaultChecked: false
   },
   {
     title: 'Code Manage',
@@ -26,7 +29,8 @@ let scopes = [
   {
     title: 'Code Status',
     description: 'Read and write commit and pull request status.',
-    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_status'
+    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_status',
+    defaultChecked: false
   },
   {
     title: 'Profile',
@@ -48,7 +52,8 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
         response_type: 'code',
         redirect_uri: ctx.redirectUri,
         scope: ctx.scopes.join(' '),
-        state: ctx.state
+        state: ctx.state,
+        response_mode: 'query'
       });
 
       return {
@@ -179,20 +184,19 @@ export let auth = SlateAuth.create()
     }),
 
     getOutput: async ctx => {
+      let token = ctx.input.token.trim();
       return {
         output: {
-          token: ctx.input.token
+          token: `Basic ${btoa(`:${token}`)}`
         }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
-      let basicAuth = btoa(`:${ctx.output.token}`);
-
       let http = createAxios({
         baseURL: 'https://app.vssps.visualstudio.com/_apis',
         headers: {
-          Authorization: `Basic ${basicAuth}`
+          Authorization: toAzureDevOpsAuthHeader(ctx.output.token)
         }
       });
 

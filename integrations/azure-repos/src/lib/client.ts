@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { toAzureDevOpsAuthHeader } from './auth';
 import type {
   AzureRepository,
   AzureRef,
@@ -28,18 +29,18 @@ export class Client {
     this.organization = config.organization;
     this.project = config.project;
 
-    // For PAT tokens, the token itself is a PAT string; for OAuth it's a bearer token.
-    // Detect based on token format: OAuth tokens from Entra ID are typically JWTs (contain dots).
-    let isPat = !config.token.includes('.');
-    let authHeader = isPat ? `Basic ${btoa(`:${config.token}`)}` : `Bearer ${config.token}`;
-
     this.http = createAxios({
       baseURL: `https://dev.azure.com/${config.organization}`,
       headers: {
-        Authorization: authHeader,
+        Authorization: toAzureDevOpsAuthHeader(config.token),
         'Content-Type': 'application/json'
       }
     });
+  }
+
+  private async getProjectDetails(): Promise<{ id?: string; name?: string }> {
+    let response = await this.http.get(`/_apis/projects/${encodeURIComponent(this.project)}?api-version=7.1`);
+    return response.data as { id?: string; name?: string };
   }
 
   // --- Repositories ---
@@ -66,9 +67,13 @@ export class Client {
       sourceRef?: string;
     }
   ): Promise<AzureRepository> {
+    let project = await this.getProjectDetails();
     let body: Record<string, any> = {
       name,
-      project: { id: this.project }
+      project: {
+        id: project.id,
+        name: project.name ?? this.project
+      }
     };
 
     if (options?.parentRepositoryId) {

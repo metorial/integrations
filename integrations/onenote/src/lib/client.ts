@@ -63,6 +63,12 @@ export interface CopyOperationResponse {
   createdDateTime: string;
 }
 
+export interface OneNoteOperationResponse extends CopyOperationResponse {
+  resourceId?: string;
+  lastActionDateTime?: string;
+  error?: any;
+}
+
 let mapNotebook = (nb: any): NotebookResponse => ({
   notebookId: nb.id,
   displayName: nb.displayName,
@@ -160,6 +166,10 @@ export class Client {
     return mapNotebook(response.data);
   }
 
+  async deleteNotebook(notebookId: string): Promise<void> {
+    await this.http.delete(`/me/onenote/notebooks/${notebookId}`);
+  }
+
   async copyNotebook(
     notebookId: string,
     params: {
@@ -223,6 +233,10 @@ export class Client {
       displayName
     });
     return mapSection(response.data);
+  }
+
+  async deleteSection(sectionId: string): Promise<void> {
+    await this.http.delete(`/me/onenote/sections/${sectionId}`);
   }
 
   async createSectionInGroup(
@@ -310,6 +324,10 @@ export class Client {
       displayName
     });
     return mapSectionGroup(response.data);
+  }
+
+  async deleteSectionGroup(sectionGroupId: string): Promise<void> {
+    await this.http.delete(`/me/onenote/sectionGroups/${sectionGroupId}`);
   }
 
   async createNestedSectionGroup(
@@ -429,6 +447,22 @@ export class Client {
     await this.http.delete(`/me/onenote/pages/${pageId}`);
   }
 
+  async getOperation(operationId: string): Promise<OneNoteOperationResponse> {
+    let response = await this.http.get(`/me/onenote/operations/${operationId}`);
+    let operation = response.data;
+
+    return {
+      operationId: operation.id ?? operationId,
+      status: operation.status ?? 'unknown',
+      resourceId: operation.resourceId,
+      resourceLocation: operation.resourceLocation,
+      percentComplete: operation.percentComplete,
+      createdDateTime: operation.createdDateTime ?? new Date().toISOString(),
+      lastActionDateTime: operation.lastActionDateTime,
+      error: operation.error
+    };
+  }
+
   // --- Search ---
 
   async searchPages(
@@ -439,13 +473,19 @@ export class Client {
       filter?: string;
     }
   ): Promise<{ pages: PageResponse[]; nextLink?: string }> {
-    let queryParams: Record<string, string> = {};
-    if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.top) queryParams['$top'] = String(params.top);
-    if (params?.skip) queryParams['$skip'] = String(params.skip);
-    queryParams['$search'] = `"${query}"`;
+    let escapedQuery = query.replace(/'/g, "''").toLowerCase();
+    let filters = [`contains(tolower(title),'${escapedQuery}')`];
+    if (params?.filter) {
+      filters.push(`(${params.filter})`);
+    }
 
-    let response = await this.http.get('/me/onenote/pages', { params: queryParams });
+    let response = await this.http.get('/me/onenote/pages', {
+      params: {
+        $filter: filters.join(' and '),
+        ...(params?.top ? { $top: String(params.top) } : {}),
+        ...(params?.skip ? { $skip: String(params.skip) } : {})
+      }
+    });
     let data = response.data;
 
     return {

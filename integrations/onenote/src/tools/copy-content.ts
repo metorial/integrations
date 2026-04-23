@@ -66,6 +66,14 @@ export let copyContent = SlateTool.create(spec, {
         ctx.input.siteId
       );
     } else if (ctx.input.resourceType === 'section') {
+      let hasNotebookDestination = Boolean(ctx.input.destinationNotebookId);
+      let hasSectionGroupDestination = Boolean(ctx.input.destinationSectionGroupId);
+      if (hasNotebookDestination === hasSectionGroupDestination) {
+        throw new Error(
+          'Provide exactly one of destinationNotebookId or destinationSectionGroupId when copying a section.'
+        );
+      }
+
       result = await client.copySection(ctx.input.resourceId, {
         destinationNotebookId: ctx.input.destinationNotebookId,
         destinationSectionGroupId: ctx.input.destinationSectionGroupId,

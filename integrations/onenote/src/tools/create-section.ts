@@ -34,8 +34,10 @@ export let createSection = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    if (!ctx.input.notebookId && !ctx.input.sectionGroupId) {
-      throw new Error('Either notebookId or sectionGroupId must be provided.');
+    let hasNotebookId = Boolean(ctx.input.notebookId);
+    let hasSectionGroupId = Boolean(ctx.input.sectionGroupId);
+    if (hasNotebookId === hasSectionGroupId) {
+      throw new Error('Provide exactly one of notebookId or sectionGroupId.');
     }
 
     let section;

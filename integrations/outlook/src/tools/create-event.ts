@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { optionalString } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -152,7 +153,9 @@ export let createEvent = SlateTool.create(spec, {
         startDateTime: ev.start?.dateTime,
         endDateTime: ev.end?.dateTime,
         webLink: ev.webLink,
-        onlineMeetingJoinUrl: ev.onlineMeeting?.joinUrl || ev.onlineMeetingUrl
+        onlineMeetingJoinUrl: optionalString(
+          ev.onlineMeeting?.joinUrl || ev.onlineMeetingUrl
+        )
       },
       message: `Created event **"${ev.subject}"** from ${ev.start?.dateTime} to ${ev.end?.dateTime}.${ev.onlineMeeting?.joinUrl ? ` Online meeting: ${ev.onlineMeeting.joinUrl}` : ''}`
     };

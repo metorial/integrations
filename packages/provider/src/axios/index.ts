@@ -19,8 +19,13 @@ let applySlateInterceptors = (
 ) => {
   instance.interceptors.request.use(
     request => {
-      // Has to be called in the context of an action execution
-      let ctx = getCurrentContext();
+      let ctx;
+      try {
+        ctx = getCurrentContext();
+      } catch {
+        return request;
+      }
+
       let spec = ctx.specification;
 
       request.headers.set('User-Agent', `slates.dev@1.0.0/${spec.key}`);

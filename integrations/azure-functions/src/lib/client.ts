@@ -31,7 +31,7 @@ export class ArmClient {
 
   async listFunctionApps(): Promise<any[]> {
     let results: any[] = [];
-    let url = `${this.basePath()}?api-version=${API_VERSION}`;
+    let url = this.basePath();
 
     while (url) {
       let response = await this.axios.get(url, { params: {} });
@@ -47,7 +47,7 @@ export class ArmClient {
 
   async listAllFunctionAppsInSubscription(): Promise<any[]> {
     let results: any[] = [];
-    let url = `/subscriptions/${this.subscriptionId}/providers/Microsoft.Web/sites?api-version=${API_VERSION}`;
+    let url = `/subscriptions/${this.subscriptionId}/providers/Microsoft.Web/sites`;
 
     while (url) {
       let response = await this.axios.get(url, { params: {} });
@@ -96,7 +96,7 @@ export class ArmClient {
 
   async listFunctions(appName: string): Promise<any[]> {
     let results: any[] = [];
-    let url = `${this.basePath()}/${appName}/functions?api-version=${API_VERSION}`;
+    let url = `${this.basePath()}/${appName}/functions`;
 
     while (url) {
       let response = await this.axios.get(url, { params: {} });
@@ -226,7 +226,7 @@ export class ArmClient {
 
   async listSlots(appName: string): Promise<any[]> {
     let results: any[] = [];
-    let url = `${this.basePath()}/${appName}/slots?api-version=${API_VERSION}`;
+    let url = `${this.basePath()}/${appName}/slots`;
 
     while (url) {
       let response = await this.axios.get(url, { params: {} });
@@ -274,7 +274,7 @@ export class ArmClient {
 
   async listDeployments(appName: string): Promise<any[]> {
     let results: any[] = [];
-    let url = `${this.basePath()}/${appName}/deployments?api-version=${API_VERSION}`;
+    let url = `${this.basePath()}/${appName}/deployments`;
 
     while (url) {
       let response = await this.axios.get(url, { params: {} });
@@ -337,7 +337,13 @@ export class RuntimeClient {
     return {
       status: response.status,
       data: response.data,
-      headers: response.headers as Record<string, string>
+      headers: Object.fromEntries(
+        Object.entries(
+          typeof (response.headers as { toJSON?: () => Record<string, unknown> }).toJSON === 'function'
+            ? (response.headers as { toJSON: () => Record<string, unknown> }).toJSON()
+            : (response.headers as Record<string, unknown>)
+        ).map(([key, value]) => [key, Array.isArray(value) ? value.join(', ') : String(value)])
+      )
     };
   }
 

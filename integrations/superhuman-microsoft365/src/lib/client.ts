@@ -36,7 +36,7 @@ export class Client {
     if (params?.top) queryParams['$top'] = String(params.top);
     if (params?.skip) queryParams['$skip'] = String(params.skip);
     if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderby) queryParams['$orderby'] = params.orderby;
+    if (params?.orderby && !params.search) queryParams['$orderby'] = params.orderby;
     if (params?.search) queryParams['$search'] = `"${params.search}"`;
     if (params?.select?.length) queryParams['$select'] = params.select.join(',');
 
@@ -125,7 +125,6 @@ export class Client {
         ? await this.axios.get<GraphListResponse<Message>>('/me/messages', {
             params: {
               $filter: filter,
-              $orderby: orderby,
               $top: String(pageSize),
               ...(select?.length ? { $select: select.join(',') } : {})
             }
@@ -139,6 +138,15 @@ export class Client {
         break;
       }
       first = false;
+    }
+
+    if (orderby.startsWith('receivedDateTime')) {
+      let descending = /\bdesc\b/i.test(orderby);
+      all.sort((a, b) => {
+        let left = a.receivedDateTime ? Date.parse(a.receivedDateTime) : 0;
+        let right = b.receivedDateTime ? Date.parse(b.receivedDateTime) : 0;
+        return descending ? right - left : left - right;
+      });
     }
 
     return all;

@@ -1,5 +1,9 @@
 import { SlateTool } from 'slates';
 import { ArmClient } from '../lib/client';
+import {
+  getFunctionAppRuntimeStack,
+  getFunctionAppVersion
+} from '../lib/function-app-metadata';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -76,15 +80,10 @@ export let getFunctionApp = SlateTool.create(spec, {
       httpsOnly: app.properties?.httpsOnly,
       clientAffinityEnabled: app.properties?.clientAffinityEnabled,
       operatingSystem: isLinux ? 'Linux' : 'Windows',
-      runtimeStack:
-        config.properties?.linuxFxVersion ||
-        config.properties?.javaVersion ||
-        config.properties?.netFrameworkVersion ||
-        undefined,
+      runtimeStack: getFunctionAppRuntimeStack(config.properties),
       functionsVersion:
-        config.properties?.functionsRuntimeScaleMonitoringEnabled !== undefined
-          ? undefined
-          : undefined,
+        getFunctionAppVersion(config.properties) ??
+        getFunctionAppVersion(app.properties?.siteConfig),
       tags: app.tags,
       appSettings,
       siteConfig: config.properties
