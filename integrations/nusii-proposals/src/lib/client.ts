@@ -1,15 +1,15 @@
 import { createAxios } from 'slates';
 import type {
+  NusiiAccount,
+  NusiiActivity,
   NusiiClient,
+  NusiiLineItem,
   NusiiProposal,
   NusiiSection,
-  NusiiLineItem,
   NusiiTemplate,
-  NusiiActivity,
-  NusiiUser,
   NusiiTheme,
+  NusiiUser,
   NusiiWebhookEndpoint,
-  NusiiAccount,
   PaginatedResult,
   PaginationMeta
 } from './types';
@@ -27,8 +27,7 @@ export class Client {
           ? `Bearer ${config.token}`
           : `Token token=${config.token}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'User-Agent': 'Slates Integration (slates.dev)'
+        Accept: 'application/json'
       }
     });
   }

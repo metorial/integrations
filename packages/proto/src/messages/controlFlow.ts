@@ -6,7 +6,8 @@ export let slatesMessageHelloNotification = z.object({
   jsonrpc: z.literal('2.0'),
   method: z.literal('slates/hello'),
   params: z.object({
-    protocol: z.literal(SLATES_PROTOCOL_VERSION)
+    protocol: z.literal(SLATES_PROTOCOL_VERSION),
+    tenant: z.string().nullable().optional()
   })
 });
 

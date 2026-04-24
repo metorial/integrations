@@ -12,8 +12,7 @@ export class Client {
       baseURL: `https://3.basecampapi.com/${this.accountId}`,
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json; charset=utf-8',
-        'User-Agent': 'Slates Basecamp Integration (https://slates.dev)'
+        'Content-Type': 'application/json; charset=utf-8'
       }
     });
   }

@@ -30,8 +30,6 @@ export class HarvestClient {
       headers: {
         Authorization: `Bearer ${clientConfig.token}`,
         'Harvest-Account-Id': clientConfig.accountId,
-        'User-Agent':
-          clientConfig.userAgent || 'Slates Harvest Integration (support@slates.dev)',
         'Content-Type': 'application/json'
       }
     });
