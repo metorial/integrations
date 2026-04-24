@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 1,
   "workspaces": {
     "": {
       "name": "@metorial/integrations-root",
@@ -1068,6 +1067,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -1081,6 +1081,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -1093,6 +1094,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -1106,6 +1108,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -3843,6 +3846,7 @@
       },
       "devDependencies": {
         "@slates/test": "1.0.0-rc.4",
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -4276,6 +4280,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -7735,6 +7740,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -8480,6 +8486,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -8504,6 +8511,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -8661,6 +8669,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -9441,6 +9450,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -9453,6 +9463,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -11690,6 +11701,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -13059,6 +13071,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
       },
     },
@@ -16404,6 +16417,8 @@
     "@types/parse-json": ["@types/parse-json@4.0.2", "", {}, "sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw=="],
 
     "@types/resolve": ["@types/resolve@1.17.1", "", { "dependencies": { "@types/node": "*" } }, "sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw=="],
+
+    "@vercel/ncc": ["@vercel/ncc@0.38.4", "", { "bin": { "ncc": "dist/ncc/cli.js" } }, "sha512-8LwjnlP39s08C08J5NstzriPvW1SP8Zfpp1BvC2sI35kPeZnHfxVkCwu4/+Wodgnd60UtT1n8K8zw+Mp7J9JmQ=="],
 
     "@vitest/expect": ["@vitest/expect@3.2.4", "", { "dependencies": { "@types/chai": "^5.2.2", "@vitest/spy": "3.2.4", "@vitest/utils": "3.2.4", "chai": "^5.2.0", "tinyrainbow": "^2.0.0" } }, "sha512-Io0yyORnB6sikFlt8QW5K7slY4OjqNX9jmJQ02QDda8lyM6B5oNgVWoSoKPac8/kgnCUzuHQKrSLtu/uOqqrig=="],
 
