@@ -33,7 +33,7 @@ export let listBranches = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let branches = await client.listBranches(ctx.input.owner, ctx.input.repo, {
       perPage: ctx.input.perPage,
       page: ctx.input.page,

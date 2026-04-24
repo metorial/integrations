@@ -46,7 +46,7 @@ export let manageFileContent = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let { owner, repo, path, action } = ctx.input;
 
     if (action === 'read') {

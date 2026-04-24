@@ -50,7 +50,7 @@ Supports initializing with a README, gitignore template, and license.`,
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let repo = await client.createRepository(ctx.input);
 
     return {

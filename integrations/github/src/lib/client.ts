@@ -1,17 +1,34 @@
 import { createAxios } from 'slates';
 
+export interface GitHubClientConfig {
+  token: string;
+  instanceUrl?: string;
+}
+
 export class GitHubClient {
   private http: ReturnType<typeof createAxios>;
+  private instanceUrl: string;
+  private apiBaseUrl: string;
 
-  constructor(token: string) {
+  constructor(private config: GitHubClientConfig) {
+    this.instanceUrl = config.instanceUrl?.replace(/\/+$/, '') || 'https://github.com';
+    this.apiBaseUrl =
+      this.instanceUrl === 'https://github.com'
+        ? 'https://api.github.com'
+        : `${this.instanceUrl}/api/v3`;
+
     this.http = createAxios({
-      baseURL: 'https://api.github.com',
+      baseURL: this.apiBaseUrl,
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${config.token}`,
         Accept: 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28'
       }
     });
+  }
+
+  getRepositoryHtmlUrl(owner: string, repo: string) {
+    return `${this.instanceUrl}/${owner}/${repo}`;
   }
 
   // ─── Repositories ──────────────────────────────────────────────

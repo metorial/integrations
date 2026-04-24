@@ -259,7 +259,7 @@ let createDemoSlate = () => {
   return Slate.create({
     spec,
     tools: [echo, fail, attachmentEcho, downloadLink],
-    triggers: [webhookEcho]
+    triggers: [webhookEcho, pollEcho]
   });
 };
 
@@ -328,7 +328,7 @@ describe('@slates/test', () => {
         description: 'A tiny test slate'
       },
       toolIds: ['echo', 'fail', 'attachment_echo', 'download_link'],
-      triggerIds: ['webhook_echo'],
+      triggerIds: ['webhook_echo', 'poll_echo'],
       authMethodIds: ['token_auth'],
       tools: [
         { id: 'echo', readOnly: false, destructive: false },

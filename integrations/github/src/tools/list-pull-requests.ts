@@ -50,7 +50,7 @@ export let listPullRequests = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let prs = await client.listPullRequests(ctx.input.owner, ctx.input.repo, {
       state: ctx.input.state,
       head: ctx.input.head,

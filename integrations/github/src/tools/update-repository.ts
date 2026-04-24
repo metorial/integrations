@@ -36,7 +36,7 @@ Modify name, description, visibility, feature toggles (issues, wiki, projects), 
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let { owner, repo, ...updateData } = ctx.input;
     let updated = await client.updateRepository(owner, repo, updateData);
 
