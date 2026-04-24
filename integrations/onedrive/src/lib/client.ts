@@ -1,5 +1,4 @@
 import { buildMicrosoftGraphUploadBody } from '@slates/oauth-microsoft';
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export interface DriveItem {
@@ -83,7 +82,7 @@ export interface SubscriptionResponse {
 }
 
 export class Client {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.api = createAxios({

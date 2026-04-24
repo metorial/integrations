@@ -694,7 +694,7 @@ export class ExcelClient {
       let response = await this.axios.get(url, {
         headers: this.headers
       });
-      let children = Array.isArray(response.data.value) ? response.data.value : [];
+      let children: any[] = Array.isArray(response.data.value) ? response.data.value : [];
 
       return children.filter(
         item =>

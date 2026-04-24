@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let API_VERSION = '2024-04-01';
 
@@ -21,7 +20,7 @@ let normalizeAxiosHeaders = (headers: unknown): Record<string, string> => {
 };
 
 export class ArmClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private subscriptionId: string;
   private resourceGroupName: string;
 
@@ -295,7 +294,7 @@ export class ArmClient {
 }
 
 export class RuntimeClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { appName: string; functionKey: string }) {
     this.axios = createAxios({

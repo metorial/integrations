@@ -1,12 +1,11 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PowerBIClientConfig {
   token: string;
 }
 
 export class PowerBIClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: PowerBIClientConfig) {
     this.http = createAxios({

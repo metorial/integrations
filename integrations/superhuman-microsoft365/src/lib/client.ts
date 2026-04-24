@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type { GraphListResponse, ItemBody, Message, Recipient, Subscription } from './types';
 
 function escapeODataString(value: string): string {
@@ -7,7 +6,7 @@ function escapeODataString(value: string): string {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({
