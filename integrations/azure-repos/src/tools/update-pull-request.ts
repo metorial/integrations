@@ -78,7 +78,7 @@ export let updatePullRequest = SlateTool.create(spec, {
       ctx.input.deleteSourceBranch !== undefined ||
       ctx.input.mergeCommitMessage;
 
-    let pr = await client.updatePullRequest(ctx.input.repositoryId, ctx.input.pullRequestId, {
+    let updates = {
       title: ctx.input.title,
       description: ctx.input.description,
       status: ctx.input.status,
@@ -97,7 +97,29 @@ export let updatePullRequest = SlateTool.create(spec, {
             mergeCommitMessage: ctx.input.mergeCommitMessage
           }
         : undefined
-    });
+    };
+
+    let hasPullRequestUpdate =
+      updates.title !== undefined ||
+      updates.description !== undefined ||
+      updates.status !== undefined ||
+      updates.targetRefName !== undefined ||
+      updates.isDraft !== undefined ||
+      updates.autoCompleteSetBy !== undefined ||
+      updates.completionOptions !== undefined;
+
+    let hasReviewerMutation =
+      (ctx.input.addReviewerIds?.length ?? 0) > 0 ||
+      (ctx.input.removeReviewerIds?.length ?? 0) > 0 ||
+      ctx.input.vote !== undefined;
+
+    if (!hasPullRequestUpdate && !hasReviewerMutation) {
+      throw new Error('No pull request changes provided.');
+    }
+
+    let pr = hasPullRequestUpdate
+      ? await client.updatePullRequest(ctx.input.repositoryId, ctx.input.pullRequestId, updates)
+      : await client.getPullRequest(ctx.input.repositoryId, ctx.input.pullRequestId);
 
     // Handle reviewer additions
     if (ctx.input.addReviewerIds) {
@@ -129,6 +151,10 @@ export let updatePullRequest = SlateTool.create(spec, {
         ctx.input.vote.reviewerId,
         { vote: ctx.input.vote.value }
       );
+    }
+
+    if (hasReviewerMutation) {
+      pr = await client.getPullRequest(ctx.input.repositoryId, ctx.input.pullRequestId);
     }
 
     return {

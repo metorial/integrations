@@ -1,13 +1,30 @@
 import {
   SLATES_PROTOCOL_VERSION,
-  SlateAuthenticationMethod,
-  SlatesAction,
   SlatesParticipant,
-  slatesRequestsByMethod,
-  slatesResponsesByMethod
+  type SlateAuthenticationMethod,
+  type SlatesAction,
+  type SlatesMessageActionGetResponse,
+  type SlatesMessageActionInvokeResponse,
+  type SlatesMessageActionsListResponse,
+  type SlatesMessageActionTriggerEventMapResponse,
+  type SlatesMessageActionTriggerWebhookHandleResponse,
+  type SlatesMessageActionTriggerWebhookRegisterResponse,
+  type SlatesMessageActionTriggerWebhookUnregisterResponse,
+  type SlatesMessageAuthAuthorizationUrlGetResponse,
+  type SlatesMessageAuthDefaultInputGetResponse,
+  type SlatesMessageAuthInputChangedResponse,
+  type SlatesMessageAuthMethodGetResponse,
+  type SlatesMessageAuthOutputGetResponse,
+  type SlatesMessageAuthProfileGetResponse,
+  type SlatesMessageAuthTokenRefreshHandleResponse,
+  type SlatesMessageConfigChangedResponse,
+  type SlatesMessageConfigDefaultGetResponse,
+  type SlatesMessageConfigSchemaGetResponse,
+  type SlatesMessageProviderIdentifyResponse,
+  type SlatesRequests,
+  type SlatesResponsesByMethod
 } from '@slates/proto';
 import { randomUUID } from 'crypto';
-import z from 'zod';
 import { SlateProtocolError } from './error';
 import { SlatesClientState, SlatesProtocolClientOptions } from './types';
 
@@ -118,10 +135,10 @@ export class SlatesProtocolClient {
     ];
   }
 
-  async request<Key extends keyof typeof slatesRequestsByMethod>(
+  async request<Key extends keyof SlatesResponsesByMethod & SlatesRequests['method']>(
     method: Key,
-    params: z.infer<(typeof slatesRequestsByMethod)[Key]>['params']
-  ): Promise<z.infer<(typeof slatesResponsesByMethod)[Key]>['result']> {
+    params: Extract<SlatesRequests, { method: Key }>['params']
+  ): Promise<SlatesResponsesByMethod[Key]['result']> {
     let id = randomUUID();
     let responses = await this.transport.send([
       ...this.buildStateMessages(),
@@ -130,7 +147,7 @@ export class SlatesProtocolClient {
         id,
         method,
         params
-      } as z.infer<(typeof slatesRequestsByMethod)[Key]>
+      } as Extract<SlatesRequests, { method: Key }>
     ]);
 
     let response = responses.find(message => 'id' in message && message.id === id) as
@@ -148,11 +165,11 @@ export class SlatesProtocolClient {
     return response.result;
   }
 
-  async identify() {
+  async identify(): Promise<SlatesMessageProviderIdentifyResponse['result']> {
     return this.request('slates/provider.identify', {});
   }
 
-  async listActions() {
+  async listActions(): Promise<SlatesMessageActionsListResponse['result']> {
     return this.request('slates/actions.list', {});
   }
 
@@ -166,7 +183,7 @@ export class SlatesProtocolClient {
     return result.actions.filter(action => action.type === 'action.trigger');
   }
 
-  async getAction(actionId: string) {
+  async getAction(actionId: string): Promise<SlatesMessageActionGetResponse['result']> {
     return this.request('slates/action.get', { actionId });
   }
 
@@ -188,18 +205,18 @@ export class SlatesProtocolClient {
     return result.action;
   }
 
-  async getConfigSchema() {
+  async getConfigSchema(): Promise<SlatesMessageConfigSchemaGetResponse['result']> {
     return this.request('slates/config.schema.get', {});
   }
 
-  async getDefaultConfig() {
+  async getDefaultConfig(): Promise<SlatesMessageConfigDefaultGetResponse['result']> {
     return this.request('slates/config.get_default', {});
   }
 
   async updateConfig(
     previousConfig: Record<string, any> | null,
     newConfig: Record<string, any>
-  ) {
+  ): Promise<SlatesMessageConfigChangedResponse['result']> {
     return this.request('slates/config.changed', {
       previousConfig,
       newConfig
@@ -210,13 +227,17 @@ export class SlatesProtocolClient {
     return this.request('slates/auth.methods.list', {});
   }
 
-  async getAuthMethod(authenticationMethodId: string) {
+  async getAuthMethod(
+    authenticationMethodId: string
+  ): Promise<SlatesMessageAuthMethodGetResponse['result']> {
     return this.request('slates/auth.method.get', {
       authenticationMethodId
     });
   }
 
-  async getDefaultAuthInput(authenticationMethodId: string) {
+  async getDefaultAuthInput(
+    authenticationMethodId: string
+  ): Promise<SlatesMessageAuthDefaultInputGetResponse['result']> {
     return this.request('slates/auth.input.get_default', {
       authenticationMethodId
     });
@@ -226,7 +247,7 @@ export class SlatesProtocolClient {
     authenticationMethodId: string;
     previousInput: Record<string, any> | null;
     newInput: Record<string, any>;
-  }) {
+  }): Promise<SlatesMessageAuthInputChangedResponse['result']> {
     return this.request('slates/auth.input.changed', {
       authenticationMethodId: d.authenticationMethodId,
       previousInput: d.previousInput,
@@ -234,7 +255,10 @@ export class SlatesProtocolClient {
     });
   }
 
-  async getAuthOutput(d: { authenticationMethodId: string; input: Record<string, any> }) {
+  async getAuthOutput(d: {
+    authenticationMethodId: string;
+    input: Record<string, any>;
+  }): Promise<SlatesMessageAuthOutputGetResponse['result']> {
     return this.request('slates/auth.output.get', {
       authenticationMethodId: d.authenticationMethodId,
       input: d.input
@@ -249,7 +273,7 @@ export class SlatesProtocolClient {
     clientId: string;
     clientSecret: string;
     scopes: string[];
-  }) {
+  }): Promise<SlatesMessageAuthAuthorizationUrlGetResponse['result']> {
     return this.request('slates/auth.authorization_url.get', d);
   }
 
@@ -278,7 +302,7 @@ export class SlatesProtocolClient {
     clientId: string;
     clientSecret: string;
     scopes: string[];
-  }) {
+  }): Promise<SlatesMessageAuthTokenRefreshHandleResponse['result']> {
     return this.request('slates/auth.token_refresh.handle', d);
   }
 
@@ -287,11 +311,14 @@ export class SlatesProtocolClient {
     output: Record<string, any>;
     input: Record<string, any>;
     scopes: string[];
-  }) {
+  }): Promise<SlatesMessageAuthProfileGetResponse['result']> {
     return this.request('slates/auth.profile.get', d);
   }
 
-  async invokeTool(actionId: string, input: Record<string, any>) {
+  async invokeTool(
+    actionId: string,
+    input: Record<string, any>
+  ): Promise<SlatesMessageActionInvokeResponse['result']> {
     this.ensureSession();
     return this.request('slates/action.tool.invoke', {
       actionId,
@@ -299,7 +326,10 @@ export class SlatesProtocolClient {
     });
   }
 
-  async mapTriggerEvent(actionId: string, input: Record<string, any>) {
+  async mapTriggerEvent(
+    actionId: string,
+    input: Record<string, any>
+  ): Promise<SlatesMessageActionTriggerEventMapResponse['result']> {
     this.ensureSession();
     return this.request('slates/action.trigger.map_event', {
       actionId,
@@ -307,7 +337,10 @@ export class SlatesProtocolClient {
     });
   }
 
-  async registerTriggerWebhook(actionId: string, webhookBaseUrl: string) {
+  async registerTriggerWebhook(
+    actionId: string,
+    webhookBaseUrl: string
+  ): Promise<SlatesMessageActionTriggerWebhookRegisterResponse['result']> {
     this.ensureSession();
     return this.request('slates/action.trigger.webhook_register', {
       actionId,
@@ -322,7 +355,7 @@ export class SlatesProtocolClient {
     headers?: Record<string, string>;
     body?: string | Uint8Array | null;
     state?: any;
-  }) {
+  }): Promise<SlatesMessageActionTriggerWebhookHandleResponse['result']> {
     this.ensureSession();
     let encodedBody =
       typeof d.body === 'string'
@@ -351,7 +384,7 @@ export class SlatesProtocolClient {
     webhookBaseUrl: string;
     registrationDetails: any;
     state?: any;
-  }) {
+  }): Promise<SlatesMessageActionTriggerWebhookUnregisterResponse['result']> {
     this.ensureSession();
     return this.request('slates/action.trigger.webhook_unregister', {
       actionId: d.actionId,

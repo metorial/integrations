@@ -6,6 +6,11 @@ let scopes = [
     title: 'Azure Management',
     description: 'Full access to manage Azure resources via the Azure Resource Manager API',
     scope: 'https://management.azure.com/.default'
+  },
+  {
+    title: 'Offline Access',
+    description: 'Maintain access with a refresh token',
+    scope: 'offline_access'
   }
 ];
 

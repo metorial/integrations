@@ -2,6 +2,18 @@ import { createAxios } from 'slates';
 
 let API_VERSION = 'v9.2';
 
+function parseSearchResponse(data: any): any {
+  let parsed = data;
+  for (let i = 0; i < 2 && typeof parsed === 'string'; i++) {
+    try {
+      parsed = JSON.parse(parsed);
+    } catch {
+      return data;
+    }
+  }
+  return parsed;
+}
+
 export class DynamicsClient {
   private baseUrl: string;
   private token: string;
@@ -199,9 +211,9 @@ export class DynamicsClient {
     }
   ): Promise<any> {
     let http = this.getAxios();
-    let body: Record<string, any> = { search: searchTerm };
+    let body: Record<string, any> = { search: searchTerm, count: true };
     if (options?.entities && options.entities.length > 0) {
-      body.entities = options.entities;
+      body.entities = JSON.stringify(options.entities.map(name => ({ name })));
     }
     if (options?.filter) {
       body.filter = options.filter;
@@ -216,7 +228,7 @@ export class DynamicsClient {
         'Content-Type': 'application/json'
       }
     });
-    return response.data;
+    return parseSearchResponse(response.data);
   }
 
   // ---- Metadata ----

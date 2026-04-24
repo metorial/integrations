@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { optionalEmailAddresses, optionalString } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -73,15 +74,12 @@ export let listContacts = SlateTool.create(spec, {
       displayName: c.displayName,
       givenName: c.givenName,
       surname: c.surname,
-      emailAddresses: c.emailAddresses?.map(e => ({
-        address: e.address,
-        name: e.name
-      })),
+      emailAddresses: optionalEmailAddresses(c.emailAddresses),
       businessPhones: c.businessPhones,
-      mobilePhone: c.mobilePhone,
-      jobTitle: c.jobTitle,
-      companyName: c.companyName,
-      department: c.department,
+      mobilePhone: optionalString(c.mobilePhone),
+      jobTitle: optionalString(c.jobTitle),
+      companyName: optionalString(c.companyName),
+      department: optionalString(c.department),
       categories: c.categories
     }));
 

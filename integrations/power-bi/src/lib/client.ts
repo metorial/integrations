@@ -1,12 +1,11 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PowerBIClientConfig {
   token: string;
 }
 
 export class PowerBIClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: PowerBIClientConfig) {
     this.http = createAxios({
@@ -428,8 +427,12 @@ export class PowerBIClient {
   }
 
   async deployPipelineStage(pipelineId: string, body: any): Promise<any> {
-    let response = await this.http.post(`/pipelines/${pipelineId}/deploy`, body);
-    return response.data;
+    let response = await this.http.post(`/pipelines/${pipelineId}/deployAll`, body);
+    let data = response.data;
+    if (Array.isArray(data?.value)) {
+      return data.value[0] || {};
+    }
+    return data;
   }
 
   async getPipelineOperations(pipelineId: string): Promise<any[]> {

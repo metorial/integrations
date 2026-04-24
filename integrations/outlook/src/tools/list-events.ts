@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { optionalString } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -92,17 +93,19 @@ export let listEvents = SlateTool.create(spec, {
       isAllDay: ev.isAllDay,
       isCancelled: ev.isCancelled,
       isOnlineMeeting: ev.isOnlineMeeting,
-      onlineMeetingJoinUrl: ev.onlineMeeting?.joinUrl || ev.onlineMeetingUrl,
-      organizerEmail: ev.organizer?.emailAddress?.address,
-      organizerName: ev.organizer?.emailAddress?.name,
+      onlineMeetingJoinUrl: optionalString(
+        ev.onlineMeeting?.joinUrl || ev.onlineMeetingUrl
+      ),
+      organizerEmail: optionalString(ev.organizer?.emailAddress?.address),
+      organizerName: optionalString(ev.organizer?.emailAddress?.name),
       attendeeCount: ev.attendees?.length,
       showAs: ev.showAs,
       importance: ev.importance,
       hasAttachments: ev.hasAttachments,
       webLink: ev.webLink,
       categories: ev.categories,
-      seriesMasterId: ev.seriesMasterId,
-      type: ev.type
+      seriesMasterId: optionalString(ev.seriesMasterId),
+      type: optionalString(ev.type)
     }));
 
     return {

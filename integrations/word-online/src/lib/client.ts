@@ -1,3 +1,4 @@
+import { buildMicrosoftGraphUploadBody } from '@slates/oauth-microsoft';
 import { createAxios } from 'slates';
 
 export interface ClientConfig {
@@ -139,7 +140,7 @@ export class Client {
   ): Promise<DriveItem> {
     let response = await this.axios.put(
       `${this.drivePath}/items/${parentId}:/${fileName}:/content`,
-      content,
+      buildMicrosoftGraphUploadBody(fileName, content, contentType),
       {
         headers: { 'Content-Type': contentType }
       }
@@ -158,7 +159,7 @@ export class Client {
     let encodedPath = fullPath.startsWith('/') ? fullPath : `/${fullPath}`;
     let response = await this.axios.put(
       `${this.drivePath}/root:${encodedPath}:/content`,
-      content,
+      buildMicrosoftGraphUploadBody(fileName, content, contentType),
       {
         headers: { 'Content-Type': contentType }
       }

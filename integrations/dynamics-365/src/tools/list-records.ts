@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DynamicsClient } from '../lib/client';
+import { resolveDynamicsInstanceUrl } from '../lib/resolve-instance-url';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -55,7 +56,7 @@ Use this to retrieve multiple records based on criteria. Supports standard OData
   .handleInvocation(async ctx => {
     let client = new DynamicsClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
+      instanceUrl: resolveDynamicsInstanceUrl(ctx)
     });
 
     let result = await client.listRecords(ctx.input.entitySetName, {

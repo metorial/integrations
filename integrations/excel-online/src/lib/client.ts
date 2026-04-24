@@ -1,5 +1,52 @@
 import { createAxios } from 'slates';
 
+let XLSX_MIME_TYPE =
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+let collectErrorMessages = (error: unknown): string[] => {
+  let seen = new Set<unknown>();
+  let messages = new Set<string>();
+
+  let visit = (value: unknown) => {
+    if (value == null || seen.has(value)) {
+      return;
+    }
+
+    if (typeof value === 'object') {
+      seen.add(value);
+    }
+
+    if (typeof value === 'string') {
+      messages.add(value.toLowerCase());
+      return;
+    }
+
+    if (typeof value !== 'object') {
+      return;
+    }
+
+    let record = value as Record<string, unknown>;
+    for (let key of ['message', 'detail', 'description']) {
+      if (typeof record[key] === 'string') {
+        messages.add(String(record[key]).toLowerCase());
+      }
+    }
+
+    visit(record.data);
+    visit(record.error);
+    visit(record.response);
+    visit(record.cause);
+    visit(record.upstream);
+  };
+
+  visit(error);
+
+  return Array.from(messages);
+};
+
+let isUnsupportedOperationError = (error: unknown) =>
+  collectErrorMessages(error).some(message => message.includes('operation not supported'));
+
 export interface ExcelClientConfig {
   token: string;
   driveId?: string;
@@ -245,9 +292,12 @@ export class ExcelClient {
     address: string,
     hasHeaders: boolean
   ): Promise<any> {
+    let normalizedAddress = address.includes('!')
+      ? address
+      : `${worksheetIdOrName}!${address}`;
     let response = await this.axios.post(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/tables/add`,
-      { address, hasHeaders },
+      { address: normalizedAddress, hasHeaders },
       { headers: this.headers }
     );
     return response.data;
@@ -304,7 +354,7 @@ export class ExcelClient {
     index?: number
   ): Promise<any> {
     let response = await this.axios.post(
-      `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}/rows`,
+      `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}/rows/add`,
       { values, index },
       { headers: this.headers }
     );
@@ -316,9 +366,8 @@ export class ExcelClient {
     tableIdOrName: string,
     rowIndex: number
   ): Promise<void> {
-    await this.axios.post(
-      `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}/rows/itemAt(index=${rowIndex})/delete`,
-      {},
+    await this.axios.delete(
+      `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}/rows/itemAt(index=${rowIndex})`,
       { headers: this.headers }
     );
   }
@@ -576,11 +625,46 @@ export class ExcelClient {
   // ─── Drive / File Operations ───────────────────────────────────────
 
   async searchFiles(query: string): Promise<any[]> {
-    let response = await this.axios.get(
-      `${this.drivePath()}/root/search(q='${encodeURIComponent(query)}')`,
-      { headers: this.headers }
-    );
-    return response.data.value;
+    try {
+      let response = await this.axios.get(
+        `${this.drivePath()}/root/search(q='${encodeURIComponent(query)}')`,
+        { headers: this.headers }
+      );
+      return response.data.value;
+    } catch (error) {
+      if (!isUnsupportedOperationError(error)) {
+        throw error;
+      }
+
+      let items: any[] = [];
+      let page = await this.getDelta();
+
+      while (page) {
+        if (Array.isArray(page.value)) {
+          items.push(...page.value);
+        }
+
+        let nextLink =
+          typeof page['@odata.nextLink'] === 'string'
+            ? page['@odata.nextLink']
+            : typeof page.nextLink === 'string'
+              ? page.nextLink
+              : undefined;
+        if (!nextLink) {
+          break;
+        }
+
+        page = await this.getDelta(undefined, nextLink);
+      }
+
+      let normalizedQuery = query.toLowerCase();
+      return items.filter(
+        item =>
+          !item?.deleted &&
+          typeof item?.name === 'string' &&
+          item.name.toLowerCase().includes(normalizedQuery)
+      );
+    }
   }
 
   async getFileMetadata(itemId: string): Promise<any> {
@@ -592,14 +676,32 @@ export class ExcelClient {
     let url = folderId
       ? `${this.drivePath()}/items/${folderId}/children`
       : `${this.drivePath()}/root/children`;
-    let response = await this.axios.get(url, {
-      headers: this.headers,
-      params: {
-        $filter:
-          "file/mimeType eq 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'"
+    let params = {
+      $filter: `file/mimeType eq '${XLSX_MIME_TYPE}'`
+    };
+
+    try {
+      let response = await this.axios.get(url, {
+        headers: this.headers,
+        params
+      });
+      return response.data.value;
+    } catch (error) {
+      if (!isUnsupportedOperationError(error)) {
+        throw error;
       }
-    });
-    return response.data.value;
+
+      let response = await this.axios.get(url, {
+        headers: this.headers
+      });
+      let children: any[] = Array.isArray(response.data.value) ? response.data.value : [];
+
+      return children.filter(
+        item =>
+          item?.file?.mimeType === XLSX_MIME_TYPE ||
+          (typeof item?.name === 'string' && item.name.toLowerCase().endsWith('.xlsx'))
+      );
+    }
   }
 
   // ─── Subscriptions (for triggers) ──────────────────────────────────
