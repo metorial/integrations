@@ -7,37 +7,39 @@ let scopes = [
     title: 'Code Read',
     description:
       'Read source code, metadata about commits, branches, and other version control artifacts.',
-    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code',
+    scope: 'vso.code',
     defaultChecked: false
   },
   {
     title: 'Code Read & Write',
     description: 'Read, update, and delete source code; create and manage pull requests.',
-    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_write',
+    scope: 'vso.code_write',
     defaultChecked: false
   },
   {
     title: 'Code Manage',
     description: 'Full repository management including creating/deleting repositories.',
-    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_manage'
+    scope: 'vso.code_manage'
   },
   {
     title: 'Code Full',
     description: 'Full access to all source code operations.',
-    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_full'
+    scope: 'vso.code_full'
   },
   {
     title: 'Code Status',
     description: 'Read and write commit and pull request status.',
-    scope: '499b84ac-1321-427f-aa17-267ca6975798/vso.code_status',
+    scope: 'vso.code_status',
     defaultChecked: false
   },
   {
     title: 'Profile',
     description: 'Read user profile information.',
-    scope: '499b84ac-1321-427f-aa17-267ca6975798/user_impersonation'
+    scope: 'vso.profile'
   }
 ];
+
+let AZURE_DEVOPS_RESOURCE = '499b84ac-1321-427f-aa17-267ca6975798';
 
 function createMicrosoftOauth(name: string, key: string, tenant: string) {
   return {
@@ -51,9 +53,12 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
         client_id: ctx.clientId,
         response_type: 'code',
         redirect_uri: ctx.redirectUri,
-        scope: ctx.scopes.join(' '),
         state: ctx.state,
-        response_mode: 'query'
+        response_mode: 'query',
+        scope: [
+          ...ctx.scopes.map((scope: string) => `${AZURE_DEVOPS_RESOURCE}/${scope}`),
+          'offline_access'
+        ].join(' ')
       });
 
       return {
@@ -74,7 +79,10 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
           code: ctx.code,
           redirect_uri: ctx.redirectUri,
           grant_type: 'authorization_code',
-          scope: ctx.scopes.join(' ')
+          scope: [
+            ...ctx.scopes.map((scope: string) => `${AZURE_DEVOPS_RESOURCE}/${scope}`),
+            'offline_access'
+          ].join(' ')
         }).toString(),
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -114,7 +122,10 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
           client_secret: ctx.clientSecret,
           refresh_token: ctx.output.refreshToken,
           grant_type: 'refresh_token',
-          scope: ctx.scopes.join(' ')
+          scope: [
+            ...ctx.scopes.map((scope: string) => `${AZURE_DEVOPS_RESOURCE}/${scope}`),
+            'offline_access'
+          ].join(' ')
         }).toString(),
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }

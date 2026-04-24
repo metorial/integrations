@@ -16,6 +16,9 @@ let repositoryOutputSchema = z.object({
   projectName: z.string().describe('Name of the parent project')
 });
 
+let getProjectName = (repo: { project?: { name?: string } }, fallback: string) =>
+  repo.project?.name ?? fallback;
+
 export let createRepository = SlateTool.create(spec, {
   name: 'Create Repository',
   key: 'create_repository',
@@ -67,7 +70,7 @@ export let createRepository = SlateTool.create(spec, {
         sshUrl: repo.sshUrl,
         isFork: repo.isFork,
         isDisabled: repo.isDisabled,
-        projectName: repo.project.name
+        projectName: getProjectName(repo, ctx.config.project)
       },
       message: isFork
         ? `Forked repository **${repo.name}** from parent repository.`
@@ -123,7 +126,7 @@ export let updateRepository = SlateTool.create(spec, {
         sshUrl: repo.sshUrl,
         isFork: repo.isFork,
         isDisabled: repo.isDisabled,
-        projectName: repo.project.name
+        projectName: getProjectName(repo, ctx.config.project)
       },
       message: `Updated repository **${repo.name}**.`
     };

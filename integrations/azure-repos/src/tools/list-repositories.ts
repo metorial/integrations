@@ -51,7 +51,7 @@ export let listRepositories = SlateTool.create(spec, {
           sshUrl: repo.sshUrl,
           isFork: repo.isFork,
           isDisabled: repo.isDisabled,
-          projectName: repo.project.name
+          projectName: repo.project?.name ?? ctx.config.project
         }))
       },
       message: `Found **${repos.length}** repositories in project **${ctx.config.project}**.`

@@ -75,7 +75,7 @@ export let searchCode = SlateTool.create(spec, {
           path: r.path,
           repositoryName: r.repository.name,
           repositoryId: r.repository.id,
-          projectName: r.project.name,
+          projectName: r.project?.name ?? ctx.config.project,
           branches: r.versions.map(v => v.branchName),
           matchLocations: r.matches
         }))
