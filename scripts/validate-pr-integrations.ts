@@ -76,6 +76,7 @@ type ValidationReport = {
 };
 
 const COMMENT_MARKER = '<!-- changed-integrations-report -->';
+const INTEGRATION_BUILD_CONCURRENCY = 1;
 const INTEGRATION_ROOTS = ['integrations', 'test-integrations'] as const;
 const HELP_TEXT = `
 Usage:
@@ -330,6 +331,7 @@ async function buildAffectedIntegrations(rootDir: string, integrations: Integrat
     'turbo',
     'run',
     'build',
+    `--concurrency=${INTEGRATION_BUILD_CONCURRENCY}`,
     '--ui=stream',
     ...integrations.map(integration => `--filter=./${integration.directory}`)
   ];
