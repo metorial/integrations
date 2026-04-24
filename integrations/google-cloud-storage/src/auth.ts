@@ -145,7 +145,7 @@ export let auth = SlateAuth.create()
 
       if (!canReadProfile) {
         return {
-          profile: null
+          profile: {}
         };
       }
 
@@ -166,7 +166,7 @@ export let auth = SlateAuth.create()
         };
       } catch {
         return {
-          profile: null
+          profile: {}
         };
       }
     }
