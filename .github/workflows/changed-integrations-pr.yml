@@ -31,6 +31,9 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Build shared packages
+        run: bun run packages:build
+
       - name: Detect, build, and validate changed integrations
         env:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
