@@ -149,6 +149,9 @@ async function main() {
       console.log('\nInstalling dependencies in base worktree...');
       await installDependencies(worktreeDir);
 
+      console.log('\nBuilding shared packages in base worktree...');
+      await buildSharedPackages(worktreeDir);
+
       console.log('\nBuilding and loading base integrations...');
       await buildAffectedIntegrations(worktreeDir, baseAffected);
       baseSnapshots = await captureSnapshots(worktreeDir, baseAffected);
@@ -507,6 +510,10 @@ async function createDetachedWorktree(rootDir: string, ref: string) {
 
 async function installDependencies(rootDir: string) {
   await runCommand(['bun', 'install'], rootDir);
+}
+
+async function buildSharedPackages(rootDir: string) {
+  await runCommand(['bun', 'run', 'packages:build'], rootDir);
 }
 
 async function resolveBuiltEntryPath(dirPath: string) {
