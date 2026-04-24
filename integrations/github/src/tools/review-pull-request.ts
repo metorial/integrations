@@ -54,7 +54,7 @@ Optionally include inline comments on specific files and lines. Can also request
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let { owner, repo, pullNumber, action } = ctx.input;
 
     if (action === 'request_reviewers') {

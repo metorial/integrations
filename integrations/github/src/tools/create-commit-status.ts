@@ -55,7 +55,7 @@ Also supports reading the combined status of all checks for a given ref.`,
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let { owner, repo, action, ref } = ctx.input;
 
     if (action === 'get') {

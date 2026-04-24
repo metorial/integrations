@@ -55,7 +55,7 @@ Supports filtering by type, sorting, and pagination.`,
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
 
     let repos: any[];
     if (ctx.input.org) {

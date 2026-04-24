@@ -41,7 +41,7 @@ Supports qualifiers for filtering (e.g., "language:python stars:>100" for reposi
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let { type, query, ...params } = ctx.input;
     let result: any;
 

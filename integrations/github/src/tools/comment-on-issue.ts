@@ -25,7 +25,7 @@ export let commentOnIssue = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let comment = await client.createIssueComment(
       ctx.input.owner,
       ctx.input.repo,

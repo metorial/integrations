@@ -41,7 +41,7 @@ Can automatically generate release notes from commits since the last release.`
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let release = await client.createRelease(ctx.input.owner, ctx.input.repo, {
       tagName: ctx.input.tagName,
       targetCommitish: ctx.input.targetCommitish,
