@@ -13,28 +13,14 @@ export interface SlateAxiosDefaults extends CreateAxiosDefaults {
   errorMapping?: SlateAxiosErrorOptions;
 }
 
-let tryGetCurrentContext = () => {
-  try {
-    return getCurrentContext();
-  } catch {
-    return undefined;
-  }
-};
-
 let applySlateInterceptors = (
   instance: AxiosInstance,
   errorMapping?: SlateAxiosErrorOptions
 ) => {
   instance.interceptors.request.use(
     request => {
-      // When an axios instance is used outside an action execution (e.g. at module
-      // load in a test harness) there is no ambient context. Skip the Slates-specific
-      // headers and tracing adapter in that case rather than failing the request.
-      let ctx = tryGetCurrentContext();
-      if (!ctx) {
-        return request;
-      }
-
+       // Has to be called in the context of an action execution
+      let ctx = getCurrentContext();
       let spec = ctx.specification;
 
       request.headers.set('User-Agent', `slates.dev@1.0.0/${spec.key}`);
