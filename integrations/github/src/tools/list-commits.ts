@@ -41,7 +41,7 @@ export let listCommits = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let commits = await client.listCommits(ctx.input.owner, ctx.input.repo, {
       sha: ctx.input.sha,
       path: ctx.input.path,

@@ -25,7 +25,7 @@ export let starRepository = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let { owner, repo, action } = ctx.input;
 
     if (action === 'star') {
@@ -35,7 +35,7 @@ export let starRepository = SlateTool.create(spec, {
           owner,
           repo,
           fullName: `${owner}/${repo}`,
-          htmlUrl: `https://github.com/${owner}/${repo}`,
+          htmlUrl: client.getRepositoryHtmlUrl(owner, repo),
           starred: true
         },
         message: `Starred **${owner}/${repo}**.`
@@ -48,7 +48,7 @@ export let starRepository = SlateTool.create(spec, {
         owner,
         repo,
         fullName: `${owner}/${repo}`,
-        htmlUrl: `https://github.com/${owner}/${repo}`,
+        htmlUrl: client.getRepositoryHtmlUrl(owner, repo),
         starred: false
       },
       message: `Removed star from **${owner}/${repo}**.`

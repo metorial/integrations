@@ -54,7 +54,7 @@ When updating: provide the issue number along with fields to change (title, body
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let { owner, repo, issueNumber, ...data } = ctx.input;
     let issue: any;
 

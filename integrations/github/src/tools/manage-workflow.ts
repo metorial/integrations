@@ -119,7 +119,7 @@ export let manageWorkflow = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let { owner, repo, action } = ctx.input;
 
     if (action === 'list_workflows') {

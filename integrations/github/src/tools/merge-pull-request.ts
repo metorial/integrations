@@ -36,7 +36,7 @@ export let mergePullRequest = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let result = await client.mergePullRequest(
       ctx.input.owner,
       ctx.input.repo,

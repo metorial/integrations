@@ -43,7 +43,7 @@ Use this to inspect a repository's configuration, check its visibility, default 
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient(ctx.auth.token);
+    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
     let repo = await client.getRepository(ctx.input.owner, ctx.input.repo);
 
     return {
