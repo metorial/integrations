@@ -4275,6 +4275,7 @@
       "name": "@slates-integrations/excel-online",
       "version": "0.2.0-rc.5",
       "dependencies": {
+        "@slates/oauth-microsoft": "1.0.0-rc.1",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -8506,6 +8507,7 @@
       "name": "@slates-integrations/onenote",
       "version": "0.2.0-rc.4",
       "dependencies": {
+        "@slates/oauth-microsoft": "1.0.0-rc.1",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -9458,6 +9460,7 @@
       "name": "@slates-integrations/powerpoint-online",
       "version": "0.2.0-rc.2",
       "dependencies": {
+        "@slates/oauth-microsoft": "1.0.0-rc.1",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",

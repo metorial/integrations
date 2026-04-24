@@ -9,33 +9,35 @@ export let MICROSOFT_GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
 let AZURE_DEVOPS_RESOURCE = '499b84ac-1321-427f-aa17-267ca6975798';
 let SECONDS_TO_MS = 1000;
 
-type MicrosoftOauthScope = {
+export type MicrosoftOauthScope = {
   title: string;
   description: string;
   scope: string;
   defaultChecked?: boolean;
 };
 
-type MicrosoftGraphProfile = {
+export type MicrosoftGraphProfile = {
   id?: string;
   email?: string;
   name?: string;
   imageUrl?: string;
 };
 
-type MicrosoftGraphProfileOptions = {
+export type MicrosoftGraphProfileOptions = {
   baseURL: string;
   path: string;
   mapProfile: (data: unknown) => MicrosoftGraphProfile;
 };
 
-type MicrosoftGraphOauthOptions = {
+export type MicrosoftGraphOauthOptions = {
   name: string;
   key: string;
   tenant: string;
   scopes: MicrosoftOauthScope[];
   allowTenantInput?: boolean;
   missingRefreshTokenMessage?: string;
+  /** Normalize loopback redirect URIs for Microsoft app registration compatibility. */
+  normalizeRedirectUri?: boolean;
   /** Transforms the raw scope list before it is sent to the token endpoint. */
   scopeMapper?: (scopes: string[]) => string[];
   /** Scopes appended after mapping (e.g. `offline_access` for Azure DevOps). */
@@ -46,11 +48,11 @@ type MicrosoftGraphOauthOptions = {
   profile?: MicrosoftGraphProfileOptions;
 };
 
-type MicrosoftGraphOauthInput = {
+export type MicrosoftGraphOauthInput = {
   tenantId?: unknown;
 };
 
-type MicrosoftGraphAuthorizationUrlContext = {
+export type MicrosoftGraphAuthorizationUrlContext = {
   clientId: string;
   clientSecret: string;
   redirectUri: string;
@@ -59,7 +61,7 @@ type MicrosoftGraphAuthorizationUrlContext = {
   input?: MicrosoftGraphOauthInput;
 };
 
-type MicrosoftGraphCallbackContext = {
+export type MicrosoftGraphCallbackContext = {
   clientId: string;
   clientSecret: string;
   redirectUri: string;
@@ -68,18 +70,21 @@ type MicrosoftGraphCallbackContext = {
   input?: MicrosoftGraphOauthInput;
 };
 
-type MicrosoftGraphTokenRefreshContext = {
+export type MicrosoftGraphOauthOutput = {
+  token: string;
+  refreshToken?: string;
+  expiresAt?: string;
+};
+
+export type MicrosoftGraphTokenRefreshContext = {
   clientId: string;
   clientSecret: string;
   scopes: string[];
   input?: MicrosoftGraphOauthInput;
-  output: {
-    token: string;
-    refreshToken?: string;
-  };
+  output: MicrosoftGraphOauthOutput;
 };
 
-type MicrosoftGraphProfileContext = {
+export type MicrosoftGraphProfileContext = {
   output: {
     token: string;
   };
@@ -114,7 +119,7 @@ let MICROSOFT_GRAPH_BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/;
 let getMicrosoftTokenOutput = (
   data: MicrosoftTokenResponse,
   currentRefreshToken?: string
-) => ({
+): MicrosoftGraphOauthOutput => ({
   token: data.access_token,
   refreshToken: data.refresh_token ?? currentRefreshToken,
   expiresAt: data.expires_in
@@ -259,6 +264,7 @@ export let createMicrosoftGraphOauth = ({
   scopes,
   allowTenantInput = false,
   missingRefreshTokenMessage = 'No refresh token available. Ensure offline_access scope is requested.',
+  normalizeRedirectUri: shouldNormalizeRedirectUri = false,
   scopeMapper,
   extraScopes,
   onMissingRefreshToken = 'throw',
@@ -268,6 +274,9 @@ export let createMicrosoftGraphOauth = ({
 
   let getTenant = (ctx: { input?: MicrosoftGraphOauthInput }) =>
     allowTenantInput ? resolveMicrosoftTenant(ctx.input?.tenantId, tenant) : tenant;
+
+  let getRedirectUri = (redirectUri: string) =>
+    shouldNormalizeRedirectUri ? normalizeMicrosoftRedirectUri(redirectUri) : redirectUri;
 
   let buildScopeParam = (rawScopes: string[]) => {
     let mapped = scopeMapper ? scopeMapper(rawScopes) : rawScopes;
@@ -285,7 +294,7 @@ export let createMicrosoftGraphOauth = ({
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: getRedirectUri(ctx.redirectUri),
         scope: buildScopeParam(ctx.scopes),
         state: ctx.state,
         response_mode: 'query'
@@ -304,7 +313,7 @@ export let createMicrosoftGraphOauth = ({
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           code: ctx.code,
-          redirect_uri: ctx.redirectUri,
+          redirect_uri: getRedirectUri(ctx.redirectUri),
           grant_type: 'authorization_code',
           scope: buildScopeParam(ctx.scopes)
         }).toString(),

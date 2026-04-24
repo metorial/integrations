@@ -36,6 +36,28 @@ describe('@slates/oauth-microsoft', () => {
     ).toBe('http://127.0.0.1:45873/callback');
   });
 
+  it('can normalize redirect URIs in the OAuth factory', async () => {
+    let oauth = createMicrosoftGraphOauth({
+      name: 'SharePoint',
+      key: 'oauth',
+      tenant: 'common',
+      scopes: [],
+      normalizeRedirectUri: true
+    });
+
+    let { url } = await oauth.getAuthorizationUrl({
+      clientId: 'client-id',
+      clientSecret: 'client-secret',
+      redirectUri: 'http://127.0.0.1:45873/callback',
+      scopes: [],
+      state: 'state'
+    });
+
+    expect(new URL(url).searchParams.get('redirect_uri')).toBe(
+      'http://localhost:45873/callback'
+    );
+  });
+
   it('uses the default tenant when the input tenant is missing or blank', () => {
     expect(resolveMicrosoftTenant(undefined, 'common')).toBe('common');
     expect(resolveMicrosoftTenant('   ', 'organizations')).toBe('organizations');
