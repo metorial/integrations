@@ -51,7 +51,7 @@ export let throwError = SlateTool.create(spec, {
         .min(0)
         .max(60_000)
         .default(0)
-        .describe('Milliseconds to wait before throwing. Useful for simulating slow failures.')
+        .describe('Milliseconds to wait before throwing the error.')
     })
   )
   .output(z.object({}))

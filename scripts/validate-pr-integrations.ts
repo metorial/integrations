@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
 
+import { createLocalSlateTransport, createSlatesClient } from '@slates/client';
+import type { SlateAuthenticationMethod, SlatesAction } from '@slates/proto';
+import { $ } from 'bun';
 import { access, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { createLocalSlateTransport, createSlatesClient } from '@slates/client';
-import type { SlateAuthenticationMethod, SlatesAction } from '@slates/proto';
-import { $ } from 'bun';
 
 type JsonValue =
   | null
@@ -140,7 +140,9 @@ async function main() {
   try {
     const baseIntegrations = await getIntegrationPackages(worktreeDir);
     const baseAffected = affectedIntegrations
-      .map(integration => baseIntegrations.find(candidate => candidate.directory === integration.directory))
+      .map(integration =>
+        baseIntegrations.find(candidate => candidate.directory === integration.directory)
+      )
       .filter((integration): integration is IntegrationPackage => integration !== undefined);
 
     if (baseAffected.length > 0) {
@@ -269,15 +271,9 @@ async function getIntegrationPackages(rootDir: string): Promise<IntegrationPacka
 
 async function getGitContext(rootDir: string, options: CliOptions) {
   const [baseSha, headSha, mergeBase, diffOutput] = await Promise.all([
-    $`git rev-parse ${options.base}`
-      .cwd(rootDir)
-      .text(),
-    $`git rev-parse ${options.head}`
-      .cwd(rootDir)
-      .text(),
-    $`git merge-base ${options.base} ${options.head}`
-      .cwd(rootDir)
-      .text(),
+    $`git rev-parse ${options.base}`.cwd(rootDir).text(),
+    $`git rev-parse ${options.head}`.cwd(rootDir).text(),
+    $`git merge-base ${options.base} ${options.head}`.cwd(rootDir).text(),
     $`git diff --name-only --diff-filter=ACMR $(git merge-base ${options.base} ${options.head})..${options.head}`
       .cwd(rootDir)
       .text()
@@ -383,7 +379,9 @@ async function loadIntegrationSnapshot(
     const providerName = getProviderName(provider, integration);
 
     console.log(`Provider: ${providerName}`);
-    console.log(`Actions (${actions.length}): ${formatNames(actions.map(action => action.id))}`);
+    console.log(
+      `Actions (${actions.length}): ${formatNames(actions.map(action => action.id))}`
+    );
     console.log(`Tools (${tools.length}): ${formatNames(tools.map(tool => tool.id))}`);
     console.log(
       `Auth methods (${authMethods.length}): ${formatNames(authMethods.map(method => method.id))}`
@@ -413,7 +411,11 @@ function compareSnapshots(d: {
     head: d.head,
     base: d.base,
     providerDiffs: diffJson(d.base?.provider ?? null, d.head.provider, 'provider'),
-    configSchemaDiffs: diffJson(d.base?.configSchema ?? null, d.head.configSchema, 'configSchema'),
+    configSchemaDiffs: diffJson(
+      d.base?.configSchema ?? null,
+      d.head.configSchema,
+      'configSchema'
+    ),
     actionChanges: compareSchemasById(
       (d.base?.actions ?? []).filter(action => action.type !== 'action.tool'),
       d.head.actions.filter(action => action.type !== 'action.tool'),
@@ -423,10 +425,15 @@ function compareSnapshots(d: {
         outputSchema: action.outputSchema
       })
     ),
-    toolChanges: compareSchemasById(d.base?.tools ?? [], d.head.tools, tool => tool.id, tool => ({
-      inputSchema: tool.inputSchema,
-      outputSchema: tool.outputSchema
-    })),
+    toolChanges: compareSchemasById(
+      d.base?.tools ?? [],
+      d.head.tools,
+      tool => tool.id,
+      tool => ({
+        inputSchema: tool.inputSchema,
+        outputSchema: tool.outputSchema
+      })
+    ),
     authMethodChanges: compareSchemasById(
       d.base?.authMethods ?? [],
       d.head.authMethods,
@@ -459,7 +466,11 @@ function compareSchemasById<T>(
       continue;
     }
 
-    const diffs = diffJson(getComparableValue(baseMap.get(id)!), getComparableValue(headMap.get(id)!), id);
+    const diffs = diffJson(
+      getComparableValue(baseMap.get(id)!),
+      getComparableValue(headMap.get(id)!),
+      id
+    );
     if (diffs.length > 0) {
       changed.push({ id, diffs });
     }
@@ -518,7 +529,9 @@ async function resolveBuiltEntryPath(dirPath: string) {
     }
   }
 
-  throw new Error(`Could not find a built entrypoint in ${dirPath}. Expected a file under dist/.`);
+  throw new Error(
+    `Could not find a built entrypoint in ${dirPath}. Expected a file under dist/.`
+  );
 }
 
 function resolveSlateExport(loaded: Record<string, any>, integrationDirectory: string) {
@@ -582,9 +595,6 @@ function renderSummary(report: ValidationReport) {
   const lines: string[] = [
     '## Changed integration validation',
     '',
-    `- Base SHA: \`${report.baseSha}\``,
-    `- Head SHA: \`${report.headSha}\``,
-    `- Merge base: \`${report.mergeBase}\``,
     `- Changed files: ${report.changedFiles.length}`,
     `- Changed integrations: ${report.affectedIntegrations.length}`,
     ''
@@ -619,9 +629,7 @@ function renderSummary(report: ValidationReport) {
         (comparison.base?.authMethods ?? []).map(method => `\`${method.id}\``)
       )}`
     );
-    lines.push(
-      `- Schema change count: ${countSchemaChanges(comparison)}`
-    );
+    lines.push(`- Schema change count: ${countSchemaChanges(comparison)}`);
     lines.push('');
   }
 
@@ -633,9 +641,6 @@ function renderComment(report: ValidationReport) {
     COMMENT_MARKER,
     '## Changed Integrations Report',
     '',
-    `- Base SHA: \`${report.baseSha}\``,
-    `- Head SHA: \`${report.headSha}\``,
-    `- Merge base for file detection: \`${report.mergeBase}\``,
     `- Changed integrations: ${report.affectedIntegrations.length}`,
     ''
   ];
@@ -795,7 +800,9 @@ function diffJson(before: unknown, after: unknown, currentPath: string): JsonDif
   if (isPlainObject(before) && isPlainObject(after)) {
     const beforeRecord = before as Record<string, unknown>;
     const afterRecord = after as Record<string, unknown>;
-    const keys = [...new Set([...Object.keys(beforeRecord), ...Object.keys(afterRecord)])].sort();
+    const keys = [
+      ...new Set([...Object.keys(beforeRecord), ...Object.keys(afterRecord)])
+    ].sort();
     const diffs: JsonDiffEntry[] = [];
 
     for (const key of keys) {
@@ -809,7 +816,11 @@ function diffJson(before: unknown, after: unknown, currentPath: string): JsonDif
       }
 
       if (hasBefore && !hasAfter) {
-        diffs.push({ kind: 'removed', path: pathPart, before: toJsonValue(beforeRecord[key]) });
+        diffs.push({
+          kind: 'removed',
+          path: pathPart,
+          before: toJsonValue(beforeRecord[key])
+        });
         continue;
       }
 
@@ -848,7 +859,7 @@ function normalizeJson(value: unknown): JsonValue {
 
   if (isPlainObject(value)) {
     return Object.fromEntries(
-      Object.keys(value)
+      Object.keys(value as any)
         .sort()
         .map(key => [key, normalizeJson((value as Record<string, unknown>)[key])])
     );
