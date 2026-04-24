@@ -3,6 +3,23 @@ import type { AxiosInstance } from 'axios';
 
 let API_VERSION = '2024-04-01';
 
+let isFunctionApp = (app: { kind?: string }) =>
+  typeof app.kind === 'string' && app.kind.toLowerCase().includes('functionapp');
+
+let normalizeAxiosHeaders = (headers: unknown): Record<string, string> => {
+  let raw =
+    typeof (headers as { toJSON?: () => Record<string, unknown> })?.toJSON === 'function'
+      ? (headers as { toJSON: () => Record<string, unknown> }).toJSON()
+      : (headers as Record<string, unknown>);
+
+  return Object.fromEntries(
+    Object.entries(raw ?? {}).map(([key, value]) => [
+      key,
+      Array.isArray(value) ? value.join(', ') : String(value)
+    ])
+  );
+};
+
 export class ArmClient {
   private axios: AxiosInstance;
   private subscriptionId: string;
@@ -27,38 +44,36 @@ export class ArmClient {
     return `/subscriptions/${this.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.Web/sites`;
   }
 
-  // ── Function App Management ──
-
-  async listFunctionApps(): Promise<any[]> {
-    let results: any[] = [];
-    let url = this.basePath();
+  private async paginate<T = any>(
+    initialUrl: string,
+    filter?: (item: T) => boolean
+  ): Promise<T[]> {
+    let results: T[] = [];
+    let url: string | null = initialUrl;
 
     while (url) {
-      let response = await this.axios.get(url, { params: {} });
-      let apps = (response.data.value || []).filter(
-        (app: any) => app.kind && app.kind.toLowerCase().includes('functionapp')
-      );
-      results.push(...apps);
-      url = response.data.nextLink || null;
+      let response: { data: { value?: T[]; nextLink?: string } } = await this.axios.get(url, {
+        params: {}
+      });
+      let page: T[] = response.data.value ?? [];
+      results.push(...(filter ? page.filter(filter) : page));
+      url = response.data.nextLink ?? null;
     }
 
     return results;
   }
 
+  // ── Function App Management ──
+
+  async listFunctionApps(): Promise<any[]> {
+    return this.paginate<any>(this.basePath(), isFunctionApp);
+  }
+
   async listAllFunctionAppsInSubscription(): Promise<any[]> {
-    let results: any[] = [];
-    let url = `/subscriptions/${this.subscriptionId}/providers/Microsoft.Web/sites`;
-
-    while (url) {
-      let response = await this.axios.get(url, { params: {} });
-      let apps = (response.data.value || []).filter(
-        (app: any) => app.kind && app.kind.toLowerCase().includes('functionapp')
-      );
-      results.push(...apps);
-      url = response.data.nextLink || null;
-    }
-
-    return results;
+    return this.paginate<any>(
+      `/subscriptions/${this.subscriptionId}/providers/Microsoft.Web/sites`,
+      isFunctionApp
+    );
   }
 
   async getFunctionApp(appName: string): Promise<any> {
@@ -95,16 +110,7 @@ export class ArmClient {
   // ── Individual Function Management ──
 
   async listFunctions(appName: string): Promise<any[]> {
-    let results: any[] = [];
-    let url = `${this.basePath()}/${appName}/functions`;
-
-    while (url) {
-      let response = await this.axios.get(url, { params: {} });
-      results.push(...(response.data.value || []));
-      url = response.data.nextLink || null;
-    }
-
-    return results;
+    return this.paginate<any>(`${this.basePath()}/${appName}/functions`);
   }
 
   async getFunction(appName: string, functionName: string): Promise<any> {
@@ -225,16 +231,7 @@ export class ArmClient {
   // ── Deployment Slot Management ──
 
   async listSlots(appName: string): Promise<any[]> {
-    let results: any[] = [];
-    let url = `${this.basePath()}/${appName}/slots`;
-
-    while (url) {
-      let response = await this.axios.get(url, { params: {} });
-      results.push(...(response.data.value || []));
-      url = response.data.nextLink || null;
-    }
-
-    return results;
+    return this.paginate<any>(`${this.basePath()}/${appName}/slots`);
   }
 
   async getSlot(appName: string, slotName: string): Promise<any> {
@@ -273,16 +270,7 @@ export class ArmClient {
   // ── Deployment Management ──
 
   async listDeployments(appName: string): Promise<any[]> {
-    let results: any[] = [];
-    let url = `${this.basePath()}/${appName}/deployments`;
-
-    while (url) {
-      let response = await this.axios.get(url, { params: {} });
-      results.push(...(response.data.value || []));
-      url = response.data.nextLink || null;
-    }
-
-    return results;
+    return this.paginate<any>(`${this.basePath()}/${appName}/deployments`);
   }
 
   async getDeployment(appName: string, deploymentId: string): Promise<any> {
@@ -337,13 +325,7 @@ export class RuntimeClient {
     return {
       status: response.status,
       data: response.data,
-      headers: Object.fromEntries(
-        Object.entries(
-          typeof (response.headers as { toJSON?: () => Record<string, unknown> }).toJSON === 'function'
-            ? (response.headers as { toJSON: () => Record<string, unknown> }).toJSON()
-            : (response.headers as Record<string, unknown>)
-        ).map(([key, value]) => [key, Array.isArray(value) ? value.join(', ') : String(value)])
-      )
+      headers: normalizeAxiosHeaders(response.headers)
     };
   }
 

@@ -118,9 +118,10 @@ export let managePipeline = SlateTool.create(spec, {
           allowOverwriteArtifact: true
         }
       });
+      let operationId = result.id;
       return {
-        output: { deploymentOperationId: result.id, success: true },
-        message: `Deployment triggered from stage **${ctx.input.sourceStageOrder}**. Operation ID: **${result.id}**.`
+        output: { deploymentOperationId: operationId, success: true },
+        message: `Deployment triggered from stage **${ctx.input.sourceStageOrder}**. Operation ID: **${operationId || 'unknown'}**.`
       };
     }
 

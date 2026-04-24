@@ -51,10 +51,7 @@ export let createBranch = SlateTool.create(spec, {
     ]);
 
     let ref = results[0]!;
-    let objectId =
-      typeof (ref as { newObjectId?: string }).newObjectId === 'string'
-        ? (ref as { newObjectId: string }).newObjectId
-        : ref.objectId;
+    let objectId = typeof ref.newObjectId === 'string' ? ref.newObjectId : ref.objectId;
     return {
       output: {
         name: ref.name,

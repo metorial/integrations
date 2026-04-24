@@ -1,9 +1,32 @@
 import { createAxios } from 'slates';
 
+export let MICROSOFT_LOGIN_BASE = 'https://login.microsoftonline.com';
+export let MICROSOFT_GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
+
+// Microsoft documents this as the Azure DevOps resource ID used when issuing
+// Entra access tokens.
+// https://learn.microsoft.com/en-us/azure/devops/cli/entra-tokens?view=azure-devops
+let AZURE_DEVOPS_RESOURCE = '499b84ac-1321-427f-aa17-267ca6975798';
+let SECONDS_TO_MS = 1000;
+
 type MicrosoftOauthScope = {
   title: string;
   description: string;
   scope: string;
+  defaultChecked?: boolean;
+};
+
+type MicrosoftGraphProfile = {
+  id?: string;
+  email?: string;
+  name?: string;
+  imageUrl?: string;
+};
+
+type MicrosoftGraphProfileOptions = {
+  baseURL: string;
+  path: string;
+  mapProfile: (data: unknown) => MicrosoftGraphProfile;
 };
 
 type MicrosoftGraphOauthOptions = {
@@ -13,6 +36,14 @@ type MicrosoftGraphOauthOptions = {
   scopes: MicrosoftOauthScope[];
   allowTenantInput?: boolean;
   missingRefreshTokenMessage?: string;
+  /** Transforms the raw scope list before it is sent to the token endpoint. */
+  scopeMapper?: (scopes: string[]) => string[];
+  /** Scopes appended after mapping (e.g. `offline_access` for Azure DevOps). */
+  extraScopes?: string[];
+  /** When no refresh token is stored, throw (default) or preserve the existing output. */
+  onMissingRefreshToken?: 'throw' | 'preserve';
+  /** Custom profile endpoint. Defaults to Microsoft Graph `/me`. */
+  profile?: MicrosoftGraphProfileOptions;
 };
 
 type MicrosoftGraphOauthInput = {
@@ -87,7 +118,7 @@ let getMicrosoftTokenOutput = (
   token: data.access_token,
   refreshToken: data.refresh_token ?? currentRefreshToken,
   expiresAt: data.expires_in
-    ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+    ? new Date(Date.now() + data.expires_in * SECONDS_TO_MS).toISOString()
     : undefined
 });
 
@@ -119,22 +150,11 @@ let isTextLikeContentType = (contentType?: string) => {
 
 let looksLikeBase64 = (content: string) => {
   let normalized = content.replace(/\s+/g, '');
-  if (
-    !normalized ||
-    normalized.length % 4 !== 0 ||
-    !MICROSOFT_GRAPH_BASE64_PATTERN.test(normalized)
-  ) {
-    return false;
-  }
-
-  try {
-    return (
-      Buffer.from(normalized, 'base64').toString('base64').replace(/=+$/g, '') ===
-      normalized.replace(/=+$/g, '')
-    );
-  } catch {
-    return false;
-  }
+  return (
+    !!normalized &&
+    normalized.length % 4 === 0 &&
+    MICROSOFT_GRAPH_BASE64_PATTERN.test(normalized)
+  );
 };
 
 export let MICROSOFT_OAUTH_INTEGRATION_KEYS = new Set([
@@ -182,6 +202,9 @@ export let resolveMicrosoftTenant = (tenantId: unknown, defaultTenant: string) =
   return normalizedTenant || defaultTenant;
 };
 
+export let mapAzureDevOpsScopes = (scopes: string[]) =>
+  scopes.map(scope => `${AZURE_DEVOPS_RESOURCE}/${scope}`);
+
 export let buildMicrosoftGraphUploadBody = (
   fileName: string,
   content: string,
@@ -198,25 +221,58 @@ export let buildMicrosoftGraphUploadBody = (
   return Buffer.from(content.replace(/\s+/g, ''), 'base64');
 };
 
+let defaultGraphProfile: MicrosoftGraphProfileOptions = {
+  baseURL: MICROSOFT_GRAPH_BASE,
+  path: '/me',
+  mapProfile: data => {
+    let user = (data ?? {}) as {
+      id?: string;
+      mail?: string;
+      userPrincipalName?: string;
+      displayName?: string;
+    };
+
+    return {
+      id: user.id,
+      email: user.mail || user.userPrincipalName,
+      name: user.displayName
+    };
+  }
+};
+
+let tokenClientCache = new Map<string, ReturnType<typeof createAxios>>();
+let getCachedTokenClient = (resolvedTenant: string) => {
+  let cached = tokenClientCache.get(resolvedTenant);
+  if (cached) return cached;
+
+  let client = createAxios({
+    baseURL: `${MICROSOFT_LOGIN_BASE}/${resolvedTenant}/oauth2/v2.0`
+  });
+  tokenClientCache.set(resolvedTenant, client);
+  return client;
+};
+
 export let createMicrosoftGraphOauth = ({
   name,
   key,
   tenant,
   scopes,
   allowTenantInput = false,
-  missingRefreshTokenMessage = 'No refresh token available. Ensure offline_access scope is requested.'
+  missingRefreshTokenMessage = 'No refresh token available. Ensure offline_access scope is requested.',
+  scopeMapper,
+  extraScopes,
+  onMissingRefreshToken = 'throw',
+  profile = defaultGraphProfile
 }: MicrosoftGraphOauthOptions) => {
-  let graphAxios = createAxios({
-    baseURL: 'https://graph.microsoft.com/v1.0'
-  });
+  let profileAxios = createAxios({ baseURL: profile.baseURL });
 
   let getTenant = (ctx: { input?: MicrosoftGraphOauthInput }) =>
     allowTenantInput ? resolveMicrosoftTenant(ctx.input?.tenantId, tenant) : tenant;
 
-  let getTokenClient = (resolvedTenant: string) =>
-    createAxios({
-      baseURL: `https://login.microsoftonline.com/${resolvedTenant}/oauth2/v2.0`
-    });
+  let buildScopeParam = (rawScopes: string[]) => {
+    let mapped = scopeMapper ? scopeMapper(rawScopes) : rawScopes;
+    return extraScopes ? [...mapped, ...extraScopes].join(' ') : mapped.join(' ');
+  };
 
   return {
     type: 'auth.oauth' as const,
@@ -230,18 +286,18 @@ export let createMicrosoftGraphOauth = ({
         client_id: ctx.clientId,
         response_type: 'code',
         redirect_uri: ctx.redirectUri,
-        scope: ctx.scopes.join(' '),
+        scope: buildScopeParam(ctx.scopes),
         state: ctx.state,
         response_mode: 'query'
       });
 
       return {
-        url: `https://login.microsoftonline.com/${resolvedTenant}/oauth2/v2.0/authorize?${params.toString()}`
+        url: `${MICROSOFT_LOGIN_BASE}/${resolvedTenant}/oauth2/v2.0/authorize?${params.toString()}`
       };
     },
 
     handleCallback: async (ctx: MicrosoftGraphCallbackContext) => {
-      let tokenClient = getTokenClient(getTenant(ctx));
+      let tokenClient = getCachedTokenClient(getTenant(ctx));
       let response = await tokenClient.post(
         '/token',
         new URLSearchParams({
@@ -250,7 +306,7 @@ export let createMicrosoftGraphOauth = ({
           code: ctx.code,
           redirect_uri: ctx.redirectUri,
           grant_type: 'authorization_code',
-          scope: ctx.scopes.join(' ')
+          scope: buildScopeParam(ctx.scopes)
         }).toString(),
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -264,10 +320,13 @@ export let createMicrosoftGraphOauth = ({
 
     handleTokenRefresh: async (ctx: MicrosoftGraphTokenRefreshContext) => {
       if (!ctx.output.refreshToken) {
+        if (onMissingRefreshToken === 'preserve') {
+          return { output: ctx.output };
+        }
         throw new Error(missingRefreshTokenMessage);
       }
 
-      let tokenClient = getTokenClient(getTenant(ctx));
+      let tokenClient = getCachedTokenClient(getTenant(ctx));
       let response = await tokenClient.post(
         '/token',
         new URLSearchParams({
@@ -275,7 +334,7 @@ export let createMicrosoftGraphOauth = ({
           client_secret: ctx.clientSecret,
           refresh_token: ctx.output.refreshToken,
           grant_type: 'refresh_token',
-          scope: ctx.scopes.join(' ')
+          scope: buildScopeParam(ctx.scopes)
         }).toString(),
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -291,24 +350,11 @@ export let createMicrosoftGraphOauth = ({
     },
 
     getProfile: async (ctx: MicrosoftGraphProfileContext) => {
-      let response = await graphAxios.get('/me', {
+      let response = await profileAxios.get(profile.path, {
         headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
-      let user = response.data as {
-        id?: string;
-        mail?: string;
-        userPrincipalName?: string;
-        displayName?: string;
-      };
-
-      return {
-        profile: {
-          id: user.id,
-          email: user.mail || user.userPrincipalName,
-          name: user.displayName
-        }
-      };
+      return { profile: profile.mapProfile(response.data) };
     }
   };
 };

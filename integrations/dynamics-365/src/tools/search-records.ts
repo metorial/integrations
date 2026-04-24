@@ -60,18 +60,24 @@ export let searchRecords = SlateTool.create(spec, {
       top: ctx.input.top
     });
 
-    let results = (searchResponse.value || []).map((item: any) => ({
-      entityName: item.entityname || item.objecttypecode || '',
-      recordId: item.objectid || item.id || '',
-      score: item.score || 0,
-      highlights: item.highlights || {},
-      attributes: item.attributes || {}
+    let values = searchResponse.Value || searchResponse.value || [];
+    let results = values.map((item: any) => ({
+      entityName: item.EntityName || item.entityName || item.entityname || '',
+      recordId: item.Id || item.id || item.ObjectId || item.objectId || item.objectid || '',
+      score: item.Score || item.score || 0,
+      highlights: item.Highlights || item.highlights || {},
+      attributes: item.Attributes || item.attributes || {}
     }));
+    let totalCount =
+      searchResponse.Count ??
+      searchResponse.count ??
+      searchResponse.totalrecordcount ??
+      results.length;
 
     return {
       output: {
         results,
-        totalCount: searchResponse.totalrecordcount || searchResponse.count || results.length
+        totalCount: typeof totalCount === 'number' && totalCount >= 0 ? totalCount : results.length
       },
       message: `Found **${results.length}** results for "${ctx.input.searchTerm}".`
     };

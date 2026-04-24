@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildMicrosoftGraphUploadBody,
+  createMicrosoftGraphOauth,
+  mapAzureDevOpsScopes,
   normalizeMicrosoftRedirectUri,
   normalizeMicrosoftRedirectUriForIntegration,
   resolveMicrosoftTenant,
@@ -41,6 +43,59 @@ describe('@slates/oauth-microsoft', () => {
 
   it('uses a trimmed tenant override when provided', () => {
     expect(resolveMicrosoftTenant(' tenants/foo ', 'common')).toBe('tenants/foo');
+  });
+
+  it('builds Azure DevOps resource-qualified scopes with offline access', async () => {
+    let oauth = createMicrosoftGraphOauth({
+      name: 'Azure DevOps',
+      key: 'oauth',
+      tenant: 'organizations',
+      scopes: [
+        {
+          title: 'Profile',
+          description: 'Read Azure DevOps profile information',
+          scope: 'vso.profile'
+        }
+      ],
+      scopeMapper: mapAzureDevOpsScopes,
+      extraScopes: ['offline_access']
+    });
+
+    let { url } = await oauth.getAuthorizationUrl({
+      clientId: 'client-id',
+      clientSecret: 'client-secret',
+      redirectUri: 'http://localhost/callback',
+      scopes: ['vso.profile'],
+      state: 'state'
+    });
+
+    let parsed = new URL(url);
+    expect(`${parsed.origin}${parsed.pathname}`).toBe(
+      'https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize'
+    );
+    expect(parsed.searchParams.get('scope')).toBe(
+      '499b84ac-1321-427f-aa17-267ca6975798/vso.profile offline_access'
+    );
+  });
+
+  it('can preserve OAuth output when a refresh token is missing', async () => {
+    let oauth = createMicrosoftGraphOauth({
+      name: 'Azure DevOps',
+      key: 'oauth',
+      tenant: 'organizations',
+      scopes: [],
+      onMissingRefreshToken: 'preserve'
+    });
+    let output = { token: 'existing-token' };
+
+    await expect(
+      oauth.handleTokenRefresh({
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        scopes: [],
+        output
+      })
+    ).resolves.toEqual({ output });
   });
 
   it('decodes binary-looking base64 uploads for non-text files', () => {

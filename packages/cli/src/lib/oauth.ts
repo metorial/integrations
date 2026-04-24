@@ -21,7 +21,7 @@ export let chooseScopes = async (
       checked:
         initialScopes.length > 0
           ? initialScopes.includes(scope.id)
-          : scope.defaultChecked ?? true
+          : (scope.defaultChecked ?? true)
     }))
   })) as string[];
 };
@@ -50,9 +50,7 @@ export let createOAuthCallbackListener = async () => {
         let oauthErrorUri = url.searchParams.get('error_uri');
 
         if (oauthError) {
-          let description = oauthErrorDescription
-            ? decodeURIComponent(oauthErrorDescription.replace(/\+/g, ' '))
-            : 'No error description was provided.';
+          let description = oauthErrorDescription ?? 'No error description was provided.';
           let errorMessage = `OAuth callback returned "${oauthError}": ${description}${
             oauthErrorUri ? ` (${oauthErrorUri})` : ''
           }`;

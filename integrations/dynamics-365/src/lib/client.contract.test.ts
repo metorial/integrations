@@ -71,3 +71,71 @@ describe('dynamics-365 action request contract', () => {
     expect(result).toEqual({ annotationid: 'note-123' });
   });
 });
+
+describe('dynamics-365 search request contract', () => {
+  it('posts Dataverse search entities as the JSON string expected by the search API', async () => {
+    let client = await loadClient();
+    post.mockResolvedValueOnce({
+      data: {
+        Value: [],
+        Count: 0
+      }
+    });
+
+    await client.search('contoso', {
+      entities: ['account', 'contact'],
+      filter: 'createdon gt 2024-01-01T00:00:00Z',
+      top: 10
+    });
+
+    expect(post).toHaveBeenCalledWith(
+      'https://example.crm.dynamics.com/api/search/v2.0/query',
+      {
+        search: 'contoso',
+        count: true,
+        entities: JSON.stringify([{ name: 'account' }, { name: 'contact' }]),
+        filter: 'createdon gt 2024-01-01T00:00:00Z',
+        top: 10
+      },
+      {
+        headers: {
+          Authorization: 'Bearer token',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+  });
+
+  it('parses escaped JSON string search responses from Dataverse', async () => {
+    let client = await loadClient();
+    post.mockResolvedValueOnce({
+      data: JSON.stringify({
+        Value: [
+          {
+            Id: 'record-1',
+            EntityName: 'account',
+            Score: 1.23,
+            Highlights: {},
+            Attributes: { name: 'Contoso' }
+          }
+        ],
+        Count: 1
+      })
+    });
+
+    let result = await client.search('contoso');
+
+    expect(result).toEqual({
+      Value: [
+        {
+          Id: 'record-1',
+          EntityName: 'account',
+          Score: 1.23,
+          Highlights: {},
+          Attributes: { name: 'Contoso' }
+        }
+      ],
+      Count: 1
+    });
+  });
+});

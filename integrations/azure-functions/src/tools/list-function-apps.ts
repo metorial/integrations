@@ -4,6 +4,8 @@ import { getFunctionAppVersion } from '../lib/function-app-metadata';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let LIST_APPS_CONFIG_CONCURRENCY = 5;
+
 let functionAppSummarySchema = z.object({
   appName: z.string().describe('Name of the function app'),
   resourceId: z.string().describe('Full ARM resource ID'),
@@ -14,6 +16,28 @@ let functionAppSummarySchema = z.object({
   runtimeVersion: z.string().optional().describe('Functions runtime version'),
   tags: z.record(z.string(), z.string()).optional().describe('Resource tags')
 });
+
+// Limits config lookups to N in-flight at a time so we don't hit ARM rate limits
+// on subscriptions with many function apps. Preserves input order in the output.
+let mapWithConcurrency = async <T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>
+): Promise<R[]> => {
+  let results = new Array<R>(items.length);
+  let cursor = 0;
+
+  let workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      let index = cursor++;
+      if (index >= items.length) return;
+      results[index] = await fn(items[index]!, index);
+    }
+  });
+
+  await Promise.all(workers);
+  return results;
+};
 
 export let listFunctionApps = SlateTool.create(spec, {
   name: 'List Function Apps',
@@ -40,8 +64,10 @@ export let listFunctionApps = SlateTool.create(spec, {
     ctx.info('Listing function apps in resource group: ' + ctx.config.resourceGroupName);
 
     let apps = await client.listFunctionApps();
-    let functionApps = await Promise.all(
-      apps.map(async (app: any) => {
+    let functionApps = await mapWithConcurrency(
+      apps,
+      LIST_APPS_CONFIG_CONCURRENCY,
+      async (app: any) => {
         let config = await client.getConfiguration(app.name).catch(() => undefined);
 
         return {
@@ -56,7 +82,7 @@ export let listFunctionApps = SlateTool.create(spec, {
             getFunctionAppVersion(app.properties?.siteConfig),
           tags: app.tags
         };
-      })
+      }
     );
 
     return {

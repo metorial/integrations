@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { requireExactlyOne } from '../lib/preconditions';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -36,11 +37,10 @@ export let createSectionGroup = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let hasNotebookId = Boolean(ctx.input.notebookId);
-    let hasParentSectionGroupId = Boolean(ctx.input.parentSectionGroupId);
-    if (hasNotebookId === hasParentSectionGroupId) {
-      throw new Error('Provide exactly one of notebookId or parentSectionGroupId.');
-    }
+    requireExactlyOne({
+      notebookId: ctx.input.notebookId,
+      parentSectionGroupId: ctx.input.parentSectionGroupId
+    });
 
     let sectionGroup;
     if (ctx.input.parentSectionGroupId) {

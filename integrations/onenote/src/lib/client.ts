@@ -465,6 +465,9 @@ export class Client {
 
   // --- Search ---
 
+  // Matches by page title only. Graph's `$search` on /me/onenote/pages would also
+  // match page content, but returned inconsistent results and is not supported on
+  // all tenants, so we fall back to an OData `$filter` over the title.
   async searchPages(
     query: string,
     params?: {

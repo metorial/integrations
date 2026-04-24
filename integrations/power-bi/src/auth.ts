@@ -31,6 +31,11 @@ export let auth = SlateAuth.create()
         scope: 'https://analysis.windows.net/powerbi/api/Dashboard.Read.All'
       },
       {
+        title: 'Apps Read',
+        description: 'Read all installed apps',
+        scope: 'https://analysis.windows.net/powerbi/api/App.Read.All'
+      },
+      {
         title: 'Reports Read',
         description: 'Read all reports',
         scope: 'https://analysis.windows.net/powerbi/api/Report.Read.All'
@@ -39,6 +44,16 @@ export let auth = SlateAuth.create()
         title: 'Reports Read/Write',
         description: 'Read and write all reports',
         scope: 'https://analysis.windows.net/powerbi/api/Report.ReadWrite.All'
+      },
+      {
+        title: 'Dataflows Read',
+        description: 'Read all dataflows',
+        scope: 'https://analysis.windows.net/powerbi/api/Dataflow.Read.All'
+      },
+      {
+        title: 'Dataflows Read/Write',
+        description: 'Read and write all dataflows',
+        scope: 'https://analysis.windows.net/powerbi/api/Dataflow.ReadWrite.All'
       },
       {
         title: 'Groups Read',
@@ -54,6 +69,31 @@ export let auth = SlateAuth.create()
         title: 'Content Create',
         description: 'Create content in Power BI',
         scope: 'https://analysis.windows.net/powerbi/api/Content.Create'
+      },
+      {
+        title: 'Capacities Read',
+        description: 'Read all capacities',
+        scope: 'https://analysis.windows.net/powerbi/api/Capacity.Read.All'
+      },
+      {
+        title: 'Capacities Read/Write',
+        description: 'Read and write all capacities',
+        scope: 'https://analysis.windows.net/powerbi/api/Capacity.ReadWrite.All'
+      },
+      {
+        title: 'Pipelines Read',
+        description: 'Read all deployment pipelines',
+        scope: 'https://analysis.windows.net/powerbi/api/Pipeline.Read.All'
+      },
+      {
+        title: 'Pipelines Read/Write',
+        description: 'Read and write all deployment pipelines',
+        scope: 'https://analysis.windows.net/powerbi/api/Pipeline.ReadWrite.All'
+      },
+      {
+        title: 'Pipelines Deploy',
+        description: 'Deploy content with deployment pipelines',
+        scope: 'https://analysis.windows.net/powerbi/api/Pipeline.Deploy'
       },
       {
         title: 'Metadata View',
