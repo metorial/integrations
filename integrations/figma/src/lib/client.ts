@@ -114,11 +114,11 @@ export class FigmaClient {
   async getComments(
     fileKey: string,
     params?: {
-      asBefore?: string;
+      asMd?: boolean;
     }
   ): Promise<any> {
     let queryParams: Record<string, any> = {};
-    if (params?.asBefore) queryParams.as_md = params.asBefore;
+    if (params?.asMd !== undefined) queryParams.as_md = params.asMd;
 
     let response = await this.api.get(`/v1/files/${fileKey}/comments`, {
       params: queryParams
@@ -342,7 +342,7 @@ export class FigmaClient {
     }
   ): Promise<any> {
     let queryParams: Record<string, any> = {};
-    if (params?.nodeId) queryParams.node_id = params.nodeId;
+    if (params?.nodeId) queryParams.node_ids = params.nodeId;
 
     let response = await this.api.get(`/v1/files/${fileKey}/dev_resources`, {
       params: queryParams
@@ -376,7 +376,15 @@ export class FigmaClient {
       url?: string;
     }
   ): Promise<any> {
-    let response = await this.api.put(`/v1/dev_resources/${devResourceId}`, params);
+    let response = await this.api.put('/v1/dev_resources', {
+      dev_resources: [
+        {
+          id: devResourceId,
+          name: params.name,
+          url: params.url
+        }
+      ]
+    });
     return response.data;
   }
 
@@ -387,7 +395,12 @@ export class FigmaClient {
   // ── Webhooks ──
 
   async getTeamWebhooks(teamId: string): Promise<any> {
-    let response = await this.api.get(`/v2/webhooks/${teamId}`);
+    let response = await this.api.get('/v2/webhooks', {
+      params: {
+        context: 'team',
+        context_id: teamId
+      }
+    });
     return response.data;
   }
 
@@ -400,7 +413,8 @@ export class FigmaClient {
   }): Promise<any> {
     let response = await this.api.post('/v2/webhooks', {
       event_type: params.eventType,
-      team_id: params.teamId,
+      context: 'team',
+      context_id: params.teamId,
       endpoint: params.endpoint,
       passcode: params.passcode,
       description: params.description

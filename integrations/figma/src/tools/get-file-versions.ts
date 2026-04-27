@@ -63,14 +63,14 @@ export let getFileVersions = SlateTool.create(spec, {
 
     let versions = (result.versions || []).map((v: any) => ({
       versionId: v.id,
-      label: v.label,
-      description: v.description,
+      label: v.label ?? undefined,
+      description: v.description ?? undefined,
       createdAt: v.created_at,
       user: v.user
         ? {
             userId: v.user.id,
             handle: v.user.handle,
-            imageUrl: v.user.img_url
+            imageUrl: v.user.img_url ?? undefined
           }
         : undefined
     }));

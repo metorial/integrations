@@ -110,7 +110,7 @@ export let getAssociations = SlateTool.create(spec, {
       associationTypes: (r.associationTypes || []).map((t: any) => ({
         category: t.category,
         typeId: t.typeId,
-        label: t.label
+        label: typeof t.label === 'string' ? t.label : undefined
       }))
     }));
 

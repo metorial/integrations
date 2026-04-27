@@ -11,6 +11,24 @@ let devResourceSchema = z.object({
   nodeId: z.string().optional().describe('Node ID this resource is attached to')
 });
 
+let devResourceErrorSchema = z.object({
+  fileKey: z.string().nullable().optional().describe('File key that failed, when provided'),
+  nodeId: z.string().nullable().optional().describe('Node ID that failed, when provided'),
+  devResourceId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Dev resource ID that failed, when provided'),
+  error: z.string().describe('Error message returned by Figma')
+});
+
+let mapDevResourceError = (error: any) => ({
+  fileKey: error.file_key ?? undefined,
+  nodeId: error.node_id ?? undefined,
+  devResourceId: error.id ?? undefined,
+  error: String(error.error ?? error.message ?? 'Unknown Figma dev resource error')
+});
+
 export let getDevResources = SlateTool.create(spec, {
   name: 'Get Dev Resources',
   key: 'get_dev_resources',
@@ -75,23 +93,29 @@ export let createDevResource = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      devResources: z.array(devResourceSchema).describe('Created dev resources')
+      devResources: z.array(devResourceSchema).describe('Created dev resources'),
+      errors: z
+        .array(devResourceErrorSchema)
+        .optional()
+        .describe('Dev resources that Figma could not create')
     })
   )
   .handleInvocation(async ctx => {
     let client = new FigmaClient(ctx.auth.token);
     let result = await client.createDevResources(ctx.input.resources);
 
-    let devResources = (result.dev_resources || []).map((r: any) => ({
+    let created = result.links_created || result.dev_resources || [];
+    let devResources = created.map((r: any) => ({
       devResourceId: r.id,
       name: r.name,
       url: r.url,
       fileKey: r.file_key,
       nodeId: r.node_id
     }));
+    let errors = (result.errors || []).map(mapDevResourceError);
 
     return {
-      output: { devResources },
+      output: { devResources, errors },
       message: `Created **${devResources.length}** dev resource(s)`
     };
   })

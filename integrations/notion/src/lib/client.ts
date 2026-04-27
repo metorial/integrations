@@ -231,6 +231,17 @@ export class NotionClient {
     discussionId?: string;
     richText: any[];
   }): Promise<any> {
+    let targetCount = [
+      params.parentPageId,
+      params.parentBlockId,
+      params.discussionId
+    ].filter(value => value !== undefined).length;
+    if (targetCount !== 1) {
+      throw new Error(
+        'Provide exactly one of parentPageId, parentBlockId, or discussionId'
+      );
+    }
+
     let body: Record<string, any> = {
       rich_text: params.richText
     };

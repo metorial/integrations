@@ -20,8 +20,8 @@ export let searchRecordsTool = SlateTool.create(spec, {
       query: z.string().describe('Search query text'),
       objects: z
         .array(z.string())
-        .optional()
-        .describe('Restrict search to specific object slugs (e.g. ["people", "companies"])'),
+        .min(1)
+        .describe('Object slugs or IDs to search (e.g. ["people", "companies"])'),
       limit: z.number().optional().default(25).describe('Maximum results (max 25)')
     })
   )

@@ -3,10 +3,17 @@ import { AttioClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let linkedRecordSchema = z.object({
+let linkedRecordObjectSchema = z.object({
   targetObject: z.string().describe('Object slug (e.g. "people", "companies")'),
   targetRecordId: z.string().describe('Record ID')
 });
+
+let linkedRecordSchema = z.union([
+  z
+    .string()
+    .describe('Record reference string accepted by Attio, such as a person email or company domain'),
+  linkedRecordObjectSchema
+]);
 
 let assigneeSchema = z.object({
   referencedActorType: z.string().describe('Actor type, typically "workspace-member"'),
@@ -128,7 +135,7 @@ export let createTaskTool = SlateTool.create(spec, {
       linkedRecords: z
         .array(linkedRecordSchema)
         .optional()
-        .describe('Records to link to this task'),
+        .describe('Record references to link to this task'),
       assignees: z
         .array(assigneeSchema)
         .optional()

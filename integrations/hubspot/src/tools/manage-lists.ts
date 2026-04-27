@@ -6,7 +6,10 @@ import { z } from 'zod';
 let listOutputSchema = z.object({
   listId: z.string().describe('HubSpot list ID'),
   name: z.string().optional().describe('List name'),
-  processingType: z.string().optional().describe('Processing type (STATIC or DYNAMIC)'),
+  processingType: z
+    .string()
+    .optional()
+    .describe('Processing type (MANUAL, DYNAMIC, or SNAPSHOT)'),
   objectTypeId: z.string().optional().describe('Object type ID the list contains'),
   size: z.number().optional().describe('Number of records in the list'),
   createdAt: z.string().optional().describe('Creation timestamp'),
@@ -16,10 +19,10 @@ let listOutputSchema = z.object({
 export let createList = SlateTool.create(spec, {
   name: 'Create List',
   key: 'create_list',
-  description: `Create a new contact list in HubSpot. Lists can be STATIC (manually managed membership) or DYNAMIC (membership based on filter criteria).`,
+  description: `Create a new contact list in HubSpot. Lists can be MANUAL (manually managed membership), DYNAMIC (membership based on filter criteria), or SNAPSHOT (filter-based at creation, then manually managed).`,
   instructions: [
     'Use objectTypeId "0-1" for contacts, "0-2" for companies.',
-    'For DYNAMIC lists, provide a filterBranch defining the membership criteria.'
+    'For DYNAMIC or SNAPSHOT lists, provide a filterBranch defining the membership criteria.'
   ],
   tags: { destructive: false, readOnly: false }
 })
@@ -27,8 +30,10 @@ export let createList = SlateTool.create(spec, {
     z.object({
       name: z.string().describe('List name'),
       processingType: z
-        .enum(['STATIC', 'DYNAMIC'])
-        .describe('STATIC for manual membership, DYNAMIC for filter-based'),
+        .enum(['MANUAL', 'DYNAMIC', 'SNAPSHOT'])
+        .describe(
+          'MANUAL for manual membership, DYNAMIC for continuously filter-based, SNAPSHOT for filter-based at creation'
+        ),
       objectTypeId: z
         .string()
         .default('0-1')
@@ -95,9 +100,9 @@ export let getList = SlateTool.create(spec, {
 export let updateListMembership = SlateTool.create(spec, {
   name: 'Update List Membership',
   key: 'update_list_membership',
-  description: `Add or remove records from a static list in HubSpot. Provide record IDs to add, remove, or both in a single operation.`,
+  description: `Add or remove records from a manually managed HubSpot list. Provide record IDs to add, remove, or both in a single operation.`,
   constraints: [
-    'Only works with STATIC lists. DYNAMIC lists are automatically managed by their filter criteria.'
+    'Only works with MANUAL or SNAPSHOT lists. DYNAMIC lists are automatically managed by their filter criteria.'
   ],
   tags: { destructive: false, readOnly: false }
 })
@@ -172,14 +177,14 @@ export let deleteList = SlateTool.create(spec, {
 export let searchLists = SlateTool.create(spec, {
   name: 'Search Lists',
   key: 'search_lists',
-  description: `Search for lists in HubSpot by name. Optionally filter by processing type (STATIC or DYNAMIC).`,
+  description: `Search for lists in HubSpot by name. Optionally filter by processing type (MANUAL, DYNAMIC, or SNAPSHOT).`,
   tags: { readOnly: true }
 })
   .input(
     z.object({
       query: z.string().describe('Search query for list name'),
       processingTypes: z
-        .array(z.enum(['STATIC', 'DYNAMIC']))
+        .array(z.enum(['MANUAL', 'DYNAMIC', 'SNAPSHOT']))
         .optional()
         .describe('Filter by processing type')
     })

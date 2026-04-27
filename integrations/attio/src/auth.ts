@@ -24,14 +24,9 @@ export let auth = SlateAuth.create()
         scope: 'record_permission:read'
       },
       {
-        title: 'Records (Read)',
-        description: 'Read records across all objects',
-        scope: 'record:read'
-      },
-      {
-        title: 'Records (Read/Write)',
+        title: 'Record Permission (Read/Write)',
         description: 'Create, update, and delete records',
-        scope: 'record:read-write'
+        scope: 'record_permission:read-write'
       },
       {
         title: 'Tasks (Read)',
@@ -69,14 +64,24 @@ export let auth = SlateAuth.create()
         scope: 'webhook:read-write'
       },
       {
-        title: 'Lists (Read)',
-        description: 'Read lists and list entries',
-        scope: 'list:read'
+        title: 'List Configuration (Read)',
+        description: 'Read list definitions and configuration',
+        scope: 'list_configuration:read'
       },
       {
-        title: 'Lists (Read/Write)',
-        description: 'Create, update, and delete lists and list entries',
-        scope: 'list:read-write'
+        title: 'List Configuration (Read/Write)',
+        description: 'Create, update, and delete list definitions',
+        scope: 'list_configuration:read-write'
+      },
+      {
+        title: 'List Entries (Read)',
+        description: 'Read list entries',
+        scope: 'list_entry:read'
+      },
+      {
+        title: 'List Entries (Read/Write)',
+        description: 'Create, update, and delete list entries',
+        scope: 'list_entry:read-write'
       },
       {
         title: 'Comments (Read)',

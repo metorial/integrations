@@ -1,5 +1,8 @@
 import { confirm, select } from '@inquirer/prompts';
-import { normalizeMicrosoftRedirectUriForIntegration } from '@slates/oauth-microsoft';
+import {
+  normalizeMicrosoftRedirectUri,
+  normalizeMicrosoftRedirectUriForIntegration
+} from '@slates/oauth-microsoft';
 import { SlatesOAuthCredentialRecord, SlatesStoredAuth } from '@slates/profiles';
 import {
   chooseAuthMethod,
@@ -26,6 +29,17 @@ type AuthSetupOptions = WithProfile &
     oauthCredential?: string;
     scopes?: string;
   };
+
+export let normalizeCallbackRedirectUriForIntegration = (
+  integration: string,
+  redirectUri: string
+) => {
+  if (integration === 'notion' || integration === 'salesforce') {
+    return normalizeMicrosoftRedirectUri(redirectUri);
+  }
+
+  return normalizeMicrosoftRedirectUriForIntegration(integration, redirectUri);
+};
 
 export let listAuth = async (opts: WithProfile) => {
   let { store, profile } = await createClientContext(opts);
@@ -264,7 +278,7 @@ let runAuthSetup = async (opts: AuthSetupOptions): Promise<SlatesStoredAuth> => 
 
   if (authMethod.type === 'auth.oauth') {
     let callback = await createOAuthCallbackListener();
-    let redirectUri = normalizeMicrosoftRedirectUriForIntegration(
+    let redirectUri = normalizeCallbackRedirectUriForIntegration(
       opts.integration,
       callback.redirectUri
     );
