@@ -318,7 +318,10 @@ export class Client {
 
     let encodedBlobName = blobName.split('/').map(encodeURIComponent).join('/');
     let url = this.appendSas(`/${containerName}/${encodedBlobName}`);
-    let response = await http.put(url, content, { headers });
+    let response = await http.put(url, content, {
+      headers,
+      transformRequest: value => value
+    });
 
     let responseHeaders = response.headers as Record<string, string>;
     return {

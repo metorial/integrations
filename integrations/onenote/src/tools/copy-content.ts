@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { requireExactlyOne } from '../lib/preconditions';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -66,6 +67,14 @@ export let copyContent = SlateTool.create(spec, {
         ctx.input.siteId
       );
     } else if (ctx.input.resourceType === 'section') {
+      requireExactlyOne(
+        {
+          destinationNotebookId: ctx.input.destinationNotebookId,
+          destinationSectionGroupId: ctx.input.destinationSectionGroupId
+        },
+        'Provide exactly one of destinationNotebookId or destinationSectionGroupId when copying a section.'
+      );
+
       result = await client.copySection(ctx.input.resourceId, {
         destinationNotebookId: ctx.input.destinationNotebookId,
         destinationSectionGroupId: ctx.input.destinationSectionGroupId,

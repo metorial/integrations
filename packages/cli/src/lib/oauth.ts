@@ -21,7 +21,7 @@ export let chooseScopes = async (
       checked:
         initialScopes.length > 0
           ? initialScopes.includes(scope.id)
-          : scope.defaultChecked ?? true
+          : (scope.defaultChecked ?? true)
     }))
   })) as string[];
 };
@@ -45,10 +45,34 @@ export let createOAuthCallbackListener = async () => {
         let url = new URL(req.url ?? '/', 'http://127.0.0.1');
         let code = url.searchParams.get('code');
         let state = url.searchParams.get('state');
+        let oauthError = url.searchParams.get('error');
+        let oauthErrorDescription = url.searchParams.get('error_description');
+        let oauthErrorUri = url.searchParams.get('error_uri');
+
+        if (oauthError) {
+          let description = oauthErrorDescription ?? 'No error description was provided.';
+          let errorMessage = `OAuth callback returned "${oauthError}": ${description}${
+            oauthErrorUri ? ` (${oauthErrorUri})` : ''
+          }`;
+
+          res.statusCode = 400;
+          res.end(errorMessage);
+          server.close();
+          settled = true;
+          waiter.reject(new Error(errorMessage));
+          return;
+        }
 
         if (!code || !state) {
           res.statusCode = 400;
           res.end('Missing code or state.');
+          server.close();
+          settled = true;
+          waiter.reject(
+            new Error(
+              `OAuth callback did not include the required query parameters. Received path: ${url.pathname}${url.search}`
+            )
+          );
           return;
         }
 

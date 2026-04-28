@@ -4,6 +4,34 @@ let graphAxios = createAxios({
   baseURL: 'https://graph.microsoft.com/v1.0'
 });
 
+let getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error && typeof error.message === 'string') {
+    return error.message;
+  }
+
+  if (
+    typeof (error as { data?: { message?: unknown } })?.data?.message === 'string'
+  ) {
+    return String((error as { data: { message: string } }).data.message);
+  }
+
+  if (
+    typeof (error as { response?: { data?: { error?: { message?: unknown } } } })?.response?.data
+      ?.error?.message === 'string'
+  ) {
+    return String(
+      (error as { response: { data: { error: { message: string } } } }).response.data.error.message
+    );
+  }
+
+  return String(error ?? '');
+};
+
+let isOnlineMeetingsFilterRequiredError = (error: unknown) => {
+  let message = getErrorMessage(error).toLowerCase();
+  return message.includes('filter expression expected') && message.includes('/onlinemeetings?$filter');
+};
+
 export interface GraphListResponse<T> {
   value: T[];
   '@odata.nextLink'?: string;
@@ -55,9 +83,28 @@ export class GraphClient {
   }
 
   async updateTeam(teamId: string, body: any): Promise<void> {
-    await graphAxios.patch(`/teams/${teamId}`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let groupBody = Object.fromEntries(
+      Object.entries(body).filter(([key, value]) =>
+        value !== undefined && ['displayName', 'description', 'visibility'].includes(key)
+      )
+    );
+    if (Object.keys(groupBody).length > 0) {
+      await graphAxios.patch(`/groups/${teamId}`, groupBody, {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      });
+    }
+
+    let teamBody = Object.fromEntries(
+      Object.entries(body).filter(
+        ([key, value]) =>
+          value !== undefined && !['displayName', 'description', 'visibility'].includes(key)
+      )
+    );
+    if (Object.keys(teamBody).length > 0) {
+      await graphAxios.patch(`/teams/${teamId}`, teamBody, {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      });
+    }
   }
 
   async archiveTeam(teamId: string): Promise<void> {
@@ -277,10 +324,20 @@ export class GraphClient {
   }
 
   async listOnlineMeetings(): Promise<any[]> {
-    let response = await graphAxios.get<GraphListResponse<any>>('/me/onlineMeetings', {
-      headers: this.headers
-    });
-    return response.data.value;
+    try {
+      let response = await graphAxios.get<GraphListResponse<any>>('/me/onlineMeetings', {
+        headers: this.headers
+      });
+      return response.data.value;
+    } catch (error) {
+      if (isOnlineMeetingsFilterRequiredError(error)) {
+        throw new Error(
+          'Microsoft Graph does not support listing all online meetings without a filter. Use get with a meetingId or query by joinWebUrl/joinMeetingId instead.'
+        );
+      }
+
+      throw error;
+    }
   }
 
   async deleteOnlineMeeting(meetingId: string): Promise<void> {

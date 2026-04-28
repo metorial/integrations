@@ -1,4 +1,5 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createMicrosoftGraphOauth } from '@slates/oauth-microsoft';
+import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 let scopes = [
@@ -40,122 +41,15 @@ let scopes = [
   }
 ];
 
-function createMicrosoftOauth(name: string, key: string, tenant: string) {
-  return {
-    type: 'auth.oauth' as const,
+let createMicrosoftOauth = (name: string, key: string, tenant: string) =>
+  createMicrosoftGraphOauth({
     name,
     key,
+    tenant,
     scopes,
-
-    getAuthorizationUrl: async (ctx: any) => {
-      let params = new URLSearchParams({
-        client_id: ctx.clientId,
-        response_type: 'code',
-        redirect_uri: ctx.redirectUri,
-        scope: ctx.scopes.join(' '),
-        state: ctx.state,
-        response_mode: 'query'
-      });
-
-      return {
-        url: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize?${params.toString()}`
-      };
-    },
-
-    handleCallback: async (ctx: any) => {
-      let http = createAxios();
-
-      let response = await http.post(
-        `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`,
-        new URLSearchParams({
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          code: ctx.code,
-          redirect_uri: ctx.redirectUri,
-          grant_type: 'authorization_code',
-          scope: ctx.scopes.join(' ')
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
-      );
-
-      let data = response.data as any;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
-
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt
-        }
-      };
-    },
-
-    handleTokenRefresh: async (ctx: any) => {
-      if (!ctx.output.refreshToken) {
-        throw new Error(
-          'No refresh token available. Re-authenticate with the offline_access scope.'
-        );
-      }
-
-      let http = createAxios();
-
-      let response = await http.post(
-        `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`,
-        new URLSearchParams({
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          refresh_token: ctx.output.refreshToken,
-          grant_type: 'refresh_token',
-          scope: ctx.scopes.join(' ')
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
-      );
-
-      let data = response.data as any;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
-
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt
-        }
-      };
-    },
-
-    getProfile: async (ctx: any) => {
-      let http = createAxios({
-        baseURL: 'https://graph.microsoft.com/v1.0',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
-
-      let response = await http.get('/me');
-      let user = response.data as any;
-
-      return {
-        profile: {
-          id: user.id,
-          email: user.mail || user.userPrincipalName,
-          name: user.displayName
-        }
-      };
-    }
-  };
-}
+    missingRefreshTokenMessage:
+      'No refresh token available. Re-authenticate with the offline_access scope.'
+  });
 
 export let auth = SlateAuth.create()
   .output(

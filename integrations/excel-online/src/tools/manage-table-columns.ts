@@ -83,11 +83,22 @@ export let manageTableColumns = SlateTool.create(spec, {
       }
       case 'add': {
         if (!ctx.input.columnName) throw new Error('columnName is required for add action');
+        let normalizedColumnValues = ctx.input.columnValues;
+        if (normalizedColumnValues?.length) {
+          let existingRows = await client.getTableRows(
+            ctx.input.workbookItemId,
+            ctx.input.tableIdOrName
+          );
+          let rowCount = Array.isArray(existingRows.value) ? existingRows.value.length : 0;
+          if (normalizedColumnValues.length === rowCount) {
+            normalizedColumnValues = [[ctx.input.columnName], ...normalizedColumnValues];
+          }
+        }
         let col = await client.addTableColumn(
           ctx.input.workbookItemId,
           ctx.input.tableIdOrName,
           ctx.input.columnName,
-          ctx.input.columnValues,
+          normalizedColumnValues,
           ctx.input.columnIndex
         );
         return {

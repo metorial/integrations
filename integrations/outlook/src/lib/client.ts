@@ -53,11 +53,16 @@ export class Client {
     if (params?.top) queryParams['$top'] = String(params.top);
     if (params?.skip) queryParams['$skip'] = String(params.skip);
     if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderby) queryParams['$orderby'] = params.orderby;
+    if (params?.orderby && !params.search) queryParams['$orderby'] = params.orderby;
     if (params?.search) queryParams['$search'] = `"${params.search}"`;
     if (params?.select?.length) queryParams['$select'] = params.select.join(',');
 
-    let response = await this.axios.get(basePath, { params: queryParams });
+    let headers: Record<string, string> = {};
+    if (params?.search) {
+      headers['ConsistencyLevel'] = 'eventual';
+    }
+
+    let response = await this.axios.get(basePath, { params: queryParams, headers });
     return response.data;
   }
 
@@ -366,11 +371,16 @@ export class Client {
     if (params?.top) queryParams['$top'] = String(params.top);
     if (params?.skip) queryParams['$skip'] = String(params.skip);
     if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderby) queryParams['$orderby'] = params.orderby;
+    if (params?.orderby && !params.search) queryParams['$orderby'] = params.orderby;
     if (params?.select?.length) queryParams['$select'] = params.select.join(',');
     if (params?.search) queryParams['$search'] = `"${params.search}"`;
 
-    let response = await this.axios.get(basePath, { params: queryParams });
+    let headers: Record<string, string> = {};
+    if (params?.search) {
+      headers['ConsistencyLevel'] = 'eventual';
+    }
+
+    let response = await this.axios.get(basePath, { params: queryParams, headers });
     return response.data;
   }
 

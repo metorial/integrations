@@ -123,10 +123,13 @@ export let manageNamedItems = SlateTool.create(spec, {
       case 'create': {
         if (!ctx.input.name) throw new Error('name is required for create action');
         if (!ctx.input.reference) throw new Error('reference is required for create action');
+        let normalizedReference = ctx.input.reference.startsWith('=')
+          ? ctx.input.reference
+          : `=${ctx.input.reference}`;
         let item = await client.addNamedItem(
           ctx.input.workbookItemId,
           ctx.input.name,
-          ctx.input.reference,
+          normalizedReference,
           ctx.input.comment,
           ctx.input.worksheetIdOrName
         );

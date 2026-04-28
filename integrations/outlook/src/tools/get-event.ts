@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { optionalString } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -77,14 +78,16 @@ export let getEvent = SlateTool.create(spec, {
         isAllDay: ev.isAllDay,
         isCancelled: ev.isCancelled,
         isOnlineMeeting: ev.isOnlineMeeting,
-        onlineMeetingJoinUrl: ev.onlineMeeting?.joinUrl || ev.onlineMeetingUrl,
-        organizerEmail: ev.organizer?.emailAddress?.address,
-        organizerName: ev.organizer?.emailAddress?.name,
+        onlineMeetingJoinUrl: optionalString(
+          ev.onlineMeeting?.joinUrl || ev.onlineMeetingUrl
+        ),
+        organizerEmail: optionalString(ev.organizer?.emailAddress?.address),
+        organizerName: optionalString(ev.organizer?.emailAddress?.name),
         attendees: ev.attendees?.map(a => ({
           email: a.emailAddress.address,
-          name: a.emailAddress.name,
+          name: optionalString(a.emailAddress.name),
           type: a.type,
-          responseStatus: a.status?.response
+          responseStatus: optionalString(a.status?.response)
         })),
         recurrence: ev.recurrence,
         reminderMinutesBeforeStart: ev.reminderMinutesBeforeStart,
@@ -96,8 +99,8 @@ export let getEvent = SlateTool.create(spec, {
         categories: ev.categories,
         createdDateTime: ev.createdDateTime,
         lastModifiedDateTime: ev.lastModifiedDateTime,
-        seriesMasterId: ev.seriesMasterId,
-        type: ev.type
+        seriesMasterId: optionalString(ev.seriesMasterId),
+        type: optionalString(ev.type)
       },
       message: `Retrieved event **"${ev.subject || '(no subject)'}"** on ${ev.start?.dateTime || 'unknown date'}.`
     };

@@ -30,6 +30,10 @@ export interface AzureRef {
   url?: string;
 }
 
+export interface AzureRefUpdateResult extends AzureRef {
+  newObjectId?: string;
+}
+
 export interface AzureIdentity {
   displayName: string;
   id: string;
