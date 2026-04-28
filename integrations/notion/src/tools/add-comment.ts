@@ -47,8 +47,28 @@ Comments can be placed at the top of a page or as a reply to an existing discuss
   .handleInvocation(async ctx => {
     let client = new NotionClient({ token: ctx.auth.token });
 
+    let targetCount = [ctx.input.pageId, ctx.input.discussionId].filter(
+      value => value !== undefined
+    ).length;
+    if (targetCount !== 1) {
+      throw new Error('Provide exactly one of pageId or discussionId');
+    }
+
+    let contentCount = [ctx.input.text, ctx.input.richText].filter(
+      value => value !== undefined
+    ).length;
+    if (contentCount !== 1) {
+      throw new Error('Provide exactly one of text or richText');
+    }
+    if (ctx.input.text !== undefined && ctx.input.text.length === 0) {
+      throw new Error('text must not be empty');
+    }
+    if (ctx.input.richText !== undefined && ctx.input.richText.length === 0) {
+      throw new Error('richText must contain at least one rich text object');
+    }
+
     let richText = ctx.input.richText ?? [
-      { type: 'text', text: { content: ctx.input.text ?? '' } }
+      { type: 'text', text: { content: ctx.input.text } }
     ];
 
     let comment = await client.createComment({

@@ -904,7 +904,7 @@
     },
     "integrations/attio": {
       "name": "@slates-integrations/attio",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -2386,7 +2386,7 @@
     },
     "integrations/clickhouse": {
       "name": "@slates-integrations/clickhouse",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -4431,7 +4431,7 @@
     },
     "integrations/figma": {
       "name": "@slates-integrations/figma",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -5117,7 +5117,7 @@
     },
     "integrations/github": {
       "name": "@slates-integrations/github",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -5141,7 +5141,7 @@
     },
     "integrations/gitlab": {
       "name": "@slates-integrations/gitlab",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -6123,7 +6123,7 @@
     },
     "integrations/hubspot": {
       "name": "@slates-integrations/hubspot",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -7121,7 +7121,7 @@
     },
     "integrations/linkedin": {
       "name": "@slates-integrations/linkedin",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -8311,7 +8311,7 @@
     },
     "integrations/notion": {
       "name": "@slates-integrations/notion",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -10312,7 +10312,7 @@
     },
     "integrations/salesforce": {
       "name": "@slates-integrations/salesforce",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.6",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -10708,7 +10708,7 @@
     },
     "integrations/sentry": {
       "name": "@slates-integrations/sentry",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -11118,8 +11118,9 @@
     },
     "integrations/slack": {
       "name": "@slates-integrations/slack",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.5",
       "dependencies": {
+        "@slates/slack-tools": "1.0.0-rc.1",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -11132,8 +11133,9 @@
     },
     "integrations/slack-user": {
       "name": "@slates-integrations/slack-user",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.4",
       "dependencies": {
+        "@slates/slack-tools": "1.0.0-rc.1",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -11216,7 +11218,7 @@
     },
     "integrations/snowflake": {
       "name": "@slates-integrations/snowflake",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -11926,7 +11928,7 @@
     },
     "integrations/telegram": {
       "name": "@slates-integrations/telegram",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -12922,7 +12924,7 @@
     },
     "integrations/whatsapp": {
       "name": "@slates-integrations/whatsapp-business",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -13630,6 +13632,19 @@
       "devDependencies": {
         "@slates/tsconfig": "1.0.0-rc.1",
         "microbundle": "^0.15.1",
+        "typescript": "5.8.2",
+        "vitest": "^3.1.2",
+      },
+    },
+    "packages/slack-tools": {
+      "name": "@slates/slack-tools",
+      "version": "1.0.0-rc.1",
+      "dependencies": {
+        "slates": "1.0.0-rc.9",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/tsconfig": "1.0.0-rc.1",
         "typescript": "5.8.2",
         "vitest": "^3.1.2",
       },
@@ -16386,6 +16401,8 @@
     "@slates/provider": ["@slates/provider@workspace:packages/provider"],
 
     "@slates/provider-handler": ["@slates/provider-handler@workspace:packages/provider-handler"],
+
+    "@slates/slack-tools": ["@slates/slack-tools@workspace:packages/slack-tools"],
 
     "@slates/test": ["@slates/test@workspace:packages/test"],
 

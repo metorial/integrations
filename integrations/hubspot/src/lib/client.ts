@@ -306,19 +306,19 @@ export class HubSpotClient {
       body.filterBranch = filterBranch;
     }
     let response = await this.http.post('/crm/v3/lists/', body);
-    return response.data;
+    return response.data.list ?? response.data;
   }
 
   async getList(listId: string): Promise<any> {
     let response = await this.http.get(`/crm/v3/lists/${listId}`);
-    return response.data;
+    return response.data.list ?? response.data;
   }
 
   async updateListName(listId: string, name: string): Promise<any> {
     let response = await this.http.put(`/crm/v3/lists/${listId}/update-list-name`, null, {
       params: { listName: name }
     });
-    return response.data;
+    return response.data.updatedList ?? response.data.list ?? response.data;
   }
 
   async deleteList(listId: string): Promise<void> {

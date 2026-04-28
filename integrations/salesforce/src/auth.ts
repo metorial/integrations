@@ -1,5 +1,20 @@
+import { createHash, randomBytes } from 'node:crypto';
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+
+let generateCodeVerifier = () => randomBytes(32).toString('base64url');
+
+let generateCodeChallenge = (codeVerifier: string) =>
+  createHash('sha256').update(codeVerifier).digest('base64url');
+
+let normalizeSalesforceRedirectUri = (redirectUri: string) => {
+  let url = new URL(redirectUri);
+  if (url.protocol === 'http:' && url.hostname === '127.0.0.1') {
+    url.hostname = 'localhost';
+  }
+
+  return url.toString();
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -29,12 +44,14 @@ export let auth = SlateAuth.create()
       {
         title: 'Full Access',
         description: 'Full access to all data accessible by the logged-in user',
-        scope: 'full'
+        scope: 'full',
+        defaultChecked: false
       },
       {
         title: 'Chatter API',
         description: 'Access to Connect REST API (Chatter) resources',
-        scope: 'chatter_api'
+        scope: 'chatter_api',
+        defaultChecked: false
       },
       {
         title: 'OpenID',
@@ -49,22 +66,26 @@ export let auth = SlateAuth.create()
       {
         title: 'Analytics API',
         description: 'Access to Analytics REST API resources',
-        scope: 'wave_api'
+        scope: 'wave_api',
+        defaultChecked: false
       },
       {
         title: 'CDP API',
         description: 'Access to all Data Cloud API resources',
-        scope: 'cdp_api'
+        scope: 'cdp_api',
+        defaultChecked: false
       },
       {
         title: 'Pardot API',
         description: 'Access to Marketing Cloud Account Engagement (Pardot)',
-        scope: 'pardot_api'
+        scope: 'pardot_api',
+        defaultChecked: false
       },
       {
         title: 'Custom Permissions',
         description: 'Access to custom permissions in the org',
-        scope: 'custom_permissions'
+        scope: 'custom_permissions',
+        defaultChecked: false
       }
     ],
 
@@ -81,23 +102,34 @@ export let auth = SlateAuth.create()
 
     getAuthorizationUrl: async ctx => {
       let baseUrl = getLoginUrl(ctx.input.environment, ctx.input.customDomain);
+      let redirectUri = normalizeSalesforceRedirectUri(ctx.redirectUri);
+      let codeVerifier = generateCodeVerifier();
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: redirectUri,
         state: ctx.state,
-        scope: ctx.scopes.join(' ')
+        scope: ctx.scopes.join(' '),
+        code_challenge: generateCodeChallenge(codeVerifier),
+        code_challenge_method: 'S256'
       });
 
       return {
         url: `${baseUrl}/services/oauth2/authorize?${params.toString()}`,
-        input: ctx.input
+        input: ctx.input,
+        callbackState: { codeVerifier }
       };
     },
 
     handleCallback: async ctx => {
       let baseUrl = getLoginUrl(ctx.input.environment, ctx.input.customDomain);
       let http = createAxios({ baseURL: baseUrl });
+      let redirectUri = normalizeSalesforceRedirectUri(ctx.redirectUri);
+      let codeVerifier = ctx.callbackState.codeVerifier as string | undefined;
+
+      if (!codeVerifier) {
+        throw new Error('Missing Salesforce PKCE code verifier for OAuth callback');
+      }
 
       let response = await http.post(
         '/services/oauth2/token',
@@ -106,7 +138,8 @@ export let auth = SlateAuth.create()
           code: ctx.code,
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri
+          redirect_uri: redirectUri,
+          code_verifier: codeVerifier
         }).toString(),
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }

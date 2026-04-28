@@ -3,12 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let hasExactlyOneMediaSource = (value: { link?: string; mediaId?: string }) => {
+  let hasLink = typeof value.link === 'string' && value.link.length > 0;
+  let hasMediaId = typeof value.mediaId === 'string' && value.mediaId.length > 0;
+  return hasLink !== hasMediaId;
+};
+
+let mediaSourceFields = {
+  link: z.string().min(1).optional().describe('Public URL of the media file'),
+  mediaId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('WhatsApp media ID of a previously uploaded file')
+};
+
 let mediaSourceSchema = z
-  .object({
-    link: z.string().optional().describe('Public URL of the media file'),
-    mediaId: z.string().optional().describe('WhatsApp media ID of a previously uploaded file')
+  .object(mediaSourceFields)
+  .refine(hasExactlyOneMediaSource, {
+    message: 'Provide exactly one of link or mediaId'
   })
-  .describe('Provide either a public URL via link or a WhatsApp media ID');
+  .describe('Provide exactly one source: a public URL via link or a WhatsApp media ID');
+
+let captionedMediaSourceSchema = z
+  .object({
+    ...mediaSourceFields,
+    caption: z.string().optional().describe('Media caption')
+  })
+  .refine(hasExactlyOneMediaSource, {
+    message: 'Provide exactly one of link or mediaId'
+  });
+
+let documentMediaSourceSchema = z
+  .object({
+    ...mediaSourceFields,
+    filename: z.string().optional().describe('Filename to display to recipient'),
+    caption: z.string().optional().describe('Document caption')
+  })
+  .refine(hasExactlyOneMediaSource, {
+    message: 'Provide exactly one of link or mediaId'
+  });
 
 let contactSchema = z.object({
   name: z.object({
@@ -105,24 +139,26 @@ For text messages within the 24-hour customer service window, use this tool. For
         })
         .optional()
         .describe('Required when type is "text"'),
-      image: mediaSourceSchema
-        .extend({
-          caption: z.string().optional().describe('Image caption')
-        })
+      image: captionedMediaSourceSchema
         .optional()
         .describe('Required when type is "image"'),
-      video: mediaSourceSchema
-        .extend({
-          caption: z.string().optional().describe('Video caption')
-        })
+      video: captionedMediaSourceSchema
         .optional()
         .describe('Required when type is "video"'),
-      audio: mediaSourceSchema.optional().describe('Required when type is "audio"'),
-      document: mediaSourceSchema
-        .extend({
-          filename: z.string().optional().describe('Filename to display to recipient'),
-          caption: z.string().optional().describe('Document caption')
+      audio: z
+        .object({
+          ...mediaSourceFields,
+          voice: z
+            .boolean()
+            .optional()
+            .describe('Whether to send supported audio as a WhatsApp voice message')
         })
+        .refine(hasExactlyOneMediaSource, {
+          message: 'Provide exactly one of link or mediaId'
+        })
+        .optional()
+        .describe('Required when type is "audio"'),
+      document: documentMediaSourceSchema
         .optional()
         .describe('Required when type is "document"'),
       location: z

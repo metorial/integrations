@@ -258,18 +258,25 @@ export class ClickHouseClient {
     return res.data.result;
   }
 
-  async listReversePrivateEndpoints() {
-    let res = await this.axios.get(`${this.orgPath}/reversePrivateEndpoints`);
+  async listReversePrivateEndpoints(serviceId: string) {
+    let res = await this.axios.get(
+      `${this.servicePath(serviceId)}/clickpipesReversePrivateEndpoints`
+    );
     return res.data.result;
   }
 
-  async createReversePrivateEndpoint(body: { name: string; region: string }) {
-    let res = await this.axios.post(`${this.orgPath}/reversePrivateEndpoints`, body);
+  async createReversePrivateEndpoint(serviceId: string, body: Record<string, any>) {
+    let res = await this.axios.post(
+      `${this.servicePath(serviceId)}/clickpipesReversePrivateEndpoints`,
+      body
+    );
     return res.data.result;
   }
 
-  async deleteReversePrivateEndpoint(endpointId: string) {
-    let res = await this.axios.delete(`${this.orgPath}/reversePrivateEndpoints/${endpointId}`);
+  async deleteReversePrivateEndpoint(serviceId: string, reversePrivateEndpointId: string) {
+    let res = await this.axios.delete(
+      `${this.servicePath(serviceId)}/clickpipesReversePrivateEndpoints/${reversePrivateEndpointId}`
+    );
     return res.data;
   }
 
@@ -372,17 +379,20 @@ export class ClickHouseClient {
   // ── Query Endpoints ───────────────────────────────────────
 
   async getQueryEndpoint(serviceId: string) {
-    let res = await this.axios.get(`${this.servicePath(serviceId)}/queryEndpoint`);
+    let res = await this.axios.get(`${this.servicePath(serviceId)}/serviceQueryEndpoint`);
     return res.data.result;
   }
 
   async upsertQueryEndpoint(serviceId: string, body: Record<string, any>) {
-    let res = await this.axios.post(`${this.servicePath(serviceId)}/queryEndpoint`, body);
+    let res = await this.axios.post(
+      `${this.servicePath(serviceId)}/serviceQueryEndpoint`,
+      body
+    );
     return res.data.result;
   }
 
   async deleteQueryEndpoint(serviceId: string) {
-    let res = await this.axios.delete(`${this.servicePath(serviceId)}/queryEndpoint`);
+    let res = await this.axios.delete(`${this.servicePath(serviceId)}/serviceQueryEndpoint`);
     return res.data;
   }
 }

@@ -599,7 +599,7 @@ describe('@slates/client local transport', () => {
       expect(trace?.request.url).not.toContain('request-secret');
       expect(trace?.request.headers).toMatchObject({
         accept: 'application/json, text/plain, */*',
-        'user-agent': 'slates.dev@1.0.0/trace-slate',
+        'user-agent': 'slates.dev/1.0.0 trace-slate',
         'x-slates-provider': 'trace-slate'
       });
       expect(trace?.request.headers).not.toHaveProperty('authorization');

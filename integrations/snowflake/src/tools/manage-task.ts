@@ -3,6 +3,26 @@ import { SnowflakeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let taskSchedule = (schedule: string) => {
+  let minutes = schedule.match(/^(\d+)\s+MINUTE(S)?$/i);
+  if (minutes) {
+    return {
+      schedule_type: 'MINUTES_TYPE',
+      minutes: Number(minutes[1])
+    };
+  }
+
+  let cron = schedule.match(/^USING\s+CRON\s+(.+)$/i);
+  if (cron) {
+    return {
+      schedule_type: 'CRON_TYPE',
+      cron_expr: cron[1]
+    };
+  }
+
+  return schedule;
+};
+
 export let manageTask = SlateTool.create(spec, {
   name: 'Manage Task',
   key: 'manage_task',
@@ -107,7 +127,7 @@ export let manageTask = SlateTool.create(spec, {
         name: taskName,
         definition: ctx.input.definition
       };
-      if (ctx.input.schedule) body.schedule = ctx.input.schedule;
+      if (ctx.input.schedule) body.schedule = taskSchedule(ctx.input.schedule);
       if (ctx.input.warehouse) body.warehouse = ctx.input.warehouse;
       if (ctx.input.condition) body.condition = ctx.input.condition;
       if (ctx.input.comment) body.comment = ctx.input.comment;

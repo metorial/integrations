@@ -27,6 +27,13 @@ export class GitHubClient {
     });
   }
 
+  private encodePath(path: string) {
+    return path
+      .split('/')
+      .map(segment => encodeURIComponent(segment))
+      .join('/');
+  }
+
   getRepositoryHtmlUrl(owner: string, repo: string) {
     return `${this.instanceUrl}/${owner}/${repo}`;
   }
@@ -42,7 +49,15 @@ export class GitHubClient {
       page?: number;
     } = {}
   ) {
-    let response = await this.http.get('/user/repos', { params });
+    let response = await this.http.get('/user/repos', {
+      params: {
+        type: params.type,
+        sort: params.sort,
+        direction: params.direction,
+        per_page: params.perPage,
+        page: params.page
+      }
+    });
     return response.data;
   }
 
@@ -364,16 +379,21 @@ export class GitHubClient {
   }
 
   async getBranch(owner: string, repo: string, branch: string) {
-    let response = await this.http.get(`/repos/${owner}/${repo}/branches/${branch}`);
+    let response = await this.http.get(
+      `/repos/${owner}/${repo}/branches/${encodeURIComponent(branch)}`
+    );
     return response.data;
   }
 
   // ─── Contents ──────────────────────────────────────────────────
 
   async getContent(owner: string, repo: string, path: string, ref?: string) {
-    let response = await this.http.get(`/repos/${owner}/${repo}/contents/${path}`, {
-      params: ref ? { ref } : undefined
-    });
+    let response = await this.http.get(
+      `/repos/${owner}/${repo}/contents/${this.encodePath(path)}`,
+      {
+        params: ref ? { ref } : undefined
+      }
+    );
     return response.data;
   }
 
@@ -388,7 +408,10 @@ export class GitHubClient {
       branch?: string;
     }
   ) {
-    let response = await this.http.put(`/repos/${owner}/${repo}/contents/${path}`, data);
+    let response = await this.http.put(
+      `/repos/${owner}/${repo}/contents/${this.encodePath(path)}`,
+      data
+    );
     return response.data;
   }
 
@@ -402,9 +425,12 @@ export class GitHubClient {
       branch?: string;
     }
   ) {
-    let response = await this.http.delete(`/repos/${owner}/${repo}/contents/${path}`, {
-      data
-    });
+    let response = await this.http.delete(
+      `/repos/${owner}/${repo}/contents/${this.encodePath(path)}`,
+      {
+        data
+      }
+    );
     return response.data;
   }
 

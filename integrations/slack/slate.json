@@ -1,20 +1,17 @@
 {
   "name": "@metorial/slack",
-  "description": "Slack (Bot): OAuth uses bot tokens — messages and API actions appear as your Slack app. Send, receive, update, delete, and schedule messages in channels, DMs, and group DMs. Manage conversations (create, archive, rename, invite/remove members, set topics). Search messages and files across workspaces. Upload, share, and manage files. Add and remove emoji reactions. Pin and bookmark messages. Create and manage user groups and reminders. Retrieve user profiles, presence, and workspace info. Post ephemeral messages, open modals, and manage App Home tabs. Configure incoming webhooks for notifications. Create and edit canvases and lists. Administer workspace settings, Slack Connect shared channels, and Enterprise Grid organizations.",
-  "categories": [
-    "email-and-messaging"
-  ],
+  "description": "Slack (Bot): OAuth uses bot tokens — messages and API actions appear as your Slack app. Send, update, delete, and schedule messages; list and cancel scheduled messages; open DMs and group DMs; manage conversations, members, files, reactions, pins, bookmarks, and user groups; and retrieve user, conversation, and workspace info.",
+  "categories": ["email-and-messaging"],
   "skills": [
     "send and schedule messages",
+    "list and cancel scheduled messages",
     "manage channels and conversations",
-    "search messages and files",
+    "open DMs and group DMs",
     "upload and share files",
     "manage emoji reactions",
-    "create and manage reminders",
     "retrieve user profiles",
     "manage user groups",
-    "pin and bookmark messages",
-    "administer workspace settings"
+    "pin and bookmark messages"
   ],
   "logoUrl": "https://provider-logos.metorial-cdn.com/slack.svg"
 }

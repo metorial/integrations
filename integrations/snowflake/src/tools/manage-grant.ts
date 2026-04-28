@@ -30,7 +30,15 @@ export let manageGrant = SlateTool.create(spec, {
           'Type of securable object (e.g. "database", "schema", "table", "warehouse")'
         ),
       securableName: z.string().describe('Fully qualified name of the securable object'),
-      roleName: z.string().describe('Role to grant privileges to or revoke from')
+      roleName: z.string().describe('Role to grant privileges to or revoke from'),
+      grantOption: z
+        .boolean()
+        .optional()
+        .describe('When granting, allow the recipient role to grant the privileges to other roles'),
+      revokeMode: z
+        .enum(['restrict', 'cascade'])
+        .optional()
+        .describe('When revoking, controls dependent grants')
     })
   )
   .output(
@@ -46,19 +54,19 @@ export let manageGrant = SlateTool.create(spec, {
       tokenType: ctx.auth.tokenType
     });
 
-    let body: Record<string, any> = {
+    let grantOptions = {
       privileges: ctx.input.privileges,
-      securable: {
-        type: ctx.input.securableType,
-        name: ctx.input.securableName
-      },
-      role: ctx.input.roleName
+      securableType: ctx.input.securableType,
+      securableName: ctx.input.securableName,
+      roleName: ctx.input.roleName,
+      grantOption: ctx.input.grantOption,
+      revokeMode: ctx.input.revokeMode
     };
 
     if (ctx.input.action === 'grant') {
-      await client.grantPrivileges(body);
+      await client.grantPrivileges(grantOptions);
     } else {
-      await client.revokeGrant(body);
+      await client.revokeGrant(grantOptions);
     }
 
     let actionLabel = ctx.input.action === 'grant' ? 'Granted' : 'Revoked';

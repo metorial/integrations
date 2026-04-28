@@ -1,5 +1,32 @@
 import { createAxios } from 'slates';
 
+type MediaSource = {
+  link?: string;
+  mediaId?: string;
+};
+
+let hasMediaValue = (value: string | undefined): value is string =>
+  typeof value === 'string' && value.length > 0;
+
+let applyMediaSource = (
+  payload: Record<string, any>,
+  media: MediaSource,
+  mediaType: string
+) => {
+  let hasLink = hasMediaValue(media.link);
+  let hasMediaId = hasMediaValue(media.mediaId);
+
+  if (hasLink === hasMediaId) {
+    throw new Error(`Provide exactly one of link or mediaId for ${mediaType}.`);
+  }
+
+  if (hasLink) {
+    payload.link = media.link;
+  } else {
+    payload.id = media.mediaId;
+  }
+};
+
 export class Client {
   private axios: ReturnType<typeof createAxios>;
   private phoneNumberId: string;
@@ -49,8 +76,7 @@ export class Client {
     image: { link?: string; mediaId?: string; caption?: string }
   ): Promise<any> {
     let imagePayload: Record<string, any> = {};
-    if (image.link) imagePayload.link = image.link;
-    if (image.mediaId) imagePayload.id = image.mediaId;
+    applyMediaSource(imagePayload, image, 'image messages');
     if (image.caption) imagePayload.caption = image.caption;
 
     return this.sendMessage({
@@ -65,8 +91,7 @@ export class Client {
     video: { link?: string; mediaId?: string; caption?: string }
   ): Promise<any> {
     let videoPayload: Record<string, any> = {};
-    if (video.link) videoPayload.link = video.link;
-    if (video.mediaId) videoPayload.id = video.mediaId;
+    applyMediaSource(videoPayload, video, 'video messages');
     if (video.caption) videoPayload.caption = video.caption;
 
     return this.sendMessage({
@@ -78,11 +103,11 @@ export class Client {
 
   async sendAudioMessage(
     to: string,
-    audio: { link?: string; mediaId?: string }
+    audio: { link?: string; mediaId?: string; voice?: boolean }
   ): Promise<any> {
     let audioPayload: Record<string, any> = {};
-    if (audio.link) audioPayload.link = audio.link;
-    if (audio.mediaId) audioPayload.id = audio.mediaId;
+    applyMediaSource(audioPayload, audio, 'audio messages');
+    if (audio.voice !== undefined) audioPayload.voice = audio.voice;
 
     return this.sendMessage({
       to,
@@ -96,8 +121,7 @@ export class Client {
     document: { link?: string; mediaId?: string; filename?: string; caption?: string }
   ): Promise<any> {
     let docPayload: Record<string, any> = {};
-    if (document.link) docPayload.link = document.link;
-    if (document.mediaId) docPayload.id = document.mediaId;
+    applyMediaSource(docPayload, document, 'document messages');
     if (document.filename) docPayload.filename = document.filename;
     if (document.caption) docPayload.caption = document.caption;
 
@@ -132,8 +156,7 @@ export class Client {
     sticker: { link?: string; mediaId?: string }
   ): Promise<any> {
     let stickerPayload: Record<string, any> = {};
-    if (sticker.link) stickerPayload.link = sticker.link;
-    if (sticker.mediaId) stickerPayload.id = sticker.mediaId;
+    applyMediaSource(stickerPayload, sticker, 'sticker messages');
 
     return this.sendMessage({
       to,

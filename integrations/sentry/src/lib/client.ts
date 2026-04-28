@@ -21,6 +21,58 @@ export class Client {
     });
   }
 
+  private toSearchParams(params: Record<string, any>) {
+    let searchParams = new URLSearchParams();
+
+    for (let [key, value] of Object.entries(params)) {
+      if (value === undefined || value === null) continue;
+
+      if (Array.isArray(value)) {
+        for (let item of value) {
+          if (item !== undefined && item !== null) {
+            searchParams.append(key, String(item));
+          }
+        }
+        continue;
+      }
+
+      searchParams.set(key, String(value));
+    }
+
+    return searchParams;
+  }
+
+  private async resolveProjectIds(
+    projectSlugs?: string[],
+    projectIds?: Array<string | number>
+  ) {
+    let resolvedIds = projectIds?.map(String) ?? [];
+
+    if (projectSlugs?.length) {
+      let projects = await Promise.all(
+        projectSlugs.map(projectSlug => this.getProject(projectSlug))
+      );
+      resolvedIds.push(...projects.map(project => String(project.id)));
+    }
+
+    return resolvedIds.length ? resolvedIds : undefined;
+  }
+
+  private async resolveProjectFilter(params?: {
+    project?: string | string[];
+    projectSlug?: string;
+    projectIds?: Array<string | number>;
+  }) {
+    let projects = params?.project
+      ? Array.isArray(params.project)
+        ? params.project
+        : [params.project]
+      : [];
+    let projectSlugs = [...projects, params?.projectSlug].filter(Boolean) as string[];
+
+    return this.resolveProjectIds(projectSlugs, params?.projectIds);
+  }
+
   // ── Organizations ──────────────────────────────────────────
 
   async getOrganization() {
@@ -109,12 +161,25 @@ export class Client {
   async listIssues(params?: {
     query?: string;
     project?: string;
+    projectSlug?: string;
+    projectIds?: Array<string | number>;
     cursor?: string;
     sort?: string;
     statsPeriod?: string;
     shortIdLookup?: boolean;
   }) {
-    let response = await this.http.get(`/organizations/${this.orgSlug}/issues/`, { params });
+    let projectIds = await this.resolveProjectFilter(params);
+
+    let response = await this.http.get(`/organizations/${this.orgSlug}/issues/`, {
+      params: this.toSearchParams({
+        query: params?.query,
+        project: projectIds,
+        cursor: params?.cursor,
+        sort: params?.sort,
+        statsPeriod: params?.statsPeriod,
+        shortIdLookup: params?.shortIdLookup
+      })
+    });
     return response.data;
   }
 
@@ -164,7 +229,7 @@ export class Client {
     if (project) params.project = project;
 
     let response = await this.http.put(`/organizations/${this.orgSlug}/issues/`, body, {
-      params
+      params: this.toSearchParams(params)
     });
     return response.data;
   }
@@ -223,7 +288,18 @@ export class Client {
       timestamp?: string;
     }>;
   }) {
-    let response = await this.http.post(`/organizations/${this.orgSlug}/releases/`, data);
+    let { commits, ...release } = data;
+    let response = await this.http.post(`/organizations/${this.orgSlug}/releases/`, {
+      ...release,
+      commits: commits?.map(commit => ({
+        id: commit.id,
+        repository: commit.repository,
+        message: commit.message,
+        author_name: commit.authorName,
+        author_email: commit.authorEmail,
+        timestamp: commit.timestamp
+      }))
+    });
     return response.data;
   }
 
@@ -340,8 +416,20 @@ export class Client {
 
   // ── Cron Monitors ─────────────────────────────────────────
 
-  async listMonitors(params?: { cursor?: string; project?: string }) {
-    let response = await this.http.get(`/organizations/${this.orgSlug}/monitors/`, { params });
+  async listMonitors(params?: {
+    cursor?: string;
+    project?: string;
+    projectSlug?: string;
+    projectIds?: Array<string | number>;
+  }) {
+    let projectIds = await this.resolveProjectFilter(params);
+
+    let response = await this.http.get(`/organizations/${this.orgSlug}/monitors/`, {
+      params: this.toSearchParams({
+        cursor: params?.cursor,
+        project: projectIds
+      })
+    });
     return response.data;
   }
 
@@ -383,12 +471,28 @@ export class Client {
     query?: string;
     sort?: string;
     project?: string[];
+    projectIds?: Array<string | number>;
     statsPeriod?: string;
     start?: string;
     end?: string;
     per_page?: number;
   }) {
-    let response = await this.http.get(`/organizations/${this.orgSlug}/events/`, { params });
+    let projectIds = await this.resolveProjectFilter({
+      project: params.project,
+      projectIds: params.projectIds
+    });
+    let response = await this.http.get(`/organizations/${this.orgSlug}/events/`, {
+      params: this.toSearchParams({
+        field: params.field,
+        query: params.query,
+        sort: params.sort,
+        project: projectIds,
+        statsPeriod: params.statsPeriod,
+        start: params.start,
+        end: params.end,
+        per_page: params.per_page
+      })
+    });
     return response.data;
   }
 

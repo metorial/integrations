@@ -38,6 +38,12 @@ Use this to access media files received from incoming messages.`,
     });
 
     let result = await client.getMediaUrl(ctx.input.mediaId);
+    let fileSize =
+      typeof result.file_size === 'number'
+        ? result.file_size
+        : typeof result.file_size === 'string'
+          ? Number(result.file_size)
+          : undefined;
 
     return {
       output: {
@@ -45,7 +51,7 @@ Use this to access media files received from incoming messages.`,
         url: result.url,
         mimeType: result.mime_type,
         sha256: result.sha256,
-        fileSize: result.file_size
+        fileSize: Number.isFinite(fileSize) ? fileSize : undefined
       },
       message: `Retrieved media URL for \`${ctx.input.mediaId}\`. MIME type: **${result.mime_type ?? 'unknown'}**. URL is valid for ~5 minutes.`
     };

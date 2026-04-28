@@ -4,7 +4,7 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let reactionTypeEnum = z
-  .enum(['LIKE', 'PRAISE', 'EMPATHY', 'INTEREST', 'APPRECIATION', 'ENTERTAINMENT', 'MAYBE'])
+  .enum(['LIKE', 'PRAISE', 'EMPATHY', 'INTEREST', 'APPRECIATION', 'ENTERTAINMENT'])
   .describe('Type of reaction');
 
 export let createReaction = SlateTool.create(spec, {
@@ -18,6 +18,9 @@ export let createReaction = SlateTool.create(spec, {
   .input(
     z.object({
       postUrn: z.string().describe('URN of the post to react to'),
+      actorUrn: z
+        .string()
+        .describe('URN of the person or organization creating the reaction'),
       reactionType: reactionTypeEnum
     })
   )
@@ -28,11 +31,15 @@ export let createReaction = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new LinkedInClient({ token: ctx.auth.token });
-    await client.createReaction(ctx.input.postUrn, ctx.input.reactionType);
+    await client.createReaction(
+      ctx.input.postUrn,
+      ctx.input.actorUrn,
+      ctx.input.reactionType
+    );
 
     return {
       output: { reacted: true },
-      message: `Added **${ctx.input.reactionType}** reaction to post \`${ctx.input.postUrn}\`.`
+      message: `Added **${ctx.input.reactionType}** reaction to post \`${ctx.input.postUrn}\` as \`${ctx.input.actorUrn}\`.`
     };
   })
   .build();
@@ -76,7 +83,7 @@ export let getReactions = SlateTool.create(spec, {
     });
 
     let reactions = result.elements.map(r => ({
-      actorUrn: r.actor,
+      actorUrn: r.actor ?? r.created?.actor ?? r.lastModified?.actor ?? '',
       reactionType: r.reactionType,
       createdAt: r.created?.time
     }));

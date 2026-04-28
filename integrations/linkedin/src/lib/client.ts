@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
 
-let LINKEDIN_API_VERSION = '202401';
+let LINKEDIN_API_VERSION = '202604';
 
 export interface LinkedInClientConfig {
   token: string;
@@ -48,54 +48,44 @@ export class LinkedInClient {
   // ---- Posts ----
 
   async createPost(post: CreatePostRequest): Promise<string> {
-    let media: Array<Record<string, unknown>> | undefined;
-    let shareMediaCategory: 'NONE' | 'ARTICLE' | 'IMAGE' = 'NONE';
+    let content: Record<string, unknown> | undefined;
 
     if (post.articleUrl) {
-      shareMediaCategory = 'ARTICLE';
-      media = [
-        {
-          status: 'READY',
-          originalUrl: post.articleUrl,
-          ...(post.articleTitle ? { title: { text: post.articleTitle } } : {}),
-          ...(post.articleDescription
-            ? { description: { text: post.articleDescription } }
-            : {})
+      content = {
+        article: {
+          source: post.articleUrl,
+          ...(post.imageUrn ? { thumbnail: post.imageUrn } : {}),
+          ...(post.articleTitle ? { title: post.articleTitle } : {}),
+          ...(post.articleDescription ? { description: post.articleDescription } : {})
         }
-      ];
+      };
     } else if (post.imageUrn) {
-      shareMediaCategory = 'IMAGE';
-      media = [
-        {
-          status: 'READY',
-          media: post.imageUrn,
-          ...(post.imageDescription ? { description: { text: post.imageDescription } } : {})
+      content = {
+        media: {
+          id: post.imageUrn,
+          ...(post.imageDescription ? { altText: post.imageDescription } : {})
         }
-      ];
+      };
     }
 
-    let response = await this.api.post(
-      '/ugcPosts',
+    let response = await this.restApi.post(
+      '/posts',
       {
         author: post.authorUrn,
-        lifecycleState: 'PUBLISHED',
-        specificContent: {
-          'com.linkedin.ugc.ShareContent': {
-            shareCommentary: {
-              text: post.text
-            },
-            shareMediaCategory,
-            ...(media ? { media } : {})
-          }
+        commentary: post.text,
+        visibility: post.visibility,
+        distribution: {
+          feedDistribution: 'MAIN_FEED',
+          targetEntities: [],
+          thirdPartyDistributionChannels: []
         },
-        visibility: {
-          'com.linkedin.ugc.MemberNetworkVisibility': post.visibility
-        }
+        lifecycleState: 'PUBLISHED',
+        isReshareDisabledByAuthor: false,
+        ...(content ? { content } : {})
       },
       {
         headers: {
-          'Content-Type': 'application/json',
-          'X-Restli-Protocol-Version': '2.0.0'
+          'Content-Type': 'application/json'
         }
       }
     );
@@ -109,7 +99,9 @@ export class LinkedInClient {
   }
 
   async deletePost(postUrn: string): Promise<void> {
-    await this.restApi.delete(`/posts/${encodeURIComponent(postUrn)}`);
+    await this.restApi.delete(`/posts/${encodeURIComponent(postUrn)}`, {
+      headers: { 'X-RestLi-Method': 'DELETE' }
+    });
   }
 
   async getPostsByAuthor(
@@ -123,7 +115,10 @@ export class LinkedInClient {
     if (options?.count) params['count'] = String(options.count);
     if (options?.start) params['start'] = String(options.start);
 
-    let response = await this.restApi.get('/posts', { params });
+    let response = await this.restApi.get('/posts', {
+      params,
+      headers: { 'X-RestLi-Method': 'FINDER' }
+    });
     return {
       elements: response.data.elements || [],
       paging: response.data.paging
@@ -136,9 +131,13 @@ export class LinkedInClient {
     postUrn: string,
     comment: CreateCommentRequest
   ): Promise<LinkedInComment> {
+    let targetUrn = comment.parentComment ?? postUrn;
     let response = await this.restApi.post(
-      `/socialActions/${encodeURIComponent(postUrn)}/comments`,
-      comment,
+      `/socialActions/${encodeURIComponent(targetUrn)}/comments`,
+      {
+        ...comment,
+        object: postUrn
+      },
       { headers: { 'Content-Type': 'application/json' } }
     );
     return response.data;
@@ -163,18 +162,26 @@ export class LinkedInClient {
   }
 
   async deleteComment(postUrn: string, commentUrn: string): Promise<void> {
+    let commentId = extractCommentId(commentUrn);
     await this.restApi.delete(
-      `/socialActions/${encodeURIComponent(postUrn)}/comments/${encodeURIComponent(commentUrn)}`
+      `/socialActions/${encodeURIComponent(postUrn)}/comments/${encodeURIComponent(commentId)}`
     );
   }
 
   // ---- Reactions ----
 
-  async createReaction(postUrn: string, reactionType: string): Promise<void> {
+  async createReaction(
+    postUrn: string,
+    actorUrn: string,
+    reactionType: string
+  ): Promise<void> {
     await this.restApi.post(
-      `/socialActions/${encodeURIComponent(postUrn)}/reactions`,
+      '/reactions',
       { root: postUrn, reactionType },
-      { headers: { 'Content-Type': 'application/json' } }
+      {
+        params: { actor: actorUrn },
+        headers: { 'Content-Type': 'application/json' }
+      }
     );
   }
 
@@ -182,12 +189,15 @@ export class LinkedInClient {
     postUrn: string,
     options?: PaginationOptions
   ): Promise<PaginatedResponse<LinkedInReaction>> {
-    let params: Record<string, string> = {};
+    let params: Record<string, string> = {
+      q: 'entity',
+      sort: '(value:REVERSE_CHRONOLOGICAL)'
+    };
     if (options?.count) params['count'] = String(options.count);
     if (options?.start) params['start'] = String(options.start);
 
     let response = await this.restApi.get(
-      `/socialActions/${encodeURIComponent(postUrn)}/reactions`,
+      `/reactions/(entity:${encodeURIComponent(postUrn)})`,
       { params }
     );
     return {
@@ -198,7 +208,7 @@ export class LinkedInClient {
 
   async deleteReaction(postUrn: string, actorUrn: string): Promise<void> {
     await this.restApi.delete(
-      `/socialActions/${encodeURIComponent(postUrn)}/reactions/${encodeURIComponent(actorUrn)}`
+      `/reactions/(actor:${encodeURIComponent(actorUrn)},entity:${encodeURIComponent(postUrn)})`
     );
   }
 
@@ -230,6 +240,7 @@ export class LinkedInClient {
       params: {
         q: 'roleAssignee',
         role: 'ADMINISTRATOR',
+        state: 'APPROVED',
         projection:
           '(elements*(organizationTarget~(id,localizedName,vanityName,logoV2(original~:playableStreams))))'
       }
@@ -268,18 +279,11 @@ export class LinkedInClient {
   // ---- Image Upload ----
 
   async initializeImageUpload(ownerUrn: string): Promise<ImageUploadInitResponse> {
-    let response = await this.api.post(
-      '/assets?action=registerUpload',
+    let response = await this.restApi.post(
+      '/images?action=initializeUpload',
       {
-        registerUploadRequest: {
-          recipes: ['urn:li:digitalmediaRecipe:feedshare-image'],
-          owner: ownerUrn,
-          serviceRelationships: [
-            {
-              relationshipType: 'OWNER',
-              identifier: 'urn:li:userGeneratedContent'
-            }
-          ]
+        initializeUploadRequest: {
+          owner: ownerUrn
         }
       },
       {
@@ -291,10 +295,8 @@ export class LinkedInClient {
     );
     let value = response.data.value;
     return {
-      uploadUrl:
-        value.uploadMechanism?.['com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest']
-          ?.uploadUrl,
-      imageUrn: value.asset
+      uploadUrl: value.uploadUrl,
+      imageUrn: value.image
     };
   }
 
@@ -373,6 +375,7 @@ export interface LinkedInPost {
 export interface CreateCommentRequest {
   actor: string;
   message: { text: string };
+  object?: string;
   parentComment?: string;
 }
 
@@ -381,14 +384,19 @@ export interface LinkedInComment {
   message: { text: string };
   created: { actor: string; time: number };
   lastModified: { actor: string; time: number };
+  id?: string;
+  commentUrn?: string;
   $URN?: string;
+  object?: string;
   parentComment?: string;
 }
 
 export interface LinkedInReaction {
-  actor: string;
+  id?: string;
+  actor?: string;
   reactionType: string;
   created: { actor: string; time: number };
+  lastModified?: { actor: string; time: number };
 }
 
 export interface LinkedInOrganization {
@@ -464,3 +472,8 @@ export interface PaginatedResponse<T> {
     links?: any[];
   };
 }
+
+let extractCommentId = (commentIdOrUrn: string): string => {
+  let match = commentIdOrUrn.match(/^urn:li:comment:\(.+,([^,)]+)\)$/);
+  return match?.[1] ?? commentIdOrUrn;
+};

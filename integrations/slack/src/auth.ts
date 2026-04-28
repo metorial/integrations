@@ -170,18 +170,6 @@ export let auth = SlateAuth.create()
         scope: 'usergroups:write'
       },
 
-      // Reminders
-      {
-        title: 'Read Reminders',
-        description: 'View reminders created by the app',
-        scope: 'reminders:read'
-      },
-      {
-        title: 'Write Reminders',
-        description: 'Add, remove, and mark reminders as complete',
-        scope: 'reminders:write'
-      },
-
       // Team/Workspace
       {
         title: 'Read Team Info',

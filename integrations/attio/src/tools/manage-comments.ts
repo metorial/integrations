@@ -27,8 +27,12 @@ export let createCommentTool = SlateTool.create(spec, {
       recordId: z.string().optional().describe('Record ID to comment on'),
       listSlug: z.string().optional().describe('List slug for entry-level comment'),
       entryId: z.string().optional().describe('Entry ID to comment on'),
-      authorType: z.string().optional().describe('Author type (e.g. "workspace-member")'),
-      authorId: z.string().optional().describe('Author ID')
+      authorType: z
+        .string()
+        .optional()
+        .default('workspace-member')
+        .describe('Author type, typically "workspace-member"'),
+      authorId: z.string().describe('Workspace member ID for the comment author')
     })
   )
   .output(
@@ -61,12 +65,10 @@ export let createCommentTool = SlateTool.create(spec, {
       };
     }
 
-    if (ctx.input.authorType && ctx.input.authorId) {
-      params.author = {
-        type: ctx.input.authorType,
-        id: ctx.input.authorId
-      };
-    }
+    params.author = {
+      type: ctx.input.authorType,
+      id: ctx.input.authorId
+    };
 
     let comment = await client.createComment(params);
 

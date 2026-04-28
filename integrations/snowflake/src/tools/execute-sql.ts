@@ -3,6 +3,8 @@ import { SnowflakeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let optionalNumber = (value: number | null | undefined) => value ?? undefined;
+
 let columnSchema = z.object({
   name: z.string().describe('Column name'),
   type: z.string().describe('Snowflake data type'),
@@ -129,9 +131,9 @@ export let executeSql = SlateTool.create(spec, {
       name: col.name,
       type: col.type,
       nullable: col.nullable,
-      length: col.length,
-      precision: col.precision,
-      scale: col.scale
+      length: optionalNumber(col.length),
+      precision: optionalNumber(col.precision),
+      scale: optionalNumber(col.scale)
     }));
 
     let rows = result.data?.map(row => row.map(v => v ?? null));

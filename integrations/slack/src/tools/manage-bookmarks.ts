@@ -52,7 +52,7 @@ export let manageBookmarks = SlateTool.create(spec, {
       channelId: b.channel_id,
       title: b.title,
       link: b.link,
-      emoji: b.emoji,
+      emoji: b.emoji ?? undefined,
       type: b.type,
       dateCreated: b.date_created
     });

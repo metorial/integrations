@@ -1,5 +1,20 @@
 import { createAxios } from 'slates';
 
+type TaskLinkedRecordInput =
+  | string
+  | {
+      targetObject: string;
+      targetRecordId: string;
+    };
+
+let normalizeTaskLinkedRecord = (record: TaskLinkedRecordInput) =>
+  typeof record === 'string'
+    ? record
+    : {
+        target_object: record.targetObject,
+        target_record_id: record.targetRecordId
+      };
+
 export class AttioClient {
   private axios: ReturnType<typeof createAxios>;
 
@@ -116,14 +131,15 @@ export class AttioClient {
 
   async searchRecords(
     query: string,
-    params?: {
-      objects?: string[];
+    params: {
+      objects: string[];
       limit?: number;
     }
   ): Promise<any[]> {
     let response = await this.axios.post('/v2/objects/records/search', {
       query,
-      ...params
+      ...params,
+      request_as: { type: 'workspace' },
     });
     return response.data.data ?? [];
   }
@@ -303,27 +319,20 @@ export class AttioClient {
     format?: string;
     deadlineAt?: string;
     isCompleted?: boolean;
-    linkedRecords?: Array<{ targetObject: string; targetRecordId: string }>;
+    linkedRecords?: TaskLinkedRecordInput[];
     assignees?: Array<{ referencedActorType: string; referencedActorId: string }>;
   }): Promise<any> {
     let body: Record<string, any> = {
       content: params.content,
       format: params.format ?? 'plaintext',
-      is_completed: params.isCompleted ?? false
-    };
-    if (params.deadlineAt) body.deadline_at = params.deadlineAt;
-    if (params.linkedRecords) {
-      body.linked_records = params.linkedRecords.map(r => ({
-        target_object: r.targetObject,
-        target_record_id: r.targetRecordId
-      }));
-    }
-    if (params.assignees) {
-      body.assignees = params.assignees.map(a => ({
+      deadline_at: params.deadlineAt ?? null,
+      is_completed: params.isCompleted ?? false,
+      linked_records: (params.linkedRecords ?? []).map(normalizeTaskLinkedRecord),
+      assignees: (params.assignees ?? []).map(a => ({
         referenced_actor_type: a.referencedActorType,
         referenced_actor_id: a.referencedActorId
-      }));
-    }
+      }))
+    };
 
     let response = await this.axios.post('/v2/tasks', { data: body });
     return response.data.data;
@@ -334,7 +343,7 @@ export class AttioClient {
     params: {
       deadlineAt?: string | null;
       isCompleted?: boolean;
-      linkedRecords?: Array<{ targetObject: string; targetRecordId: string }>;
+      linkedRecords?: TaskLinkedRecordInput[];
       assignees?: Array<{ referencedActorType: string; referencedActorId: string }>;
     }
   ): Promise<any> {
@@ -342,10 +351,7 @@ export class AttioClient {
     if (params.deadlineAt !== undefined) body.deadline_at = params.deadlineAt;
     if (params.isCompleted !== undefined) body.is_completed = params.isCompleted;
     if (params.linkedRecords) {
-      body.linked_records = params.linkedRecords.map(r => ({
-        target_object: r.targetObject,
-        target_record_id: r.targetRecordId
-      }));
+      body.linked_records = params.linkedRecords.map(normalizeTaskLinkedRecord);
     }
     if (params.assignees) {
       body.assignees = params.assignees.map(a => ({

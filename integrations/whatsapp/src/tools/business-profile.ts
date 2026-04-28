@@ -3,6 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let businessProfileVerticals = [
+  'UNDEFINED',
+  'OTHER',
+  'AUTO',
+  'BEAUTY',
+  'APPAREL',
+  'EDU',
+  'ENTERTAIN',
+  'EVENT_PLAN',
+  'FINANCE',
+  'GROCERY',
+  'GOVT',
+  'HOTEL',
+  'HEALTH',
+  'NONPROFIT',
+  'PROF_SERVICES',
+  'RETAIL',
+  'TRAVEL',
+  'RESTAURANT',
+  'NOT_A_BIZ',
+  'AUTOMOTIVE'
+] as const;
+
+let normalizeBusinessProfileVertical = (vertical: string | undefined) =>
+  vertical === 'AUTOMOTIVE' ? 'AUTO' : vertical;
+
 export let getBusinessProfile = SlateTool.create(spec, {
   name: 'Get Business Profile',
   key: 'get_business_profile',
@@ -33,7 +59,8 @@ export let getBusinessProfile = SlateTool.create(spec, {
     });
 
     let result = await client.getBusinessProfile();
-    let profile = result.data?.[0] ?? {};
+    let directProfile = result.data?.[0] ?? {};
+    let profile = directProfile.business_profile ?? directProfile;
 
     return {
       output: {
@@ -56,7 +83,7 @@ export let updateBusinessProfile = SlateTool.create(spec, {
   description: `Update the WhatsApp Business profile for your phone number. Only the fields you provide will be updated; omitted fields remain unchanged.`,
   instructions: [
     'Maximum 2 websites allowed',
-    'Vertical must be one of: AUTOMOTIVE, BEAUTY, APPAREL, EDU, ENTERTAIN, EVENT_PLAN, FINANCE, GROCERY, GOVT, HOTEL, HEALTH, NONPROFIT, PROF_SERVICES, RETAIL, TRAVEL, RESTAURANT, NOT_A_BIZ, OTHER'
+    'Vertical must be one of: UNDEFINED, OTHER, AUTO, BEAUTY, APPAREL, EDU, ENTERTAIN, EVENT_PLAN, FINANCE, GROCERY, GOVT, HOTEL, HEALTH, NONPROFIT, PROF_SERVICES, RETAIL, TRAVEL, RESTAURANT, or NOT_A_BIZ. AUTOMOTIVE is accepted as a deprecated alias and sent as AUTO.'
   ],
   tags: {
     destructive: false,
@@ -65,38 +92,28 @@ export let updateBusinessProfile = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      about: z.string().optional().describe('Short about text (max 139 characters)'),
-      address: z.string().optional().describe('Business address (max 256 characters)'),
-      description: z.string().optional().describe('Business description (max 512 characters)'),
-      email: z.string().optional().describe('Business email address (max 128 characters)'),
+      about: z.string().max(139).optional().describe('Short about text (max 139 characters)'),
+      address: z.string().max(256).optional().describe('Business address (max 256 characters)'),
+      description: z
+        .string()
+        .max(256)
+        .optional()
+        .describe('Business description (max 256 characters)'),
+      email: z
+        .string()
+        .email()
+        .max(128)
+        .optional()
+        .describe('Business email address (max 128 characters)'),
       websites: z
         .array(z.string())
         .max(2)
         .optional()
         .describe('Business website URLs (max 2)'),
       vertical: z
-        .enum([
-          'AUTOMOTIVE',
-          'BEAUTY',
-          'APPAREL',
-          'EDU',
-          'ENTERTAIN',
-          'EVENT_PLAN',
-          'FINANCE',
-          'GROCERY',
-          'GOVT',
-          'HOTEL',
-          'HEALTH',
-          'NONPROFIT',
-          'PROF_SERVICES',
-          'RETAIL',
-          'TRAVEL',
-          'RESTAURANT',
-          'NOT_A_BIZ',
-          'OTHER'
-        ])
+        .enum(businessProfileVerticals)
         .optional()
-        .describe('Industry vertical category'),
+        .describe('Industry vertical category. AUTOMOTIVE is deprecated and maps to AUTO.'),
       profilePictureHandle: z
         .string()
         .optional()
@@ -122,7 +139,7 @@ export let updateBusinessProfile = SlateTool.create(spec, {
       description: ctx.input.description,
       email: ctx.input.email,
       websites: ctx.input.websites,
-      vertical: ctx.input.vertical,
+      vertical: normalizeBusinessProfileVertical(ctx.input.vertical),
       profilePictureHandle: ctx.input.profilePictureHandle
     });
 

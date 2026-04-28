@@ -64,7 +64,7 @@ export let checkStatementStatus = SlateTool.create(spec, {
       ctx.input.partition
     );
 
-    let completed = result.code !== '090001';
+    let completed = result.httpStatus !== 202;
 
     let columns = result.resultSetMetaData?.rowType?.map(col => ({
       name: col.name,

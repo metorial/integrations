@@ -1,12 +1,16 @@
 # <img src="https://provider-logos.metorial-cdn.com/slack.svg" height="20"> Slack
 
-Send, receive, update, delete, and schedule messages in channels, DMs, and group DMs. Manage conversations (create, archive, rename, invite/remove members, set topics). Search messages and files across workspaces. Upload, share, and manage files. Add and remove emoji reactions. Pin and bookmark messages. Create and manage user groups and reminders. Retrieve user profiles, presence, and workspace info. Post ephemeral messages, open modals, and manage App Home tabs. Configure incoming webhooks for notifications. Create and edit canvases and lists. Administer workspace settings, Slack Connect shared channels, and Enterprise Grid organizations.
+Use a Slack bot token to send, update, delete, and schedule messages; list and cancel scheduled messages; open DMs and group DMs; manage conversations, members, files, reactions, pins, bookmarks, and user groups; and retrieve user, conversation, and workspace info.
 
 ## Tools
 
 ### Get Conversation History
 
 Retrieve message history from a Slack channel, DM, or group DM. Supports pagination, time range filtering, and fetching thread replies.
+
+### Get Conversation Info
+
+Retrieve stable metadata for a Slack conversation, including channel type, membership, topic, purpose, member count, and timestamps.
 
 ### Get Team Info
 
@@ -44,21 +48,21 @@ Pin or unpin messages in a Slack channel, or list all pinned items. Pinned messa
 
 Add, remove, or list emoji reactions on a Slack message. Use this to react to messages, remove existing reactions, or see all reactions on a message.
 
-### Manage Reminders
-
-Create, complete, delete, or list Slack reminders. Reminders notify a user at a specified time with a custom message.
-
 ### Manage User Groups
 
 Create, update, enable, disable, or list user groups (also known as @mention handle groups) in Slack. Manage group membership by setting the full member list.
 
+### Manage Scheduled Messages
+
+List or delete Slack messages that are scheduled to be sent later.
+
+### Open Conversation
+
+Open or resume a Slack direct message or group direct message with one or more users.
+
 ### Schedule Message
 
 Schedule a message to be sent to a Slack channel at a future time. The message will be delivered automatically at the specified time.
-
-### Search Messages
-
-Search for messages across a Slack workspace by keyword query. Results include the message text, channel, sender, and timestamp. Requires a user token with \
 
 ### Send Message
 

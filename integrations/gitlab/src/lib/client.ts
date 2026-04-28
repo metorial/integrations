@@ -112,11 +112,40 @@ export class GitLabClient {
     if (params.description !== undefined) body.description = params.description;
     if (params.visibility) body.visibility = params.visibility;
     if (params.defaultBranch) body.default_branch = params.defaultBranch;
-    if (params.archived !== undefined) body.archived = params.archived;
 
-    let response = await this.api.put(
-      `/projects/${encodeURIComponent(String(projectId))}`,
-      body,
+    let project: any;
+    if (Object.keys(body).length > 0) {
+      let response = await this.api.put(
+        `/projects/${encodeURIComponent(String(projectId))}`,
+        body,
+        {
+          headers: this.headers()
+        }
+      );
+      project = response.data;
+    }
+
+    if (params.archived === true) {
+      return this.archiveProject(projectId);
+    }
+
+    if (params.archived === false) {
+      return this.unarchiveProject(projectId);
+    }
+
+    return project ?? this.getProject(projectId);
+  }
+
+  async deleteProject(projectId: string | number): Promise<void> {
+    await this.api.delete(`/projects/${encodeURIComponent(String(projectId))}`, {
+      headers: this.headers()
+    });
+  }
+
+  async archiveProject(projectId: string | number): Promise<any> {
+    let response = await this.api.post(
+      `/projects/${encodeURIComponent(String(projectId))}/archive`,
+      {},
       {
         headers: this.headers()
       }
@@ -124,10 +153,15 @@ export class GitLabClient {
     return response.data;
   }
 
-  async deleteProject(projectId: string | number): Promise<void> {
-    await this.api.delete(`/projects/${encodeURIComponent(String(projectId))}`, {
-      headers: this.headers()
-    });
+  async unarchiveProject(projectId: string | number): Promise<any> {
+    let response = await this.api.post(
+      `/projects/${encodeURIComponent(String(projectId))}/unarchive`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
+    return response.data;
   }
 
   async forkProject(
@@ -684,7 +718,13 @@ export class GitLabClient {
     variables?: Array<{ key: string; value: string; variableType?: string }>
   ): Promise<any> {
     let body: Record<string, any> = { ref };
-    if (variables) body.variables = variables;
+    if (variables) {
+      body.variables = variables.map(variable => ({
+        key: variable.key,
+        value: variable.value,
+        variable_type: variable.variableType
+      }));
+    }
 
     let response = await this.api.post(
       `/projects/${encodeURIComponent(String(projectId))}/pipeline`,

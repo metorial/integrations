@@ -5,6 +5,7 @@ import type {
   SlackConversation,
   SlackUser,
   SlackFile,
+  SlackScheduledMessage,
   SlackPin,
   SlackUserGroup,
   SlackReminder,
@@ -136,6 +137,39 @@ export class SlackClient {
       SlackResponse & { scheduled_message_id: string; post_at: number }
     >('chat.scheduleMessage', body);
     return { scheduledMessageId: data.scheduled_message_id, postAt: data.post_at };
+  }
+
+  async deleteScheduledMessage(params: {
+    channel: string;
+    scheduledMessageId: string;
+  }): Promise<void> {
+    await this.call('chat.deleteScheduledMessage', {
+      channel: params.channel,
+      scheduled_message_id: params.scheduledMessageId
+    });
+  }
+
+  async listScheduledMessages(params?: {
+    channel?: string;
+    oldest?: string;
+    latest?: string;
+    limit?: number;
+    cursor?: string;
+  }): Promise<{ scheduledMessages: SlackScheduledMessage[]; nextCursor?: string }> {
+    let query: Record<string, any> = {};
+    if (params?.channel) query.channel = params.channel;
+    if (params?.oldest) query.oldest = params.oldest;
+    if (params?.latest) query.latest = params.latest;
+    if (params?.limit) query.limit = params.limit;
+    if (params?.cursor) query.cursor = params.cursor;
+
+    let data = await this.get<
+      SlackResponse & { scheduled_messages: SlackScheduledMessage[] }
+    >('chat.scheduledMessages.list', query);
+    return {
+      scheduledMessages: data.scheduled_messages,
+      nextCursor: data.response_metadata?.next_cursor || undefined
+    };
   }
 
   async getPermalink(params: { channel: string; messageTs: string }): Promise<string> {
@@ -370,10 +404,34 @@ export class SlackClient {
     return data.user;
   }
 
-  async getUserProfile(userId: string): Promise<SlackUser['profile']> {
+  async getUserProfile(userId?: string): Promise<SlackUser['profile']> {
+    let query: Record<string, any> = {};
+    if (userId) query.user = userId;
+
     let data = await this.get<SlackResponse & { profile: SlackUser['profile'] }>(
       'users.profile.get',
-      { user: userId }
+      query
+    );
+    return data.profile;
+  }
+
+  async setUserProfile(profile: {
+    statusText?: string;
+    statusEmoji?: string;
+    statusExpiration?: number;
+  }): Promise<SlackUser['profile']> {
+    let body: Record<string, any> = {
+      profile: {}
+    };
+    if (profile.statusText !== undefined) body.profile.status_text = profile.statusText;
+    if (profile.statusEmoji !== undefined) body.profile.status_emoji = profile.statusEmoji;
+    if (profile.statusExpiration !== undefined) {
+      body.profile.status_expiration = profile.statusExpiration;
+    }
+
+    let data = await this.call<SlackResponse & { profile: SlackUser['profile'] }>(
+      'users.profile.set',
+      body
     );
     return data.profile;
   }
@@ -441,17 +499,64 @@ export class SlackClient {
     title?: string;
     threadTs?: string;
   }): Promise<SlackFile> {
-    let body: Record<string, any> = {};
-    if (params.channels) body.channels = params.channels;
-    if (params.content) body.content = params.content;
-    if (params.filename) body.filename = params.filename;
-    if (params.filetype) body.filetype = params.filetype;
-    if (params.initialComment) body.initial_comment = params.initialComment;
-    if (params.title) body.title = params.title;
-    if (params.threadTs) body.thread_ts = params.threadTs;
+    let content = Buffer.from(params.content ?? '', 'utf8');
+    let uploadBody = new URLSearchParams({
+      filename: params.filename ?? params.title ?? 'upload.txt',
+      length: String(content.byteLength)
+    });
+    if (params.filetype) uploadBody.set('snippet_type', params.filetype);
+    let uploadResponseMetadata = await this.axios.post(
+      '/files.getUploadURLExternal',
+      uploadBody,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
+    );
+    let upload = uploadResponseMetadata.data as SlackResponse & {
+      file_id: string;
+      upload_url: string;
+    };
+    if (!upload.ok) {
+      throw new Error(
+        `Slack API error (files.getUploadURLExternal): ${upload.error || 'Unknown error'}`
+      );
+    }
 
-    let data = await this.call<SlackResponse & { file: SlackFile }>('files.upload', body);
-    return data.file;
+    let uploadResponse = await fetch(upload.upload_url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/octet-stream'
+      },
+      body: content
+    });
+    if (!uploadResponse.ok) {
+      throw new Error(`Slack file upload failed: HTTP ${uploadResponse.status}`);
+    }
+
+    let completeBody: Record<string, any> = {
+      files: [
+        {
+          id: upload.file_id,
+          title: params.title ?? params.filename
+        }
+      ]
+    };
+    let channelIds = params.channels
+      ?.split(',')
+      .map(channel => channel.trim())
+      .filter(Boolean);
+    if (channelIds?.length === 1) completeBody.channel_id = channelIds[0];
+    if (channelIds && channelIds.length > 1) completeBody.channels = channelIds.join(',');
+    if (params.initialComment) completeBody.initial_comment = params.initialComment;
+    if (params.threadTs) completeBody.thread_ts = params.threadTs;
+
+    let data = await this.call<SlackResponse & { files: SlackFile[] }>(
+      'files.completeUploadExternal',
+      completeBody
+    );
+    return data.files[0]!;
   }
 
   async listFiles(params?: {
@@ -662,7 +767,7 @@ export class SlackClient {
   }
 
   async listBookmarks(channelId: string): Promise<SlackBookmark[]> {
-    let data = await this.get<SlackResponse & { bookmarks: SlackBookmark[] }>(
+    let data = await this.call<SlackResponse & { bookmarks: SlackBookmark[] }>(
       'bookmarks.list',
       { channel_id: channelId }
     );
@@ -724,16 +829,27 @@ export class SlackClient {
     users?: string;
     channel?: string;
     returnIm?: boolean;
-  }): Promise<SlackConversation> {
+  }): Promise<{
+    channel: SlackConversation;
+    alreadyOpen?: boolean;
+    noOp?: boolean;
+  }> {
     let body: Record<string, any> = {};
     if (params.users) body.users = params.users;
     if (params.channel) body.channel = params.channel;
     if (params.returnIm !== undefined) body.return_im = params.returnIm;
 
-    let data = await this.call<SlackResponse & { channel: SlackConversation }>(
-      'conversations.open',
-      body
-    );
-    return data.channel;
+    let data = await this.call<
+      SlackResponse & {
+        channel: SlackConversation;
+        already_open?: boolean;
+        no_op?: boolean;
+      }
+    >('conversations.open', body);
+    return {
+      channel: data.channel,
+      alreadyOpen: data.already_open,
+      noOp: data.no_op
+    };
   }
 }

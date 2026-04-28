@@ -27,7 +27,14 @@ export let discoverQueryTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Field to sort by (prefix with "-" for descending)'),
-      projectSlugs: z.array(z.string()).optional().describe('Filter by project slugs'),
+      projectSlugs: z
+        .array(z.string())
+        .optional()
+        .describe('Filter by project slugs; resolved to Sentry project IDs before querying'),
+      projectIds: z
+        .array(z.number())
+        .optional()
+        .describe('Filter by Sentry numeric project IDs'),
       statsPeriod: z
         .string()
         .optional()
@@ -59,6 +66,7 @@ export let discoverQueryTool = SlateTool.create(spec, {
       query: ctx.input.query,
       sort: ctx.input.sort,
       project: ctx.input.projectSlugs,
+      projectIds: ctx.input.projectIds,
       statsPeriod: ctx.input.start ? undefined : ctx.input.statsPeriod,
       start: ctx.input.start,
       end: ctx.input.end,

@@ -21,6 +21,7 @@ export interface SqlExecutionOptions {
 
 export interface StatementResult {
   statementHandle: string;
+  httpStatus?: number;
   statementHandles?: string[];
   code: string;
   message: string;
@@ -58,6 +59,15 @@ export interface ListParams {
   fromName?: string;
 }
 
+export interface GrantOptions {
+  roleName: string;
+  securableType: string;
+  securableName: string;
+  privileges: string[];
+  grantOption?: boolean;
+  revokeMode?: 'restrict' | 'cascade';
+}
+
 export class SnowflakeClient {
   private http: AxiosInstance;
   private tokenType: string;
@@ -73,6 +83,99 @@ export class SnowflakeClient {
         'X-Snowflake-Authorization-Token-Type': this.tokenType
       }
     });
+  }
+
+  private splitQualifiedName(name: string): string[] {
+    let parts: string[] = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let index = 0; index < name.length; index++) {
+      let char = name[index];
+
+      if (char === '"') {
+        current += char;
+
+        if (name[index + 1] === '"') {
+          current += name[index + 1];
+          index++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+
+        continue;
+      }
+
+      if (char === '.' && !inQuotes) {
+        if (current.trim()) {
+          parts.push(current.trim());
+        }
+        current = '';
+        continue;
+      }
+
+      current += char;
+    }
+
+    if (current.trim()) {
+      parts.push(current.trim());
+    }
+
+    return parts;
+  }
+
+  private identifiersEqual(left: string, right: string): boolean {
+    if (left === right) return true;
+
+    let normalize = (value: string) => {
+      if (value.startsWith('"') && value.endsWith('"')) {
+        return value.slice(1, -1).replace(/""/g, '"');
+      }
+
+      return value.toUpperCase();
+    };
+
+    return normalize(left) === normalize(right);
+  }
+
+  private buildGrantBody(options: GrantOptions): Record<string, any> {
+    let securableType = options.securableType.toUpperCase();
+    let securableNameParts = this.splitQualifiedName(options.securableName);
+    let securable: Record<string, string>;
+
+    if (securableType === 'SCHEMA' && securableNameParts.length >= 2) {
+      securable = {
+        database: securableNameParts.slice(0, -1).join('.'),
+        name: securableNameParts[securableNameParts.length - 1]!
+      };
+    } else if (securableNameParts.length >= 3) {
+      securable = {
+        database: securableNameParts[0]!,
+        schema: securableNameParts[1]!,
+        name: securableNameParts.slice(2).join('.')
+      };
+    } else if (securableNameParts.length === 2) {
+      securable = {
+        schema: securableNameParts[0]!,
+        name: securableNameParts[1]!
+      };
+    } else {
+      securable = {
+        name: options.securableName
+      };
+    }
+
+    let body: Record<string, any> = {
+      securable_type: securableType,
+      securable,
+      privileges: options.privileges
+    };
+
+    if (options.grantOption !== undefined) {
+      body.grant_option = options.grantOption;
+    }
+
+    return body;
   }
 
   // --- SQL Statement Execution ---
@@ -117,7 +220,10 @@ export class SnowflakeClient {
       validateStatus: (status: number) => status === 200 || status === 202
     });
 
-    return response.data;
+    return {
+      ...response.data,
+      httpStatus: response.status
+    };
   }
 
   async cancelStatement(statementHandle: string): Promise<{ code: string; message: string }> {
@@ -338,8 +444,17 @@ export class SnowflakeClient {
   }
 
   async getRole(name: string): Promise<any> {
-    let response = await this.http.get(`/api/v2/roles/${encodeURIComponent(name)}`);
-    return response.data;
+    let roles = await this.listRoles({ like: name });
+    let role = roles.find((candidate: any) => {
+      if (typeof candidate?.name !== 'string') return false;
+      return this.identifiersEqual(candidate.name, name);
+    });
+
+    if (!role) {
+      throw new Error(`Role not found: ${name}`);
+    }
+
+    return role;
   }
 
   async createRole(body: Record<string, any>, createMode?: string): Promise<any> {
@@ -362,13 +477,25 @@ export class SnowflakeClient {
 
   // --- Grant Management ---
 
-  async grantPrivileges(body: Record<string, any>): Promise<any> {
-    let response = await this.http.post('/api/v2/grants', body);
+  async grantPrivileges(options: GrantOptions): Promise<any> {
+    let response = await this.http.post(
+      `/api/v2/roles/${encodeURIComponent(options.roleName)}/grants`,
+      this.buildGrantBody(options)
+    );
     return response.data;
   }
 
-  async revokeGrant(body: Record<string, any>): Promise<any> {
-    let response = await this.http.post('/api/v2/grants:revoke', body);
+  async revokeGrant(options: GrantOptions): Promise<any> {
+    let params: Record<string, string> = {};
+    if (options.revokeMode) {
+      params.mode = options.revokeMode;
+    }
+
+    let response = await this.http.post(
+      `/api/v2/roles/${encodeURIComponent(options.roleName)}/grants:revoke`,
+      this.buildGrantBody(options),
+      { params }
+    );
     return response.data;
   }
 

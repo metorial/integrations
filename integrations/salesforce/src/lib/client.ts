@@ -335,18 +335,25 @@ export let createSalesforceClient = (config: SalesforceClientConfig) => {
     // --- Chatter ---
 
     getChatterFeed: async (feedType: string, subjectId?: string) => {
-      let url = subjectId
-        ? `/chatter/feeds/${feedType}/feed-elements?subjectId=${subjectId}`
-        : `/chatter/feeds/${feedType}/feed-elements`;
-      let response = await rawHttp.get(
-        `/services/data/${config.apiVersion}/connect${url.startsWith('/') ? url : '/' + url}`
-      );
+      let feedTypesWithoutSubject = new Set([
+        'company',
+        'direct-messages',
+        'draft',
+        'landing',
+        'pending-review'
+      ]);
+      let encodedFeedType = encodeURIComponent(feedType);
+      let path =
+        subjectId || !feedTypesWithoutSubject.has(feedType)
+          ? `/chatter/feeds/${encodedFeedType}/${encodeURIComponent(subjectId ?? 'me')}/feed-elements`
+          : `/chatter/feeds/${encodedFeedType}/feed-elements`;
+      let response = await rawHttp.get(`/services/data/${config.apiVersion}${path}`);
       return response.data;
     },
 
     postChatterFeedItem: async (subjectId: string, text: string) => {
       let response = await rawHttp.post(
-        `/services/data/${config.apiVersion}/connect/chatter/feed-elements`,
+        `/services/data/${config.apiVersion}/chatter/feed-elements`,
         {
           body: {
             messageSegments: [{ type: 'Text', text }]

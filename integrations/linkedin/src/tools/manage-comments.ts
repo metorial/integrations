@@ -50,7 +50,12 @@ export let createComment = SlateTool.create(spec, {
 
     return {
       output: {
-        commentUrn: comment['$URN'],
+        commentUrn:
+          comment.commentUrn ??
+          comment['$URN'] ??
+          (comment.object && comment.id
+            ? `urn:li:comment:(${comment.object},${comment.id})`
+            : undefined),
         actorUrn: comment.actor,
         text: comment.message.text,
         createdAt: comment.created?.time
@@ -101,7 +106,10 @@ export let getComments = SlateTool.create(spec, {
     });
 
     let comments = result.elements.map(c => ({
-      commentUrn: c['$URN'],
+      commentUrn:
+        c.commentUrn ??
+        c['$URN'] ??
+        (c.object && c.id ? `urn:li:comment:(${c.object},${c.id})` : undefined),
       actorUrn: c.actor,
       text: c.message.text,
       createdAt: c.created?.time,
@@ -129,7 +137,9 @@ export let deleteComment = SlateTool.create(spec, {
   .input(
     z.object({
       postUrn: z.string().describe('URN of the post the comment belongs to'),
-      commentUrn: z.string().describe('URN of the comment to delete')
+      commentUrn: z
+        .string()
+        .describe('Comment ID or composite URN of the comment to delete')
     })
   )
   .output(
