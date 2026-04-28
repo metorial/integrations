@@ -112,6 +112,7 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
 ) =>
   createSlatesProviderProtoHandler(async manager => {
     let protocol = new State<string | null>(null);
+    let tenant = new State<string | null>(null);
     let participants = new State<SlatesParticipant[] | null>(null);
 
     let auth = new State<{ authenticationMethodId: string; output: AuthType } | null>(null);
@@ -194,6 +195,7 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
 
       return {
         protocol: currentProtocol,
+        tenant: tenant.get(),
         participants: currentParticipants
       };
     };
@@ -225,7 +227,7 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
       };
     };
 
-    let getEmptyContext = () => new SlateContext({}, {}, {}, slate.spec as any, logger);
+    let getEmptyContext = () => new SlateContext({}, {}, {}, tenant.get(), slate.spec as any, logger);
     let withRequestTraces = <Result extends Record<string, any>>(
       context: SlateContext<any, any, any>,
       result: Result
@@ -236,6 +238,7 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
 
     manager.onNotification('slates/hello', async ({ params }) => {
       protocol.set(params.protocol);
+      tenant.set(params.tenant ?? null);
     });
 
     manager.onNotification('slates/participant.set', async ({ params }) => {
@@ -732,7 +735,14 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         `Invalid input for tool ID: ${params.actionId}`
       );
 
-      let context = new SlateContext(ctx.config, input, ctx.auth?.output!, slate.spec, logger);
+      let context = new SlateContext(
+        ctx.config,
+        input,
+        ctx.auth?.output!,
+        ctx.tenant,
+        slate.spec,
+        logger
+      );
       let res = await traceProviderCall(
         {
           component: 'action',
@@ -774,7 +784,14 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         `Invalid event for trigger ID: ${params.actionId}`
       );
 
-      let context = new SlateContext(ctx.config, input, ctx.auth?.output!, slate.spec, logger);
+      let context = new SlateContext(
+        ctx.config,
+        input,
+        ctx.auth?.output!,
+        ctx.tenant,
+        slate.spec,
+        logger
+      );
       let res = await traceProviderCall(
         {
           component: 'action',
@@ -817,6 +834,7 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         ctx.config,
         { state: params.state },
         ctx.auth?.output!,
+        ctx.tenant,
         slate.spec,
         logger
       );
@@ -872,6 +890,7 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         ctx.config,
         { request: req, state: params.state },
         ctx.auth?.output!,
+        ctx.tenant,
         slate.spec,
         logger
       );
@@ -921,6 +940,7 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         ctx.config,
         { webhookBaseUrl: params.webhookBaseUrl },
         ctx.auth?.output!,
+        ctx.tenant,
         slate.spec,
         logger
       );
@@ -970,6 +990,7 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
           state: params.state
         },
         ctx.auth?.output!,
+        ctx.tenant,
         slate.spec,
         logger
       );

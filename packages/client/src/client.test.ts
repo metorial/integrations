@@ -555,7 +555,9 @@ describe('@slates/client local transport', () => {
   });
 
   it('returns sanitized request traces for shared axios calls', async () => {
-    let server = createServer((_req, res) => {
+    let receivedTenantHeader: string | undefined;
+    let server = createServer((req, res) => {
+      receivedTenantHeader = req.headers['metorial-tenant'] as string | undefined;
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('X-Request-Id', 'req-123');
@@ -580,6 +582,7 @@ describe('@slates/client local transport', () => {
           slate: createTraceSlate(`http://127.0.0.1:${port}`)
         }),
         state: {
+          tenant: 'tenant-acme',
           config: {}
         }
       });
@@ -591,6 +594,7 @@ describe('@slates/client local transport', () => {
         status: 200,
         traceCount: 1
       });
+      expect(receivedTenantHeader).toBe('tenant-acme');
       expect(result.requestTraces).toHaveLength(1);
 
       let trace = result.requestTraces?.[0];
@@ -598,9 +602,7 @@ describe('@slates/client local transport', () => {
       expect(trace?.request.url).toContain('visible=yes');
       expect(trace?.request.url).not.toContain('request-secret');
       expect(trace?.request.headers).toMatchObject({
-        accept: 'application/json, text/plain, */*',
-        'user-agent': 'slates.dev@1.0.0/trace-slate',
-        'x-slates-provider': 'trace-slate'
+        accept: 'application/json, text/plain, */*'
       });
       expect(trace?.request.headers).not.toHaveProperty('authorization');
       expect(trace?.request.headers).not.toHaveProperty('x-api-key');

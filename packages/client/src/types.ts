@@ -12,6 +12,7 @@ export type SlatesProtocolResponse = SlatesNotifications | SlatesResponses;
 
 export interface SlatesClientState {
   protocol: SlatesProtocolVersion;
+  tenant: string | null;
   participants: SlatesParticipant[];
   config: SlatesJsonObject | null;
   auth: {

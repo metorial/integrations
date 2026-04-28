@@ -44,6 +44,7 @@ export class SlatesProtocolClient {
     this.transport = opts.transport;
     this.state = {
       protocol: SLATES_PROTOCOL_VERSION,
+      tenant: opts.state?.tenant ?? null,
       participants: opts.participants ?? createDefaultParticipants(),
       config: opts.state?.config ?? null,
       auth: opts.state?.auth ?? null,
@@ -53,6 +54,11 @@ export class SlatesProtocolClient {
 
   setParticipants(participants: SlatesParticipant[]) {
     this.state.participants = participants;
+    return this;
+  }
+
+  setTenant(tenant: string | null) {
+    this.state.tenant = tenant;
     return this;
   }
 
@@ -92,7 +98,10 @@ export class SlatesProtocolClient {
       {
         jsonrpc: '2.0' as const,
         method: 'slates/hello' as const,
-        params: { protocol: this.state.protocol }
+        params: {
+          protocol: this.state.protocol,
+          tenant: this.state.tenant
+        }
       },
       {
         jsonrpc: '2.0' as const,

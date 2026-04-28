@@ -6,18 +6,21 @@ export class SlateContext<ConfigType extends {}, AuthType extends {}, InputType 
   #config: ConfigType;
   #input: InputType;
   #auth: AuthType;
+  #tenant: string | null;
   #httpTraces: SlateHttpTrace[] = [];
 
   constructor(
     config: ConfigType,
     input: InputType,
     auth: AuthType,
+    tenant: string | null,
     private readonly spec: SlateSpecification<ConfigType, AuthType>,
     private readonly logger: SlateLogger
   ) {
     this.#config = config;
     this.#input = input;
     this.#auth = auth;
+    this.#tenant = tenant;
   }
 
   get specification() {
@@ -50,6 +53,10 @@ export class SlateContext<ConfigType extends {}, AuthType extends {}, InputType 
 
   get auth() {
     return Object.freeze(this.#auth);
+  }
+
+  get tenant() {
+    return this.#tenant;
   }
 
   recordHttpTrace(trace: SlateHttpTrace) {

@@ -93,8 +93,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://app.nusii.com/api/v2',
         headers: {
           Authorization: `Bearer ${ctx.output.token}`,
-          'Content-Type': 'application/json',
-          'User-Agent': 'Slates Integration (slates.dev)'
+          'Content-Type': 'application/json'
         }
       });
 
@@ -134,8 +133,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://app.nusii.com/api/v2',
         headers: {
           Authorization: `Token token=${ctx.output.token}`,
-          'Content-Type': 'application/json',
-          'User-Agent': 'Slates Integration (slates.dev)'
+          'Content-Type': 'application/json'
         }
       });
 

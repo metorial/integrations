@@ -23,8 +23,18 @@ let applySlateInterceptors = (
       let ctx = getCurrentContext();
       let spec = ctx.specification;
 
-      request.headers.set('User-Agent', `slates.dev@1.0.0/${spec.key}`);
-      request.headers.set('X-Slates-Provider', spec.key);
+      request.headers.set(
+        'User-Agent',
+        `${spec.name} (via Metorial, https://metorial.com, mailto:integration@metorial.com)`
+      );
+      request.headers.set('Metorial-Provider', spec.key);
+      request.headers.set('Metorial-Provider-Name', spec.name);
+      if (ctx.tenant) {
+        request.headers.set('Metorial-Tenant', ctx.tenant);
+      } else {
+        request.headers.delete('Metorial-Tenant');
+      }
+      request.headers.set('X-Abuse-Contact', 'integration@metorial.com');
 
       let tracedRequest = attachHttpTraceDraft(request, ctx) as InternalAxiosRequestConfig & {
         __slatesTraceAdapterWrapped?: boolean;

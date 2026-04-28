@@ -9,7 +9,7 @@
   "dependencies": {
     "@slates/oauth-microsoft": "1.0.0-rc.1",
     "@types/node": "^20",
-    "slates": "1.0.0-rc.9",
+    "slates": "1.0.0-rc.10",
     "zod": "^4.2"
   },
   "devDependencies": {
