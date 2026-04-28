@@ -99,6 +99,11 @@ export let auth = SlateAuth.create()
         description: 'View profile details about people in a workspace',
         scope: 'users.profile:read'
       },
+      {
+        title: 'Write User Profile',
+        description: 'Set and clear the authorized user’s Slack status',
+        scope: 'users.profile:write'
+      },
 
       {
         title: 'Read Files',

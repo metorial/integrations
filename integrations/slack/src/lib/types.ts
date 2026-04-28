@@ -30,6 +30,15 @@ export interface SlackMessage {
   pinned_to?: string[];
 }
 
+export interface SlackScheduledMessage {
+  id?: string;
+  scheduled_message_id?: string;
+  channel_id?: string;
+  post_at?: number;
+  date_created?: number;
+  text?: string;
+}
+
 export interface SlackConversation {
   id: string;
   name?: string;

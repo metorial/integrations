@@ -22,6 +22,10 @@ export let listIssuesTool = SlateTool.create(spec, {
         .optional()
         .describe('Sentry search query (e.g. "is:unresolved assigned:me level:error")'),
       projectSlug: z.string().optional().describe('Filter by project slug'),
+      projectIds: z
+        .array(z.number())
+        .optional()
+        .describe('Filter by Sentry numeric project IDs'),
       sort: z
         .enum(['date', 'new', 'freq', 'priority'])
         .optional()
@@ -62,6 +66,7 @@ export let listIssuesTool = SlateTool.create(spec, {
     let issues = await client.listIssues({
       query: ctx.input.query,
       project: ctx.input.projectSlug,
+      projectIds: ctx.input.projectIds,
       sort: ctx.input.sort,
       statsPeriod: ctx.input.statsPeriod,
       cursor: ctx.input.cursor
