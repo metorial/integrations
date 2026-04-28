@@ -320,7 +320,7 @@ export let auth = SlateAuth.create()
   .addOauth(
     createGithubOauth({
       name: 'GitHub.com',
-      key: 'oauth_github_com',
+      key: 'oauth',
       hardcodedInstanceUrl: 'https://github.com'
     })
   )
@@ -334,7 +334,7 @@ export let auth = SlateAuth.create()
   .addTokenAuth(
     createGithubPat({
       name: 'Personal Access Token (GitHub.com)',
-      key: 'pat_github_com',
+      key: 'personal_access_token',
       hardcodedInstanceUrl: 'https://github.com'
     })
   )
