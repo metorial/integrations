@@ -447,8 +447,7 @@ export class TelegramClient {
     cacheTime?: number;
     isPersonal?: boolean;
     nextOffset?: string;
-    switchPmText?: string;
-    switchPmParameter?: string;
+    button?: any;
   }): Promise<boolean> {
     let response = await this.axios.post('/answerInlineQuery', {
       inline_query_id: params.inlineQueryId,
@@ -456,8 +455,7 @@ export class TelegramClient {
       cache_time: params.cacheTime,
       is_personal: params.isPersonal,
       next_offset: params.nextOffset,
-      switch_pm_text: params.switchPmText,
-      switch_pm_parameter: params.switchPmParameter
+      button: params.button
     });
     return response.data.result;
   }

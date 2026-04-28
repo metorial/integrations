@@ -13,6 +13,12 @@ let templateComponentDefinition = z.object({
     .string()
     .optional()
     .describe('Component text content. Use {{1}}, {{2}}, etc. for dynamic variables'),
+  example: z
+    .any()
+    .optional()
+    .describe(
+      'Meta template example object for dynamic variables, such as body_text, header_text, or header_handle'
+    ),
   buttons: z
     .array(
       z.object({
@@ -156,6 +162,7 @@ Templates have three categories: **MARKETING**, **UTILITY**, and **AUTHENTICATIO
       let mapped: Record<string, any> = { type: comp.type };
       if (comp.format) mapped.format = comp.format;
       if (comp.text) mapped.text = comp.text;
+      if (comp.example !== undefined) mapped.example = comp.example;
       if (comp.buttons) {
         mapped.buttons = comp.buttons.map(btn => {
           let b: Record<string, any> = { type: btn.type, text: btn.text };

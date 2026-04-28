@@ -17,6 +17,27 @@ let inlineResultSchema = z.object({
     .describe('Formatting for messageText')
 });
 
+let inlineQueryButtonSchema = z
+  .object({
+    text: z.string().describe('Label text for the button shown above inline results'),
+    startParameter: z
+      .string()
+      .optional()
+      .describe('Deep-linking /start parameter for opening a private chat with the bot'),
+    webAppUrl: z
+      .string()
+      .optional()
+      .describe('HTTPS URL of a Web App to launch from the inline results button')
+  })
+  .refine(
+    button =>
+      [button.startParameter, button.webAppUrl].filter(value => value !== undefined)
+        .length === 1,
+    {
+      message: 'Provide exactly one of startParameter or webAppUrl'
+    }
+  );
+
 export let answerInlineQueryTool = SlateTool.create(spec, {
   name: 'Answer Inline Query',
   key: 'answer_inline_query',
@@ -39,7 +60,10 @@ export let answerInlineQueryTool = SlateTool.create(spec, {
         .optional()
         .describe('Max time in seconds to cache results (default 300)'),
       isPersonal: z.boolean().optional().describe('Whether results are specific to this user'),
-      nextOffset: z.string().optional().describe('Offset for pagination of results')
+      nextOffset: z.string().optional().describe('Offset for pagination of results'),
+      button: inlineQueryButtonSchema
+        .optional()
+        .describe('Optional button to show above inline query results')
     })
   )
   .output(
@@ -81,7 +105,16 @@ export let answerInlineQueryTool = SlateTool.create(spec, {
       results: formattedResults,
       cacheTime: ctx.input.cacheTime,
       isPersonal: ctx.input.isPersonal,
-      nextOffset: ctx.input.nextOffset
+      nextOffset: ctx.input.nextOffset,
+      button: ctx.input.button
+        ? {
+            text: ctx.input.button.text,
+            start_parameter: ctx.input.button.startParameter,
+            web_app: ctx.input.button.webAppUrl
+              ? { url: ctx.input.button.webAppUrl }
+              : undefined
+          }
+        : undefined
     });
 
     return {

@@ -3,31 +3,77 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+type TemplateMediaSource = {
+  link?: string;
+  mediaId?: string;
+  filename?: string;
+};
+
+let hasExactlyOneMediaSource = (value: { link?: string; mediaId?: string }) => {
+  let hasLink = typeof value.link === 'string' && value.link.length > 0;
+  let hasMediaId = typeof value.mediaId === 'string' && value.mediaId.length > 0;
+  return hasLink !== hasMediaId;
+};
+
+let templateMediaSourceFields = {
+  link: z.string().min(1).optional().describe('Public URL of the media file'),
+  mediaId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe('WhatsApp media ID of a previously uploaded file')
+};
+
+let templateMediaSourceSchema = z
+  .object(templateMediaSourceFields)
+  .refine(hasExactlyOneMediaSource, {
+    message: 'Provide exactly one of link or mediaId'
+  });
+
+let templateDocumentSourceSchema = z
+  .object({
+    ...templateMediaSourceFields,
+    filename: z.string().optional().describe('Document filename')
+  })
+  .refine(hasExactlyOneMediaSource, {
+    message: 'Provide exactly one of link or mediaId'
+  });
+
+let mapTemplateMediaSource = (source: TemplateMediaSource, field: string) => {
+  let hasLink = typeof source.link === 'string' && source.link.length > 0;
+  let hasMediaId = typeof source.mediaId === 'string' && source.mediaId.length > 0;
+
+  if (hasLink === hasMediaId) {
+    throw new Error(`Provide exactly one of link or mediaId for template ${field}.`);
+  }
+
+  let mapped: Record<string, any> = {};
+  if (hasLink) {
+    mapped.link = source.link;
+  } else {
+    mapped.id = source.mediaId;
+  }
+  if (source.filename) mapped.filename = source.filename;
+
+  return mapped;
+};
+
 let templateParameterSchema = z.object({
   type: z
     .enum(['text', 'image', 'video', 'document', 'currency', 'date_time', 'payload'])
     .describe('Parameter type'),
   text: z.string().optional().describe('Text value (for type "text" or button URL suffix)'),
   image: z
-    .object({
-      link: z.string().optional(),
-      mediaId: z.string().optional()
+    .object(templateMediaSourceFields)
+    .refine(hasExactlyOneMediaSource, {
+      message: 'Provide exactly one of link or mediaId'
     })
     .optional()
     .describe('Image source (for type "image")'),
-  video: z
-    .object({
-      link: z.string().optional(),
-      mediaId: z.string().optional()
-    })
+  video: templateMediaSourceSchema
     .optional()
     .describe('Video source (for type "video")'),
-  document: z
-    .object({
-      link: z.string().optional(),
-      mediaId: z.string().optional(),
-      filename: z.string().optional()
-    })
+  document: templateDocumentSourceSchema
     .optional()
     .describe('Document source (for type "document")'),
   currency: z
@@ -55,6 +101,8 @@ let templateComponentSchema = z.object({
     .describe('Button sub-type (required for button components)'),
   index: z
     .number()
+    .int()
+    .nonnegative()
     .optional()
     .describe('Button index (required for button components, 0-based)'),
   parameters: z.array(templateParameterSchema).describe('Component parameters')
@@ -112,20 +160,13 @@ Templates must be created and approved in the Meta dashboard before use. Use the
           if (param.text !== undefined) p.text = param.text;
           if (param.payload !== undefined) p.payload = param.payload;
           if (param.image) {
-            p.image = {};
-            if (param.image.link) p.image.link = param.image.link;
-            if (param.image.mediaId) p.image.id = param.image.mediaId;
+            p.image = mapTemplateMediaSource(param.image, 'image parameter');
           }
           if (param.video) {
-            p.video = {};
-            if (param.video.link) p.video.link = param.video.link;
-            if (param.video.mediaId) p.video.id = param.video.mediaId;
+            p.video = mapTemplateMediaSource(param.video, 'video parameter');
           }
           if (param.document) {
-            p.document = {};
-            if (param.document.link) p.document.link = param.document.link;
-            if (param.document.mediaId) p.document.id = param.document.mediaId;
-            if (param.document.filename) p.document.filename = param.document.filename;
+            p.document = mapTemplateMediaSource(param.document, 'document parameter');
           }
           if (param.currency) {
             p.currency = {
@@ -143,7 +184,7 @@ Templates must be created and approved in the Meta dashboard before use. Use the
         })
       };
       if (comp.subType) mapped.sub_type = comp.subType;
-      if (comp.index !== undefined) mapped.index = comp.index;
+      if (comp.index !== undefined) mapped.index = String(comp.index);
       return mapped;
     });
 
