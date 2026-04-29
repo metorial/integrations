@@ -5,16 +5,16 @@ import { slackActionScopes, slackBotOAuthScopes, slackUserOAuthScopes } from './
 
 let grantedScopeIds = (scopes: Array<{ scope: string }>) => scopes.map(scope => scope.scope);
 
-let toolIdsAvailableForScopes = (
-  tools: Array<{ id: string; scopes?: { AND: Array<{ OR: string[] }> } }>,
+let actionIdsAvailableForScopes = (
+  actions: Array<{ id: string; scopes?: { AND: Array<{ OR: string[] }> } }>,
   grantedScopes: string[]
 ) => {
   let granted = new Set(grantedScopes);
-  return tools
-    .filter(tool =>
-      tool.scopes?.AND.every(clause => clause.OR.some(scope => granted.has(scope)))
+  return actions
+    .filter(action =>
+      action.scopes?.AND.every(clause => clause.OR.some(scope => granted.has(scope)))
     )
-    .map(tool => tool.id);
+    .map(action => action.id);
 };
 
 describe('slack provider contract', () => {
@@ -60,8 +60,8 @@ describe('slack provider contract', () => {
       authMethodIds: ['oauth', 'user_oauth', 'bot_token', 'user_token']
     });
 
-    for (let tool of contract.tools) {
-      expect(tool.scopes?.AND.length).toBeGreaterThan(0);
+    for (let action of [...contract.tools, ...contract.triggers]) {
+      expect(action.scopes?.AND.length).toBeGreaterThan(0);
     }
 
     expect(contract.actions.find(action => action.id === 'send_message')?.scopes).toEqual(
@@ -76,6 +76,24 @@ describe('slack provider contract', () => {
     expect(contract.actions.find(action => action.id === 'manage_reminders')?.scopes).toEqual(
       slackActionScopes.reminders
     );
+    expect(contract.actions.find(action => action.id === 'new_message')?.scopes).toEqual(
+      slackActionScopes.messagePolling
+    );
+    expect(
+      contract.actions.find(action => action.id === 'new_message_webhook')?.scopes
+    ).toEqual(slackActionScopes.messageEvents);
+    expect(
+      contract.actions.find(action => action.id === 'channel_activity')?.scopes
+    ).toEqual(slackActionScopes.channelActivity);
+    expect(contract.actions.find(action => action.id === 'new_reaction')?.scopes).toEqual(
+      slackActionScopes.reactionEvents
+    );
+    expect(contract.actions.find(action => action.id === 'new_file')?.scopes).toEqual(
+      slackActionScopes.fileEvents
+    );
+    expect(contract.actions.find(action => action.id === 'user_change')?.scopes).toEqual(
+      slackActionScopes.userChange
+    );
 
     let botOAuth = await client.getAuthMethod('oauth');
     let userOAuth = await client.getAuthMethod('user_oauth');
@@ -89,27 +107,37 @@ describe('slack provider contract', () => {
 
   it('models bot and user scope availability distinctly', async () => {
     let client = createLocalSlateTestClient({ slate: provider });
-    let tools = (await client.listTools()) as Array<{
+    let actions = (await client.listActions()).actions as Array<{
       id: string;
       scopes?: { AND: Array<{ OR: string[] }> };
     }>;
 
-    let botTools = toolIdsAvailableForScopes(tools, grantedScopeIds(slackBotOAuthScopes));
-    expect(botTools).toContain('send_message');
-    expect(botTools).not.toContain('manage_reminders');
-    expect(botTools).not.toContain('search_messages');
-    expect(botTools).not.toContain('search_files');
-    expect(botTools).not.toContain('manage_user_status');
+    let botActions = actionIdsAvailableForScopes(
+      actions,
+      grantedScopeIds(slackBotOAuthScopes)
+    );
+    expect(botActions).toContain('send_message');
+    expect(botActions).toContain('new_message');
+    expect(botActions).toContain('new_message_webhook');
+    expect(botActions).not.toContain('manage_reminders');
+    expect(botActions).not.toContain('search_messages');
+    expect(botActions).not.toContain('search_files');
+    expect(botActions).not.toContain('manage_user_status');
 
-    let userTools = toolIdsAvailableForScopes(tools, grantedScopeIds(slackUserOAuthScopes));
-    expect(userTools).toContain('send_message');
-    expect(userTools).toContain('manage_reminders');
-    expect(userTools).toContain('search_messages');
-    expect(userTools).toContain('search_files');
-    expect(userTools).toContain('manage_user_status');
+    let userActions = actionIdsAvailableForScopes(
+      actions,
+      grantedScopeIds(slackUserOAuthScopes)
+    );
+    expect(userActions).toContain('send_message');
+    expect(userActions).toContain('new_message');
+    expect(userActions).toContain('new_message_webhook');
+    expect(userActions).toContain('manage_reminders');
+    expect(userActions).toContain('search_messages');
+    expect(userActions).toContain('search_files');
+    expect(userActions).toContain('manage_user_status');
 
-    let chatOnlyTools = toolIdsAvailableForScopes(tools, ['chat:write']);
-    expect(chatOnlyTools).toEqual([
+    let chatOnlyActions = actionIdsAvailableForScopes(actions, ['chat:write']);
+    expect(chatOnlyActions).toEqual([
       'send_message',
       'update_message',
       'schedule_message',

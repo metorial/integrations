@@ -290,15 +290,29 @@ export let slackUserOAuthScopes = [
   }
 ];
 
+let slackConversationReadScopes = allOf(
+  'channels:read',
+  'groups:read',
+  'im:read',
+  'mpim:read'
+);
+let slackConversationHistoryScopes = allOf(
+  'channels:history',
+  'groups:history',
+  'im:history',
+  'mpim:history'
+);
+let slackPublicPrivateConversationReadScopes = allOf('channels:read', 'groups:read');
+let slackPublicPrivateConversationHistoryScopes = allOf(
+  'channels:history',
+  'groups:history'
+);
+let slackUserInfoScopes = allOf('users:read', 'users:read.email');
+
 export let slackActionScopes = {
   chatWrite: anyOf('chat:write'),
-  conversationRead: allOf('channels:read', 'groups:read', 'im:read', 'mpim:read'),
-  conversationHistory: allOf(
-    'channels:history',
-    'groups:history',
-    'im:history',
-    'mpim:history'
-  ),
+  conversationRead: slackConversationReadScopes,
+  conversationHistory: slackConversationHistoryScopes,
   channelManagement: allOf(['channels:manage', 'channels:write'], 'groups:write'),
   channelMembership: allOf(
     'channels:read',
@@ -312,7 +326,7 @@ export let slackActionScopes = {
     'mpim:write'
   ),
   openConversation: allOf('im:write', 'mpim:write'),
-  userInfo: allOf('users:read', 'users:read.email'),
+  userInfo: slackUserInfoScopes,
   reactions: allOf('reactions:read', 'reactions:write'),
   pins: allOf('pins:read', 'pins:write'),
   files: allOf('files:read', 'files:write'),
@@ -321,5 +335,15 @@ export let slackActionScopes = {
   teamInfo: anyOf('team:read'),
   search: anyOf('search:read'),
   userStatus: allOf('users.profile:read', 'users.profile:write'),
-  reminders: allOf('reminders:read', 'reminders:write')
+  reminders: allOf('reminders:read', 'reminders:write'),
+  messagePolling: allOf(slackConversationReadScopes, slackConversationHistoryScopes),
+  messageEvents: slackConversationHistoryScopes,
+  channelActivity: slackPublicPrivateConversationReadScopes,
+  fileEvents: anyOf('files:read'),
+  reactionEvents: allOf(
+    slackPublicPrivateConversationReadScopes,
+    slackPublicPrivateConversationHistoryScopes,
+    'reactions:read'
+  ),
+  userChange: slackUserInfoScopes
 };
