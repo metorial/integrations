@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlackClient } from '../lib/client';
+import { missingRequiredFieldError } from '../lib/errors';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -47,7 +48,7 @@ export let manageChannelMembers = SlateTool.create(spec, {
 
     if (action === 'invite') {
       if (!userIds || userIds.length === 0)
-        throw new Error('userIds is required for invite action');
+        throw missingRequiredFieldError('userIds', 'invite action');
       await client.inviteToConversation(channelId, userIds);
       return {
         output: {
@@ -60,7 +61,7 @@ export let manageChannelMembers = SlateTool.create(spec, {
 
     if (action === 'kick') {
       if (!userIds || userIds.length === 0)
-        throw new Error('userIds is required for kick action');
+        throw missingRequiredFieldError('userIds', 'kick action');
       for (let userId of userIds) {
         await client.kickFromConversation(channelId, userId);
       }

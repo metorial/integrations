@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlackClient } from '../lib/client';
+import { missingRequiredFieldError } from '../lib/errors';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -46,7 +47,7 @@ export let manageReactions = SlateTool.create(spec, {
     let { action, channelId, messageTs, emoji } = ctx.input;
 
     if (action === 'add') {
-      if (!emoji) throw new Error('emoji is required for add action');
+      if (!emoji) throw missingRequiredFieldError('emoji', 'add action');
       await client.addReaction({ channel: channelId, timestamp: messageTs, name: emoji });
       return {
         output: { channelId, messageTs },
@@ -55,7 +56,7 @@ export let manageReactions = SlateTool.create(spec, {
     }
 
     if (action === 'remove') {
-      if (!emoji) throw new Error('emoji is required for remove action');
+      if (!emoji) throw missingRequiredFieldError('emoji', 'remove action');
       await client.removeReaction({ channel: channelId, timestamp: messageTs, name: emoji });
       return {
         output: { channelId, messageTs },

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlackClient } from '../lib/client';
+import { missingRequiredFieldError } from '../lib/errors';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -55,7 +56,7 @@ export let manageChannel = SlateTool.create(spec, {
     let { action, channelId, name, isPrivate, topic, purpose } = ctx.input;
 
     if (action === 'create') {
-      if (!name) throw new Error('Name is required to create a channel');
+      if (!name) throw missingRequiredFieldError('name', 'create action');
 
       let channel = await client.createConversation({ name, isPrivate });
 
@@ -75,7 +76,7 @@ export let manageChannel = SlateTool.create(spec, {
       };
     }
 
-    if (!channelId) throw new Error('channelId is required for this action');
+    if (!channelId) throw missingRequiredFieldError('channelId', `${action} action`);
 
     if (action === 'archive') {
       await client.archiveConversation(channelId);

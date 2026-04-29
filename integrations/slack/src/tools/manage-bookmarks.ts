@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlackClient } from '../lib/client';
+import { missingRequiredFieldError } from '../lib/errors';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -60,7 +61,7 @@ export let manageBookmarks = SlateTool.create(spec, {
     });
 
     if (action === 'add') {
-      if (!ctx.input.title) throw new Error('title is required for add action');
+      if (!ctx.input.title) throw missingRequiredFieldError('title', 'add action');
       let bookmark = await client.addBookmark({
         channelId,
         title: ctx.input.title,
@@ -75,7 +76,7 @@ export let manageBookmarks = SlateTool.create(spec, {
     }
 
     if (action === 'edit') {
-      if (!ctx.input.bookmarkId) throw new Error('bookmarkId is required for edit action');
+      if (!ctx.input.bookmarkId) throw missingRequiredFieldError('bookmarkId', 'edit action');
       let bookmark = await client.editBookmark({
         channelId,
         bookmarkId: ctx.input.bookmarkId,
@@ -90,7 +91,9 @@ export let manageBookmarks = SlateTool.create(spec, {
     }
 
     if (action === 'remove') {
-      if (!ctx.input.bookmarkId) throw new Error('bookmarkId is required for remove action');
+      if (!ctx.input.bookmarkId) {
+        throw missingRequiredFieldError('bookmarkId', 'remove action');
+      }
       await client.removeBookmark(channelId, ctx.input.bookmarkId);
       return {
         output: { removed: true },

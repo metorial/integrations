@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlackClient } from '../lib/client';
+import { missingRequiredFieldError, userTokenRequiredError } from '../lib/errors';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -56,7 +57,9 @@ export let manageReminders = SlateTool.create(spec, {
     let isUserToken =
       ctx.auth.actorType === 'user' || String(ctx.auth.token ?? '').startsWith('xoxp-');
     if (!isUserToken) {
-      throw new Error('Slack reminders require a user token. Use user_oauth or user_token.');
+      throw userTokenRequiredError(
+        'Slack reminders require a user token. Use user_oauth or user_token.'
+      );
     }
 
     let client = new SlackClient(ctx.auth.token);
@@ -72,8 +75,8 @@ export let manageReminders = SlateTool.create(spec, {
     });
 
     if (action === 'create') {
-      if (!ctx.input.text) throw new Error('text is required for create action');
-      if (!ctx.input.time) throw new Error('time is required for create action');
+      if (!ctx.input.text) throw missingRequiredFieldError('text', 'create action');
+      if (!ctx.input.time) throw missingRequiredFieldError('time', 'create action');
       let reminder = await client.addReminder({
         text: ctx.input.text,
         time: ctx.input.time,
@@ -86,7 +89,9 @@ export let manageReminders = SlateTool.create(spec, {
     }
 
     if (action === 'complete') {
-      if (!ctx.input.reminderId) throw new Error('reminderId is required for complete action');
+      if (!ctx.input.reminderId) {
+        throw missingRequiredFieldError('reminderId', 'complete action');
+      }
       await client.completeReminder(ctx.input.reminderId);
       return {
         output: { reminder: { reminderId: ctx.input.reminderId } },
@@ -95,7 +100,9 @@ export let manageReminders = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.reminderId) throw new Error('reminderId is required for delete action');
+      if (!ctx.input.reminderId) {
+        throw missingRequiredFieldError('reminderId', 'delete action');
+      }
       await client.deleteReminder(ctx.input.reminderId);
       return {
         output: { deleted: true },

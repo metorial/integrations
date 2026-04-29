@@ -1,3 +1,4 @@
+import { ServiceError, badRequestError } from '@lowerdeck/error';
 import { SlateTool, type SlateActionScopes } from 'slates';
 import { z } from 'zod';
 
@@ -33,6 +34,12 @@ type SlackToolFactoryDeps = {
 
 let applyScopes = (builder: any, scopes?: SlateActionScopes) =>
   scopes ? builder.scopes(scopes) : builder;
+
+let missingRequiredFieldError = (field: string, context?: string) => {
+  let message = `${field} is required${context ? ` for ${context}` : ''}`;
+
+  return new ServiceError(badRequestError({ message }));
+};
 
 let conversationInfoOutputSchema = z.object({
   conversationId: z.string().describe('Conversation ID'),
@@ -208,10 +215,10 @@ export let createManageScheduledMessagesTool = ({
 
       if (ctx.input.action === 'delete') {
         if (!ctx.input.channelId) {
-          throw new Error('channelId is required for delete action');
+          throw missingRequiredFieldError('channelId', 'delete action');
         }
         if (!ctx.input.scheduledMessageId) {
-          throw new Error('scheduledMessageId is required for delete action');
+          throw missingRequiredFieldError('scheduledMessageId', 'delete action');
         }
 
         await client.deleteScheduledMessage({

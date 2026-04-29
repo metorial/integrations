@@ -5,6 +5,7 @@ import {
   slackBotOAuthScopes,
   slackUserOAuthScopes
 } from './lib/scopes';
+import { slackOAuthError } from './lib/errors';
 
 type SlackProfile = {
   id?: string;
@@ -113,7 +114,7 @@ export let auth = SlateAuth.create()
       };
 
       if (!data.ok || !data.access_token) {
-        throw new Error(`Slack OAuth error: ${data.error || 'Unknown error'}`);
+        throw slackOAuthError(data.error);
       }
 
       let scopes = parseSlackGrantedScopes(data.scope);
@@ -167,7 +168,7 @@ export let auth = SlateAuth.create()
 
       let token = data.authed_user?.access_token;
       if (!data.ok || !token) {
-        throw new Error(`Slack OAuth error: ${data.error || 'missing user access token'}`);
+        throw slackOAuthError(data.error || 'missing user access token');
       }
 
       let scopes = parseSlackGrantedScopes(data.authed_user?.scope);

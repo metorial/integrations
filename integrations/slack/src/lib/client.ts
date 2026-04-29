@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { slackApiError, slackServiceError } from './errors';
 import type {
   SlackResponse,
   SlackMessage,
@@ -33,7 +34,7 @@ export class SlackClient {
     let response = await this.axios.post(`/${method}`, params || {});
     let data = response.data as T;
     if (!data.ok) {
-      throw new Error(`Slack API error (${method}): ${data.error || 'Unknown error'}`);
+      throw slackApiError(method, data.error);
     }
     return data;
   }
@@ -45,7 +46,7 @@ export class SlackClient {
     let response = await this.axios.get(`/${method}`, { params });
     let data = response.data as T;
     if (!data.ok) {
-      throw new Error(`Slack API error (${method}): ${data.error || 'Unknown error'}`);
+      throw slackApiError(method, data.error);
     }
     return data;
   }
@@ -520,9 +521,7 @@ export class SlackClient {
       upload_url: string;
     };
     if (!upload.ok) {
-      throw new Error(
-        `Slack API error (files.getUploadURLExternal): ${upload.error || 'Unknown error'}`
-      );
+      throw slackApiError('files.getUploadURLExternal', upload.error);
     }
 
     let uploadResponse = await fetch(upload.upload_url, {
@@ -533,7 +532,7 @@ export class SlackClient {
       body: content
     });
     if (!uploadResponse.ok) {
-      throw new Error(`Slack file upload failed: HTTP ${uploadResponse.status}`);
+      throw slackServiceError(`Slack file upload failed: HTTP ${uploadResponse.status}`);
     }
 
     let completeBody: Record<string, any> = {

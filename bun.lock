@@ -11119,9 +11119,10 @@
     },
     "integrations/slack": {
       "name": "@slates-integrations/slack",
-      "version": "0.2.0-rc.8",
+      "version": "0.2.0-rc.10",
       "dependencies": {
-        "@slates/slack-tools": "1.0.0-rc.2",
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/slack-tools": "1.0.0-rc.4",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -13626,8 +13627,9 @@
     },
     "packages/slack-tools": {
       "name": "@slates/slack-tools",
-      "version": "1.0.0-rc.2",
+      "version": "1.0.0-rc.4",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
       },
