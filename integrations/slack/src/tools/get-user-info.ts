@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlackClient } from '../lib/client';
+import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -36,6 +37,7 @@ export let getUserInfo = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(slackActionScopes.userInfo)
   .input(
     z.object({
       userId: z.string().optional().describe('Slack user ID to look up'),

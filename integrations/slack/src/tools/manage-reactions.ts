@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlackClient } from '../lib/client';
+import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let manageReactions = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(slackActionScopes.reactions)
   .input(
     z.object({
       action: z.enum(['add', 'remove', 'list']).describe('The reaction action to perform'),

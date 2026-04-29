@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlackClient } from '../lib/client';
+import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -30,6 +31,7 @@ export let manageUserStatus = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(slackActionScopes.userStatus)
   .input(
     z.object({
       action: z.enum(['get', 'set', 'clear']).describe('Status action to perform'),

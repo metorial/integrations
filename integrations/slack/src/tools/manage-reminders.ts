@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlackClient } from '../lib/client';
+import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -21,6 +22,7 @@ export let manageReminders = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(slackActionScopes.reminders)
   .input(
     z.object({
       action: z
@@ -51,6 +53,12 @@ export let manageReminders = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    let isUserToken =
+      ctx.auth.actorType === 'user' || String(ctx.auth.token ?? '').startsWith('xoxp-');
+    if (!isUserToken) {
+      throw new Error('Slack reminders require a user token. Use user_oauth or user_token.');
+    }
+
     let client = new SlackClient(ctx.auth.token);
     let { action } = ctx.input;
 
@@ -95,7 +103,6 @@ export let manageReminders = SlateTool.create(spec, {
       };
     }
 
-    // list
     let reminders = await client.listReminders();
     return {
       output: { reminders: reminders.map(mapReminder) },
