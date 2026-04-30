@@ -32,9 +32,14 @@ type AuthSetupOptions = WithProfile &
 
 export let normalizeCallbackRedirectUriForIntegration = (
   integration: string,
-  redirectUri: string
+  redirectUri: string,
+  authMethodId?: string
 ) => {
-  if (integration === 'notion' || integration === 'salesforce') {
+  if (
+    integration === 'notion' ||
+    integration === 'salesforce' ||
+    (integration === 'hubspot' && authMethodId === 'developer_platform_oauth')
+  ) {
     return normalizeMicrosoftRedirectUri(redirectUri);
   }
 
@@ -280,7 +285,8 @@ let runAuthSetup = async (opts: AuthSetupOptions): Promise<SlatesStoredAuth> => 
     let callback = await createOAuthCallbackListener();
     let redirectUri = normalizeCallbackRedirectUriForIntegration(
       opts.integration,
-      callback.redirectUri
+      callback.redirectUri,
+      authMethod.id
     );
     console.log(`OAuth redirect URL: ${redirectUri}`);
 
