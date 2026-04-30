@@ -20,6 +20,14 @@ import {
 import { JsonInput, WithProfile } from '../lib/types';
 
 type JsonObject = Record<string, any>;
+let NOTION_INTEGRATION_KEY = 'notion';
+let SALESFORCE_INTEGRATION_KEY = 'salesforce';
+let HUBSPOT_INTEGRATION_KEY = 'hubspot';
+let HUBSPOT_DEVELOPER_PLATFORM_OAUTH_METHOD_ID = 'developer_platform_oauth';
+let LOOPBACK_REDIRECT_NORMALIZED_INTEGRATIONS = new Set([
+  NOTION_INTEGRATION_KEY,
+  SALESFORCE_INTEGRATION_KEY
+]);
 
 type AuthSetupOptions = WithProfile &
   JsonInput & {
@@ -36,9 +44,9 @@ export let normalizeCallbackRedirectUriForIntegration = (
   authMethodId?: string
 ) => {
   if (
-    integration === 'notion' ||
-    integration === 'salesforce' ||
-    (integration === 'hubspot' && authMethodId === 'developer_platform_oauth')
+    LOOPBACK_REDIRECT_NORMALIZED_INTEGRATIONS.has(integration) ||
+    (integration === HUBSPOT_INTEGRATION_KEY &&
+      authMethodId === HUBSPOT_DEVELOPER_PLATFORM_OAUTH_METHOD_ID)
   ) {
     return normalizeMicrosoftRedirectUri(redirectUri);
   }

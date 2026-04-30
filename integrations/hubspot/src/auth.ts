@@ -3,8 +3,8 @@ import { z } from 'zod';
 import { hubSpotApiError, hubSpotOAuthError, hubSpotServiceError } from './lib/errors';
 import {
   hubSpotOptionalScopeValues,
-  hubSpotRequiredOAuthScopes,
   hubSpotRequiredScopeValues,
+  hubSpotSelectableOAuthScopes,
   parseHubSpotGrantedScopes
 } from './lib/scopes';
 
@@ -34,14 +34,17 @@ type OAuthVariant = {
   key: string;
   tokenPath: '/oauth/v1/token' | '/oauth/2026-03/token';
   getAccessTokenMetadata?: (ctx: any, token: string) => Promise<HubSpotTokenMetadata>;
-  introspectTokenResponse?: boolean;
   profileFromStoredOutput?: boolean;
   normalizeLoopbackRedirectUri?: boolean;
 };
 
 let formHeaders = { 'Content-Type': 'application/x-www-form-urlencoded' };
+let SECONDS_TO_MS = 1000;
+let HUBSPOT_DEVELOPER_PLATFORM_OAUTH_METHOD_ID = 'developer_platform_oauth';
 
 let uniqueScopes = (scopes: string[]) => [...new Set(scopes)];
+let requiredScopeSet = new Set(hubSpotRequiredScopeValues);
+let optionalScopeSet = new Set(hubSpotOptionalScopeValues);
 
 let normalizeLoopbackRedirectUri = (redirectUri: string) => {
   let url = new URL(redirectUri);
@@ -85,6 +88,21 @@ let getLegacyAccessTokenMetadata = async (_ctx: any, token: string) => {
   }
 };
 
+let getDeveloperPlatformAccessTokenMetadata = async (
+  ctx: { clientId: string; clientSecret: string },
+  token: string
+) =>
+  postOAuthForm<HubSpotTokenMetadata>(
+    '/oauth/2026-03/token/introspect',
+    {
+      client_id: ctx.clientId,
+      client_secret: ctx.clientSecret,
+      token_type_hint: 'access_token',
+      access_token: token
+    },
+    'access token introspection'
+  );
+
 let profileFromMetadata = (data: HubSpotTokenMetadata) => {
   if (data.active === false) {
     throw hubSpotServiceError('HubSpot OAuth access token is inactive');
@@ -114,7 +132,7 @@ let tokenResultFromResponse = (
 
   let expiresAt =
     typeof data.expires_in === 'number'
-      ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+      ? new Date(Date.now() + data.expires_in * SECONDS_TO_MS).toISOString()
       : undefined;
   let scopes = uniqueScopes([
     ...parseHubSpotGrantedScopes(data.scopes),
@@ -138,6 +156,18 @@ let tokenResultFromResponse = (
   };
 };
 
+let getTokenMetadata = async (
+  variant: OAuthVariant,
+  ctx: any,
+  data: HubSpotOAuthTokenResponse
+) => {
+  if (!variant.getAccessTokenMetadata || !data.access_token) {
+    return undefined;
+  }
+
+  return variant.getAccessTokenMetadata(ctx, data.access_token);
+};
+
 let metadataFromStoredOutput = (output: {
   hubId?: string;
   userId?: string;
@@ -154,16 +184,24 @@ let buildAuthorizationUrl = async (ctx: {
   clientId: string;
   redirectUri: string;
   state: string;
+  scopes: string[];
 }) => {
+  let selectedOptionalScopes = hubSpotOptionalScopeValues.filter(scope =>
+    ctx.scopes.includes(scope)
+  );
+  let additionalRequiredScopes = ctx.scopes.filter(
+    scope => !requiredScopeSet.has(scope) && !optionalScopeSet.has(scope)
+  );
+  let requiredScopes = uniqueScopes([...hubSpotRequiredScopeValues, ...additionalRequiredScopes]);
   let params = new URLSearchParams({
     client_id: ctx.clientId,
     redirect_uri: ctx.redirectUri,
-    scope: hubSpotRequiredScopeValues.join(' '),
+    scope: requiredScopes.join(' '),
     state: ctx.state
   });
 
-  if (hubSpotOptionalScopeValues.length > 0) {
-    params.set('optional_scope', hubSpotOptionalScopeValues.join(' '));
+  if (selectedOptionalScopes.length > 0) {
+    params.set('optional_scope', selectedOptionalScopes.join(' '));
   }
 
   return {
@@ -176,11 +214,16 @@ let createHubSpotOauth = (variant: OAuthVariant) => ({
   name: variant.name,
   key: variant.key,
 
-  // Only declare scopes that must be granted for a successful connection.
-  // HubSpot may drop optional scopes for portals that do not support them.
-  scopes: hubSpotRequiredOAuthScopes,
+  // Required HubSpot scopes are always sent automatically. Expose only optional
+  // scopes here so CLI scope selection maps cleanly to HubSpot optional_scope.
+  scopes: hubSpotSelectableOAuthScopes,
 
-  getAuthorizationUrl: async (ctx: { clientId: string; redirectUri: string; state: string }) =>
+  getAuthorizationUrl: async (ctx: {
+    clientId: string;
+    redirectUri: string;
+    state: string;
+    scopes: string[];
+  }) =>
     buildAuthorizationUrl({
       ...ctx,
       redirectUri: getRedirectUri(variant, ctx.redirectUri)
@@ -199,12 +242,7 @@ let createHubSpotOauth = (variant: OAuthVariant) => ({
       'authorization code exchange'
     );
 
-    let metadata =
-      variant.introspectTokenResponse !== false &&
-      variant.getAccessTokenMetadata &&
-      data.access_token
-        ? await variant.getAccessTokenMetadata(ctx, data.access_token)
-        : undefined;
+    let metadata = await getTokenMetadata(variant, ctx, data);
 
     return tokenResultFromResponse(data, undefined, metadata);
   },
@@ -225,12 +263,7 @@ let createHubSpotOauth = (variant: OAuthVariant) => ({
       'token refresh'
     );
 
-    let metadata =
-      variant.introspectTokenResponse !== false &&
-      variant.getAccessTokenMetadata &&
-      data.access_token
-        ? await variant.getAccessTokenMetadata(ctx, data.access_token)
-        : undefined;
+    let metadata = await getTokenMetadata(variant, ctx, data);
 
     return tokenResultFromResponse(data, ctx.output.refreshToken, metadata);
   },
@@ -275,9 +308,9 @@ export let auth = SlateAuth.create()
   .addOauth(
     createHubSpotOauth({
       name: 'OAuth (Developer Platform / CLI App)',
-      key: 'developer_platform_oauth',
+      key: HUBSPOT_DEVELOPER_PLATFORM_OAUTH_METHOD_ID,
       tokenPath: '/oauth/2026-03/token',
-      introspectTokenResponse: false,
+      getAccessTokenMetadata: getDeveloperPlatformAccessTokenMetadata,
       profileFromStoredOutput: true,
       normalizeLoopbackRedirectUri: true
     })

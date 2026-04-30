@@ -4,9 +4,12 @@ export type HubSpotScopeDefinition = {
   title: string;
   description: string;
   scope: string;
+  defaultChecked?: boolean;
 };
 
-// These lists must stay in lockstep with the HubSpot app's Auth scope settings.
+// These scopes are required for the baseline HubSpot tools and are sent on every
+// OAuth install. Product-gated and narrower feature scopes belong in optional
+// scopes so portals without those products can still connect.
 export let hubSpotRequiredOAuthScopes: HubSpotScopeDefinition[] = [
   { title: 'Contacts Read', description: 'Read contacts', scope: 'crm.objects.contacts.read' },
   {
@@ -55,89 +58,71 @@ export let hubSpotRequiredOAuthScopes: HubSpotScopeDefinition[] = [
     title: 'Sales Email Read',
     description: 'Read sales email data',
     scope: 'sales-email-read'
-  },
-  { title: 'Quotes Read', description: 'Read quotes', scope: 'crm.objects.quotes.read' },
-  { title: 'Quotes Write', description: 'Write quotes', scope: 'crm.objects.quotes.write' },
-  { title: 'Content', description: 'CMS, blog, email, landing pages', scope: 'content' },
-  { title: 'Automation', description: 'Workflows', scope: 'automation' },
-  { title: 'Forms', description: 'Forms', scope: 'forms' },
-  {
-    title: 'Forms External Integrations',
-    description: 'External integrations forms access',
-    scope: 'external_integrations.forms.access'
-  },
-  {
-    title: 'Forms Uploaded Files',
-    description: 'Read uploaded files on forms',
-    scope: 'forms-uploaded-files'
   }
 ];
 
-// Sequences and custom objects are product/tier-gated; required scopes break OAuth on
-// portals without access.
+// These scopes back optional, product-gated, or input-dependent HubSpot tools.
+// They are requested with HubSpot's optional_scope parameter when selected.
 export let hubSpotOptionalOAuthScopes: HubSpotScopeDefinition[] = [
-  {
-    title: 'Automation Sequences Read',
-    description: 'Read marketing / sales sequences (requires eligible HubSpot products)',
-    scope: 'automation.sequences.read'
-  },
-  {
-    title: 'Automation Sequences Enrollments Write',
-    description: 'Enroll contacts in sequences (requires eligible HubSpot products)',
-    scope: 'automation.sequences.enrollments.write'
-  },
   {
     title: 'Custom Objects Read',
     description: 'Read custom objects (Enterprise)',
-    scope: 'crm.objects.custom.read'
+    scope: 'crm.objects.custom.read',
+    defaultChecked: true
   },
   {
     title: 'Custom Objects Write',
     description: 'Write custom objects (Enterprise)',
-    scope: 'crm.objects.custom.write'
+    scope: 'crm.objects.custom.write',
+    defaultChecked: true
   },
   {
     title: 'CRM Contact Schemas Write',
     description: 'Create and update contact property settings',
-    scope: 'crm.schemas.contacts.write'
+    scope: 'crm.schemas.contacts.write',
+    defaultChecked: true
   },
   {
     title: 'CRM Company Schemas Write',
     description: 'Create and update company property settings',
-    scope: 'crm.schemas.companies.write'
+    scope: 'crm.schemas.companies.write',
+    defaultChecked: true
   },
   {
     title: 'CRM Deal Schemas Write',
     description: 'Create and update deal property settings',
-    scope: 'crm.schemas.deals.write'
+    scope: 'crm.schemas.deals.write',
+    defaultChecked: true
   },
   {
     title: 'CRM Custom Schemas Read',
     description: 'Read custom object schemas (Enterprise)',
-    scope: 'crm.schemas.custom.read'
+    scope: 'crm.schemas.custom.read',
+    defaultChecked: true
   },
   {
     title: 'CRM Custom Schemas Write',
     description: 'Create and update custom object schemas (Enterprise)',
-    scope: 'crm.schemas.custom.write'
+    scope: 'crm.schemas.custom.write',
+    defaultChecked: true
   },
   {
     title: 'Order Pipelines Read',
     description: 'Read order pipelines',
-    scope: 'crm.pipelines.orders.read'
+    scope: 'crm.pipelines.orders.read',
+    defaultChecked: true
   },
   {
     title: 'Order Pipelines Write',
     description: 'Create and update order pipelines',
-    scope: 'crm.pipelines.orders.write'
-  },
-  { title: 'Files', description: 'File Manager', scope: 'files' },
-  { title: 'E-Commerce', description: 'Products and line items', scope: 'e-commerce' },
-  { title: 'Social', description: 'Social media', scope: 'social' }
+    scope: 'crm.pipelines.orders.write',
+    defaultChecked: true
+  }
 ];
 
 export let hubSpotRequiredScopeValues = hubSpotRequiredOAuthScopes.map(({ scope }) => scope);
 export let hubSpotOptionalScopeValues = hubSpotOptionalOAuthScopes.map(({ scope }) => scope);
+export let hubSpotSelectableOAuthScopes = hubSpotOptionalOAuthScopes;
 
 export let parseHubSpotGrantedScopes = (value?: unknown) => {
   if (Array.isArray(value)) {
