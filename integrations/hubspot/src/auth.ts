@@ -98,7 +98,7 @@ let getDeveloperPlatformAccessTokenMetadata = async (
       client_id: ctx.clientId,
       client_secret: ctx.clientSecret,
       token_type_hint: 'access_token',
-      access_token: token
+      token
     },
     'access token introspection'
   );
