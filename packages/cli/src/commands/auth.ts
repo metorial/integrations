@@ -259,7 +259,11 @@ let chooseOAuthCredentialsForSetup = async (opts: {
 };
 
 let runAuthSetup = async (opts: AuthSetupOptions): Promise<SlatesStoredAuth> => {
-  let { store, profile, client } = await createClientContext(opts);
+  let { store, profile, client } = await createClientContext({
+    ...opts,
+    autoRefresh: false
+  });
+  client.clearAuth();
   let authMethod = await chooseAuthMethod({
     client,
     authMethodId: opts.authMethodId,
