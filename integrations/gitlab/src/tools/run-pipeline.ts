@@ -1,6 +1,6 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
-import { createClient, resolveProjectId } from '../lib/helpers';
+import { createClient, resolveProjectId, gitLabServiceError } from '../lib/helpers';
 import { z } from 'zod';
 
 export let runPipeline = SlateTool.create(spec, {
@@ -57,7 +57,7 @@ export let runPipeline = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.ref) {
-        throw new Error('ref is required when creating a pipeline');
+        throw gitLabServiceError('ref is required when creating a pipeline');
       }
       let vars = ctx.input.variables?.map(v => ({
         key: v.key,
@@ -67,12 +67,12 @@ export let runPipeline = SlateTool.create(spec, {
       p = await client.createPipeline(projectId, ctx.input.ref, vars);
     } else if (ctx.input.action === 'retry') {
       if (!ctx.input.pipelineId) {
-        throw new Error('pipelineId is required when retrying a pipeline');
+        throw gitLabServiceError('pipelineId is required when retrying a pipeline');
       }
       p = await client.retryPipeline(projectId, ctx.input.pipelineId);
     } else {
       if (!ctx.input.pipelineId) {
-        throw new Error('pipelineId is required when canceling a pipeline');
+        throw gitLabServiceError('pipelineId is required when canceling a pipeline');
       }
       p = await client.cancelPipeline(projectId, ctx.input.pipelineId);
     }

@@ -1,6 +1,6 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
-import { createClient, resolveProjectId } from '../lib/helpers';
+import { createClient, resolveProjectId, gitLabServiceError } from '../lib/helpers';
 import { z } from 'zod';
 
 let variableSchema = z.object({
@@ -65,7 +65,7 @@ export let manageVariables = SlateTool.create(spec, {
     let scopeId =
       ctx.input.scopeId || (scope === 'project' ? ctx.config.projectId : undefined);
     if (!scopeId) {
-      throw new Error(`${scope} ID is required.`);
+      throw gitLabServiceError(`${scope} ID is required.`);
     }
 
     if (action === 'list') {
@@ -88,8 +88,11 @@ export let manageVariables = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!key) throw new Error('key is required for get action');
-      let v = (await client.getProjectVariable(scopeId, key)) as any;
+      if (!key) throw gitLabServiceError('key is required for get action');
+      let v =
+        scope === 'project'
+          ? ((await client.getProjectVariable(scopeId, key)) as any)
+          : ((await client.getGroupVariable(scopeId, key)) as any);
       return {
         output: {
           variable: {
@@ -106,7 +109,8 @@ export let manageVariables = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!key || !value) throw new Error('key and value are required for create action');
+      if (!key || !value)
+        throw gitLabServiceError('key and value are required for create action');
       let data = {
         key,
         value,
@@ -137,7 +141,7 @@ export let manageVariables = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!key) throw new Error('key is required for update action');
+      if (!key) throw gitLabServiceError('key is required for update action');
       let data: any = {};
       if (value !== undefined) data.value = value;
       if (variableType !== undefined) data.variable_type = variableType;
@@ -166,7 +170,7 @@ export let manageVariables = SlateTool.create(spec, {
     }
 
     // delete
-    if (!key) throw new Error('key is required for delete action');
+    if (!key) throw gitLabServiceError('key is required for delete action');
     if (scope === 'project') {
       await client.deleteProjectVariable(scopeId, key);
     } else {

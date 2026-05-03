@@ -1,6 +1,6 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
-import { createClient, resolveProjectId } from '../lib/helpers';
+import { createClient, resolveProjectId, gitLabServiceError } from '../lib/helpers';
 import { z } from 'zod';
 
 let triggerTokenSchema = z.object({
@@ -88,7 +88,8 @@ export let manageTriggers = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.description) throw new Error('description is required for create action');
+      if (!ctx.input.description)
+        throw gitLabServiceError('description is required for create action');
       let t = await client.createPipelineTrigger(projectId, ctx.input.description);
       return {
         output: { trigger: mapTrigger(t) },
@@ -97,8 +98,10 @@ export let manageTriggers = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.triggerId) throw new Error('triggerId is required for update action');
-      if (!ctx.input.description) throw new Error('description is required for update action');
+      if (!ctx.input.triggerId)
+        throw gitLabServiceError('triggerId is required for update action');
+      if (!ctx.input.description)
+        throw gitLabServiceError('description is required for update action');
       let t = await client.updatePipelineTrigger(
         projectId,
         ctx.input.triggerId,
@@ -111,7 +114,8 @@ export let manageTriggers = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.triggerId) throw new Error('triggerId is required for delete action');
+      if (!ctx.input.triggerId)
+        throw gitLabServiceError('triggerId is required for delete action');
       await client.deletePipelineTrigger(projectId, ctx.input.triggerId);
       return {
         output: { deleted: true },
@@ -120,8 +124,9 @@ export let manageTriggers = SlateTool.create(spec, {
     }
 
     // fire
-    if (!ctx.input.triggerToken) throw new Error('triggerToken is required for fire action');
-    if (!ctx.input.ref) throw new Error('ref is required for fire action');
+    if (!ctx.input.triggerToken)
+      throw gitLabServiceError('triggerToken is required for fire action');
+    if (!ctx.input.ref) throw gitLabServiceError('ref is required for fire action');
     let p = (await client.triggerPipeline(
       projectId,
       ctx.input.triggerToken,
