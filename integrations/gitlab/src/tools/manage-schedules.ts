@@ -1,6 +1,6 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
-import { createClient, resolveProjectId } from '../lib/helpers';
+import { createClient, resolveProjectId, gitLabServiceError } from '../lib/helpers';
 import { z } from 'zod';
 
 let scheduleSchema = z.object({
@@ -123,7 +123,7 @@ export let manageSchedules = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!scheduleId) throw new Error('scheduleId is required for get action');
+      if (!scheduleId) throw gitLabServiceError('scheduleId is required for get action');
       let s = await client.getPipelineSchedule(projectId, scheduleId);
       return {
         output: { schedule: mapSchedule(s) },
@@ -133,7 +133,7 @@ export let manageSchedules = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.description || !ctx.input.ref || !ctx.input.cron) {
-        throw new Error('description, ref, and cron are required for create action');
+        throw gitLabServiceError('description, ref, and cron are required for create action');
       }
       let s = await client.createPipelineSchedule(projectId, {
         description: ctx.input.description,
@@ -167,7 +167,7 @@ export let manageSchedules = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!scheduleId) throw new Error('scheduleId is required for update action');
+      if (!scheduleId) throw gitLabServiceError('scheduleId is required for update action');
       let data: any = {};
       if (ctx.input.description !== undefined) data.description = ctx.input.description;
       if (ctx.input.ref !== undefined) data.ref = ctx.input.ref;
@@ -212,7 +212,7 @@ export let manageSchedules = SlateTool.create(spec, {
     }
 
     // delete
-    if (!scheduleId) throw new Error('scheduleId is required for delete action');
+    if (!scheduleId) throw gitLabServiceError('scheduleId is required for delete action');
     await client.deletePipelineSchedule(projectId, scheduleId);
     return {
       output: { deleted: true },

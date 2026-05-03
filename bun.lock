@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@metorial/integrations-root",
@@ -5142,20 +5141,9 @@
     },
     "integrations/gitlab": {
       "name": "@slates-integrations/gitlab",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.6",
       "dependencies": {
-        "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
-        "zod": "^4.2",
-      },
-      "devDependencies": {
-        "typescript": "^5",
-      },
-    },
-    "integrations/gitlab-ci": {
-      "name": "@slates-integrations/gitlab-ci",
-      "version": "0.2.0-rc.2",
-      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -6124,7 +6112,7 @@
     },
     "integrations/hubspot": {
       "name": "@slates-integrations/hubspot",
-      "version": "0.2.0-rc.7",
+      "version": "0.2.0-rc.8",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
@@ -7099,8 +7087,9 @@
     },
     "integrations/linear": {
       "name": "@slates-integrations/linear",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -15014,8 +15003,6 @@
     "@slates-integrations/github-actions": ["@slates-integrations/github-actions@workspace:integrations/github-actions"],
 
     "@slates-integrations/gitlab": ["@slates-integrations/gitlab@workspace:integrations/gitlab"],
-
-    "@slates-integrations/gitlab-ci": ["@slates-integrations/gitlab-ci@workspace:integrations/gitlab-ci"],
 
     "@slates-integrations/givebutter": ["@slates-integrations/givebutter@workspace:integrations/givebutter"],
 

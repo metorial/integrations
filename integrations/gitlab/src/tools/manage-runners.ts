@@ -1,6 +1,6 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
-import { createClient, resolveProjectId } from '../lib/helpers';
+import { createClient, resolveProjectId, gitLabServiceError } from '../lib/helpers';
 import { z } from 'zod';
 
 let runnerSchema = z.object({
@@ -142,7 +142,7 @@ export let manageRunners = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!runnerId) throw new Error('runnerId is required for get action');
+      if (!runnerId) throw gitLabServiceError('runnerId is required for get action');
       let r = await client.getRunner(runnerId);
       return {
         output: { runner: mapRunner(r) },
@@ -151,7 +151,7 @@ export let manageRunners = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!runnerId) throw new Error('runnerId is required for update action');
+      if (!runnerId) throw gitLabServiceError('runnerId is required for update action');
       let data: any = {};
       if (ctx.input.paused !== undefined) data.paused = ctx.input.paused;
       if (ctx.input.description !== undefined) data.description = ctx.input.description;
@@ -169,7 +169,7 @@ export let manageRunners = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!runnerId) throw new Error('runnerId is required for delete action');
+      if (!runnerId) throw gitLabServiceError('runnerId is required for delete action');
       await client.deleteRunner(runnerId);
       return {
         output: { deleted: true },
@@ -178,7 +178,7 @@ export let manageRunners = SlateTool.create(spec, {
     }
 
     // jobs
-    if (!runnerId) throw new Error('runnerId is required for jobs action');
+    if (!runnerId) throw gitLabServiceError('runnerId is required for jobs action');
     let result = (await client.listRunnerJobs(runnerId, {
       status: ctx.input.status
     })) as any[];

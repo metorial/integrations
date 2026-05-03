@@ -1,6 +1,6 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
-import { createClient, resolveProjectId } from '../lib/helpers';
+import { createClient, resolveProjectId, gitLabServiceError } from '../lib/helpers';
 import { z } from 'zod';
 
 let environmentSchema = z.object({
@@ -91,7 +91,7 @@ export let manageEnvironments = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!environmentId) throw new Error('environmentId is required for get action');
+      if (!environmentId) throw gitLabServiceError('environmentId is required for get action');
       let e = (await client.getEnvironment(projectId, environmentId)) as any;
       return {
         output: {
@@ -111,7 +111,7 @@ export let manageEnvironments = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!name) throw new Error('name is required for create action');
+      if (!name) throw gitLabServiceError('name is required for create action');
       let e = (await client.createEnvironment(projectId, {
         name,
         external_url: externalUrl,
@@ -135,7 +135,8 @@ export let manageEnvironments = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!environmentId) throw new Error('environmentId is required for update action');
+      if (!environmentId)
+        throw gitLabServiceError('environmentId is required for update action');
       let data: any = {};
       if (name !== undefined) data.name = name;
       if (externalUrl !== undefined) data.external_url = externalUrl;
@@ -159,7 +160,8 @@ export let manageEnvironments = SlateTool.create(spec, {
     }
 
     if (action === 'stop') {
-      if (!environmentId) throw new Error('environmentId is required for stop action');
+      if (!environmentId)
+        throw gitLabServiceError('environmentId is required for stop action');
       let e = (await client.stopEnvironment(projectId, environmentId)) as any;
       return {
         output: {
@@ -179,7 +181,8 @@ export let manageEnvironments = SlateTool.create(spec, {
     }
 
     // delete
-    if (!environmentId) throw new Error('environmentId is required for delete action');
+    if (!environmentId)
+      throw gitLabServiceError('environmentId is required for delete action');
     await client.deleteEnvironment(projectId, environmentId);
     return {
       output: { deleted: true },

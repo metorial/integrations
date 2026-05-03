@@ -1,6 +1,6 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
-import { createClient, resolveProjectId } from '../lib/helpers';
+import { createClient, resolveProjectId, gitLabServiceError } from '../lib/helpers';
 import { z } from 'zod';
 
 let jobSchema = z.object({
