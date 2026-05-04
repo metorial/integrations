@@ -6,7 +6,8 @@ let outputSchema = z.object({
   token: z.string(),
   refreshToken: z.string().optional(),
   expiresAt: z.string().optional(),
-  instanceUrl: z.string()
+  instanceUrl: z.string(),
+  redirectUri: z.string().optional()
 });
 
 type AuthOutput = z.infer<typeof outputSchema>;
@@ -154,7 +155,8 @@ function createGitlabOauth(opts: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          instanceUrl: baseUrl
+          instanceUrl: baseUrl,
+          redirectUri: ctx.redirectUri
         }
       };
     },
@@ -170,18 +172,21 @@ function createGitlabOauth(opts: {
 
       let oauthAxios = createAxios({ baseURL: baseUrl });
 
+      let params = new URLSearchParams({
+        client_id: ctx.clientId,
+        client_secret: ctx.clientSecret,
+        refresh_token: ctx.output.refreshToken,
+        grant_type: 'refresh_token'
+      });
+      if (ctx.output.redirectUri) {
+        params.set('redirect_uri', ctx.output.redirectUri);
+      }
+
       let response;
       try {
-        response = await oauthAxios.post(
-          '/oauth/token',
-          new URLSearchParams({
-            client_id: ctx.clientId,
-            client_secret: ctx.clientSecret,
-            refresh_token: ctx.output.refreshToken,
-            grant_type: 'refresh_token'
-          }).toString(),
-          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-        );
+        response = await oauthAxios.post('/oauth/token', params.toString(), {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
       } catch (error) {
         throw gitLabApiError(error, 'OAuth token refresh');
       }
@@ -196,7 +201,8 @@ function createGitlabOauth(opts: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
-          instanceUrl: baseUrl
+          instanceUrl: baseUrl,
+          redirectUri: ctx.output.redirectUri
         }
       };
     },
