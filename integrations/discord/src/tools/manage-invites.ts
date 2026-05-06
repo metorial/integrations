@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DiscordClient } from '../lib/client';
+import { discordServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -97,7 +98,7 @@ export let manageInvites = SlateTool.create(spec, {
 
     if (action === 'list_channel') {
       if (!ctx.input.channelId)
-        throw new Error('channelId is required for list_channel action');
+        throw discordServiceError('channelId is required for list_channel action');
       let invites = await client.getChannelInvites(ctx.input.channelId);
       let mapped = invites.map(mapInvite);
       return {
@@ -107,7 +108,8 @@ export let manageInvites = SlateTool.create(spec, {
     }
 
     if (action === 'list_guild') {
-      if (!ctx.input.guildId) throw new Error('guildId is required for list_guild action');
+      if (!ctx.input.guildId)
+        throw discordServiceError('guildId is required for list_guild action');
       let invites = await client.getGuildInvites(ctx.input.guildId);
       let mapped = invites.map(mapInvite);
       return {
@@ -117,7 +119,8 @@ export let manageInvites = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.channelId) throw new Error('channelId is required for create action');
+      if (!ctx.input.channelId)
+        throw discordServiceError('channelId is required for create action');
       let invite = await client.createChannelInvite(ctx.input.channelId, {
         max_age: ctx.input.maxAge,
         max_uses: ctx.input.maxUses,
@@ -132,7 +135,8 @@ export let manageInvites = SlateTool.create(spec, {
     }
 
     // delete
-    if (!ctx.input.inviteCode) throw new Error('inviteCode is required for delete action');
+    if (!ctx.input.inviteCode)
+      throw discordServiceError('inviteCode is required for delete action');
     let invite = await client.deleteInvite(ctx.input.inviteCode);
     let mapped = mapInvite(invite);
     return {

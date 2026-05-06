@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { intercomApiError } from './errors';
 
 let regionBaseUrls: Record<string, string> = {
   us: 'https://api.intercom.io',
@@ -20,6 +21,11 @@ export class Client {
         'Intercom-Version': '2.11'
       }
     });
+
+    this.http.interceptors.response.use(
+      response => response,
+      error => Promise.reject(intercomApiError(error))
+    );
   }
 
   // ──────── Contacts ────────
@@ -226,6 +232,20 @@ export class Client {
 
   async getConversation(conversationId: string) {
     let response = await this.http.get(`/conversations/${conversationId}`);
+    return response.data;
+  }
+
+  async updateConversation(
+    conversationId: string,
+    data: {
+      read?: boolean;
+      customAttributes?: Record<string, any>;
+    }
+  ) {
+    let body: Record<string, any> = {};
+    if (data.read !== undefined) body.read = data.read;
+    if (data.customAttributes) body.custom_attributes = data.customAttributes;
+    let response = await this.http.put(`/conversations/${conversationId}`, body);
     return response.data;
   }
 
@@ -645,23 +665,47 @@ export class Client {
     return response.data;
   }
 
-  // ──────── Segments ────────
+  // ──────── Teams ────────
 
-  async listSegments() {
-    let response = await this.http.get('/segments');
+  async listTeams() {
+    let response = await this.http.get('/teams');
     return response.data;
   }
 
-  async getSegment(segmentId: string) {
-    let response = await this.http.get(`/segments/${segmentId}`);
+  async getTeam(teamId: string) {
+    let response = await this.http.get(`/teams/${teamId}`);
+    return response.data;
+  }
+
+  // ──────── Segments ────────
+
+  async listSegments(params?: { includeCount?: boolean }) {
+    let query = new URLSearchParams();
+    if (params?.includeCount) query.set('include_count', 'true');
+    let qs = query.toString();
+    let response = await this.http.get(`/segments${qs ? `?${qs}` : ''}`);
+    return response.data;
+  }
+
+  async getSegment(segmentId: string, params?: { includeCount?: boolean }) {
+    let query = new URLSearchParams();
+    if (params?.includeCount) query.set('include_count', 'true');
+    let qs = query.toString();
+    let response = await this.http.get(`/segments/${segmentId}${qs ? `?${qs}` : ''}`);
+    return response.data;
+  }
+
+  async listContactSegments(contactId: string) {
+    let response = await this.http.get(`/contacts/${contactId}/segments`);
     return response.data;
   }
 
   // ──────── Data Attributes ────────
 
-  async listDataAttributes(params?: { model?: string }) {
+  async listDataAttributes(params?: { model?: string; includeArchived?: boolean }) {
     let query = new URLSearchParams();
     if (params?.model) query.set('model', params.model);
+    if (params?.includeArchived) query.set('include_archived', 'true');
     let qs = query.toString();
     let response = await this.http.get(`/data_attributes${qs ? `?${qs}` : ''}`);
     return response.data;
@@ -673,6 +717,7 @@ export class Client {
     dataType: string;
     description?: string;
     options?: string[];
+    messengerWritable?: boolean;
   }) {
     let body: Record<string, any> = {
       name: data.name,
@@ -680,7 +725,9 @@ export class Client {
       data_type: data.dataType
     };
     if (data.description) body.description = data.description;
-    if (data.options) body.options = data.options;
+    if (data.options) body.options = data.options.map(value => ({ value }));
+    if (data.messengerWritable !== undefined)
+      body.messenger_writable = data.messengerWritable;
     let response = await this.http.post('/data_attributes', body);
     return response.data;
   }
@@ -691,12 +738,15 @@ export class Client {
       description?: string;
       options?: string[];
       archived?: boolean;
+      messengerWritable?: boolean;
     }
   ) {
     let body: Record<string, any> = {};
     if (data.description) body.description = data.description;
-    if (data.options) body.options = data.options;
+    if (data.options) body.options = data.options.map(value => ({ value }));
     if (data.archived !== undefined) body.archived = data.archived;
+    if (data.messengerWritable !== undefined)
+      body.messenger_writable = data.messengerWritable;
     let response = await this.http.put(`/data_attributes/${attributeId}`, body);
     return response.data;
   }
@@ -715,10 +765,40 @@ export class Client {
     return response.data;
   }
 
+  async listCompanyNotes(companyId: string) {
+    let response = await this.http.get(`/companies/${companyId}/notes`);
+    return response.data;
+  }
+
+  async getNote(noteId: string) {
+    let response = await this.http.get(`/notes/${noteId}`);
+    return response.data;
+  }
+
   // ──────── Subscription Types ────────
 
   async listSubscriptionTypes() {
     let response = await this.http.get('/subscription_types');
+    return response.data;
+  }
+
+  async listContactSubscriptions(contactId: string) {
+    let response = await this.http.get(`/contacts/${contactId}/subscriptions`);
+    return response.data;
+  }
+
+  async addContactSubscription(contactId: string, subscriptionId: string, consentType: string) {
+    let response = await this.http.post(`/contacts/${contactId}/subscriptions`, {
+      id: subscriptionId,
+      consent_type: consentType
+    });
+    return response.data;
+  }
+
+  async removeContactSubscription(contactId: string, subscriptionId: string) {
+    let response = await this.http.delete(
+      `/contacts/${contactId}/subscriptions/${subscriptionId}`
+    );
     return response.data;
   }
 

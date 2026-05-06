@@ -7,6 +7,7 @@ export * from './manage-bill';
 export * from './manage-item';
 export * from './manage-account';
 export * from './manage-estimate';
+export * from './manage-sales-receipt';
 export * from './create-journal-entry';
 export * from './record-expense';
 export * from './get-report';

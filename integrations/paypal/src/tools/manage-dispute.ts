@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { PayPalClient } from '../lib/client';
+import { paypalServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -106,7 +107,8 @@ export let manageDispute = SlateTool.create(spec, {
         };
       }
       case 'get': {
-        if (!ctx.input.disputeId) throw new Error('disputeId is required for get action');
+        if (!ctx.input.disputeId)
+          throw paypalServiceError('disputeId is required for get action');
         let dispute = await client.getDispute(ctx.input.disputeId);
         return {
           output: {
@@ -123,7 +125,7 @@ export let manageDispute = SlateTool.create(spec, {
       }
       case 'acceptClaim': {
         if (!ctx.input.disputeId)
-          throw new Error('disputeId is required for acceptClaim action');
+          throw paypalServiceError('disputeId is required for acceptClaim action');
         await client.acceptDisputeClaim(ctx.input.disputeId, {
           note: ctx.input.note,
           acceptClaimReason: ctx.input.acceptClaimReason
@@ -138,7 +140,7 @@ export let manageDispute = SlateTool.create(spec, {
       }
       case 'provideEvidence': {
         if (!ctx.input.disputeId)
-          throw new Error('disputeId is required for provideEvidence action');
+          throw paypalServiceError('disputeId is required for provideEvidence action');
         await client.provideDisputeEvidence(ctx.input.disputeId, {
           evidences: [
             {
@@ -156,7 +158,8 @@ export let manageDispute = SlateTool.create(spec, {
         };
       }
       case 'escalate': {
-        if (!ctx.input.disputeId) throw new Error('disputeId is required for escalate action');
+        if (!ctx.input.disputeId)
+          throw paypalServiceError('disputeId is required for escalate action');
         await client.escalateDispute(
           ctx.input.disputeId,
           ctx.input.note || 'Escalated by integration'

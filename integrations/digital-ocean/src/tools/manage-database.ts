@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -218,7 +219,9 @@ export let manageDatabaseUsers = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.userName) throw new Error('userName is required for create action');
+      if (!ctx.input.userName) {
+        throw digitalOceanValidationError('userName is required for create action');
+      }
       let user = await client.createDatabaseUser(ctx.input.databaseId, {
         name: ctx.input.userName
       });
@@ -233,7 +236,9 @@ export let manageDatabaseUsers = SlateTool.create(spec, {
       };
     }
 
-    if (!ctx.input.userName) throw new Error('userName is required for delete action');
+    if (!ctx.input.userName) {
+      throw digitalOceanValidationError('userName is required for delete action');
+    }
     await client.deleteDatabaseUser(ctx.input.databaseId, ctx.input.userName);
     return {
       output: { deleted: true },

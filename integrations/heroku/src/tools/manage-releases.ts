@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { herokuServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -63,7 +64,7 @@ export let manageReleases = SlateTool.create(spec, {
 
     if (action === 'get') {
       if (!ctx.input.releaseIdOrVersion)
-        throw new Error('releaseIdOrVersion is required for "get" action.');
+        throw herokuServiceError('releaseIdOrVersion is required for "get" action.');
       let release = await client.getRelease(appIdOrName, ctx.input.releaseIdOrVersion);
       return {
         output: { releases: [mapRelease(release)] },
@@ -72,7 +73,8 @@ export let manageReleases = SlateTool.create(spec, {
     }
 
     // rollback
-    if (!ctx.input.slugId) throw new Error('slugId is required for "rollback" action.');
+    if (!ctx.input.slugId)
+      throw herokuServiceError('slugId is required for "rollback" action.');
     let release = await client.rollback(appIdOrName, ctx.input.slugId);
     return {
       output: { releases: [mapRelease(release)] },

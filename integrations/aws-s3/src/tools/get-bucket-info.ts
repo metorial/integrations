@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { S3Client } from '../lib/client';
+import { hasS3ErrorCode } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -63,30 +64,24 @@ Select which details to include using the **include** parameter.`,
     let details: string[] = [];
 
     if (include.includes('location')) {
-      try {
-        output.location = await client.getBucketLocation(bucketName);
-        details.push(`region: ${output.location}`);
-      } catch (e) {
-        ctx.warn(`Failed to get bucket location: ${e}`);
-      }
+      output.location = await client.getBucketLocation(bucketName);
+      details.push(`region: ${output.location}`);
     }
 
     if (include.includes('versioning')) {
-      try {
-        let versioning = await client.getBucketVersioning(bucketName);
-        output.versioningStatus = versioning.status;
-        details.push(`versioning: ${versioning.status}`);
-      } catch (e) {
-        ctx.warn(`Failed to get versioning: ${e}`);
-      }
+      let versioning = await client.getBucketVersioning(bucketName);
+      output.versioningStatus = versioning.status;
+      details.push(`versioning: ${versioning.status}`);
     }
 
     if (include.includes('tags')) {
       try {
         output.tags = await client.getBucketTagging(bucketName);
         details.push(`${output.tags.length} tag(s)`);
-      } catch (e) {
-        // NoSuchTagSet is common and not an error
+      } catch (error) {
+        if (!hasS3ErrorCode(error, 'NoSuchTagSet')) {
+          throw error;
+        }
         output.tags = [];
         details.push('0 tags');
       }
@@ -96,7 +91,10 @@ Select which details to include using the **include** parameter.`,
       try {
         output.policy = await client.getBucketPolicy(bucketName);
         details.push('policy present');
-      } catch (e) {
+      } catch (error) {
+        if (!hasS3ErrorCode(error, 'NoSuchBucketPolicy')) {
+          throw error;
+        }
         details.push('no policy');
       }
     }

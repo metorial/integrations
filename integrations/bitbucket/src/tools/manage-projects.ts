@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { bitbucketServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -81,7 +82,9 @@ Projects organize repositories into logical groups. Use action "list" to browse,
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.projectKey || !ctx.input.name) {
-        throw new Error('projectKey and name are required to create a project');
+        throw bitbucketServiceError(
+          'projectKey and name are required to create a project'
+        );
       }
 
       let body: Record<string, any> = {
@@ -108,7 +111,9 @@ Projects organize repositories into logical groups. Use action "list" to browse,
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.projectKey) throw new Error('projectKey is required for update');
+      if (!ctx.input.projectKey) {
+        throw bitbucketServiceError('projectKey is required for update');
+      }
 
       let body: Record<string, any> = {};
       if (ctx.input.name) body.name = ctx.input.name;
@@ -132,7 +137,9 @@ Projects organize repositories into logical groups. Use action "list" to browse,
     }
 
     // delete
-    if (!ctx.input.projectKey) throw new Error('projectKey is required for delete');
+    if (!ctx.input.projectKey) {
+      throw bitbucketServiceError('projectKey is required for delete');
+    }
 
     await client.deleteProject(ctx.input.projectKey);
 

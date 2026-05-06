@@ -71,7 +71,7 @@ Read user profile information for the authenticated user, including account deta
 
 ### Trends
 
-The API provides access to trending topics and product categories on Pinterest, allowing discovery of what's popular on the platform.
+The API provides access to trending keywords and search term ideas on Pinterest, allowing discovery of what's popular on the platform.
 
 ### Audience Management
 

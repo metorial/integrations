@@ -13,7 +13,9 @@ import {
   manageWebhooks,
   getAuditLogTool,
   manageScheduledEventsTool,
-  manageAutoModerationTool
+  manageAutoModerationTool,
+  manageApplicationCommands,
+  manageEmojis
 } from './tools';
 import {
   newMessage,
@@ -38,7 +40,9 @@ export let provider = Slate.create({
     manageWebhooks,
     getAuditLogTool,
     manageScheduledEventsTool,
-    manageAutoModerationTool
+    manageAutoModerationTool,
+    manageApplicationCommands,
+    manageEmojis
   ],
   triggers: [inboundWebhook, newMessage, memberUpdate, guildUpdate, channelUpdate]
 });

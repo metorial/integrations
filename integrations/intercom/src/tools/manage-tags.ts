@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { intercomServiceError } from '../lib/errors';
 
 export let manageTags = SlateTool.create(spec, {
   name: 'Manage Tags',
@@ -87,7 +88,7 @@ Tags can be used to organize contacts, companies, and conversations for filterin
     }
 
     if (action === 'create') {
-      if (!ctx.input.name) throw new Error('name is required for create');
+      if (!ctx.input.name) throw intercomServiceError('name is required for create');
       let result = await client.createTag(ctx.input.name);
       return {
         output: { tagId: result.id, name: result.name },
@@ -97,7 +98,7 @@ Tags can be used to organize contacts, companies, and conversations for filterin
 
     if (action === 'update') {
       if (!ctx.input.tagId || !ctx.input.name)
-        throw new Error('tagId and name are required for update');
+        throw intercomServiceError('tagId and name are required for update');
       let result = await client.updateTag(ctx.input.tagId, ctx.input.name);
       return {
         output: { tagId: result.id, name: result.name },
@@ -106,7 +107,7 @@ Tags can be used to organize contacts, companies, and conversations for filterin
     }
 
     if (action === 'delete') {
-      if (!ctx.input.tagId) throw new Error('tagId is required for delete');
+      if (!ctx.input.tagId) throw intercomServiceError('tagId is required for delete');
       await client.deleteTag(ctx.input.tagId);
       return {
         output: { tagId: ctx.input.tagId, deleted: true },
@@ -116,7 +117,7 @@ Tags can be used to organize contacts, companies, and conversations for filterin
 
     if (action === 'tag_contact') {
       if (!ctx.input.contactId || !ctx.input.tagId) {
-        throw new Error('contactId and tagId are required for tag_contact');
+        throw intercomServiceError('contactId and tagId are required for tag_contact');
       }
       let result = await client.addTagToContact(ctx.input.contactId, ctx.input.tagId);
       return {
@@ -127,7 +128,7 @@ Tags can be used to organize contacts, companies, and conversations for filterin
 
     if (action === 'untag_contact') {
       if (!ctx.input.contactId || !ctx.input.tagId) {
-        throw new Error('contactId and tagId are required for untag_contact');
+        throw intercomServiceError('contactId and tagId are required for untag_contact');
       }
       let result = await client.removeTagFromContact(ctx.input.contactId, ctx.input.tagId);
       return {
@@ -138,7 +139,7 @@ Tags can be used to organize contacts, companies, and conversations for filterin
 
     if (action === 'tag_conversation') {
       if (!ctx.input.conversationId || !ctx.input.tagId || !ctx.input.adminId) {
-        throw new Error(
+        throw intercomServiceError(
           'conversationId, tagId, and adminId are required for tag_conversation'
         );
       }
@@ -155,7 +156,7 @@ Tags can be used to organize contacts, companies, and conversations for filterin
 
     if (action === 'untag_conversation') {
       if (!ctx.input.conversationId || !ctx.input.tagId || !ctx.input.adminId) {
-        throw new Error(
+        throw intercomServiceError(
           'conversationId, tagId, and adminId are required for untag_conversation'
         );
       }
@@ -170,6 +171,6 @@ Tags can be used to organize contacts, companies, and conversations for filterin
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw intercomServiceError(`Unknown action: ${action}`);
   })
   .build();

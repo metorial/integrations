@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageR2BucketsTool = SlateTool.create(spec, {
@@ -22,7 +23,15 @@ export let manageR2BucketsTool = SlateTool.create(spec, {
       locationHint: z
         .string()
         .optional()
-        .describe('Location hint for bucket creation (e.g. wnam, enam, weur, eeur, apac)')
+        .describe('Location hint for bucket creation (e.g. wnam, enam, weur, eeur, apac)'),
+      storageClass: z
+        .enum(['Standard', 'InfrequentAccess'])
+        .optional()
+        .describe('Storage class for newly uploaded objects'),
+      jurisdiction: z
+        .enum(['default', 'eu', 'fedramp'])
+        .optional()
+        .describe('Jurisdiction where bucket objects are guaranteed to be stored')
     })
   )
   .output(
@@ -32,7 +41,9 @@ export let manageR2BucketsTool = SlateTool.create(spec, {
           z.object({
             name: z.string(),
             creationDate: z.string().optional(),
-            location: z.string().optional()
+            location: z.string().optional(),
+            storageClass: z.string().optional(),
+            jurisdiction: z.string().optional()
           })
         )
         .optional(),
@@ -40,7 +51,9 @@ export let manageR2BucketsTool = SlateTool.create(spec, {
         .object({
           name: z.string(),
           creationDate: z.string().optional(),
-          location: z.string().optional()
+          location: z.string().optional(),
+          storageClass: z.string().optional(),
+          jurisdiction: z.string().optional()
         })
         .optional(),
       deleted: z.boolean().optional()
@@ -48,7 +61,7 @@ export let manageR2BucketsTool = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let accountId = ctx.input.accountId || ctx.config.accountId;
-    if (!accountId) throw new Error('accountId is required');
+    if (!accountId) throw cloudflareServiceError('accountId is required');
 
     let client = new Client(ctx.auth);
     let { action } = ctx.input;
@@ -59,7 +72,9 @@ export let manageR2BucketsTool = SlateTool.create(spec, {
       let buckets = (Array.isArray(bucketList) ? bucketList : []).map((b: any) => ({
         name: b.name,
         creationDate: b.creation_date,
-        location: b.location
+        location: b.location,
+        storageClass: b.storage_class,
+        jurisdiction: b.jurisdiction
       }));
       return {
         output: { buckets },
@@ -68,16 +83,30 @@ export let manageR2BucketsTool = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.bucketName) throw new Error('bucketName is required');
-      await client.createR2Bucket(accountId, ctx.input.bucketName, ctx.input.locationHint);
+      if (!ctx.input.bucketName) throw cloudflareServiceError('bucketName is required');
+      let response = await client.createR2Bucket(accountId, {
+        name: ctx.input.bucketName,
+        locationHint: ctx.input.locationHint,
+        storageClass: ctx.input.storageClass,
+        jurisdiction: ctx.input.jurisdiction
+      });
+      let bucket = response.result || {};
       return {
-        output: { bucket: { name: ctx.input.bucketName, location: ctx.input.locationHint } },
+        output: {
+          bucket: {
+            name: bucket.name || ctx.input.bucketName,
+            creationDate: bucket.creation_date,
+            location: bucket.location || ctx.input.locationHint,
+            storageClass: bucket.storage_class || ctx.input.storageClass,
+            jurisdiction: bucket.jurisdiction || ctx.input.jurisdiction
+          }
+        },
         message: `Created R2 bucket **${ctx.input.bucketName}**.`
       };
     }
 
     if (action === 'get') {
-      if (!ctx.input.bucketName) throw new Error('bucketName is required');
+      if (!ctx.input.bucketName) throw cloudflareServiceError('bucketName is required');
       let response = await client.getR2Bucket(accountId, ctx.input.bucketName);
       let b = response.result;
       return {
@@ -85,7 +114,9 @@ export let manageR2BucketsTool = SlateTool.create(spec, {
           bucket: {
             name: b.name,
             creationDate: b.creation_date,
-            location: b.location
+            location: b.location,
+            storageClass: b.storage_class,
+            jurisdiction: b.jurisdiction
           }
         },
         message: `R2 bucket **${b.name}** — Location: ${b.location || 'auto'}`
@@ -93,7 +124,7 @@ export let manageR2BucketsTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.bucketName) throw new Error('bucketName is required');
+      if (!ctx.input.bucketName) throw cloudflareServiceError('bucketName is required');
       await client.deleteR2Bucket(accountId, ctx.input.bucketName);
       return {
         output: { deleted: true },
@@ -101,6 +132,6 @@ export let manageR2BucketsTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

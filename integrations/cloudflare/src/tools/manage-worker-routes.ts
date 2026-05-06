@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageWorkerRoutesTool = SlateTool.create(spec, {
@@ -65,7 +66,7 @@ export let manageWorkerRoutesTool = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.pattern || !ctx.input.scriptName) {
-        throw new Error('pattern and scriptName are required');
+        throw cloudflareServiceError('pattern and scriptName are required');
       }
       let response = await client.createWorkerRoute(zoneId, {
         pattern: ctx.input.pattern,
@@ -78,7 +79,7 @@ export let manageWorkerRoutesTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.routeId) throw new Error('routeId is required for delete');
+      if (!ctx.input.routeId) throw cloudflareServiceError('routeId is required for delete');
       await client.deleteWorkerRoute(zoneId, ctx.input.routeId);
       return {
         output: { deleted: true },
@@ -86,6 +87,6 @@ export let manageWorkerRoutesTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

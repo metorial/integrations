@@ -15,6 +15,8 @@ export let getEndpointStats = SlateTool.create(spec, {
     z.object({
       applicationId: z.string().describe('Application ID or UID'),
       endpointId: z.string().describe('Endpoint ID or UID'),
+      since: z.string().optional().describe('Filter stats to deliveries after this ISO timestamp'),
+      until: z.string().optional().describe('Filter stats to deliveries before this ISO timestamp'),
       includeSecret: z
         .boolean()
         .optional()
@@ -27,6 +29,7 @@ export let getEndpointStats = SlateTool.create(spec, {
       pending: z.number().describe('Number of pending deliveries'),
       fail: z.number().describe('Number of failed deliveries'),
       sending: z.number().describe('Number of deliveries in progress'),
+      canceled: z.number().describe('Number of canceled deliveries'),
       signingSecret: z
         .string()
         .optional()
@@ -40,7 +43,10 @@ export let getEndpointStats = SlateTool.create(spec, {
     });
 
     ctx.progress('Fetching endpoint stats...');
-    let stats = await client.getEndpointStats(ctx.input.applicationId, ctx.input.endpointId);
+    let stats = await client.getEndpointStats(ctx.input.applicationId, ctx.input.endpointId, {
+      since: ctx.input.since,
+      until: ctx.input.until
+    });
 
     let signingSecret: string | undefined;
     if (ctx.input.includeSecret) {
@@ -58,9 +64,10 @@ export let getEndpointStats = SlateTool.create(spec, {
         pending: stats.pending,
         fail: stats.fail,
         sending: stats.sending,
+        canceled: stats.canceled,
         signingSecret
       },
-      message: `Endpoint \`${ctx.input.endpointId}\` stats: **${stats.success}** success, **${stats.pending}** pending, **${stats.fail}** failed, **${stats.sending}** sending.`
+      message: `Endpoint \`${ctx.input.endpointId}\` stats: **${stats.success}** success, **${stats.pending}** pending, **${stats.fail}** failed, **${stats.sending}** sending, **${stats.canceled}** canceled.`
     };
   })
   .build();

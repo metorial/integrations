@@ -1,13 +1,15 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { pinterestServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
 export let manageBoard = SlateTool.create(spec, {
   name: 'Manage Board',
   key: 'manage_board',
-  description: `Create, update, or delete a Pinterest board. Use this to organize pins into themed collections. Supports public and secret board creation and modification.`,
+  description: `Get, create, update, or delete a Pinterest board. Use this to organize pins into themed collections. Supports public and secret board creation and modification.`,
   instructions: [
+    'To get a board, provide the boardId and set action to "get".',
     'To create a board, provide a name and optionally a description and privacy setting.',
     'To update a board, provide the boardId along with the fields to update.',
     'To delete a board, provide the boardId and set action to "delete".'
@@ -20,7 +22,7 @@ export let manageBoard = SlateTool.create(spec, {
   .input(
     z.object({
       action: z
-        .enum(['create', 'update', 'delete'])
+        .enum(['get', 'create', 'update', 'delete'])
         .describe('Action to perform on the board'),
       boardId: z.string().optional().describe('Board ID (required for update and delete)'),
       name: z
@@ -51,7 +53,7 @@ export let manageBoard = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.name) {
-        throw new Error('Board name is required for create action');
+        throw pinterestServiceError('Board name is required for create action');
       }
       let result = await client.createBoard({
         name: ctx.input.name,
@@ -73,9 +75,29 @@ export let manageBoard = SlateTool.create(spec, {
       };
     }
 
+    if (ctx.input.action === 'get') {
+      if (!ctx.input.boardId) {
+        throw pinterestServiceError('Board ID is required for get action');
+      }
+      let result = await client.getBoard(ctx.input.boardId);
+
+      return {
+        output: {
+          boardId: result.id,
+          name: result.name,
+          description: result.description,
+          privacy: result.privacy,
+          pinCount: result.pin_count,
+          followerCount: result.follower_count,
+          createdAt: result.created_at
+        },
+        message: `Retrieved board **${result.name}**.`
+      };
+    }
+
     if (ctx.input.action === 'update') {
       if (!ctx.input.boardId) {
-        throw new Error('Board ID is required for update action');
+        throw pinterestServiceError('Board ID is required for update action');
       }
       let result = await client.updateBoard(ctx.input.boardId, {
         name: ctx.input.name,
@@ -99,7 +121,7 @@ export let manageBoard = SlateTool.create(spec, {
 
     if (ctx.input.action === 'delete') {
       if (!ctx.input.boardId) {
-        throw new Error('Board ID is required for delete action');
+        throw pinterestServiceError('Board ID is required for delete action');
       }
       await client.deleteBoard(ctx.input.boardId);
 
@@ -112,6 +134,6 @@ export let manageBoard = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw pinterestServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

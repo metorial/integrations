@@ -68,9 +68,17 @@ Create, list, update, complete, or delete draft orders. Draft orders are useful 
 
 View and adjust inventory levels across locations. Supports: - **list**: Query inventory levels by item IDs or location IDs - **set**: Set absolute inventory quantity for an item at a location - **adjust**: Increment or decrement inventory by a relative amount
 
+### Manage Metafields
+
+List, retrieve, create, update, or delete metafields attached to Shopify resources. Use metafields for custom structured data such as specifications, internal IDs, operational notes, and storefront metadata.
+
 ### Manage Order
 
 Perform lifecycle actions on an order. Supports: - **close**: Close an order - **open**: Reopen a closed order - **cancel**: Cancel an order with optional reason, email notification, and restocking - **update**: Update order notes or tags
+
+### Manage Pages
+
+List, retrieve, create, update, or delete Shopify online store pages. Pages are useful for static storefront content such as About, FAQ, policy, and campaign pages.
 
 ### Manage Variants
 

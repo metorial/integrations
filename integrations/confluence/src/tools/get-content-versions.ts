@@ -11,13 +11,18 @@ export let getContentVersions = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      contentId: z.string().describe('The content ID (page or blog post)'),
+      contentId: z.string().describe('The content ID (page, blog post, or attachment)'),
+      contentType: z
+        .enum(['page', 'blogpost', 'attachment'])
+        .optional()
+        .default('page')
+        .describe('The type of content whose versions should be retrieved'),
       limit: z
         .number()
         .optional()
         .default(10)
         .describe('Maximum number of versions to return'),
-      start: z.number().optional().describe('Offset for pagination')
+      cursor: z.string().optional().describe('Cursor for pagination')
     })
   )
   .output(
@@ -31,14 +36,16 @@ export let getContentVersions = SlateTool.create(spec, {
           authorAccountId: z.string().optional(),
           minorEdit: z.boolean().optional()
         })
-      )
+      ),
+      nextCursor: z.string().optional()
     })
   )
   .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let response = await client.getContentVersions(ctx.input.contentId, {
+      contentType: ctx.input.contentType,
       limit: ctx.input.limit,
-      start: ctx.input.start
+      cursor: ctx.input.cursor
     });
 
     let versions = response.results.map((v: any) => ({
@@ -46,13 +53,20 @@ export let getContentVersions = SlateTool.create(spec, {
       message: v.message,
       when: v.when,
       authorDisplayName: v.by?.displayName,
-      authorAccountId: v.by?.accountId,
+      authorAccountId: v.by?.accountId || v.authorId,
       minorEdit: v.minorEdit
     }));
 
+    let nextLink = response._links?.next;
+    let nextCursor: string | undefined;
+    if (nextLink) {
+      let match = nextLink.match(/cursor=([^&]+)/);
+      if (match) nextCursor = decodeURIComponent(match[1]!);
+    }
+
     return {
-      output: { versions },
-      message: `Found **${versions.length}** versions for content ${ctx.input.contentId}`
+      output: { versions, nextCursor },
+      message: `Found **${versions.length}** versions for ${ctx.input.contentType} ${ctx.input.contentId}`
     };
   })
   .build();

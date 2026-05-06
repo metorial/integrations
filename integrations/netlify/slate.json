@@ -1,21 +1,21 @@
 {
   "name": "@metorial/netlify",
-  "description": "Manage web application sites, deploys, and hosting on Netlify. Create, update, configure, list, and delete sites. Deploy sites via file digest or ZIP upload, including serverless functions. Manage environment variables with per-context values. Access and manage form submissions, including spam filtering. Configure DNS zones and records. Inject JavaScript or HTML snippets into site pages. Create and manage split tests (A/B testing) for traffic routing between branches. Set up notification hooks (webhooks, email, Slack) for deploy and form submission events. Purge CDN cached content. Manage site assets for Large Media.",
+  "description": "Manage web application sites, deploys, builds, build hooks, deployed files, metadata, and hosting on Netlify. Create, update, configure, list, and delete sites. Manage environment variables with per-context values and scopes. Access and manage form submissions, including spam filtering. Configure DNS zones and records. Inject JavaScript or HTML snippets into site pages. Create and manage split tests (A/B testing) for traffic routing between branches. Set up notification hooks for deploy and form submission events. Purge CDN cached content by site or cache tag.",
   "categories": [
     "apis-and-http-requests",
     "document-processing"
   ],
   "skills": [
     "create and manage sites",
-    "deploy web applications",
+    "manage builds and build hooks",
+    "inspect deployed files and site metadata",
     "manage environment variables",
     "manage form submissions",
     "configure DNS records",
     "inject code snippets",
     "manage split tests",
     "configure notification hooks",
-    "purge CDN cache",
-    "manage site assets"
+    "purge CDN cache"
   ],
   "logoUrl": "https://provider-logos.metorial-cdn.com/netlify.png"
 }

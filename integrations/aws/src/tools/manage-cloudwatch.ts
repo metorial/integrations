@@ -1,11 +1,16 @@
+import {
+  DeleteAlarmsCommand,
+  DescribeAlarmsCommand,
+  GetMetricStatisticsCommand,
+  ListMetricsCommand,
+  PutMetricAlarmCommand,
+  PutMetricDataCommand
+} from '@aws-sdk/client-cloudwatch';
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
-import { clientFromContext, flattenList, flattenParams } from '../lib/helpers';
-import { extractXmlValue, extractXmlValues, extractXmlBlocks } from '../lib/xml';
-
-let CW_VERSION = '2010-08-01';
-let CW_SERVICE = 'monitoring';
+import { clientFromContext } from '../lib/helpers';
+import { awsServiceError } from '../lib/errors';
 
 let dimensionSchema = z.object({
   name: z.string().describe('Dimension name'),
@@ -77,6 +82,27 @@ let datapointSchema = z.object({
   unit: z.string().optional().describe('Unit of the metric')
 });
 
+let statisticValuesSchema = z.object({
+  sampleCount: z.number().describe('Number of samples represented by this statistic set'),
+  sum: z.number().describe('Sum of all sample values'),
+  minimum: z.number().describe('Minimum sample value'),
+  maximum: z.number().describe('Maximum sample value')
+});
+
+let metricDatumInputSchema = z.object({
+  metricName: z.string().describe('Name of the custom metric to publish'),
+  value: z.number().optional().describe('Single metric value to publish'),
+  statisticValues: statisticValuesSchema
+    .optional()
+    .describe('Statistic set to publish instead of a single value'),
+  unit: z.string().optional().describe('Metric unit, e.g. Count, Seconds, Percent, Bytes'),
+  timestamp: z.string().optional().describe('Timestamp for the datapoint in ISO 8601 format'),
+  dimensions: z
+    .array(dimensionSchema)
+    .optional()
+    .describe('Dimensions associated with this metric datum')
+});
+
 let outputSchema = z.object({
   operation: z.string().describe('The operation that was performed'),
   alarms: z
@@ -94,18 +120,60 @@ let outputSchema = z.object({
     .array(z.string())
     .optional()
     .describe('Names of deleted alarms (for delete_alarms)'),
+  publishedMetricCount: z
+    .number()
+    .optional()
+    .describe('Number of metric data points accepted by CloudWatch'),
+  success: z.boolean().optional().describe('Whether the operation completed successfully'),
   nextToken: z.string().optional().describe('Token for retrieving the next page of results')
 });
+
+let mapDimensions = (dimensions?: Array<{ name: string; value: string }>) =>
+  dimensions?.map(dimension => ({ Name: dimension.name, Value: dimension.value }));
+
+let parseAlarm = (alarm: any): z.infer<typeof alarmSchema> | null => {
+  if (!alarm.AlarmName) return null;
+
+  let dimensions = (alarm.Dimensions ?? [])
+    .map((dimension: any) =>
+      dimension.Name && dimension.Value
+        ? { name: dimension.Name, value: dimension.Value }
+        : null
+    )
+    .filter(
+      (dimension: any): dimension is { name: string; value: string } => dimension !== null
+    );
+
+  return {
+    alarmName: alarm.AlarmName,
+    alarmArn: alarm.AlarmArn,
+    alarmDescription: alarm.AlarmDescription,
+    stateValue: alarm.StateValue,
+    stateReason: alarm.StateReason,
+    stateUpdatedTimestamp: alarm.StateUpdatedTimestamp?.toISOString(),
+    metricName: alarm.MetricName,
+    namespace: alarm.Namespace,
+    statistic: alarm.Statistic,
+    period: alarm.Period,
+    evaluationPeriods: alarm.EvaluationPeriods,
+    threshold: alarm.Threshold,
+    comparisonOperator: alarm.ComparisonOperator,
+    actionsEnabled: alarm.ActionsEnabled,
+    alarmActions: alarm.AlarmActions?.length ? alarm.AlarmActions : undefined,
+    dimensions: dimensions.length > 0 ? dimensions : undefined
+  };
+};
 
 export let manageCloudWatchTool = SlateTool.create(spec, {
   name: 'Manage CloudWatch',
   key: 'manage_cloudwatch',
-  description: `Manage Amazon CloudWatch metrics and alarms. Supports listing and describing alarms, creating or updating metric alarms, deleting alarms, retrieving metric statistics, and listing available metrics. Use this to monitor AWS resources, configure alerting thresholds, and query time-series metric data.`,
+  description: `Manage Amazon CloudWatch metrics and alarms. Supports listing and describing alarms, creating or updating metric alarms, deleting alarms, publishing custom metric data, retrieving metric statistics, and listing available metrics. Use this to monitor AWS resources, configure alerting thresholds, and query time-series metric data.`,
   instructions: [
     'Use operation "list_alarms" to list CloudWatch alarms. Optionally filter by "alarmNames" or "stateValue" (OK, ALARM, INSUFFICIENT_DATA). Supports pagination with "maxRecords" and "nextToken".',
     'Use operation "describe_alarms" to get full details for specific alarms by name. Provide "alarmNames" as an array.',
     'Use operation "create_update_alarm" to create a new metric alarm or update an existing one. Requires "alarmName", "namespace", "metricName", "comparisonOperator", "evaluationPeriods", "period", "statistic", and "threshold". Optionally provide "alarmDescription", "alarmActions", "actionsEnabled", and "dimensions".',
     'Use operation "delete_alarms" to delete one or more alarms. Provide "alarmNames" as an array of alarm names to delete.',
+    'Use operation "put_metric_data" to publish one or more custom metric data points. Provide "namespace" and "metricData".',
     'Use operation "get_metric_statistics" to retrieve statistical data for a metric. Requires "namespace", "metricName", "startTime" (ISO 8601), "endTime" (ISO 8601), "period" (seconds), and "statistics" (e.g., ["Average", "Maximum"]). Optionally filter by "dimensions".',
     'Use operation "list_metrics" to discover available metrics. Optionally filter by "namespace", "metricName", or "dimensions". Supports pagination with "nextToken".'
   ],
@@ -122,6 +190,7 @@ export let manageCloudWatchTool = SlateTool.create(spec, {
           'describe_alarms',
           'create_update_alarm',
           'delete_alarms',
+          'put_metric_data',
           'get_metric_statistics',
           'list_metrics'
         ])
@@ -230,7 +299,11 @@ export let manageCloudWatchTool = SlateTool.create(spec, {
       statistics: z
         .array(z.enum(['SampleCount', 'Average', 'Sum', 'Minimum', 'Maximum']))
         .optional()
-        .describe('List of statistics to retrieve (required for get_metric_statistics)')
+        .describe('List of statistics to retrieve (required for get_metric_statistics)'),
+      metricData: z
+        .array(metricDatumInputSchema)
+        .optional()
+        .describe('Custom metric data points to publish (required for put_metric_data)')
     })
   )
   .output(outputSchema)
@@ -238,65 +311,46 @@ export let manageCloudWatchTool = SlateTool.create(spec, {
     let client = clientFromContext(ctx);
     let { operation } = ctx.input;
 
-    // ── List Alarms ──────────────────────────────────────────────────
     if (operation === 'list_alarms') {
-      let params: Record<string, string> = {};
-
-      if (ctx.input.alarmNames && ctx.input.alarmNames.length > 0) {
-        Object.assign(params, flattenList('AlarmNames.member', ctx.input.alarmNames));
-      }
-      if (ctx.input.stateValue) {
-        params['StateValue'] = ctx.input.stateValue;
-      }
-      if (ctx.input.maxRecords !== undefined) {
-        params['MaxRecords'] = String(ctx.input.maxRecords);
-      }
-      if (ctx.input.nextToken) {
-        params['NextToken'] = ctx.input.nextToken;
-      }
-
-      let response = await client.queryApi({
-        service: CW_SERVICE,
-        action: 'DescribeAlarms',
-        version: CW_VERSION,
-        params
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let alarmBlocks = extractXmlBlocks(xml, 'member');
-      let alarms = parseAlarmBlocks(alarmBlocks);
-      let nextToken = extractXmlValue(xml, 'NextToken');
+      let response = await client.send('CloudWatch DescribeAlarms', () =>
+        client.cloudWatch.send(
+          new DescribeAlarmsCommand({
+            AlarmNames: ctx.input.alarmNames,
+            StateValue: ctx.input.stateValue as any,
+            MaxRecords: ctx.input.maxRecords,
+            NextToken: ctx.input.nextToken
+          })
+        )
+      );
+      let alarms = (response.MetricAlarms ?? [])
+        .map(parseAlarm)
+        .filter((alarm): alarm is z.infer<typeof alarmSchema> => alarm !== null);
 
       return {
         output: {
           operation: 'list_alarms',
           alarms,
-          nextToken: nextToken || undefined
+          nextToken: response.NextToken
         },
-        message: `Found **${alarms.length}** alarm(s)${nextToken ? ' (more available)' : ''}.`
+        message: `Found **${alarms.length}** alarm(s)${response.NextToken ? ' (more available)' : ''}.`
       };
     }
 
-    // ── Describe Alarms ──────────────────────────────────────────────
     if (operation === 'describe_alarms') {
       if (!ctx.input.alarmNames || ctx.input.alarmNames.length === 0) {
-        throw new Error('alarmNames is required for describe_alarms');
+        throw awsServiceError('alarmNames is required for describe_alarms');
       }
 
-      let params: Record<string, string> = {
-        ...flattenList('AlarmNames.member', ctx.input.alarmNames)
-      };
-
-      let response = await client.queryApi({
-        service: CW_SERVICE,
-        action: 'DescribeAlarms',
-        version: CW_VERSION,
-        params
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let alarmBlocks = extractXmlBlocks(xml, 'member');
-      let alarms = parseAlarmBlocks(alarmBlocks);
+      let response = await client.send('CloudWatch DescribeAlarms', () =>
+        client.cloudWatch.send(
+          new DescribeAlarmsCommand({
+            AlarmNames: ctx.input.alarmNames
+          })
+        )
+      );
+      let alarms = (response.MetricAlarms ?? [])
+        .map(parseAlarm)
+        .filter((alarm): alarm is z.infer<typeof alarmSchema> => alarm !== null);
 
       return {
         output: {
@@ -307,61 +361,42 @@ export let manageCloudWatchTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Create/Update Metric Alarm ───────────────────────────────────
     if (operation === 'create_update_alarm') {
       if (!ctx.input.alarmName)
-        throw new Error('alarmName is required for create_update_alarm');
+        throw awsServiceError('alarmName is required for create_update_alarm');
       if (!ctx.input.namespace)
-        throw new Error('namespace is required for create_update_alarm');
+        throw awsServiceError('namespace is required for create_update_alarm');
       if (!ctx.input.metricName)
-        throw new Error('metricName is required for create_update_alarm');
+        throw awsServiceError('metricName is required for create_update_alarm');
       if (!ctx.input.comparisonOperator)
-        throw new Error('comparisonOperator is required for create_update_alarm');
+        throw awsServiceError('comparisonOperator is required for create_update_alarm');
       if (ctx.input.evaluationPeriods === undefined)
-        throw new Error('evaluationPeriods is required for create_update_alarm');
+        throw awsServiceError('evaluationPeriods is required for create_update_alarm');
       if (ctx.input.period === undefined)
-        throw new Error('period is required for create_update_alarm');
+        throw awsServiceError('period is required for create_update_alarm');
       if (!ctx.input.statistic)
-        throw new Error('statistic is required for create_update_alarm');
+        throw awsServiceError('statistic is required for create_update_alarm');
       if (ctx.input.threshold === undefined)
-        throw new Error('threshold is required for create_update_alarm');
+        throw awsServiceError('threshold is required for create_update_alarm');
 
-      let params: Record<string, string> = {
-        AlarmName: ctx.input.alarmName,
-        Namespace: ctx.input.namespace,
-        MetricName: ctx.input.metricName,
-        ComparisonOperator: ctx.input.comparisonOperator,
-        EvaluationPeriods: String(ctx.input.evaluationPeriods),
-        Period: String(ctx.input.period),
-        Statistic: ctx.input.statistic,
-        Threshold: String(ctx.input.threshold)
-      };
-
-      if (ctx.input.alarmDescription) {
-        params['AlarmDescription'] = ctx.input.alarmDescription;
-      }
-      if (ctx.input.actionsEnabled !== undefined) {
-        params['ActionsEnabled'] = String(ctx.input.actionsEnabled);
-      }
-      if (ctx.input.alarmActions && ctx.input.alarmActions.length > 0) {
-        Object.assign(params, flattenList('AlarmActions.member', ctx.input.alarmActions));
-      }
-      if (ctx.input.dimensions && ctx.input.dimensions.length > 0) {
-        Object.assign(
-          params,
-          flattenParams(
-            'Dimensions.member',
-            ctx.input.dimensions.map(d => ({ Name: d.name, Value: d.value }))
-          )
-        );
-      }
-
-      await client.postQueryApi({
-        service: CW_SERVICE,
-        action: 'PutMetricAlarm',
-        version: CW_VERSION,
-        params
-      });
+      await client.send('CloudWatch PutMetricAlarm', () =>
+        client.cloudWatch.send(
+          new PutMetricAlarmCommand({
+            AlarmName: ctx.input.alarmName,
+            Namespace: ctx.input.namespace,
+            MetricName: ctx.input.metricName,
+            ComparisonOperator: ctx.input.comparisonOperator as any,
+            EvaluationPeriods: ctx.input.evaluationPeriods,
+            Period: ctx.input.period,
+            Statistic: ctx.input.statistic as any,
+            Threshold: ctx.input.threshold,
+            AlarmDescription: ctx.input.alarmDescription,
+            ActionsEnabled: ctx.input.actionsEnabled,
+            AlarmActions: ctx.input.alarmActions,
+            Dimensions: mapDimensions(ctx.input.dimensions)
+          })
+        )
+      );
 
       return {
         output: {
@@ -385,22 +420,14 @@ export let manageCloudWatchTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Delete Alarms ────────────────────────────────────────────────
     if (operation === 'delete_alarms') {
       if (!ctx.input.alarmNames || ctx.input.alarmNames.length === 0) {
-        throw new Error('alarmNames is required for delete_alarms');
+        throw awsServiceError('alarmNames is required for delete_alarms');
       }
 
-      let params: Record<string, string> = {
-        ...flattenList('AlarmNames.member', ctx.input.alarmNames)
-      };
-
-      await client.postQueryApi({
-        service: CW_SERVICE,
-        action: 'DeleteAlarms',
-        version: CW_VERSION,
-        params
-      });
+      await client.send('CloudWatch DeleteAlarms', () =>
+        client.cloudWatch.send(new DeleteAlarmsCommand({ AlarmNames: ctx.input.alarmNames }))
+      );
 
       return {
         output: {
@@ -411,143 +438,142 @@ export let manageCloudWatchTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Get Metric Statistics ────────────────────────────────────────
-    if (operation === 'get_metric_statistics') {
+    if (operation === 'put_metric_data') {
       if (!ctx.input.namespace)
-        throw new Error('namespace is required for get_metric_statistics');
-      if (!ctx.input.metricName)
-        throw new Error('metricName is required for get_metric_statistics');
-      if (!ctx.input.startTime)
-        throw new Error('startTime is required for get_metric_statistics');
-      if (!ctx.input.endTime) throw new Error('endTime is required for get_metric_statistics');
-      if (ctx.input.period === undefined)
-        throw new Error('period is required for get_metric_statistics');
-      if (!ctx.input.statistics || ctx.input.statistics.length === 0) {
-        throw new Error('statistics is required for get_metric_statistics');
+        throw awsServiceError('namespace is required for put_metric_data');
+      if (!ctx.input.metricData || ctx.input.metricData.length === 0) {
+        throw awsServiceError('metricData is required for put_metric_data');
       }
 
-      let params: Record<string, string> = {
-        Namespace: ctx.input.namespace,
-        MetricName: ctx.input.metricName,
-        StartTime: ctx.input.startTime,
-        EndTime: ctx.input.endTime,
-        Period: String(ctx.input.period),
-        ...flattenList('Statistics.member', ctx.input.statistics)
-      };
+      let metricData = ctx.input.metricData.map((datum, index) => {
+        if (datum.value === undefined && !datum.statisticValues) {
+          throw awsServiceError(
+            `metricData[${index}].value or metricData[${index}].statisticValues is required for put_metric_data`
+          );
+        }
 
-      if (ctx.input.dimensions && ctx.input.dimensions.length > 0) {
-        Object.assign(
-          params,
-          flattenParams(
-            'Dimensions.member',
-            ctx.input.dimensions.map(d => ({ Name: d.name, Value: d.value }))
-          )
-        );
-      }
-
-      let response = await client.queryApi({
-        service: CW_SERVICE,
-        action: 'GetMetricStatistics',
-        version: CW_VERSION,
-        params
+        return {
+          MetricName: datum.metricName,
+          Value: datum.value,
+          Unit: datum.unit as any,
+          Timestamp: datum.timestamp ? new Date(datum.timestamp) : undefined,
+          StatisticValues: datum.statisticValues
+            ? {
+                SampleCount: datum.statisticValues.sampleCount,
+                Sum: datum.statisticValues.sum,
+                Minimum: datum.statisticValues.minimum,
+                Maximum: datum.statisticValues.maximum
+              }
+            : undefined,
+          Dimensions: mapDimensions(datum.dimensions)
+        };
       });
 
-      let xml = typeof response === 'string' ? response : String(response);
-      let label = extractXmlValue(xml, 'Label');
-      let datapointBlocks = extractXmlBlocks(xml, 'member');
-      let datapoints = datapointBlocks
-        .map(block => {
-          let timestamp = extractXmlValue(block, 'Timestamp');
-          if (!timestamp) return null;
+      await client.send('CloudWatch PutMetricData', () =>
+        client.cloudWatch.send(
+          new PutMetricDataCommand({
+            Namespace: ctx.input.namespace,
+            MetricData: metricData
+          })
+        )
+      );
 
-          let sampleCountStr = extractXmlValue(block, 'SampleCount');
-          let averageStr = extractXmlValue(block, 'Average');
-          let sumStr = extractXmlValue(block, 'Sum');
-          let minimumStr = extractXmlValue(block, 'Minimum');
-          let maximumStr = extractXmlValue(block, 'Maximum');
-          let unit = extractXmlValue(block, 'Unit');
+      return {
+        output: {
+          operation: 'put_metric_data',
+          publishedMetricCount: ctx.input.metricData.length,
+          success: true
+        },
+        message: `Published **${ctx.input.metricData.length}** metric data point(s) to namespace **${ctx.input.namespace}**.`
+      };
+    }
 
-          return {
-            timestamp,
-            sampleCount: sampleCountStr ? parseFloat(sampleCountStr) : undefined,
-            average: averageStr ? parseFloat(averageStr) : undefined,
-            sum: sumStr ? parseFloat(sumStr) : undefined,
-            minimum: minimumStr ? parseFloat(minimumStr) : undefined,
-            maximum: maximumStr ? parseFloat(maximumStr) : undefined,
-            unit: unit || undefined
-          };
-        })
-        .filter((dp): dp is NonNullable<typeof dp> => dp !== null)
+    if (operation === 'get_metric_statistics') {
+      if (!ctx.input.namespace)
+        throw awsServiceError('namespace is required for get_metric_statistics');
+      if (!ctx.input.metricName)
+        throw awsServiceError('metricName is required for get_metric_statistics');
+      if (!ctx.input.startTime)
+        throw awsServiceError('startTime is required for get_metric_statistics');
+      if (!ctx.input.endTime)
+        throw awsServiceError('endTime is required for get_metric_statistics');
+      if (ctx.input.period === undefined)
+        throw awsServiceError('period is required for get_metric_statistics');
+      if (!ctx.input.statistics || ctx.input.statistics.length === 0) {
+        throw awsServiceError('statistics is required for get_metric_statistics');
+      }
+
+      let startTime = ctx.input.startTime;
+      let endTime = ctx.input.endTime;
+
+      let response = await client.send('CloudWatch GetMetricStatistics', () =>
+        client.cloudWatch.send(
+          new GetMetricStatisticsCommand({
+            Namespace: ctx.input.namespace,
+            MetricName: ctx.input.metricName,
+            StartTime: new Date(startTime),
+            EndTime: new Date(endTime),
+            Period: ctx.input.period,
+            Statistics: ctx.input.statistics as any,
+            Dimensions: mapDimensions(ctx.input.dimensions)
+          })
+        )
+      );
+      let datapoints = (response.Datapoints ?? [])
+        .filter(datapoint => datapoint.Timestamp)
+        .map(datapoint => ({
+          timestamp: datapoint.Timestamp!.toISOString(),
+          sampleCount: datapoint.SampleCount,
+          average: datapoint.Average,
+          sum: datapoint.Sum,
+          minimum: datapoint.Minimum,
+          maximum: datapoint.Maximum,
+          unit: datapoint.Unit
+        }))
         .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
       return {
         output: {
           operation: 'get_metric_statistics',
-          label: label || undefined,
+          label: response.Label,
           datapoints
         },
         message: `Retrieved **${datapoints.length}** datapoint(s) for metric **${ctx.input.namespace}/${ctx.input.metricName}**.`
       };
     }
 
-    // ── List Metrics ─────────────────────────────────────────────────
     if (operation === 'list_metrics') {
-      let params: Record<string, string> = {};
+      let response = await client.send('CloudWatch ListMetrics', () =>
+        client.cloudWatch.send(
+          new ListMetricsCommand({
+            Namespace: ctx.input.namespace,
+            MetricName: ctx.input.metricName,
+            NextToken: ctx.input.nextToken,
+            Dimensions: mapDimensions(ctx.input.dimensions)
+          })
+        )
+      );
+      let metrics: z.infer<typeof metricSchema>[] = [];
+      for (let metric of response.Metrics ?? []) {
+        if (!metric.MetricName || !metric.Namespace) continue;
 
-      if (ctx.input.namespace) {
-        params['Namespace'] = ctx.input.namespace;
-      }
-      if (ctx.input.metricName) {
-        params['MetricName'] = ctx.input.metricName;
-      }
-      if (ctx.input.nextToken) {
-        params['NextToken'] = ctx.input.nextToken;
-      }
-      if (ctx.input.dimensions && ctx.input.dimensions.length > 0) {
-        Object.assign(
-          params,
-          flattenParams(
-            'Dimensions.member',
-            ctx.input.dimensions.map(d => ({ Name: d.name, Value: d.value }))
+        let dimensions = (metric.Dimensions ?? [])
+          .map(dimension =>
+            dimension.Name && dimension.Value
+              ? { name: dimension.Name, value: dimension.Value }
+              : null
           )
-        );
+          .filter(
+            (dimension): dimension is { name: string; value: string } => dimension !== null
+          );
+
+        let outputMetric: z.infer<typeof metricSchema> = {
+          metricName: metric.MetricName,
+          namespace: metric.Namespace
+        };
+        if (dimensions.length > 0) outputMetric.dimensions = dimensions;
+        metrics.push(outputMetric);
       }
-
-      let response = await client.queryApi({
-        service: CW_SERVICE,
-        action: 'ListMetrics',
-        version: CW_VERSION,
-        params
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let metricBlocks = extractXmlBlocks(xml, 'member');
-      let metrics = metricBlocks
-        .map(block => {
-          let metricName = extractXmlValue(block, 'MetricName');
-          let namespace = extractXmlValue(block, 'Namespace');
-          if (!metricName || !namespace) return null;
-
-          let dimensionBlocks = extractXmlBlocks(block, 'member');
-          // Filter dimension blocks to only those containing Name and Value (not other member blocks)
-          let dimensions = dimensionBlocks
-            .map(dimBlock => {
-              let name = extractXmlValue(dimBlock, 'Name');
-              let value = extractXmlValue(dimBlock, 'Value');
-              if (name && value) return { name, value };
-              return null;
-            })
-            .filter((d): d is NonNullable<typeof d> => d !== null);
-
-          return {
-            metricName,
-            namespace,
-            dimensions: dimensions.length > 0 ? dimensions : undefined
-          };
-        })
-        .filter((m): m is NonNullable<typeof m> => m !== null);
-
-      let nextToken = extractXmlValue(xml, 'NextToken');
 
       let filterLabel = ctx.input.namespace ? ` in namespace **${ctx.input.namespace}**` : '';
 
@@ -555,67 +581,12 @@ export let manageCloudWatchTool = SlateTool.create(spec, {
         output: {
           operation: 'list_metrics',
           metrics,
-          nextToken: nextToken || undefined
+          nextToken: response.NextToken
         },
-        message: `Found **${metrics.length}** metric(s)${filterLabel}${nextToken ? ' (more available)' : ''}.`
+        message: `Found **${metrics.length}** metric(s)${filterLabel}${response.NextToken ? ' (more available)' : ''}.`
       };
     }
 
-    throw new Error(`Unknown operation: ${operation}`);
+    throw awsServiceError(`Unknown operation: ${operation}`);
   })
   .build();
-
-let parseAlarmBlocks = (blocks: string[]): z.infer<typeof alarmSchema>[] => {
-  return blocks
-    .map(block => {
-      let alarmName = extractXmlValue(block, 'AlarmName');
-      if (!alarmName) return null;
-
-      let periodStr = extractXmlValue(block, 'Period');
-      let evalPeriodsStr = extractXmlValue(block, 'EvaluationPeriods');
-      let thresholdStr = extractXmlValue(block, 'Threshold');
-      let actionsEnabledStr = extractXmlValue(block, 'ActionsEnabled');
-
-      let alarmActionValues = extractXmlValues(block, 'member');
-      // Filter alarm actions to only ARN-like strings from AlarmActions block
-      let alarmActionsBlock = extractXmlBlocks(block, 'AlarmActions');
-      let alarmActions: string[] = [];
-      if (alarmActionsBlock.length > 0) {
-        alarmActions = extractXmlValues(alarmActionsBlock[0]!, 'member');
-      }
-
-      let dimensionsBlock = extractXmlBlocks(block, 'Dimensions');
-      let dimensions: { name: string; value: string }[] = [];
-      if (dimensionsBlock.length > 0) {
-        let dimMemberBlocks = extractXmlBlocks(dimensionsBlock[0]!, 'member');
-        dimensions = dimMemberBlocks
-          .map(dimBlock => {
-            let name = extractXmlValue(dimBlock, 'Name');
-            let value = extractXmlValue(dimBlock, 'Value');
-            if (name && value) return { name, value };
-            return null;
-          })
-          .filter((d): d is NonNullable<typeof d> => d !== null);
-      }
-
-      return {
-        alarmName,
-        alarmArn: extractXmlValue(block, 'AlarmArn') || undefined,
-        alarmDescription: extractXmlValue(block, 'AlarmDescription') || undefined,
-        stateValue: extractXmlValue(block, 'StateValue') || undefined,
-        stateReason: extractXmlValue(block, 'StateReason') || undefined,
-        stateUpdatedTimestamp: extractXmlValue(block, 'StateUpdatedTimestamp') || undefined,
-        metricName: extractXmlValue(block, 'MetricName') || undefined,
-        namespace: extractXmlValue(block, 'Namespace') || undefined,
-        statistic: extractXmlValue(block, 'Statistic') || undefined,
-        period: periodStr ? parseInt(periodStr, 10) : undefined,
-        evaluationPeriods: evalPeriodsStr ? parseInt(evalPeriodsStr, 10) : undefined,
-        threshold: thresholdStr ? parseFloat(thresholdStr) : undefined,
-        comparisonOperator: extractXmlValue(block, 'ComparisonOperator') || undefined,
-        actionsEnabled: actionsEnabledStr ? actionsEnabledStr === 'true' : undefined,
-        alarmActions: alarmActions.length > 0 ? alarmActions : undefined,
-        dimensions: dimensions.length > 0 ? dimensions : undefined
-      };
-    })
-    .filter((a): a is NonNullable<typeof a> => a !== null);
-};

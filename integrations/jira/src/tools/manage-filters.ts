@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { JiraClient } from '../lib/client';
+import { jiraServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -53,6 +54,149 @@ export let createFilterTool = SlateTool.create(spec, {
         owner: filter.owner?.displayName
       },
       message: `Created filter **${filter.name}** (ID: ${filter.id}).`
+    };
+  })
+  .build();
+
+export let getFilterTool = SlateTool.create(spec, {
+  name: 'Get Filter',
+  key: 'get_filter',
+  description: `Retrieve a saved Jira JQL filter by ID.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      filterId: z.string().describe('The filter ID to retrieve.')
+    })
+  )
+  .output(
+    z.object({
+      filterId: z.string().describe('The filter ID.'),
+      name: z.string().describe('The filter name.'),
+      jql: z.string().describe('The JQL query.'),
+      description: z.string().optional().describe('The filter description.'),
+      owner: z.string().optional().describe('Display name of the filter owner.'),
+      favourite: z.boolean().optional().describe('Whether the filter is a favourite.')
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new JiraClient({
+      token: ctx.auth.token,
+      cloudId: ctx.auth.cloudId,
+      refreshToken: ctx.auth.refreshToken
+    });
+
+    let filter = await client.getFilter(ctx.input.filterId);
+
+    return {
+      output: {
+        filterId: filter.id,
+        name: filter.name,
+        jql: filter.jql,
+        description: filter.description,
+        owner: filter.owner?.displayName,
+        favourite: filter.favourite
+      },
+      message: `Retrieved filter **${filter.name}** (ID: ${filter.id}).`
+    };
+  })
+  .build();
+
+export let updateFilterTool = SlateTool.create(spec, {
+  name: 'Update Filter',
+  key: 'update_filter',
+  description: `Update a saved Jira JQL filter's name, description, query, or favourite state.`,
+  tags: {
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      filterId: z.string().describe('The filter ID to update.'),
+      name: z.string().optional().describe('Updated filter name.'),
+      jql: z.string().optional().describe('Updated JQL query.'),
+      description: z.string().optional().describe('Updated filter description.'),
+      favourite: z.boolean().optional().describe('Whether to mark the filter as favourite.')
+    })
+  )
+  .output(
+    z.object({
+      filterId: z.string().describe('The filter ID.'),
+      name: z.string().describe('The filter name.'),
+      jql: z.string().describe('The JQL query.'),
+      description: z.string().optional().describe('The filter description.'),
+      favourite: z.boolean().optional().describe('Whether the filter is a favourite.')
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new JiraClient({
+      token: ctx.auth.token,
+      cloudId: ctx.auth.cloudId,
+      refreshToken: ctx.auth.refreshToken
+    });
+
+    let fields: Record<string, any> = {};
+    if (ctx.input.name !== undefined) fields.name = ctx.input.name;
+    if (ctx.input.jql !== undefined) fields.jql = ctx.input.jql;
+    if (ctx.input.description !== undefined) fields.description = ctx.input.description;
+    if (ctx.input.favourite !== undefined) fields.favourite = ctx.input.favourite;
+
+    if (Object.keys(fields).length === 0) {
+      throw jiraServiceError(
+        'Provide name, jql, description, or favourite to update a filter.'
+      );
+    }
+
+    let filter = await client.updateFilter(ctx.input.filterId, fields);
+
+    return {
+      output: {
+        filterId: filter.id,
+        name: filter.name,
+        jql: filter.jql,
+        description: filter.description,
+        favourite: filter.favourite
+      },
+      message: `Updated filter **${filter.name}** (ID: ${filter.id}).`
+    };
+  })
+  .build();
+
+export let deleteFilterTool = SlateTool.create(spec, {
+  name: 'Delete Filter',
+  key: 'delete_filter',
+  description: `Delete a saved Jira JQL filter owned by the authenticated user.`,
+  tags: {
+    destructive: true,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      filterId: z.string().describe('The filter ID to delete.')
+    })
+  )
+  .output(
+    z.object({
+      filterId: z.string().describe('The deleted filter ID.')
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new JiraClient({
+      token: ctx.auth.token,
+      cloudId: ctx.auth.cloudId,
+      refreshToken: ctx.auth.refreshToken
+    });
+
+    await client.deleteFilter(ctx.input.filterId);
+
+    return {
+      output: {
+        filterId: ctx.input.filterId
+      },
+      message: `Deleted filter **${ctx.input.filterId}**.`
     };
   })
   .build();

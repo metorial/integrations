@@ -1,4 +1,7 @@
 import { createAxios } from 'slates';
+import { redditApiError } from './errors';
+
+export let REDDIT_USER_AGENT = 'web:slates-integrations-reddit:0.2.0-rc.3 (by /u/slates)';
 
 export class RedditClient {
   private http: ReturnType<typeof createAxios>;
@@ -7,9 +10,15 @@ export class RedditClient {
     this.http = createAxios({
       baseURL: 'https://oauth.reddit.com',
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        'User-Agent': REDDIT_USER_AGENT
       }
     });
+
+    this.http.interceptors.response.use(
+      response => response,
+      error => Promise.reject(redditApiError(error))
+    );
   }
 
   // ─── User ──────────────────────────────────────────────────────
@@ -54,6 +63,30 @@ export class RedditClient {
 
   async getUserTrophies(username: string) {
     let response = await this.http.get(`/api/v1/user/${username}/trophies`);
+    return response.data;
+  }
+
+  async getUserListing(
+    username: string,
+    where:
+      | 'overview'
+      | 'submitted'
+      | 'comments'
+      | 'saved'
+      | 'hidden'
+      | 'upvoted'
+      | 'downvoted'
+      | 'gilded',
+    params: {
+      sort?: string;
+      t?: string;
+      limit?: number;
+      after?: string;
+      before?: string;
+      show?: string;
+    } = {}
+  ) {
+    let response = await this.http.get(`/user/${username}/${where}`, { params });
     return response.data;
   }
 
@@ -164,6 +197,16 @@ export class RedditClient {
       queryParams.restrict_sr = restrict_sr !== false ? 'true' : 'false';
     }
     let response = await this.http.get(url, { params: queryParams });
+    return response.data;
+  }
+
+  async getContentInfo(params: { ids?: string[]; url?: string; subredditNames?: string[] }) {
+    let queryParams: Record<string, string> = {};
+    if (params.ids?.length) queryParams.id = params.ids.join(',');
+    if (params.url) queryParams.url = params.url;
+    if (params.subredditNames?.length) queryParams.sr_name = params.subredditNames.join(',');
+
+    let response = await this.http.get('/api/info', { params: queryParams });
     return response.data;
   }
 
@@ -421,6 +464,11 @@ export class RedditClient {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       }
     );
+    return response.data;
+  }
+
+  async getSavedCategories() {
+    let response = await this.http.get('/api/saved_categories');
     return response.data;
   }
 

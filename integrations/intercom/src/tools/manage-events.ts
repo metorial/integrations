@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { intercomServiceError } from '../lib/errors';
 
 export let manageEvents = SlateTool.create(spec, {
   name: 'Manage Data Events',
@@ -64,9 +65,12 @@ Use "submit" to track a new event, or "list" to retrieve events for a contact.`,
     let { action } = ctx.input;
 
     if (action === 'submit') {
-      if (!ctx.input.eventName) throw new Error('eventName is required for submit');
+      if (!ctx.input.eventName)
+        throw intercomServiceError('eventName is required for submit');
       if (!ctx.input.userId && !ctx.input.email && !ctx.input.intercomUserId) {
-        throw new Error('At least one of userId, email, or intercomUserId is required');
+        throw intercomServiceError(
+          'At least one of userId, email, or intercomUserId is required'
+        );
       }
       await client.submitEvent({
         eventName: ctx.input.eventName,
@@ -84,7 +88,7 @@ Use "submit" to track a new event, or "list" to retrieve events for a contact.`,
 
     if (action === 'list') {
       if (!ctx.input.intercomUserId && !ctx.input.email && !ctx.input.userId) {
-        throw new Error(
+        throw intercomServiceError(
           'At least one of intercomUserId, email, or userId is required for list'
         );
       }
@@ -108,6 +112,6 @@ Use "submit" to track a new event, or "list" to retrieve events for a contact.`,
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw intercomServiceError(`Unknown action: ${action}`);
   })
   .build();

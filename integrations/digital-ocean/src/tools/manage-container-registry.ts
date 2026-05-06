@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -92,7 +93,9 @@ export let manageContainerRegistry = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'list_repositories') {
-      if (!ctx.input.registryName) throw new Error('registryName is required');
+      if (!ctx.input.registryName) {
+        throw digitalOceanValidationError('registryName is required');
+      }
       let repos = await client.listRegistryRepositories(ctx.input.registryName);
       return {
         output: {
@@ -108,7 +111,7 @@ export let manageContainerRegistry = SlateTool.create(spec, {
 
     if (ctx.input.action === 'list_tags') {
       if (!ctx.input.registryName || !ctx.input.repositoryName) {
-        throw new Error('registryName and repositoryName are required');
+        throw digitalOceanValidationError('registryName and repositoryName are required');
       }
       let tags = await client.listRegistryRepositoryTags(
         ctx.input.registryName,
@@ -128,7 +131,9 @@ export let manageContainerRegistry = SlateTool.create(spec, {
 
     if (ctx.input.action === 'delete_tag') {
       if (!ctx.input.registryName || !ctx.input.repositoryName || !ctx.input.tag) {
-        throw new Error('registryName, repositoryName, and tag are required');
+        throw digitalOceanValidationError(
+          'registryName, repositoryName, and tag are required'
+        );
       }
       await client.deleteRegistryRepositoryTag(
         ctx.input.registryName,
@@ -142,7 +147,9 @@ export let manageContainerRegistry = SlateTool.create(spec, {
     }
 
     // garbage_collect
-    if (!ctx.input.registryName) throw new Error('registryName is required');
+    if (!ctx.input.registryName) {
+      throw digitalOceanValidationError('registryName is required');
+    }
     let gc = await client.runRegistryGarbageCollection(ctx.input.registryName);
     return {
       output: {

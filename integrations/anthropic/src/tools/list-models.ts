@@ -22,7 +22,14 @@ Optionally fetch details for a specific model by providing its ID.`,
           'Specific model ID to retrieve details for. If omitted, lists all available models.'
         ),
       limit: z.number().optional().describe('Maximum number of models to return when listing'),
-      afterId: z.string().optional().describe('Pagination cursor: return models after this ID')
+      afterId: z
+        .string()
+        .optional()
+        .describe('Pagination cursor: return models after this ID'),
+      beforeId: z
+        .string()
+        .optional()
+        .describe('Pagination cursor: return models before this ID')
     })
   )
   .output(
@@ -61,7 +68,8 @@ Optionally fetch details for a specific model by providing its ID.`,
 
     let result = await client.listModels({
       limit: ctx.input.limit,
-      afterId: ctx.input.afterId
+      afterId: ctx.input.afterId,
+      beforeId: ctx.input.beforeId
     });
 
     return {

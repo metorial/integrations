@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -68,7 +69,9 @@ export let manageTags = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.tagName) throw new Error('tagName is required');
+      if (!ctx.input.tagName) {
+        throw digitalOceanValidationError('tagName is required');
+      }
       let tag = await client.createTag(ctx.input.tagName);
       return {
         output: { tag: { name: tag.name } },
@@ -77,7 +80,9 @@ export let manageTags = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.tagName) throw new Error('tagName is required');
+      if (!ctx.input.tagName) {
+        throw digitalOceanValidationError('tagName is required');
+      }
       await client.deleteTag(ctx.input.tagName);
       return {
         output: { deleted: true },
@@ -87,7 +92,7 @@ export let manageTags = SlateTool.create(spec, {
 
     if (ctx.input.action === 'tag_resources') {
       if (!ctx.input.tagName || !ctx.input.resources) {
-        throw new Error('tagName and resources are required');
+        throw digitalOceanValidationError('tagName and resources are required');
       }
       await client.tagResources(ctx.input.tagName, ctx.input.resources);
       return {
@@ -98,7 +103,7 @@ export let manageTags = SlateTool.create(spec, {
 
     // untag_resources
     if (!ctx.input.tagName || !ctx.input.resources) {
-      throw new Error('tagName and resources are required');
+      throw digitalOceanValidationError('tagName and resources are required');
     }
     await client.untagResources(ctx.input.tagName, ctx.input.resources);
 

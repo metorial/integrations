@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { quickBooksApiError, quickBooksServiceError } from './lib/errors';
 
 let oauthAxios = createAxios({
   baseURL: 'https://oauth.platform.intuit.com'
@@ -69,62 +70,86 @@ export let auth = SlateAuth.create()
     handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await oauthAxios.post(
-        '/oauth2/v1/tokens/bearer',
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: ctx.code,
-          redirect_uri: ctx.redirectUri
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Accept: 'application/json'
+      try {
+        let response = await oauthAxios.post(
+          '/oauth2/v1/tokens/bearer',
+          new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: ctx.code,
+            redirect_uri: ctx.redirectUri
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Accept: 'application/json'
+            }
           }
-        }
-      );
+        );
 
-      let data = response.data;
-      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
-
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt
+        let data = response.data;
+        if (!data?.access_token) {
+          throw quickBooksServiceError(
+            'QuickBooks OAuth token exchange did not return an access token.'
+          );
         }
-      };
+
+        let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+
+        return {
+          output: {
+            token: data.access_token,
+            refreshToken: data.refresh_token,
+            expiresAt
+          }
+        };
+      } catch (error) {
+        throw quickBooksApiError(error, 'OAuth token exchange');
+      }
     },
 
     handleTokenRefresh: async ctx => {
+      if (!ctx.output.refreshToken) {
+        throw quickBooksServiceError('QuickBooks OAuth refresh requires a refresh token.');
+      }
+
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await oauthAxios.post(
-        '/oauth2/v1/tokens/bearer',
-        new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken || ''
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Accept: 'application/json'
+      try {
+        let response = await oauthAxios.post(
+          '/oauth2/v1/tokens/bearer',
+          new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Accept: 'application/json'
+            }
           }
-        }
-      );
+        );
 
-      let data = response.data;
-      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
-
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt
+        let data = response.data;
+        if (!data?.access_token) {
+          throw quickBooksServiceError(
+            'QuickBooks OAuth refresh did not return an access token.'
+          );
         }
-      };
+
+        let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+
+        return {
+          output: {
+            token: data.access_token,
+            refreshToken: data.refresh_token,
+            expiresAt
+          }
+        };
+      } catch (error) {
+        throw quickBooksApiError(error, 'OAuth token refresh');
+      }
     },
 
     getProfile: async (ctx: {
@@ -132,21 +157,30 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let response = await userInfoAxios.get('/v1/openid_connect/userinfo', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-          Accept: 'application/json'
-        }
-      });
+      try {
+        let response = await userInfoAxios.get('/v1/openid_connect/userinfo', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`,
+            Accept: 'application/json'
+          }
+        });
 
-      let data = response.data;
-
-      return {
-        profile: {
-          id: data.sub,
-          email: data.email,
-          name: [data.givenName, data.familyName].filter(Boolean).join(' ') || data.email
+        let data = response.data;
+        if (!data?.sub) {
+          throw quickBooksServiceError(
+            'QuickBooks profile response did not include a user ID.'
+          );
         }
-      };
+
+        return {
+          profile: {
+            id: data.sub,
+            email: data.email,
+            name: [data.givenName, data.familyName].filter(Boolean).join(' ') || data.email
+          }
+        };
+      } catch (error) {
+        throw quickBooksApiError(error, 'profile lookup');
+      }
     }
   });

@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { openAIApiError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -12,7 +13,7 @@ export let auth = SlateAuth.create()
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      token: z.string().describe('Your OpenAI API key (starts with sk-)')
+      token: z.string().min(1).describe('Your OpenAI API key (starts with sk-)')
     }),
     getOutput: async ctx => {
       return {
@@ -29,14 +30,15 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await axios.get('/me');
-      let me = response.data;
+      try {
+        await axios.get('/models');
+      } catch (error) {
+        throw openAIApiError(error, 'profile validation');
+      }
 
       return {
         profile: {
-          id: me.id,
-          name: me.name,
-          email: me.email
+          name: 'OpenAI API key'
         }
       };
     }

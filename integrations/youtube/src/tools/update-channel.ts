@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -7,7 +8,7 @@ import { z } from 'zod';
 export let updateChannel = SlateTool.create(spec, {
   name: 'Update Channel',
   key: 'update_channel',
-  description: `Update branding settings for a YouTube channel. Can modify the channel's title, description, keywords, unsubscribed trailer, and country. Requires channel ownership.`,
+  description: `Update branding settings for a YouTube channel. Can modify the channel description, keywords, unsubscribed trailer, and country. Requires channel ownership.`,
   tags: {
     destructive: false
   }
@@ -16,7 +17,10 @@ export let updateChannel = SlateTool.create(spec, {
   .input(
     z.object({
       channelId: z.string().describe('ID of the channel to update'),
-      title: z.string().optional().describe('Channel title'),
+      title: z
+        .string()
+        .optional()
+        .describe('Deprecated: YouTube does not allow channel title changes through this API'),
       description: z.string().optional().describe('Channel description'),
       keywords: z.string().optional().describe('Channel keywords (space-separated)'),
       unsubscribedTrailer: z
@@ -37,10 +41,26 @@ export let updateChannel = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
+
+    if (ctx.input.title !== undefined) {
+      throw youtubeServiceError(
+        'YouTube channel titles cannot be changed through channels.update; omit title'
+      );
+    }
+
+    if (
+      ctx.input.description === undefined &&
+      ctx.input.keywords === undefined &&
+      ctx.input.unsubscribedTrailer === undefined &&
+      ctx.input.country === undefined
+    ) {
+      throw youtubeServiceError(
+        'At least one channel branding field to update must be provided'
+      );
+    }
 
     let channelSettings: Record<string, any> = {};
-    if (ctx.input.title !== undefined) channelSettings.title = ctx.input.title;
     if (ctx.input.description !== undefined)
       channelSettings.description = ctx.input.description;
     if (ctx.input.keywords !== undefined) channelSettings.keywords = ctx.input.keywords;

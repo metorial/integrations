@@ -24,6 +24,10 @@ Retrieve details of a specific Pin by its ID. Returns the pin's metadata includi
 
 Discover trending topics and product categories on Pinterest for a specific region. Useful for content strategy, understanding popular interests, and identifying trending products.
 
+### Get Terms
+
+Retrieve Pinterest search term ideas. Supports related terms for topic expansion and suggested terms for popular search completions.
+
 ### Get User Account
 
 Retrieve the authenticated user's Pinterest account information, including username, profile image, account type, and follower/following counts.
@@ -58,7 +62,11 @@ Create, update, delete, or list sections within a Pinterest board. Board section
 
 ### Manage Board
 
-Create, update, or delete a Pinterest board. Use this to organize pins into themed collections. Supports public and secret board creation and modification.
+Get, create, update, or delete a Pinterest board. Use this to organize pins into themed collections. Supports public and secret board creation and modification.
+
+### Save Pin
+
+Save an existing Pinterest Pin to a board or board section owned by the authenticated user.
 
 ### Search Pins
 

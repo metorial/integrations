@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { zapierServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -51,7 +52,7 @@ For OAuth-based apps, users must complete the authorization flow in a browser in
 
     let created = response.data?.[0];
     if (!created) {
-      throw new Error('No authentication returned in response');
+      throw zapierServiceError('Zapier did not return the created authentication.');
     }
 
     return {

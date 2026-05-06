@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RedditClient } from '../lib/client';
+import { requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -45,18 +46,26 @@ export let manageSubscriptions = SlateTool.create(spec, {
     let { action } = ctx.input;
 
     if (action === 'subscribe') {
-      await client.subscribe(ctx.input.subredditName!);
+      let subredditName = requireRedditInput(
+        ctx.input.subredditName,
+        'subredditName is required for subscribe action'
+      );
+      await client.subscribe(subredditName);
       return {
         output: { success: true },
-        message: `Subscribed to r/${ctx.input.subredditName}.`
+        message: `Subscribed to r/${subredditName}.`
       };
     }
 
     if (action === 'unsubscribe') {
-      await client.unsubscribe(ctx.input.subredditName!);
+      let subredditName = requireRedditInput(
+        ctx.input.subredditName,
+        'subredditName is required for unsubscribe action'
+      );
+      await client.unsubscribe(subredditName);
       return {
         output: { success: true },
-        message: `Unsubscribed from r/${ctx.input.subredditName}.`
+        message: `Unsubscribed from r/${subredditName}.`
       };
     }
 

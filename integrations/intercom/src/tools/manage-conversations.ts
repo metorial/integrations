@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { intercomServiceError } from '../lib/errors';
 
 export let manageConversations = SlateTool.create(spec, {
   name: 'Manage Conversations',
@@ -13,7 +14,8 @@ Combines multiple conversation management operations into a single tool.`,
     'For "reply", specify whether the reply is from an admin or contact, and provide the relevant IDs.',
     'For "assign", provide both the performing adminId and the target assigneeId.',
     'For "snooze", provide a snoozedUntil ISO 8601 timestamp.',
-    'For "add_note", only admins can add internal notes.'
+    'For "add_note", only admins can add internal notes.',
+    'For "update", provide read and/or customAttributes.'
   ],
   tags: {
     destructive: false,
@@ -23,7 +25,16 @@ Combines multiple conversation management operations into a single tool.`,
   .input(
     z.object({
       action: z
-        .enum(['create', 'reply', 'assign', 'close', 'open', 'snooze', 'add_note'])
+        .enum([
+          'create',
+          'update',
+          'reply',
+          'assign',
+          'close',
+          'open',
+          'snooze',
+          'add_note'
+        ])
         .describe('Operation to perform'),
       conversationId: z
         .string()
@@ -38,6 +49,11 @@ Combines multiple conversation management operations into a single tool.`,
         .optional()
         .describe('Contact ID initiating the conversation (for create)'),
       body: z.string().optional().describe('Message body (HTML supported)'),
+      read: z.boolean().optional().describe('Mark the conversation as read or unread'),
+      customAttributes: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Conversation custom attributes to update'),
       adminId: z.string().optional().describe('Admin ID performing the action'),
       replyType: z
         .enum(['admin', 'user'])
@@ -90,7 +106,7 @@ Combines multiple conversation management operations into a single tool.`,
 
     if (action === 'create') {
       if (!ctx.input.fromType || !ctx.input.fromId || !ctx.input.body) {
-        throw new Error('fromType, fromId, and body are required for create');
+        throw intercomServiceError('fromType, fromId, and body are required for create');
       }
       let result = await client.createConversation({
         from: { type: ctx.input.fromType, id: ctx.input.fromId },
@@ -102,10 +118,25 @@ Combines multiple conversation management operations into a single tool.`,
       };
     }
 
-    if (!ctx.input.conversationId) throw new Error('conversationId is required');
+    if (!ctx.input.conversationId)
+      throw intercomServiceError('conversationId is required');
+
+    if (action === 'update') {
+      if (ctx.input.read === undefined && !ctx.input.customAttributes) {
+        throw intercomServiceError('read or customAttributes is required for update');
+      }
+      let result = await client.updateConversation(ctx.input.conversationId, {
+        read: ctx.input.read,
+        customAttributes: ctx.input.customAttributes
+      });
+      return {
+        output: mapConversation(result),
+        message: `Updated conversation **${ctx.input.conversationId}**`
+      };
+    }
 
     if (action === 'reply') {
-      if (!ctx.input.body) throw new Error('body is required for reply');
+      if (!ctx.input.body) throw intercomServiceError('body is required for reply');
       let replyType = ctx.input.replyType || 'admin';
       let result = await client.replyToConversation(ctx.input.conversationId, {
         messageType: 'comment',
@@ -124,7 +155,7 @@ Combines multiple conversation management operations into a single tool.`,
 
     if (action === 'assign') {
       if (!ctx.input.adminId || !ctx.input.assigneeId) {
-        throw new Error('adminId and assigneeId are required for assign');
+        throw intercomServiceError('adminId and assigneeId are required for assign');
       }
       let result = await client.assignConversation(ctx.input.conversationId, {
         adminId: ctx.input.adminId,
@@ -139,7 +170,7 @@ Combines multiple conversation management operations into a single tool.`,
     }
 
     if (action === 'close') {
-      if (!ctx.input.adminId) throw new Error('adminId is required for close');
+      if (!ctx.input.adminId) throw intercomServiceError('adminId is required for close');
       let result = await client.closeConversation(
         ctx.input.conversationId,
         ctx.input.adminId,
@@ -152,7 +183,7 @@ Combines multiple conversation management operations into a single tool.`,
     }
 
     if (action === 'open') {
-      if (!ctx.input.adminId) throw new Error('adminId is required for open');
+      if (!ctx.input.adminId) throw intercomServiceError('adminId is required for open');
       let result = await client.openConversation(ctx.input.conversationId, ctx.input.adminId);
       return {
         output: mapConversation(result),
@@ -162,7 +193,7 @@ Combines multiple conversation management operations into a single tool.`,
 
     if (action === 'snooze') {
       if (!ctx.input.adminId || !ctx.input.snoozedUntil) {
-        throw new Error('adminId and snoozedUntil are required for snooze');
+        throw intercomServiceError('adminId and snoozedUntil are required for snooze');
       }
       let snoozedUntilTs = Math.floor(new Date(ctx.input.snoozedUntil).getTime() / 1000);
       let result = await client.snoozeConversation(
@@ -178,7 +209,7 @@ Combines multiple conversation management operations into a single tool.`,
 
     if (action === 'add_note') {
       if (!ctx.input.adminId || !ctx.input.body) {
-        throw new Error('adminId and body are required for add_note');
+        throw intercomServiceError('adminId and body are required for add_note');
       }
       let result = await client.addNoteToConversation(
         ctx.input.conversationId,
@@ -191,7 +222,7 @@ Combines multiple conversation management operations into a single tool.`,
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw intercomServiceError(`Unknown action: ${action}`);
   })
   .build();
 

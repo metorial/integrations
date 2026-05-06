@@ -1,12 +1,13 @@
 import { SlateTool } from 'slates';
 import { InstagramClient } from '../lib/client';
+import { instagramServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
 export let sendMessageTool = SlateTool.create(spec, {
   name: 'Send Message',
   key: 'send_message',
-  description: `Send a direct message to an Instagram user, or send a private reply to a comment. Supports text messages and image attachments. Also supports fetching recent conversations.`,
+  description: `Send a direct message to an Instagram user, or send a private reply to a comment. Supports text messages, image attachments, and media-share attachments. Also supports fetching recent conversations.`,
   instructions: [
     'Use `recipientId` for direct messages to a user.',
     'Use `commentId` to privately reply to a user who commented on your post.',
@@ -31,6 +32,10 @@ export let sendMessageTool = SlateTool.create(spec, {
         ),
       text: z.string().optional().describe('Text message content'),
       imageUrl: z.string().optional().describe('URL of an image to send as an attachment'),
+      mediaId: z
+        .string()
+        .optional()
+        .describe("ID of one of the authenticated user's Instagram posts to send as a media share"),
       commentId: z
         .string()
         .optional()
@@ -69,7 +74,8 @@ export let sendMessageTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new InstagramClient({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion
+      apiVersion: ctx.config.apiVersion,
+      apiBaseUrl: ctx.auth.apiBaseUrl
     });
 
     let effectiveUserId = ctx.input.userId || ctx.auth.userId || 'me';
@@ -97,10 +103,15 @@ export let sendMessageTool = SlateTool.create(spec, {
 
     if (action === 'private_reply') {
       if (!ctx.input.commentId)
-        throw new Error('commentId is required for "private_reply" action');
-      if (!ctx.input.text) throw new Error('text is required for "private_reply" action');
+        throw instagramServiceError('commentId is required for "private_reply" action');
+      if (!ctx.input.text)
+        throw instagramServiceError('text is required for "private_reply" action');
 
-      let result = await client.sendPrivateReply(ctx.input.commentId, ctx.input.text);
+      let result = await client.sendPrivateReply(
+        effectiveUserId,
+        ctx.input.commentId,
+        ctx.input.text
+      );
       return {
         output: {
           messageId: result.message_id,
@@ -111,14 +122,18 @@ export let sendMessageTool = SlateTool.create(spec, {
     }
 
     if (action === 'send') {
-      if (!ctx.input.recipientId) throw new Error('recipientId is required for "send" action');
-      if (!ctx.input.text && !ctx.input.imageUrl) {
-        throw new Error('Either text or imageUrl is required for "send" action');
+      if (!ctx.input.recipientId)
+        throw instagramServiceError('recipientId is required for "send" action');
+      if (!ctx.input.text && !ctx.input.imageUrl && !ctx.input.mediaId) {
+        throw instagramServiceError(
+          'One of text, imageUrl, or mediaId is required for "send" action'
+        );
       }
 
       let result = await client.sendMessage(effectiveUserId, ctx.input.recipientId, {
         text: ctx.input.text,
-        imageUrl: ctx.input.imageUrl
+        imageUrl: ctx.input.imageUrl,
+        mediaId: ctx.input.mediaId
       });
 
       return {
@@ -131,6 +146,6 @@ export let sendMessageTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw instagramServiceError(`Unknown action: ${action}`);
   })
   .build();

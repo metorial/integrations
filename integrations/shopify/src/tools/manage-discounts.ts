@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ShopifyClient } from '../lib/client';
+import { shopifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -160,7 +161,7 @@ Supports:
     }
 
     if (ctx.input.action === 'delete_price_rule') {
-      if (!ctx.input.priceRuleId) throw new Error('priceRuleId is required');
+      if (!ctx.input.priceRuleId) throw shopifyServiceError('priceRuleId is required');
       await client.deletePriceRule(ctx.input.priceRuleId);
       return {
         output: { deleted: true },
@@ -169,7 +170,7 @@ Supports:
     }
 
     if (ctx.input.action === 'list_codes') {
-      if (!ctx.input.priceRuleId) throw new Error('priceRuleId is required');
+      if (!ctx.input.priceRuleId) throw shopifyServiceError('priceRuleId is required');
       let codes = await client.listDiscountCodes(ctx.input.priceRuleId, {
         limit: ctx.input.limit
       });
@@ -180,8 +181,8 @@ Supports:
     }
 
     if (ctx.input.action === 'create_code') {
-      if (!ctx.input.priceRuleId) throw new Error('priceRuleId is required');
-      if (!ctx.input.code) throw new Error('code is required');
+      if (!ctx.input.priceRuleId) throw shopifyServiceError('priceRuleId is required');
+      if (!ctx.input.code) throw shopifyServiceError('code is required');
       let dc = await client.createDiscountCode(ctx.input.priceRuleId, {
         code: ctx.input.code
       });
@@ -192,8 +193,9 @@ Supports:
     }
 
     if (ctx.input.action === 'delete_code') {
-      if (!ctx.input.priceRuleId) throw new Error('priceRuleId is required');
-      if (!ctx.input.discountCodeId) throw new Error('discountCodeId is required');
+      if (!ctx.input.priceRuleId) throw shopifyServiceError('priceRuleId is required');
+      if (!ctx.input.discountCodeId)
+        throw shopifyServiceError('discountCodeId is required');
       await client.deleteDiscountCode(ctx.input.priceRuleId, ctx.input.discountCodeId);
       return {
         output: { deleted: true },
@@ -202,7 +204,7 @@ Supports:
     }
 
     if (ctx.input.action === 'lookup_code') {
-      if (!ctx.input.code) throw new Error('code is required');
+      if (!ctx.input.code) throw shopifyServiceError('code is required');
       let dc = await client.lookupDiscountCode(ctx.input.code);
       return {
         output: { discountCode: mapCode(dc) },
@@ -210,6 +212,6 @@ Supports:
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw shopifyServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

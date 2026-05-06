@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { calendlyServiceError } from '../lib/errors';
 
 export let listEventTypes = SlateTool.create(spec, {
   name: 'List Event Types',
@@ -57,6 +58,12 @@ export let listEventTypes = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (!ctx.input.userUri && !ctx.input.organizationUri) {
+      throw calendlyServiceError(
+        'Provide either userUri or organizationUri to list event types.'
+      );
+    }
+
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listEventTypes({

@@ -12,16 +12,33 @@ export let auth = SlateAuth.create()
   .addCustomAuth({
     type: 'auth.custom',
 
-    name: 'AWS Credentials',
+    name: 'AWS Access Keys',
     key: 'aws_credentials',
 
     inputSchema: z.object({
       accessKeyId: z.string().describe('AWS Access Key ID'),
-      secretAccessKey: z.string().describe('AWS Secret Access Key'),
-      sessionToken: z
-        .string()
-        .optional()
-        .describe('AWS Session Token (for temporary credentials)')
+      secretAccessKey: z.string().describe('AWS Secret Access Key')
+    }),
+
+    getOutput: async ctx => {
+      return {
+        output: {
+          accessKeyId: ctx.input.accessKeyId,
+          secretAccessKey: ctx.input.secretAccessKey
+        }
+      };
+    }
+  })
+  .addCustomAuth({
+    type: 'auth.custom',
+
+    name: 'AWS Temporary Credentials (STS)',
+    key: 'aws_temporary_credentials',
+
+    inputSchema: z.object({
+      accessKeyId: z.string().describe('Temporary AWS Access Key ID'),
+      secretAccessKey: z.string().describe('Temporary AWS Secret Access Key'),
+      sessionToken: z.string().describe('AWS Session Token')
     }),
 
     getOutput: async ctx => {

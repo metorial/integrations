@@ -6,11 +6,15 @@ Process payments, manage orders, and handle financial transactions through PayPa
 
 ### Add Tracking
 
-Add shipment tracking information to a captured PayPal payment. Associates a carrier and tracking number with a transaction so buyers can track their shipments.
+Add shipment tracking information to a captured PayPal payment or order. Uses Orders v2 tracking when an order ID is provided and falls back to legacy transaction tracking otherwise.
+
+### Authorize Order
+
+Authorize payment for an approved PayPal order with AUTHORIZE intent. Returns the authorization ID so it can be captured, voided, or inspected with Manage Payment.
 
 ### Capture Order
 
-Capture payment for an approved PayPal order. The order must have been approved by the buyer first. For orders with intent "AUTHORIZE", use this to finalize the payment after authorization.
+Capture payment for an approved PayPal order with CAPTURE intent. The order must have been approved by the buyer first.
 
 ### Create Invoice
 
@@ -36,6 +40,10 @@ Retrieve the status and details of a PayPal batch payout or individual payout it
 
 List PayPal invoices with optional pagination. Returns invoice summaries including status, amounts, and recipient information.
 
+### Search Invoices
+
+Search PayPal invoices by recipient, invoice number, status, and pagination. Use this when list pagination is not specific enough for reconciliation or follow-up workflows.
+
 ### Manage Billing Plan
 
 Create, retrieve, list, activate, or deactivate PayPal billing plans. Billing plans define pricing and billing cycle details for subscriptions.
@@ -46,7 +54,7 @@ Manage PayPal customer disputes (chargebacks, claims, inquiries). List disputes,
 
 ### Manage Invoice
 
-Manage existing PayPal invoices. Send, cancel, or record payment against a draft or sent invoice. Can also retrieve invoice details.
+Manage existing PayPal invoices. Send, cancel, delete drafts, record or remove external payments and refunds, and retrieve invoice details.
 
 ### Manage Payment
 
@@ -58,7 +66,7 @@ Create, retrieve, or list PayPal catalog products. Products are used as the basi
 
 ### Manage Subscription
 
-Manage an existing PayPal subscription. Retrieve details, suspend, cancel, reactivate, or list transactions for a subscription.
+Manage PayPal subscriptions. List subscriptions, retrieve details, suspend, cancel, reactivate, or list transactions for a subscription.
 
 ### Search Transactions
 

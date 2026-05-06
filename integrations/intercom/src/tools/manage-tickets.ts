@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { intercomServiceError } from '../lib/errors';
 
 export let manageTickets = SlateTool.create(spec, {
   name: 'Manage Tickets',
@@ -109,7 +110,7 @@ Use the "list_ticket_types" action to discover available ticket types before cre
 
     if (action === 'create') {
       if (!ctx.input.ticketTypeId || !ctx.input.contactIds?.length) {
-        throw new Error('ticketTypeId and contactIds are required for create');
+        throw intercomServiceError('ticketTypeId and contactIds are required for create');
       }
       let result = await client.createTicket({
         ticketTypeId: ctx.input.ticketTypeId,
@@ -125,7 +126,8 @@ Use the "list_ticket_types" action to discover available ticket types before cre
     }
 
     if (action === 'update') {
-      if (!ctx.input.ticketId) throw new Error('ticketId is required for update');
+      if (!ctx.input.ticketId)
+        throw intercomServiceError('ticketId is required for update');
       let result = await client.updateTicket(ctx.input.ticketId, {
         ticketAttributes: ctx.input.ticketAttributes,
         state: ctx.input.state,
@@ -143,7 +145,7 @@ Use the "list_ticket_types" action to discover available ticket types before cre
 
     if (action === 'reply') {
       if (!ctx.input.ticketId || !ctx.input.body) {
-        throw new Error('ticketId and body are required for reply');
+        throw intercomServiceError('ticketId and body are required for reply');
       }
       let replyType = ctx.input.replyType || 'admin';
       let result = await client.replyToTicket(ctx.input.ticketId, {
@@ -159,7 +161,7 @@ Use the "list_ticket_types" action to discover available ticket types before cre
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw intercomServiceError(`Unknown action: ${action}`);
   })
   .build();
 

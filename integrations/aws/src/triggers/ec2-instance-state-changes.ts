@@ -1,8 +1,8 @@
+import { DescribeInstancesCommand } from '@aws-sdk/client-ec2';
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { clientFromContext } from '../lib/helpers';
-import { extractXmlValue, extractXmlBlocks } from '../lib/xml';
 
 let instanceStateInputSchema = z.object({
   instanceId: z.string().describe('EC2 instance ID'),
@@ -39,51 +39,26 @@ export let ec2InstanceStateChangesTrigger = SlateTrigger.create(spec, {
       let client = clientFromContext(ctx);
       let previousStates: Record<string, string> = (ctx.state as Record<string, string>) ?? {};
 
-      let response = await client.queryApi({
-        service: 'ec2',
-        action: 'DescribeInstances',
-        version: '2016-11-15',
-        params: {}
-      });
+      let response = await client.send('EC2 DescribeInstances', () =>
+        client.ec2.send(new DescribeInstancesCommand({}))
+      );
 
-      let xml = typeof response === 'string' ? response : String(response);
-      let reservationSetBlock = extractXmlBlocks(xml, 'reservationSet')[0];
-
-      let currentInstances: Array<{
-        instanceId: string;
-        state: string;
-        instanceType: string | undefined;
-        availabilityZone: string | undefined;
-      }> = [];
-
-      if (reservationSetBlock) {
-        let reservations = extractXmlBlocks(reservationSetBlock, 'item');
-        for (let reservation of reservations) {
-          let instancesSetBlock = extractXmlBlocks(reservation, 'instancesSet')[0];
-          if (instancesSetBlock) {
-            let instanceItems = extractXmlBlocks(instancesSetBlock, 'item');
-            for (let instanceBlock of instanceItems) {
-              let instanceId = extractXmlValue(instanceBlock, 'instanceId');
-              let stateBlock = extractXmlBlocks(instanceBlock, 'instanceState')[0];
-              let stateName = stateBlock ? extractXmlValue(stateBlock, 'name') : undefined;
-              let instanceType = extractXmlValue(instanceBlock, 'instanceType');
-              let placementBlock = extractXmlBlocks(instanceBlock, 'placement')[0];
-              let availabilityZone = placementBlock
-                ? extractXmlValue(placementBlock, 'availabilityZone')
-                : undefined;
-
-              if (instanceId && stateName) {
-                currentInstances.push({
-                  instanceId,
-                  state: stateName,
-                  instanceType,
-                  availabilityZone
-                });
-              }
-            }
+      let currentInstances = (response.Reservations ?? [])
+        .flatMap(reservation => reservation.Instances ?? [])
+        .flatMap(instance => {
+          if (!instance.InstanceId || !instance.State?.Name) {
+            return [];
           }
-        }
-      }
+
+          return [
+            {
+              instanceId: instance.InstanceId,
+              state: instance.State.Name,
+              instanceType: instance.InstanceType,
+              availabilityZone: instance.Placement?.AvailabilityZone
+            }
+          ];
+        });
 
       let inputs: z.infer<typeof instanceStateInputSchema>[] = [];
       let newStates: Record<string, string> = {};

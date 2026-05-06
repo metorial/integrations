@@ -54,6 +54,11 @@ export interface AirtableComment {
   createdTime: string;
 }
 
+export interface AirtableListCommentsResponse {
+  comments: AirtableComment[];
+  offset?: string | null;
+}
+
 export interface AirtableWebhook {
   id: string;
   type: string;

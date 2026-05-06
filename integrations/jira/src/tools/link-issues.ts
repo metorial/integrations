@@ -97,3 +97,40 @@ export let listIssueLinkTypesTool = SlateTool.create(spec, {
     };
   })
   .build();
+
+export let deleteIssueLinkTool = SlateTool.create(spec, {
+  name: 'Delete Issue Link',
+  key: 'delete_issue_link',
+  description: `Delete an existing link between two Jira issues by issue link ID. Use Get Issue with fields=["issuelinks"] to find link IDs.`,
+  tags: {
+    destructive: true,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      issueLinkId: z.string().describe('The issue link ID to delete.')
+    })
+  )
+  .output(
+    z.object({
+      issueLinkId: z.string().describe('The deleted issue link ID.')
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new JiraClient({
+      token: ctx.auth.token,
+      cloudId: ctx.auth.cloudId,
+      refreshToken: ctx.auth.refreshToken
+    });
+
+    await client.deleteIssueLink(ctx.input.issueLinkId);
+
+    return {
+      output: {
+        issueLinkId: ctx.input.issueLinkId
+      },
+      message: `Deleted issue link **${ctx.input.issueLinkId}**.`
+    };
+  })
+  .build();

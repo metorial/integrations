@@ -1,5 +1,18 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { calendlyApiError, calendlyServiceError } from './lib/errors';
+
+let calendlyOauthScopes = [
+  'users:read',
+  'organizations:read',
+  'event_types:read',
+  'availability:read',
+  'scheduled_events:read',
+  'scheduled_events:write',
+  'scheduling_links:write',
+  'routing_forms:read',
+  'webhooks:write'
+];
 
 let authAxios = createAxios({
   baseURL: 'https://auth.calendly.com'
@@ -25,11 +38,11 @@ export let auth = SlateAuth.create()
     key: 'oauth',
 
     scopes: [
-      {
-        title: 'Default',
-        description: 'Full access based on authenticated user role (user or admin/owner)',
-        scope: 'default'
-      }
+      ...calendlyOauthScopes.map(scope => ({
+        title: scope,
+        description: `Calendly ${scope} scope`,
+        scope
+      }))
     ],
 
     getAuthorizationUrl: async ctx => {
@@ -37,7 +50,8 @@ export let auth = SlateAuth.create()
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
-        state: ctx.state
+        state: ctx.state,
+        scope: calendlyOauthScopes.join(' ')
       });
 
       return {
@@ -46,80 +60,92 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response = await authAxios.post('/oauth/token', {
-        grant_type: 'authorization_code',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri
-      });
+      try {
+        let response = await authAxios.post('/oauth/token', {
+          grant_type: 'authorization_code',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        });
 
-      let tokenData = response.data;
-      let expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
+        let tokenData = response.data;
+        let expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
 
-      let userResponse = await apiAxios.get('/users/me', {
-        headers: {
-          Authorization: `Bearer ${tokenData.access_token}`
-        }
-      });
+        let userResponse = await apiAxios.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${tokenData.access_token}`
+          }
+        });
 
-      let user = userResponse.data.resource;
+        let user = userResponse.data.resource;
 
-      return {
-        output: {
-          token: tokenData.access_token,
-          refreshToken: tokenData.refresh_token,
-          expiresAt,
-          userUri: user.uri,
-          organizationUri: user.current_organization
-        }
-      };
+        return {
+          output: {
+            token: tokenData.access_token,
+            refreshToken: tokenData.refresh_token,
+            expiresAt,
+            userUri: user.uri,
+            organizationUri: user.current_organization
+          }
+        };
+      } catch (error) {
+        throw calendlyApiError(error, 'OAuth callback');
+      }
     },
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available');
+        throw calendlyServiceError('Calendly OAuth refresh token is missing');
       }
 
-      let response = await authAxios.post('/oauth/token', {
-        grant_type: 'refresh_token',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken
-      });
+      try {
+        let response = await authAxios.post('/oauth/token', {
+          grant_type: 'refresh_token',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          refresh_token: ctx.output.refreshToken
+        });
 
-      let tokenData = response.data;
-      let expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
+        let tokenData = response.data;
+        let expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
 
-      return {
-        output: {
-          ...ctx.output,
-          token: tokenData.access_token,
-          refreshToken: tokenData.refresh_token ?? ctx.output.refreshToken,
-          expiresAt
-        }
-      };
+        return {
+          output: {
+            ...ctx.output,
+            token: tokenData.access_token,
+            refreshToken: tokenData.refresh_token ?? ctx.output.refreshToken,
+            expiresAt
+          }
+        };
+      } catch (error) {
+        throw calendlyApiError(error, 'OAuth token refresh');
+      }
     },
 
     getProfile: async (ctx: any) => {
-      let response = await apiAxios.get('/users/me', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      try {
+        let response = await apiAxios.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
 
-      let user = response.data.resource;
+        let user = response.data.resource;
 
-      return {
-        profile: {
-          id: user.uri,
-          email: user.email,
-          name: user.name,
-          imageUrl: user.avatar_url,
-          schedulingUrl: user.scheduling_url,
-          timezone: user.timezone
-        }
-      };
+        return {
+          profile: {
+            id: user.uri,
+            email: user.email,
+            name: user.name,
+            imageUrl: user.avatar_url,
+            schedulingUrl: user.scheduling_url,
+            timezone: user.timezone
+          }
+        };
+      } catch (error) {
+        throw calendlyApiError(error, 'get OAuth profile');
+      }
     }
   })
   .addTokenAuth({
@@ -134,41 +160,49 @@ export let auth = SlateAuth.create()
     }),
 
     getOutput: async ctx => {
-      let response = await apiAxios.get('/users/me', {
-        headers: {
-          Authorization: `Bearer ${ctx.input.token}`
-        }
-      });
+      try {
+        let response = await apiAxios.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${ctx.input.token}`
+          }
+        });
 
-      let user = response.data.resource;
+        let user = response.data.resource;
 
-      return {
-        output: {
-          token: ctx.input.token,
-          userUri: user.uri,
-          organizationUri: user.current_organization
-        }
-      };
+        return {
+          output: {
+            token: ctx.input.token,
+            userUri: user.uri,
+            organizationUri: user.current_organization
+          }
+        };
+      } catch (error) {
+        throw calendlyApiError(error, 'validate personal access token');
+      }
     },
 
     getProfile: async (ctx: any) => {
-      let response = await apiAxios.get('/users/me', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      try {
+        let response = await apiAxios.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
 
-      let user = response.data.resource;
+        let user = response.data.resource;
 
-      return {
-        profile: {
-          id: user.uri,
-          email: user.email,
-          name: user.name,
-          imageUrl: user.avatar_url,
-          schedulingUrl: user.scheduling_url,
-          timezone: user.timezone
-        }
-      };
+        return {
+          profile: {
+            id: user.uri,
+            email: user.email,
+            name: user.name,
+            imageUrl: user.avatar_url,
+            schedulingUrl: user.scheduling_url,
+            timezone: user.timezone
+          }
+        };
+      } catch (error) {
+        throw calendlyApiError(error, 'get personal access token profile');
+      }
     }
   });

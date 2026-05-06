@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -56,9 +57,19 @@ export let manageSubscriptions = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
 
     if (ctx.input.action === 'list') {
+      if (
+        !ctx.input.mine &&
+        !ctx.input.channelId &&
+        !ctx.input.forChannelId &&
+        !ctx.input.subscriptionId
+      ) {
+        throw youtubeServiceError(
+          'Provide mine=true, channelId, forChannelId, or subscriptionId when listing subscriptions'
+        );
+      }
       let response = await client.listSubscriptions({
         part: ['snippet', 'contentDetails'],
         mine: ctx.input.mine,
@@ -89,7 +100,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
       };
     } else if (ctx.input.action === 'subscribe') {
       if (!ctx.input.targetChannelId)
-        throw new Error('targetChannelId is required for subscribing');
+        throw youtubeServiceError('targetChannelId is required for subscribing');
 
       let sub = await client.createSubscription({
         part: ['snippet'],
@@ -111,7 +122,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
       };
     } else {
       if (!ctx.input.subscriptionId)
-        throw new Error('subscriptionId is required for unsubscribing');
+        throw youtubeServiceError('subscriptionId is required for unsubscribing');
 
       await client.deleteSubscription(ctx.input.subscriptionId);
 

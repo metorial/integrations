@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { FirestoreClient } from '../lib/client';
+import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -69,7 +70,7 @@ export let manageFirestoreDocument = SlateTool.create(spec, {
     let { operation, collectionPath, documentId, fields, updateFieldPaths } = ctx.input;
 
     if (operation === 'get') {
-      if (!documentId) throw new Error('documentId is required for get operation');
+      if (!documentId) throw missingRequiredFieldError('documentId', 'get');
       let doc = await client.getDocument(collectionPath, documentId);
       return {
         output: {
@@ -84,7 +85,7 @@ export let manageFirestoreDocument = SlateTool.create(spec, {
     }
 
     if (operation === 'create') {
-      if (!fields) throw new Error('fields is required for create operation');
+      if (!fields) throw missingRequiredFieldError('fields', 'create');
       let doc = await client.createDocument(collectionPath, documentId, fields);
       return {
         output: {
@@ -99,8 +100,8 @@ export let manageFirestoreDocument = SlateTool.create(spec, {
     }
 
     if (operation === 'update') {
-      if (!documentId) throw new Error('documentId is required for update operation');
-      if (!fields) throw new Error('fields is required for update operation');
+      if (!documentId) throw missingRequiredFieldError('documentId', 'update');
+      if (!fields) throw missingRequiredFieldError('fields', 'update');
       let doc = await client.updateDocument(
         collectionPath,
         documentId,
@@ -119,7 +120,7 @@ export let manageFirestoreDocument = SlateTool.create(spec, {
     }
 
     if (operation === 'delete') {
-      if (!documentId) throw new Error('documentId is required for delete operation');
+      if (!documentId) throw missingRequiredFieldError('documentId', 'delete');
       await client.deleteDocument(collectionPath, documentId);
       return {
         output: {
@@ -130,6 +131,6 @@ export let manageFirestoreDocument = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown operation: ${operation}`);
+    throw firebaseServiceError(`Unknown operation: ${operation}`);
   })
   .build();

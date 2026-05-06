@@ -20,6 +20,16 @@ let cachedContentSchema = z.object({
     .describe('Token usage metadata for the cached content')
 });
 
+let mapCachedContent = (cachedContent: any) => ({
+  cachedContentName: cachedContent.name,
+  model: cachedContent.model,
+  displayName: cachedContent.displayName,
+  createTime: cachedContent.createTime,
+  updateTime: cachedContent.updateTime,
+  expireTime: cachedContent.expireTime,
+  usageMetadata: cachedContent.usageMetadata
+});
+
 export let createCachedContent = SlateTool.create(spec, {
   name: 'Create Cached Content',
   key: 'create_cached_content',
@@ -92,15 +102,7 @@ export let createCachedContent = SlateTool.create(spec, {
     });
 
     return {
-      output: {
-        cachedContentName: result.name,
-        model: result.model,
-        displayName: result.displayName,
-        createTime: result.createTime,
-        updateTime: result.updateTime,
-        expireTime: result.expireTime,
-        usageMetadata: result.usageMetadata
-      },
+      output: mapCachedContent(result),
       message: `Created cached content **${result.name}**${result.displayName ? ` ("${result.displayName}")` : ''} for model **${result.model}**. Expires at ${result.expireTime ?? 'default TTL'}.`
     };
   })
@@ -140,15 +142,7 @@ export let listCachedContents = SlateTool.create(spec, {
       pageToken: ctx.input.pageToken
     });
 
-    let cachedContents = (result.cachedContents ?? []).map((c: any) => ({
-      cachedContentName: c.name,
-      model: c.model,
-      displayName: c.displayName,
-      createTime: c.createTime,
-      updateTime: c.updateTime,
-      expireTime: c.expireTime,
-      usageMetadata: c.usageMetadata
-    }));
+    let cachedContents = (result.cachedContents ?? []).map(mapCachedContent);
 
     return {
       output: {
@@ -156,6 +150,34 @@ export let listCachedContents = SlateTool.create(spec, {
         nextPageToken: result.nextPageToken
       },
       message: `Found **${cachedContents.length}** cached content entry(ies).`
+    };
+  })
+  .build();
+
+export let getCachedContent = SlateTool.create(spec, {
+  name: 'Get Cached Content',
+  key: 'get_cached_content',
+  description: `Get metadata for a cached content entry. The API returns cache metadata such as model, display name, token usage, and expiration, but not the original cached content body.`,
+  tags: {
+    readOnly: true,
+    destructive: false
+  }
+})
+  .input(
+    z.object({
+      cachedContentName: z
+        .string()
+        .describe('Resource name of the cached content (e.g. "cachedContents/abc123")')
+    })
+  )
+  .output(cachedContentSchema)
+  .handleInvocation(async ctx => {
+    let client = createClient(ctx);
+    let result = await client.getCachedContent(ctx.input.cachedContentName);
+
+    return {
+      output: mapCachedContent(result),
+      message: `Retrieved cached content **${result.name}**. Expires at ${result.expireTime ?? 'unknown'}.`
     };
   })
   .build();
@@ -194,15 +216,7 @@ export let updateCachedContent = SlateTool.create(spec, {
     });
 
     return {
-      output: {
-        cachedContentName: result.name,
-        model: result.model,
-        displayName: result.displayName,
-        createTime: result.createTime,
-        updateTime: result.updateTime,
-        expireTime: result.expireTime,
-        usageMetadata: result.usageMetadata
-      },
+      output: mapCachedContent(result),
       message: `Updated cached content **${result.name}**. New expiration: ${result.expireTime ?? 'unknown'}.`
     };
   })

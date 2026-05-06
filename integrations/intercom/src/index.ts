@@ -17,7 +17,12 @@ import {
   sendMessage,
   manageEvents,
   listAdmins,
-  createNote
+  createNote,
+  listTeams,
+  getSegments,
+  manageDataAttributes,
+  manageSubscriptions,
+  getNotes
 } from './tools';
 import { contactEvents, conversationEvents, ticketEvents, companyEvents } from './triggers';
 
@@ -40,7 +45,12 @@ export let provider = Slate.create({
     sendMessage,
     manageEvents,
     listAdmins,
-    createNote
+    createNote,
+    listTeams,
+    getSegments,
+    manageDataAttributes,
+    manageSubscriptions,
+    getNotes
   ],
   triggers: [contactEvents, conversationEvents, ticketEvents, companyEvents]
 });

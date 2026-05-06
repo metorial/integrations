@@ -33,6 +33,11 @@ export let getFunction = SlateTool.create(spec, {
       version: z.string().optional().describe('Function version'),
       state: z.string().optional().describe('Current state'),
       stateReason: z.string().optional().describe('Reason for current state'),
+      lastUpdateStatus: z.string().optional().describe('Status of the last update'),
+      lastUpdateStatusReason: z
+        .string()
+        .optional()
+        .describe('Reason for the last update status'),
       packageType: z.string().optional().describe('Package type (Zip or Image)'),
       architectures: z.array(z.string()).optional().describe('Instruction set architectures'),
       environment: z
@@ -81,6 +86,8 @@ export let getFunction = SlateTool.create(spec, {
         version: config.Version,
         state: config.State,
         stateReason: config.StateReason,
+        lastUpdateStatus: config.LastUpdateStatus,
+        lastUpdateStatusReason: config.LastUpdateStatusReason,
         packageType: config.PackageType,
         architectures: config.Architectures,
         environment: config.Environment?.Variables,

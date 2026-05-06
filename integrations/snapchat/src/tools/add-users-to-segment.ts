@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SnapchatClient } from '../lib/client';
+import { snapchatServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -26,6 +27,7 @@ export let addUsersToSegment = SlateTool.create(spec, {
         .describe('Schema describing the identifier types in the data, in order'),
       users: z
         .array(z.array(z.string()))
+        .max(100000)
         .describe(
           'Array of user records, each record is an array of hashed identifiers matching the schema order'
         )
@@ -39,7 +41,19 @@ export let addUsersToSegment = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
 
-    let result = await client.addUsersToSegment(ctx.input.segmentId, {
+    if (ctx.input.users.length === 0) {
+      throw snapchatServiceError('At least one user record is required.');
+    }
+
+    for (let [index, record] of ctx.input.users.entries()) {
+      if (record.length !== ctx.input.schema.length) {
+        throw snapchatServiceError(
+          `User record at index ${index} must contain ${ctx.input.schema.length} identifier value(s).`
+        );
+      }
+    }
+
+    await client.addUsersToSegment(ctx.input.segmentId, {
       users: ctx.input.users.map(record => ({
         schema: ctx.input.schema,
         data: record

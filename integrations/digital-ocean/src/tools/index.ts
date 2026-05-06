@@ -13,3 +13,5 @@ export * from './get-account';
 export * from './list-resources';
 export * from './manage-container-registry';
 export * from './manage-tags';
+export * from './list-functions';
+export * from './list-edge-resources';

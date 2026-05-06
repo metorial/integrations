@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwilioClient } from '../lib/client';
+import { twilioServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -74,6 +75,18 @@ export let makeCall = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    let callFlowInputs = [
+      ctx.input.twimlUrl ? 'twimlUrl' : undefined,
+      ctx.input.twiml ? 'twiml' : undefined,
+      ctx.input.applicationSid ? 'applicationSid' : undefined
+    ].filter(Boolean);
+
+    if (callFlowInputs.length !== 1) {
+      throw twilioServiceError(
+        'Exactly one of twimlUrl, twiml, or applicationSid is required to make a call.'
+      );
+    }
+
     let client = new TwilioClient({
       accountSid: ctx.config.accountSid,
       token: ctx.auth.token,

@@ -36,7 +36,7 @@ After creating the app, note down the **Client ID** and **Client Secret**.
 
 All bearer tokens are limited in what functions they may perform. You must explicitly request access to areas of the API.
 
-Available scopes: `identity`, `edit`, `flair`, `history`, `modconfig`, `modflair`, `modlog`, `modposts`, `modwiki`, `mysubreddits`, `privatemessages`, `read`, `report`, `save`, `submit`, `subscribe`, `vote`, `wikiedit`, `wikiread`.
+Available scopes used by this integration: `identity`, `edit`, `flair`, `history`, `modconfig`, `modflair`, `modlog`, `modposts`, `modwiki`, `mysubreddits`, `privatemessages`, `read`, `report`, `save`, `submit`, `subscribe`, `vote`, `wikiedit`, `wikiread`.
 
 A full list with descriptions is available at `https://www.reddit.com/api/v1/scopes`.
 
@@ -48,15 +48,15 @@ You must use a User-Agent where possible. Change your client's User-Agent string
 
 ### Subreddit Browsing & Search
 
-Fetch information about specific subreddits, including their descriptions, subscriber counts, and rules. Retrieve posts from subreddits, sorted by criteria such as hot, new, top, and controversial. Search across Reddit for posts matching specific keywords. List and discover subreddits.
+Fetch information about specific subreddits, including their descriptions, subscriber counts, and rules. Resolve posts, comments, and subreddits by fullname or URL. Retrieve posts from subreddits, sorted by criteria such as hot, new, top, and controversial. Search across Reddit for posts matching specific keywords. List and discover subreddits.
 
 ### Post & Comment Management
 
-Submit new posts (text, links, or images) to subreddits. Comment on posts and reply to comments. Upvote or downvote posts and comments. Edit and delete your own posts and comments. Save and unsave content.
+Submit new text or link posts to subreddits. Comment on posts and reply to comments. Upvote or downvote posts and comments. Edit and delete your own posts and comments. Save and unsave content, and list saved categories.
 
 ### User Profiles
 
-Access public user profile information, including their post and comment history. Manage account settings and preferences. Retrieve karma scores and trophy data.
+Access public user profile information, including their post and comment history. List account history such as overview, saved, hidden, voted, and gilded content where Reddit permits it. Retrieve karma scores and trophy data.
 
 ### Private Messaging
 
@@ -68,7 +68,7 @@ Subscribe and unsubscribe from subreddits. Retrieve a list of the authenticated 
 
 ### Moderation Tools
 
-Manage subreddit moderation tasks such as approving or removing posts and comments. Access moderation logs and reports. Configure subreddit settings, manage flairs, manage the ban list, and edit AutoModerator/wiki pages.
+Manage subreddit moderation tasks such as approving or removing posts and comments. Access moderation logs, reports, and queues. Manage flairs and edit subreddit wiki pages.
 
 ### Flair Management
 
@@ -76,11 +76,7 @@ Set and manage user and post flairs within subreddits. Configure flair templates
 
 ### Wiki
 
-Read and edit subreddit wiki pages. Manage wiki page permissions and revision history.
-
-### Awards & Gilding
-
-Give awards to posts and comments (subject to the authenticated user having available coins/credits).
+Read and edit subreddit wiki pages. List wiki pages and view revision history.
 
 ## Events
 

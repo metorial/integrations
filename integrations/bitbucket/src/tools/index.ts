@@ -23,3 +23,6 @@ export { searchCodeTool } from './search-code';
 export { listWorkspaceMembersTool } from './list-workspace-members';
 export { manageProjectsTool } from './manage-projects';
 export { createCommitStatusTool } from './create-commit-status';
+export { manageWebhooksTool } from './manage-webhooks';
+export { manageDefaultReviewersTool } from './manage-default-reviewers';
+export { manageBranchRestrictionsTool } from './manage-branch-restrictions';

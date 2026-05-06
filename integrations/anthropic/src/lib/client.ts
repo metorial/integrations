@@ -1,5 +1,30 @@
 import { createAxios } from 'slates';
+import { Buffer } from 'node:buffer';
 import type { AxiosInstance } from 'axios';
+import { anthropicApiError } from './errors';
+
+let FILES_API_BETA = 'files-api-2025-04-14';
+
+let betaHeaders = (headers?: string[]) =>
+  headers && headers.length > 0 ? { 'anthropic-beta': headers.join(',') } : undefined;
+
+let appendParam = (
+  params: URLSearchParams,
+  key: string,
+  value: string | number | boolean | undefined
+) => {
+  if (value !== undefined) params.append(key, String(value));
+};
+
+let appendArrayParam = (
+  params: URLSearchParams,
+  key: string,
+  values: string[] | undefined
+) => {
+  for (let value of values ?? []) {
+    params.append(key, value);
+  }
+};
 
 export interface BatchResult {
   batchId: string;
@@ -18,6 +43,29 @@ export interface BatchResult {
   resultsUrl?: string;
 }
 
+export interface AnthropicFileResult {
+  fileId: string;
+  type?: string;
+  filename?: string;
+  mimeType?: string;
+  sizeBytes?: number;
+  createdAt?: string;
+  downloadable?: boolean;
+}
+
+export interface AnthropicFileContent {
+  fileId: string;
+  contentBase64: string;
+  contentType?: string;
+  sizeBytes: number;
+}
+
+export interface AnthropicReportResult {
+  data: Array<Record<string, unknown>>;
+  hasMore: boolean;
+  nextPage?: string | null;
+}
+
 export class AnthropicClient {
   private axios: AxiosInstance;
 
@@ -30,6 +78,11 @@ export class AnthropicClient {
         'content-type': 'application/json'
       }
     });
+
+    this.axios.interceptors.response.use(
+      response => response,
+      error => Promise.reject(anthropicApiError(error))
+    );
   }
 
   // ---- Messages API ----
@@ -50,6 +103,9 @@ export class AnthropicClient {
     toolChoice?: Record<string, unknown>;
     thinking?: Record<string, unknown>;
     metadata?: Record<string, unknown>;
+    mcpServers?: Array<Record<string, unknown>>;
+    serviceTier?: string;
+    betaHeaders?: string[];
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       model: params.model,
@@ -66,8 +122,12 @@ export class AnthropicClient {
     if (params.toolChoice !== undefined) body.tool_choice = params.toolChoice;
     if (params.thinking !== undefined) body.thinking = params.thinking;
     if (params.metadata !== undefined) body.metadata = params.metadata;
+    if (params.mcpServers !== undefined) body.mcp_servers = params.mcpServers;
+    if (params.serviceTier !== undefined) body.service_tier = params.serviceTier;
 
-    let response = await this.axios.post('/v1/messages', body);
+    let response = await this.axios.post('/v1/messages', body, {
+      headers: betaHeaders(params.betaHeaders)
+    });
     return response.data;
   }
 
@@ -82,6 +142,7 @@ export class AnthropicClient {
     system?: string;
     tools?: Array<Record<string, unknown>>;
     thinking?: Record<string, unknown>;
+    betaHeaders?: string[];
   }): Promise<{ inputTokens: number }> {
     let body: Record<string, unknown> = {
       model: params.model,
@@ -92,16 +153,15 @@ export class AnthropicClient {
     if (params.tools !== undefined) body.tools = params.tools;
     if (params.thinking !== undefined) body.thinking = params.thinking;
 
-    let response = await this.axios.post('/v1/messages/count_tokens', body);
+    let response = await this.axios.post('/v1/messages/count_tokens', body, {
+      headers: betaHeaders(params.betaHeaders)
+    });
     return { inputTokens: response.data.input_tokens };
   }
 
   // ---- Models API ----
 
-  async listModels(params?: {
-    limit?: number;
-    afterId?: string;
-  }): Promise<{
+  async listModels(params?: { limit?: number; afterId?: string; beforeId?: string }): Promise<{
     models: Array<Record<string, unknown>>;
     hasMore: boolean;
     firstId?: string;
@@ -110,6 +170,7 @@ export class AnthropicClient {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
+    if (params?.beforeId !== undefined) queryParams.before_id = params.beforeId;
 
     let response = await this.axios.get('/v1/models', { params: queryParams });
     return {
@@ -125,13 +186,94 @@ export class AnthropicClient {
     return response.data;
   }
 
+  // ---- Files API ----
+
+  async createFile(params: {
+    filename: string;
+    contentBase64: string;
+    mimeType?: string;
+  }): Promise<AnthropicFileResult> {
+    let fileBytes = Buffer.from(params.contentBase64, 'base64');
+    let formData = new FormData();
+    let blob = new Blob([fileBytes], {
+      type: params.mimeType ?? 'application/octet-stream'
+    });
+    formData.append('file', blob, params.filename);
+
+    let response = await this.axios.post('/v1/files', formData, {
+      headers: {
+        'anthropic-beta': FILES_API_BETA,
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return this.normalizeFile(response.data);
+  }
+
+  async listFiles(params?: { limit?: number; afterId?: string; beforeId?: string }): Promise<{
+    files: Array<AnthropicFileResult>;
+    hasMore: boolean;
+    firstId?: string;
+    lastId?: string;
+  }> {
+    let queryParams: Record<string, string> = {};
+    if (params?.limit !== undefined) queryParams.limit = String(params.limit);
+    if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
+    if (params?.beforeId !== undefined) queryParams.before_id = params.beforeId;
+
+    let response = await this.axios.get('/v1/files', {
+      params: queryParams,
+      headers: { 'anthropic-beta': FILES_API_BETA }
+    });
+    return {
+      files: (response.data.data as Array<Record<string, unknown>>).map(file =>
+        this.normalizeFile(file)
+      ),
+      hasMore: response.data.has_more,
+      firstId: response.data.first_id,
+      lastId: response.data.last_id
+    };
+  }
+
+  async getFile(fileId: string): Promise<AnthropicFileResult> {
+    let response = await this.axios.get(`/v1/files/${fileId}`, {
+      headers: { 'anthropic-beta': FILES_API_BETA }
+    });
+    return this.normalizeFile(response.data);
+  }
+
+  async downloadFile(fileId: string): Promise<AnthropicFileContent> {
+    let response = await this.axios.get(`/v1/files/${fileId}/content`, {
+      responseType: 'arraybuffer',
+      headers: { 'anthropic-beta': FILES_API_BETA }
+    });
+    let content = Buffer.from(response.data as ArrayBuffer);
+    let contentType = response.headers['content-type'];
+    return {
+      fileId,
+      contentBase64: content.toString('base64'),
+      contentType: typeof contentType === 'string' ? contentType : undefined,
+      sizeBytes: content.byteLength
+    };
+  }
+
+  async deleteFile(fileId: string): Promise<{ fileId: string; type?: string }> {
+    let response = await this.axios.delete(`/v1/files/${fileId}`, {
+      headers: { 'anthropic-beta': FILES_API_BETA }
+    });
+    return {
+      fileId: response.data.id,
+      type: response.data.type
+    };
+  }
+
   // ---- Message Batches API ----
 
   async createMessageBatch(
     requests: Array<{
       customId: string;
       params: Record<string, unknown>;
-    }>
+    }>,
+    betaHeaderValues?: string[]
   ): Promise<BatchResult> {
     let body = {
       requests: requests.map(r => ({
@@ -140,7 +282,9 @@ export class AnthropicClient {
       }))
     };
 
-    let response = await this.axios.post('/v1/messages/batches', body);
+    let response = await this.axios.post('/v1/messages/batches', body, {
+      headers: betaHeaders(betaHeaderValues)
+    });
     return this.normalizeBatch(response.data);
   }
 
@@ -152,10 +296,12 @@ export class AnthropicClient {
   async listMessageBatches(params?: {
     limit?: number;
     afterId?: string;
+    beforeId?: string;
   }): Promise<{ batches: Array<BatchResult>; hasMore: boolean }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
+    if (params?.beforeId !== undefined) queryParams.before_id = params.beforeId;
 
     let response = await this.axios.get('/v1/messages/batches', { params: queryParams });
     return {
@@ -190,6 +336,18 @@ export class AnthropicClient {
       updatedAt: data.updated_at as string | undefined,
       expiresAt: data.expires_at as string | undefined,
       resultsUrl: data.results_url as string | undefined
+    };
+  }
+
+  private normalizeFile(data: Record<string, unknown>): AnthropicFileResult {
+    return {
+      fileId: data.id as string,
+      type: data.type as string | undefined,
+      filename: data.filename as string | undefined,
+      mimeType: data.mime_type as string | undefined,
+      sizeBytes: data.size_bytes as number | undefined,
+      createdAt: data.created_at as string | undefined,
+      downloadable: data.downloadable as boolean | undefined
     };
   }
 
@@ -246,6 +404,11 @@ export class AnthropicClient {
       invites: response.data.data,
       hasMore: response.data.has_more
     };
+  }
+
+  async getInvite(inviteId: string): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(`/v1/organizations/invites/${inviteId}`);
+    return response.data;
   }
 
   async deleteInvite(inviteId: string): Promise<void> {
@@ -343,6 +506,16 @@ export class AnthropicClient {
     };
   }
 
+  async getWorkspaceMember(
+    workspaceId: string,
+    userId: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(
+      `/v1/organizations/workspaces/${workspaceId}/members/${userId}`
+    );
+    return response.data;
+  }
+
   async updateWorkspaceMember(
     workspaceId: string,
     userId: string,
@@ -382,11 +555,78 @@ export class AnthropicClient {
     };
   }
 
+  async getApiKey(apiKeyId: string): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(`/v1/organizations/api_keys/${apiKeyId}`);
+    return response.data;
+  }
+
   async updateApiKey(
     apiKeyId: string,
     params: Record<string, unknown>
   ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`/v1/organizations/api_keys/${apiKeyId}`, params);
     return response.data;
+  }
+
+  // ---- Admin API: Usage and Cost Reports ----
+
+  async getMessagesUsageReport(params: {
+    startingAt: string;
+    endingAt?: string;
+    bucketWidth?: '1m' | '1h' | '1d';
+    limit?: number;
+    page?: string;
+    groupBy?: string[];
+    apiKeyIds?: string[];
+    workspaceIds?: string[];
+    models?: string[];
+    serviceTiers?: string[];
+    contextWindows?: string[];
+  }): Promise<AnthropicReportResult> {
+    let queryParams = new URLSearchParams();
+    appendParam(queryParams, 'starting_at', params.startingAt);
+    appendParam(queryParams, 'ending_at', params.endingAt);
+    appendParam(queryParams, 'bucket_width', params.bucketWidth);
+    appendParam(queryParams, 'limit', params.limit);
+    appendParam(queryParams, 'page', params.page);
+    appendArrayParam(queryParams, 'group_by[]', params.groupBy);
+    appendArrayParam(queryParams, 'api_key_ids[]', params.apiKeyIds);
+    appendArrayParam(queryParams, 'workspace_ids[]', params.workspaceIds);
+    appendArrayParam(queryParams, 'models[]', params.models);
+    appendArrayParam(queryParams, 'service_tiers[]', params.serviceTiers);
+    appendArrayParam(queryParams, 'context_window[]', params.contextWindows);
+
+    let response = await this.axios.get('/v1/organizations/usage_report/messages', {
+      params: queryParams
+    });
+    return {
+      data: response.data.data,
+      hasMore: response.data.has_more,
+      nextPage: response.data.next_page
+    };
+  }
+
+  async getCostReport(params: {
+    startingAt: string;
+    endingAt?: string;
+    limit?: number;
+    page?: string;
+    groupBy?: string[];
+  }): Promise<AnthropicReportResult> {
+    let queryParams = new URLSearchParams();
+    appendParam(queryParams, 'starting_at', params.startingAt);
+    appendParam(queryParams, 'ending_at', params.endingAt);
+    appendParam(queryParams, 'limit', params.limit);
+    appendParam(queryParams, 'page', params.page);
+    appendArrayParam(queryParams, 'group_by[]', params.groupBy);
+
+    let response = await this.axios.get('/v1/organizations/cost_report', {
+      params: queryParams
+    });
+    return {
+      data: response.data.data,
+      hasMore: response.data.has_more,
+      nextPage: response.data.next_page
+    };
   }
 }

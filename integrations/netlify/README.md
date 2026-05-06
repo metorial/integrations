@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/netlify.png" height="20"> Netlify
 
-Manage web application sites, deploys, and hosting on Netlify. Create, update, configure, list, and delete sites. Deploy sites via file digest or ZIP upload, including serverless functions. Manage environment variables with per-context values. Access and manage form submissions, including spam filtering. Configure DNS zones and records. Inject JavaScript or HTML snippets into site pages. Create and manage split tests (A/B testing) for traffic routing between branches. Set up notification hooks (webhooks, email, Slack) for deploy and form submission events. Purge CDN cached content. Manage site assets for Large Media.
+Manage web application sites, deploys, builds, build hooks, deployed files, metadata, and hosting on Netlify. Create, update, configure, list, and delete sites. Manage environment variables with per-context values, scopes, and secret settings. Access and manage form submissions, including spam filtering. Configure DNS zones and records. Inject JavaScript or HTML snippets into site pages. Create and manage split tests (A/B testing) for traffic routing between branches. Set up notification hooks for deploy and form submission events. Purge CDN cached content by site or cache tag.
 
 ## Tools
 
@@ -32,13 +32,45 @@ List all environment variables for a Netlify account. Optionally filter by a spe
 
 List all forms for a Netlify site. Returns form metadata including submission count and creation date.
 
+### List Form Submissions
+
+List verified or spam form submissions for a form or site.
+
+### Get Form Submission
+
+Retrieve a specific Netlify form submission by ID.
+
+### Manage Form Submission State
+
+Mark a form submission as spam or verified.
+
 ### List Notification Hooks
 
 List all notification hooks configured for a Netlify site. Hooks can be webhooks, email notifications, or Slack messages triggered by deploy or form submission events.
 
+### List Notification Hook Types
+
+List supported notification hook types, required fields, and events.
+
 ### Create Site
 
 Create a new Netlify site. Optionally link it to a Git repository and configure build settings. The site can be created under a specific team account.
+
+### Manage Builds
+
+List builds for a site, retrieve a build by ID, or trigger a site build.
+
+### Manage Build Hooks
+
+Create, list, retrieve, update, and delete build hooks for a site.
+
+### Manage Site Metadata
+
+Get or replace custom metadata stored on a Netlify site.
+
+### Manage Site Files
+
+List deployed files for a site or retrieve metadata for a specific deployed file path.
 
 ### List Snippets
 

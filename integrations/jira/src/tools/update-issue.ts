@@ -8,7 +8,7 @@ export let updateIssueTool = SlateTool.create(spec, {
   key: 'update_issue',
   description: `Update an existing Jira issue's fields, transition it to a new status, or reassign it. Combines field updates, workflow transitions, and assignment into a single flexible tool. Only provided fields will be updated.`,
   instructions: [
-    'To transition an issue, provide the transitionId. Use the Get Issue tool with expand=["transitions"] to find available transitions.',
+    'To transition an issue, provide the transitionId. Use the Get Transitions tool to find available transition IDs.',
     'Set assigneeAccountId to null to unassign the issue.'
   ],
   tags: {

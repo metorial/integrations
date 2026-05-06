@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { digitalOceanApiError } from './errors';
 
 export class Client {
   private axios: AxiosInstance;
@@ -12,6 +13,11 @@ export class Client {
         'Content-Type': 'application/json'
       }
     });
+
+    this.axios.interceptors.response.use(
+      response => response,
+      error => Promise.reject(digitalOceanApiError(error))
+    );
   }
 
   // ─── Account ────────────────────────────────────────────────────
@@ -27,12 +33,16 @@ export class Client {
     page?: number;
     perPage?: number;
     tagName?: string;
+    name?: string;
+    type?: 'droplets' | 'gpus';
   }): Promise<{ droplets: any[]; meta: any }> {
     let response = await this.axios.get('/droplets', {
       params: {
         page: params?.page || 1,
         per_page: params?.perPage || 20,
-        tag_name: params?.tagName
+        tag_name: params?.tagName,
+        name: params?.name,
+        type: params?.type
       }
     });
     return { droplets: response.data.droplets, meta: response.data.meta };
@@ -964,10 +974,15 @@ export class Client {
     return response.data.reserved_ips;
   }
 
-  async createReservedIP(params: { region?: string; dropletId?: number }): Promise<any> {
+  async createReservedIP(params: {
+    region?: string;
+    dropletId?: number;
+    projectId?: string;
+  }): Promise<any> {
     let body: any = {};
     if (params.region) body.region = params.region;
     if (params.dropletId) body.droplet_id = params.dropletId;
+    if (params.projectId) body.project_id = params.projectId;
     let response = await this.axios.post('/reserved_ips', body);
     return response.data.reserved_ip;
   }
@@ -1152,7 +1167,7 @@ export class Client {
 
   async listFunctionNamespaces(): Promise<any[]> {
     let response = await this.axios.get('/functions/namespaces');
-    return response.data.namespaces;
+    return response.data.namespaces || [];
   }
 
   async getFunctionNamespace(namespaceId: string): Promise<any> {
@@ -1171,7 +1186,7 @@ export class Client {
 
   async listFunctionTriggers(namespaceId: string): Promise<any[]> {
     let response = await this.axios.get(`/functions/namespaces/${namespaceId}/triggers`);
-    return response.data.triggers;
+    return response.data.triggers || [];
   }
 
   async createFunctionTrigger(
@@ -1196,5 +1211,33 @@ export class Client {
 
   async deleteFunctionTrigger(namespaceId: string, triggerName: string): Promise<void> {
     await this.axios.delete(`/functions/namespaces/${namespaceId}/triggers/${triggerName}`);
+  }
+
+  // ─── CDN & Certificates ───────────────────────────────────────
+
+  async listCdnEndpoints(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<{ endpoints: any[]; meta: any }> {
+    let response = await this.axios.get('/cdn/endpoints', {
+      params: {
+        page: params?.page || 1,
+        per_page: params?.perPage || 20
+      }
+    });
+    return { endpoints: response.data.endpoints || [], meta: response.data.meta };
+  }
+
+  async listCertificates(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<{ certificates: any[]; meta: any }> {
+    let response = await this.axios.get('/certificates', {
+      params: {
+        page: params?.page || 1,
+        per_page: params?.perPage || 20
+      }
+    });
+    return { certificates: response.data.certificates || [], meta: response.data.meta };
   }
 }

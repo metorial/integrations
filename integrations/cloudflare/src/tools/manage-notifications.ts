@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageNotificationsTool = SlateTool.create(spec, {
@@ -101,7 +102,7 @@ export let manageNotificationsTool = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let accountId = ctx.input.accountId || ctx.config.accountId;
-    if (!accountId) throw new Error('accountId is required');
+    if (!accountId) throw cloudflareServiceError('accountId is required');
 
     let client = new Client(ctx.auth);
     let { action } = ctx.input;
@@ -123,7 +124,7 @@ export let manageNotificationsTool = SlateTool.create(spec, {
 
     if (action === 'create_policy') {
       if (!ctx.input.name || !ctx.input.alertType || !ctx.input.mechanisms) {
-        throw new Error('name, alertType, and mechanisms are required');
+        throw cloudflareServiceError('name, alertType, and mechanisms are required');
       }
       let response = await client.createNotificationPolicy(accountId, {
         name: ctx.input.name,
@@ -140,7 +141,7 @@ export let manageNotificationsTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete_policy') {
-      if (!ctx.input.policyId) throw new Error('policyId is required');
+      if (!ctx.input.policyId) throw cloudflareServiceError('policyId is required');
       await client.deleteNotificationPolicy(accountId, ctx.input.policyId);
       return {
         output: { deleted: true },
@@ -164,7 +165,7 @@ export let manageNotificationsTool = SlateTool.create(spec, {
 
     if (action === 'create_webhook') {
       if (!ctx.input.name || !ctx.input.webhookUrl) {
-        throw new Error('name and webhookUrl are required');
+        throw cloudflareServiceError('name and webhookUrl are required');
       }
       let response = await client.createNotificationWebhook(accountId, {
         name: ctx.input.name,
@@ -177,7 +178,7 @@ export let manageNotificationsTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete_webhook') {
-      if (!ctx.input.webhookId) throw new Error('webhookId is required');
+      if (!ctx.input.webhookId) throw cloudflareServiceError('webhookId is required');
       await client.deleteNotificationWebhook(accountId, ctx.input.webhookId);
       return {
         output: { deleted: true },
@@ -203,6 +204,6 @@ export let manageNotificationsTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

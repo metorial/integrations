@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageSslCertificatesTool = SlateTool.create(spec, {
@@ -127,7 +128,7 @@ export let manageSslCertificatesTool = SlateTool.create(spec, {
     }
 
     if (action === 'update_ssl_mode') {
-      if (!ctx.input.sslMode) throw new Error('sslMode is required');
+      if (!ctx.input.sslMode) throw cloudflareServiceError('sslMode is required');
       await client.updateSslSetting(zoneId, ctx.input.sslMode);
       return {
         output: { sslMode: ctx.input.sslMode },
@@ -136,7 +137,7 @@ export let manageSslCertificatesTool = SlateTool.create(spec, {
     }
 
     if (action === 'create_origin_ca') {
-      if (!ctx.input.hostnames?.length) throw new Error('hostnames are required');
+      if (!ctx.input.hostnames?.length) throw cloudflareServiceError('hostnames are required');
       let response = await client.createOriginCaCertificate({
         hostnames: ctx.input.hostnames,
         requestedValidity: ctx.input.requestedValidity
@@ -156,7 +157,7 @@ export let manageSslCertificatesTool = SlateTool.create(spec, {
     }
 
     if (action === 'revoke_origin_ca') {
-      if (!ctx.input.certificateId) throw new Error('certificateId is required');
+      if (!ctx.input.certificateId) throw cloudflareServiceError('certificateId is required');
       await client.revokeOriginCaCertificate(ctx.input.certificateId);
       return {
         output: { revoked: true },
@@ -164,6 +165,6 @@ export let manageSslCertificatesTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

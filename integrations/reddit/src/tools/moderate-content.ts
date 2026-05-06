@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RedditClient } from '../lib/client';
+import { requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -64,38 +65,54 @@ Supports approving, removing, distinguishing content, and viewing the mod queue,
     let { action } = ctx.input;
 
     if (action === 'approve') {
-      await client.approve(ctx.input.thingId!);
+      let thingId = requireRedditInput(
+        ctx.input.thingId,
+        'thingId is required for approve action'
+      );
+      await client.approve(thingId);
       return {
         output: { success: true },
-        message: `Approved \`${ctx.input.thingId}\`.`
+        message: `Approved \`${thingId}\`.`
       };
     }
 
     if (action === 'remove') {
-      await client.remove(ctx.input.thingId!, ctx.input.isSpam ?? false);
+      let thingId = requireRedditInput(
+        ctx.input.thingId,
+        'thingId is required for remove action'
+      );
+      await client.remove(thingId, ctx.input.isSpam ?? false);
       return {
         output: { success: true },
-        message: `Removed \`${ctx.input.thingId}\`${ctx.input.isSpam ? ' (marked as spam)' : ''}.`
+        message: `Removed \`${thingId}\`${ctx.input.isSpam ? ' (marked as spam)' : ''}.`
       };
     }
 
     if (action === 'distinguish') {
-      await client.distinguish(ctx.input.thingId!, ctx.input.distinguishType ?? 'yes');
+      let thingId = requireRedditInput(
+        ctx.input.thingId,
+        'thingId is required for distinguish action'
+      );
+      await client.distinguish(thingId, ctx.input.distinguishType ?? 'yes');
       return {
         output: { success: true },
-        message: `Distinguished \`${ctx.input.thingId}\` as ${ctx.input.distinguishType ?? 'yes'}.`
+        message: `Distinguished \`${thingId}\` as ${ctx.input.distinguishType ?? 'yes'}.`
       };
     }
 
     let listParams = { limit: ctx.input.limit ?? 25 };
     let data: any;
+    let subredditName = requireRedditInput(
+      ctx.input.subredditName,
+      `subredditName is required for ${action} action`
+    );
 
     if (action === 'mod_queue') {
-      data = await client.getModQueue(ctx.input.subredditName!, listParams);
+      data = await client.getModQueue(subredditName, listParams);
     } else if (action === 'reports') {
-      data = await client.getReports(ctx.input.subredditName!, listParams);
+      data = await client.getReports(subredditName, listParams);
     } else {
-      data = await client.getModLog(ctx.input.subredditName!, listParams);
+      data = await client.getModLog(subredditName, listParams);
     }
 
     let children = data?.data?.children ?? [];
@@ -117,7 +134,7 @@ Supports approving, removing, distinguishing content, and viewing the mod queue,
         success: true,
         items
       },
-      message: `Retrieved ${items.length} items from ${action.replace('_', ' ')} in r/${ctx.input.subredditName}.`
+      message: `Retrieved ${items.length} items from ${action.replace('_', ' ')} in r/${subredditName}.`
     };
   })
   .build();

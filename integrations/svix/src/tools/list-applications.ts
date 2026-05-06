@@ -17,7 +17,23 @@ export let listApplications = SlateTool.create(spec, {
         .number()
         .optional()
         .describe('Maximum number of applications to return (default 50)'),
-      iterator: z.string().optional().describe('Pagination cursor from a previous request')
+      iterator: z.string().optional().describe('Pagination cursor from a previous request'),
+      order: z
+        .enum(['ascending', 'descending'])
+        .optional()
+        .describe('Sort order for returned applications'),
+      excludeAppsWithNoEndpoints: z
+        .boolean()
+        .optional()
+        .describe('Exclude applications that have no endpoints'),
+      excludeAppsWithDisabledEndpoints: z
+        .boolean()
+        .optional()
+        .describe('Exclude applications that only have disabled endpoints'),
+      excludeAppsWithSvixPlayEndpoints: z
+        .boolean()
+        .optional()
+        .describe('Exclude applications that only have Svix Play endpoints')
     })
   )
   .output(
@@ -28,6 +44,7 @@ export let listApplications = SlateTool.create(spec, {
           name: z.string().describe('Name of the application'),
           uid: z.string().optional().describe('Custom UID assigned to the application'),
           rateLimit: z.number().optional().describe('Rate limit for the application'),
+          throttleRate: z.number().optional().describe('Message throttle rate'),
           metadata: z.record(z.string(), z.string()).describe('Application metadata'),
           createdAt: z.string().describe('When the application was created'),
           updatedAt: z.string().describe('When the application was last updated')
@@ -46,14 +63,19 @@ export let listApplications = SlateTool.create(spec, {
     ctx.progress('Fetching applications...');
     let result = await client.listApplications({
       limit: ctx.input.limit,
-      iterator: ctx.input.iterator
+      iterator: ctx.input.iterator,
+      order: ctx.input.order,
+      excludeAppsWithNoEndpoints: ctx.input.excludeAppsWithNoEndpoints,
+      excludeAppsWithDisabledEndpoints: ctx.input.excludeAppsWithDisabledEndpoints,
+      excludeAppsWithSvixPlayEndpoints: ctx.input.excludeAppsWithSvixPlayEndpoints
     });
 
     let applications = result.data.map(app => ({
       applicationId: app.id,
       name: app.name,
-      uid: app.uid,
-      rateLimit: app.rateLimit,
+      uid: app.uid ?? undefined,
+      rateLimit: app.rateLimit ?? undefined,
+      throttleRate: app.throttleRate ?? undefined,
       metadata: app.metadata || {},
       createdAt: app.createdAt,
       updatedAt: app.updatedAt
@@ -63,7 +85,7 @@ export let listApplications = SlateTool.create(spec, {
       output: {
         applications,
         hasMore: !result.done,
-        iterator: result.iterator
+        iterator: result.iterator ?? undefined
       },
       message: `Found **${applications.length}** application(s).${applications.length > 0 ? '\n' + applications.map(a => `- **${a.name}**${a.uid ? ` (uid: ${a.uid})` : ''}`).join('\n') : ''}`
     };

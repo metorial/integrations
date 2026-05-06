@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { confluenceApiError, confluenceServiceError } from './errors';
 
 export interface ConfluenceClientConfig {
   token: string;
@@ -79,12 +80,15 @@ export interface ConfluenceAttachment {
   id: string;
   status: string;
   title: string;
+  createdAt?: string;
   mediaType?: string;
   fileSize?: number;
   pageId?: string;
   blogPostId?: string;
   version?: { number: number; createdAt?: string };
+  webuiLink?: string;
   downloadLink?: string;
+  _links?: { webui?: string; download?: string };
 }
 
 export interface ConfluenceLabel {
@@ -131,19 +135,85 @@ export interface ContentProperty {
   version?: { number: number };
 }
 
+export type ConfluenceContentType = 'page' | 'blogpost' | 'attachment';
+export type ConfluenceAttachmentContainerType = 'page' | 'blogpost';
+
+let v2Path = (path: string) => `/wiki/api/v2${path}`;
+
+let attachmentContainerPath = (
+  contentType: ConfluenceAttachmentContainerType,
+  contentId: string
+) => {
+  if (contentType === 'blogpost') {
+    return `/blogposts/${contentId}/attachments`;
+  }
+
+  return `/pages/${contentId}/attachments`;
+};
+
+let labelPath = (contentType: ConfluenceContentType, contentId: string) => {
+  if (contentType === 'blogpost') {
+    return `/blogposts/${contentId}/labels`;
+  }
+  if (contentType === 'attachment') {
+    return `/attachments/${contentId}/labels`;
+  }
+
+  return `/pages/${contentId}/labels`;
+};
+
+let versionsPath = (contentType: ConfluenceContentType, contentId: string) => {
+  if (contentType === 'blogpost') {
+    return `/blogposts/${contentId}/versions`;
+  }
+  if (contentType === 'attachment') {
+    return `/attachments/${contentId}/versions`;
+  }
+
+  return `/pages/${contentId}/versions`;
+};
+
+let asAttachment = (raw: any): ConfluenceAttachment => ({
+  id: String(raw.id),
+  status: raw.status || 'current',
+  title: raw.title || raw.fileName || raw.filename,
+  createdAt: raw.createdAt,
+  mediaType: raw.mediaType || raw.metadata?.mediaType,
+  fileSize: raw.fileSize || raw.extensions?.fileSize,
+  pageId: raw.pageId || (raw.container?.type === 'page' ? raw.container.id : undefined),
+  blogPostId:
+    raw.blogPostId || (raw.container?.type === 'blogpost' ? raw.container.id : undefined),
+  version: raw.version
+    ? {
+        number: raw.version.number,
+        createdAt: raw.version.createdAt || raw.version.when
+      }
+    : undefined,
+  webuiLink: raw.webuiLink || raw._links?.webui,
+  downloadLink: raw.downloadLink || raw._links?.download,
+  _links: raw._links
+});
+
+let firstAttachmentFromContentArray = (data: any): ConfluenceAttachment => {
+  let raw = Array.isArray(data?.results) ? data.results[0] : data;
+  if (!raw) {
+    throw confluenceServiceError('Confluence did not return attachment metadata.');
+  }
+
+  return asAttachment(raw);
+};
+
 export class ConfluenceClient {
   private ax: AxiosInstance;
 
   constructor(private clientConfig: ConfluenceClientConfig) {
-    let isCloud = !!clientConfig.cloudId;
-
     let baseURL: string;
-    if (isCloud && clientConfig.cloudId) {
-      baseURL = `https://api.atlassian.com/ex/confluence/${clientConfig.cloudId}`;
-    } else if (clientConfig.baseUrl) {
+    if (clientConfig.baseUrl) {
       baseURL = clientConfig.baseUrl.replace(/\/$/, '');
+    } else if (clientConfig.cloudId) {
+      baseURL = `https://api.atlassian.com/ex/confluence/${clientConfig.cloudId}`;
     } else {
-      throw new Error(
+      throw confluenceServiceError(
         'Either cloudId (for Cloud) or baseUrl (for Data Center) must be provided.'
       );
     }
@@ -161,6 +231,11 @@ export class ConfluenceClient {
       baseURL,
       headers
     });
+
+    this.ax.interceptors.response.use(
+      response => response,
+      error => Promise.reject(confluenceApiError(error))
+    );
   }
 
   // ── Pages (v2 API) ──
@@ -183,7 +258,7 @@ export class ConfluenceClient {
     if (params.cursor) queryParams['cursor'] = params.cursor;
     if (params.sort) queryParams['sort'] = params.sort;
 
-    let response = await this.ax.get('/api/v2/pages', { params: queryParams });
+    let response = await this.ax.get(v2Path('/pages'), { params: queryParams });
     return response.data;
   }
 
@@ -191,7 +266,7 @@ export class ConfluenceClient {
     let params: Record<string, string> = {};
     if (includeBody) params['body-format'] = 'storage';
 
-    let response = await this.ax.get(`/api/v2/pages/${pageId}`, { params });
+    let response = await this.ax.get(v2Path(`/pages/${pageId}`), { params });
     return response.data;
   }
 
@@ -216,7 +291,7 @@ export class ConfluenceClient {
       payload.parentId = data.parentId;
     }
 
-    let response = await this.ax.post('/api/v2/pages', payload);
+    let response = await this.ax.post(v2Path('/pages'), payload);
     return response.data;
   }
 
@@ -230,29 +305,40 @@ export class ConfluenceClient {
       message?: string;
     }
   ): Promise<ConfluencePage> {
+    let current =
+      data.title === undefined || data.body === undefined
+        ? await this.getPageById(pageId, true)
+        : undefined;
+    let title = data.title ?? current?.title;
+    let body = data.body ?? current?.body?.storage?.value;
+
+    if (!title) {
+      throw confluenceServiceError('A page title is required to update a Confluence page.');
+    }
+    if (body === undefined) {
+      throw confluenceServiceError('A page body is required to update a Confluence page.');
+    }
+
     let payload: any = {
       id: pageId,
-      status: data.status || 'current',
+      status: data.status || current?.status || 'current',
+      title,
+      body: {
+        representation: 'storage',
+        value: body
+      },
       version: {
         number: data.version,
         message: data.message
       }
     };
 
-    if (data.title) payload.title = data.title;
-    if (data.body !== undefined) {
-      payload.body = {
-        representation: 'storage',
-        value: data.body
-      };
-    }
-
-    let response = await this.ax.put(`/api/v2/pages/${pageId}`, payload);
+    let response = await this.ax.put(v2Path(`/pages/${pageId}`), payload);
     return response.data;
   }
 
   async deletePage(pageId: string): Promise<void> {
-    await this.ax.delete(`/api/v2/pages/${pageId}`);
+    await this.ax.delete(v2Path(`/pages/${pageId}`));
   }
 
   async getPageChildren(
@@ -266,7 +352,7 @@ export class ConfluenceClient {
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.cursor) queryParams['cursor'] = params.cursor;
 
-    let response = await this.ax.get(`/api/v2/pages/${pageId}/children`, {
+    let response = await this.ax.get(v2Path(`/pages/${pageId}/children`), {
       params: queryParams
     });
     return response.data;
@@ -292,7 +378,7 @@ export class ConfluenceClient {
     if (params.cursor) queryParams['cursor'] = params.cursor;
     if (params.sort) queryParams['sort'] = params.sort;
 
-    let response = await this.ax.get('/api/v2/blogposts', { params: queryParams });
+    let response = await this.ax.get(v2Path('/blogposts'), { params: queryParams });
     return response.data;
   }
 
@@ -303,7 +389,7 @@ export class ConfluenceClient {
     let params: Record<string, string> = {};
     if (includeBody) params['body-format'] = 'storage';
 
-    let response = await this.ax.get(`/api/v2/blogposts/${blogPostId}`, { params });
+    let response = await this.ax.get(v2Path(`/blogposts/${blogPostId}`), { params });
     return response.data;
   }
 
@@ -313,7 +399,7 @@ export class ConfluenceClient {
     body: string;
     status?: string;
   }): Promise<ConfluenceBlogPost> {
-    let response = await this.ax.post('/api/v2/blogposts', {
+    let response = await this.ax.post(v2Path('/blogposts'), {
       spaceId: data.spaceId,
       status: data.status || 'current',
       title: data.title,
@@ -334,28 +420,43 @@ export class ConfluenceClient {
       status?: string;
     }
   ): Promise<ConfluenceBlogPost> {
+    let current =
+      data.title === undefined || data.body === undefined
+        ? await this.getBlogPostById(blogPostId, true)
+        : undefined;
+    let title = data.title ?? current?.title;
+    let body = data.body ?? current?.body?.storage?.value;
+
+    if (!title) {
+      throw confluenceServiceError(
+        'A blog post title is required to update a Confluence blog post.'
+      );
+    }
+    if (body === undefined) {
+      throw confluenceServiceError(
+        'A blog post body is required to update a Confluence blog post.'
+      );
+    }
+
     let payload: any = {
       id: blogPostId,
-      status: data.status || 'current',
+      status: data.status || current?.status || 'current',
+      title,
+      body: {
+        representation: 'storage',
+        value: body
+      },
       version: {
         number: data.version
       }
     };
 
-    if (data.title) payload.title = data.title;
-    if (data.body !== undefined) {
-      payload.body = {
-        representation: 'storage',
-        value: data.body
-      };
-    }
-
-    let response = await this.ax.put(`/api/v2/blogposts/${blogPostId}`, payload);
+    let response = await this.ax.put(v2Path(`/blogposts/${blogPostId}`), payload);
     return response.data;
   }
 
   async deleteBlogPost(blogPostId: string): Promise<void> {
-    await this.ax.delete(`/api/v2/blogposts/${blogPostId}`);
+    await this.ax.delete(v2Path(`/blogposts/${blogPostId}`));
   }
 
   // ── Spaces (v2 API) ──
@@ -378,12 +479,12 @@ export class ConfluenceClient {
     if (params.cursor) queryParams['cursor'] = params.cursor;
     if (params.sort) queryParams['sort'] = params.sort;
 
-    let response = await this.ax.get('/api/v2/spaces', { params: queryParams });
+    let response = await this.ax.get(v2Path('/spaces'), { params: queryParams });
     return response.data;
   }
 
   async getSpaceById(spaceId: string): Promise<ConfluenceSpace> {
-    let response = await this.ax.get(`/api/v2/spaces/${spaceId}`);
+    let response = await this.ax.get(v2Path(`/spaces/${spaceId}`));
     return response.data;
   }
 
@@ -400,14 +501,14 @@ export class ConfluenceClient {
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.cursor) queryParams['cursor'] = params.cursor;
 
-    let response = await this.ax.get(`/api/v2/pages/${pageId}/footer-comments`, {
+    let response = await this.ax.get(v2Path(`/pages/${pageId}/footer-comments`), {
       params: queryParams
     });
     return response.data;
   }
 
   async createPageFooterComment(pageId: string, body: string): Promise<ConfluenceComment> {
-    let response = await this.ax.post(`/api/v2/footer-comments`, {
+    let response = await this.ax.post(v2Path('/footer-comments'), {
       pageId,
       body: {
         representation: 'storage',
@@ -421,7 +522,7 @@ export class ConfluenceClient {
     blogPostId: string,
     body: string
   ): Promise<ConfluenceComment> {
-    let response = await this.ax.post(`/api/v2/footer-comments`, {
+    let response = await this.ax.post(v2Path('/footer-comments'), {
       blogPostId,
       body: {
         representation: 'storage',
@@ -432,17 +533,20 @@ export class ConfluenceClient {
   }
 
   async deleteFooterComment(commentId: string): Promise<void> {
-    await this.ax.delete(`/api/v2/footer-comments/${commentId}`);
+    await this.ax.delete(v2Path(`/footer-comments/${commentId}`));
   }
 
   async deleteInlineComment(commentId: string): Promise<void> {
-    await this.ax.delete(`/api/v2/inline-comments/${commentId}`);
+    await this.ax.delete(v2Path(`/inline-comments/${commentId}`));
   }
 
-  // ── Labels (v1 API) ──
+  // ── Labels (v2 read, v1 write API) ──
 
-  async getContentLabels(contentId: string): Promise<V1PaginatedResponse<ConfluenceLabel>> {
-    let response = await this.ax.get(`/api/v2/pages/${contentId}/labels`);
+  async getContentLabels(
+    contentId: string,
+    contentType: ConfluenceContentType = 'page'
+  ): Promise<V1PaginatedResponse<ConfluenceLabel>> {
+    let response = await this.ax.get(v2Path(labelPath(contentType, contentId)));
     let data = response.data;
     return {
       results: data.results || [],
@@ -492,12 +596,15 @@ export class ConfluenceClient {
   // ── Content Properties (v2 API) ──
 
   async getPageProperties(pageId: string): Promise<V2PaginatedResponse<ContentProperty>> {
-    let response = await this.ax.get(`/api/v2/pages/${pageId}/properties`);
+    let response = await this.ax.get(v2Path(`/pages/${pageId}/properties`));
     return response.data;
   }
 
   async createPageProperty(pageId: string, key: string, value: any): Promise<ContentProperty> {
-    let response = await this.ax.post(`/api/v2/pages/${pageId}/properties`, { key, value });
+    let response = await this.ax.post(v2Path(`/pages/${pageId}/properties`), {
+      key,
+      value
+    });
     return response.data;
   }
 
@@ -508,23 +615,27 @@ export class ConfluenceClient {
     value: any,
     version: number
   ): Promise<ContentProperty> {
-    let response = await this.ax.put(`/api/v2/pages/${pageId}/properties/${propertyId}`, {
-      key,
-      value,
-      version: { number: version }
-    });
+    let response = await this.ax.put(
+      v2Path(`/pages/${pageId}/properties/${propertyId}`),
+      {
+        key,
+        value,
+        version: { number: version }
+      }
+    );
     return response.data;
   }
 
   async deletePageProperty(pageId: string, propertyId: string): Promise<void> {
-    await this.ax.delete(`/api/v2/pages/${pageId}/properties/${propertyId}`);
+    await this.ax.delete(v2Path(`/pages/${pageId}/properties/${propertyId}`));
   }
 
-  // ── Attachments (v2 API) ──
+  // ── Attachments (v2 read/delete, v1 upload API) ──
 
-  async getPageAttachments(
-    pageId: string,
+  async getContentAttachments(
+    contentId: string,
     params: {
+      contentType?: ConfluenceAttachmentContainerType;
       limit?: number;
       cursor?: string;
     } = {}
@@ -533,10 +644,71 @@ export class ConfluenceClient {
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.cursor) queryParams['cursor'] = params.cursor;
 
-    let response = await this.ax.get(`/api/v2/pages/${pageId}/attachments`, {
-      params: queryParams
+    let response = await this.ax.get(
+      v2Path(attachmentContainerPath(params.contentType || 'page', contentId)),
+      {
+        params: queryParams
+      }
+    );
+    return {
+      ...response.data,
+      results: (response.data.results || []).map(asAttachment)
+    };
+  }
+
+  async getPageAttachments(
+    pageId: string,
+    params: {
+      limit?: number;
+      cursor?: string;
+    } = {}
+  ): Promise<V2PaginatedResponse<ConfluenceAttachment>> {
+    return this.getContentAttachments(pageId, { ...params, contentType: 'page' });
+  }
+
+  async getAttachmentById(attachmentId: string): Promise<ConfluenceAttachment> {
+    let response = await this.ax.get(v2Path(`/attachments/${attachmentId}`));
+    return asAttachment(response.data);
+  }
+
+  async uploadContentAttachment(data: {
+    contentId: string;
+    fileName: string;
+    contentBase64: string;
+    mediaType?: string;
+    comment?: string;
+    minorEdit?: boolean;
+    overwriteExisting?: boolean;
+  }): Promise<ConfluenceAttachment> {
+    let fileBytes = Buffer.from(data.contentBase64, 'base64');
+    let formData = new FormData();
+    formData.append(
+      'file',
+      new Blob([fileBytes], { type: data.mediaType || 'application/octet-stream' }),
+      data.fileName
+    );
+    formData.append('minorEdit', String(data.minorEdit !== false));
+    if (data.comment) {
+      formData.append('comment', data.comment);
+    }
+
+    let method = data.overwriteExisting ? 'put' : 'post';
+    let response = await this.ax.request({
+      method,
+      url: `/wiki/rest/api/content/${data.contentId}/child/attachment`,
+      data: formData,
+      headers: {
+        'X-Atlassian-Token': 'nocheck'
+      }
     });
-    return response.data;
+
+    return firstAttachmentFromContentArray(response.data);
+  }
+
+  async deleteAttachment(attachmentId: string, purge?: boolean): Promise<void> {
+    await this.ax.delete(v2Path(`/attachments/${attachmentId}`), {
+      params: purge ? { purge: true } : undefined
+    });
   }
 
   // ── Content Restrictions (v1 API) ──
@@ -599,27 +771,33 @@ export class ConfluenceClient {
     return response.data;
   }
 
-  // ── Content Version History (v1 API) ──
+  // ── Content Version History (v2 API) ──
 
   async getContentVersions(
     contentId: string,
     params: {
+      contentType?: ConfluenceContentType;
       limit?: number;
-      start?: number;
+      cursor?: string;
     } = {}
   ): Promise<V1PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
     if (params.limit) queryParams['limit'] = String(params.limit);
+    if (params.cursor) queryParams['cursor'] = params.cursor;
 
-    let response = await this.ax.get(`/api/v2/pages/${contentId}/versions`, {
-      params: queryParams
-    });
+    let response = await this.ax.get(
+      v2Path(versionsPath(params.contentType || 'page', contentId)),
+      {
+        params: queryParams
+      }
+    );
     let data = response.data;
     return {
       results: data.results || [],
       start: 0,
       limit: params.limit ?? 10,
-      size: data.results?.length ?? 0
+      size: data.results?.length ?? 0,
+      _links: data._links
     };
   }
 

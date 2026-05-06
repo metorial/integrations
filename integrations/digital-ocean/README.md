@@ -1,4 +1,4 @@
-# <img src="https://provider-logos.metorial-cdn.com/digital_ocean-logo.svg" height="20"> Digitalocean
+# <img src="https://provider-logos.metorial-cdn.com/digital_ocean-logo.svg" height="20"> DigitalOcean
 
 Manage cloud infrastructure on DigitalOcean. Create, resize, rebuild, and destroy Droplets (virtual machines). Provision and manage managed Kubernetes clusters, managed databases (MySQL, PostgreSQL, MongoDB, Valkey, OpenSearch, Kafka), and App Platform deployments. Create and manage block storage volumes, Spaces object storage buckets, container registries, and serverless functions. Configure networking resources including domains, DNS records, load balancers, VPCs, firewalls, and reserved IPs. Set up monitoring alert policies and uptime checks for Droplets and URLs. Manage SSH keys, images, snapshots, projects, tags, and billing information. Access generative AI inference endpoints via the Gradient AI Platform.
 
@@ -43,6 +43,22 @@ List all managed Kubernetes clusters in your DigitalOcean account. Returns clust
 ### List Alert Policies
 
 List all monitoring alert policies. Shows CPU, memory, disk, and bandwidth alerts configured for Droplets and load balancers.
+
+### List Certificates
+
+List DigitalOcean-managed TLS certificates used by load balancers and CDN endpoints. Returns IDs, names, DNS names, state, and expiration information.
+
+### List CDN Endpoints
+
+List DigitalOcean CDN endpoints for Spaces origins. Use this to audit edge delivery configuration and find endpoint IDs.
+
+### List Function Namespaces
+
+List DigitalOcean Functions namespaces including labels, regions, API hosts, and IDs.
+
+### List Function Triggers
+
+List scheduled triggers in a DigitalOcean Functions namespace.
 
 ### List Load Balancers
 

@@ -1,15 +1,21 @@
+import {
+  ChangeMessageVisibilityCommand,
+  CreateQueueCommand,
+  DeleteMessageCommand,
+  DeleteQueueCommand,
+  GetQueueAttributesCommand,
+  GetQueueUrlCommand,
+  ListQueuesCommand,
+  PurgeQueueCommand,
+  ReceiveMessageCommand,
+  SendMessageCommand,
+  SetQueueAttributesCommand
+} from '@aws-sdk/client-sqs';
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
-import { clientFromContext, flattenList } from '../lib/helpers';
-import { extractXmlValue, extractXmlValues, extractXmlBlocks } from '../lib/xml';
-
-let SQS_VERSION = '2012-11-05';
-let SQS_SERVICE = 'sqs';
-
-let queueSchema = z.object({
-  queueUrl: z.string().describe('Full URL of the SQS queue')
-});
+import { clientFromContext } from '../lib/helpers';
+import { awsServiceError } from '../lib/errors';
 
 let messageSchema = z.object({
   messageId: z.string().describe('Unique message identifier'),
@@ -57,15 +63,18 @@ let outputSchema = z.object({
 export let manageSqsTool = SlateTool.create(spec, {
   name: 'Manage SQS',
   key: 'manage_sqs',
-  description: `Manage Amazon SQS (Simple Queue Service) queues and messages. Supports listing queues, creating and deleting queues, sending and receiving messages, deleting messages, retrieving queue attributes, and purging all messages from a queue.`,
+  description: `Manage Amazon SQS (Simple Queue Service) queues and messages. Supports listing queues, resolving queue URLs, creating and deleting queues, sending and receiving messages, deleting messages, changing message visibility, retrieving and setting queue attributes, and purging all messages from a queue.`,
   instructions: [
     'Use operation "list_queues" to list SQS queues. Optionally filter by "queueNamePrefix" and use "maxResults" for pagination.',
+    'Use operation "get_queue_url" to resolve a queue name into its full queue URL. Optionally provide "queueOwnerAccountId" for cross-account queues.',
     'Use operation "create_queue" to create a new queue. Provide "queueName" and optionally "attributes" for configuration such as VisibilityTimeout, DelaySeconds, and MaximumMessageSize.',
     'Use operation "delete_queue" to permanently delete a queue and all its messages. Provide "queueUrl".',
     'Use operation "send_message" to send a message to a queue. Provide "queueUrl" and "messageBody". Optionally set "delaySeconds".',
     'Use operation "receive_messages" to receive messages from a queue. Provide "queueUrl" and optionally "maxNumberOfMessages", "waitTimeSeconds", and "visibilityTimeout".',
+    'Use operation "change_message_visibility" to change how long a received message stays hidden. Provide "queueUrl", "receiptHandle", and "visibilityTimeout".',
     'Use operation "delete_message" to delete a processed message. Provide "queueUrl" and "receiptHandle" from the receive response.',
     'Use operation "get_queue_attributes" to retrieve queue configuration and statistics. Provide "queueUrl" and optionally "attributeNames".',
+    'Use operation "set_queue_attributes" to update queue configuration. Provide "queueUrl" and "attributes". Most changes can take up to 60 seconds to propagate.',
     'Use operation "purge_queue" to delete all messages from a queue. Provide "queueUrl". This cannot be undone.'
   ],
   tags: {
@@ -78,12 +87,15 @@ export let manageSqsTool = SlateTool.create(spec, {
       operation: z
         .enum([
           'list_queues',
+          'get_queue_url',
           'create_queue',
           'delete_queue',
           'send_message',
           'receive_messages',
           'delete_message',
+          'change_message_visibility',
           'get_queue_attributes',
+          'set_queue_attributes',
           'purge_queue'
         ])
         .describe('The SQS operation to perform'),
@@ -103,6 +115,12 @@ export let manageSqsTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Filter queues by name prefix (for list_queues)'),
+      queueOwnerAccountId: z
+        .string()
+        .optional()
+        .describe(
+          'AWS account ID that owns the queue (for get_queue_url cross-account access)'
+        ),
       maxResults: z
         .number()
         .optional()
@@ -153,7 +171,7 @@ export let manageSqsTool = SlateTool.create(spec, {
         .record(z.string(), z.string())
         .optional()
         .describe(
-          'Queue attributes for create_queue, e.g. { "VisibilityTimeout": "60", "DelaySeconds": "5", "MaximumMessageSize": "131072" }'
+          'Queue attributes for create_queue and set_queue_attributes, e.g. { "VisibilityTimeout": "60", "DelaySeconds": "5", "MaximumMessageSize": "131072" }'
         )
     })
   )
@@ -162,24 +180,18 @@ export let manageSqsTool = SlateTool.create(spec, {
     let client = clientFromContext(ctx);
     let { operation } = ctx.input;
 
-    // ── List Queues ──────────────────────────────────────────────────
     if (operation === 'list_queues') {
-      let params: Record<string, string> = {};
-      if (ctx.input.queueNamePrefix) params['QueueNamePrefix'] = ctx.input.queueNamePrefix;
-      if (ctx.input.maxResults !== undefined)
-        params['MaxResults'] = String(ctx.input.maxResults);
-      if (ctx.input.nextToken) params['NextToken'] = ctx.input.nextToken;
-
-      let response = await client.queryApi({
-        service: SQS_SERVICE,
-        action: 'ListQueues',
-        version: SQS_VERSION,
-        params
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let queueUrls = extractXmlValues(xml, 'QueueUrl');
-      let nextToken = extractXmlValue(xml, 'NextToken');
+      let response = await client.send('SQS ListQueues', () =>
+        client.sqs.send(
+          new ListQueuesCommand({
+            QueueNamePrefix: ctx.input.queueNamePrefix,
+            MaxResults: ctx.input.maxResults,
+            NextToken: ctx.input.nextToken
+          })
+        )
+      );
+      let queueUrls = response.QueueUrls ?? [];
+      let nextToken = response.NextToken;
 
       let prefixLabel = ctx.input.queueNamePrefix
         ? ` matching prefix "${ctx.input.queueNamePrefix}"`
@@ -199,32 +211,42 @@ export let manageSqsTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Create Queue ─────────────────────────────────────────────────
-    if (operation === 'create_queue') {
-      if (!ctx.input.queueName) throw new Error('queueName is required for create_queue');
+    if (operation === 'get_queue_url') {
+      if (!ctx.input.queueName)
+        throw awsServiceError('queueName is required for get_queue_url');
 
-      let params: Record<string, string> = {
-        QueueName: ctx.input.queueName
+      let response = await client.send('SQS GetQueueUrl', () =>
+        client.sqs.send(
+          new GetQueueUrlCommand({
+            QueueName: ctx.input.queueName,
+            QueueOwnerAWSAccountId: ctx.input.queueOwnerAccountId
+          })
+        )
+      );
+      let queueUrl = response.QueueUrl ?? '';
+
+      return {
+        output: {
+          operation: 'get_queue_url',
+          queueUrl
+        },
+        message: `Resolved queue **${ctx.input.queueName}** to \`${queueUrl}\`.`
       };
+    }
 
-      // Flatten attributes into Attribute.N.Name / Attribute.N.Value format
-      if (ctx.input.attributes) {
-        let attrEntries = Object.entries(ctx.input.attributes);
-        attrEntries.forEach(([name, value], index) => {
-          params[`Attribute.${index + 1}.Name`] = name;
-          params[`Attribute.${index + 1}.Value`] = value;
-        });
-      }
+    if (operation === 'create_queue') {
+      if (!ctx.input.queueName)
+        throw awsServiceError('queueName is required for create_queue');
 
-      let response = await client.postQueryApi({
-        service: SQS_SERVICE,
-        action: 'CreateQueue',
-        version: SQS_VERSION,
-        params
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let queueUrl = extractXmlValue(xml, 'QueueUrl') ?? '';
+      let response = await client.send('SQS CreateQueue', () =>
+        client.sqs.send(
+          new CreateQueueCommand({
+            QueueName: ctx.input.queueName,
+            Attributes: ctx.input.attributes
+          })
+        )
+      );
+      let queueUrl = response.QueueUrl ?? '';
 
       return {
         output: {
@@ -235,18 +257,12 @@ export let manageSqsTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Delete Queue ─────────────────────────────────────────────────
     if (operation === 'delete_queue') {
-      if (!ctx.input.queueUrl) throw new Error('queueUrl is required for delete_queue');
+      if (!ctx.input.queueUrl) throw awsServiceError('queueUrl is required for delete_queue');
 
-      await client.postQueryApi({
-        service: SQS_SERVICE,
-        action: 'DeleteQueue',
-        version: SQS_VERSION,
-        params: {
-          QueueUrl: ctx.input.queueUrl
-        }
-      });
+      await client.send('SQS DeleteQueue', () =>
+        client.sqs.send(new DeleteQueueCommand({ QueueUrl: ctx.input.queueUrl }))
+      );
 
       return {
         output: {
@@ -258,98 +274,58 @@ export let manageSqsTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Send Message ─────────────────────────────────────────────────
     if (operation === 'send_message') {
-      if (!ctx.input.queueUrl) throw new Error('queueUrl is required for send_message');
-      if (!ctx.input.messageBody) throw new Error('messageBody is required for send_message');
+      if (!ctx.input.queueUrl) throw awsServiceError('queueUrl is required for send_message');
+      if (!ctx.input.messageBody)
+        throw awsServiceError('messageBody is required for send_message');
 
-      let params: Record<string, string> = {
-        QueueUrl: ctx.input.queueUrl,
-        MessageBody: ctx.input.messageBody
-      };
-
-      if (ctx.input.delaySeconds !== undefined) {
-        params['DelaySeconds'] = String(ctx.input.delaySeconds);
-      }
-
-      let response = await client.postQueryApi({
-        service: SQS_SERVICE,
-        action: 'SendMessage',
-        version: SQS_VERSION,
-        params
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let messageId = extractXmlValue(xml, 'MessageId') ?? '';
-      let md5OfMessageBody = extractXmlValue(xml, 'MD5OfMessageBody') ?? '';
+      let response = await client.send('SQS SendMessage', () =>
+        client.sqs.send(
+          new SendMessageCommand({
+            QueueUrl: ctx.input.queueUrl,
+            MessageBody: ctx.input.messageBody,
+            DelaySeconds: ctx.input.delaySeconds
+          })
+        )
+      );
 
       return {
         output: {
           operation: 'send_message',
           queueUrl: ctx.input.queueUrl,
-          messageId,
-          md5OfMessageBody
+          messageId: response.MessageId ?? '',
+          md5OfMessageBody: response.MD5OfMessageBody ?? ''
         },
-        message: `Sent message **${messageId}** to queue.`
+        message: `Sent message **${response.MessageId ?? ''}** to queue.`
       };
     }
 
-    // ── Receive Messages ─────────────────────────────────────────────
     if (operation === 'receive_messages') {
-      if (!ctx.input.queueUrl) throw new Error('queueUrl is required for receive_messages');
+      if (!ctx.input.queueUrl)
+        throw awsServiceError('queueUrl is required for receive_messages');
 
-      let params: Record<string, string> = {
-        QueueUrl: ctx.input.queueUrl
-      };
+      let response = await client.send('SQS ReceiveMessage', () =>
+        client.sqs.send(
+          new ReceiveMessageCommand({
+            QueueUrl: ctx.input.queueUrl,
+            MaxNumberOfMessages: ctx.input.maxNumberOfMessages,
+            WaitTimeSeconds: ctx.input.waitTimeSeconds,
+            VisibilityTimeout: ctx.input.visibilityTimeout,
+            AttributeNames: ['All']
+          })
+        )
+      );
 
-      if (ctx.input.maxNumberOfMessages !== undefined) {
-        params['MaxNumberOfMessages'] = String(ctx.input.maxNumberOfMessages);
-      }
-      if (ctx.input.waitTimeSeconds !== undefined) {
-        params['WaitTimeSeconds'] = String(ctx.input.waitTimeSeconds);
-      }
-      if (ctx.input.visibilityTimeout !== undefined) {
-        params['VisibilityTimeout'] = String(ctx.input.visibilityTimeout);
-      }
-
-      // Request all system attributes by default for richer output
-      params['AttributeName.1'] = 'All';
-
-      let response = await client.queryApi({
-        service: SQS_SERVICE,
-        action: 'ReceiveMessage',
-        version: SQS_VERSION,
-        params
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let messageBlocks = extractXmlBlocks(xml, 'Message');
-
-      let messages = messageBlocks.map(block => {
-        let messageId = extractXmlValue(block, 'MessageId') ?? '';
-        let receiptHandle = extractXmlValue(block, 'ReceiptHandle') ?? '';
-        let body = extractXmlValue(block, 'Body') ?? '';
-        let md5OfBody = extractXmlValue(block, 'MD5OfBody') ?? '';
-
-        // Parse system attributes
-        let attrBlocks = extractXmlBlocks(block, 'Attribute');
-        let attributes: Record<string, string> = {};
-        attrBlocks.forEach(attrBlock => {
-          let name = extractXmlValue(attrBlock, 'Name');
-          let value = extractXmlValue(attrBlock, 'Value');
-          if (name && value) {
-            attributes[name] = value;
-          }
-        });
-
-        return {
-          messageId,
-          receiptHandle,
-          body,
-          md5OfBody,
-          attributes: Object.keys(attributes).length > 0 ? attributes : undefined
-        };
-      });
+      let messages = (response.Messages ?? []).map(message => ({
+        messageId: message.MessageId ?? '',
+        receiptHandle: message.ReceiptHandle ?? '',
+        body: message.Body ?? '',
+        md5OfBody: message.MD5OfBody ?? '',
+        attributes:
+          message.Attributes && Object.keys(message.Attributes).length > 0
+            ? message.Attributes
+            : undefined
+      }));
 
       return {
         output: {
@@ -364,21 +340,49 @@ export let manageSqsTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Delete Message ───────────────────────────────────────────────
-    if (operation === 'delete_message') {
-      if (!ctx.input.queueUrl) throw new Error('queueUrl is required for delete_message');
+    if (operation === 'change_message_visibility') {
+      if (!ctx.input.queueUrl)
+        throw awsServiceError('queueUrl is required for change_message_visibility');
       if (!ctx.input.receiptHandle)
-        throw new Error('receiptHandle is required for delete_message');
+        throw awsServiceError('receiptHandle is required for change_message_visibility');
+      if (ctx.input.visibilityTimeout === undefined) {
+        throw awsServiceError('visibilityTimeout is required for change_message_visibility');
+      }
 
-      await client.postQueryApi({
-        service: SQS_SERVICE,
-        action: 'DeleteMessage',
-        version: SQS_VERSION,
-        params: {
-          QueueUrl: ctx.input.queueUrl,
-          ReceiptHandle: ctx.input.receiptHandle
-        }
-      });
+      await client.send('SQS ChangeMessageVisibility', () =>
+        client.sqs.send(
+          new ChangeMessageVisibilityCommand({
+            QueueUrl: ctx.input.queueUrl,
+            ReceiptHandle: ctx.input.receiptHandle,
+            VisibilityTimeout: ctx.input.visibilityTimeout
+          })
+        )
+      );
+
+      return {
+        output: {
+          operation: 'change_message_visibility',
+          queueUrl: ctx.input.queueUrl,
+          success: true
+        },
+        message: `Updated message visibility timeout to **${ctx.input.visibilityTimeout}** second(s).`
+      };
+    }
+
+    if (operation === 'delete_message') {
+      if (!ctx.input.queueUrl)
+        throw awsServiceError('queueUrl is required for delete_message');
+      if (!ctx.input.receiptHandle)
+        throw awsServiceError('receiptHandle is required for delete_message');
+
+      await client.send('SQS DeleteMessage', () =>
+        client.sqs.send(
+          new DeleteMessageCommand({
+            QueueUrl: ctx.input.queueUrl,
+            ReceiptHandle: ctx.input.receiptHandle
+          })
+        )
+      );
 
       return {
         output: {
@@ -390,37 +394,19 @@ export let manageSqsTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Get Queue Attributes ─────────────────────────────────────────
     if (operation === 'get_queue_attributes') {
       if (!ctx.input.queueUrl)
-        throw new Error('queueUrl is required for get_queue_attributes');
+        throw awsServiceError('queueUrl is required for get_queue_attributes');
 
-      let attrNames = ctx.input.attributeNames ?? ['All'];
-      let params: Record<string, string> = {
-        QueueUrl: ctx.input.queueUrl,
-        ...flattenList('AttributeName', attrNames)
-      };
-
-      let response = await client.queryApi({
-        service: SQS_SERVICE,
-        action: 'GetQueueAttributes',
-        version: SQS_VERSION,
-        params
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let attrBlocks = extractXmlBlocks(xml, 'Attribute');
-      let attributes: Record<string, string> = {};
-
-      attrBlocks.forEach(block => {
-        let name = extractXmlValue(block, 'Name');
-        let value = extractXmlValue(block, 'Value');
-        if (name && value !== undefined) {
-          attributes[name] = value;
-        }
-      });
-
-      let attrCount = Object.keys(attributes).length;
+      let response = await client.send('SQS GetQueueAttributes', () =>
+        client.sqs.send(
+          new GetQueueAttributesCommand({
+            QueueUrl: ctx.input.queueUrl,
+            AttributeNames: (ctx.input.attributeNames ?? ['All']) as any
+          })
+        )
+      );
+      let attributes = response.Attributes ?? {};
 
       return {
         output: {
@@ -428,22 +414,43 @@ export let manageSqsTool = SlateTool.create(spec, {
           queueUrl: ctx.input.queueUrl,
           attributes
         },
-        message: `Retrieved **${attrCount}** attribute(s) for queue.`
+        message: `Retrieved **${Object.keys(attributes).length}** attribute(s) for queue.`
       };
     }
 
-    // ── Purge Queue ──────────────────────────────────────────────────
-    if (operation === 'purge_queue') {
-      if (!ctx.input.queueUrl) throw new Error('queueUrl is required for purge_queue');
+    if (operation === 'set_queue_attributes') {
+      if (!ctx.input.queueUrl)
+        throw awsServiceError('queueUrl is required for set_queue_attributes');
+      if (!ctx.input.attributes || Object.keys(ctx.input.attributes).length === 0) {
+        throw awsServiceError('attributes is required for set_queue_attributes');
+      }
 
-      await client.postQueryApi({
-        service: SQS_SERVICE,
-        action: 'PurgeQueue',
-        version: SQS_VERSION,
-        params: {
-          QueueUrl: ctx.input.queueUrl
-        }
-      });
+      await client.send('SQS SetQueueAttributes', () =>
+        client.sqs.send(
+          new SetQueueAttributesCommand({
+            QueueUrl: ctx.input.queueUrl,
+            Attributes: ctx.input.attributes
+          })
+        )
+      );
+
+      return {
+        output: {
+          operation: 'set_queue_attributes',
+          queueUrl: ctx.input.queueUrl,
+          attributes: ctx.input.attributes,
+          success: true
+        },
+        message: `Updated **${Object.keys(ctx.input.attributes).length}** queue attribute(s).`
+      };
+    }
+
+    if (operation === 'purge_queue') {
+      if (!ctx.input.queueUrl) throw awsServiceError('queueUrl is required for purge_queue');
+
+      await client.send('SQS PurgeQueue', () =>
+        client.sqs.send(new PurgeQueueCommand({ QueueUrl: ctx.input.queueUrl }))
+      );
 
       return {
         output: {
@@ -455,6 +462,6 @@ export let manageSqsTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown operation: ${operation}`);
+    throw awsServiceError(`Unknown operation: ${operation}`);
   })
   .build();

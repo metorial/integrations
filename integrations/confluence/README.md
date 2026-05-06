@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/confluence-logo.png" height="20"> Confluence
 
-Create, read, update, and delete pages, blog posts, comments, and attachments in Confluence spaces. Manage spaces, permissions, labels, and content restrictions. Search content using Confluence Query Language (CQL). Upload and download file attachments with versioning. Manage users, groups, and group memberships. Create and manage whiteboards, databases, folders, and templates. View and update inline tasks. Access audit logs. Listen for webhooks on page, blog, comment, attachment, space, label, and user events.
+Create, read, update, and delete pages, blog posts, comments, and attachments in Confluence spaces. List spaces, manage labels, content restrictions, and page properties, and search content using Confluence Query Language (CQL). Upload, inspect, list, and delete file attachments with version metadata. Read current user and group information. Listen for webhooks on page, blog, comment, attachment, space, and label events.
 
 ## Tools
 
@@ -14,7 +14,19 @@ Delete a Confluence page by ID. The page is moved to trash and can be restored l
 
 ### Get Attachments
 
-List file attachments on a Confluence page. Returns attachment metadata including file name, media type, and size.
+List file attachments on a Confluence page or blog post. Returns attachment metadata including file name, media type, size, and download link.
+
+### Upload Attachment
+
+Upload a file attachment to a Confluence page or blog post from base64-encoded content.
+
+### Get Attachment
+
+Retrieve a Confluence attachment by ID, including file metadata and download link when available.
+
+### Delete Attachment
+
+Delete a Confluence attachment by ID. Attachments are moved to trash unless purged after being trashed.
 
 ### Get Content Versions
 

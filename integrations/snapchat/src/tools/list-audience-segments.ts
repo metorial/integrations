@@ -28,19 +28,35 @@ export let listAudienceSegments = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      adAccountId: z.string().describe('Ad account ID to list segments for')
+      adAccountId: z.string().describe('Ad account ID to list segments for'),
+      limit: z
+        .number()
+        .int()
+        .min(50)
+        .max(1000)
+        .optional()
+        .describe('Maximum number of audience segments to return, from 50 to 1000'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous nextLink')
     })
   )
   .output(
     z.object({
-      segments: z.array(segmentSchema).describe('List of audience segments')
+      segments: z.array(segmentSchema).describe('List of audience segments'),
+      nextLink: z
+        .string()
+        .optional()
+        .describe('Pagination URL for the next page, if available')
     })
   )
   .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
-    let results = await client.listSegments(ctx.input.adAccountId);
+    let result = await client.listSegments(
+      ctx.input.adAccountId,
+      ctx.input.limit,
+      ctx.input.cursor
+    );
 
-    let segments = results.map((s: any) => ({
+    let segments = result.items.map((s: any) => ({
       segmentId: s.id,
       name: s.name,
       description: s.description,
@@ -53,7 +69,7 @@ export let listAudienceSegments = SlateTool.create(spec, {
     }));
 
     return {
-      output: { segments },
+      output: { segments, nextLink: result.nextLink },
       message: `Found **${segments.length}** audience segment(s).`
     };
   })

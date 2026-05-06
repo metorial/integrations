@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { createClient, qualifiedTableName } from '../lib/helpers';
+import { postgresServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let deleteRows = SlateTool.create(spec, {
@@ -52,7 +53,7 @@ Supports returning the deleted rows and requires explicit confirmation for full-
     let fullTableName = qualifiedTableName(ctx.input.tableName, schema);
 
     if (!ctx.input.where && !ctx.input.confirmDeleteAll) {
-      throw new Error(
+      throw postgresServiceError(
         'No WHERE condition specified. Set confirmDeleteAll to true to delete all rows from the table.'
       );
     }

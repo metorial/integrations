@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnthropicClient } from '../lib/client';
+import { anthropicServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,6 +17,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
     'For "archive": provide workspaceId.',
     'For "add_member": provide workspaceId, userId, and workspaceRole.',
     'For "list_members": provide workspaceId.',
+    'For "get_member": provide workspaceId and userId.',
     'For "update_member": provide workspaceId, userId, and workspaceRole.',
     'For "remove_member": provide workspaceId and userId.'
   ],
@@ -36,6 +38,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
           'archive',
           'add_member',
           'list_members',
+          'get_member',
           'update_member',
           'remove_member'
         ])
@@ -91,7 +94,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
     switch (ctx.input.action) {
       case 'create': {
         if (!ctx.input.workspaceName) {
-          throw new Error('workspaceName is required for "create"');
+          throw anthropicServiceError('workspaceName is required for "create"');
         }
         let workspace = await client.createWorkspace(ctx.input.workspaceName);
         return {
@@ -112,7 +115,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
       }
       case 'get': {
         if (!ctx.input.workspaceId) {
-          throw new Error('workspaceId is required for "get"');
+          throw anthropicServiceError('workspaceId is required for "get"');
         }
         let workspace = await client.getWorkspace(ctx.input.workspaceId);
         return {
@@ -122,7 +125,9 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
       }
       case 'update': {
         if (!ctx.input.workspaceId || !ctx.input.workspaceName) {
-          throw new Error('workspaceId and workspaceName are required for "update"');
+          throw anthropicServiceError(
+            'workspaceId and workspaceName are required for "update"'
+          );
         }
         let workspace = await client.updateWorkspace(ctx.input.workspaceId, {
           name: ctx.input.workspaceName
@@ -134,7 +139,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
       }
       case 'archive': {
         if (!ctx.input.workspaceId) {
-          throw new Error('workspaceId is required for "archive"');
+          throw anthropicServiceError('workspaceId is required for "archive"');
         }
         await client.archiveWorkspace(ctx.input.workspaceId);
         return {
@@ -144,7 +149,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
       }
       case 'add_member': {
         if (!ctx.input.workspaceId || !ctx.input.userId || !ctx.input.workspaceRole) {
-          throw new Error(
+          throw anthropicServiceError(
             'workspaceId, userId, and workspaceRole are required for "add_member"'
           );
         }
@@ -160,7 +165,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
       }
       case 'list_members': {
         if (!ctx.input.workspaceId) {
-          throw new Error('workspaceId is required for "list_members"');
+          throw anthropicServiceError('workspaceId is required for "list_members"');
         }
         let result = await client.listWorkspaceMembers(ctx.input.workspaceId, {
           limit: ctx.input.limit,
@@ -171,9 +176,19 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
           message: `Found **${result.members.length}** member(s) in workspace **${ctx.input.workspaceId}**.`
         };
       }
+      case 'get_member': {
+        if (!ctx.input.workspaceId || !ctx.input.userId) {
+          throw anthropicServiceError('workspaceId and userId are required for "get_member"');
+        }
+        let member = await client.getWorkspaceMember(ctx.input.workspaceId, ctx.input.userId);
+        return {
+          output: { member },
+          message: `Retrieved **${ctx.input.userId}** membership in workspace **${ctx.input.workspaceId}**.`
+        };
+      }
       case 'update_member': {
         if (!ctx.input.workspaceId || !ctx.input.userId || !ctx.input.workspaceRole) {
-          throw new Error(
+          throw anthropicServiceError(
             'workspaceId, userId, and workspaceRole are required for "update_member"'
           );
         }
@@ -189,7 +204,9 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
       }
       case 'remove_member': {
         if (!ctx.input.workspaceId || !ctx.input.userId) {
-          throw new Error('workspaceId and userId are required for "remove_member"');
+          throw anthropicServiceError(
+            'workspaceId and userId are required for "remove_member"'
+          );
         }
         await client.removeWorkspaceMember(ctx.input.workspaceId, ctx.input.userId);
         return {

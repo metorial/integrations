@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { pinterestServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -62,7 +63,9 @@ export let manageAudience = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.name || !ctx.input.audienceType || !ctx.input.rule) {
-        throw new Error('Name, audienceType, and rule are required for create action');
+        throw pinterestServiceError(
+          'Name, audienceType, and rule are required for create action'
+        );
       }
 
       let result = await client.createAudience(ctx.input.adAccountId, {
@@ -80,6 +83,6 @@ export let manageAudience = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw pinterestServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

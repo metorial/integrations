@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -23,7 +24,10 @@ export let manageComments = SlateTool.create(spec, {
         .enum(['post', 'reply', 'update', 'delete', 'moderate'])
         .describe('Action to perform'),
       videoId: z.string().optional().describe('Video ID for posting a top-level comment'),
-      channelId: z.string().optional().describe('Channel ID for posting a top-level comment'),
+      channelId: z
+        .string()
+        .optional()
+        .describe('Channel ID for posting a top-level comment (required for post)'),
       parentCommentId: z.string().optional().describe('Parent comment ID for replies'),
       commentId: z.string().optional().describe('Comment ID for update or delete'),
       commentIds: z.array(z.string()).optional().describe('Comment IDs for moderation'),
@@ -47,16 +51,17 @@ export let manageComments = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
 
     if (ctx.input.action === 'post') {
-      if (!ctx.input.videoId) throw new Error('videoId is required for posting');
-      if (!ctx.input.text) throw new Error('text is required for posting');
+      if (!ctx.input.videoId) throw youtubeServiceError('videoId is required for posting');
+      if (!ctx.input.channelId) throw youtubeServiceError('channelId is required for posting');
+      if (!ctx.input.text) throw youtubeServiceError('text is required for posting');
 
       let thread = await client.createCommentThread({
         part: ['snippet'],
         videoId: ctx.input.videoId,
-        channelId: ctx.input.channelId || '',
+        channelId: ctx.input.channelId,
         text: ctx.input.text
       });
 
@@ -73,8 +78,8 @@ export let manageComments = SlateTool.create(spec, {
       };
     } else if (ctx.input.action === 'reply') {
       if (!ctx.input.parentCommentId)
-        throw new Error('parentCommentId is required for replies');
-      if (!ctx.input.text) throw new Error('text is required for replies');
+        throw youtubeServiceError('parentCommentId is required for replies');
+      if (!ctx.input.text) throw youtubeServiceError('text is required for replies');
 
       let comment = await client.createComment({
         part: ['snippet'],
@@ -92,8 +97,9 @@ export let manageComments = SlateTool.create(spec, {
         message: `Replied to comment \`${ctx.input.parentCommentId}\`.`
       };
     } else if (ctx.input.action === 'update') {
-      if (!ctx.input.commentId) throw new Error('commentId is required for updating');
-      if (!ctx.input.text) throw new Error('text is required for updating');
+      if (!ctx.input.commentId)
+        throw youtubeServiceError('commentId is required for updating');
+      if (!ctx.input.text) throw youtubeServiceError('text is required for updating');
 
       let comment = await client.updateComment({
         part: ['snippet'],
@@ -111,7 +117,8 @@ export let manageComments = SlateTool.create(spec, {
         message: `Updated comment \`${ctx.input.commentId}\`.`
       };
     } else if (ctx.input.action === 'delete') {
-      if (!ctx.input.commentId) throw new Error('commentId is required for deleting');
+      if (!ctx.input.commentId)
+        throw youtubeServiceError('commentId is required for deleting');
 
       await client.deleteComment(ctx.input.commentId);
 
@@ -121,9 +128,9 @@ export let manageComments = SlateTool.create(spec, {
       };
     } else {
       if (!ctx.input.commentIds || ctx.input.commentIds.length === 0)
-        throw new Error('commentIds is required for moderation');
+        throw youtubeServiceError('commentIds is required for moderation');
       if (!ctx.input.moderationStatus)
-        throw new Error('moderationStatus is required for moderation');
+        throw youtubeServiceError('moderationStatus is required for moderation');
 
       await client.setCommentModerationStatus({
         commentIds: ctx.input.commentIds,

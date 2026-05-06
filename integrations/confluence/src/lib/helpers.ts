@@ -1,10 +1,12 @@
 import { ConfluenceClient, ConfluenceClientConfig } from './client';
+import { confluenceServiceError } from './errors';
 
 export interface AuthOutput {
   token: string;
   refreshToken?: string;
   expiresAt?: string;
   cloudId?: string;
+  baseUrl?: string;
 }
 
 export interface ConfigOutput {
@@ -14,7 +16,7 @@ export interface ConfigOutput {
 
 export let createClient = (auth: AuthOutput, config: ConfigOutput): ConfluenceClient => {
   let cloudId = auth.cloudId || config.cloudId;
-  let baseUrl = config.baseUrl;
+  let providedBaseUrl = auth.baseUrl || config.baseUrl;
 
   let authType: ConfluenceClientConfig['authType'];
   if (cloudId) {
@@ -33,6 +35,14 @@ export let createClient = (auth: AuthOutput, config: ConfigOutput): ConfluenceCl
   } else {
     authType = 'bearer';
   }
+
+  if (authType === 'basic' && !providedBaseUrl) {
+    throw confluenceServiceError(
+      'Confluence API token authentication requires a site base URL. Reconnect the account or set the Confluence Cloud baseUrl.'
+    );
+  }
+
+  let baseUrl = authType === 'oauth' && cloudId ? undefined : providedBaseUrl;
 
   return new ConfluenceClient({
     token: auth.token,

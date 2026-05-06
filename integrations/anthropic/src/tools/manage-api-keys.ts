@@ -1,12 +1,13 @@
 import { SlateTool } from 'slates';
 import { AnthropicClient } from '../lib/client';
+import { anthropicServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
 export let manageApiKeys = SlateTool.create(spec, {
   name: 'Manage API Keys',
   key: 'manage_api_keys',
-  description: `List and update organization API keys via the Admin API. View active, inactive, or archived keys filtered by workspace. Update keys to activate, deactivate, or rename them.
+  description: `List, retrieve, and update organization API keys via the Admin API. View active, inactive, or archived keys filtered by workspace. Update keys to activate, deactivate, or rename them.
 Requires an Admin API key (sk-ant-admin...).`,
   constraints: [
     'Requires an Admin API key (sk-ant-admin...).',
@@ -19,8 +20,8 @@ Requires an Admin API key (sk-ant-admin...).`,
 })
   .input(
     z.object({
-      action: z.enum(['list', 'update']).describe('Operation to perform'),
-      apiKeyId: z.string().optional().describe('API key ID (required for "update")'),
+      action: z.enum(['list', 'get', 'update']).describe('Operation to perform'),
+      apiKeyId: z.string().optional().describe('API key ID (required for "get" and "update")'),
       status: z
         .enum(['active', 'inactive', 'archived'])
         .optional()
@@ -64,9 +65,19 @@ Requires an Admin API key (sk-ant-admin...).`,
           message: `Found **${result.apiKeys.length}** API key(s).${result.hasMore ? ' More available with pagination.' : ''}`
         };
       }
+      case 'get': {
+        if (!ctx.input.apiKeyId) {
+          throw anthropicServiceError('apiKeyId is required for "get"');
+        }
+        let apiKey = await client.getApiKey(ctx.input.apiKeyId);
+        return {
+          output: { apiKey },
+          message: `Retrieved API key **${ctx.input.apiKeyId}**.`
+        };
+      }
       case 'update': {
         if (!ctx.input.apiKeyId) {
-          throw new Error('apiKeyId is required for "update"');
+          throw anthropicServiceError('apiKeyId is required for "update"');
         }
         let params: Record<string, unknown> = {};
         if (ctx.input.name !== undefined) params.name = ctx.input.name;

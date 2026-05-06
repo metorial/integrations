@@ -50,6 +50,8 @@ The Send API allows sending messages from a Page to users who have initiated a c
 - Text, images, buttons, and quick replies.
 - Media content such as images, videos, and audio files, allowing chatbots to showcase visual content or play audio clips as part of conversations.
 - File attachments.
+- Reusable attachments uploaded from public URLs and sent later by attachment ID.
+- Multiple image attachments in one message.
 
 **Messaging Window:** Facebook Messenger has a standard messaging window of 24 hours. After 24 hours from the user's last message, businesses can only send messages using **Message Tags** (e.g., `CONFIRMED_EVENT_UPDATE`, `POST_PURCHASE_UPDATE`, `ACCOUNT_UPDATE`) or **Marketing Messages** (requires user opt-in).
 
@@ -69,7 +71,8 @@ Configures the appearance and behavior of the Messenger experience for a Page:
 
 - **Get Started Button:** Displays a "Get Started" button for first-time users, triggering a postback event.
 - **Greeting Text:** Allows you to specify the greeting message people will see on the welcome screen of your bot. The welcome screen is displayed for people interacting with your bot for the first time. Supports personalization with user name variables and localization by locale.
-- **Persistent Menu:** A fixed navigation bar inside Messenger conversations. It's always visible to the user, providing quick access to essential actions. It's called persistent because it remains visible regardless of where the user is in the conversation. Supports up to 3 top-level items per locale, with nested sub-menus.
+- **Persistent Menu:** A fixed navigation bar inside Messenger conversations. It's always visible to the user, providing quick access to essential actions. It's called persistent because it remains visible regardless of where the user is in the conversation. Supports up to 20 call-to-action items per locale.
+- **Account Linking URL:** A profile-level URL that starts the secure webview flow used to link a Messenger PSID to an external account.
 - **Ice Breakers:** Clickable questions users can select when first interacting with the bot. This helps reduce friction and guides them to the right flow.
 - **Whitelisted Domains:** Specifies a list of third-party domains that are accessible in the Messenger webview for use with the Messenger Extensions SDK, the Checkbox Plugin, and the Customer Chat Plugin.
 
@@ -83,7 +86,7 @@ Allows displaying typing indicators and read receipts to users, simulating a mor
 
 ### Handover Protocol
 
-Enables multiple apps to collaborate on the same Page's Messenger experience. A primary receiver app can pass thread control to secondary apps and take it back. Useful for routing between automated bots and live agents.
+Enables multiple apps to collaborate on the same Page's Messenger experience. A primary receiver app can pass thread control to secondary apps and take it back. Apps can also inspect the current thread owner and, when permitted, list configured secondary receiver apps. Useful for routing between automated bots and live agents.
 
 ### Account Linking
 

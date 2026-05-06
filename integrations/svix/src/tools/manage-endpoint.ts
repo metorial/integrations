@@ -24,11 +24,19 @@ export let createEndpoint = SlateTool.create(spec, {
         .optional()
         .describe('Event types to subscribe to (empty = all events)'),
       channels: z.array(z.string()).optional().describe('Channels the endpoint subscribes to'),
+      headers: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom HTTP headers sent with webhook deliveries'),
       secret: z
         .string()
         .optional()
         .describe('Signing secret for the endpoint (auto-generated if not set)'),
-      rateLimit: z.number().optional().describe('Rate limit for this endpoint'),
+      rateLimit: z.number().optional().describe('Deprecated. Use throttleRate instead.'),
+      throttleRate: z
+        .number()
+        .optional()
+        .describe('Maximum messages per second to send to this endpoint'),
       disabled: z.boolean().optional().describe('Whether the endpoint starts disabled'),
       metadata: z.record(z.string(), z.string()).optional().describe('Endpoint metadata')
     })
@@ -38,6 +46,7 @@ export let createEndpoint = SlateTool.create(spec, {
       endpointId: z.string().describe('Svix endpoint ID'),
       url: z.string().describe('Endpoint URL'),
       uid: z.string().optional().describe('Custom UID'),
+      throttleRate: z.number().optional().describe('Message throttle rate'),
       disabled: z.boolean().describe('Whether the endpoint is disabled'),
       createdAt: z.string().describe('When the endpoint was created')
     })
@@ -56,8 +65,10 @@ export let createEndpoint = SlateTool.create(spec, {
       version: ctx.input.version,
       filterTypes: ctx.input.filterTypes,
       channels: ctx.input.channels,
+      headers: ctx.input.headers,
       secret: ctx.input.secret,
       rateLimit: ctx.input.rateLimit,
+      throttleRate: ctx.input.throttleRate,
       disabled: ctx.input.disabled,
       metadata: ctx.input.metadata
     });
@@ -66,8 +77,9 @@ export let createEndpoint = SlateTool.create(spec, {
       output: {
         endpointId: ep.id,
         url: ep.url,
-        uid: ep.uid,
-        disabled: ep.disabled,
+        uid: ep.uid ?? undefined,
+        throttleRate: ep.throttleRate ?? undefined,
+        disabled: ep.disabled ?? false,
         createdAt: ep.createdAt
       },
       message: `Created endpoint \`${ep.id}\` pointing to **${ep.url}** for application \`${ctx.input.applicationId}\`.`
@@ -87,7 +99,11 @@ export let listEndpoints = SlateTool.create(spec, {
     z.object({
       applicationId: z.string().describe('Application ID or UID'),
       limit: z.number().optional().describe('Maximum number of endpoints to return'),
-      iterator: z.string().optional().describe('Pagination cursor')
+      iterator: z.string().optional().describe('Pagination cursor'),
+      order: z
+        .enum(['ascending', 'descending'])
+        .optional()
+        .describe('Sort order for returned endpoints')
     })
   )
   .output(
@@ -102,6 +118,8 @@ export let listEndpoints = SlateTool.create(spec, {
           channels: z.array(z.string()).optional().describe('Subscribed channels'),
           disabled: z.boolean().describe('Whether the endpoint is disabled'),
           rateLimit: z.number().optional().describe('Rate limit'),
+          throttleRate: z.number().optional().describe('Message throttle rate'),
+          metadata: z.record(z.string(), z.string()).describe('Endpoint metadata'),
           createdAt: z.string().describe('When the endpoint was created'),
           updatedAt: z.string().describe('When the endpoint was last updated')
         })
@@ -119,18 +137,21 @@ export let listEndpoints = SlateTool.create(spec, {
     ctx.progress('Fetching endpoints...');
     let result = await client.listEndpoints(ctx.input.applicationId, {
       limit: ctx.input.limit,
-      iterator: ctx.input.iterator
+      iterator: ctx.input.iterator,
+      order: ctx.input.order
     });
 
     let endpoints = result.data.map(ep => ({
       endpointId: ep.id,
       url: ep.url,
       description: ep.description,
-      uid: ep.uid,
-      filterTypes: ep.filterTypes,
-      channels: ep.channels,
-      disabled: ep.disabled,
-      rateLimit: ep.rateLimit,
+      uid: ep.uid ?? undefined,
+      filterTypes: ep.filterTypes ?? undefined,
+      channels: ep.channels ?? undefined,
+      disabled: ep.disabled ?? false,
+      rateLimit: ep.rateLimit ?? undefined,
+      throttleRate: ep.throttleRate ?? undefined,
+      metadata: ep.metadata || {},
       createdAt: ep.createdAt,
       updatedAt: ep.updatedAt
     }));
@@ -139,7 +160,7 @@ export let listEndpoints = SlateTool.create(spec, {
       output: {
         endpoints,
         hasMore: !result.done,
-        iterator: result.iterator
+        iterator: result.iterator ?? undefined
       },
       message: `Found **${endpoints.length}** endpoint(s) for application \`${ctx.input.applicationId}\`.${endpoints.length > 0 ? '\n' + endpoints.map(e => `- **${e.url}**${e.disabled ? ' (disabled)' : ''}`).join('\n') : ''}`
     };
@@ -162,7 +183,11 @@ export let updateEndpoint = SlateTool.create(spec, {
         .optional()
         .describe('Updated event types to subscribe to'),
       channels: z.array(z.string()).optional().describe('Updated channels'),
-      rateLimit: z.number().optional().describe('Updated rate limit'),
+      rateLimit: z.number().optional().describe('Deprecated. Use throttleRate instead.'),
+      throttleRate: z
+        .number()
+        .optional()
+        .describe('Updated maximum messages per second for this endpoint'),
       disabled: z.boolean().optional().describe('Whether to disable or enable the endpoint'),
       metadata: z.record(z.string(), z.string()).optional().describe('Updated metadata'),
       uid: z.string().optional().describe('Updated custom UID'),
@@ -173,6 +198,7 @@ export let updateEndpoint = SlateTool.create(spec, {
     z.object({
       endpointId: z.string().describe('Svix endpoint ID'),
       url: z.string().describe('Updated URL'),
+      throttleRate: z.number().optional().describe('Message throttle rate'),
       disabled: z.boolean().describe('Whether the endpoint is disabled'),
       updatedAt: z.string().describe('When the endpoint was updated')
     })
@@ -190,6 +216,7 @@ export let updateEndpoint = SlateTool.create(spec, {
       filterTypes: ctx.input.filterTypes,
       channels: ctx.input.channels,
       rateLimit: ctx.input.rateLimit,
+      throttleRate: ctx.input.throttleRate,
       disabled: ctx.input.disabled,
       metadata: ctx.input.metadata,
       uid: ctx.input.uid,
@@ -200,7 +227,8 @@ export let updateEndpoint = SlateTool.create(spec, {
       output: {
         endpointId: ep.id,
         url: ep.url,
-        disabled: ep.disabled,
+        throttleRate: ep.throttleRate ?? undefined,
+        disabled: ep.disabled ?? false,
         updatedAt: ep.updatedAt
       },
       message: `Updated endpoint \`${ep.id}\` → **${ep.url}**.`

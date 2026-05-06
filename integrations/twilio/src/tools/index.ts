@@ -11,3 +11,6 @@ export * from './manage-phone-number';
 export * from './manage-conversation';
 export * from './conversation-participants';
 export * from './send-conversation-message';
+export * from './manage-messaging-service';
+export * from './list-recordings';
+export * from './list-verify-services';

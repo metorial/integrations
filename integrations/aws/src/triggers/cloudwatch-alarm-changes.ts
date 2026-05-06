@@ -1,8 +1,8 @@
+import { DescribeAlarmsCommand } from '@aws-sdk/client-cloudwatch';
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
-import { clientFromContext, flattenList } from '../lib/helpers';
-import { extractXmlValue, extractXmlBlocks } from '../lib/xml';
+import { clientFromContext } from '../lib/helpers';
 
 let alarmInputSchema = z.object({
   alarmName: z.string().describe('Name of the alarm'),
@@ -48,49 +48,34 @@ export let cloudwatchAlarmChangesTrigger = SlateTrigger.create(spec, {
       let previousAlarmStates: Record<string, string> =
         (ctx.state as Record<string, string>) ?? {};
 
-      let response = await client.queryApi({
-        service: 'monitoring',
-        action: 'DescribeAlarms',
-        version: '2010-08-01',
-        params: { MaxRecords: '100' }
-      });
+      let response = await client.send('CloudWatch DescribeAlarms', () =>
+        client.cloudWatch.send(new DescribeAlarmsCommand({ MaxRecords: 100 }))
+      );
 
-      let xml = typeof response === 'string' ? response : String(response);
-      let memberBlocks = extractXmlBlocks(xml, 'member');
-
-      let currentAlarms: Array<{
-        alarmName: string;
-        alarmArn: string;
-        stateValue: string;
-        stateReason: string | undefined;
-        stateUpdatedTimestamp: string;
-        metricName: string | undefined;
-        namespace: string | undefined;
-        threshold: number | undefined;
-        comparisonOperator: string | undefined;
-      }> = [];
-
-      for (let block of memberBlocks) {
-        let alarmName = extractXmlValue(block, 'AlarmName');
-        let alarmArn = extractXmlValue(block, 'AlarmArn');
-        let stateValue = extractXmlValue(block, 'StateValue');
-        let stateUpdatedTimestamp = extractXmlValue(block, 'StateUpdatedTimestamp');
-
-        if (alarmName && alarmArn && stateValue && stateUpdatedTimestamp) {
-          let thresholdStr = extractXmlValue(block, 'Threshold');
-          currentAlarms.push({
-            alarmName,
-            alarmArn,
-            stateValue,
-            stateReason: extractXmlValue(block, 'StateReason'),
-            stateUpdatedTimestamp,
-            metricName: extractXmlValue(block, 'MetricName'),
-            namespace: extractXmlValue(block, 'Namespace'),
-            threshold: thresholdStr ? parseFloat(thresholdStr) : undefined,
-            comparisonOperator: extractXmlValue(block, 'ComparisonOperator')
-          });
+      let currentAlarms = (response.MetricAlarms ?? []).flatMap(alarm => {
+        if (
+          !alarm.AlarmName ||
+          !alarm.AlarmArn ||
+          !alarm.StateValue ||
+          !alarm.StateUpdatedTimestamp
+        ) {
+          return [];
         }
-      }
+
+        return [
+          {
+            alarmName: alarm.AlarmName,
+            alarmArn: alarm.AlarmArn,
+            stateValue: alarm.StateValue,
+            stateReason: alarm.StateReason,
+            stateUpdatedTimestamp: alarm.StateUpdatedTimestamp.toISOString(),
+            metricName: alarm.MetricName,
+            namespace: alarm.Namespace,
+            threshold: alarm.Threshold,
+            comparisonOperator: alarm.ComparisonOperator
+          }
+        ];
+      });
 
       let inputs: z.infer<typeof alarmInputSchema>[] = [];
       let newStates: Record<string, string> = {};

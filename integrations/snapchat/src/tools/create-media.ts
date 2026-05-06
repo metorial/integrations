@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SnapchatClient } from '../lib/client';
+import { snapchatServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -35,6 +36,10 @@ export let createMedia = SlateTool.create(spec, {
       name: ctx.input.name,
       type: ctx.input.type
     });
+
+    if (!result) {
+      throw snapchatServiceError('Snapchat did not return media in the API response.');
+    }
 
     let output = {
       mediaId: result.id,

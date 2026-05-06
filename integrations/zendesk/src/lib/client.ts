@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { zendeskApiError } from './errors';
 
 export interface ZendeskClientConfig {
   subdomain: string;
@@ -21,6 +22,11 @@ export class ZendeskClient {
         'Content-Type': 'application/json'
       }
     });
+
+    this.http.interceptors.response.use(
+      response => response,
+      error => Promise.reject(zendeskApiError(error))
+    );
   }
 
   // ── Tickets ──────────────────────────────────────────────
@@ -61,9 +67,24 @@ export class ZendeskClient {
     await this.http.delete(`/tickets/${ticketId}.json`);
   }
 
-  async getTicketComments(ticketId: string, params?: { page?: number; perPage?: number }) {
+  async getTicketComments(
+    ticketId: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+      sortOrder?: 'asc' | 'desc';
+      includeUsers?: boolean;
+      includeInlineImages?: boolean;
+    }
+  ) {
     let response = await this.http.get(`/tickets/${ticketId}/comments.json`, {
-      params: { page: params?.page, per_page: params?.perPage }
+      params: {
+        page: params?.page,
+        per_page: params?.perPage,
+        sort_order: params?.sortOrder,
+        include: params?.includeUsers ? 'users' : undefined,
+        include_inline_images: params?.includeInlineImages
+      }
     });
     return response.data;
   }
@@ -245,9 +266,36 @@ export class ZendeskClient {
 
   // ── Macros ───────────────────────────────────────────────
 
-  async listMacros(params?: { page?: number; perPage?: number }) {
+  async listMacros(params?: {
+    page?: number;
+    perPage?: number;
+    active?: boolean;
+    access?: 'personal' | 'agents' | 'shared' | 'account';
+    categoryId?: string;
+    groupId?: string;
+    onlyViewable?: boolean;
+    sortBy?:
+      | 'alphabetical'
+      | 'created_at'
+      | 'updated_at'
+      | 'usage_1h'
+      | 'usage_24h'
+      | 'usage_7d'
+      | 'usage_30d';
+    sortOrder?: 'asc' | 'desc';
+  }) {
     let response = await this.http.get('/macros.json', {
-      params: { page: params?.page, per_page: params?.perPage }
+      params: {
+        page: params?.page,
+        per_page: params?.perPage,
+        active: params?.active,
+        access: params?.access,
+        category: params?.categoryId,
+        group_id: params?.groupId,
+        only_viewable: params?.onlyViewable,
+        sort_by: params?.sortBy,
+        sort_order: params?.sortOrder
+      }
     });
     return response.data;
   }
@@ -345,8 +393,24 @@ export class ZendeskClient {
 
   // ── Ticket Fields ────────────────────────────────────────
 
-  async listTicketFields() {
-    let response = await this.http.get('/ticket_fields.json');
+  async listTicketFields(params?: {
+    creator?: boolean;
+    locale?: string;
+    sort?: string;
+    pageSize?: number;
+    pageAfter?: string;
+    pageBefore?: string;
+  }) {
+    let response = await this.http.get('/ticket_fields.json', {
+      params: {
+        creator: params?.creator,
+        locale: params?.locale,
+        sort: params?.sort,
+        'page[size]': params?.pageSize,
+        'page[after]': params?.pageAfter,
+        'page[before]': params?.pageBefore
+      }
+    });
     return response.data;
   }
 

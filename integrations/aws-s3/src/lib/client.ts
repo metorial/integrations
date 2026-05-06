@@ -1,6 +1,36 @@
-import { createAxios } from 'slates';
-import { signRequest, createPresignedUrl } from './signing';
-import { parseXml, getChildText, getChildren, getChild, buildXml, type XmlNode } from './xml';
+import { Buffer } from 'node:buffer';
+import {
+  CopyObjectCommand,
+  CreateBucketCommand,
+  DeleteBucketCommand,
+  DeleteBucketLifecycleCommand,
+  DeleteBucketPolicyCommand,
+  DeleteBucketTaggingCommand,
+  DeleteObjectCommand,
+  DeleteObjectTaggingCommand,
+  DeleteObjectsCommand,
+  GetBucketLifecycleConfigurationCommand,
+  GetBucketLocationCommand,
+  GetBucketPolicyCommand,
+  GetBucketTaggingCommand,
+  GetBucketVersioningCommand,
+  GetObjectCommand,
+  GetObjectTaggingCommand,
+  HeadObjectCommand,
+  ListBucketsCommand,
+  ListObjectVersionsCommand,
+  ListObjectsV2Command,
+  PutBucketLifecycleConfigurationCommand,
+  PutBucketPolicyCommand,
+  PutBucketTaggingCommand,
+  PutBucketVersioningCommand,
+  PutObjectCommand,
+  PutObjectTaggingCommand,
+  S3Client as AwsS3Client
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { createSlatesAwsSdkHttpHandler } from '@slates/aws-sdk-http-handler';
+import { s3ApiError } from './errors';
 
 export interface S3ClientConfig {
   accessKeyId: string;
@@ -65,132 +95,364 @@ export interface S3Tag {
   value: string;
 }
 
+export type S3LifecycleRuleStatus = 'Enabled' | 'Disabled';
+
+export type S3LifecycleTransitionStorageClass =
+  | 'GLACIER'
+  | 'STANDARD_IA'
+  | 'ONEZONE_IA'
+  | 'INTELLIGENT_TIERING'
+  | 'DEEP_ARCHIVE'
+  | 'GLACIER_IR';
+
+export interface S3LifecycleExpiration {
+  date?: string;
+  days?: number;
+  expiredObjectDeleteMarker?: boolean;
+}
+
+export interface S3LifecycleTransition {
+  date?: string;
+  days?: number;
+  storageClass: S3LifecycleTransitionStorageClass;
+}
+
+export interface S3NoncurrentVersionExpiration {
+  noncurrentDays?: number;
+  newerNoncurrentVersions?: number;
+}
+
+export interface S3NoncurrentVersionTransition {
+  noncurrentDays?: number;
+  newerNoncurrentVersions?: number;
+  storageClass: S3LifecycleTransitionStorageClass;
+}
+
+export interface S3LifecycleRule {
+  id?: string;
+  status: S3LifecycleRuleStatus;
+  prefix?: string;
+  tagFilters?: S3Tag[];
+  objectSizeGreaterThan?: number;
+  objectSizeLessThan?: number;
+  expiration?: S3LifecycleExpiration;
+  transitions?: S3LifecycleTransition[];
+  noncurrentVersionExpiration?: S3NoncurrentVersionExpiration;
+  noncurrentVersionTransitions?: S3NoncurrentVersionTransition[];
+  abortIncompleteMultipartUploadDays?: number;
+}
+
+let isRecord = (value: unknown): value is Record<string, any> =>
+  typeof value === 'object' && value !== null;
+
+let withoutUndefined = <T extends Record<string, any>>(input: T): T => {
+  let out: Record<string, any> = {};
+
+  for (let [key, value] of Object.entries(input)) {
+    if (value !== undefined) {
+      out[key] = value;
+    }
+  }
+
+  return out as T;
+};
+
+let dateToString = (value: unknown): string | undefined => {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string' && value.length > 0) return value;
+  return undefined;
+};
+
+let parseDate = (value: string | undefined) => (value ? new Date(value) : undefined);
+
+let stripEtag = (value: string | undefined) => value?.replace(/"/g, '') || '';
+
+let toSdkTag = (tag: S3Tag) => ({
+  Key: tag.key,
+  Value: tag.value
+});
+
+let fromSdkTag = (tag: { Key?: string; Value?: string }): S3Tag => ({
+  key: tag.Key || '',
+  value: tag.Value || ''
+});
+
+let getSdkStatus = (error: unknown) => {
+  if (!isRecord(error)) return undefined;
+  let metadata = isRecord(error.$metadata) ? error.$metadata : undefined;
+  let status = metadata?.httpStatusCode ?? error.statusCode ?? error.status;
+  return typeof status === 'number' ? status : undefined;
+};
+
+let getSdkCode = (error: unknown) => {
+  if (!isRecord(error)) return undefined;
+  if (typeof error.Code === 'string') return error.Code;
+  if (typeof error.code === 'string' && !error.code.startsWith('upstream.')) {
+    return error.code;
+  }
+  if (typeof error.name === 'string' && error.name !== 'Error') return error.name;
+  return undefined;
+};
+
+let getSdkMessage = (error: unknown) => {
+  if (!isRecord(error)) {
+    return error instanceof Error ? error.message : String(error);
+  }
+
+  return (
+    (typeof error.message === 'string' && error.message) ||
+    (typeof error.Message === 'string' && error.Message) ||
+    (typeof error.Code === 'string' && error.Code) ||
+    'Unknown error'
+  );
+};
+
+let bodyToString = async (body: any): Promise<string> => {
+  if (body === undefined || body === null) return '';
+  if (typeof body === 'string') return body;
+  if (body instanceof Uint8Array) return Buffer.from(body).toString('utf8');
+  if (typeof body.transformToString === 'function') return await body.transformToString();
+  if (typeof body.text === 'function') return await body.text();
+
+  if (typeof body[Symbol.asyncIterator] === 'function') {
+    let chunks: Buffer[] = [];
+    for await (let chunk of body as AsyncIterable<Uint8Array | string>) {
+      chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks).toString('utf8');
+  }
+
+  return String(body);
+};
+
+let encodeCopySource = (bucket: string, key: string, versionId?: string) => {
+  let source = `${bucket}/${encodeObjectKey(key)}`;
+  return versionId ? `${source}?versionId=${encodeURIComponent(versionId)}` : source;
+};
+
+let encodeObjectKey = (key: string): string => {
+  return key
+    .split('/')
+    .map(segment => encodeURIComponent(segment))
+    .join('/');
+};
+
+let metadataFromObjectResponse = (key: string, response: Record<string, any>) => ({
+  objectKey: key,
+  contentType: response.ContentType,
+  contentLength: response.ContentLength,
+  eTag: stripEtag(response.ETag) || undefined,
+  lastModified: dateToString(response.LastModified),
+  storageClass: response.StorageClass,
+  versionId: response.VersionId,
+  serverSideEncryption: response.ServerSideEncryption,
+  metadata: response.Metadata || {}
+});
+
+let buildLifecycleFilter = (rule: S3LifecycleRule) => {
+  let tags = (rule.tagFilters || []).map(toSdkTag);
+  let hasPrefix = rule.prefix !== undefined;
+  let hasGreaterThan = rule.objectSizeGreaterThan !== undefined;
+  let hasLessThan = rule.objectSizeLessThan !== undefined;
+  let filterParts =
+    (hasPrefix ? 1 : 0) + tags.length + (hasGreaterThan ? 1 : 0) + (hasLessThan ? 1 : 0);
+
+  if (filterParts === 0) {
+    return { Prefix: '' };
+  }
+
+  if (filterParts === 1) {
+    if (hasPrefix) return { Prefix: rule.prefix };
+    if (tags[0]) return { Tag: tags[0] };
+    if (hasGreaterThan) return { ObjectSizeGreaterThan: rule.objectSizeGreaterThan };
+    return { ObjectSizeLessThan: rule.objectSizeLessThan };
+  }
+
+  return {
+    And: withoutUndefined({
+      Prefix: rule.prefix,
+      Tags: tags.length > 0 ? tags : undefined,
+      ObjectSizeGreaterThan: rule.objectSizeGreaterThan,
+      ObjectSizeLessThan: rule.objectSizeLessThan
+    })
+  };
+};
+
+let parseLifecycleFilter = (
+  rule: Record<string, any>
+): {
+  prefix?: string;
+  tagFilters?: S3Tag[];
+  objectSizeGreaterThan?: number;
+  objectSizeLessThan?: number;
+} => {
+  let filter = rule.Filter || {};
+
+  if (filter.And) {
+    return {
+      prefix: filter.And.Prefix,
+      tagFilters: filter.And.Tags?.map(fromSdkTag),
+      objectSizeGreaterThan: filter.And.ObjectSizeGreaterThan,
+      objectSizeLessThan: filter.And.ObjectSizeLessThan
+    };
+  }
+
+  return {
+    prefix: filter.Prefix ?? rule.Prefix,
+    tagFilters: filter.Tag ? [fromSdkTag(filter.Tag)] : undefined,
+    objectSizeGreaterThan: filter.ObjectSizeGreaterThan,
+    objectSizeLessThan: filter.ObjectSizeLessThan
+  };
+};
+
+let toSdkLifecycleRule = (rule: S3LifecycleRule) =>
+  withoutUndefined({
+    ID: rule.id,
+    Status: rule.status,
+    Filter: buildLifecycleFilter(rule),
+    Expiration: rule.expiration
+      ? withoutUndefined({
+          Date: parseDate(rule.expiration.date),
+          Days: rule.expiration.days,
+          ExpiredObjectDeleteMarker: rule.expiration.expiredObjectDeleteMarker
+        })
+      : undefined,
+    Transitions:
+      rule.transitions && rule.transitions.length > 0
+        ? rule.transitions.map(transition =>
+            withoutUndefined({
+              Date: parseDate(transition.date),
+              Days: transition.days,
+              StorageClass: transition.storageClass
+            })
+          )
+        : undefined,
+    NoncurrentVersionExpiration: rule.noncurrentVersionExpiration
+      ? withoutUndefined({
+          NoncurrentDays: rule.noncurrentVersionExpiration.noncurrentDays,
+          NewerNoncurrentVersions: rule.noncurrentVersionExpiration.newerNoncurrentVersions
+        })
+      : undefined,
+    NoncurrentVersionTransitions:
+      rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.length > 0
+        ? rule.noncurrentVersionTransitions.map(transition =>
+            withoutUndefined({
+              NoncurrentDays: transition.noncurrentDays,
+              NewerNoncurrentVersions: transition.newerNoncurrentVersions,
+              StorageClass: transition.storageClass
+            })
+          )
+        : undefined,
+    AbortIncompleteMultipartUpload:
+      rule.abortIncompleteMultipartUploadDays !== undefined
+        ? { DaysAfterInitiation: rule.abortIncompleteMultipartUploadDays }
+        : undefined
+  });
+
+let fromSdkLifecycleRule = (rule: Record<string, any>): S3LifecycleRule => {
+  let filter = parseLifecycleFilter(rule);
+
+  return {
+    id: rule.ID,
+    status: rule.Status === 'Enabled' || rule.Status === 'Disabled' ? rule.Status : 'Disabled',
+    ...filter,
+    expiration: rule.Expiration
+      ? {
+          date: dateToString(rule.Expiration.Date),
+          days: rule.Expiration.Days,
+          expiredObjectDeleteMarker: rule.Expiration.ExpiredObjectDeleteMarker
+        }
+      : undefined,
+    transitions: (rule.Transitions || []).map((transition: Record<string, any>) => ({
+      date: dateToString(transition.Date),
+      days: transition.Days,
+      storageClass: (transition.StorageClass || 'GLACIER') as S3LifecycleTransitionStorageClass
+    })),
+    noncurrentVersionExpiration: rule.NoncurrentVersionExpiration
+      ? {
+          noncurrentDays: rule.NoncurrentVersionExpiration.NoncurrentDays,
+          newerNoncurrentVersions: rule.NoncurrentVersionExpiration.NewerNoncurrentVersions
+        }
+      : undefined,
+    noncurrentVersionTransitions: (rule.NoncurrentVersionTransitions || []).map(
+      (transition: Record<string, any>) => ({
+        noncurrentDays: transition.NoncurrentDays,
+        newerNoncurrentVersions: transition.NewerNoncurrentVersions,
+        storageClass: (transition.StorageClass ||
+          'GLACIER') as S3LifecycleTransitionStorageClass
+      })
+    ),
+    abortIncompleteMultipartUploadDays:
+      rule.AbortIncompleteMultipartUpload?.DaysAfterInitiation
+  };
+};
+
 export class S3Client {
-  private config: S3ClientConfig;
+  private client: AwsS3Client;
 
   constructor(config: S3ClientConfig) {
-    this.config = config;
-  }
-
-  private getBucketEndpoint(bucket: string): string {
-    return `https://${bucket}.s3.${this.config.region}.amazonaws.com`;
-  }
-
-  private getServiceEndpoint(): string {
-    return `https://s3.${this.config.region}.amazonaws.com`;
-  }
-
-  private async makeRequest(params: {
-    method: string;
-    url: string;
-    headers?: Record<string, string>;
-    body?: string;
-  }): Promise<{ status: number; data: string; headers: Record<string, string> }> {
-    let { method, url, headers = {}, body } = params;
-
-    let signedHeaders = await signRequest({
-      method,
-      url,
-      headers: { ...headers },
-      body: body || '',
-      accessKeyId: this.config.accessKeyId,
-      secretAccessKey: this.config.secretAccessKey,
-      sessionToken: this.config.sessionToken,
-      region: this.config.region
+    this.client = new AwsS3Client({
+      region: config.region,
+      credentials: withoutUndefined({
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey,
+        sessionToken: config.sessionToken || undefined
+      }),
+      requestHandler: createSlatesAwsSdkHttpHandler()
     });
+  }
 
-    let ax = createAxios();
-
-    let response = await ax.request({
-      method,
-      url,
-      headers: signedHeaders,
-      data: body || undefined,
-      validateStatus: () => true,
-      transformResponse: [(data: any) => data]
-    });
-
-    if (response.status >= 400) {
-      let errorMessage = typeof response.data === 'string' ? response.data : 'Request failed';
-      try {
-        let errorXml = parseXml(errorMessage);
-        let code = getChildText(errorXml, 'Code') || '';
-        let message = getChildText(errorXml, 'Message') || errorMessage;
-        throw new Error(`S3 Error (${response.status}): ${code} - ${message}`);
-      } catch (e) {
-        if (e instanceof Error && e.message.startsWith('S3 Error')) throw e;
-        throw new Error(`S3 Error (${response.status}): ${errorMessage}`);
-      }
+  private async send<T>(operation: string, command: any): Promise<T> {
+    try {
+      return (await this.client.send(command)) as T;
+    } catch (error) {
+      throw s3ApiError({
+        operation,
+        status: getSdkStatus(error),
+        code: getSdkCode(error),
+        message: getSdkMessage(error),
+        parent: error
+      });
     }
-
-    let responseHeaders: Record<string, string> = {};
-    if (response.headers) {
-      for (let [key, val] of Object.entries(response.headers)) {
-        if (typeof val === 'string') {
-          responseHeaders[key] = val;
-        }
-      }
-    }
-
-    return {
-      status: response.status,
-      data: response.data as string,
-      headers: responseHeaders
-    };
   }
 
   // === Bucket Operations ===
 
   async listBuckets(): Promise<S3Bucket[]> {
-    let response = await this.makeRequest({
-      method: 'GET',
-      url: this.getServiceEndpoint() + '/'
-    });
+    let response: any = await this.send('ListBuckets', new ListBucketsCommand({}));
 
-    let xml = parseXml(response.data);
-    let bucketsNode = getChild(xml, 'Buckets');
-    if (!bucketsNode) return [];
-
-    return getChildren(bucketsNode, 'Bucket').map(b => ({
-      bucketName: getChildText(b, 'Name') || '',
-      creationDate: getChildText(b, 'CreationDate') || ''
+    return (response.Buckets || []).map((bucket: any) => ({
+      bucketName: bucket.Name || '',
+      creationDate: dateToString(bucket.CreationDate) || ''
     }));
   }
 
   async createBucket(bucket: string, locationConstraint?: string): Promise<void> {
-    let body = '';
-    let region = locationConstraint || this.config.region;
-    if (region !== 'us-east-1') {
-      body = buildXml({
-        name: 'CreateBucketConfiguration',
-        attributes: { xmlns: 'http://s3.amazonaws.com/doc/2006-03-01/' },
-        children: [{ name: 'LocationConstraint', text: region }]
-      });
-    }
+    let region = locationConstraint || (await this.client.config.region());
 
-    await this.makeRequest({
-      method: 'PUT',
-      url: this.getBucketEndpoint(bucket) + '/',
-      headers: body ? { 'Content-Type': 'application/xml' } : {},
-      body
-    });
+    await this.send(
+      'CreateBucket',
+      new CreateBucketCommand(
+        withoutUndefined({
+          Bucket: bucket,
+          CreateBucketConfiguration:
+            region === 'us-east-1' ? undefined : { LocationConstraint: region }
+        }) as any
+      )
+    );
   }
 
   async deleteBucket(bucket: string): Promise<void> {
-    await this.makeRequest({
-      method: 'DELETE',
-      url: this.getBucketEndpoint(bucket) + '/'
-    });
+    await this.send('DeleteBucket', new DeleteBucketCommand({ Bucket: bucket }));
   }
 
   async getBucketLocation(bucket: string): Promise<string> {
-    let response = await this.makeRequest({
-      method: 'GET',
-      url: this.getBucketEndpoint(bucket) + '/?location'
-    });
+    let response: any = await this.send(
+      'GetBucketLocation',
+      new GetBucketLocationCommand({ Bucket: bucket })
+    );
 
-    let xml = parseXml(response.data);
-    return xml.text || 'us-east-1';
+    return response.LocationConstraint || 'us-east-1';
   }
 
   // === Object Operations ===
@@ -205,40 +467,34 @@ export class S3Client {
       startAfter?: string;
     }
   ): Promise<ListObjectsResult> {
-    let url = new URL(this.getBucketEndpoint(bucket) + '/');
-    url.searchParams.set('list-type', '2');
-    if (options?.prefix) url.searchParams.set('prefix', options.prefix);
-    if (options?.delimiter) url.searchParams.set('delimiter', options.delimiter);
-    if (options?.maxKeys) url.searchParams.set('max-keys', String(options.maxKeys));
-    if (options?.continuationToken)
-      url.searchParams.set('continuation-token', options.continuationToken);
-    if (options?.startAfter) url.searchParams.set('start-after', options.startAfter);
-
-    let response = await this.makeRequest({
-      method: 'GET',
-      url: url.toString()
-    });
-
-    let xml = parseXml(response.data);
-
-    let objects = getChildren(xml, 'Contents').map(c => ({
-      objectKey: getChildText(c, 'Key') || '',
-      lastModified: getChildText(c, 'LastModified') || '',
-      eTag: getChildText(c, 'ETag')?.replace(/"/g, '') || '',
-      sizeBytes: parseInt(getChildText(c, 'Size') || '0', 10),
-      storageClass: getChildText(c, 'StorageClass') || 'STANDARD'
-    }));
-
-    let commonPrefixes = getChildren(xml, 'CommonPrefixes').map(
-      cp => getChildText(cp, 'Prefix') || ''
+    let response: any = await this.send(
+      'ListObjectsV2',
+      new ListObjectsV2Command(
+        withoutUndefined({
+          Bucket: bucket,
+          Prefix: options?.prefix,
+          Delimiter: options?.delimiter,
+          MaxKeys: options?.maxKeys,
+          ContinuationToken: options?.continuationToken,
+          StartAfter: options?.startAfter
+        })
+      )
     );
 
     return {
-      objects,
-      commonPrefixes,
-      isTruncated: getChildText(xml, 'IsTruncated') === 'true',
-      nextContinuationToken: getChildText(xml, 'NextContinuationToken'),
-      keyCount: parseInt(getChildText(xml, 'KeyCount') || '0', 10)
+      objects: (response.Contents || []).map((object: any) => ({
+        objectKey: object.Key || '',
+        lastModified: dateToString(object.LastModified) || '',
+        eTag: stripEtag(object.ETag),
+        sizeBytes: object.Size || 0,
+        storageClass: object.StorageClass || 'STANDARD'
+      })),
+      commonPrefixes: (response.CommonPrefixes || []).map(
+        (prefix: any) => prefix.Prefix || ''
+      ),
+      isTruncated: response.IsTruncated === true,
+      nextContinuationToken: response.NextContinuationToken,
+      keyCount: response.KeyCount || 0
     };
   }
 
@@ -250,21 +506,22 @@ export class S3Client {
       range?: string;
     }
   ): Promise<{ content: string; metadata: S3ObjectMetadata }> {
-    let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
-    if (options?.versionId) url.searchParams.set('versionId', options.versionId);
+    let response: any = await this.send(
+      'GetObject',
+      new GetObjectCommand(
+        withoutUndefined({
+          Bucket: bucket,
+          Key: key,
+          VersionId: options?.versionId,
+          Range: options?.range
+        })
+      )
+    );
 
-    let headers: Record<string, string> = {};
-    if (options?.range) headers['Range'] = options.range;
-
-    let response = await this.makeRequest({
-      method: 'GET',
-      url: url.toString(),
-      headers
-    });
-
-    let metadata = extractMetadataFromHeaders(key, response.headers);
-
-    return { content: response.data, metadata };
+    return {
+      content: await bodyToString(response.Body),
+      metadata: metadataFromObjectResponse(key, response)
+    };
   }
 
   async headObject(
@@ -272,15 +529,18 @@ export class S3Client {
     key: string,
     versionId?: string
   ): Promise<S3ObjectMetadata> {
-    let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
-    if (versionId) url.searchParams.set('versionId', versionId);
+    let response: any = await this.send(
+      'HeadObject',
+      new HeadObjectCommand(
+        withoutUndefined({
+          Bucket: bucket,
+          Key: key,
+          VersionId: versionId
+        })
+      )
+    );
 
-    let response = await this.makeRequest({
-      method: 'HEAD',
-      url: url.toString()
-    });
-
-    return extractMetadataFromHeaders(key, response.headers);
+    return metadataFromObjectResponse(key, response);
   }
 
   async putObject(
@@ -296,30 +556,26 @@ export class S3Client {
       acl?: string;
     }
   ): Promise<{ eTag: string; versionId?: string }> {
-    let headers: Record<string, string> = {};
-    if (options?.contentType) headers['Content-Type'] = options.contentType;
-    if (options?.storageClass) headers['x-amz-storage-class'] = options.storageClass;
-    if (options?.serverSideEncryption)
-      headers['x-amz-server-side-encryption'] = options.serverSideEncryption;
-    if (options?.tagging) headers['x-amz-tagging'] = options.tagging;
-    if (options?.acl) headers['x-amz-acl'] = options.acl;
-    if (options?.metadata) {
-      for (let [k, v] of Object.entries(options.metadata)) {
-        headers[`x-amz-meta-${k}`] = v;
-      }
-    }
-
-    let url = this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key);
-    let response = await this.makeRequest({
-      method: 'PUT',
-      url,
-      headers,
-      body
-    });
+    let response: any = await this.send(
+      'PutObject',
+      new PutObjectCommand(
+        withoutUndefined({
+          Bucket: bucket,
+          Key: key,
+          Body: body,
+          ContentType: options?.contentType,
+          Metadata: options?.metadata,
+          StorageClass: options?.storageClass,
+          ServerSideEncryption: options?.serverSideEncryption,
+          Tagging: options?.tagging,
+          ACL: options?.acl
+        }) as any
+      )
+    );
 
     return {
-      eTag: response.headers['etag']?.replace(/"/g, '') || '',
-      versionId: response.headers['x-amz-version-id']
+      eTag: stripEtag(response.ETag),
+      versionId: response.VersionId
     };
   }
 
@@ -328,17 +584,20 @@ export class S3Client {
     key: string,
     versionId?: string
   ): Promise<{ deleteMarker?: boolean; versionId?: string }> {
-    let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
-    if (versionId) url.searchParams.set('versionId', versionId);
-
-    let response = await this.makeRequest({
-      method: 'DELETE',
-      url: url.toString()
-    });
+    let response: any = await this.send(
+      'DeleteObject',
+      new DeleteObjectCommand(
+        withoutUndefined({
+          Bucket: bucket,
+          Key: key,
+          VersionId: versionId
+        })
+      )
+    );
 
     return {
-      deleteMarker: response.headers['x-amz-delete-marker'] === 'true',
-      versionId: response.headers['x-amz-version-id']
+      deleteMarker: response.DeleteMarker,
+      versionId: response.VersionId
     };
   }
 
@@ -349,45 +608,33 @@ export class S3Client {
     deleted: Array<{ objectKey: string; versionId?: string }>;
     errors: Array<{ objectKey: string; code: string; message: string }>;
   }> {
-    let objectNodes: XmlNode[] = keys.map(k => {
-      let children: XmlNode[] = [{ name: 'Key', text: k.objectKey }];
-      if (k.versionId) children.push({ name: 'VersionId', text: k.versionId });
-      return { name: 'Object', children };
-    });
+    let response: any = await this.send(
+      'DeleteObjects',
+      new DeleteObjectsCommand({
+        Bucket: bucket,
+        Delete: {
+          Quiet: false,
+          Objects: keys.map(object =>
+            withoutUndefined({
+              Key: object.objectKey,
+              VersionId: object.versionId
+            })
+          )
+        }
+      })
+    );
 
-    let body = buildXml({
-      name: 'Delete',
-      attributes: { xmlns: 'http://s3.amazonaws.com/doc/2006-03-01/' },
-      children: [{ name: 'Quiet', text: 'false' }, ...objectNodes]
-    });
-
-    let url = this.getBucketEndpoint(bucket) + '/?delete';
-    let contentMd5 = computeMd5Base64(body);
-
-    let response = await this.makeRequest({
-      method: 'POST',
-      url,
-      headers: {
-        'Content-Type': 'application/xml',
-        'Content-MD5': contentMd5
-      },
-      body
-    });
-
-    let xml = parseXml(response.data);
-
-    let deleted = getChildren(xml, 'Deleted').map(d => ({
-      objectKey: getChildText(d, 'Key') || '',
-      versionId: getChildText(d, 'VersionId')
-    }));
-
-    let errors = getChildren(xml, 'Error').map(e => ({
-      objectKey: getChildText(e, 'Key') || '',
-      code: getChildText(e, 'Code') || '',
-      message: getChildText(e, 'Message') || ''
-    }));
-
-    return { deleted, errors };
+    return {
+      deleted: (response.Deleted || []).map((object: any) => ({
+        objectKey: object.Key || '',
+        versionId: object.VersionId
+      })),
+      errors: (response.Errors || []).map((error: any) => ({
+        objectKey: error.Key || '',
+        code: error.Code || '',
+        message: error.Message || ''
+      }))
+    };
   }
 
   async copyObject(
@@ -404,35 +651,26 @@ export class S3Client {
       sourceVersionId?: string;
     }
   ): Promise<{ eTag: string; lastModified: string; versionId?: string }> {
-    let headers: Record<string, string> = {};
-    let copySource = `/${sourceBucket}/${encodeObjectKey(sourceKey)}`;
-    if (options?.sourceVersionId) copySource += `?versionId=${options.sourceVersionId}`;
-    headers['x-amz-copy-source'] = copySource;
+    let response: any = await this.send(
+      'CopyObject',
+      new CopyObjectCommand(
+        withoutUndefined({
+          Bucket: destBucket,
+          Key: destKey,
+          CopySource: encodeCopySource(sourceBucket, sourceKey, options?.sourceVersionId),
+          MetadataDirective: options?.metadataDirective,
+          Metadata: options?.metadata,
+          ContentType: options?.contentType,
+          StorageClass: options?.storageClass,
+          ServerSideEncryption: options?.serverSideEncryption
+        }) as any
+      )
+    );
 
-    if (options?.metadataDirective)
-      headers['x-amz-metadata-directive'] = options.metadataDirective;
-    if (options?.contentType) headers['Content-Type'] = options.contentType;
-    if (options?.storageClass) headers['x-amz-storage-class'] = options.storageClass;
-    if (options?.serverSideEncryption)
-      headers['x-amz-server-side-encryption'] = options.serverSideEncryption;
-    if (options?.metadata) {
-      for (let [k, v] of Object.entries(options.metadata)) {
-        headers[`x-amz-meta-${k}`] = v;
-      }
-    }
-
-    let url = this.getBucketEndpoint(destBucket) + '/' + encodeObjectKey(destKey);
-    let response = await this.makeRequest({
-      method: 'PUT',
-      url,
-      headers
-    });
-
-    let xml = parseXml(response.data);
     return {
-      eTag: getChildText(xml, 'ETag')?.replace(/"/g, '') || '',
-      lastModified: getChildText(xml, 'LastModified') || '',
-      versionId: response.headers['x-amz-version-id']
+      eTag: stripEtag(response.CopyObjectResult?.ETag),
+      lastModified: dateToString(response.CopyObjectResult?.LastModified) || '',
+      versionId: response.VersionId
     };
   }
 
@@ -449,51 +687,52 @@ export class S3Client {
     }
   ): Promise<string> {
     let method = options?.method || 'GET';
-    let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
-    if (options?.versionId) url.searchParams.set('versionId', options.versionId);
-    if (options?.contentType && method === 'PUT') {
-      url.searchParams.set('Content-Type', options.contentType);
-    }
+    let command =
+      method === 'PUT'
+        ? new PutObjectCommand(
+            withoutUndefined({
+              Bucket: bucket,
+              Key: key,
+              ContentType: options?.contentType
+            })
+          )
+        : new GetObjectCommand(
+            withoutUndefined({
+              Bucket: bucket,
+              Key: key,
+              VersionId: options?.versionId
+            })
+          );
 
-    return createPresignedUrl({
-      method,
-      url: url.toString(),
-      accessKeyId: this.config.accessKeyId,
-      secretAccessKey: this.config.secretAccessKey,
-      sessionToken: this.config.sessionToken,
-      region: this.config.region,
-      expiresInSeconds: options?.expiresInSeconds || 3600
+    return await getSignedUrl(this.client, command, {
+      expiresIn: options?.expiresInSeconds || 3600
     });
   }
 
   // === Versioning ===
 
   async getBucketVersioning(bucket: string): Promise<{ status: string; mfaDelete?: string }> {
-    let response = await this.makeRequest({
-      method: 'GET',
-      url: this.getBucketEndpoint(bucket) + '/?versioning'
-    });
+    let response: any = await this.send(
+      'GetBucketVersioning',
+      new GetBucketVersioningCommand({ Bucket: bucket })
+    );
 
-    let xml = parseXml(response.data);
     return {
-      status: getChildText(xml, 'Status') || 'Disabled',
-      mfaDelete: getChildText(xml, 'MfaDelete')
+      status: response.Status || 'Disabled',
+      mfaDelete: response.MFADelete
     };
   }
 
   async putBucketVersioning(bucket: string, status: 'Enabled' | 'Suspended'): Promise<void> {
-    let body = buildXml({
-      name: 'VersioningConfiguration',
-      attributes: { xmlns: 'http://s3.amazonaws.com/doc/2006-03-01/' },
-      children: [{ name: 'Status', text: status }]
-    });
-
-    await this.makeRequest({
-      method: 'PUT',
-      url: this.getBucketEndpoint(bucket) + '/?versioning',
-      headers: { 'Content-Type': 'application/xml' },
-      body
-    });
+    await this.send(
+      'PutBucketVersioning',
+      new PutBucketVersioningCommand({
+        Bucket: bucket,
+        VersioningConfiguration: {
+          Status: status
+        }
+      })
+    );
   }
 
   async listObjectVersions(
@@ -505,75 +744,68 @@ export class S3Client {
       versionIdMarker?: string;
     }
   ): Promise<ListVersionsResult> {
-    let url = new URL(this.getBucketEndpoint(bucket) + '/');
-    url.searchParams.set('versions', '');
-    if (options?.prefix) url.searchParams.set('prefix', options.prefix);
-    if (options?.maxKeys) url.searchParams.set('max-keys', String(options.maxKeys));
-    if (options?.keyMarker) url.searchParams.set('key-marker', options.keyMarker);
-    if (options?.versionIdMarker)
-      url.searchParams.set('version-id-marker', options.versionIdMarker);
+    let response: any = await this.send(
+      'ListObjectVersions',
+      new ListObjectVersionsCommand(
+        withoutUndefined({
+          Bucket: bucket,
+          Prefix: options?.prefix,
+          MaxKeys: options?.maxKeys,
+          KeyMarker: options?.keyMarker,
+          VersionIdMarker: options?.versionIdMarker
+        })
+      )
+    );
 
-    let response = await this.makeRequest({
-      method: 'GET',
-      url: url.toString()
-    });
-
-    let xml = parseXml(response.data);
-
-    let versions: S3ObjectVersion[] = getChildren(xml, 'Version').map(v => ({
-      objectKey: getChildText(v, 'Key') || '',
-      versionId: getChildText(v, 'VersionId') || '',
-      isLatest: getChildText(v, 'IsLatest') === 'true',
-      lastModified: getChildText(v, 'LastModified') || '',
-      eTag: getChildText(v, 'ETag')?.replace(/"/g, '') || '',
-      sizeBytes: parseInt(getChildText(v, 'Size') || '0', 10),
-      storageClass: getChildText(v, 'StorageClass') || 'STANDARD',
+    let versions: S3ObjectVersion[] = (response.Versions || []).map((version: any) => ({
+      objectKey: version.Key || '',
+      versionId: version.VersionId || '',
+      isLatest: version.IsLatest === true,
+      lastModified: dateToString(version.LastModified) || '',
+      eTag: stripEtag(version.ETag),
+      sizeBytes: version.Size || 0,
+      storageClass: version.StorageClass || 'STANDARD',
       isDeleteMarker: false
     }));
 
-    let deleteMarkers: S3ObjectVersion[] = getChildren(xml, 'DeleteMarker').map(d => ({
-      objectKey: getChildText(d, 'Key') || '',
-      versionId: getChildText(d, 'VersionId') || '',
-      isLatest: getChildText(d, 'IsLatest') === 'true',
-      lastModified: getChildText(d, 'LastModified') || '',
-      eTag: '',
-      sizeBytes: 0,
-      storageClass: '',
-      isDeleteMarker: true
-    }));
-
-    let allVersions = [...versions, ...deleteMarkers].sort((a, b) =>
-      b.lastModified.localeCompare(a.lastModified)
+    let deleteMarkers: S3ObjectVersion[] = (response.DeleteMarkers || []).map(
+      (marker: any) => ({
+        objectKey: marker.Key || '',
+        versionId: marker.VersionId || '',
+        isLatest: marker.IsLatest === true,
+        lastModified: dateToString(marker.LastModified) || '',
+        eTag: '',
+        sizeBytes: 0,
+        storageClass: '',
+        isDeleteMarker: true
+      })
     );
 
     return {
-      versions: allVersions,
-      isTruncated: getChildText(xml, 'IsTruncated') === 'true',
-      nextKeyMarker: getChildText(xml, 'NextKeyMarker'),
-      nextVersionIdMarker: getChildText(xml, 'NextVersionIdMarker')
+      versions: [...versions, ...deleteMarkers].sort((a, b) =>
+        b.lastModified.localeCompare(a.lastModified)
+      ),
+      isTruncated: response.IsTruncated === true,
+      nextKeyMarker: response.NextKeyMarker,
+      nextVersionIdMarker: response.NextVersionIdMarker
     };
   }
 
   // === Tags ===
 
   async getObjectTagging(bucket: string, key: string, versionId?: string): Promise<S3Tag[]> {
-    let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
-    url.searchParams.set('tagging', '');
-    if (versionId) url.searchParams.set('versionId', versionId);
+    let response: any = await this.send(
+      'GetObjectTagging',
+      new GetObjectTaggingCommand(
+        withoutUndefined({
+          Bucket: bucket,
+          Key: key,
+          VersionId: versionId
+        })
+      )
+    );
 
-    let response = await this.makeRequest({
-      method: 'GET',
-      url: url.toString()
-    });
-
-    let xml = parseXml(response.data);
-    let tagSet = getChild(xml, 'TagSet');
-    if (!tagSet) return [];
-
-    return getChildren(tagSet, 'Tag').map(t => ({
-      key: getChildText(t, 'Key') || '',
-      value: getChildText(t, 'Value') || ''
-    }));
+    return (response.TagSet || []).map(fromSdkTag);
   }
 
   async putObjectTagging(
@@ -582,248 +814,111 @@ export class S3Client {
     tags: S3Tag[],
     versionId?: string
   ): Promise<void> {
-    let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
-    url.searchParams.set('tagging', '');
-    if (versionId) url.searchParams.set('versionId', versionId);
-
-    let body = buildXml({
-      name: 'Tagging',
-      attributes: { xmlns: 'http://s3.amazonaws.com/doc/2006-03-01/' },
-      children: [
-        {
-          name: 'TagSet',
-          children: tags.map(t => ({
-            name: 'Tag',
-            children: [
-              { name: 'Key', text: t.key },
-              { name: 'Value', text: t.value }
-            ]
-          }))
-        }
-      ]
-    });
-
-    await this.makeRequest({
-      method: 'PUT',
-      url: url.toString(),
-      headers: { 'Content-Type': 'application/xml' },
-      body
-    });
+    await this.send(
+      'PutObjectTagging',
+      new PutObjectTaggingCommand(
+        withoutUndefined({
+          Bucket: bucket,
+          Key: key,
+          VersionId: versionId,
+          Tagging: {
+            TagSet: tags.map(toSdkTag)
+          }
+        })
+      )
+    );
   }
 
   async deleteObjectTagging(bucket: string, key: string, versionId?: string): Promise<void> {
-    let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
-    url.searchParams.set('tagging', '');
-    if (versionId) url.searchParams.set('versionId', versionId);
-
-    await this.makeRequest({
-      method: 'DELETE',
-      url: url.toString()
-    });
+    await this.send(
+      'DeleteObjectTagging',
+      new DeleteObjectTaggingCommand(
+        withoutUndefined({
+          Bucket: bucket,
+          Key: key,
+          VersionId: versionId
+        })
+      )
+    );
   }
 
   async getBucketTagging(bucket: string): Promise<S3Tag[]> {
-    let response = await this.makeRequest({
-      method: 'GET',
-      url: this.getBucketEndpoint(bucket) + '/?tagging'
-    });
+    let response: any = await this.send(
+      'GetBucketTagging',
+      new GetBucketTaggingCommand({ Bucket: bucket })
+    );
 
-    let xml = parseXml(response.data);
-    let tagSet = getChild(xml, 'TagSet');
-    if (!tagSet) return [];
-
-    return getChildren(tagSet, 'Tag').map(t => ({
-      key: getChildText(t, 'Key') || '',
-      value: getChildText(t, 'Value') || ''
-    }));
+    return (response.TagSet || []).map(fromSdkTag);
   }
 
   async putBucketTagging(bucket: string, tags: S3Tag[]): Promise<void> {
-    let body = buildXml({
-      name: 'Tagging',
-      attributes: { xmlns: 'http://s3.amazonaws.com/doc/2006-03-01/' },
-      children: [
-        {
-          name: 'TagSet',
-          children: tags.map(t => ({
-            name: 'Tag',
-            children: [
-              { name: 'Key', text: t.key },
-              { name: 'Value', text: t.value }
-            ]
-          }))
+    await this.send(
+      'PutBucketTagging',
+      new PutBucketTaggingCommand({
+        Bucket: bucket,
+        Tagging: {
+          TagSet: tags.map(toSdkTag)
         }
-      ]
-    });
+      })
+    );
+  }
 
-    await this.makeRequest({
-      method: 'PUT',
-      url: this.getBucketEndpoint(bucket) + '/?tagging',
-      headers: { 'Content-Type': 'application/xml' },
-      body
-    });
+  async deleteBucketTagging(bucket: string): Promise<void> {
+    await this.send('DeleteBucketTagging', new DeleteBucketTaggingCommand({ Bucket: bucket }));
   }
 
   // === Bucket Policy ===
 
   async getBucketPolicy(bucket: string): Promise<string> {
-    let response = await this.makeRequest({
-      method: 'GET',
-      url: this.getBucketEndpoint(bucket) + '/?policy'
-    });
-    return response.data;
+    let response: any = await this.send(
+      'GetBucketPolicy',
+      new GetBucketPolicyCommand({ Bucket: bucket })
+    );
+
+    return response.Policy || '';
   }
 
   async putBucketPolicy(bucket: string, policy: string): Promise<void> {
-    await this.makeRequest({
-      method: 'PUT',
-      url: this.getBucketEndpoint(bucket) + '/?policy',
-      headers: { 'Content-Type': 'application/json' },
-      body: policy
-    });
+    await this.send(
+      'PutBucketPolicy',
+      new PutBucketPolicyCommand({
+        Bucket: bucket,
+        Policy: policy
+      })
+    );
   }
 
   async deleteBucketPolicy(bucket: string): Promise<void> {
-    await this.makeRequest({
-      method: 'DELETE',
-      url: this.getBucketEndpoint(bucket) + '/?policy'
-    });
+    await this.send('DeleteBucketPolicy', new DeleteBucketPolicyCommand({ Bucket: bucket }));
+  }
+
+  // === Bucket Lifecycle ===
+
+  async getBucketLifecycle(bucket: string): Promise<S3LifecycleRule[]> {
+    let response: any = await this.send(
+      'GetBucketLifecycleConfiguration',
+      new GetBucketLifecycleConfigurationCommand({ Bucket: bucket })
+    );
+
+    return (response.Rules || []).map(fromSdkLifecycleRule);
+  }
+
+  async putBucketLifecycle(bucket: string, rules: S3LifecycleRule[]): Promise<void> {
+    await this.send(
+      'PutBucketLifecycleConfiguration',
+      new PutBucketLifecycleConfigurationCommand({
+        Bucket: bucket,
+        LifecycleConfiguration: {
+          Rules: rules.map(toSdkLifecycleRule)
+        }
+      } as any)
+    );
+  }
+
+  async deleteBucketLifecycle(bucket: string): Promise<void> {
+    await this.send(
+      'DeleteBucketLifecycle',
+      new DeleteBucketLifecycleCommand({ Bucket: bucket })
+    );
   }
 }
-
-let encodeObjectKey = (key: string): string => {
-  return key
-    .split('/')
-    .map(segment => encodeURIComponent(segment))
-    .join('/');
-};
-
-let extractMetadataFromHeaders = (
-  key: string,
-  headers: Record<string, string>
-): S3ObjectMetadata => {
-  let metadata: Record<string, string> = {};
-  for (let [k, v] of Object.entries(headers)) {
-    if (k.toLowerCase().startsWith('x-amz-meta-')) {
-      metadata[k.toLowerCase().replace('x-amz-meta-', '')] = v;
-    }
-  }
-
-  return {
-    objectKey: key,
-    contentType: headers['content-type'],
-    contentLength: headers['content-length']
-      ? parseInt(headers['content-length'], 10)
-      : undefined,
-    eTag: headers['etag']?.replace(/"/g, ''),
-    lastModified: headers['last-modified'],
-    storageClass: headers['x-amz-storage-class'],
-    versionId: headers['x-amz-version-id'],
-    serverSideEncryption: headers['x-amz-server-side-encryption'],
-    metadata
-  };
-};
-
-// MD5 computation for Content-MD5 header (required for delete-objects)
-let computeMd5Base64 = (data: string): string => {
-  let input = new TextEncoder().encode(data);
-  let hash = md5(input);
-  let binary = '';
-  for (let i = 0; i < hash.length; i++) {
-    binary += String.fromCharCode(hash[i]!);
-  }
-  return btoa(binary);
-};
-
-let md5 = (input: Uint8Array): Uint8Array => {
-  let S = [
-    7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5,
-    9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10,
-    15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
-  ];
-  let K = [
-    0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613,
-    0xfd469501, 0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193,
-    0xa679438e, 0x49b40821, 0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d,
-    0x02441453, 0xd8a1e681, 0xe7d3fbc8, 0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
-    0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a, 0xfffa3942, 0x8771f681, 0x6d9d6122,
-    0xfde5380c, 0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70, 0x289b7ec6, 0xeaa127fa,
-    0xd4ef3085, 0x04881d05, 0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665, 0xf4292244,
-    0x432aff97, 0xab9423a7, 0xfc93a039, 0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-    0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1, 0xf7537e82, 0xbd3af235, 0x2ad7d2bb,
-    0xeb86d391
-  ];
-
-  let leftRotate = (x: number, c: number): number => ((x << c) | (x >>> (32 - c))) >>> 0;
-
-  let originalLength = input.length;
-  let paddingLength = (56 - ((originalLength + 1) % 64) + 64) % 64;
-  let padded = new Uint8Array(originalLength + 1 + paddingLength + 8);
-  padded.set(input);
-  padded[originalLength] = 0x80;
-
-  let bitLength = originalLength * 8;
-  for (let i = 0; i < 8; i++) {
-    padded[originalLength + 1 + paddingLength + i] = (bitLength >>> (i * 8)) & 0xff;
-  }
-
-  let a0 = 0x67452301 >>> 0;
-  let b0 = 0xefcdab89 >>> 0;
-  let c0 = 0x98badcfe >>> 0;
-  let d0 = 0x10325476 >>> 0;
-
-  for (let offset = 0; offset < padded.length; offset += 64) {
-    let M = new Uint32Array(16);
-    for (let j = 0; j < 16; j++) {
-      M[j] =
-        (padded[offset + j * 4]! |
-          (padded[offset + j * 4 + 1]! << 8) |
-          (padded[offset + j * 4 + 2]! << 16) |
-          (padded[offset + j * 4 + 3]! << 24)) >>>
-        0;
-    }
-
-    let A = a0,
-      B = b0,
-      C = c0,
-      D = d0;
-
-    for (let i = 0; i < 64; i++) {
-      let F: number, g: number;
-      if (i < 16) {
-        F = ((B & C) | (~B & D)) >>> 0;
-        g = i;
-      } else if (i < 32) {
-        F = ((D & B) | (~D & C)) >>> 0;
-        g = (5 * i + 1) % 16;
-      } else if (i < 48) {
-        F = (B ^ C ^ D) >>> 0;
-        g = (3 * i + 5) % 16;
-      } else {
-        F = (C ^ (B | ~D)) >>> 0;
-        g = (7 * i) % 16;
-      }
-
-      F = (F + A + K[i]! + M[g]!) >>> 0;
-      A = D;
-      D = C;
-      C = B;
-      B = (B + leftRotate(F, S[i]!)) >>> 0;
-    }
-
-    a0 = (a0 + A) >>> 0;
-    b0 = (b0 + B) >>> 0;
-    c0 = (c0 + C) >>> 0;
-    d0 = (d0 + D) >>> 0;
-  }
-
-  let result = new Uint8Array(16);
-  for (let i = 0; i < 4; i++) {
-    result[i] = (a0 >>> (i * 8)) & 0xff;
-    result[i + 4] = (b0 >>> (i * 8)) & 0xff;
-    result[i + 8] = (c0 >>> (i * 8)) & 0xff;
-    result[i + 12] = (d0 >>> (i * 8)) & 0xff;
-  }
-
-  return result;
-};

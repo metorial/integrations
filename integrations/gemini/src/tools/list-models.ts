@@ -3,6 +3,39 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let modelSchema = z.object({
+  modelName: z
+    .string()
+    .describe('Full resource name of the model (e.g. "models/gemini-2.0-flash")'),
+  displayName: z.string().describe('Human-readable display name'),
+  description: z.string().optional().describe('Description of the model'),
+  version: z.string().optional().describe('Model version string'),
+  inputTokenLimit: z.number().optional().describe('Maximum input tokens supported'),
+  outputTokenLimit: z.number().optional().describe('Maximum output tokens supported'),
+  supportedGenerationMethods: z
+    .array(z.string())
+    .optional()
+    .describe('Supported methods (e.g. "generateContent", "embedContent")'),
+  temperature: z.number().optional().describe('Default temperature'),
+  maxTemperature: z.number().optional().describe('Maximum allowed temperature'),
+  topP: z.number().optional().describe('Default top-p value'),
+  topK: z.number().optional().describe('Default top-k value')
+});
+
+let mapModel = (model: any) => ({
+  modelName: model.name,
+  displayName: model.displayName ?? '',
+  description: model.description,
+  version: model.version,
+  inputTokenLimit: model.inputTokenLimit,
+  outputTokenLimit: model.outputTokenLimit,
+  supportedGenerationMethods: model.supportedGenerationMethods,
+  temperature: model.temperature,
+  maxTemperature: model.maxTemperature,
+  topP: model.topP,
+  topK: model.topK
+});
+
 export let listModels = SlateTool.create(spec, {
   name: 'List Models',
   key: 'list_models',
@@ -25,31 +58,7 @@ export let listModels = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      models: z
-        .array(
-          z.object({
-            modelName: z
-              .string()
-              .describe('Full resource name of the model (e.g. "models/gemini-2.0-flash")'),
-            displayName: z.string().describe('Human-readable display name'),
-            description: z.string().optional().describe('Description of the model'),
-            version: z.string().optional().describe('Model version string'),
-            inputTokenLimit: z.number().optional().describe('Maximum input tokens supported'),
-            outputTokenLimit: z
-              .number()
-              .optional()
-              .describe('Maximum output tokens supported'),
-            supportedGenerationMethods: z
-              .array(z.string())
-              .optional()
-              .describe('Supported methods (e.g. "generateContent", "embedContent")'),
-            temperature: z.number().optional().describe('Default temperature'),
-            maxTemperature: z.number().optional().describe('Maximum allowed temperature'),
-            topP: z.number().optional().describe('Default top-p value'),
-            topK: z.number().optional().describe('Default top-k value')
-          })
-        )
-        .describe('Available models'),
+      models: z.array(modelSchema).describe('Available models'),
       nextPageToken: z.string().optional().describe('Token for fetching the next page')
     })
   )
@@ -61,19 +70,7 @@ export let listModels = SlateTool.create(spec, {
       pageToken: ctx.input.pageToken
     });
 
-    let models = (result.models ?? []).map((m: any) => ({
-      modelName: m.name,
-      displayName: m.displayName ?? '',
-      description: m.description,
-      version: m.version,
-      inputTokenLimit: m.inputTokenLimit,
-      outputTokenLimit: m.outputTokenLimit,
-      supportedGenerationMethods: m.supportedGenerationMethods,
-      temperature: m.temperature,
-      maxTemperature: m.maxTemperature,
-      topP: m.topP,
-      topK: m.topK
-    }));
+    let models = (result.models ?? []).map(mapModel);
 
     return {
       output: {
@@ -81,6 +78,34 @@ export let listModels = SlateTool.create(spec, {
         nextPageToken: result.nextPageToken
       },
       message: `Found **${models.length}** models.${result.nextPageToken ? ' More models available on next page.' : ''}`
+    };
+  })
+  .build();
+
+export let getModel = SlateTool.create(spec, {
+  name: 'Get Model',
+  key: 'get_model',
+  description: `Get metadata for a specific Gemini model, including supported generation methods, token limits, version, and generation defaults. Use this before invoking a model-specific capability such as text generation, embeddings, or token counting.`,
+  tags: {
+    readOnly: true,
+    destructive: false
+  }
+})
+  .input(
+    z.object({
+      model: z
+        .string()
+        .describe('Model ID or resource name to retrieve (e.g. "gemini-2.0-flash")')
+    })
+  )
+  .output(modelSchema)
+  .handleInvocation(async ctx => {
+    let client = createClient(ctx);
+    let model = mapModel(await client.getModel(ctx.input.model));
+
+    return {
+      output: model,
+      message: `Retrieved model **${model.modelName}**.`
     };
   })
   .build();

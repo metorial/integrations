@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { jiraApiError, jiraServiceError } from './lib/errors';
 
 let outputSchema = z.object({
   token: z.string(),
@@ -97,43 +98,54 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let http = createAxios();
+      try {
+        let http = createAxios();
 
-      let tokenResponse = await http.post('https://auth.atlassian.com/oauth/token', {
-        grant_type: 'authorization_code',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri
-      });
+        let tokenResponse = await http.post('https://auth.atlassian.com/oauth/token', {
+          grant_type: 'authorization_code',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        });
 
-      let accessToken = tokenResponse.data.access_token;
-      let refreshToken = tokenResponse.data.refresh_token;
-      let expiresIn = tokenResponse.data.expires_in;
-      let expiresAt = expiresIn
-        ? new Date(Date.now() + expiresIn * 1000).toISOString()
-        : undefined;
-
-      let resourcesResponse = await http.get(
-        'https://api.atlassian.com/oauth/token/accessible-resources',
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
-
-      let resources = resourcesResponse.data as Array<{
-        id: string;
-        name: string;
-        url: string;
-      }>;
-      let cloudId = resources[0]?.id ?? '';
-
-      return {
-        output: {
-          token: accessToken,
-          cloudId,
-          refreshToken,
-          expiresAt
+        let accessToken = tokenResponse.data.access_token;
+        if (!accessToken) {
+          throw jiraServiceError('Jira OAuth token response did not include an access token.');
         }
-      };
+
+        let refreshToken = tokenResponse.data.refresh_token;
+        let expiresIn = tokenResponse.data.expires_in;
+        let expiresAt = expiresIn
+          ? new Date(Date.now() + expiresIn * 1000).toISOString()
+          : undefined;
+
+        let resourcesResponse = await http.get(
+          'https://api.atlassian.com/oauth/token/accessible-resources',
+          { headers: { Authorization: `Bearer ${accessToken}` } }
+        );
+
+        let resources = resourcesResponse.data as Array<{
+          id: string;
+          name: string;
+          url: string;
+        }>;
+        let cloudId = resources[0]?.id ?? '';
+        if (!cloudId) {
+          throw jiraServiceError('Jira OAuth did not return an accessible Cloud site.');
+        }
+
+        return {
+          output: {
+            token: accessToken,
+            cloudId,
+            refreshToken,
+            expiresAt
+          }
+        };
+      } catch (error) {
+        throw jiraApiError(error, 'OAuth callback');
+      }
     },
 
     handleTokenRefresh: async ctx => {
@@ -141,49 +153,63 @@ export let auth = SlateAuth.create()
         return { output: ctx.output };
       }
 
-      let http = createAxios();
+      try {
+        let http = createAxios();
 
-      let tokenResponse = await http.post('https://auth.atlassian.com/oauth/token', {
-        grant_type: 'refresh_token',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken
-      });
+        let tokenResponse = await http.post('https://auth.atlassian.com/oauth/token', {
+          grant_type: 'refresh_token',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          refresh_token: ctx.output.refreshToken
+        });
 
-      let accessToken = tokenResponse.data.access_token;
-      let refreshToken = tokenResponse.data.refresh_token ?? ctx.output.refreshToken;
-      let expiresIn = tokenResponse.data.expires_in;
-      let expiresAt = expiresIn
-        ? new Date(Date.now() + expiresIn * 1000).toISOString()
-        : undefined;
-
-      return {
-        output: {
-          token: accessToken,
-          cloudId: ctx.output.cloudId,
-          refreshToken,
-          expiresAt
+        let accessToken = tokenResponse.data.access_token;
+        if (!accessToken) {
+          throw jiraServiceError(
+            'Jira OAuth refresh response did not include an access token.'
+          );
         }
-      };
+
+        let refreshToken = tokenResponse.data.refresh_token ?? ctx.output.refreshToken;
+        let expiresIn = tokenResponse.data.expires_in;
+        let expiresAt = expiresIn
+          ? new Date(Date.now() + expiresIn * 1000).toISOString()
+          : undefined;
+
+        return {
+          output: {
+            token: accessToken,
+            cloudId: ctx.output.cloudId,
+            refreshToken,
+            expiresAt
+          }
+        };
+      } catch (error) {
+        throw jiraApiError(error, 'OAuth refresh');
+      }
     },
 
     getProfile: async (ctx: { output: AuthOutput; input: {}; scopes: string[] }) => {
-      let http = createAxios({
-        baseURL: 'https://api.atlassian.com',
-        headers: { Authorization: `Bearer ${ctx.output.token}` }
-      });
+      try {
+        let http = createAxios({
+          baseURL: 'https://api.atlassian.com',
+          headers: { Authorization: `Bearer ${ctx.output.token}` }
+        });
 
-      let meResponse = await http.get('/me');
-      let me = meResponse.data;
+        let meResponse = await http.get('/me');
+        let me = meResponse.data;
 
-      return {
-        profile: {
-          id: me.account_id,
-          email: me.email,
-          name: me.name,
-          imageUrl: me.picture
-        }
-      };
+        return {
+          profile: {
+            id: me.account_id,
+            email: me.email,
+            name: me.name,
+            imageUrl: me.picture
+          }
+        };
+      } catch (error) {
+        throw jiraApiError(error, 'profile lookup');
+      }
     }
   })
   .addTokenAuth({
@@ -204,45 +230,53 @@ export let auth = SlateAuth.create()
     }),
 
     getOutput: async ctx => {
-      let basicToken = btoa(`${ctx.input.email}:${ctx.input.token}`);
+      try {
+        let basicToken = btoa(`${ctx.input.email}:${ctx.input.token}`);
 
-      let tenantInfo = await createAxios().get(
-        `https://${ctx.input.domain}.atlassian.net/_edge/tenant_info`
-      );
-      let cloudId = (tenantInfo.data as { cloudId?: string }).cloudId;
-      if (!cloudId) {
-        throw new Error(
-          `Could not resolve cloudId for domain "${ctx.input.domain}". Verify the domain is correct (e.g., "mycompany" for mycompany.atlassian.net).`
+        let tenantInfo = await createAxios().get(
+          `https://${ctx.input.domain}.atlassian.net/_edge/tenant_info`
         );
-      }
-
-      return {
-        output: {
-          token: basicToken,
-          cloudId
+        let cloudId = (tenantInfo.data as { cloudId?: string }).cloudId;
+        if (!cloudId) {
+          throw jiraServiceError(
+            `Could not resolve cloudId for domain "${ctx.input.domain}". Verify the domain is correct (e.g., "mycompany" for mycompany.atlassian.net).`
+          );
         }
-      };
+
+        return {
+          output: {
+            token: basicToken,
+            cloudId
+          }
+        };
+      } catch (error) {
+        throw jiraApiError(error, 'API token setup');
+      }
     },
 
     getProfile: async (ctx: {
       output: AuthOutput;
       input: { email: string; token: string; domain: string };
     }) => {
-      let http = createAxios({
-        baseURL: `https://api.atlassian.com/ex/jira/${ctx.output.cloudId}/rest/api/3`,
-        headers: { Authorization: `Basic ${ctx.output.token}` }
-      });
+      try {
+        let http = createAxios({
+          baseURL: `https://api.atlassian.com/ex/jira/${ctx.output.cloudId}/rest/api/3`,
+          headers: { Authorization: `Basic ${ctx.output.token}` }
+        });
 
-      let response = await http.get('/myself');
-      let user = response.data;
+        let response = await http.get('/myself');
+        let user = response.data;
 
-      return {
-        profile: {
-          id: user.accountId,
-          email: user.emailAddress,
-          name: user.displayName,
-          imageUrl: user.avatarUrls?.['48x48']
-        }
-      };
+        return {
+          profile: {
+            id: user.accountId,
+            email: user.emailAddress,
+            name: user.displayName,
+            imageUrl: user.avatarUrls?.['48x48']
+          }
+        };
+      } catch (error) {
+        throw jiraApiError(error, 'profile lookup');
+      }
     }
   });

@@ -1,6 +1,8 @@
+import { ServiceError } from '@lowerdeck/error';
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 import { getAccessTokenFromServiceAccount } from './lib/jwt';
+import { firebaseOAuthError, firebaseServiceError } from './lib/errors';
 import { firebaseScopes } from './scopes';
 
 let googleOAuthAxios = createAxios({
@@ -65,21 +67,26 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response = await googleOAuthAxios.post(
-        '/token',
-        new URLSearchParams({
-          code: ctx.code,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri,
-          grant_type: 'authorization_code'
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await googleOAuthAxios.post(
+          '/token',
+          new URLSearchParams({
+            code: ctx.code,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri,
+            grant_type: 'authorization_code'
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw firebaseOAuthError('callback', error);
+      }
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -100,23 +107,28 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available');
+        throw firebaseServiceError('No refresh token available');
       }
 
-      let response = await googleOAuthAxios.post(
-        '/token',
-        new URLSearchParams({
-          refresh_token: ctx.output.refreshToken,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          grant_type: 'refresh_token'
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await googleOAuthAxios.post(
+          '/token',
+          new URLSearchParams({
+            refresh_token: ctx.output.refreshToken,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            grant_type: 'refresh_token'
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw firebaseOAuthError('refresh', error);
+      }
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -133,11 +145,16 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
-      let response = await googleUserInfoAxios.get('/oauth2/v2/userinfo', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response;
+      try {
+        response = await googleUserInfoAxios.get('/oauth2/v2/userinfo', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw firebaseOAuthError('profile', error);
+      }
 
       return {
         profile: {
@@ -165,11 +182,13 @@ export let auth = SlateAuth.create()
       try {
         serviceAccount = JSON.parse(ctx.input.serviceAccountJson);
       } catch {
-        throw new Error('Invalid service account JSON format');
+        throw firebaseServiceError('Invalid service account JSON format');
       }
 
       if (!serviceAccount.client_email || !serviceAccount.private_key) {
-        throw new Error('Service account JSON must contain client_email and private_key');
+        throw firebaseServiceError(
+          'Service account JSON must contain client_email and private_key'
+        );
       }
 
       let scopes = [
@@ -178,11 +197,22 @@ export let auth = SlateAuth.create()
         firebaseScopes.userInfoEmail
       ];
 
-      let result = await getAccessTokenFromServiceAccount({
-        clientEmail: serviceAccount.client_email,
-        privateKey: serviceAccount.private_key,
-        scopes
-      });
+      let result;
+      try {
+        result = await getAccessTokenFromServiceAccount({
+          clientEmail: serviceAccount.client_email,
+          privateKey: serviceAccount.private_key,
+          scopes
+        });
+      } catch (error) {
+        if (error instanceof ServiceError) {
+          throw error;
+        }
+
+        throw firebaseServiceError(
+          'Service account key could not be used to create an access token'
+        );
+      }
 
       return {
         output: {
@@ -196,11 +226,16 @@ export let auth = SlateAuth.create()
       output: { token: string };
       input: { serviceAccountJson: string };
     }) => {
-      let response = await googleUserInfoAxios.get('/oauth2/v2/userinfo', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response;
+      try {
+        response = await googleUserInfoAxios.get('/oauth2/v2/userinfo', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw firebaseOAuthError('profile', error);
+      }
 
       return {
         profile: {

@@ -1,12 +1,12 @@
 # <img src="https://provider-logos.metorial-cdn.com/amazon.svg" height="20"> Aws Lambda
 
-Create, update, configure, and delete serverless Lambda functions. Invoke functions synchronously, asynchronously, or with response streaming. Manage function code deployment via ZIP archives or container images. Publish immutable function versions and create aliases with weighted traffic shifting for canary and blue/green deployments. Create and manage layers for shared code, dependencies, and runtimes. Configure event source mappings to poll events from SQS, Kinesis, DynamoDB Streams, Kafka, and Amazon MQ. Set up function URLs as dedicated HTTPS endpoints. Manage concurrency settings including reserved and provisioned concurrency. Configure asynchronous invocation retry behavior and destination routing. Manage resource-based permissions policies, code signing configurations, tags, and durable execution workflows.
+Create, update, configure, and delete serverless Lambda functions. Invoke functions synchronously or asynchronously. Manage function code deployment via ZIP archives or container images. Publish immutable function versions and create aliases with weighted traffic shifting for canary and blue/green deployments. Create and manage layers for shared code, dependencies, and runtimes. Configure event source mappings to poll events from SQS, Kinesis, DynamoDB Streams, Kafka, and Amazon MQ. Set up function URLs as dedicated HTTPS endpoints. Manage concurrency settings including reserved and provisioned concurrency. Configure asynchronous invocation retry behavior and destination routing. Manage resource-based permissions policies, tags, runtime update mode, recursive loop detection, and durable execution workflows.
 
 ## Tools
 
 ### Configure Async Invocation
 
-Get, set, or remove the asynchronous invocation configuration for a Lambda function. Controls retry behavior, maximum event age, and destination routing for successful or failed invocations (to SQS, SNS, Lambda, or EventBridge).
+List, get, set, update, or remove the asynchronous invocation configuration for a Lambda function. Controls retry behavior, maximum event age, and destination routing for successful or failed invocations (to SQS, SNS, Lambda, S3, or EventBridge).
 
 ### Create Function
 
@@ -59,6 +59,14 @@ Publish, get, delete, or list Lambda layers and their versions. Layers are reusa
 ### Manage Permission
 
 Add, remove, or view resource-based policy statements on a Lambda function. These policies grant other AWS accounts or services (e.g., S3, API Gateway, EventBridge) permission to invoke the function.
+
+### Manage Recursion Config
+
+Get or set recursive loop detection for a Lambda function. Lambda defaults to terminating detected recursive invocation loops; only use Allow for intentional recursive designs with safeguards.
+
+### Manage Runtime Management
+
+Get or set the runtime update mode for a Lambda function version. Runtime management controls whether Lambda applies runtime patches automatically, on function updates, or pins a manual runtime version ARN.
 
 ### Manage Tags
 

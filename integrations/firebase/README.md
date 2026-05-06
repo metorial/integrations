@@ -1,12 +1,16 @@
 # <img src="https://provider-logos.metorial-cdn.com/firebase.png" height="20"> Firebase
 
-Manage backend services for mobile and web applications. Create, read, update, and delete documents in Cloud Firestore and Realtime Database. Manage user accounts including creating, updating, deleting, and listing users with authentication support. Send push notifications and data messages to devices, topics, and device groups via Cloud Messaging (FCM). Upload, download, and delete files in Cloud Storage. Read and publish Remote Config templates to change app behavior remotely. Deploy and manage serverless Cloud Functions triggered by database events, authentication events, storage events, and HTTP requests. Stream real-time database changes via Server-Sent Events. Query databases with filters, ordering, and pagination. Perform batch writes and transactions in Firestore. Generate and verify custom tokens and ID tokens for user authentication.
+Manage backend services for mobile and web applications. Create, read, update, and delete documents in Cloud Firestore and Realtime Database. Manage user accounts including creating, updating, deleting, looking up, and listing users. Send push notifications and data messages to devices, topics, and conditions via Cloud Messaging (FCM). Upload, list, inspect, copy, and delete files in Cloud Storage. Read and publish Remote Config templates to change app behavior remotely. Discover Firebase Android, iOS, and Web apps and retrieve their SDK configuration artifacts.
 
 ## Tools
 
 ### Get Remote Config
 
 Retrieve the current Firebase Remote Config template including all parameters, conditions, and parameter groups. Also supports listing version history for audit and rollback purposes.
+
+### Get Firebase Apps
+
+List Firebase Android, iOS, and Web apps in a project, retrieve a specific app, or download its SDK configuration artifact. Use this to discover app IDs, package or bundle identifiers, web config, and native google-services files.
 
 ### List Users
 
@@ -26,7 +30,7 @@ Read, write, push, update, or delete data at any path in the Firebase Realtime D
 
 ### Manage Cloud Storage
 
-List, get metadata, delete, or copy objects in Firebase Cloud Storage. Supports prefix-based listing for browsing folder-like structures, fetching download URLs, and copying objects between paths.
+List, upload, get metadata, delete, or copy objects in Firebase Cloud Storage. Supports prefix-based listing for browsing folder-like structures, fetching download URLs, and copying objects between paths.
 
 ### Manage Topic Subscriptions
 

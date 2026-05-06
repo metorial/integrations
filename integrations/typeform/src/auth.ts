@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { typeformApiError, typeformServiceError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -91,7 +92,7 @@ export let auth = SlateAuth.create()
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        scope: ctx.scopes.join('+'),
+        scope: ctx.scopes.join(' '),
         state: ctx.state
       });
 
@@ -113,11 +114,16 @@ export let auth = SlateAuth.create()
         redirect_uri: ctx.redirectUri
       });
 
-      let response = await client.post('/oauth/token', body.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
+      let response;
+      try {
+        response = await client.post('/oauth/token', body.toString(), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        });
+      } catch (error) {
+        throw typeformApiError('exchanging OAuth code', error);
+      }
 
       let data = response.data as {
         access_token: string;
@@ -127,7 +133,7 @@ export let auth = SlateAuth.create()
       };
 
       if (!data.access_token) {
-        throw new Error('Failed to obtain access token from Typeform');
+        throw typeformServiceError('Failed to obtain access token from Typeform.');
       }
 
       let expiresAt: string | undefined;
@@ -146,7 +152,7 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error(
+        throw typeformServiceError(
           'No refresh token available. Ensure the "offline" scope was requested during authorization.'
         );
       }
@@ -162,11 +168,16 @@ export let auth = SlateAuth.create()
         client_secret: ctx.clientSecret
       });
 
-      let response = await client.post('/oauth/token', body.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
+      let response;
+      try {
+        response = await client.post('/oauth/token', body.toString(), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        });
+      } catch (error) {
+        throw typeformApiError('refreshing OAuth token', error);
+      }
 
       let data = response.data as {
         access_token: string;
@@ -176,7 +187,7 @@ export let auth = SlateAuth.create()
       };
 
       if (!data.access_token) {
-        throw new Error('Failed to refresh access token');
+        throw typeformServiceError('Failed to refresh access token from Typeform.');
       }
 
       let expiresAt: string | undefined;
@@ -201,7 +212,12 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await client.get('/me');
+      let response;
+      try {
+        response = await client.get('/me');
+      } catch (error) {
+        throw typeformApiError('retrieving OAuth profile', error);
+      }
 
       let data = response.data as {
         user_id?: string;
@@ -245,7 +261,12 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await client.get('/me');
+      let response;
+      try {
+        response = await client.get('/me');
+      } catch (error) {
+        throw typeformApiError('retrieving token profile', error);
+      }
 
       let data = response.data as {
         user_id?: string;

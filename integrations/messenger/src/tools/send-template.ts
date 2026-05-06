@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { messengerServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -31,6 +32,36 @@ let receiptItemSchema = z.object({
   currency: z.string().optional().describe('Item currency code (e.g. USD)'),
   imageUrl: z.string().optional().describe('Item image URL')
 });
+
+let validateMessagingPolicy = (messagingType: string, tag?: string) => {
+  if (messagingType === 'MESSAGE_TAG' && !tag) {
+    throw messengerServiceError('tag is required when messagingType is MESSAGE_TAG');
+  }
+
+  if (tag && messagingType !== 'MESSAGE_TAG') {
+    throw messengerServiceError('tag can only be used when messagingType is MESSAGE_TAG');
+  }
+};
+
+let validateButton = (button: { type: string; url?: string; payload?: string }) => {
+  if (button.type === 'web_url' && !button.url) {
+    throw messengerServiceError('url is required for web_url buttons');
+  }
+
+  if (button.type === 'postback' && !button.payload) {
+    throw messengerServiceError('payload is required for postback buttons');
+  }
+
+  if (button.type === 'phone_number' && !button.payload) {
+    throw messengerServiceError('payload is required for phone_number buttons');
+  }
+};
+
+let validateButtons = (buttons?: Array<{ type: string; url?: string; payload?: string }>) => {
+  for (let button of buttons || []) {
+    validateButton(button);
+  }
+};
 
 export let sendTemplate = SlateTool.create(spec, {
   name: 'Send Template',
@@ -163,11 +194,15 @@ Choose the appropriate templateType and provide the corresponding fields.`,
 
     let result: any;
     let { input } = ctx;
+    validateMessagingPolicy(input.messagingType, input.tag);
 
     switch (input.templateType) {
       case 'generic': {
         if (!input.elements || input.elements.length === 0) {
-          throw new Error('Elements are required for generic template');
+          throw messengerServiceError('elements are required for generic template');
+        }
+        for (let element of input.elements) {
+          validateButtons(element.buttons);
         }
         result = await client.sendGenericTemplate({
           recipientId: input.recipientId,
@@ -180,8 +215,9 @@ Choose the appropriate templateType and provide the corresponding fields.`,
 
       case 'button': {
         if (!input.text || !input.buttons || input.buttons.length === 0) {
-          throw new Error('Text and buttons are required for button template');
+          throw messengerServiceError('text and buttons are required for button template');
         }
+        validateButtons(input.buttons);
         result = await client.sendButtonTemplate({
           recipientId: input.recipientId,
           text: input.text,
@@ -194,8 +230,14 @@ Choose the appropriate templateType and provide the corresponding fields.`,
 
       case 'media': {
         if (!input.mediaType) {
-          throw new Error('mediaType is required for media template');
+          throw messengerServiceError('mediaType is required for media template');
         }
+        if (Boolean(input.mediaUrl) === Boolean(input.attachmentId)) {
+          throw messengerServiceError(
+            'Provide exactly one of mediaUrl or attachmentId for media template'
+          );
+        }
+        validateButtons(input.mediaButtons);
         result = await client.sendMediaTemplate({
           recipientId: input.recipientId,
           mediaType: input.mediaType,
@@ -215,9 +257,10 @@ Choose the appropriate templateType and provide the corresponding fields.`,
           !input.currency ||
           !input.paymentMethod ||
           !input.items ||
+          input.items.length === 0 ||
           input.totalCost === undefined
         ) {
-          throw new Error(
+          throw messengerServiceError(
             'recipientName, orderNumber, currency, paymentMethod, items, and totalCost are required for receipt template'
           );
         }

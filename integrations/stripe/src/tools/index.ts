@@ -11,3 +11,7 @@ export * from './get-balance';
 export * from './manage-coupons';
 export * from './manage-disputes';
 export * from './search-charges';
+export * from './manage-setup-intents';
+export * from './manage-payment-methods';
+export * from './create-billing-portal-session';
+export * from './manage-tax-rates';

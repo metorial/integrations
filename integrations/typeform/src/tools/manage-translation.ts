@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TypeformClient } from '../lib/client';
+import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -64,7 +65,10 @@ export let manageTranslation = SlateTool.create(spec, {
     });
 
     // Delete
-    if (ctx.input.delete && ctx.input.language) {
+    if (ctx.input.delete) {
+      if (!ctx.input.language) {
+        throw typeformServiceError('language is required when deleting a translation.');
+      }
       await client.deleteTranslation(ctx.input.formId, ctx.input.language);
       return {
         output: {
@@ -77,7 +81,10 @@ export let manageTranslation = SlateTool.create(spec, {
     }
 
     // Auto-translate
-    if (ctx.input.autoTranslate && ctx.input.language) {
+    if (ctx.input.autoTranslate) {
+      if (!ctx.input.language) {
+        throw typeformServiceError('language is required when auto-translating a form.');
+      }
       await client.autoTranslate(ctx.input.formId, ctx.input.language);
       return {
         output: {
@@ -90,7 +97,10 @@ export let manageTranslation = SlateTool.create(spec, {
     }
 
     // Update translation
-    if (ctx.input.translationPayload && ctx.input.language) {
+    if (ctx.input.translationPayload) {
+      if (!ctx.input.language) {
+        throw typeformServiceError('language is required when updating a translation.');
+      }
       let result = await client.updateTranslation(
         ctx.input.formId,
         ctx.input.language,

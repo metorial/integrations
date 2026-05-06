@@ -36,6 +36,18 @@ Retrieve members (contacts) from an audience. Supports filtering by status and p
 
 Retrieve email templates from the Mailchimp account. Filter by type (user-created or Mailchimp gallery). Returns template IDs, names, types, and creation dates.
 
+### Manage File Manager
+
+List, get, upload, update, or delete File Manager files and folders. Use uploaded file URLs in campaigns, templates, signup forms, and landing pages.
+
+### Manage Interest Groups
+
+List, get, create, update, or delete audience interest categories and interests. Interest categories are group titles; interests are group names that contacts can be assigned to.
+
+### Manage Merge Fields
+
+List, get, create, update, or delete audience merge fields. Merge fields store custom contact data used for personalization, segmentation, and signup forms.
+
 ### Manage Audience
 
 Create, update, or delete an audience (list). To create, provide name, contact info, permission reminder, and campaign defaults. To update, provide the listId and the fields to change. To delete, provide the listId and set "delete" to true.

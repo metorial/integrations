@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { vercelApiError } from './errors';
 
 export class Client {
   private axios: ReturnType<typeof createAxios>;
@@ -13,6 +14,10 @@ export class Client {
         'Content-Type': 'application/json'
       }
     });
+    this.axios.interceptors.response.use(
+      response => response,
+      error => Promise.reject(vercelApiError(error))
+    );
   }
 
   private teamParams(extra?: Record<string, string | undefined>): Record<string, string> {
@@ -121,6 +126,38 @@ export class Client {
     return response.data;
   }
 
+  async getDeploymentEvents(
+    idOrUrl: string,
+    options?: {
+      direction?: string;
+      limit?: number;
+      buildId?: string;
+      since?: number;
+      until?: number;
+      statusCode?: string;
+      delimiter?: boolean;
+      builds?: boolean;
+    }
+  ) {
+    let response = await this.axios.get(
+      `/v3/deployments/${encodeURIComponent(idOrUrl)}/events`,
+      {
+        params: this.teamParams({
+          direction: options?.direction,
+          limit: options?.limit?.toString(),
+          name: options?.buildId,
+          since: options?.since?.toString(),
+          until: options?.until?.toString(),
+          statusCode: options?.statusCode,
+          delimiter:
+            options?.delimiter === undefined ? undefined : options.delimiter ? '1' : '0',
+          builds: options?.builds === undefined ? undefined : options.builds ? '1' : '0'
+        })
+      }
+    );
+    return response.data;
+  }
+
   async createDeployment(data: {
     name: string;
     project?: string;
@@ -151,6 +188,77 @@ export class Client {
     await this.axios.delete(`/v13/deployments/${encodeURIComponent(deploymentId)}`, {
       params: this.teamParams()
     });
+  }
+
+  // ─── Aliases ──────────────────────────────────────────────
+
+  async listAliases(options?: {
+    domain?: string;
+    projectId?: string;
+    limit?: number;
+    since?: number;
+    until?: number;
+    rollbackDeploymentId?: string;
+  }) {
+    let response = await this.axios.get('/v4/aliases', {
+      params: this.teamParams({
+        domain: options?.domain,
+        projectId: options?.projectId,
+        limit: options?.limit?.toString(),
+        since: options?.since?.toString(),
+        until: options?.until?.toString(),
+        rollbackDeploymentId: options?.rollbackDeploymentId
+      })
+    });
+    return response.data;
+  }
+
+  async getAlias(
+    idOrAlias: string,
+    options?: { projectId?: string; since?: number; until?: number }
+  ) {
+    let response = await this.axios.get(`/v4/aliases/${encodeURIComponent(idOrAlias)}`, {
+      params: this.teamParams({
+        projectId: options?.projectId,
+        since: options?.since?.toString(),
+        until: options?.until?.toString()
+      })
+    });
+    return response.data;
+  }
+
+  async listDeploymentAliases(deploymentId: string) {
+    let response = await this.axios.get(
+      `/v2/deployments/${encodeURIComponent(deploymentId)}/aliases`,
+      {
+        params: this.teamParams()
+      }
+    );
+    return response.data;
+  }
+
+  async assignAlias(
+    deploymentId: string,
+    data: { alias: string; redirect?: string | null }
+  ) {
+    let response = await this.axios.post(
+      `/v2/deployments/${encodeURIComponent(deploymentId)}/aliases`,
+      data,
+      {
+        params: this.teamParams()
+      }
+    );
+    return response.data;
+  }
+
+  async deleteAlias(aliasIdOrAlias: string) {
+    let response = await this.axios.delete(
+      `/v2/aliases/${encodeURIComponent(aliasIdOrAlias)}`,
+      {
+        params: this.teamParams()
+      }
+    );
+    return response.data;
   }
 
   // ─── Domains ───────────────────────────────────────────────

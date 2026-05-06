@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -125,7 +126,7 @@ export let manageUptimeChecks = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.name || !ctx.input.target) {
-        throw new Error('name and target are required for create action');
+        throw digitalOceanValidationError('name and target are required for create action');
       }
       let check = await client.createUptimeCheck({
         name: ctx.input.name,
@@ -141,7 +142,9 @@ export let manageUptimeChecks = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.checkId) throw new Error('checkId is required for update action');
+      if (!ctx.input.checkId) {
+        throw digitalOceanValidationError('checkId is required for update action');
+      }
       let check = await client.updateUptimeCheck(ctx.input.checkId, {
         name: ctx.input.name,
         target: ctx.input.target,
@@ -156,7 +159,9 @@ export let manageUptimeChecks = SlateTool.create(spec, {
     }
 
     // delete
-    if (!ctx.input.checkId) throw new Error('checkId is required for delete action');
+    if (!ctx.input.checkId) {
+      throw digitalOceanValidationError('checkId is required for delete action');
+    }
     await client.deleteUptimeCheck(ctx.input.checkId);
 
     return {

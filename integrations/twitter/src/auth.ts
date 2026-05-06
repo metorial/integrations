@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { twitterApiError, twitterServiceError } from './lib/errors';
 
 let twitterApi = createAxios({
   baseURL: 'https://api.x.com'
@@ -111,23 +112,32 @@ export let auth = SlateAuth.create()
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
       let codeVerifier = ctx.callbackState?.codeVerifier || '';
 
-      let response = await twitterApi.post(
-        '/2/oauth2/token',
-        new URLSearchParams({
-          code: ctx.code,
-          grant_type: 'authorization_code',
-          redirect_uri: ctx.redirectUri,
-          code_verifier: codeVerifier
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: `Basic ${credentials}`
+      let response;
+      try {
+        response = await twitterApi.post(
+          '/2/oauth2/token',
+          new URLSearchParams({
+            code: ctx.code,
+            grant_type: 'authorization_code',
+            redirect_uri: ctx.redirectUri,
+            code_verifier: codeVerifier
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Authorization: `Basic ${credentials}`
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw twitterApiError(error, 'OAuth token exchange');
+      }
 
       let data = response.data;
+      if (!data?.access_token) {
+        throw twitterServiceError('X OAuth token response did not include an access token.');
+      }
+
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -149,28 +159,37 @@ export let auth = SlateAuth.create()
       scopes: string[];
     }) => {
       if (!ctx.output.refreshToken) {
-        throw new Error(
+        throw twitterServiceError(
           'No refresh token available. Include the offline.access scope to obtain a refresh token.'
         );
       }
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await twitterApi.post(
-        '/2/oauth2/token',
-        new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: `Basic ${credentials}`
+      let response;
+      try {
+        response = await twitterApi.post(
+          '/2/oauth2/token',
+          new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Authorization: `Basic ${credentials}`
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw twitterApiError(error, 'OAuth token refresh');
+      }
 
       let data = response.data;
+      if (!data?.access_token) {
+        throw twitterServiceError('X OAuth refresh response did not include an access token.');
+      }
+
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -189,16 +208,24 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let response = await twitterApi.get('/2/users/me', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        },
-        params: {
-          'user.fields': 'id,name,username,profile_image_url,description'
-        }
-      });
+      let response;
+      try {
+        response = await twitterApi.get('/2/users/me', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          },
+          params: {
+            'user.fields': 'id,name,username,profile_image_url,description'
+          }
+        });
+      } catch (error) {
+        throw twitterApiError(error, 'OAuth profile lookup');
+      }
 
       let user = response.data.data;
+      if (!user?.id) {
+        throw twitterServiceError('X profile response did not include a user.');
+      }
 
       return {
         profile: {

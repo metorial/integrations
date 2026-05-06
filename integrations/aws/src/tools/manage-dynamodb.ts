@@ -1,7 +1,20 @@
+import {
+  CreateTableCommand,
+  DeleteItemCommand,
+  DeleteTableCommand,
+  DescribeTableCommand,
+  GetItemCommand,
+  ListTablesCommand,
+  PutItemCommand,
+  QueryCommand,
+  ScanCommand,
+  UpdateItemCommand
+} from '@aws-sdk/client-dynamodb';
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { clientFromContext } from '../lib/helpers';
+import { awsServiceError } from '../lib/errors';
 
 // ---------------------------------------------------------------------------
 // DynamoDB attribute value marshalling helpers
@@ -123,6 +136,7 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     'For "delete_table", provide "tableName". This action is irreversible.',
     'For "put_item", provide "tableName" and "item" as a plain JSON object.',
     'For "get_item", provide "tableName" and "key" as a plain JSON object with the primary key attributes.',
+    'For "update_item", provide "tableName", "key", and "updateExpression". Use "expressionAttributeValues" in plain JSON.',
     'For "query", provide "tableName" and "keyConditionExpression" with "expressionAttributeValues" in plain JSON.',
     'For "scan", provide "tableName" and optionally a "filterExpression".',
     'For "delete_item", provide "tableName" and "key" as a plain JSON object with the primary key attributes.'
@@ -141,6 +155,7 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
           'delete_table',
           'put_item',
           'get_item',
+          'update_item',
           'query',
           'scan',
           'delete_item'
@@ -217,7 +232,19 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
       conditionExpression: z
         .string()
         .optional()
-        .describe('Condition expression that must be satisfied (put_item, delete_item)'),
+        .describe(
+          'Condition expression that must be satisfied (put_item, update_item, delete_item)'
+        ),
+      updateExpression: z
+        .string()
+        .optional()
+        .describe(
+          'Update expression for update_item, e.g. "SET #status = :status, attempts = attempts + :one"'
+        ),
+      returnValues: z
+        .enum(['NONE', 'ALL_OLD', 'UPDATED_OLD', 'ALL_NEW', 'UPDATED_NEW'])
+        .optional()
+        .describe('Attributes to return for update_item. Defaults to ALL_NEW.'),
       returnOldItem: z
         .boolean()
         .optional()
@@ -366,6 +393,10 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
         .record(z.string(), z.any())
         .optional()
         .describe('Previous item value if returnOldItem was true'),
+      updatedItem: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Returned item attributes from update_item based on returnValues'),
 
       // get_item
       found: z.boolean().optional().describe('Whether the item was found (get_item)'),
@@ -393,16 +424,64 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
   .handleInvocation(async ctx => {
     let client = clientFromContext(ctx);
     let { action } = ctx.input;
-    let region = ctx.config.region;
 
-    // Helper to make DynamoDB JSON API calls
-    let dynamo = async (target: string, payload: Record<string, any>) => {
-      return client.jsonApi({
-        service: 'dynamodb',
-        target: `DynamoDB_20120810.${target}`,
-        payload,
-        region
-      });
+    let requireInput = <T>(value: T | undefined | null, field: string): T => {
+      if (
+        value === undefined ||
+        value === null ||
+        (typeof value === 'string' && value.length === 0)
+      ) {
+        throw awsServiceError(`${field} is required for ${action}`);
+      }
+      return value;
+    };
+
+    // Helper to make DynamoDB SDK calls
+    let dynamo = async (target: string, payload: Record<string, any>): Promise<any> => {
+      switch (target) {
+        case 'ListTables':
+          return client.send(target, () =>
+            client.dynamoDb.send(new ListTablesCommand(payload as any))
+          );
+        case 'DescribeTable':
+          return client.send(target, () =>
+            client.dynamoDb.send(new DescribeTableCommand(payload as any))
+          );
+        case 'CreateTable':
+          return client.send(target, () =>
+            client.dynamoDb.send(new CreateTableCommand(payload as any))
+          );
+        case 'DeleteTable':
+          return client.send(target, () =>
+            client.dynamoDb.send(new DeleteTableCommand(payload as any))
+          );
+        case 'PutItem':
+          return client.send(target, () =>
+            client.dynamoDb.send(new PutItemCommand(payload as any))
+          );
+        case 'GetItem':
+          return client.send(target, () =>
+            client.dynamoDb.send(new GetItemCommand(payload as any))
+          );
+        case 'UpdateItem':
+          return client.send(target, () =>
+            client.dynamoDb.send(new UpdateItemCommand(payload as any))
+          );
+        case 'Query':
+          return client.send(target, () =>
+            client.dynamoDb.send(new QueryCommand(payload as any))
+          );
+        case 'Scan':
+          return client.send(target, () =>
+            client.dynamoDb.send(new ScanCommand(payload as any))
+          );
+        case 'DeleteItem':
+          return client.send(target, () =>
+            client.dynamoDb.send(new DeleteItemCommand(payload as any))
+          );
+        default:
+          throw awsServiceError(`Unknown DynamoDB SDK operation: ${target}`);
+      }
     };
 
     // Convert user-supplied expressionAttributeValues to DynamoDB format
@@ -446,7 +525,7 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     // -----------------------------------------------------------------------
     if (action === 'describe_table') {
       let result = await dynamo('DescribeTable', {
-        TableName: ctx.input.tableName
+        TableName: requireInput(ctx.input.tableName, 'tableName')
       });
       let t = result.Table;
 
@@ -507,13 +586,20 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     // create_table
     // -----------------------------------------------------------------------
     if (action === 'create_table') {
+      let tableName = requireInput(ctx.input.tableName, 'tableName');
+      let keySchema = requireInput(ctx.input.keySchema, 'keySchema');
+      let attributeDefinitions = requireInput(
+        ctx.input.attributeDefinitions,
+        'attributeDefinitions'
+      );
+
       let payload: Record<string, any> = {
-        TableName: ctx.input.tableName,
-        KeySchema: (ctx.input.keySchema ?? []).map(k => ({
+        TableName: tableName,
+        KeySchema: keySchema.map(k => ({
           AttributeName: k.attributeName,
           KeyType: k.keyType
         })),
-        AttributeDefinitions: (ctx.input.attributeDefinitions ?? []).map(a => ({
+        AttributeDefinitions: attributeDefinitions.map(a => ({
           AttributeName: a.attributeName,
           AttributeType: a.attributeType
         })),
@@ -592,7 +678,7 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     // -----------------------------------------------------------------------
     if (action === 'delete_table') {
       let result = await dynamo('DeleteTable', {
-        TableName: ctx.input.tableName
+        TableName: requireInput(ctx.input.tableName, 'tableName')
       });
       let tableDesc = result.TableDescription;
 
@@ -610,8 +696,8 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     // -----------------------------------------------------------------------
     if (action === 'put_item') {
       let payload: Record<string, any> = {
-        TableName: ctx.input.tableName,
-        Item: toDynamoDBItem(ctx.input.item ?? {})
+        TableName: requireInput(ctx.input.tableName, 'tableName'),
+        Item: toDynamoDBItem(requireInput(ctx.input.item, 'item'))
       };
 
       if (ctx.input.conditionExpression) {
@@ -646,8 +732,8 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     // -----------------------------------------------------------------------
     if (action === 'get_item') {
       let payload: Record<string, any> = {
-        TableName: ctx.input.tableName,
-        Key: marshalKey(ctx.input.key)
+        TableName: requireInput(ctx.input.tableName, 'tableName'),
+        Key: marshalKey(requireInput(ctx.input.key, 'key'))
       };
 
       if (ctx.input.consistentRead) {
@@ -676,12 +762,50 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     }
 
     // -----------------------------------------------------------------------
+    // update_item
+    // -----------------------------------------------------------------------
+    if (action === 'update_item') {
+      let payload: Record<string, any> = {
+        TableName: requireInput(ctx.input.tableName, 'tableName'),
+        Key: marshalKey(requireInput(ctx.input.key, 'key')),
+        UpdateExpression: requireInput(ctx.input.updateExpression, 'updateExpression'),
+        ReturnValues: ctx.input.returnValues ?? 'ALL_NEW'
+      };
+
+      if (ctx.input.conditionExpression) {
+        payload.ConditionExpression = ctx.input.conditionExpression;
+      }
+      if (ctx.input.expressionAttributeNames) {
+        payload.ExpressionAttributeNames = ctx.input.expressionAttributeNames;
+      }
+      if (ctx.input.expressionAttributeValues) {
+        payload.ExpressionAttributeValues = marshalExprValues(
+          ctx.input.expressionAttributeValues
+        );
+      }
+
+      let result = await dynamo('UpdateItem', payload);
+      let updatedItem = result.Attributes ? fromDynamoDBItem(result.Attributes) : undefined;
+
+      return {
+        output: {
+          success: true,
+          updatedItem
+        },
+        message: `Successfully updated item in **${ctx.input.tableName}**`
+      };
+    }
+
+    // -----------------------------------------------------------------------
     // query
     // -----------------------------------------------------------------------
     if (action === 'query') {
       let payload: Record<string, any> = {
-        TableName: ctx.input.tableName,
-        KeyConditionExpression: ctx.input.keyConditionExpression
+        TableName: requireInput(ctx.input.tableName, 'tableName'),
+        KeyConditionExpression: requireInput(
+          ctx.input.keyConditionExpression,
+          'keyConditionExpression'
+        )
       };
 
       if (ctx.input.indexName) payload.IndexName = ctx.input.indexName;
@@ -723,7 +847,7 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     // -----------------------------------------------------------------------
     if (action === 'scan') {
       let payload: Record<string, any> = {
-        TableName: ctx.input.tableName
+        TableName: requireInput(ctx.input.tableName, 'tableName')
       };
 
       if (ctx.input.indexName) payload.IndexName = ctx.input.indexName;
@@ -763,8 +887,8 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     // -----------------------------------------------------------------------
     if (action === 'delete_item') {
       let payload: Record<string, any> = {
-        TableName: ctx.input.tableName,
-        Key: marshalKey(ctx.input.key)
+        TableName: requireInput(ctx.input.tableName, 'tableName'),
+        Key: marshalKey(requireInput(ctx.input.key, 'key'))
       };
 
       if (ctx.input.conditionExpression) {
@@ -794,9 +918,6 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
       };
     }
 
-    return {
-      output: {},
-      message: 'No action performed.'
-    };
+    throw awsServiceError(`Unknown action: ${action}`);
   })
   .build();

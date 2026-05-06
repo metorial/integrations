@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwitterClient } from '../lib/client';
+import { twitterServiceError } from '../lib/errors';
 import { postSchema, userSchema, mapPost, mapUser } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -52,7 +53,7 @@ export let manageLike = SlateTool.create(spec, {
 
     if (action === 'like') {
       if (!userId || !postId)
-        throw new Error('userId and postId are required to like a post.');
+        throw twitterServiceError('userId and postId are required to like a post.');
       await client.likePost(userId, postId);
       return {
         output: { success: true },
@@ -62,7 +63,7 @@ export let manageLike = SlateTool.create(spec, {
 
     if (action === 'unlike') {
       if (!userId || !postId)
-        throw new Error('userId and postId are required to unlike a post.');
+        throw twitterServiceError('userId and postId are required to unlike a post.');
       await client.unlikePost(userId, postId);
       return {
         output: { success: true },
@@ -71,7 +72,7 @@ export let manageLike = SlateTool.create(spec, {
     }
 
     if (action === 'list_liked_posts') {
-      if (!userId) throw new Error('userId is required to list liked posts.');
+      if (!userId) throw twitterServiceError('userId is required to list liked posts.');
       let result = await client.getLikedPosts(userId, { maxResults, paginationToken });
       let posts = (result.data || []).map(mapPost);
       return {
@@ -81,7 +82,7 @@ export let manageLike = SlateTool.create(spec, {
     }
 
     if (action === 'list_liking_users') {
-      if (!postId) throw new Error('postId is required to list liking users.');
+      if (!postId) throw twitterServiceError('postId is required to list liking users.');
       let result = await client.getPostLikingUsers(postId, { maxResults, paginationToken });
       let users = (result.data || []).map(mapUser);
       return {
@@ -90,6 +91,6 @@ export let manageLike = SlateTool.create(spec, {
       };
     }
 
-    throw new Error('Invalid action.');
+    throw twitterServiceError('Invalid action.');
   })
   .build();

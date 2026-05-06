@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DiscordClient } from '../lib/client';
+import { discordServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -132,12 +133,13 @@ export let manageScheduledEventsTool = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.name) throw new Error('name is required for create action');
-      if (!ctx.input.entityType) throw new Error('entityType is required for create action');
+      if (!ctx.input.name) throw discordServiceError('name is required for create action');
+      if (!ctx.input.entityType)
+        throw discordServiceError('entityType is required for create action');
       if (!ctx.input.scheduledStartTime)
-        throw new Error('scheduledStartTime is required for create action');
+        throw discordServiceError('scheduledStartTime is required for create action');
       if (!ctx.input.privacyLevel)
-        throw new Error('privacyLevel is required for create action');
+        throw discordServiceError('privacyLevel is required for create action');
 
       let data: Record<string, any> = {
         name: ctx.input.name,
@@ -171,7 +173,7 @@ export let manageScheduledEventsTool = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!eventId) throw new Error('eventId is required for update action');
+      if (!eventId) throw discordServiceError('eventId is required for update action');
 
       let data: Record<string, any> = {};
 
@@ -220,7 +222,7 @@ export let manageScheduledEventsTool = SlateTool.create(spec, {
     }
 
     // delete
-    if (!eventId) throw new Error('eventId is required for delete action');
+    if (!eventId) throw discordServiceError('eventId is required for delete action');
     await client.deleteGuildScheduledEvent(guildId, eventId);
     return {
       output: {},

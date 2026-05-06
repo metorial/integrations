@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { herokuServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -59,7 +60,8 @@ export let manageCollaborators = SlateTool.create(spec, {
     }
 
     if (action === 'add') {
-      if (!ctx.input.userEmail) throw new Error('userEmail is required for "add" action.');
+      if (!ctx.input.userEmail)
+        throw herokuServiceError('userEmail is required for "add" action.');
       let collab = await client.addCollaborator(appIdOrName, {
         userEmail: ctx.input.userEmail,
         silent: ctx.input.silent
@@ -71,7 +73,8 @@ export let manageCollaborators = SlateTool.create(spec, {
     }
 
     // remove
-    if (!ctx.input.userEmail) throw new Error('userEmail is required for "remove" action.');
+    if (!ctx.input.userEmail)
+      throw herokuServiceError('userEmail is required for "remove" action.');
     await client.removeCollaborator(appIdOrName, ctx.input.userEmail);
     return {
       output: { removed: true },

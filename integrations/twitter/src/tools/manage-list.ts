@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwitterClient } from '../lib/client';
+import { twitterServiceError } from '../lib/errors';
 import { listSchema, userSchema, postSchema, mapList, mapUser, mapPost } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -74,7 +75,7 @@ export let manageList = SlateTool.create(spec, {
       ctx.input;
 
     if (action === 'create') {
-      if (!name) throw new Error('name is required to create a list.');
+      if (!name) throw twitterServiceError('name is required to create a list.');
       let result = await client.createList(name, description, isPrivate);
       let list = mapList(result.data);
       return {
@@ -84,7 +85,7 @@ export let manageList = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!listId) throw new Error('listId is required to update a list.');
+      if (!listId) throw twitterServiceError('listId is required to update a list.');
       await client.updateList(listId, { name, description, isPrivate });
       return {
         output: { success: true },
@@ -93,7 +94,7 @@ export let manageList = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!listId) throw new Error('listId is required to delete a list.');
+      if (!listId) throw twitterServiceError('listId is required to delete a list.');
       await client.deleteList(listId);
       return {
         output: { success: true },
@@ -102,7 +103,7 @@ export let manageList = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!listId) throw new Error('listId is required to get a list.');
+      if (!listId) throw twitterServiceError('listId is required to get a list.');
       let result = await client.getList(listId);
       let list = mapList(result.data);
       return {
@@ -112,7 +113,7 @@ export let manageList = SlateTool.create(spec, {
     }
 
     if (action === 'list_owned') {
-      if (!userId) throw new Error('userId is required to list owned lists.');
+      if (!userId) throw twitterServiceError('userId is required to list owned lists.');
       let result = await client.getUserOwnedLists(userId, { maxResults, paginationToken });
       let lists = (result.data || []).map(mapList);
       return {
@@ -123,7 +124,7 @@ export let manageList = SlateTool.create(spec, {
 
     if (action === 'add_member') {
       if (!listId || !userId)
-        throw new Error('listId and userId are required to add a member.');
+        throw twitterServiceError('listId and userId are required to add a member.');
       await client.addListMember(listId, userId);
       return {
         output: { success: true },
@@ -133,7 +134,7 @@ export let manageList = SlateTool.create(spec, {
 
     if (action === 'remove_member') {
       if (!listId || !userId)
-        throw new Error('listId and userId are required to remove a member.');
+        throw twitterServiceError('listId and userId are required to remove a member.');
       await client.removeListMember(listId, userId);
       return {
         output: { success: true },
@@ -142,7 +143,7 @@ export let manageList = SlateTool.create(spec, {
     }
 
     if (action === 'list_members') {
-      if (!listId) throw new Error('listId is required to list members.');
+      if (!listId) throw twitterServiceError('listId is required to list members.');
       let result = await client.getListMembers(listId, { maxResults, paginationToken });
       let users = (result.data || []).map(mapUser);
       return {
@@ -152,7 +153,7 @@ export let manageList = SlateTool.create(spec, {
     }
 
     if (action === 'list_posts') {
-      if (!listId) throw new Error('listId is required to list posts.');
+      if (!listId) throw twitterServiceError('listId is required to list posts.');
       let result = await client.getListPosts(listId, { maxResults, paginationToken });
       let posts = (result.data || []).map(mapPost);
       return {
@@ -161,6 +162,6 @@ export let manageList = SlateTool.create(spec, {
       };
     }
 
-    throw new Error('Invalid action.');
+    throw twitterServiceError('Invalid action.');
   })
   .build();

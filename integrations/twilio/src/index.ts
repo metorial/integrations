@@ -13,7 +13,10 @@ import {
   managePhoneNumber,
   manageConversation,
   conversationParticipants,
-  sendConversationMessage
+  sendConversationMessage,
+  manageMessagingService,
+  listRecordings,
+  listVerifyServices
 } from './tools';
 import { incomingMessage, messageStatus, incomingCall, callStatus } from './triggers';
 
@@ -32,7 +35,10 @@ export let provider = Slate.create({
     managePhoneNumber,
     manageConversation,
     conversationParticipants,
-    sendConversationMessage
+    sendConversationMessage,
+    manageMessagingService,
+    listRecordings,
+    listVerifyServices
   ],
   triggers: [incomingMessage, messageStatus, incomingCall, callStatus]
 });

@@ -42,7 +42,11 @@ import {
   listSnapshots,
   listImages,
   manageContainerRegistry,
-  manageTags
+  manageTags,
+  listFunctionNamespaces,
+  listFunctionTriggers,
+  listCdnEndpoints,
+  listCertificates
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -91,7 +95,11 @@ export let provider = Slate.create({
     listSnapshots,
     listImages,
     manageContainerRegistry,
-    manageTags
+    manageTags,
+    listFunctionNamespaces,
+    listFunctionTriggers,
+    listCdnEndpoints,
+    listCertificates
   ],
   triggers: [inboundWebhook]
 });

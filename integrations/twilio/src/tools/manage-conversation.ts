@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwilioClient } from '../lib/client';
+import { twilioServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -96,7 +97,7 @@ export let manageConversation = SlateTool.create(spec, {
 
     if (ctx.input.action === 'get') {
       if (!ctx.input.conversationSid)
-        throw new Error('conversationSid is required for get action');
+        throw twilioServiceError('conversationSid is required for get action');
       let result = await client.getConversation(ctx.input.conversationSid);
       return {
         output: { conversations: [mapConversation(result)] },
@@ -118,7 +119,7 @@ export let manageConversation = SlateTool.create(spec, {
 
     if (ctx.input.action === 'update') {
       if (!ctx.input.conversationSid)
-        throw new Error('conversationSid is required for update action');
+        throw twilioServiceError('conversationSid is required for update action');
       let result = await client.updateConversation(ctx.input.conversationSid, {
         friendlyName: ctx.input.friendlyName,
         uniqueName: ctx.input.uniqueName,
@@ -133,7 +134,7 @@ export let manageConversation = SlateTool.create(spec, {
 
     if (ctx.input.action === 'delete') {
       if (!ctx.input.conversationSid)
-        throw new Error('conversationSid is required for delete action');
+        throw twilioServiceError('conversationSid is required for delete action');
       await client.deleteConversation(ctx.input.conversationSid);
       return {
         output: { deleted: true },
@@ -141,6 +142,6 @@ export let manageConversation = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw twilioServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { TwitterClient } from '../lib/client';
-import { userSchema, mapUser } from '../lib/helpers';
+import { twitterServiceError } from '../lib/errors';
+import { postSchema, userSchema, mapPost, mapUser } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -10,7 +11,8 @@ export let manageRetweet = SlateTool.create(spec, {
   description: `Retweet or undo a retweet of a post, or retrieve users who retweeted a specific post.`,
   instructions: [
     'Use action **retweet** or **undo_retweet** to retweet/undo retweet (requires userId and postId).',
-    'Use action **list_retweeted_by** to get users who retweeted a specific post.'
+    'Use action **list_retweeted_by** to get users who retweeted a specific post.',
+    'Use action **list_quote_posts** to get quote posts for a specific post.'
   ],
   tags: {
     destructive: false,
@@ -20,7 +22,7 @@ export let manageRetweet = SlateTool.create(spec, {
   .input(
     z.object({
       action: z
-        .enum(['retweet', 'undo_retweet', 'list_retweeted_by'])
+        .enum(['retweet', 'undo_retweet', 'list_retweeted_by', 'list_quote_posts'])
         .describe('Action to perform'),
       userId: z.string().optional().describe('User ID (required for retweet, undo_retweet)'),
       postId: z.string().describe('Post ID to act on'),
@@ -35,6 +37,7 @@ export let manageRetweet = SlateTool.create(spec, {
         .array(userSchema)
         .optional()
         .describe('Users who retweeted (for list_retweeted_by)'),
+      posts: z.array(postSchema).optional().describe('Quote posts (for list_quote_posts)'),
       nextToken: z.string().optional().describe('Pagination token for next page')
     })
   )
@@ -43,7 +46,7 @@ export let manageRetweet = SlateTool.create(spec, {
     let { action, userId, postId, maxResults, paginationToken } = ctx.input;
 
     if (action === 'retweet') {
-      if (!userId) throw new Error('userId is required to retweet.');
+      if (!userId) throw twitterServiceError('userId is required to retweet.');
       await client.retweet(userId, postId);
       return {
         output: { success: true },
@@ -52,7 +55,7 @@ export let manageRetweet = SlateTool.create(spec, {
     }
 
     if (action === 'undo_retweet') {
-      if (!userId) throw new Error('userId is required to undo retweet.');
+      if (!userId) throw twitterServiceError('userId is required to undo retweet.');
       await client.undoRetweet(userId, postId);
       return {
         output: { success: true },
@@ -69,6 +72,15 @@ export let manageRetweet = SlateTool.create(spec, {
       };
     }
 
-    throw new Error('Invalid action.');
+    if (action === 'list_quote_posts') {
+      let result = await client.getQuotePosts(postId, { maxResults, paginationToken });
+      let posts = (result.data || []).map(mapPost);
+      return {
+        output: { posts, nextToken: result.meta?.next_token },
+        message: `Retrieved **${posts.length}** quote post(s).`
+      };
+    }
+
+    throw twitterServiceError('Invalid action.');
   })
   .build();

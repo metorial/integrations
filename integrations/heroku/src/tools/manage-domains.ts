@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { herokuServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -61,7 +62,8 @@ export let manageDomains = SlateTool.create(spec, {
     }
 
     if (action === 'add') {
-      if (!ctx.input.hostname) throw new Error('hostname is required for "add" action.');
+      if (!ctx.input.hostname)
+        throw herokuServiceError('hostname is required for "add" action.');
       let domain = await client.addDomain(appIdOrName, ctx.input.hostname, {
         sniEndpoint: ctx.input.sniEndpoint
       });
@@ -72,7 +74,8 @@ export let manageDomains = SlateTool.create(spec, {
     }
 
     // remove
-    if (!ctx.input.hostname) throw new Error('hostname is required for "remove" action.');
+    if (!ctx.input.hostname)
+      throw herokuServiceError('hostname is required for "remove" action.');
     await client.removeDomain(appIdOrName, ctx.input.hostname);
     return {
       output: { removed: true },

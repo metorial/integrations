@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { discordApiError } from './errors';
 
 export class DiscordClient {
   private api: AxiosInstance;
@@ -14,6 +15,11 @@ export class DiscordClient {
         'Content-Type': 'application/json'
       }
     });
+
+    this.api.interceptors.response.use(
+      response => response,
+      error => Promise.reject(discordApiError(error))
+    );
   }
 
   // ── Guilds ──
@@ -354,8 +360,22 @@ export class DiscordClient {
     return response.data;
   }
 
+  async getGuildEmoji(guildId: string, emojiId: string): Promise<any> {
+    let response = await this.api.get(`/guilds/${guildId}/emojis/${emojiId}`);
+    return response.data;
+  }
+
   async createGuildEmoji(guildId: string, data: Record<string, any>): Promise<any> {
     let response = await this.api.post(`/guilds/${guildId}/emojis`, data);
+    return response.data;
+  }
+
+  async modifyGuildEmoji(
+    guildId: string,
+    emojiId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.patch(`/guilds/${guildId}/emojis/${emojiId}`, data);
     return response.data;
   }
 
@@ -460,8 +480,25 @@ export class DiscordClient {
 
   // ── Application Commands ──
 
-  async getGlobalApplicationCommands(applicationId: string): Promise<any[]> {
-    let response = await this.api.get(`/applications/${applicationId}/commands`);
+  async getGlobalApplicationCommands(
+    applicationId: string,
+    withLocalizations?: boolean
+  ): Promise<any[]> {
+    let params: Record<string, string> = {};
+    if (withLocalizations !== undefined) {
+      params.with_localizations = String(withLocalizations);
+    }
+    let response = await this.api.get(`/applications/${applicationId}/commands`, { params });
+    return response.data;
+  }
+
+  async getGlobalApplicationCommand(
+    applicationId: string,
+    commandId: string
+  ): Promise<any> {
+    let response = await this.api.get(
+      `/applications/${applicationId}/commands/${commandId}`
+    );
     return response.data;
   }
 
@@ -473,6 +510,18 @@ export class DiscordClient {
     return response.data;
   }
 
+  async editGlobalApplicationCommand(
+    applicationId: string,
+    commandId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.patch(
+      `/applications/${applicationId}/commands/${commandId}`,
+      data
+    );
+    return response.data;
+  }
+
   async deleteGlobalApplicationCommand(
     applicationId: string,
     commandId: string
@@ -480,9 +529,29 @@ export class DiscordClient {
     await this.api.delete(`/applications/${applicationId}/commands/${commandId}`);
   }
 
-  async getGuildApplicationCommands(applicationId: string, guildId: string): Promise<any[]> {
+  async getGuildApplicationCommands(
+    applicationId: string,
+    guildId: string,
+    withLocalizations?: boolean
+  ): Promise<any[]> {
+    let params: Record<string, string> = {};
+    if (withLocalizations !== undefined) {
+      params.with_localizations = String(withLocalizations);
+    }
     let response = await this.api.get(
-      `/applications/${applicationId}/guilds/${guildId}/commands`
+      `/applications/${applicationId}/guilds/${guildId}/commands`,
+      { params }
+    );
+    return response.data;
+  }
+
+  async getGuildApplicationCommand(
+    applicationId: string,
+    guildId: string,
+    commandId: string
+  ): Promise<any> {
+    let response = await this.api.get(
+      `/applications/${applicationId}/guilds/${guildId}/commands/${commandId}`
     );
     return response.data;
   }
@@ -494,6 +563,19 @@ export class DiscordClient {
   ): Promise<any> {
     let response = await this.api.post(
       `/applications/${applicationId}/guilds/${guildId}/commands`,
+      data
+    );
+    return response.data;
+  }
+
+  async editGuildApplicationCommand(
+    applicationId: string,
+    guildId: string,
+    commandId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.patch(
+      `/applications/${applicationId}/guilds/${guildId}/commands/${commandId}`,
       data
     );
     return response.data;

@@ -1,3 +1,3 @@
-// Gemini API does not support webhooks or event subscriptions.
-// No triggers are implemented as the API is request-response only.
+// Gemini API does not support native webhooks or event subscriptions.
+// The exported inbound webhook is a generic manual HTTP entrypoint only.
 export * from './inbound-webhook';

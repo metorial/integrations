@@ -6,10 +6,10 @@ import { z } from 'zod';
 export let captureOrder = SlateTool.create(spec, {
   name: 'Capture Order',
   key: 'capture_order',
-  description: `Capture payment for an approved PayPal order. The order must have been approved by the buyer first. For orders with intent "AUTHORIZE", use this to finalize the payment after authorization.`,
+  description: `Capture payment for an approved PayPal order with CAPTURE intent. The order must have been approved by the buyer first.`,
   instructions: [
     'The order must be in **APPROVED** status before capturing.',
-    'For AUTHORIZE intent orders, use **authorizeOrder** first, then capture the authorization separately.'
+    'For AUTHORIZE intent orders, use **Authorize Order** first, then capture the authorization with **Manage Payment**.'
   ],
   tags: {
     destructive: false,

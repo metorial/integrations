@@ -1,7 +1,15 @@
+import {
+  DeleteFunctionCommand,
+  GetFunctionCommand,
+  InvokeCommand,
+  ListFunctionsCommand,
+  UpdateFunctionConfigurationCommand
+} from '@aws-sdk/client-lambda';
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { clientFromContext } from '../lib/helpers';
+import { awsServiceError } from '../lib/errors';
 
 let functionSummarySchema = z.object({
   functionName: z.string().optional().describe('Name of the function'),
@@ -44,11 +52,40 @@ let functionDetailSchema = functionSummarySchema.extend({
   tags: z.record(z.string(), z.string()).optional().describe('Resource tags'),
   ephemeralStorageSize: z.number().optional().describe('Ephemeral /tmp storage size in MB'),
   loggingFormat: z.string().optional().describe('Log format (Text or JSON)'),
-  tracingMode: z.string().optional().describe('X-Ray tracing mode (Active or PassThrough)'),
+  tracingMode: z.string().optional().describe('X-Ray tracing mode'),
   vpcId: z.string().optional().describe('VPC ID if configured'),
   subnetIds: z.array(z.string()).optional().describe('VPC subnet IDs'),
   securityGroupIds: z.array(z.string()).optional().describe('VPC security group IDs')
 });
+
+let mapFunctionSummary = (f: any) => ({
+  functionName: f.FunctionName,
+  functionArn: f.FunctionArn,
+  runtime: f.Runtime,
+  role: f.Role,
+  handler: f.Handler,
+  codeSize: f.CodeSize,
+  description: f.Description,
+  timeout: f.Timeout,
+  memorySize: f.MemorySize,
+  lastModified: f.LastModified,
+  version: f.Version,
+  state: f.State,
+  packageType: f.PackageType,
+  architectures: f.Architectures
+});
+
+let parsePayload = (payload: Uint8Array | undefined) => {
+  if (!payload) return undefined;
+  let text = new TextDecoder().decode(payload);
+  if (!text) return undefined;
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+};
 
 export let manageLambdaTool = SlateTool.create(spec, {
   name: 'Manage Lambda',
@@ -68,8 +105,6 @@ export let manageLambdaTool = SlateTool.create(spec, {
       operation: z
         .enum(['list', 'get', 'invoke', 'updateConfiguration', 'delete'])
         .describe('The operation to perform on Lambda functions'),
-
-      // Common
       functionName: z
         .string()
         .optional()
@@ -80,15 +115,11 @@ export let manageLambdaTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Version number or alias name (used with get, invoke, delete)'),
-
-      // List
       maxItems: z
         .number()
         .optional()
         .describe('Maximum number of functions to return when listing (1-10000)'),
       marker: z.string().optional().describe('Pagination token from a previous list response'),
-
-      // Invoke
       payload: z.any().optional().describe('JSON payload to send when invoking the function'),
       invocationType: z
         .enum(['RequestResponse', 'Event', 'DryRun'])
@@ -102,8 +133,6 @@ export let manageLambdaTool = SlateTool.create(spec, {
         .describe(
           'Set to "Tail" to include the last 4KB of execution logs in the invoke response'
         ),
-
-      // Update configuration
       configuration: z
         .object({
           role: z.string().optional().describe('New execution role ARN'),
@@ -150,8 +179,6 @@ export let manageLambdaTool = SlateTool.create(spec, {
   .output(
     z.object({
       operation: z.string().describe('The operation that was performed'),
-
-      // List results
       functions: z
         .array(functionSummarySchema)
         .optional()
@@ -160,13 +187,9 @@ export let manageLambdaTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Pagination token for the next page (list operation)'),
-
-      // Get results
       functionDetail: functionDetailSchema
         .optional()
         .describe('Detailed function information (get operation)'),
-
-      // Invoke results
       statusCode: z
         .number()
         .optional()
@@ -187,13 +210,9 @@ export let manageLambdaTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Last 4KB of execution log when logType is Tail (invoke operation)'),
-
-      // Update results
       updatedConfiguration: functionSummarySchema
         .optional()
         .describe('Updated function configuration (updateConfiguration operation)'),
-
-      // Delete results
       deleted: z
         .boolean()
         .optional()
@@ -204,36 +223,16 @@ export let manageLambdaTool = SlateTool.create(spec, {
     let client = clientFromContext(ctx);
     let { operation } = ctx.input;
 
-    // ── List functions ──
     if (operation === 'list') {
-      let params: Record<string, string> = {};
-      if (ctx.input.maxItems !== undefined) params['MaxItems'] = String(ctx.input.maxItems);
-      if (ctx.input.marker) params['Marker'] = ctx.input.marker;
-
-      let result = await client.request({
-        service: 'lambda',
-        method: 'GET',
-        path: '/2015-03-31/functions',
-        params,
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      let functions = (result.Functions || []).map((f: any) => ({
-        functionName: f.FunctionName,
-        functionArn: f.FunctionArn,
-        runtime: f.Runtime,
-        role: f.Role,
-        handler: f.Handler,
-        codeSize: f.CodeSize,
-        description: f.Description,
-        timeout: f.Timeout,
-        memorySize: f.MemorySize,
-        lastModified: f.LastModified,
-        version: f.Version,
-        state: f.State,
-        packageType: f.PackageType,
-        architectures: f.Architectures
-      }));
+      let result = await client.send('Lambda ListFunctions', () =>
+        client.lambda.send(
+          new ListFunctionsCommand({
+            MaxItems: ctx.input.maxItems,
+            Marker: ctx.input.marker
+          })
+        )
+      );
+      let functions = (result.Functions ?? []).map(mapFunctionSummary);
 
       return {
         output: {
@@ -245,52 +244,31 @@ export let manageLambdaTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Validate functionName for remaining operations ──
     if (!ctx.input.functionName) {
-      throw new Error(
+      throw awsServiceError(
         `The "functionName" field is required for the "${operation}" operation.`
       );
     }
 
-    let encodedName = encodeURIComponent(ctx.input.functionName);
-
-    // ── Get function ──
     if (operation === 'get') {
-      let path = `/2015-03-31/functions/${encodedName}`;
-      if (ctx.input.qualifier) {
-        path += `?Qualifier=${encodeURIComponent(ctx.input.qualifier)}`;
-      }
-
-      let result = await client.request({
-        service: 'lambda',
-        method: 'GET',
-        path,
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      let config = result.Configuration || {};
-      let layers = (config.Layers || []).map((l: any) => ({
-        arn: l.Arn,
-        codeSize: l.CodeSize
+      let result = await client.send('Lambda GetFunction', () =>
+        client.lambda.send(
+          new GetFunctionCommand({
+            FunctionName: ctx.input.functionName,
+            Qualifier: ctx.input.qualifier
+          })
+        )
+      );
+      let config = result.Configuration ?? {};
+      let layers = (config.Layers ?? []).map(layer => ({
+        arn: layer.Arn,
+        codeSize: layer.CodeSize
       }));
 
       let detail = {
-        functionName: config.FunctionName,
-        functionArn: config.FunctionArn,
-        runtime: config.Runtime,
-        role: config.Role,
-        handler: config.Handler,
-        codeSize: config.CodeSize,
+        ...mapFunctionSummary(config),
         codeSha256: config.CodeSha256,
-        description: config.Description,
-        timeout: config.Timeout,
-        memorySize: config.MemorySize,
-        lastModified: config.LastModified,
-        version: config.Version,
-        state: config.State,
         stateReason: config.StateReason,
-        packageType: config.PackageType,
-        architectures: config.Architectures,
         environment: config.Environment?.Variables,
         layers,
         codeLocation: result.Code?.Location,
@@ -313,35 +291,22 @@ export let manageLambdaTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Invoke function ──
     if (operation === 'invoke') {
-      let path = `/2015-03-31/functions/${encodedName}/invocations`;
-      if (ctx.input.qualifier) {
-        path += `?Qualifier=${encodeURIComponent(ctx.input.qualifier)}`;
-      }
-
-      let headers: Record<string, string> = {
-        'Content-Type': 'application/json'
-      };
-
-      if (ctx.input.invocationType) {
-        headers['X-Amz-Invocation-Type'] = ctx.input.invocationType;
-      }
-      if (ctx.input.logType) {
-        headers['X-Amz-Log-Type'] = ctx.input.logType;
-      }
-
       let body =
-        ctx.input.payload !== undefined ? JSON.stringify(ctx.input.payload) : undefined;
-
-      let result = await client.request({
-        service: 'lambda',
-        method: 'POST',
-        path,
-        body,
-        headers
-      });
-
+        ctx.input.payload !== undefined
+          ? new TextEncoder().encode(JSON.stringify(ctx.input.payload))
+          : undefined;
+      let result = await client.send('Lambda Invoke', () =>
+        client.lambda.send(
+          new InvokeCommand({
+            FunctionName: ctx.input.functionName,
+            Qualifier: ctx.input.qualifier,
+            Payload: body,
+            InvocationType: ctx.input.invocationType,
+            LogType: ctx.input.logType
+          })
+        )
+      );
       let invType = ctx.input.invocationType || 'RequestResponse';
       let msg =
         invType === 'Event'
@@ -350,129 +315,89 @@ export let manageLambdaTool = SlateTool.create(spec, {
             ? `Dry run completed for **${ctx.input.functionName}** -- permissions validated.`
             : `Function **${ctx.input.functionName}** invoked successfully.`;
 
-      // Parse response: Lambda returns the payload directly for sync invocations
-      let responsePayload = result;
-      let functionError: string | undefined;
-      let executedVersion: string | undefined;
-      let logResultValue: string | undefined;
-      let statusCode: number | undefined;
-
-      // If the result is an object with metadata fields, extract them
-      if (result && typeof result === 'object') {
-        functionError = result.FunctionError;
-        executedVersion = result.ExecutedVersion;
-        logResultValue = result.LogResult;
-        statusCode = result.StatusCode;
-      }
-
       return {
         output: {
           operation: 'invoke',
-          statusCode,
-          response: responsePayload,
-          functionError,
-          executedVersion,
-          logResult: logResultValue
+          statusCode: result.StatusCode,
+          response: parsePayload(result.Payload),
+          functionError: result.FunctionError,
+          executedVersion: result.ExecutedVersion,
+          logResult: result.LogResult
         },
         message: msg
       };
     }
 
-    // ── Update function configuration ──
     if (operation === 'updateConfiguration') {
       if (!ctx.input.configuration) {
-        throw new Error(
+        throw awsServiceError(
           'The "configuration" field is required for the "updateConfiguration" operation.'
         );
       }
 
       let cfg = ctx.input.configuration;
-      let configBody: Record<string, any> = {};
-
-      if (cfg.role) configBody['Role'] = cfg.role;
-      if (cfg.runtime) configBody['Runtime'] = cfg.runtime;
-      if (cfg.handler) configBody['Handler'] = cfg.handler;
-      if (cfg.description !== undefined) configBody['Description'] = cfg.description;
-      if (cfg.timeout !== undefined) configBody['Timeout'] = cfg.timeout;
-      if (cfg.memorySize !== undefined) configBody['MemorySize'] = cfg.memorySize;
-      if (cfg.environment) configBody['Environment'] = { Variables: cfg.environment };
-      if (cfg.layers) configBody['Layers'] = cfg.layers;
-      if (cfg.ephemeralStorageSize !== undefined)
-        configBody['EphemeralStorage'] = { Size: cfg.ephemeralStorageSize };
-      if (cfg.tracingMode) configBody['TracingConfig'] = { Mode: cfg.tracingMode };
-      if (cfg.vpcSubnetIds || cfg.vpcSecurityGroupIds) {
-        configBody['VpcConfig'] = {
-          SubnetIds: cfg.vpcSubnetIds || [],
-          SecurityGroupIds: cfg.vpcSecurityGroupIds || []
-        };
+      let hasUpdate = Object.values(cfg).some(value => value !== undefined);
+      if (!hasUpdate) {
+        throw awsServiceError('At least one configuration field must be provided to update.');
       }
 
-      if (Object.keys(configBody).length === 0) {
-        throw new Error('At least one configuration field must be provided to update.');
-      }
-
-      let result = await client.request({
-        service: 'lambda',
-        method: 'PUT',
-        path: `/2015-03-31/functions/${encodedName}/configuration`,
-        body: JSON.stringify(configBody),
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      let updatedFields = Object.keys(cfg).filter(k => (cfg as any)[k] !== undefined);
+      let result = await client.send('Lambda UpdateFunctionConfiguration', () =>
+        client.lambda.send(
+          new UpdateFunctionConfigurationCommand({
+            FunctionName: ctx.input.functionName,
+            Role: cfg.role,
+            Runtime: cfg.runtime as any,
+            Handler: cfg.handler,
+            Description: cfg.description,
+            Timeout: cfg.timeout,
+            MemorySize: cfg.memorySize,
+            Environment: cfg.environment ? { Variables: cfg.environment } : undefined,
+            Layers: cfg.layers,
+            EphemeralStorage:
+              cfg.ephemeralStorageSize !== undefined
+                ? { Size: cfg.ephemeralStorageSize }
+                : undefined,
+            TracingConfig: cfg.tracingMode ? { Mode: cfg.tracingMode as any } : undefined,
+            VpcConfig:
+              cfg.vpcSubnetIds !== undefined || cfg.vpcSecurityGroupIds !== undefined
+                ? {
+                    SubnetIds: cfg.vpcSubnetIds,
+                    SecurityGroupIds: cfg.vpcSecurityGroupIds
+                  }
+                : undefined
+          })
+        )
+      );
 
       return {
         output: {
           operation: 'updateConfiguration',
-          updatedConfiguration: {
-            functionName: result.FunctionName,
-            functionArn: result.FunctionArn,
-            runtime: result.Runtime,
-            role: result.Role,
-            handler: result.Handler,
-            codeSize: result.CodeSize,
-            description: result.Description,
-            timeout: result.Timeout,
-            memorySize: result.MemorySize,
-            lastModified: result.LastModified,
-            version: result.Version,
-            state: result.State,
-            packageType: result.PackageType,
-            architectures: result.Architectures
-          }
+          updatedConfiguration: mapFunctionSummary(result)
         },
-        message: `Updated **${updatedFields.length}** configuration field(s) for function **${result.FunctionName || ctx.input.functionName}**: ${updatedFields.join(', ')}.`
+        message: `Updated configuration for function **${result.FunctionName || ctx.input.functionName}**.`
       };
     }
 
-    // ── Delete function ──
     if (operation === 'delete') {
-      let path = `/2015-03-31/functions/${encodedName}`;
-      if (ctx.input.qualifier) {
-        path += `?Qualifier=${encodeURIComponent(ctx.input.qualifier)}`;
-      }
-
-      await client.request({
-        service: 'lambda',
-        method: 'DELETE',
-        path,
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      let msg = ctx.input.qualifier
-        ? `Deleted version **${ctx.input.qualifier}** of function **${ctx.input.functionName}**.`
-        : `Deleted function **${ctx.input.functionName}** and all its versions/aliases.`;
+      await client.send('Lambda DeleteFunction', () =>
+        client.lambda.send(
+          new DeleteFunctionCommand({
+            FunctionName: ctx.input.functionName,
+            Qualifier: ctx.input.qualifier
+          })
+        )
+      );
 
       return {
         output: {
           operation: 'delete',
           deleted: true
         },
-        message: msg
+        message: `Deleted function **${ctx.input.functionName}**.`
       };
     }
 
-    throw new Error(
+    throw awsServiceError(
       `Unknown operation: "${operation}". Expected one of: list, get, invoke, updateConfiguration, delete.`
     );
   })

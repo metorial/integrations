@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { hookdeckServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let publishEvent = SlateTool.create(spec, {
@@ -45,6 +46,10 @@ export let publishEvent = SlateTool.create(spec, {
     if (ctx.input.sourceName) data.source_name = ctx.input.sourceName;
     if (ctx.input.headers) data.headers = ctx.input.headers;
     if (ctx.input.body !== undefined) data.body = ctx.input.body;
+
+    if (!data.source_id && !data.source_name) {
+      throw hookdeckServiceError('sourceId or sourceName is required.');
+    }
 
     let response = await client.publishEvent(data as any);
 

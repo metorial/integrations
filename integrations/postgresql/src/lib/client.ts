@@ -19,6 +19,12 @@ import {
   type ColumnDescription,
   type ParsedMessage
 } from './protocol';
+import {
+  postgresFieldsError,
+  postgresServiceError,
+  postgresUpstreamError,
+  toPostgresServiceError
+} from './errors';
 
 export interface ConnectionConfig {
   host: string;
@@ -54,7 +60,7 @@ export class PostgresClient {
       return result;
     } catch (err) {
       socket.destroy();
-      throw err;
+      throw toPostgresServiceError(err, 'PostgreSQL query failed');
     }
   }
 
@@ -72,18 +78,22 @@ export class PostgresClient {
       return results;
     } catch (err) {
       socket.destroy();
-      throw err;
+      throw toPostgresServiceError(err, 'PostgreSQL query failed');
     }
   }
 
   private connect(timeoutMs: number): Promise<net.Socket> {
     return new Promise((resolve, reject) => {
+      let socket: net.Socket;
+
       let timer = setTimeout(() => {
         socket.destroy();
-        reject(new Error(`Connection timeout after ${timeoutMs}ms`));
+        reject(
+          postgresUpstreamError(`PostgreSQL connection timeout after ${timeoutMs}ms`, {
+            reason: 'postgresql_connection_timeout'
+          })
+        );
       }, timeoutMs);
-
-      let socket: net.Socket;
 
       let handleConnection = async (sock: net.Socket) => {
         try {
@@ -93,7 +103,7 @@ export class PostgresClient {
         } catch (err) {
           clearTimeout(timer);
           sock.destroy();
-          reject(err);
+          reject(toPostgresServiceError(err, 'PostgreSQL authentication failed'));
         }
       };
 
@@ -106,7 +116,12 @@ export class PostgresClient {
 
         socket.once('error', err => {
           clearTimeout(timer);
-          reject(new Error(`Connection failed: ${err.message}`));
+          reject(
+            postgresUpstreamError(`PostgreSQL connection failed: ${err.message}`, {
+              reason: 'postgresql_connection_failed',
+              parent: err
+            })
+          );
         });
 
         socket.once('connect', () => {
@@ -134,22 +149,32 @@ export class PostgresClient {
               });
               tlsSocket.once('error', err => {
                 clearTimeout(timer);
-                reject(new Error(`SSL connection failed: ${err.message}`));
+                reject(
+                  postgresUpstreamError(`PostgreSQL SSL connection failed: ${err.message}`, {
+                    reason: 'postgresql_ssl_failed',
+                    parent: err
+                  })
+                );
               });
             } else if (responseChar === 'N') {
-              if (this.config.sslMode === 'require') {
-                // Server doesn't support SSL but we require it - some implementations proceed anyway
-                // For 'require', we just need encryption, not cert verification, so fall back to plain
-                handleConnection(socket);
-              } else {
-                clearTimeout(timer);
-                socket.destroy();
-                reject(new Error('Server does not support SSL connections'));
-              }
+              clearTimeout(timer);
+              socket.destroy();
+              reject(
+                postgresUpstreamError(
+                  `PostgreSQL server does not support SSL connections for sslmode=${this.config.sslMode}`,
+                  {
+                    reason: 'postgresql_ssl_unsupported'
+                  }
+                )
+              );
             } else {
               clearTimeout(timer);
               socket.destroy();
-              reject(new Error(`Unexpected SSL response: ${responseChar}`));
+              reject(
+                postgresUpstreamError(`Unexpected PostgreSQL SSL response: ${responseChar}`, {
+                  reason: 'postgresql_ssl_unexpected_response'
+                })
+              );
             }
           });
         });
@@ -161,7 +186,12 @@ export class PostgresClient {
 
         socket.once('error', err => {
           clearTimeout(timer);
-          reject(new Error(`Connection failed: ${err.message}`));
+          reject(
+            postgresUpstreamError(`PostgreSQL connection failed: ${err.message}`, {
+              reason: 'postgresql_connection_failed',
+              parent: err
+            })
+          );
         });
 
         socket.once('connect', () => {
@@ -178,7 +208,11 @@ export class PostgresClient {
 
       let timer = setTimeout(() => {
         cleanup();
-        reject(new Error(`Authentication timeout after ${timeoutMs}ms`));
+        reject(
+          postgresUpstreamError(`PostgreSQL authentication timeout after ${timeoutMs}ms`, {
+            reason: 'postgresql_auth_timeout'
+          })
+        );
       }, timeoutMs);
 
       let cleanup = () => {
@@ -189,7 +223,12 @@ export class PostgresClient {
 
       let onError = (err: Error) => {
         cleanup();
-        reject(new Error(`Authentication error: ${err.message}`));
+        reject(
+          postgresUpstreamError(`PostgreSQL authentication error: ${err.message}`, {
+            reason: 'postgresql_auth_error',
+            parent: err
+          })
+        );
       };
 
       let onData = (data: Uint8Array) => {
@@ -226,22 +265,22 @@ export class PostgresClient {
                 })
                 .catch(err => {
                   cleanup();
-                  reject(err);
+                  reject(toPostgresServiceError(err, 'PostgreSQL SASL authentication failed'));
                 });
               return; // SASL handler takes over data events temporarily
             } else {
               cleanup();
-              reject(new Error(`Unsupported authentication method: ${authType}`));
+              reject(
+                postgresServiceError(
+                  `Unsupported PostgreSQL authentication method: ${authType}`
+                )
+              );
               return;
             }
           } else if (msg.type === MessageTypes.ERROR_RESPONSE) {
             let fields = parseErrorFields(msg.body);
             cleanup();
-            reject(
-              new Error(
-                `PostgreSQL error: ${fields['message'] || 'Unknown error'}${fields['detail'] ? ` - ${fields['detail']}` : ''}`
-              )
-            );
+            reject(postgresFieldsError(fields));
             return;
           } else if (msg.type === MessageTypes.READY_FOR_QUERY) {
             if (authenticated) {
@@ -289,7 +328,7 @@ export class PostgresClient {
     }
 
     if (!mechanisms.includes('SCRAM-SHA-256')) {
-      throw new Error(
+      throw postgresServiceError(
         `Unsupported SASL mechanisms: ${mechanisms.join(', ')}. Only SCRAM-SHA-256 is supported.`
       );
     }
@@ -324,7 +363,12 @@ export class PostgresClient {
     );
     let continueAuthType = continueView.getInt32(0, false);
     if (continueAuthType !== AuthenticationTypes.SASL_CONTINUE) {
-      throw new Error(`Expected SASL_CONTINUE, got auth type: ${continueAuthType}`);
+      throw postgresUpstreamError(
+        `Expected SASL_CONTINUE, got auth type: ${continueAuthType}`,
+        {
+          reason: 'postgresql_sasl_protocol_error'
+        }
+      );
     }
 
     let serverFirstMessage = decoder.decode(saslContinueMsg.msg.body.slice(4));
@@ -334,7 +378,9 @@ export class PostgresClient {
     let iterations = parseInt(serverParams['i'] || '4096', 10);
 
     if (!serverNonce.startsWith(nonce)) {
-      throw new Error('Server nonce does not start with client nonce');
+      throw postgresUpstreamError('Server nonce does not start with client nonce', {
+        reason: 'postgresql_sasl_protocol_error'
+      });
     }
 
     // Compute SCRAM proof
@@ -387,7 +433,9 @@ export class PostgresClient {
       let expectedServerSignature = this.base64Encode(this.hmacSha256(serverKey, authMessage));
 
       if (serverSignature !== expectedServerSignature) {
-        throw new Error('Server signature verification failed');
+        throw postgresUpstreamError('PostgreSQL server signature verification failed', {
+          reason: 'postgresql_sasl_signature_verification_failed'
+        });
       }
     }
 
@@ -396,7 +444,11 @@ export class PostgresClient {
     return new Promise((resolve, reject) => {
       let timer = setTimeout(() => {
         cleanup();
-        reject(new Error('SASL auth completion timeout'));
+        reject(
+          postgresUpstreamError('PostgreSQL SASL auth completion timeout', {
+            reason: 'postgresql_sasl_timeout'
+          })
+        );
       }, timeoutMs);
 
       let cleanup = () => {
@@ -407,7 +459,12 @@ export class PostgresClient {
 
       let onError = (err: Error) => {
         cleanup();
-        reject(err);
+        reject(
+          postgresUpstreamError(`PostgreSQL SASL auth error: ${err.message}`, {
+            reason: 'postgresql_sasl_error',
+            parent: err
+          })
+        );
       };
 
       let onData = (data: Uint8Array) => {
@@ -423,7 +480,7 @@ export class PostgresClient {
           if (msg.type === MessageTypes.ERROR_RESPONSE) {
             let fields = parseErrorFields(msg.body);
             cleanup();
-            reject(new Error(`PostgreSQL error: ${fields['message'] || 'Unknown error'}`));
+            reject(postgresFieldsError(fields));
             return;
           }
           if (msg.type === MessageTypes.READY_FOR_QUERY) {
@@ -446,7 +503,7 @@ export class PostgresClient {
         if (msg.type === MessageTypes.ERROR_RESPONSE) {
           let fields = parseErrorFields(msg.body);
           cleanup();
-          reject(new Error(`PostgreSQL error: ${fields['message'] || 'Unknown error'}`));
+          reject(postgresFieldsError(fields));
           return;
         }
       }
@@ -527,7 +584,11 @@ export class PostgresClient {
 
       let timer = setTimeout(() => {
         cleanup();
-        reject(new Error('Timeout waiting for message'));
+        reject(
+          postgresUpstreamError('Timeout waiting for PostgreSQL message', {
+            reason: 'postgresql_message_timeout'
+          })
+        );
       }, timeoutMs);
 
       let cleanup = () => {
@@ -538,7 +599,12 @@ export class PostgresClient {
 
       let onError = (err: Error) => {
         cleanup();
-        reject(err);
+        reject(
+          postgresUpstreamError(`PostgreSQL socket error: ${err.message}`, {
+            reason: 'postgresql_socket_error',
+            parent: err
+          })
+        );
       };
 
       let processBuffer = (): boolean => {
@@ -549,7 +615,7 @@ export class PostgresClient {
           if (msg.type === MessageTypes.ERROR_RESPONSE) {
             let fields = parseErrorFields(msg.body);
             cleanup();
-            reject(new Error(`PostgreSQL error: ${fields['message'] || 'Unknown error'}`));
+            reject(postgresFieldsError(fields));
             return true;
           }
           if (msg.type === expectedType) {
@@ -591,7 +657,11 @@ export class PostgresClient {
 
       let timer = setTimeout(() => {
         cleanup();
-        reject(new Error(`Query timeout after ${timeoutMs}ms`));
+        reject(
+          postgresUpstreamError(`PostgreSQL query timeout after ${timeoutMs}ms`, {
+            reason: 'postgresql_query_timeout'
+          })
+        );
       }, timeoutMs);
 
       let cleanup = () => {
@@ -602,7 +672,12 @@ export class PostgresClient {
 
       let onError = (err: Error) => {
         cleanup();
-        reject(new Error(`Query error: ${err.message}`));
+        reject(
+          postgresUpstreamError(`PostgreSQL query error: ${err.message}`, {
+            reason: 'postgresql_query_error',
+            parent: err
+          })
+        );
       };
 
       let onData = (data: Uint8Array) => {
@@ -626,13 +701,7 @@ export class PostgresClient {
           } else if (msg.type === MessageTypes.ERROR_RESPONSE) {
             let fields = parseErrorFields(msg.body);
             cleanup();
-            let errorMsg = fields['message'] || 'Unknown error';
-            if (fields['detail']) errorMsg += ` - ${fields['detail']}`;
-            if (fields['hint']) errorMsg += ` (Hint: ${fields['hint']})`;
-            if (fields['position']) errorMsg += ` at position ${fields['position']}`;
-            reject(
-              new Error(`PostgreSQL query error [${fields['code'] || 'UNKNOWN'}]: ${errorMsg}`)
-            );
+            reject(postgresFieldsError(fields));
             return;
           } else if (msg.type === MessageTypes.READY_FOR_QUERY) {
             cleanup();

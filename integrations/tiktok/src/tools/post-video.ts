@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TikTokConsumerClient } from '../lib/client';
+import { tiktokServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -71,6 +72,26 @@ export let postVideo = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (ctx.input.source === 'PULL_FROM_URL' && !ctx.input.videoUrl) {
+      throw tiktokServiceError('videoUrl is required when source is PULL_FROM_URL.');
+    }
+
+    if (ctx.input.source === 'FILE_UPLOAD') {
+      let missingFields = [
+        ['videoSize', ctx.input.videoSize],
+        ['chunkSize', ctx.input.chunkSize],
+        ['totalChunkCount', ctx.input.totalChunkCount]
+      ]
+        .filter(([, value]) => typeof value !== 'number')
+        .map(([field]) => field);
+
+      if (missingFields.length > 0) {
+        throw tiktokServiceError(
+          `${missingFields.join(', ')} ${missingFields.length === 1 ? 'is' : 'are'} required when source is FILE_UPLOAD.`
+        );
+      }
+    }
+
     let client = new TikTokConsumerClient({ token: ctx.auth.token });
 
     let result = await client.initVideoPost({

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StripeClient } from '../lib/client';
+import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -90,7 +91,7 @@ export let manageDisputes = SlateTool.create(spec, {
     });
 
     if (action === 'get') {
-      if (!ctx.input.disputeId) throw new Error('disputeId is required for get action');
+      if (!ctx.input.disputeId) throw stripeServiceError('disputeId is required for get action');
       let dispute = await client.getDispute(ctx.input.disputeId);
       return {
         output: mapDispute(dispute),
@@ -99,7 +100,7 @@ export let manageDisputes = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.disputeId) throw new Error('disputeId is required for update action');
+      if (!ctx.input.disputeId) throw stripeServiceError('disputeId is required for update action');
       let params: Record<string, any> = {};
 
       if (ctx.input.evidence) {
@@ -131,7 +132,7 @@ export let manageDisputes = SlateTool.create(spec, {
     }
 
     if (action === 'close') {
-      if (!ctx.input.disputeId) throw new Error('disputeId is required for close action');
+      if (!ctx.input.disputeId) throw stripeServiceError('disputeId is required for close action');
       let dispute = await client.closeDispute(ctx.input.disputeId);
       return {
         output: mapDispute(dispute),

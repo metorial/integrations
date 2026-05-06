@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/bitbucket.svg" height="20"> Bitbucket
 
-Manage Git repositories, pull requests, and CI/CD pipelines on Bitbucket Cloud. Create, fork, and configure repositories within workspaces and projects. Create, review, approve, merge, and decline pull requests with inline code comments. Browse source code, list commits, and manage branches and tags. Track issues with the built-in issue tracker. Trigger, monitor, and manage Bitbucket Pipelines, deployment environments, and pipeline variables. Control workspace membership, user permissions, and group access. Create and manage webhooks for repository and workspace events. Search code across repositories and manage code snippets.
+Manage Git repositories, pull requests, and CI/CD pipelines on Bitbucket Cloud. Create, fork, and configure repositories within workspaces and projects. Create, review, approve, merge, and decline pull requests with inline code comments. Browse source code, list commits, and manage branches and tags. Track issues with the built-in issue tracker. Trigger, monitor, and manage Bitbucket Pipelines. List workspace members, configure repository default reviewers and branch restrictions, create and manage repository webhooks, and search code across repositories.
 
 ## Tools
 
@@ -68,9 +68,17 @@ List repositories in the configured workspace. Supports filtering by query and p
 
 List all members in the configured workspace. Returns user display names, UUIDs, and account IDs.
 
+### Manage Branch Restrictions
+
+List, get, create, update, or delete repository branch restriction rules for push restrictions and merge checks.
+
 ### Manage Branches
 
 List, create, or delete branches in a repository. Use action "list" to browse branches, "create" to create a new branch from a target commit/branch, or "delete" to remove a branch.
+
+### Manage Default Reviewers
+
+List, get, add, or remove default reviewers that are automatically added to newly created pull requests.
 
 ### Manage Pipelines
 
@@ -87,6 +95,10 @@ Perform actions on a pull request: **approve**, **unapprove**, **merge**, **decl
 ### Manage Tags
 
 List, create, or delete tags in a repository. Use action "list" to browse tags, "create" to create a new tag at a specific commit, or "delete" to remove a tag.
+
+### Manage Webhooks
+
+List, get, create, update, or delete repository webhooks for Bitbucket events such as pushes, pull request changes, issue changes, and build status changes.
 
 ### Search Code
 

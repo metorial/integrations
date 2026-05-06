@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { cloudflareApiError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -39,20 +40,24 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await http.get('/user/tokens/verify');
-      let tokenData = response.data.result;
+      try {
+        await http.get('/user/tokens/verify');
 
-      let userResponse = await http.get('/user');
-      let userData = userResponse.data.result;
+        let userResponse = await http.get('/user');
+        let userData = userResponse.data.result;
 
-      return {
-        profile: {
-          id: userData.id,
-          email: userData.email,
-          name:
-            `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || userData.email
-        }
-      };
+        return {
+          profile: {
+            id: userData.id,
+            email: userData.email,
+            name:
+              `${userData.first_name || ''} ${userData.last_name || ''}`.trim() ||
+              userData.email
+          }
+        };
+      } catch (error) {
+        throw cloudflareApiError(error, 'profile lookup');
+      }
     }
   })
   .addCustomAuth({
@@ -90,16 +95,21 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await http.get('/user');
-      let userData = response.data.result;
+      try {
+        let response = await http.get('/user');
+        let userData = response.data.result;
 
-      return {
-        profile: {
-          id: userData.id,
-          email: userData.email,
-          name:
-            `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || userData.email
-        }
-      };
+        return {
+          profile: {
+            id: userData.id,
+            email: userData.email,
+            name:
+              `${userData.first_name || ''} ${userData.last_name || ''}`.trim() ||
+              userData.email
+          }
+        };
+      } catch (error) {
+        throw cloudflareApiError(error, 'profile lookup');
+      }
     }
   });

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { PayPalClient } from '../lib/client';
+import { paypalServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -102,23 +103,21 @@ export let createInvoice = SlateTool.create(spec, {
     let selfLink = (invoice.href || '') as string;
     let invoiceId = selfLink.split('/').pop() || '';
 
-    // If we need the full invoice details, fetch them
+    if (!invoiceId) {
+      throw paypalServiceError('PayPal did not return an invoice ID for the created invoice');
+    }
+
+    // Fetch the created invoice so downstream tools get a stable ID and current status.
     let status = 'DRAFT';
     let invoiceNumber = ctx.input.invoiceNumber;
 
-    if (invoiceId) {
-      try {
-        let fullInvoice = await client.getInvoice(invoiceId);
-        status = fullInvoice.status || 'DRAFT';
-        invoiceNumber = fullInvoice.detail?.invoice_number;
+    let fullInvoice = await client.getInvoice(invoiceId);
+    status = fullInvoice.status || 'DRAFT';
+    invoiceNumber = fullInvoice.detail?.invoice_number;
 
-        if (ctx.input.sendImmediately) {
-          await client.sendInvoice(invoiceId);
-          status = 'SENT';
-        }
-      } catch {
-        // Invoice was created but we couldn't fetch/send
-      }
+    if (ctx.input.sendImmediately) {
+      await client.sendInvoice(invoiceId);
+      status = 'SENT';
     }
 
     return {

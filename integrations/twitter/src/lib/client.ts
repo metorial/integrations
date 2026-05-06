@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { twitterApiError } from './errors';
 
 let createTwitterClient = (token: string) => {
   return createAxios({
@@ -17,11 +18,29 @@ export let DEFAULT_MEDIA_FIELDS = 'media_key,type,url,preview_image_url,alt_text
 export let DEFAULT_EXPANSIONS =
   'author_id,referenced_tweets.id,attachments.media_keys,in_reply_to_user_id';
 
+export let SIMPLE_MEDIA_CATEGORIES = ['tweet_image', 'dm_image', 'subtitles'] as const;
+export let SIMPLE_MEDIA_TYPES = [
+  'text/srt',
+  'text/vtt',
+  'image/jpeg',
+  'image/bmp',
+  'image/png',
+  'image/webp',
+  'image/pjpeg',
+  'image/tiff'
+] as const;
+
 export class TwitterClient {
   private api: ReturnType<typeof createAxios>;
 
   constructor(private token: string) {
     this.api = createTwitterClient(token);
+    this.api.interceptors.response.use(
+      response => response,
+      error => {
+        throw twitterApiError(error);
+      }
+    );
   }
 
   // ==================== Users ====================
@@ -95,8 +114,10 @@ export class TwitterClient {
     replyToPostId?: string;
     quotePostId?: string;
     mediaIds?: string[];
+    mediaTaggedUserIds?: string[];
     pollOptions?: string[];
     pollDurationMinutes?: number;
+    replySettings?: 'following' | 'mentionedUsers' | 'subscribers' | 'verified';
   }) {
     let body: Record<string, any> = { text: params.text };
 
@@ -110,6 +131,9 @@ export class TwitterClient {
 
     if (params.mediaIds && params.mediaIds.length > 0) {
       body.media = { media_ids: params.mediaIds };
+      if (params.mediaTaggedUserIds && params.mediaTaggedUserIds.length > 0) {
+        body.media.tagged_user_ids = params.mediaTaggedUserIds;
+      }
     }
 
     if (params.pollOptions && params.pollOptions.length > 0) {
@@ -117,6 +141,10 @@ export class TwitterClient {
         options: params.pollOptions,
         duration_minutes: params.pollDurationMinutes || 1440
       };
+    }
+
+    if (params.replySettings) {
+      body.reply_settings = params.replySettings;
     }
 
     let response = await this.api.post('/tweets', body);
@@ -200,7 +228,7 @@ export class TwitterClient {
       exclude?: string[];
     }
   ) {
-    let response = await this.api.get(`/users/${userId}/reverse_chronological`, {
+    let response = await this.api.get(`/users/${userId}/timelines/reverse_chronological`, {
       params: {
         'tweet.fields': DEFAULT_POST_FIELDS,
         'user.fields': DEFAULT_USER_FIELDS,
@@ -515,26 +543,60 @@ export class TwitterClient {
     return response.data;
   }
 
-  async sendDmToUser(participantId: string, text: string) {
-    let response = await this.api.post(`/dm_conversations/with/${participantId}/messages`, {
-      text
+  async getDmConversationEventsWithParticipant(
+    participantId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
+    let response = await this.api.get(`/dm_conversations/with/${participantId}/dm_events`, {
+      params: {
+        'dm_event.fields': 'id,text,created_at,sender_id,dm_conversation_id,event_type',
+        'user.fields': DEFAULT_USER_FIELDS,
+        expansions: 'sender_id',
+        max_results: params?.maxResults || 20,
+        pagination_token: params?.paginationToken
+      }
     });
     return response.data;
   }
 
-  async sendDmToConversation(conversationId: string, text: string) {
-    let response = await this.api.post(`/dm_conversations/${conversationId}/messages`, {
-      text
-    });
+  private buildDmMessageBody(text: string, mediaId?: string) {
+    let body: Record<string, any> = { text };
+    if (mediaId) {
+      body.attachments = [{ media_id: mediaId }];
+    }
+    return body;
+  }
+
+  async sendDmToUser(participantId: string, text: string, mediaId?: string) {
+    let response = await this.api.post(
+      `/dm_conversations/with/${participantId}/messages`,
+      this.buildDmMessageBody(text, mediaId)
+    );
     return response.data;
   }
 
-  async createDmConversation(participantIds: string[], text: string) {
+  async sendDmToConversation(conversationId: string, text: string, mediaId?: string) {
+    let response = await this.api.post(
+      `/dm_conversations/${conversationId}/messages`,
+      this.buildDmMessageBody(text, mediaId)
+    );
+    return response.data;
+  }
+
+  async createDmConversation(participantIds: string[], text: string, mediaId?: string) {
     let response = await this.api.post('/dm_conversations', {
       conversation_type: 'Group',
       participant_ids: participantIds,
-      message: { text }
+      message: this.buildDmMessageBody(text, mediaId)
     });
+    return response.data;
+  }
+
+  async deleteDmEvent(eventId: string) {
+    let response = await this.api.delete(`/dm_events/${eventId}`);
     return response.data;
   }
 
@@ -659,6 +721,35 @@ export class TwitterClient {
         expansions: 'author_id',
         max_results: params?.maxResults || 10,
         pagination_token: params?.paginationToken
+      }
+    });
+    return response.data;
+  }
+
+  // ==================== Media Upload ====================
+
+  async uploadMedia(params: {
+    mediaBase64: string;
+    mediaCategory: (typeof SIMPLE_MEDIA_CATEGORIES)[number];
+    mediaType?: (typeof SIMPLE_MEDIA_TYPES)[number];
+    additionalOwnerIds?: string[];
+    shared?: boolean;
+  }) {
+    let response = await this.api.post('/media/upload', {
+      media: params.mediaBase64,
+      media_category: params.mediaCategory,
+      media_type: params.mediaType,
+      additional_owners: params.additionalOwnerIds,
+      shared: params.shared
+    });
+    return response.data;
+  }
+
+  async getMediaUploadStatus(mediaId: string) {
+    let response = await this.api.get('/media/upload', {
+      params: {
+        command: 'STATUS',
+        media_id: mediaId
       }
     });
     return response.data;

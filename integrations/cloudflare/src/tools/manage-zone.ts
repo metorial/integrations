@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageZoneTool = SlateTool.create(spec, {
@@ -44,9 +45,11 @@ export let manageZoneTool = SlateTool.create(spec, {
     let { action } = ctx.input;
 
     if (action === 'create') {
-      if (!ctx.input.name) throw new Error('name is required for creating a zone');
+      if (!ctx.input.name)
+        throw cloudflareServiceError('name is required for creating a zone');
       let accountId = ctx.input.accountId || ctx.config.accountId;
-      if (!accountId) throw new Error('accountId is required for creating a zone');
+      if (!accountId)
+        throw cloudflareServiceError('accountId is required for creating a zone');
 
       let response = await client.createZone({
         name: ctx.input.name,
@@ -69,7 +72,7 @@ export let manageZoneTool = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.zoneId) throw new Error('zoneId is required');
+      if (!ctx.input.zoneId) throw cloudflareServiceError('zoneId is required');
       let response = await client.getZone(ctx.input.zoneId);
       let z = response.result;
       return {
@@ -85,7 +88,8 @@ export let manageZoneTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.zoneId) throw new Error('zoneId is required for deleting a zone');
+      if (!ctx.input.zoneId)
+        throw cloudflareServiceError('zoneId is required for deleting a zone');
       let response = await client.deleteZone(ctx.input.zoneId);
       return {
         output: { zoneId: response.result.id },
@@ -93,6 +97,6 @@ export let manageZoneTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

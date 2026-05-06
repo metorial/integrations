@@ -27,7 +27,15 @@ export let countTokens = SlateTool.create(spec, {
       tools: z
         .array(z.record(z.string(), z.unknown()))
         .optional()
-        .describe('Tool definitions to include in the count')
+        .describe('Tool definitions to include in the count'),
+      thinking: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Extended thinking configuration to include in the count'),
+      betaHeaders: z
+        .array(z.string())
+        .optional()
+        .describe('Anthropic beta headers to send with this request')
     })
   )
   .output(
@@ -51,7 +59,9 @@ export let countTokens = SlateTool.create(spec, {
       model: ctx.input.model,
       messages,
       system: ctx.input.system,
-      tools: ctx.input.tools
+      tools: ctx.input.tools,
+      thinking: ctx.input.thinking,
+      betaHeaders: ctx.input.betaHeaders
     });
 
     return {

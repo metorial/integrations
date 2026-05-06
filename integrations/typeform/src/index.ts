@@ -5,8 +5,10 @@ import {
   getForm,
   createForm,
   updateForm,
+  patchForm,
   deleteForm,
   getResponses,
+  downloadResponseFile,
   deleteResponses,
   listWorkspaces,
   manageWorkspace,
@@ -14,6 +16,7 @@ import {
   manageTheme,
   manageImage,
   manageWebhook,
+  manageFormMessages,
   manageTranslation,
   getFormInsights
 } from './tools';
@@ -26,8 +29,10 @@ export let provider = Slate.create({
     getForm,
     createForm,
     updateForm,
+    patchForm,
     deleteForm,
     getResponses,
+    downloadResponseFile,
     deleteResponses,
     listWorkspaces,
     manageWorkspace,
@@ -35,6 +40,7 @@ export let provider = Slate.create({
     manageTheme,
     manageImage,
     manageWebhook,
+    manageFormMessages,
     manageTranslation,
     getFormInsights
   ],

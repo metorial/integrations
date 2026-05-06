@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { lambdaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -106,7 +107,7 @@ export let manageLayer = SlateTool.create(spec, {
       };
     }
 
-    if (!layerName) throw new Error('layerName is required for this action');
+    if (!layerName) throw lambdaServiceError('layerName is required for this action');
 
     if (action === 'list_versions') {
       let result = await client.listLayerVersions(layerName);
@@ -123,7 +124,8 @@ export let manageLayer = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.versionNumber) throw new Error('versionNumber is required for delete');
+      if (!ctx.input.versionNumber)
+        throw lambdaServiceError('versionNumber is required for delete');
       await client.deleteLayerVersion(layerName, ctx.input.versionNumber);
       return {
         output: { deleted: true },
@@ -132,7 +134,8 @@ export let manageLayer = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.versionNumber) throw new Error('versionNumber is required for get');
+      if (!ctx.input.versionNumber)
+        throw lambdaServiceError('versionNumber is required for get');
       let result = await client.getLayerVersion(layerName, ctx.input.versionNumber);
       return {
         output: {
@@ -149,7 +152,8 @@ export let manageLayer = SlateTool.create(spec, {
     }
 
     // publish
-    if (!ctx.input.content) throw new Error('content is required for publishing a layer');
+    if (!ctx.input.content)
+      throw lambdaServiceError('content is required for publishing a layer');
     let contentObj: Record<string, any> = {};
     if (ctx.input.content.s3Bucket) contentObj['S3Bucket'] = ctx.input.content.s3Bucket;
     if (ctx.input.content.s3Key) contentObj['S3Key'] = ctx.input.content.s3Key;

@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { mailchimpApiError, mailchimpServiceError } from './errors';
 
 export class MailchimpClient {
   private token: string;
@@ -8,9 +9,25 @@ export class MailchimpClient {
   constructor(config: { token: string; serverPrefix: string }) {
     this.token = config.token;
     this.serverPrefix = config.serverPrefix;
+
+    if (!this.token?.trim()) {
+      throw mailchimpServiceError('Mailchimp authentication token is required.');
+    }
+
+    if (!this.serverPrefix?.trim()) {
+      throw mailchimpServiceError('Mailchimp data center prefix is required.');
+    }
+
     this.axios = createAxios({
       baseURL: `https://${this.serverPrefix}.api.mailchimp.com/3.0`
     });
+
+    this.axios.interceptors.response.use(
+      response => response,
+      error => {
+        throw mailchimpApiError(error);
+      }
+    );
   }
 
   private get headers() {
@@ -369,7 +386,7 @@ export class MailchimpClient {
 
   async startAutomation(workflowId: string) {
     await this.axios.post(
-      `/automations/${workflowId}/actions/start`,
+      `/automations/${workflowId}/actions/start-all-emails`,
       {},
       { headers: this.headers }
     );
@@ -377,7 +394,7 @@ export class MailchimpClient {
 
   async pauseAutomation(workflowId: string) {
     await this.axios.post(
-      `/automations/${workflowId}/actions/pause`,
+      `/automations/${workflowId}/actions/pause-all-emails`,
       {},
       { headers: this.headers }
     );
@@ -562,20 +579,213 @@ export class MailchimpClient {
     return response.data;
   }
 
-  // ─── Interest Categories ────────────────────────────────────
-
-  async getInterestCategories(listId: string) {
-    let response = await this.axios.get(`/lists/${listId}/interest-categories`, {
+  async getMergeField(listId: string, mergeId: number) {
+    let response = await this.axios.get(`/lists/${listId}/merge-fields/${mergeId}`, {
       headers: this.headers
     });
     return response.data;
   }
 
-  async getInterests(listId: string, categoryId: string) {
-    let response = await this.axios.get(
-      `/lists/${listId}/interest-categories/${categoryId}/interests`,
+  async createMergeField(listId: string, data: Record<string, any>) {
+    let response = await this.axios.post(`/lists/${listId}/merge-fields`, data, {
+      headers: this.headers
+    });
+    return response.data;
+  }
+
+  async updateMergeField(listId: string, mergeId: number, data: Record<string, any>) {
+    let response = await this.axios.patch(`/lists/${listId}/merge-fields/${mergeId}`, data, {
+      headers: this.headers
+    });
+    return response.data;
+  }
+
+  async deleteMergeField(listId: string, mergeId: number) {
+    await this.axios.delete(`/lists/${listId}/merge-fields/${mergeId}`, {
+      headers: this.headers
+    });
+  }
+
+  // ─── Interest Categories ────────────────────────────────────
+
+  async getInterestCategories(listId: string, params?: { count?: number; offset?: number }) {
+    let response = await this.axios.get(`/lists/${listId}/interest-categories`, {
+      headers: this.headers,
+      params: { count: params?.count ?? 100, offset: params?.offset ?? 0 }
+    });
+    return response.data;
+  }
+
+  async getInterestCategory(listId: string, categoryId: string) {
+    let response = await this.axios.get(`/lists/${listId}/interest-categories/${categoryId}`, {
+      headers: this.headers
+    });
+    return response.data;
+  }
+
+  async createInterestCategory(listId: string, data: Record<string, any>) {
+    let response = await this.axios.post(`/lists/${listId}/interest-categories`, data, {
+      headers: this.headers
+    });
+    return response.data;
+  }
+
+  async updateInterestCategory(listId: string, categoryId: string, data: Record<string, any>) {
+    let response = await this.axios.patch(
+      `/lists/${listId}/interest-categories/${categoryId}`,
+      data,
       { headers: this.headers }
     );
+    return response.data;
+  }
+
+  async deleteInterestCategory(listId: string, categoryId: string) {
+    await this.axios.delete(`/lists/${listId}/interest-categories/${categoryId}`, {
+      headers: this.headers
+    });
+  }
+
+  async getInterests(
+    listId: string,
+    categoryId: string,
+    params?: { count?: number; offset?: number }
+  ) {
+    let response = await this.axios.get(
+      `/lists/${listId}/interest-categories/${categoryId}/interests`,
+      {
+        headers: this.headers,
+        params: { count: params?.count ?? 100, offset: params?.offset ?? 0 }
+      }
+    );
+    return response.data;
+  }
+
+  async getInterest(listId: string, categoryId: string, interestId: string) {
+    let response = await this.axios.get(
+      `/lists/${listId}/interest-categories/${categoryId}/interests/${interestId}`,
+      { headers: this.headers }
+    );
+    return response.data;
+  }
+
+  async createInterest(listId: string, categoryId: string, data: Record<string, any>) {
+    let response = await this.axios.post(
+      `/lists/${listId}/interest-categories/${categoryId}/interests`,
+      data,
+      { headers: this.headers }
+    );
+    return response.data;
+  }
+
+  async updateInterest(
+    listId: string,
+    categoryId: string,
+    interestId: string,
+    data: Record<string, any>
+  ) {
+    let response = await this.axios.patch(
+      `/lists/${listId}/interest-categories/${categoryId}/interests/${interestId}`,
+      data,
+      { headers: this.headers }
+    );
+    return response.data;
+  }
+
+  async deleteInterest(listId: string, categoryId: string, interestId: string) {
+    await this.axios.delete(
+      `/lists/${listId}/interest-categories/${categoryId}/interests/${interestId}`,
+      { headers: this.headers }
+    );
+  }
+
+  // ─── File Manager ───────────────────────────────────────────
+
+  async getFileManagerFiles(params?: { count?: number; offset?: number }) {
+    let response = await this.axios.get('/file-manager/files', {
+      headers: this.headers,
+      params: { count: params?.count ?? 100, offset: params?.offset ?? 0 }
+    });
+    return response.data;
+  }
+
+  async getFileManagerFile(fileId: number) {
+    let response = await this.axios.get(`/file-manager/files/${fileId}`, {
+      headers: this.headers
+    });
+    return response.data;
+  }
+
+  async createFileManagerFile(data: { name: string; fileData: string; folderId?: number }) {
+    let body: Record<string, any> = {
+      name: data.name,
+      file_data: data.fileData
+    };
+
+    if (data.folderId !== undefined) body.folder_id = data.folderId;
+
+    let response = await this.axios.post('/file-manager/files', body, {
+      headers: this.headers
+    });
+    return response.data;
+  }
+
+  async updateFileManagerFile(fileId: number, data: { name?: string; folderId?: number }) {
+    let body: Record<string, any> = {};
+    if (data.name) body.name = data.name;
+    if (data.folderId !== undefined) body.folder_id = data.folderId;
+
+    let response = await this.axios.patch(`/file-manager/files/${fileId}`, body, {
+      headers: this.headers
+    });
+    return response.data;
+  }
+
+  async deleteFileManagerFile(fileId: number) {
+    await this.axios.delete(`/file-manager/files/${fileId}`, {
+      headers: this.headers
+    });
+  }
+
+  async getFileManagerFolders(params?: { count?: number; offset?: number }) {
+    let response = await this.axios.get('/file-manager/folders', {
+      headers: this.headers,
+      params: { count: params?.count ?? 100, offset: params?.offset ?? 0 }
+    });
+    return response.data;
+  }
+
+  async getFileManagerFolder(folderId: number) {
+    let response = await this.axios.get(`/file-manager/folders/${folderId}`, {
+      headers: this.headers
+    });
+    return response.data;
+  }
+
+  async createFileManagerFolder(data: { name: string }) {
+    let response = await this.axios.post('/file-manager/folders', data, {
+      headers: this.headers
+    });
+    return response.data;
+  }
+
+  async updateFileManagerFolder(folderId: number, data: { name: string }) {
+    let response = await this.axios.patch(`/file-manager/folders/${folderId}`, data, {
+      headers: this.headers
+    });
+    return response.data;
+  }
+
+  async deleteFileManagerFolder(folderId: number) {
+    await this.axios.delete(`/file-manager/folders/${folderId}`, {
+      headers: this.headers
+    });
+  }
+
+  async getFilesInFolder(folderId: number, params?: { count?: number; offset?: number }) {
+    let response = await this.axios.get(`/file-manager/folders/${folderId}/files`, {
+      headers: this.headers,
+      params: { count: params?.count ?? 100, offset: params?.offset ?? 0 }
+    });
     return response.data;
   }
 }

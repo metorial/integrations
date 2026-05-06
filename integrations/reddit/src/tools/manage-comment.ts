@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RedditClient } from '../lib/client';
+import { requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -32,7 +33,10 @@ export let manageComment = SlateTool.create(spec, {
     let fullname = commentId.startsWith('t1_') ? commentId : `t1_${commentId}`;
 
     if (action === 'edit') {
-      await client.editComment(fullname, text ?? '');
+      await client.editComment(
+        fullname,
+        requireRedditInput(text, 'text is required for edit action')
+      );
     } else {
       await client.deleteComment(fullname);
     }

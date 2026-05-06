@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/discord.svg" height="20"> Discord
 
-Send, edit, and delete messages in channels and DMs. Manage servers (guilds), channels, roles, and members. Create and handle slash commands, buttons, and interactive components. Execute webhooks to post messages into channels. Manage threads, scheduled events, auto moderation rules, and audit logs. Create and manage voice and stage channels. Handle emoji, stickers, and soundboard sounds. Add or remove users, assign roles, kick or ban members. Register application commands at global or guild scope. Receive real-time events via Gateway WebSocket for messages, reactions, voice state changes, and member updates. Manage monetization with SKUs and entitlements. Create multiplayer game lobbies and send in-lobby messages.
+Send, edit, and delete messages in channels. Manage servers (guilds), channels, roles, members, invites, webhooks, threads, scheduled events, auto moderation rules, audit logs, application commands, and custom guild emojis. Add or remove users, assign roles, kick or ban members, and receive supported message, guild, channel, member, and inbound webhook triggers.
 
 ## Tools
 
@@ -12,9 +12,17 @@ Fetch audit log entries for a Discord guild. Supports filtering by user, action 
 
 Manage auto moderation rules in a Discord guild. Supports listing all rules, getting a specific rule, creating new rules, updating existing rules, and deleting rules.
 
+### Manage Application Commands
+
+List, get, create, update, or delete Discord application commands at global or guild scope.
+
 ### Manage Channels
 
 List, get, create, update, or delete channels in a Discord guild. Supports text, voice, category, announcement, stage, and forum channel types.
+
+### Manage Emojis
+
+List, get, create, update, or delete custom guild emojis.
 
 ### Manage Guild
 

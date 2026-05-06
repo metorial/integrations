@@ -1,5 +1,19 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
+import type { AxiosInstance, AxiosResponse } from 'axios';
+import {
+  cloudflareApiError,
+  cloudflareApiResponseError,
+  cloudflareServiceError,
+  isCloudflareNotFoundError
+} from './errors';
+
+let isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+let isCloudflareEnvelopeFailure = (value: unknown) =>
+  isRecord(value) && value.success === false;
+
+let encodePathSegment = (value: string) => encodeURIComponent(value);
 
 export interface CloudflareAuthConfig {
   token: string;
@@ -43,6 +57,17 @@ export class Client {
       baseURL: 'https://api.cloudflare.com/client/v4',
       headers
     });
+
+    this.http.interceptors.response.use(
+      (response: AxiosResponse) => {
+        if (isCloudflareEnvelopeFailure(response.data)) {
+          throw cloudflareApiResponseError(response);
+        }
+
+        return response;
+      },
+      error => Promise.reject(cloudflareApiError(error))
+    );
   }
 
   // ─── DNS Records ───────────────────────────────────────────────
@@ -195,6 +220,11 @@ export class Client {
     return response.data as CloudflareResponse<{ id: string }>;
   }
 
+  async purgeFilesByPrefixes(zoneId: string, prefixes: string[]) {
+    let response = await this.http.post(`/zones/${zoneId}/purge_cache`, { prefixes });
+    return response.data as CloudflareResponse<{ id: string }>;
+  }
+
   async setDevelopmentMode(zoneId: string, value: 'on' | 'off') {
     return this.updateZoneSetting(zoneId, 'development_mode', value);
   }
@@ -266,10 +296,23 @@ export class Client {
   // ─── Custom Rules (WAF) ───────────────────────────────────────
 
   async listCustomRules(zoneId: string) {
-    let response = await this.http.get(
-      `/zones/${zoneId}/rulesets/phases/http_request_firewall_custom/entrypoint`
-    );
-    return response.data as CloudflareResponse<any>;
+    try {
+      let response = await this.http.get(
+        `/zones/${zoneId}/rulesets/phases/http_request_firewall_custom/entrypoint`
+      );
+      return response.data as CloudflareResponse<any>;
+    } catch (error) {
+      if (isCloudflareNotFoundError(error)) {
+        return {
+          success: true,
+          errors: [],
+          messages: [],
+          result: { rules: [] }
+        };
+      }
+
+      throw error;
+    }
   }
 
   async createCustomRule(
@@ -308,6 +351,20 @@ export class Client {
       });
       return response.data as CloudflareResponse<any>;
     }
+  }
+
+  async deleteCustomRule(zoneId: string, ruleId: string) {
+    let entrypoint = await this.listCustomRules(zoneId);
+    let rulesetId = entrypoint.result?.id;
+
+    if (!rulesetId) {
+      throw cloudflareServiceError('No custom WAF ruleset exists for this zone.');
+    }
+
+    let response = await this.http.delete(
+      `/zones/${zoneId}/rulesets/${rulesetId}/rules/${ruleId}`
+    );
+    return response.data as CloudflareResponse<any>;
   }
 
   // ─── Workers ───────────────────────────────────────────────────
@@ -378,6 +435,21 @@ export class Client {
     return response.data as CloudflareResponse<any>;
   }
 
+  async getKvNamespace(accountId: string, namespaceId: string) {
+    let response = await this.http.get(
+      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}`
+    );
+    return response.data as CloudflareResponse<any>;
+  }
+
+  async renameKvNamespace(accountId: string, namespaceId: string, title: string) {
+    let response = await this.http.put(
+      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}`,
+      { title }
+    );
+    return response.data as CloudflareResponse<any>;
+  }
+
   async deleteKvNamespace(accountId: string, namespaceId: string) {
     let response = await this.http.delete(
       `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}`
@@ -409,7 +481,7 @@ export class Client {
 
   async getKvValue(accountId: string, namespaceId: string, key: string) {
     let response = await this.http.get(
-      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`
+      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${encodePathSegment(key)}`
     );
     return response.data;
   }
@@ -422,7 +494,7 @@ export class Client {
     metadata?: any
   ) {
     let response = await this.http.put(
-      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`,
+      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${encodePathSegment(key)}`,
       value,
       {
         headers: { 'Content-Type': 'text/plain' }
@@ -433,7 +505,7 @@ export class Client {
 
   async deleteKvKey(accountId: string, namespaceId: string, key: string) {
     let response = await this.http.delete(
-      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`
+      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${encodePathSegment(key)}`
     );
     return response.data as CloudflareResponse<any>;
   }
@@ -445,10 +517,22 @@ export class Client {
     return response.data as CloudflareResponse<any>;
   }
 
-  async createR2Bucket(accountId: string, name: string, locationHint?: string) {
-    let body: any = { name };
-    if (locationHint) body.location_hint = locationHint;
-    let response = await this.http.post(`/accounts/${accountId}/r2/buckets`, body);
+  async createR2Bucket(
+    accountId: string,
+    data: {
+      name: string;
+      locationHint?: string;
+      storageClass?: string;
+      jurisdiction?: string;
+    }
+  ) {
+    let body: any = { name: data.name };
+    if (data.locationHint) body.locationHint = data.locationHint;
+    if (data.storageClass) body.storageClass = data.storageClass;
+
+    let response = await this.http.post(`/accounts/${accountId}/r2/buckets`, body, {
+      headers: data.jurisdiction ? { 'cf-r2-jurisdiction': data.jurisdiction } : undefined
+    });
     return response.data as CloudflareResponse<any>;
   }
 

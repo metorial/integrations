@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { facebookServiceError } from '../lib/errors';
 
 export let getLeads = SlateTool.create(spec, {
   name: 'Get Leads',
@@ -65,7 +66,7 @@ Requires the \`leads_retrieval\` permission.`,
 
     if (ctx.input.action === 'list_forms') {
       if (!ctx.input.pageId) {
-        throw new Error('pageId is required for list_forms action');
+        throw facebookServiceError('pageId is required for list_forms action');
       }
       let pageAccessToken = await client.getPageAccessToken(ctx.input.pageId);
       let forms = await client.getLeadForms(ctx.input.pageId, pageAccessToken);
@@ -83,7 +84,7 @@ Requires the \`leads_retrieval\` permission.`,
 
     // get_leads
     if (!ctx.input.formId) {
-      throw new Error('formId is required for get_leads action');
+      throw facebookServiceError('formId is required for get_leads action');
     }
     let result = await client.getLeads(ctx.input.formId, {
       limit: ctx.input.limit,

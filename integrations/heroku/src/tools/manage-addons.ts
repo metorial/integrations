@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { herokuServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -86,7 +87,7 @@ export let manageAddons = SlateTool.create(spec, {
 
     if (action === 'get') {
       if (!ctx.input.addonIdOrName)
-        throw new Error('addonIdOrName is required for "get" action.');
+        throw herokuServiceError('addonIdOrName is required for "get" action.');
       let addon = await client.getAddon(ctx.input.addonIdOrName);
       return {
         output: { addons: [mapOutput(addon)] },
@@ -96,8 +97,9 @@ export let manageAddons = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.appIdOrName)
-        throw new Error('appIdOrName is required for "create" action.');
-      if (!ctx.input.plan) throw new Error('plan is required for "create" action.');
+        throw herokuServiceError('appIdOrName is required for "create" action.');
+      if (!ctx.input.plan)
+        throw herokuServiceError('plan is required for "create" action.');
       let addon = await client.createAddon(ctx.input.appIdOrName, {
         plan: ctx.input.plan,
         name: ctx.input.addonName,
@@ -111,7 +113,7 @@ export let manageAddons = SlateTool.create(spec, {
 
     if (action === 'update') {
       if (!ctx.input.addonIdOrName)
-        throw new Error('addonIdOrName is required for "update" action.');
+        throw herokuServiceError('addonIdOrName is required for "update" action.');
       let addon = await client.updateAddon(ctx.input.addonIdOrName, {
         plan: ctx.input.plan,
         name: ctx.input.addonName
@@ -124,9 +126,9 @@ export let manageAddons = SlateTool.create(spec, {
 
     // delete
     if (!ctx.input.appIdOrName)
-      throw new Error('appIdOrName is required for "delete" action.');
+      throw herokuServiceError('appIdOrName is required for "delete" action.');
     if (!ctx.input.addonIdOrName)
-      throw new Error('addonIdOrName is required for "delete" action.');
+      throw herokuServiceError('addonIdOrName is required for "delete" action.');
     await client.deleteAddon(ctx.input.appIdOrName, ctx.input.addonIdOrName);
     return {
       output: { deleted: true },

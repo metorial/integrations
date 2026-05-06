@@ -11,7 +11,10 @@ import {
   generatePresignedUrlTool,
   manageObjectTagsTool,
   getBucketInfoTool,
-  listObjectVersionsTool
+  listObjectVersionsTool,
+  manageBucketTagsTool,
+  manageBucketPolicyTool,
+  manageBucketLifecycleTool
 } from './tools';
 import { objectChangesTrigger, inboundWebhook } from './triggers';
 
@@ -28,7 +31,10 @@ export let provider = Slate.create({
     generatePresignedUrlTool,
     manageObjectTagsTool,
     getBucketInfoTool,
-    listObjectVersionsTool
+    listObjectVersionsTool,
+    manageBucketTagsTool,
+    manageBucketPolicyTool,
+    manageBucketLifecycleTool
   ],
   triggers: [inboundWebhook, objectChangesTrigger]
 });

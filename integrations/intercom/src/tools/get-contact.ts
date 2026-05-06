@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { intercomServiceError } from '../lib/errors';
 
 export let getContact = SlateTool.create(spec, {
   name: 'Get Contact',
@@ -69,7 +70,7 @@ export let getContact = SlateTool.create(spec, {
     } else if (ctx.input.externalId) {
       result = await client.getContactByExternalId(ctx.input.externalId);
     } else {
-      throw new Error('Either contactId or externalId must be provided');
+      throw intercomServiceError('Either contactId or externalId must be provided');
     }
 
     return {

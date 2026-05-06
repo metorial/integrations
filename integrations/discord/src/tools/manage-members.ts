@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DiscordClient } from '../lib/client';
+import { discordServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -115,7 +116,7 @@ export let manageMembers = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!userId) throw new Error('userId is required for get action');
+      if (!userId) throw discordServiceError('userId is required for get action');
       let member = await client.getGuildMember(guildId, userId);
       return {
         output: {
@@ -127,7 +128,7 @@ export let manageMembers = SlateTool.create(spec, {
     }
 
     if (action === 'search') {
-      if (!ctx.input.query) throw new Error('query is required for search action');
+      if (!ctx.input.query) throw discordServiceError('query is required for search action');
       let members = await client.searchGuildMembers(guildId, ctx.input.query, ctx.input.limit);
       let mapped = members.map(formatMember);
       return {
@@ -140,7 +141,7 @@ export let manageMembers = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!userId) throw new Error('userId is required for update action');
+      if (!userId) throw discordServiceError('userId is required for update action');
       let data: Record<string, any> = {};
       if (ctx.input.nickname !== undefined) data.nick = ctx.input.nickname;
       if (ctx.input.roles !== undefined) data.roles = ctx.input.roles;
@@ -157,7 +158,7 @@ export let manageMembers = SlateTool.create(spec, {
     }
 
     if (action === 'kick') {
-      if (!userId) throw new Error('userId is required for kick action');
+      if (!userId) throw discordServiceError('userId is required for kick action');
       await client.removeGuildMember(guildId, userId);
       return {
         output: {
@@ -168,7 +169,7 @@ export let manageMembers = SlateTool.create(spec, {
     }
 
     if (action === 'ban') {
-      if (!userId) throw new Error('userId is required for ban action');
+      if (!userId) throw discordServiceError('userId is required for ban action');
       await client.createGuildBan(guildId, userId, ctx.input.deleteMessageSeconds);
       return {
         output: {
@@ -179,7 +180,7 @@ export let manageMembers = SlateTool.create(spec, {
     }
 
     if (action === 'unban') {
-      if (!userId) throw new Error('userId is required for unban action');
+      if (!userId) throw discordServiceError('userId is required for unban action');
       await client.removeGuildBan(guildId, userId);
       return {
         output: {
@@ -189,6 +190,6 @@ export let manageMembers = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw discordServiceError(`Unknown action: ${action}`);
   })
   .build();

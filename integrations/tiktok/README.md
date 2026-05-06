@@ -36,6 +36,10 @@ Check the status of a previously initiated content post on TikTok. Returns the c
 
 Retrieve the authenticated TikTok user's profile information including display name, avatar, bio, verification status, follower/following counts, and video count. The level of detail depends on the granted OAuth scopes.
 
+### List Advertisers
+
+List TikTok Ads advertiser accounts that have granted the connected TikTok Business app permission. Use this to discover advertiser IDs before calling campaign, ad group, ad, and reporting tools.
+
 ### List Videos
 
 Retrieve a paginated list of the authenticated user's public TikTok videos, sorted by creation time (newest first). Returns video metadata including engagement metrics, embed links, and cover images. Use cursor-based pagination to retrieve additional pages.

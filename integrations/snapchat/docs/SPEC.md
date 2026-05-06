@@ -92,9 +92,13 @@ Collect leads directly within Snapchat through customizable lead forms attached 
 
 Manage organization members, roles, funding sources, billing centers, invoices, and transactions. Control access permissions across ad accounts.
 
+### Audience And Bid Planning
+
+Estimate potential audience size and bid ranges before launching or changing ad squads. This is useful for validating that a targeting spec is broad enough and that proposed bids are realistic for the selected optimization goal.
+
 ### Snap Pixel Management
 
-Create and manage Snap Pixels for tracking website events. Define custom conversions based on pixel event rules.
+Read and update existing Snap Pixels for tracking website events. Pixel creation is handled in Snapchat Ads Manager; the Marketing API supports retrieving the pixel associated with an ad account, getting a specific pixel, and updating pixel metadata.
 
 ## Events
 

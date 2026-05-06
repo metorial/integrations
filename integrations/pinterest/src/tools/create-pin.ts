@@ -1,14 +1,22 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { pinterestServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
 let mediaSourceSchema = z
   .object({
     sourceType: z
-      .enum(['image_url', 'image_base64', 'video_id', 'multiple_image_urls'])
+      .enum([
+        'image_url',
+        'image_base64',
+        'video_id',
+        'multiple_image_urls',
+        'multiple_image_base64',
+        'pin_url'
+      ])
       .describe(
-        'Type of media source. Use "image_url" for an image URL, "video_id" for a previously uploaded video, or "multiple_image_urls" for carousel pins.'
+        'Type of media source. Use "image_url" for an image URL, "image_base64" for Base64 image data, "video_id" for uploaded video media, "multiple_image_urls" or "multiple_image_base64" for carousel pins, or "pin_url" for product pins where supported.'
       ),
     url: z
       .string()
@@ -17,22 +25,46 @@ let mediaSourceSchema = z
     contentType: z
       .enum(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
       .optional()
-      .describe('MIME type of the image'),
+      .describe('MIME type of Base64 image data'),
+    data: z
+      .string()
+      .optional()
+      .describe('Base64 image data for image_base64 source type'),
     mediaId: z
       .string()
       .optional()
       .describe('Media ID for video pins (required for video_id source type)'),
     coverImageUrl: z.string().optional().describe('Cover image URL for video pins'),
-    coverImageContentType: z.string().optional().describe('MIME type of the cover image'),
+    coverImageData: z.string().optional().describe('Base64 cover image data for video pins'),
+    coverImageContentType: z.string().optional().describe('MIME type of the cover image data'),
+    coverImageKeyFrameTime: z
+      .number()
+      .optional()
+      .describe('Video keyframe timestamp in seconds to use as the cover image'),
+    index: z
+      .number()
+      .optional()
+      .describe('Carousel item index to use as the first item'),
+    isAffiliateLink: z
+      .boolean()
+      .optional()
+      .describe('Whether the Pin URL source is an affiliate or sponsored product link'),
+    isStandard: z
+      .boolean()
+      .optional()
+      .describe('Whether to create a standard Pin where supported'),
     items: z
       .array(
         z.object({
           title: z.string().optional().describe('Title for this carousel item'),
           description: z.string().optional().describe('Description for this carousel item'),
           link: z.string().optional().describe('Link URL for this carousel item'),
-          sourceType: z.string().describe('Source type for the item image'),
-          url: z.string().describe('URL of the item image'),
-          contentType: z.string().optional().describe('MIME type of the item image')
+          url: z.string().optional().describe('URL of the item image'),
+          data: z.string().optional().describe('Base64 image data for this item'),
+          contentType: z
+            .enum(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
+            .optional()
+            .describe('MIME type for Base64 item image data')
         })
       )
       .optional()
@@ -93,6 +125,46 @@ export let createPin = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
+    let mediaSource = ctx.input.mediaSource;
+
+    if (mediaSource.sourceType === 'image_url' && !mediaSource.url) {
+      throw pinterestServiceError('mediaSource.url is required for image_url pins');
+    }
+
+    if (
+      mediaSource.sourceType === 'image_base64' &&
+      (!mediaSource.data || !mediaSource.contentType)
+    ) {
+      throw pinterestServiceError(
+        'mediaSource.data and mediaSource.contentType are required for image_base64 pins'
+      );
+    }
+
+    if (mediaSource.sourceType === 'video_id' && !mediaSource.mediaId) {
+      throw pinterestServiceError('mediaSource.mediaId is required for video_id pins');
+    }
+
+    if (
+      mediaSource.sourceType === 'multiple_image_urls' &&
+      (!mediaSource.items ||
+        mediaSource.items.length < 2 ||
+        mediaSource.items.some(item => !item.url))
+    ) {
+      throw pinterestServiceError(
+        'At least two mediaSource.items with url are required for multiple_image_urls pins'
+      );
+    }
+
+    if (
+      mediaSource.sourceType === 'multiple_image_base64' &&
+      (!mediaSource.items ||
+        mediaSource.items.length < 2 ||
+        mediaSource.items.some(item => !item.data || !item.contentType))
+    ) {
+      throw pinterestServiceError(
+        'At least two mediaSource.items with data and contentType are required for multiple_image_base64 pins'
+      );
+    }
 
     let result = await client.createPin({
       boardId: ctx.input.boardId,
@@ -102,7 +174,7 @@ export let createPin = SlateTool.create(spec, {
       link: ctx.input.link,
       altText: ctx.input.altText,
       note: ctx.input.note,
-      mediaSource: ctx.input.mediaSource
+      mediaSource
     });
 
     return {

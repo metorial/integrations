@@ -8,9 +8,13 @@ Programmatically manage automated workflows (Zaps) that connect thousands of clo
 
 Create a new authentication (connected account) for a Zapier app. This works for apps that support API key-based authentication. For OAuth-based apps, users must complete the authorization flow in a browser instead.
 
+### Create Action Run
+
+Run a single Zapier action asynchronously without creating a saved Zap. Returns an Action Run ID that can be checked with **Get Action Run**.
+
 ### Create Workflow Step
 
-Create a standalone Workflow Step that returns a webhook URL for on-demand invocation. The webhook can be called with a POST request containing JSON data to execute the step and get a response. Field values can be hardcoded or use mapped values in double curly braces (e.g., \
+Create a standalone Workflow Step that returns a webhook URL for on-demand invocation. The webhook can be called with a POST request containing JSON data to execute the step and get a response. Field values can be hardcoded or use mapped values in double curly braces.
 
 ### Create Zap
 
@@ -19,6 +23,18 @@ Create a new Zap (automated workflow) with a specified title and steps. Each ste
 ### Get Action Input Fields
 
 Retrieve the input fields required for a specific action. Returns field definitions including types, labels, whether they're required, and available choices. Use this to discover what inputs are needed before creating a Zap step or testing an action. Some fields may depend on the values of other fields.
+
+### Get Action Output Fields
+
+Retrieve output fields produced by a specific action so later Zap steps can map data from that action.
+
+### Get Action Run
+
+Retrieve the status, results, and errors for an asynchronous Zapier Action Run.
+
+### Get Input Field Choices
+
+Retrieve available choices for a SELECT input field on a Zapier action, such as folders, sheets, channels, lists, or projects.
 
 ### Get Zap Runs
 
@@ -47,6 +63,10 @@ Retrieve the list of all supported Zap categories on the Zapier platform. Catego
 ### List Zaps
 
 Retrieve a list of Zaps for the authenticated Zapier user. Returns Zap details including enabled/disabled status, last successful run date, step details, and editor links. Use the **expand** parameter to include full action and authentication objects instead of just IDs.
+
+### Test Action Step
+
+Test a configured Zapier action step with the provided authentication and inputs before creating a Zap.
 
 ## License
 

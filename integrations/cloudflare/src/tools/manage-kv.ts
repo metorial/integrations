@@ -1,15 +1,17 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageKvTool = SlateTool.create(spec, {
   name: 'Manage Workers KV',
   key: 'manage_kv',
-  description: `Manage Workers KV (Key-Value) storage. List namespaces, create or delete namespaces, and read/write/delete key-value pairs within a namespace.`,
+  description: `Manage Workers KV (Key-Value) storage. List, create, retrieve, rename, or delete namespaces, and read/write/delete key-value pairs within a namespace.`,
   instructions: [
     'First list or create a namespace, then use the namespaceId to operate on keys.',
-    'KV values are strings by default. For structured data, store JSON as a string.'
+    'KV values are strings by default. For structured data, store JSON as a string.',
+    'Key names are URL-encoded before calling Cloudflare, so names containing path separators are supported.'
   ],
   tags: {
     destructive: true
@@ -21,6 +23,8 @@ export let manageKvTool = SlateTool.create(spec, {
         .enum([
           'list_namespaces',
           'create_namespace',
+          'get_namespace',
+          'rename_namespace',
           'delete_namespace',
           'list_keys',
           'get_value',
@@ -56,11 +60,18 @@ export let manageKvTool = SlateTool.create(spec, {
           title: z.string()
         })
         .optional(),
+      namespace: z
+        .object({
+          namespaceId: z.string(),
+          title: z.string()
+        })
+        .optional(),
       keys: z
         .array(
           z.object({
             name: z.string(),
-            expiration: z.number().optional()
+            expiration: z.number().optional(),
+            metadata: z.any().optional()
           })
         )
         .optional(),
@@ -71,7 +82,7 @@ export let manageKvTool = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let accountId = ctx.input.accountId || ctx.config.accountId;
-    if (!accountId) throw new Error('accountId is required');
+    if (!accountId) throw cloudflareServiceError('accountId is required');
 
     let client = new Client(ctx.auth);
     let { action } = ctx.input;
@@ -89,7 +100,7 @@ export let manageKvTool = SlateTool.create(spec, {
     }
 
     if (action === 'create_namespace') {
-      if (!ctx.input.namespaceName) throw new Error('namespaceName is required');
+      if (!ctx.input.namespaceName) throw cloudflareServiceError('namespaceName is required');
       let response = await client.createKvNamespace(accountId, ctx.input.namespaceName);
       return {
         output: {
@@ -102,8 +113,41 @@ export let manageKvTool = SlateTool.create(spec, {
       };
     }
 
+    if (action === 'get_namespace') {
+      if (!ctx.input.namespaceId) throw cloudflareServiceError('namespaceId is required');
+      let response = await client.getKvNamespace(accountId, ctx.input.namespaceId);
+      return {
+        output: {
+          namespace: {
+            namespaceId: response.result.id,
+            title: response.result.title
+          }
+        },
+        message: `KV namespace **${response.result.title}**.`
+      };
+    }
+
+    if (action === 'rename_namespace') {
+      if (!ctx.input.namespaceId) throw cloudflareServiceError('namespaceId is required');
+      if (!ctx.input.namespaceName) throw cloudflareServiceError('namespaceName is required');
+      let response = await client.renameKvNamespace(
+        accountId,
+        ctx.input.namespaceId,
+        ctx.input.namespaceName
+      );
+      return {
+        output: {
+          namespace: {
+            namespaceId: response.result.id,
+            title: response.result.title
+          }
+        },
+        message: `Renamed KV namespace to **${response.result.title}**.`
+      };
+    }
+
     if (action === 'delete_namespace') {
-      if (!ctx.input.namespaceId) throw new Error('namespaceId is required');
+      if (!ctx.input.namespaceId) throw cloudflareServiceError('namespaceId is required');
       await client.deleteKvNamespace(accountId, ctx.input.namespaceId);
       return {
         output: { deleted: true },
@@ -112,14 +156,15 @@ export let manageKvTool = SlateTool.create(spec, {
     }
 
     if (action === 'list_keys') {
-      if (!ctx.input.namespaceId) throw new Error('namespaceId is required');
+      if (!ctx.input.namespaceId) throw cloudflareServiceError('namespaceId is required');
       let response = await client.listKvKeys(accountId, ctx.input.namespaceId, {
         prefix: ctx.input.prefix,
         limit: ctx.input.limit
       });
       let keys = response.result.map((k: any) => ({
         name: k.name,
-        expiration: k.expiration
+        expiration: k.expiration,
+        metadata: k.metadata
       }));
       return {
         output: { keys },
@@ -129,7 +174,7 @@ export let manageKvTool = SlateTool.create(spec, {
 
     if (action === 'get_value') {
       if (!ctx.input.namespaceId || !ctx.input.key) {
-        throw new Error('namespaceId and key are required');
+        throw cloudflareServiceError('namespaceId and key are required');
       }
       let value = await client.getKvValue(accountId, ctx.input.namespaceId, ctx.input.key);
       let strValue = typeof value === 'string' ? value : JSON.stringify(value);
@@ -141,7 +186,7 @@ export let manageKvTool = SlateTool.create(spec, {
 
     if (action === 'put_value') {
       if (!ctx.input.namespaceId || !ctx.input.key || ctx.input.value === undefined) {
-        throw new Error('namespaceId, key, and value are required');
+        throw cloudflareServiceError('namespaceId, key, and value are required');
       }
       await client.putKvValue(
         accountId,
@@ -157,7 +202,7 @@ export let manageKvTool = SlateTool.create(spec, {
 
     if (action === 'delete_key') {
       if (!ctx.input.namespaceId || !ctx.input.key) {
-        throw new Error('namespaceId and key are required');
+        throw cloudflareServiceError('namespaceId and key are required');
       }
       await client.deleteKvKey(accountId, ctx.input.namespaceId, ctx.input.key);
       return {
@@ -166,6 +211,6 @@ export let manageKvTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

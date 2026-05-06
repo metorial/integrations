@@ -9,3 +9,4 @@ export { manageTopicSubscriptions } from './manage-topic-subscriptions';
 export { getRemoteConfig } from './get-remote-config';
 export { updateRemoteConfig } from './update-remote-config';
 export { manageStorage } from './manage-storage';
+export { getFirebaseApps } from './get-firebase-apps';

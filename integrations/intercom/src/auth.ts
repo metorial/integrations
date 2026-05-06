@@ -1,5 +1,18 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { intercomApiError } from './lib/errors';
+
+let withIntercomErrors = <T extends ReturnType<typeof createAxios>>(
+  http: T,
+  operation = 'auth request'
+) => {
+  http.interceptors.response.use(
+    response => response,
+    error => Promise.reject(intercomApiError(error, operation))
+  );
+
+  return http;
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -148,9 +161,12 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let http = createAxios({
-        baseURL: 'https://api.intercom.io'
-      });
+      let http = withIntercomErrors(
+        createAxios({
+          baseURL: 'https://api.intercom.io'
+        }),
+        'OAuth token exchange'
+      );
 
       let response = await http.post('/auth/eagle/token', {
         code: ctx.code,
@@ -166,13 +182,16 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
-      let http = createAxios({
-        baseURL: 'https://api.intercom.io',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-          Accept: 'application/json'
-        }
-      });
+      let http = withIntercomErrors(
+        createAxios({
+          baseURL: 'https://api.intercom.io',
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`,
+            Accept: 'application/json'
+          }
+        }),
+        'profile lookup'
+      );
 
       let response = await http.get('/me');
       let data = response.data;
@@ -205,13 +224,16 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
-      let http = createAxios({
-        baseURL: 'https://api.intercom.io',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-          Accept: 'application/json'
-        }
-      });
+      let http = withIntercomErrors(
+        createAxios({
+          baseURL: 'https://api.intercom.io',
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`,
+            Accept: 'application/json'
+          }
+        }),
+        'profile lookup'
+      );
 
       let response = await http.get('/me');
       let data = response.data;

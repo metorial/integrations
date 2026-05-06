@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { requireHookdeckInput } from '../lib/errors';
 import { z } from 'zod';
 
 let sourceSchema = z.object({
@@ -99,15 +100,17 @@ export let manageSources = SlateTool.create(spec, {
         };
       }
       case 'get': {
-        let source = await client.getSource(ctx.input.sourceId!);
+        let sourceId = requireHookdeckInput(ctx.input.sourceId, 'sourceId', 'get');
+        let source = await client.getSource(sourceId);
         return {
           output: { source: mapSource(source) },
           message: `Retrieved source **${source.name}** (\`${source.id}\`).`
         };
       }
       case 'create': {
+        let name = requireHookdeckInput(ctx.input.name, 'name', 'create');
         let source = await client.createSource({
-          name: ctx.input.name!,
+          name,
           description: ctx.input.description,
           type: ctx.input.type,
           verification: ctx.input.verification
@@ -118,7 +121,8 @@ export let manageSources = SlateTool.create(spec, {
         };
       }
       case 'update': {
-        let source = await client.updateSource(ctx.input.sourceId!, {
+        let sourceId = requireHookdeckInput(ctx.input.sourceId, 'sourceId', 'update');
+        let source = await client.updateSource(sourceId, {
           name: ctx.input.name,
           description: ctx.input.description,
           type: ctx.input.type,
@@ -130,21 +134,24 @@ export let manageSources = SlateTool.create(spec, {
         };
       }
       case 'delete': {
-        let result = await client.deleteSource(ctx.input.sourceId!);
+        let sourceId = requireHookdeckInput(ctx.input.sourceId, 'sourceId', 'delete');
+        let result = await client.deleteSource(sourceId);
         return {
           output: { deletedId: result.id },
           message: `Deleted source \`${result.id}\`.`
         };
       }
       case 'enable': {
-        let source = await client.enableSource(ctx.input.sourceId!);
+        let sourceId = requireHookdeckInput(ctx.input.sourceId, 'sourceId', 'enable');
+        let source = await client.enableSource(sourceId);
         return {
           output: { source: mapSource(source) },
           message: `Enabled source **${source.name}** (\`${source.id}\`).`
         };
       }
       case 'disable': {
-        let source = await client.disableSource(ctx.input.sourceId!);
+        let sourceId = requireHookdeckInput(ctx.input.sourceId, 'sourceId', 'disable');
+        let source = await client.disableSource(sourceId);
         return {
           output: { source: mapSource(source) },
           message: `Disabled source **${source.name}** (\`${source.id}\`).`

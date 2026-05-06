@@ -45,7 +45,7 @@ export let channelActivity = SlateTrigger.create(spec, {
     },
 
     pollEvents: async ctx => {
-      let client = new Client({ token: ctx.auth.token });
+      let client = Client.fromAuth(ctx.auth);
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
 

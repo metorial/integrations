@@ -36,6 +36,18 @@ Creates a new customer record in QuickBooks. Supports full contact details, bill
 
 Creates a new estimate (quote/proposal) for a customer. Estimates can later be converted to invoices. Supports multiple line items with item references.
 
+### Create Sales Receipt
+
+Creates a sales receipt for an immediate sale where payment is received at purchase time. Supports customer references, line items, payment method, deposit account, receipt email, and memo fields.
+
+### Get Sales Receipt
+
+Retrieves a sales receipt by ID, including customer, transaction date, total amount, sync token, and line item details.
+
+### Delete Sales Receipt
+
+Deletes a sales receipt transaction using its current sync token, fetching the token first when it is not supplied.
+
 ### Get Invoice
 
 Retrieves a single invoice by its ID, returning full details including line items, amounts, customer info, and payment status. Can also send or void an invoice.

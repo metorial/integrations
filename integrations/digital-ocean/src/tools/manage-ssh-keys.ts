@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -67,7 +68,7 @@ export let manageSSHKeys = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.name || !ctx.input.publicKey) {
-        throw new Error('name and publicKey are required for create action');
+        throw digitalOceanValidationError('name and publicKey are required for create action');
       }
       let key = await client.createSSHKey({
         name: ctx.input.name,
@@ -81,7 +82,7 @@ export let manageSSHKeys = SlateTool.create(spec, {
 
     // delete
     if (!ctx.input.keyIdOrFingerprint)
-      throw new Error('keyIdOrFingerprint is required for delete action');
+      throw digitalOceanValidationError('keyIdOrFingerprint is required for delete action');
     await client.deleteSSHKey(ctx.input.keyIdOrFingerprint);
 
     return {

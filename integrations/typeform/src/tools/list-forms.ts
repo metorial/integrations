@@ -20,7 +20,12 @@ export let listForms = SlateTool.create(spec, {
         .number()
         .optional()
         .describe('Number of forms per page (default 10, max 200)'),
-      sort: z.string().optional().describe('Sort order, e.g. "created_at,desc" or "title,asc"')
+      sortBy: z
+        .enum(['created_at', 'last_updated_at'])
+        .optional()
+        .describe('Field to sort by'),
+      orderBy: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      sort: z.string().optional().describe('Deprecated legacy sort, e.g. "created_at,desc"')
     })
   )
   .output(
@@ -36,7 +41,8 @@ export let listForms = SlateTool.create(spec, {
             createdAt: z.string().optional().describe('Creation timestamp (ISO 8601)'),
             selfUrl: z.string().optional().describe('API URL for this form'),
             displayUrl: z.string().optional().describe('Public display URL for this form'),
-            status: z.string().optional().describe('Form status (e.g. "public", "closed")')
+            status: z.string().optional().describe('Derived public/private status'),
+            isPublic: z.boolean().optional().describe('Whether the form is public')
           })
         )
         .describe('Array of forms')
@@ -53,6 +59,8 @@ export let listForms = SlateTool.create(spec, {
       workspaceId: ctx.input.workspaceId,
       page: ctx.input.page,
       pageSize: ctx.input.pageSize,
+      sortBy: ctx.input.sortBy,
+      orderBy: ctx.input.orderBy,
       sort: ctx.input.sort
     });
 
@@ -63,7 +71,8 @@ export let listForms = SlateTool.create(spec, {
       createdAt: f.created_at,
       selfUrl: f.self?.href,
       displayUrl: f._links?.display,
-      status: f.settings?.status
+      status: f.settings?.is_public === false ? 'private' : 'public',
+      isPublic: f.settings?.is_public
     }));
 
     return {

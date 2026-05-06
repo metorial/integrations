@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -31,7 +32,12 @@ export let updateVideo = SlateTool.create(spec, {
         .boolean()
         .optional()
         .describe('Whether public stats are viewable'),
-      madeForKids: z.boolean().optional().describe('Whether the video is made for kids'),
+      madeForKids: z
+        .boolean()
+        .optional()
+        .describe(
+          'Alias for selfDeclaredMadeForKids; YouTube only accepts self-declared values'
+        ),
       selfDeclaredMadeForKids: z
         .boolean()
         .optional()
@@ -52,7 +58,7 @@ export let updateVideo = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
 
     let parts: string[] = [];
     let snippet: Record<string, any> | undefined;
@@ -92,14 +98,15 @@ export let updateVideo = SlateTool.create(spec, {
       if (ctx.input.embeddable !== undefined) status.embeddable = ctx.input.embeddable;
       if (ctx.input.publicStatsViewable !== undefined)
         status.publicStatsViewable = ctx.input.publicStatsViewable;
-      if (ctx.input.madeForKids !== undefined) status.madeForKids = ctx.input.madeForKids;
       if (ctx.input.selfDeclaredMadeForKids !== undefined)
         status.selfDeclaredMadeForKids = ctx.input.selfDeclaredMadeForKids;
+      else if (ctx.input.madeForKids !== undefined)
+        status.selfDeclaredMadeForKids = ctx.input.madeForKids;
       if (ctx.input.publishAt !== undefined) status.publishAt = ctx.input.publishAt;
     }
 
     if (parts.length === 0) {
-      throw new Error('At least one field to update must be provided');
+      throw youtubeServiceError('At least one field to update must be provided');
     }
 
     let video = await client.updateVideo({

@@ -1,14 +1,16 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageDnsRecordTool = SlateTool.create(spec, {
   name: 'Manage DNS Record',
   key: 'manage_dns_record',
-  description: `Create, update, or delete a DNS record in a Cloudflare zone. Supports all record types including A, AAAA, CNAME, MX, TXT, NS, SRV, and more. Use **action** to specify the operation.`,
+  description: `Create, retrieve, update, or delete a DNS record in a Cloudflare zone. Supports all record types including A, AAAA, CNAME, MX, TXT, NS, SRV, and more. Use **action** to specify the operation.`,
   instructions: [
     'For creating a record, provide type, name, and content. TTL of 1 means automatic.',
+    'For retrieving a record, provide recordId.',
     'For updating, provide the recordId and only the fields you want to change.',
     'For MX records, also set the priority field.'
   ],
@@ -18,7 +20,7 @@ export let manageDnsRecordTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
+      action: z.enum(['create', 'get', 'update', 'delete']).describe('Operation to perform'),
       zoneId: z.string().describe('Zone ID containing the DNS record'),
       recordId: z.string().optional().describe('Record ID (required for update and delete)'),
       type: z.string().optional().describe('DNS record type (e.g. A, AAAA, CNAME, MX, TXT)'),
@@ -46,7 +48,10 @@ export let manageDnsRecordTool = SlateTool.create(spec, {
       name: z.string().optional(),
       content: z.string().optional(),
       ttl: z.number().optional(),
-      proxied: z.boolean().optional()
+      proxied: z.boolean().optional(),
+      comment: z.string().optional().nullable(),
+      createdOn: z.string().optional(),
+      modifiedOn: z.string().optional()
     })
   )
   .handleInvocation(async ctx => {
@@ -55,7 +60,9 @@ export let manageDnsRecordTool = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.type || !ctx.input.name || !ctx.input.content) {
-        throw new Error('type, name, and content are required for creating a DNS record');
+        throw cloudflareServiceError(
+          'type, name, and content are required for creating a DNS record'
+        );
       }
 
       let response = await client.createDnsRecord(zoneId, {
@@ -82,8 +89,31 @@ export let manageDnsRecordTool = SlateTool.create(spec, {
       };
     }
 
+    if (action === 'get') {
+      if (!recordId)
+        throw cloudflareServiceError('recordId is required for retrieving a DNS record');
+
+      let response = await client.getDnsRecord(zoneId, recordId);
+      let r = response.result;
+      return {
+        output: {
+          recordId: r.id,
+          type: r.type,
+          name: r.name,
+          content: r.content,
+          ttl: r.ttl,
+          proxied: r.proxied,
+          comment: r.comment,
+          createdOn: r.created_on,
+          modifiedOn: r.modified_on
+        },
+        message: `DNS record \`${r.name}\` (${r.type}) → \`${r.content}\`.`
+      };
+    }
+
     if (action === 'update') {
-      if (!recordId) throw new Error('recordId is required for updating a DNS record');
+      if (!recordId)
+        throw cloudflareServiceError('recordId is required for updating a DNS record');
 
       let response = await client.updateDnsRecord(zoneId, recordId, {
         type: ctx.input.type,
@@ -110,7 +140,8 @@ export let manageDnsRecordTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!recordId) throw new Error('recordId is required for deleting a DNS record');
+      if (!recordId)
+        throw cloudflareServiceError('recordId is required for deleting a DNS record');
 
       let response = await client.deleteDnsRecord(zoneId, recordId);
       return {
@@ -121,6 +152,6 @@ export let manageDnsRecordTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

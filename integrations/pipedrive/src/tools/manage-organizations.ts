@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { pipedriveServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -50,7 +51,7 @@ Supports setting name, address, visibility, and custom fields.`,
 
     if (ctx.input.action === 'delete') {
       if (!ctx.input.organizationId)
-        throw new Error('organizationId is required for delete action');
+        throw pipedriveServiceError('organizationId is required for delete action');
       await client.deleteOrganization(ctx.input.organizationId);
       return {
         output: { organizationId: ctx.input.organizationId, deleted: true },
@@ -71,7 +72,7 @@ Supports setting name, address, visibility, and custom fields.`,
       result = await client.createOrganization(body);
     } else {
       if (!ctx.input.organizationId)
-        throw new Error('organizationId is required for update action');
+        throw pipedriveServiceError('organizationId is required for update action');
       result = await client.updateOrganization(ctx.input.organizationId, body);
     }
 

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -159,7 +160,9 @@ export let performDropletAction = SlateTool.create(spec, {
 
     switch (ctx.input.action) {
       case 'resize':
-        if (!ctx.input.size) throw new Error('Size is required for resize action');
+        if (!ctx.input.size) {
+          throw digitalOceanValidationError('Size is required for resize action');
+        }
         result = await client.resizeDroplet(
           ctx.input.dropletId,
           ctx.input.size,
@@ -167,16 +170,20 @@ export let performDropletAction = SlateTool.create(spec, {
         );
         break;
       case 'rebuild':
-        if (!ctx.input.image) throw new Error('Image is required for rebuild action');
+        if (!ctx.input.image) {
+          throw digitalOceanValidationError('Image is required for rebuild action');
+        }
         result = await client.rebuildDroplet(ctx.input.dropletId, ctx.input.image);
         break;
       case 'rename':
-        if (!ctx.input.name) throw new Error('Name is required for rename action');
+        if (!ctx.input.name) {
+          throw digitalOceanValidationError('Name is required for rename action');
+        }
         result = await client.renameDroplet(ctx.input.dropletId, ctx.input.name);
         break;
       case 'snapshot':
         if (!ctx.input.snapshotName)
-          throw new Error('Snapshot name is required for snapshot action');
+          throw digitalOceanValidationError('Snapshot name is required for snapshot action');
         result = await client.createDropletSnapshot(
           ctx.input.dropletId,
           ctx.input.snapshotName

@@ -1,5 +1,37 @@
-import { SlateAuth, createAxios } from 'slates';
+import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
+import { createSlatesAwsSdkHttpHandler } from '@slates/aws-sdk-http-handler';
+import { SlateAuth } from 'slates';
 import { z } from 'zod';
+
+let getIdentityProfile = async (output: {
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken?: string;
+}) => {
+  try {
+    let client = new STSClient({
+      region: 'us-east-1',
+      credentials: output,
+      requestHandler: createSlatesAwsSdkHttpHandler()
+    });
+    let identity = await client.send(new GetCallerIdentityCommand({}));
+
+    return {
+      profile: {
+        id: identity.UserId ?? output.accessKeyId,
+        name: identity.Arn ?? output.accessKeyId,
+        accountId: identity.Account
+      }
+    };
+  } catch {
+    return {
+      profile: {
+        id: output.accessKeyId,
+        name: output.accessKeyId
+      }
+    };
+  }
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -31,50 +63,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: any) => {
-      let ax = createAxios();
-      try {
-        let { signRequest } = await import('./lib/signing');
-        let signed = await signRequest({
-          method: 'GET',
-          url: 'https://sts.amazonaws.com/',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          params: { Action: 'GetCallerIdentity', Version: '2011-06-15' },
-          credentials: {
-            accessKeyId: ctx.output.accessKeyId,
-            secretAccessKey: ctx.output.secretAccessKey,
-            sessionToken: ctx.output.sessionToken
-          },
-          region: 'us-east-1',
-          service: 'sts'
-        });
-
-        let response = await ax.get('https://sts.amazonaws.com/', {
-          headers: signed.headers,
-          params: signed.params
-        });
-
-        let body = response.data as string;
-        let arnMatch = body.match(/<Arn>(.*?)<\/Arn>/);
-        let accountMatch = body.match(/<Account>(.*?)<\/Account>/);
-        let userIdMatch = body.match(/<UserId>(.*?)<\/UserId>/);
-
-        return {
-          profile: {
-            id: userIdMatch?.[1] ?? ctx.output.accessKeyId,
-            name: arnMatch?.[1] ?? ctx.output.accessKeyId,
-            accountId: accountMatch?.[1]
-          }
-        };
-      } catch {
-        return {
-          profile: {
-            id: ctx.output.accessKeyId,
-            name: ctx.output.accessKeyId
-          }
-        };
-      }
-    }
+    getProfile: async (ctx: any) => getIdentityProfile(ctx.output)
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -97,48 +86,5 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: any) => {
-      let ax = createAxios();
-      try {
-        let { signRequest } = await import('./lib/signing');
-        let signed = await signRequest({
-          method: 'GET',
-          url: 'https://sts.amazonaws.com/',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          params: { Action: 'GetCallerIdentity', Version: '2011-06-15' },
-          credentials: {
-            accessKeyId: ctx.output.accessKeyId,
-            secretAccessKey: ctx.output.secretAccessKey,
-            sessionToken: ctx.output.sessionToken
-          },
-          region: 'us-east-1',
-          service: 'sts'
-        });
-
-        let response = await ax.get('https://sts.amazonaws.com/', {
-          headers: signed.headers,
-          params: signed.params
-        });
-
-        let body = response.data as string;
-        let arnMatch = body.match(/<Arn>(.*?)<\/Arn>/);
-        let accountMatch = body.match(/<Account>(.*?)<\/Account>/);
-        let userIdMatch = body.match(/<UserId>(.*?)<\/UserId>/);
-
-        return {
-          profile: {
-            id: userIdMatch?.[1] ?? ctx.output.accessKeyId,
-            name: arnMatch?.[1] ?? ctx.output.accessKeyId,
-            accountId: accountMatch?.[1]
-          }
-        };
-      } catch {
-        return {
-          profile: {
-            id: ctx.output.accessKeyId,
-            name: ctx.output.accessKeyId
-          }
-        };
-      }
-    }
+    getProfile: async (ctx: any) => getIdentityProfile(ctx.output)
   });

@@ -14,3 +14,5 @@ export { listFoldersTool } from './list-folders';
 export { manageWebhooksTool } from './manage-webhooks';
 export { listReportsTool } from './list-reports';
 export { createReportTool } from './create-report';
+export { listFormFilesTool } from './list-form-files';
+export { manageFormQuestionTool } from './manage-form-question';

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -61,7 +62,19 @@ export let listComments = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
+    let filterCount = [
+      ctx.input.parentCommentId,
+      ctx.input.videoId,
+      ctx.input.channelId,
+      ctx.input.allThreadsRelatedToChannelId
+    ].filter(Boolean).length;
+
+    if (filterCount !== 1) {
+      throw youtubeServiceError(
+        'Provide exactly one of parentCommentId, videoId, channelId, or allThreadsRelatedToChannelId'
+      );
+    }
 
     if (ctx.input.parentCommentId) {
       let response = await client.listComments({

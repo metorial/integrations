@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TypeformClient } from '../lib/client';
+import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -47,7 +48,11 @@ export let manageTheme = SlateTool.create(spec, {
       roundedCorners: z
         .boolean()
         .optional()
-        .describe('Whether to use rounded corners on buttons')
+        .describe('Deprecated. true maps to "small", false maps to "none"'),
+      cornerStyle: z
+        .enum(['none', 'small', 'large'])
+        .optional()
+        .describe('Rounded corner style for buttons and form elements')
     })
   )
   .output(
@@ -64,6 +69,7 @@ export let manageTheme = SlateTool.create(spec, {
         .optional()
         .describe('Theme colors'),
       font: z.string().optional().describe('Theme font'),
+      roundedCorners: z.string().optional().describe('Rounded corner style'),
       deleted: z.boolean().optional().describe('Whether the theme was deleted')
     })
   )
@@ -74,7 +80,10 @@ export let manageTheme = SlateTool.create(spec, {
     });
 
     // Delete
-    if (ctx.input.delete && ctx.input.themeId) {
+    if (ctx.input.delete) {
+      if (!ctx.input.themeId) {
+        throw typeformServiceError('themeId is required when deleting a theme.');
+      }
       await client.deleteTheme(ctx.input.themeId);
       return {
         output: {
@@ -95,8 +104,22 @@ export let manageTheme = SlateTool.create(spec, {
     }
     if (ctx.input.hasTransparentButton !== undefined)
       themeData.has_transparent_button = ctx.input.hasTransparentButton;
-    if (ctx.input.roundedCorners !== undefined)
-      themeData.rounded_corners = ctx.input.roundedCorners;
+    if (ctx.input.cornerStyle !== undefined) {
+      themeData.rounded_corners = ctx.input.cornerStyle;
+    } else if (ctx.input.roundedCorners !== undefined) {
+      themeData.rounded_corners = ctx.input.roundedCorners ? 'small' : 'none';
+    }
+
+    if (ctx.input.themeId && ctx.input.colors) {
+      let missingColors = ['answer', 'background', 'button', 'question'].filter(
+        key => !(key in ctx.input.colors!)
+      );
+      if (missingColors.length > 0) {
+        throw typeformServiceError(
+          `Updating theme colors requires all color fields: ${missingColors.join(', ')} missing.`
+        );
+      }
+    }
 
     // Create
     if (!ctx.input.themeId && ctx.input.name) {
@@ -106,7 +129,8 @@ export let manageTheme = SlateTool.create(spec, {
           themeId: result.id,
           name: result.name,
           colors: result.colors,
-          font: result.font
+          font: result.font,
+          roundedCorners: result.rounded_corners
         },
         message: `Created theme **${result.name}**.`
       };
@@ -120,7 +144,8 @@ export let manageTheme = SlateTool.create(spec, {
           themeId: result.id,
           name: result.name,
           colors: result.colors,
-          font: result.font
+          font: result.font,
+          roundedCorners: result.rounded_corners
         },
         message: `Updated theme **${result.name}**.`
       };
@@ -134,13 +159,14 @@ export let manageTheme = SlateTool.create(spec, {
           themeId: result.id,
           name: result.name,
           colors: result.colors,
-          font: result.font
+          font: result.font,
+          roundedCorners: result.rounded_corners
         },
         message: `Retrieved theme **${result.name}**.`
       };
     }
 
-    throw new Error(
+    throw typeformServiceError(
       'Provide either a name to create a theme, or a themeId to retrieve/update/delete one.'
     );
   })

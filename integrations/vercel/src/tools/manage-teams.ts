@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { vercelServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -108,7 +109,7 @@ export let manageTeamsTool = SlateTool.create(spec, {
     }
 
     if (action === 'get_team') {
-      if (!ctx.input.teamId) throw new Error('teamId is required');
+      if (!ctx.input.teamId) throw vercelServiceError('teamId is required');
       let t = await client.getTeam(ctx.input.teamId);
       return {
         output: {
@@ -120,7 +121,7 @@ export let manageTeamsTool = SlateTool.create(spec, {
     }
 
     if (action === 'list_members') {
-      if (!ctx.input.teamId) throw new Error('teamId is required');
+      if (!ctx.input.teamId) throw vercelServiceError('teamId is required');
       let result = await client.listTeamMembers(ctx.input.teamId, {
         limit: ctx.input.limit,
         search: ctx.input.search
@@ -140,7 +141,7 @@ export let manageTeamsTool = SlateTool.create(spec, {
 
     if (action === 'invite_member') {
       if (!ctx.input.teamId || !ctx.input.email)
-        throw new Error('teamId and email are required');
+        throw vercelServiceError('teamId and email are required');
       await client.inviteTeamMember(ctx.input.teamId, ctx.input.email, ctx.input.role);
       return {
         output: { success: true },
@@ -150,7 +151,7 @@ export let manageTeamsTool = SlateTool.create(spec, {
 
     if (action === 'remove_member') {
       if (!ctx.input.teamId || !ctx.input.userId)
-        throw new Error('teamId and userId are required');
+        throw vercelServiceError('teamId and userId are required');
       await client.removeTeamMember(ctx.input.teamId, ctx.input.userId);
       return {
         output: { success: true },
@@ -158,6 +159,6 @@ export let manageTeamsTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw vercelServiceError(`Unknown action: ${action}`);
   })
   .build();

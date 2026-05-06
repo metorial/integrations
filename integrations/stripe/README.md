@@ -12,6 +12,10 @@ Create a hosted Stripe Checkout session or retrieve an existing one. Checkout pr
 
 Create a shareable Stripe Payment Link for accepting one-time or recurring payments without building a custom checkout page. Also retrieve or list existing payment links.
 
+### Create Billing Portal Session
+
+Create a short-lived Stripe-hosted Billing Portal session so a customer can manage subscriptions, invoices, and payment methods.
+
 ### Create Refund
 
 Issue a full or partial refund on a charge or PaymentIntent. Optionally specify a reason for the refund. You can also retrieve existing refunds or list all refunds.
@@ -40,6 +44,10 @@ Create, retrieve, update, finalize, send, pay, or void invoices. Supports adding
 
 Create, retrieve, update, confirm, capture, or cancel PaymentIntents. PaymentIntents orchestrate the full payment lifecycle, supporting authorization, capture, and confirmation across many payment methods and currencies.
 
+### Manage Payment Methods
+
+Retrieve, list, attach, or detach Stripe PaymentMethods for customer billing and saved payment flows.
+
 ### Manage Payouts
 
 Create, retrieve, or list payouts. Payouts transfer funds from your Stripe balance to an external bank account or debit card. Amounts are in smallest currency unit.
@@ -51,6 +59,14 @@ Create, retrieve, update, or delete products and their associated prices. Produc
 ### Manage Subscriptions
 
 Create, retrieve, update, cancel, pause, or resume subscriptions. Subscriptions handle recurring billing with support for trials, multiple items, proration, and various billing cycles.
+
+### Manage Setup Intents
+
+Create, retrieve, confirm, cancel, or list Stripe SetupIntents for saving payment methods for future use.
+
+### Manage Tax Rates
+
+Create, retrieve, update, or list Stripe manual Tax Rates for invoices, subscriptions, and Checkout Sessions.
 
 ### Search Charges
 

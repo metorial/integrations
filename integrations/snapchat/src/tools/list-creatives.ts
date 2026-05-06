@@ -25,19 +25,35 @@ export let listCreatives = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      adAccountId: z.string().describe('Ad account ID to list creatives for')
+      adAccountId: z.string().describe('Ad account ID to list creatives for'),
+      limit: z
+        .number()
+        .int()
+        .min(50)
+        .max(1000)
+        .optional()
+        .describe('Maximum number of creatives to return, from 50 to 1000'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous nextLink')
     })
   )
   .output(
     z.object({
-      creatives: z.array(creativeSchema).describe('List of creatives')
+      creatives: z.array(creativeSchema).describe('List of creatives'),
+      nextLink: z
+        .string()
+        .optional()
+        .describe('Pagination URL for the next page, if available')
     })
   )
   .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
-    let results = await client.listCreatives(ctx.input.adAccountId);
+    let result = await client.listCreatives(
+      ctx.input.adAccountId,
+      ctx.input.limit,
+      ctx.input.cursor
+    );
 
-    let creatives = results.map((c: any) => ({
+    let creatives = result.items.map((c: any) => ({
       creativeId: c.id,
       name: c.name,
       type: c.type,
@@ -50,7 +66,7 @@ export let listCreatives = SlateTool.create(spec, {
     }));
 
     return {
-      output: { creatives },
+      output: { creatives, nextLink: result.nextLink },
       message: `Found **${creatives.length}** creative(s).`
     };
   })

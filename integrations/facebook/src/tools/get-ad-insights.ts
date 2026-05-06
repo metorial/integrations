@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { facebookServiceError } from '../lib/errors';
 
 export let getAdInsights = SlateTool.create(spec, {
   name: 'Get Ad Insights',
@@ -97,7 +98,7 @@ Use \`action\` to select the operation.`,
 
     if (ctx.input.action === 'list_campaigns') {
       if (!ctx.input.adAccountId) {
-        throw new Error('adAccountId is required for list_campaigns action');
+        throw facebookServiceError('adAccountId is required for list_campaigns action');
       }
       let result = await client.getCampaigns(ctx.input.adAccountId, {
         limit: ctx.input.limit
@@ -121,7 +122,7 @@ Use \`action\` to select the operation.`,
 
     // campaign_insights
     if (!ctx.input.campaignId) {
-      throw new Error('campaignId is required for campaign_insights action');
+      throw facebookServiceError('campaignId is required for campaign_insights action');
     }
     let insights = await client.getCampaignInsights(ctx.input.campaignId, {
       datePreset: ctx.input.datePreset,

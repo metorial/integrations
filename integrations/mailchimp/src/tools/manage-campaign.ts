@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MailchimpClient } from '../lib/client';
+import { mailchimpServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -56,6 +57,10 @@ export let manageCampaignTool = SlateTool.create(spec, {
       };
     }
 
+    if (ctx.input.delete && !ctx.input.campaignId) {
+      throw mailchimpServiceError('campaignId is required to delete a campaign.');
+    }
+
     let data: Record<string, any> = {};
 
     if (ctx.input.type) data.type = ctx.input.type;
@@ -82,6 +87,12 @@ export let manageCampaignTool = SlateTool.create(spec, {
     if (Object.keys(tracking).length > 0) data.tracking = tracking;
 
     if (ctx.input.campaignId) {
+      if (Object.keys(data).length === 0) {
+        throw mailchimpServiceError(
+          'At least one field must be provided to update a campaign.'
+        );
+      }
+
       let result = await client.updateCampaign(ctx.input.campaignId, data);
       return {
         output: {
@@ -91,6 +102,10 @@ export let manageCampaignTool = SlateTool.create(spec, {
         },
         message: `Campaign **${result.settings?.title ?? result.id}** has been updated.`
       };
+    }
+
+    if (!ctx.input.type) {
+      throw mailchimpServiceError('type is required to create a campaign.');
     }
 
     let result = await client.createCampaign(data);

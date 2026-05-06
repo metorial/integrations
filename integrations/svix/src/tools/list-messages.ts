@@ -16,6 +16,10 @@ export let listMessages = SlateTool.create(spec, {
       applicationId: z.string().describe('Application ID or UID'),
       limit: z.number().optional().describe('Maximum number of messages to return'),
       iterator: z.string().optional().describe('Pagination cursor from a previous request'),
+      order: z
+        .enum(['ascending', 'descending'])
+        .optional()
+        .describe('Sort order for returned messages'),
       channel: z.string().optional().describe('Filter by channel'),
       before: z
         .string()
@@ -26,7 +30,11 @@ export let listMessages = SlateTool.create(spec, {
         .optional()
         .describe('Only return messages created after this ISO timestamp'),
       eventTypes: z.array(z.string()).optional().describe('Filter by event types'),
-      tag: z.string().optional().describe('Filter by tag')
+      tag: z.string().optional().describe('Filter by tag'),
+      includePayload: z
+        .boolean()
+        .optional()
+        .describe('Whether to include each message payload in the response')
     })
   )
   .output(
@@ -40,6 +48,12 @@ export let listMessages = SlateTool.create(spec, {
             .array(z.string())
             .optional()
             .describe('Channels the message was tagged with'),
+          tags: z.array(z.string()).optional().describe('Message tags'),
+          deliverAt: z.string().nullable().optional().describe('Scheduled delivery time'),
+          payload: z
+            .record(z.string(), z.unknown())
+            .optional()
+            .describe('Webhook payload when includePayload is true'),
           timestamp: z.string().describe('When the message was created')
         })
       ),
@@ -57,18 +71,23 @@ export let listMessages = SlateTool.create(spec, {
     let result = await client.listMessages(ctx.input.applicationId, {
       limit: ctx.input.limit,
       iterator: ctx.input.iterator,
+      order: ctx.input.order,
       channel: ctx.input.channel,
       before: ctx.input.before,
       after: ctx.input.after,
       eventTypes: ctx.input.eventTypes,
-      tag: ctx.input.tag
+      tag: ctx.input.tag,
+      withContent: ctx.input.includePayload
     });
 
     let messages = result.data.map(msg => ({
       messageId: msg.id,
       eventType: msg.eventType,
-      eventId: msg.eventId,
-      channels: msg.channels,
+      eventId: msg.eventId ?? undefined,
+      channels: msg.channels ?? undefined,
+      tags: msg.tags ?? undefined,
+      deliverAt: msg.deliverAt,
+      payload: ctx.input.includePayload ? msg.payload : undefined,
       timestamp: msg.timestamp
     }));
 
@@ -76,7 +95,7 @@ export let listMessages = SlateTool.create(spec, {
       output: {
         messages,
         hasMore: !result.done,
-        iterator: result.iterator
+        iterator: result.iterator ?? undefined
       },
       message: `Found **${messages.length}** message(s) for application \`${ctx.input.applicationId}\`.`
     };

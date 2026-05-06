@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ShopifyClient } from '../lib/client';
+import { shopifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -108,7 +109,8 @@ export let manageVariants = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.variantId) throw new Error('variantId is required for update');
+      if (!ctx.input.variantId)
+        throw shopifyServiceError('variantId is required for update');
       let variantData: Record<string, any> = {};
       if (ctx.input.title) variantData.title = ctx.input.title;
       if (ctx.input.price) variantData.price = ctx.input.price;
@@ -132,7 +134,8 @@ export let manageVariants = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.variantId) throw new Error('variantId is required for delete');
+      if (!ctx.input.variantId)
+        throw shopifyServiceError('variantId is required for delete');
       await client.deleteVariant(ctx.input.productId, ctx.input.variantId);
       return {
         output: { deleted: true },
@@ -140,6 +143,6 @@ export let manageVariants = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw shopifyServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

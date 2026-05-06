@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SnapchatClient } from '../lib/client';
+import { snapchatServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -67,6 +68,17 @@ export let getCampaignStats = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
+
+    if (
+      (ctx.input.granularity === 'DAY' || ctx.input.granularity === 'HOUR') &&
+      (!ctx.input.startTime || !ctx.input.endTime)
+    ) {
+      throw snapchatServiceError('startTime and endTime are required for DAY and HOUR stats.');
+    }
+
+    if (ctx.input.fields.length === 0) {
+      throw snapchatServiceError('At least one stats field is required.');
+    }
 
     let params: Record<string, string> = {
       granularity: ctx.input.granularity,

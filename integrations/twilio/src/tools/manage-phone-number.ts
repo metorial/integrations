@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwilioClient } from '../lib/client';
+import { twilioServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -104,7 +105,7 @@ export let managePhoneNumber = SlateTool.create(spec, {
 
     if (ctx.input.action === 'purchase') {
       if (!ctx.input.phoneNumber)
-        throw new Error('phoneNumber is required for purchase action');
+        throw twilioServiceError('phoneNumber is required for purchase action');
       let result = await client.purchasePhoneNumber({
         phoneNumber: ctx.input.phoneNumber,
         friendlyName: ctx.input.friendlyName,
@@ -131,7 +132,7 @@ export let managePhoneNumber = SlateTool.create(spec, {
 
     if (ctx.input.action === 'update') {
       if (!ctx.input.phoneNumberSid)
-        throw new Error('phoneNumberSid is required for update action');
+        throw twilioServiceError('phoneNumberSid is required for update action');
       let result = await client.updateIncomingPhoneNumber(ctx.input.phoneNumberSid, {
         friendlyName: ctx.input.friendlyName,
         voiceUrl: ctx.input.voiceUrl,
@@ -146,7 +147,7 @@ export let managePhoneNumber = SlateTool.create(spec, {
 
     if (ctx.input.action === 'release') {
       if (!ctx.input.phoneNumberSid)
-        throw new Error('phoneNumberSid is required for release action');
+        throw twilioServiceError('phoneNumberSid is required for release action');
       await client.releasePhoneNumber(ctx.input.phoneNumberSid);
       return {
         output: { released: true },
@@ -154,6 +155,6 @@ export let managePhoneNumber = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw twilioServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

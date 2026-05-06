@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/airtable.svg" height="20"> Airtable
 
-Create, read, update, and delete records in Airtable bases and tables. Manage base schemas including creating tables and fields. Filter records using formulas, sort by fields, and scope queries to specific views. Upsert records to find, create, or update in a single call. Read and write comments on records. Manage collaborators and permissions on bases and workspaces. Sync CSV data in bulk. Create and manage webhooks to receive real-time notifications about record, field, and table changes. Access enterprise administration features for user management and audit logging.
+Create, read, update, and delete records in Airtable bases and tables. Manage base schemas including creating tables and fields. Filter records using formulas, sort by fields, and scope queries to specific views. Upsert records to find, create, or update in a single call. Upload attachments to records, read and write record comments, list accessible bases, and receive real-time base change events through webhooks.
 
 ## Tools
 
@@ -39,6 +39,10 @@ Create a new field or update an existing field in a table within the configured 
 ### Manage Table
 
 Create a new table or update an existing table in the configured Airtable base. When creating, provide the table name and initial fields. When updating, provide the table ID and new name or description.
+
+### Upload Attachment
+
+Upload a base64-encoded file directly into an Airtable attachment field on an existing record.
 
 ### Update Records
 

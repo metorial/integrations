@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StripeClient } from '../lib/client';
+import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -66,7 +67,7 @@ export let searchCharges = SlateTool.create(spec, {
     let { action } = ctx.input;
 
     if (action === 'get') {
-      if (!ctx.input.chargeId) throw new Error('chargeId is required for get action');
+      if (!ctx.input.chargeId) throw stripeServiceError('chargeId is required for get action');
       let charge = await client.getCharge(ctx.input.chargeId);
       return {
         output: {

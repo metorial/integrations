@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { geminiApiError, geminiServiceError } from './errors';
 
 export interface ClientConfig {
   token: string;
@@ -20,6 +21,35 @@ export class Client {
     });
   }
 
+  private async request<T>(operation: string, run: () => Promise<{ data: T }>): Promise<T> {
+    try {
+      let response = await run();
+      return response.data;
+    } catch (error) {
+      throw geminiApiError(error, operation);
+    }
+  }
+
+  private async requestResponse<T>(operation: string, run: () => Promise<T>): Promise<T> {
+    try {
+      return await run();
+    } catch (error) {
+      throw geminiApiError(error, operation);
+    }
+  }
+
+  private modelResourceName(modelName: string) {
+    return modelName.startsWith('models/') ? modelName : `models/${modelName}`;
+  }
+
+  private fileResourceName(fileName: string) {
+    return fileName.startsWith('files/') ? fileName : `files/${fileName}`;
+  }
+
+  private cachedContentResourceName(name: string) {
+    return name.startsWith('cachedContents/') ? name : `cachedContents/${name}`;
+  }
+
   // ─── Models ───
 
   async listModels(params?: { pageSize?: number; pageToken?: string }): Promise<any> {
@@ -27,13 +57,15 @@ export class Client {
     if (params?.pageSize !== undefined) query.pageSize = params.pageSize;
     if (params?.pageToken) query.pageToken = params.pageToken;
 
-    let response = await this.axios.get('/models', { params: query });
-    return response.data;
+    return await this.request('list models', () =>
+      this.axios.get('/models', { params: query })
+    );
   }
 
   async getModel(modelName: string): Promise<any> {
-    let response = await this.axios.get(`/models/${modelName}`);
-    return response.data;
+    return await this.request('get model', () =>
+      this.axios.get(`/${this.modelResourceName(modelName)}`)
+    );
   }
 
   // ─── Content Generation ───
@@ -64,8 +96,9 @@ export class Client {
     if (params.toolConfig) body.toolConfig = params.toolConfig;
     if (params.cachedContent) body.cachedContent = params.cachedContent;
 
-    let response = await this.axios.post(`/models/${modelName}:generateContent`, body);
-    return response.data;
+    return await this.request('generate content', () =>
+      this.axios.post(`/${this.modelResourceName(modelName)}:generateContent`, body)
+    );
   }
 
   // ─── Embeddings ───
@@ -88,8 +121,9 @@ export class Client {
     if (params.outputDimensionality !== undefined)
       body.outputDimensionality = params.outputDimensionality;
 
-    let response = await this.axios.post(`/models/${modelName}:embedContent`, body);
-    return response.data;
+    return await this.request('embed content', () =>
+      this.axios.post(`/${this.modelResourceName(modelName)}:embedContent`, body)
+    );
   }
 
   async batchEmbedContents(
@@ -105,7 +139,7 @@ export class Client {
   ): Promise<any> {
     let body = {
       requests: params.requests.map(req => ({
-        model: `models/${modelName}`,
+        model: this.modelResourceName(modelName),
         content: req.content,
         taskType: req.taskType,
         title: req.title,
@@ -113,8 +147,9 @@ export class Client {
       }))
     };
 
-    let response = await this.axios.post(`/models/${modelName}:batchEmbedContents`, body);
-    return response.data;
+    return await this.request('batch embed contents', () =>
+      this.axios.post(`/${this.modelResourceName(modelName)}:batchEmbedContents`, body)
+    );
   }
 
   // ─── Token Counting ───
@@ -132,8 +167,33 @@ export class Client {
     if (params.generateContentRequest)
       body.generateContentRequest = params.generateContentRequest;
 
-    let response = await this.axios.post(`/models/${modelName}:countTokens`, body);
-    return response.data;
+    return await this.request('count tokens', () =>
+      this.axios.post(`/${this.modelResourceName(modelName)}:countTokens`, body)
+    );
+  }
+
+  async generateImagenImages(
+    modelName: string,
+    params: {
+      prompt: string;
+      numberOfImages?: number;
+      aspectRatio?: string;
+      imageSize?: string;
+      personGeneration?: string;
+    }
+  ): Promise<any> {
+    let parameters: Record<string, any> = {};
+    if (params.numberOfImages !== undefined) parameters.sampleCount = params.numberOfImages;
+    if (params.aspectRatio) parameters.aspectRatio = params.aspectRatio;
+    if (params.imageSize) parameters.imageSize = params.imageSize;
+    if (params.personGeneration) parameters.personGeneration = params.personGeneration;
+
+    return await this.request('generate Imagen images', () =>
+      this.axios.post(`/${this.modelResourceName(modelName)}:predict`, {
+        instances: [{ prompt: params.prompt }],
+        parameters
+      })
+    );
   }
 
   // ─── File Management ───
@@ -143,28 +203,46 @@ export class Client {
     mimeType: string;
     fileData: string; // base64 encoded
   }): Promise<any> {
-    let body: Record<string, any> = {
-      file: {
-        displayName: params.displayName
-      }
-    };
-
-    let response = await this.axios.post(
-      `https://generativelanguage.googleapis.com/upload/${this.config.apiVersion}/files`,
-      {
-        file: { displayName: params.displayName },
-        inline_data: {
-          mime_type: params.mimeType,
-          data: params.fileData
+    let fileBytes = Buffer.from(params.fileData, 'base64');
+    let uploadStart = await this.requestResponse<any>('start file upload', () =>
+      this.axios.post(
+        `https://generativelanguage.googleapis.com/upload/${this.config.apiVersion}/files`,
+        {
+          file: params.displayName ? { displayName: params.displayName } : {}
+        },
+        {
+          headers: {
+            'x-goog-api-key': this.config.token,
+            'Content-Type': 'application/json',
+            'X-Goog-Upload-Protocol': 'resumable',
+            'X-Goog-Upload-Command': 'start',
+            'X-Goog-Upload-Header-Content-Length': String(fileBytes.length),
+            'X-Goog-Upload-Header-Content-Type': params.mimeType
+          }
         }
-      },
-      {
-        headers: {
-          'x-goog-api-key': this.config.token
-        }
-      }
+      )
     );
-    return response.data;
+
+    let uploadUrl =
+      uploadStart.headers?.['x-goog-upload-url'] ??
+      uploadStart.headers?.get?.('x-goog-upload-url');
+    if (typeof uploadUrl !== 'string' || !uploadUrl) {
+      throw geminiServiceError('Gemini File API did not return an upload URL.');
+    }
+
+    let uploadResponse = await this.requestResponse<any>('upload file bytes', () =>
+      this.axios.post(uploadUrl, fileBytes, {
+        headers: {
+          'Content-Length': String(fileBytes.length),
+          'Content-Type': params.mimeType,
+          'X-Goog-Upload-Offset': '0',
+          'X-Goog-Upload-Command': 'upload, finalize'
+        },
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity
+      })
+    );
+    return uploadResponse.data;
   }
 
   async listFiles(params?: { pageSize?: number; pageToken?: string }): Promise<any> {
@@ -172,20 +250,19 @@ export class Client {
     if (params?.pageSize !== undefined) query.pageSize = params.pageSize;
     if (params?.pageToken) query.pageToken = params.pageToken;
 
-    let response = await this.axios.get('/files', { params: query });
-    return response.data;
+    return await this.request('list files', () => this.axios.get('/files', { params: query }));
   }
 
   async getFile(fileName: string): Promise<any> {
-    let name = fileName.startsWith('files/') ? fileName : `files/${fileName}`;
-    let response = await this.axios.get(`/${name}`);
-    return response.data;
+    return await this.request('get file', () =>
+      this.axios.get(`/${this.fileResourceName(fileName)}`)
+    );
   }
 
   async deleteFile(fileName: string): Promise<any> {
-    let name = fileName.startsWith('files/') ? fileName : `files/${fileName}`;
-    let response = await this.axios.delete(`/${name}`);
-    return response.data;
+    return await this.request('delete file', () =>
+      this.axios.delete(`/${this.fileResourceName(fileName)}`)
+    );
   }
 
   // ─── Cached Content ───
@@ -200,7 +277,7 @@ export class Client {
     displayName?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      model: params.model.startsWith('models/') ? params.model : `models/${params.model}`,
+      model: this.modelResourceName(params.model),
       contents: params.contents
     };
 
@@ -210,8 +287,9 @@ export class Client {
     if (params.expireTime) body.expireTime = params.expireTime;
     if (params.displayName) body.displayName = params.displayName;
 
-    let response = await this.axios.post('/cachedContents', body);
-    return response.data;
+    return await this.request('create cached content', () =>
+      this.axios.post('/cachedContents', body)
+    );
   }
 
   async listCachedContents(params?: { pageSize?: number; pageToken?: string }): Promise<any> {
@@ -219,14 +297,15 @@ export class Client {
     if (params?.pageSize !== undefined) query.pageSize = params.pageSize;
     if (params?.pageToken) query.pageToken = params.pageToken;
 
-    let response = await this.axios.get('/cachedContents', { params: query });
-    return response.data;
+    return await this.request('list cached contents', () =>
+      this.axios.get('/cachedContents', { params: query })
+    );
   }
 
   async getCachedContent(name: string): Promise<any> {
-    let fullName = name.startsWith('cachedContents/') ? name : `cachedContents/${name}`;
-    let response = await this.axios.get(`/${fullName}`);
-    return response.data;
+    return await this.request('get cached content', () =>
+      this.axios.get(`/${this.cachedContentResourceName(name)}`)
+    );
   }
 
   async updateCachedContent(
@@ -236,7 +315,6 @@ export class Client {
       expireTime?: string;
     }
   ): Promise<any> {
-    let fullName = name.startsWith('cachedContents/') ? name : `cachedContents/${name}`;
     let body: Record<string, any> = {};
     let updateMask: string[] = [];
 
@@ -248,17 +326,21 @@ export class Client {
       body.expireTime = params.expireTime;
       updateMask.push('expireTime');
     }
+    if (updateMask.length === 0) {
+      throw geminiServiceError('At least one of ttl or expireTime is required.');
+    }
 
-    let response = await this.axios.patch(`/${fullName}`, body, {
-      params: { updateMask: updateMask.join(',') }
-    });
-    return response.data;
+    return await this.request('update cached content', () =>
+      this.axios.patch(`/${this.cachedContentResourceName(name)}`, body, {
+        params: { updateMask: updateMask.join(',') }
+      })
+    );
   }
 
   async deleteCachedContent(name: string): Promise<any> {
-    let fullName = name.startsWith('cachedContents/') ? name : `cachedContents/${name}`;
-    let response = await this.axios.delete(`/${fullName}`);
-    return response.data;
+    return await this.request('delete cached content', () =>
+      this.axios.delete(`/${this.cachedContentResourceName(name)}`)
+    );
   }
 
   // ─── Tuned Models ───
@@ -268,13 +350,13 @@ export class Client {
     if (params?.pageSize !== undefined) query.pageSize = params.pageSize;
     if (params?.pageToken) query.pageToken = params.pageToken;
 
-    let response = await this.axios.get('/tunedModels', { params: query });
-    return response.data;
+    return await this.request('list tuned models', () =>
+      this.axios.get('/tunedModels', { params: query })
+    );
   }
 
   async getTunedModel(name: string): Promise<any> {
     let fullName = name.startsWith('tunedModels/') ? name : `tunedModels/${name}`;
-    let response = await this.axios.get(`/${fullName}`);
-    return response.data;
+    return await this.request('get tuned model', () => this.axios.get(`/${fullName}`));
   }
 }

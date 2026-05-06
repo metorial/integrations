@@ -23,7 +23,11 @@ export let createApplication = SlateTool.create(spec, {
       rateLimit: z
         .number()
         .optional()
-        .describe('Rate limit for message delivery to this application'),
+        .describe('Deprecated. Use throttleRate instead.'),
+      throttleRate: z
+        .number()
+        .optional()
+        .describe('Maximum messages per second to send to this application'),
       metadata: z
         .record(z.string(), z.string())
         .optional()
@@ -35,6 +39,7 @@ export let createApplication = SlateTool.create(spec, {
       applicationId: z.string().describe('Svix application ID'),
       name: z.string().describe('Name of the application'),
       uid: z.string().optional().describe('Custom UID of the application'),
+      throttleRate: z.number().optional().describe('Message throttle rate'),
       createdAt: z.string().describe('When the application was created')
     })
   )
@@ -49,6 +54,7 @@ export let createApplication = SlateTool.create(spec, {
       name: ctx.input.name,
       uid: ctx.input.uid,
       rateLimit: ctx.input.rateLimit,
+      throttleRate: ctx.input.throttleRate,
       metadata: ctx.input.metadata
     });
 
@@ -56,7 +62,8 @@ export let createApplication = SlateTool.create(spec, {
       output: {
         applicationId: app.id,
         name: app.name,
-        uid: app.uid,
+        uid: app.uid ?? undefined,
+        throttleRate: app.throttleRate ?? undefined,
         createdAt: app.createdAt
       },
       message: `Created application **${app.name}**${app.uid ? ` (uid: ${app.uid})` : ''} with ID \`${app.id}\`.`

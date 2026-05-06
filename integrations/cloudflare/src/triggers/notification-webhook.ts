@@ -1,5 +1,6 @@
 import { SlateTrigger } from 'slates';
 import { Client } from '../lib/client';
+import { cloudflareServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -43,7 +44,9 @@ export let notificationWebhookTrigger = SlateTrigger.create(spec, {
     autoRegisterWebhook: async ctx => {
       let accountId = ctx.config.accountId;
       if (!accountId)
-        throw new Error('accountId is required in config for webhook registration');
+        throw cloudflareServiceError(
+          'accountId is required in config for webhook registration'
+        );
 
       let client = new Client(ctx.auth);
       let response = await client.createNotificationWebhook(accountId, {

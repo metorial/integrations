@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RedditClient } from '../lib/client';
+import { requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -46,7 +47,10 @@ Retrieve both user flair and link (post) flair templates, or assign flair to use
 
     if (action === 'set_user_flair') {
       await client.setUserFlair(subredditName, {
-        name: ctx.input.username!,
+        name: requireRedditInput(
+          ctx.input.username,
+          'username is required for set_user_flair action'
+        ),
         text: ctx.input.flairText,
         flairTemplateId: ctx.input.flairTemplateId,
         cssClass: ctx.input.cssClass
@@ -59,7 +63,10 @@ Retrieve both user flair and link (post) flair templates, or assign flair to use
 
     if (action === 'set_post_flair') {
       await client.setPostFlair(subredditName, {
-        linkFullname: ctx.input.postId!,
+        linkFullname: requireRedditInput(
+          ctx.input.postId,
+          'postId is required for set_post_flair action'
+        ),
         text: ctx.input.flairText,
         flairTemplateId: ctx.input.flairTemplateId,
         cssClass: ctx.input.cssClass

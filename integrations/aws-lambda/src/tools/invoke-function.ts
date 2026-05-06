@@ -9,7 +9,7 @@ export let invokeFunction = SlateTool.create(spec, {
   description: `Invoke a Lambda function synchronously or asynchronously. **Synchronous** (RequestResponse) returns the function's output. **Asynchronous** (Event) queues the event and returns immediately. Use **DryRun** to validate permissions without executing.`,
   instructions: [
     'Synchronous invocations have a 6MB payload limit and return the function result.',
-    'Asynchronous invocations have a 256KB payload limit and return a 202 status immediately.',
+    'Asynchronous invocations have a 1MB payload limit and return a 202 status immediately.',
     'Set logType to "Tail" to get the last 4KB of execution logs in the response.'
   ]
 })
@@ -25,7 +25,16 @@ export let invokeFunction = SlateTool.create(spec, {
       logType: z
         .enum(['None', 'Tail'])
         .optional()
-        .describe('Set to "Tail" to include execution logs')
+        .describe('Set to "Tail" to include execution logs'),
+      clientContext: z
+        .string()
+        .optional()
+        .describe('Base64-encoded client context for synchronous invocations'),
+      durableExecutionName: z
+        .string()
+        .optional()
+        .describe('Optional durable execution name for durable functions'),
+      tenantId: z.string().optional().describe('Tenant identifier for multi-tenant functions')
     })
   )
   .output(
@@ -43,7 +52,11 @@ export let invokeFunction = SlateTool.create(spec, {
       logResult: z
         .string()
         .optional()
-        .describe('Last 4KB of execution log (when logType is Tail)')
+        .describe('Last 4KB of execution log (when logType is Tail)'),
+      durableExecutionArn: z
+        .string()
+        .optional()
+        .describe('Durable execution ARN returned by durable function invocations')
     })
   )
   .handleInvocation(async ctx => {
@@ -52,7 +65,10 @@ export let invokeFunction = SlateTool.create(spec, {
     let result = await client.invokeFunction(ctx.input.functionName, ctx.input.payload, {
       invocationType: ctx.input.invocationType,
       logType: ctx.input.logType,
-      qualifier: ctx.input.qualifier
+      qualifier: ctx.input.qualifier,
+      clientContext: ctx.input.clientContext,
+      durableExecutionName: ctx.input.durableExecutionName,
+      tenantId: ctx.input.tenantId
     });
 
     let invType = ctx.input.invocationType || 'RequestResponse';
@@ -66,10 +82,11 @@ export let invokeFunction = SlateTool.create(spec, {
     return {
       output: {
         statusCode: result?.StatusCode,
-        response: result,
+        response: result?.Payload,
         functionError: result?.FunctionError,
         executedVersion: result?.ExecutedVersion,
-        logResult: result?.LogResult
+        logResult: result?.LogResult,
+        durableExecutionArn: result?.DurableExecutionArn
       },
       message: msg
     };

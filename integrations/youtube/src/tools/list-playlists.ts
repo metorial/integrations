@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -67,7 +68,14 @@ export let listPlaylists = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
+    let filterCount = [ctx.input.playlistId, ctx.input.channelId, ctx.input.mine].filter(
+      Boolean
+    ).length;
+
+    if (filterCount !== 1) {
+      throw youtubeServiceError('Provide exactly one of playlistId, channelId, or mine=true');
+    }
 
     let response = await client.listPlaylists({
       part: ['snippet', 'status', 'contentDetails'],

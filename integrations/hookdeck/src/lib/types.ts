@@ -3,6 +3,7 @@ export interface PaginationParams {
   next?: string;
   prev?: string;
   orderBy?: string;
+  order_by?: string;
   dir?: 'asc' | 'desc';
 }
 
@@ -107,11 +108,20 @@ export interface HookdeckRequest {
   id: string;
   team_id: string;
   source_id: string;
+  status?: string;
   headers: Record<string, string>;
   body?: unknown;
   query?: string;
   path?: string;
   parsed_query?: Record<string, unknown>;
+  data?: {
+    headers?: Record<string, string>;
+    body?: unknown;
+    query?: string;
+    path?: string;
+    parsed_query?: Record<string, unknown>;
+    parsedQuery?: Record<string, unknown>;
+  };
   rejection_cause?: string | null;
   verified_at?: string | null;
   created_at: string;
@@ -125,6 +135,9 @@ export interface HookdeckAttempt {
   response_status?: number | null;
   status: string;
   error_code?: string | null;
+  response_ms?: number | null;
+  trigger?: string | null;
+  data?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -166,10 +179,37 @@ export interface HookdeckBookmark {
 
 export interface HookdeckIssueTrigger {
   id: string;
-  team_id: string;
+  team_id?: string | null;
+  name?: string | null;
   type: string;
   configs?: Record<string, unknown>;
+  channels?: Record<string, unknown> | null;
   disabled_at?: string | null;
+  deleted_at?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface HookdeckMetricsRow {
+  time_bucket?: string | null;
+  dimensions?: Record<string, unknown>;
+  metrics?: Record<string, unknown>;
+}
+
+export interface HookdeckMetricsResponse {
+  data: HookdeckMetricsRow[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface HookdeckBulkOperation {
+  id: string;
+  team_id?: string;
+  status?: string;
+  type?: string;
+  query?: Record<string, unknown>;
+  count?: number;
+  estimated_count?: number;
+  processed_count?: number;
+  created_at?: string;
+  updated_at?: string;
 }

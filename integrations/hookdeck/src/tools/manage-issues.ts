@@ -1,12 +1,13 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { requireHookdeckInput } from '../lib/errors';
 import { z } from 'zod';
 
 let issueSchema = z.object({
   issueId: z.string().describe('Issue ID'),
   teamId: z.string().describe('Team/project ID'),
-  type: z.string().describe('Issue type (delivery, transformation, backpressure)'),
+  type: z.string().describe('Issue type (delivery, transformation, backpressure, request)'),
   status: z.string().describe('Issue status (OPENED, ACKNOWLEDGED, RESOLVED, IGNORED)'),
   reference: z
     .record(z.string(), z.unknown())
@@ -47,7 +48,7 @@ export let manageIssues = SlateTool.create(spec, {
         .optional()
         .describe('New status (for update_status) or filter (for list)'),
       type: z
-        .enum(['delivery', 'transformation', 'backpressure'])
+        .enum(['delivery', 'transformation', 'backpressure', 'request'])
         .optional()
         .describe('Filter by issue type (for list)'),
       limit: z.number().optional().describe('Max results (for list)'),
@@ -57,6 +58,7 @@ export let manageIssues = SlateTool.create(spec, {
   .output(
     z.object({
       issue: issueSchema.optional().describe('Single issue'),
+      dismissedIssueId: z.string().optional().describe('Dismissed issue ID'),
       issues: z.array(issueSchema).optional().describe('List of issues'),
       nextCursor: z.string().optional().describe('Next pagination cursor'),
       totalCount: z.number().optional().describe('Total count')
@@ -96,15 +98,18 @@ export let manageIssues = SlateTool.create(spec, {
         };
       }
       case 'get': {
-        let issue = await client.getIssue(ctx.input.issueId!);
+        let issueId = requireHookdeckInput(ctx.input.issueId, 'issueId', 'get');
+        let issue = await client.getIssue(issueId);
         return {
           output: { issue: mapIssue(issue) },
           message: `Retrieved issue \`${issue.id}\` — type: **${issue.type}**, status: **${issue.status}**.`
         };
       }
       case 'update_status': {
-        let issue = await client.updateIssue(ctx.input.issueId!, {
-          status: ctx.input.status!
+        let issueId = requireHookdeckInput(ctx.input.issueId, 'issueId', 'update_status');
+        let status = requireHookdeckInput(ctx.input.status, 'status', 'update_status');
+        let issue = await client.updateIssue(issueId, {
+          status
         });
         return {
           output: { issue: mapIssue(issue) },
@@ -112,10 +117,11 @@ export let manageIssues = SlateTool.create(spec, {
         };
       }
       case 'dismiss': {
-        let issue = await client.dismissIssue(ctx.input.issueId!);
+        let issueId = requireHookdeckInput(ctx.input.issueId, 'issueId', 'dismiss');
+        let result = await client.dismissIssue(issueId);
         return {
-          output: { issue: mapIssue(issue) },
-          message: `Dismissed issue \`${issue.id}\`.`
+          output: { dismissedIssueId: result.id ?? issueId },
+          message: `Dismissed issue \`${result.id ?? issueId}\`.`
         };
       }
     }

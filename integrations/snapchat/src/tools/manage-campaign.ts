@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SnapchatClient } from '../lib/client';
+import { snapchatServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,6 +17,10 @@ let campaignOutputSchema = z.object({
     .number()
     .optional()
     .describe('Lifetime spend cap in micro-currency'),
+  objectiveV2Properties: z
+    .any()
+    .optional()
+    .describe('Current objective_v2_properties payload'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
@@ -45,6 +50,12 @@ export let manageCampaign = SlateTool.create(spec, {
         .describe(
           'Campaign objective (e.g., APP_INSTALLS, WEB_CONVERSIONS, VIDEO_VIEWS, BRAND_AWARENESS, LEAD_GENERATION)'
         ),
+      objectiveV2Properties: z
+        .any()
+        .optional()
+        .describe(
+          'Objective v2 properties object, e.g. { objective_v2_type: "SALES" }. Recommended for new campaigns.'
+        ),
       startTime: z.string().optional().describe('Campaign start time in ISO 8601 format'),
       endTime: z.string().optional().describe('Campaign end time in ISO 8601 format'),
       dailyBudgetMicro: z.number().optional().describe('Daily budget in micro-currency'),
@@ -59,11 +70,22 @@ export let manageCampaign = SlateTool.create(spec, {
     let client = new SnapchatClient(ctx.auth.token);
     let { adAccountId, campaignId, ...fields } = ctx.input;
 
+    if (!campaignId) {
+      if (!fields.name) throw snapchatServiceError('name is required to create a campaign.');
+      if (!fields.status)
+        throw snapchatServiceError('status is required to create a campaign.');
+      if (!fields.startTime) {
+        throw snapchatServiceError('startTime is required to create a campaign.');
+      }
+    }
+
     let campaignData: Record<string, any> = {};
     if (campaignId) campaignData.id = campaignId;
     if (fields.name) campaignData.name = fields.name;
     if (fields.status) campaignData.status = fields.status;
     if (fields.objective) campaignData.objective = fields.objective;
+    if (fields.objectiveV2Properties)
+      campaignData.objective_v2_properties = fields.objectiveV2Properties;
     if (fields.startTime) campaignData.start_time = fields.startTime;
     if (fields.endTime) campaignData.end_time = fields.endTime;
     if (fields.dailyBudgetMicro !== undefined)
@@ -78,6 +100,10 @@ export let manageCampaign = SlateTool.create(spec, {
       result = await client.createCampaign(adAccountId, campaignData);
     }
 
+    if (!result) {
+      throw snapchatServiceError('Snapchat did not return a campaign in the API response.');
+    }
+
     let output = {
       campaignId: result.id,
       adAccountId: result.ad_account_id,
@@ -88,6 +114,7 @@ export let manageCampaign = SlateTool.create(spec, {
       endTime: result.end_time,
       dailyBudgetMicro: result.daily_budget_micro,
       lifetimeSpendCapMicro: result.lifetime_spend_cap_micro,
+      objectiveV2Properties: result.objective_v2_properties,
       createdAt: result.created_at,
       updatedAt: result.updated_at
     };

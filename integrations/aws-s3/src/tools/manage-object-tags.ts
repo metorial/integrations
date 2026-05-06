@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { S3Client } from '../lib/client';
+import { s3ServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -29,6 +30,7 @@ When setting tags, provide the **complete** tag set — existing tags are replac
             value: z.string().describe('Tag value')
           })
         )
+        .max(10)
         .optional()
         .describe('Tags to set (required for "set" action, replaces all existing tags)')
     })
@@ -68,7 +70,7 @@ When setting tags, provide the **complete** tag set — existing tags are replac
 
     if (action === 'set') {
       if (!tags || tags.length === 0) {
-        throw new Error('Tags are required for the "set" action');
+        throw s3ServiceError('Tags are required for the "set" action.');
       }
       await client.putObjectTagging(bucketName, objectKey, tags, versionId);
       return {

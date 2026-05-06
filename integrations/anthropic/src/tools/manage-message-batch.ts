@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnthropicClient } from '../lib/client';
+import { anthropicServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -59,7 +60,12 @@ Use **action** to specify the operation: "create", "get", "list", or "cancel".`,
         .optional()
         .describe('Batch requests (required for "create")'),
       limit: z.number().optional().describe('Max results to return (for "list")'),
-      afterId: z.string().optional().describe('Pagination cursor (for "list")')
+      afterId: z.string().optional().describe('Pagination cursor after this batch ID'),
+      beforeId: z.string().optional().describe('Pagination cursor before this batch ID'),
+      betaHeaders: z
+        .array(z.string())
+        .optional()
+        .describe('Anthropic beta headers to send when creating the batch')
     })
   )
   .output(
@@ -81,9 +87,9 @@ Use **action** to specify the operation: "create", "get", "list", or "cancel".`,
 
     if (action === 'create') {
       if (!ctx.input.requests || ctx.input.requests.length === 0) {
-        throw new Error('requests array is required for "create" action');
+        throw anthropicServiceError('requests array is required for "create" action');
       }
-      let batch = await client.createMessageBatch(ctx.input.requests);
+      let batch = await client.createMessageBatch(ctx.input.requests, ctx.input.betaHeaders);
       return {
         output: { batch, batches: undefined, hasMore: undefined },
         message: `Created message batch **${batch.batchId}** with **${ctx.input.requests.length}** request(s).`
@@ -92,7 +98,7 @@ Use **action** to specify the operation: "create", "get", "list", or "cancel".`,
 
     if (action === 'get') {
       if (!ctx.input.batchId) {
-        throw new Error('batchId is required for "get" action');
+        throw anthropicServiceError('batchId is required for "get" action');
       }
       let batch = await client.getMessageBatch(ctx.input.batchId);
       return {
@@ -104,7 +110,8 @@ Use **action** to specify the operation: "create", "get", "list", or "cancel".`,
     if (action === 'list') {
       let result = await client.listMessageBatches({
         limit: ctx.input.limit,
-        afterId: ctx.input.afterId
+        afterId: ctx.input.afterId,
+        beforeId: ctx.input.beforeId
       });
       return {
         output: { batch: undefined, batches: result.batches, hasMore: result.hasMore },
@@ -114,7 +121,7 @@ Use **action** to specify the operation: "create", "get", "list", or "cancel".`,
 
     // cancel
     if (!ctx.input.batchId) {
-      throw new Error('batchId is required for "cancel" action');
+      throw anthropicServiceError('batchId is required for "cancel" action');
     }
     let batch = await client.cancelMessageBatch(ctx.input.batchId);
     return {

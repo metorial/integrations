@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MessagingClient } from '../lib/client';
+import { firebaseServiceError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -75,7 +76,11 @@ export let sendFcmMessage = SlateTool.create(spec, {
           link: z.string().optional().describe('URL to open when notification is clicked')
         })
         .optional()
-        .describe('Web push configuration')
+        .describe('Web push configuration'),
+      validateOnly: z
+        .boolean()
+        .optional()
+        .describe('Validate the request without delivering the message.')
     })
   )
   .output(
@@ -99,12 +104,15 @@ export let sendFcmMessage = SlateTool.create(spec, {
       dataPayload,
       android,
       apns,
-      webpush
+      webpush,
+      validateOnly
     } = ctx.input;
 
     let targetCount = [deviceToken, topic, condition].filter(Boolean).length;
     if (targetCount !== 1) {
-      throw new Error('Exactly one of deviceToken, topic, or condition must be provided');
+      throw firebaseServiceError(
+        'Exactly one of deviceToken, topic, or condition must be provided'
+      );
     }
 
     let message: any = {};
@@ -165,12 +173,12 @@ export let sendFcmMessage = SlateTool.create(spec, {
       };
     }
 
-    let result = await client.sendMessage(message);
+    let result = await client.sendMessage(message, { validateOnly });
 
     let target = deviceToken ? `device` : topic ? `topic "${topic}"` : `condition`;
     return {
       output: result,
-      message: `Sent message to ${target}. Message ID: **${result.messageId}**`
+      message: `${validateOnly ? 'Validated' : 'Sent'} message to ${target}. Message ID: **${result.messageId}**`
     };
   })
   .build();

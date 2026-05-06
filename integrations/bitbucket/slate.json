@@ -1,6 +1,6 @@
 {
   "name": "@atlassian/bitbucket",
-  "description": "Manage Git repositories, pull requests, and CI/CD pipelines on Bitbucket Cloud. Create, fork, and configure repositories within workspaces and projects. Create, review, approve, merge, and decline pull requests with inline code comments. Browse source code, list commits, and manage branches and tags. Track issues with the built-in issue tracker. Trigger, monitor, and manage Bitbucket Pipelines, deployment environments, and pipeline variables. Control workspace membership, user permissions, and group access. Create and manage webhooks for repository and workspace events. Search code across repositories and manage code snippets.",
+  "description": "Manage Git repositories, pull requests, and CI/CD pipelines on Bitbucket Cloud. Create, fork, and configure repositories within workspaces and projects. Create, review, approve, merge, and decline pull requests with inline code comments. Browse source code, list commits, and manage branches and tags. Track issues with the built-in issue tracker. Trigger, monitor, and manage Bitbucket Pipelines. List workspace members, configure repository default reviewers and branch restrictions, create and manage repository webhooks, and search code across repositories.",
   "categories": ["apis-and-http-requests", "task-and-project-management"],
   "skills": [
     "manage Git repositories",
@@ -9,9 +9,9 @@
     "manage branches and tags",
     "run CI/CD pipelines",
     "track issues",
-    "manage workspace permissions",
+    "manage default reviewers",
+    "manage branch restrictions",
     "configure webhooks",
-    "manage deployment environments",
     "search code"
   ],
   "logoUrl": "https://provider-logos.metorial-cdn.com/bitbucket.svg",

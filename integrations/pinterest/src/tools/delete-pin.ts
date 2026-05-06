@@ -14,7 +14,11 @@ export let deletePin = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      pinId: z.string().describe('ID of the pin to delete')
+      pinId: z.string().describe('ID of the pin to delete'),
+      adAccountId: z
+        .string()
+        .optional()
+        .describe('Ad account ID for Business Access operation user context')
     })
   )
   .output(
@@ -25,7 +29,7 @@ export let deletePin = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    await client.deletePin(ctx.input.pinId);
+    await client.deletePin(ctx.input.pinId, ctx.input.adAccountId);
 
     return {
       output: {

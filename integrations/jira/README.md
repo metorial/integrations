@@ -12,6 +12,30 @@ Create a new Jira issue in a specified project. Supports setting all standard fi
 
 Permanently delete a Jira issue. Optionally delete all sub-tasks along with the parent issue. This action cannot be undone.
 
+### Delete Comment
+
+Delete a comment from a Jira issue.
+
+### Delete Filter
+
+Delete a saved Jira JQL filter owned by the authenticated user.
+
+### Delete Issue Link
+
+Delete an existing link between two Jira issues by issue link ID. Use Get Issue with fields=["issuelinks"] to find link IDs.
+
+### Delete Version
+
+Delete a Jira project version. Optionally move affected or fixed issues to replacement versions.
+
+### Delete Worklog
+
+Delete a worklog from a Jira issue.
+
+### Get Filter
+
+Retrieve a saved Jira JQL filter by ID.
+
 ### Get Issue
 
 Retrieve detailed information about a Jira issue by its key or ID. Returns the full issue data including all fields, status, assignee, reporter, comments, and changelog. Optionally expand additional information like transitions, rendered fields, or changelog.
@@ -31,6 +55,10 @@ List Jira boards (Scrum or Kanban). Optionally filter by board type or project.
 ### List Projects
 
 List Jira projects accessible to the authenticated user. Supports pagination for large project lists.
+
+### List Worklogs
+
+List worklogs for a Jira issue with pagination support.
 
 ### Log Work
 
@@ -63,6 +91,18 @@ Search for Jira users by name, username, or email. Useful for finding account ID
 ### Update Issue
 
 Update an existing Jira issue's fields, transition it to a new status, or reassign it. Combines field updates, workflow transitions, and assignment into a single flexible tool. Only provided fields will be updated.
+
+### Update Comment
+
+Update an existing comment on a Jira issue. Supports plain text or Atlassian Document Format (ADF) bodies.
+
+### Update Filter
+
+Update a saved Jira JQL filter's name, description, query, or favourite state.
+
+### Update Worklog
+
+Update time spent, start time, or comment for an existing Jira issue worklog.
 
 ## License
 

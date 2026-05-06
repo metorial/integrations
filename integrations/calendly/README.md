@@ -16,9 +16,21 @@ Check available time slots for a specific event type, retrieve a user's busy tim
 
 Create a single-use scheduling link for a specific event type. The generated link can be shared with an invitee to book one meeting. Single-use links expire after 90 days if unused.
 
+### Create Event Invitee
+
+Book a Calendly meeting by creating an invitee for an event type at an available start time. Use check_availability first and pass one of the returned start times.
+
 ### Get Event Details
 
 Retrieve detailed information about a specific scheduled event, including its invitees. Returns the event details along with the list of invitees and their responses to custom questions.
+
+### Get Event Invitee
+
+Retrieve detailed invitee information for a scheduled event, including contact details, answers, no-show status, and cancellation/reschedule links.
+
+### Get Event Type
+
+Retrieve detailed Calendly event type configuration, including scheduling URL, duration, location metadata, and custom questions.
 
 ### Get User
 

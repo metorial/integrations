@@ -5,34 +5,44 @@ import type {
   XeroCreditNote,
   XeroPayment,
   XeroBankTransaction,
+  XeroBankTransfer,
   XeroAccount,
   XeroPurchaseOrder,
   XeroQuote,
   XeroOrganisation,
   XeroTaxRate,
   XeroTrackingCategory,
+  XeroContactGroup,
   XeroManualJournal,
   XeroItem,
   XeroCurrency,
   XeroBrandingTheme,
   XeroReport
 } from './types';
+import { xeroApiError } from './errors';
 
 export class XeroClient {
   private axios: ReturnType<typeof createAxios>;
-  private tenantId: string;
 
-  constructor(params: { token: string; tenantId: string }) {
-    this.tenantId = params.tenantId;
+  constructor(params: { token: string; tenantId?: string }) {
+    let headers: Record<string, string> = {
+      Authorization: `Bearer ${params.token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    };
+    if (params.tenantId) {
+      headers['xero-tenant-id'] = params.tenantId;
+    }
+
     this.axios = createAxios({
       baseURL: 'https://api.xero.com/api.xro/2.0',
-      headers: {
-        Authorization: `Bearer ${params.token}`,
-        'xero-tenant-id': params.tenantId,
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      }
+      headers
     });
+
+    this.axios.interceptors.response.use(
+      response => response,
+      error => Promise.reject(xeroApiError(error))
+    );
   }
 
   // ─── Invoices ─────────────────────────────────────────────────
@@ -142,6 +152,64 @@ export class XeroClient {
     let response = await this.axios.post(`/Contacts/${contactId}`, contact);
     let data = response.data as { Contacts: XeroContact[] };
     return data.Contacts[0]!;
+  }
+
+  // Contact Groups
+
+  async getContactGroups(params?: {
+    where?: string;
+    order?: string;
+  }): Promise<{ ContactGroups: XeroContactGroup[] }> {
+    let query: Record<string, any> = {};
+    if (params?.where) query.where = params.where;
+    if (params?.order) query.order = params.order;
+
+    let response = await this.axios.get('/ContactGroups', { params: query });
+    return response.data as { ContactGroups: XeroContactGroup[] };
+  }
+
+  async getContactGroup(contactGroupId: string): Promise<XeroContactGroup> {
+    let response = await this.axios.get(`/ContactGroups/${contactGroupId}`);
+    let data = response.data as { ContactGroups: XeroContactGroup[] };
+    return data.ContactGroups[0]!;
+  }
+
+  async createContactGroup(
+    contactGroup: Partial<XeroContactGroup>
+  ): Promise<XeroContactGroup> {
+    let response = await this.axios.put('/ContactGroups', {
+      ContactGroups: [contactGroup]
+    });
+    let data = response.data as { ContactGroups: XeroContactGroup[] };
+    return data.ContactGroups[0]!;
+  }
+
+  async updateContactGroup(
+    contactGroupId: string,
+    contactGroup: Partial<XeroContactGroup>
+  ): Promise<XeroContactGroup> {
+    let response = await this.axios.post(`/ContactGroups/${contactGroupId}`, {
+      ContactGroups: [contactGroup]
+    });
+    let data = response.data as { ContactGroups: XeroContactGroup[] };
+    return data.ContactGroups[0]!;
+  }
+
+  async addContactsToContactGroup(
+    contactGroupId: string,
+    contactIds: string[]
+  ): Promise<{ Contacts: XeroContact[] }> {
+    let response = await this.axios.put(`/ContactGroups/${contactGroupId}/Contacts`, {
+      Contacts: contactIds.map(contactId => ({ ContactID: contactId }))
+    });
+    return response.data as { Contacts: XeroContact[] };
+  }
+
+  async removeContactFromContactGroup(
+    contactGroupId: string,
+    contactId: string
+  ): Promise<void> {
+    await this.axios.delete(`/ContactGroups/${contactGroupId}/Contacts/${contactId}`);
   }
 
   // ─── Credit Notes ─────────────────────────────────────────────
@@ -273,6 +341,40 @@ export class XeroClient {
     let response = await this.axios.post(`/BankTransactions/${transactionId}`, transaction);
     let data = response.data as { BankTransactions: XeroBankTransaction[] };
     return data.BankTransactions[0]!;
+  }
+
+  // Bank Transfers
+
+  async getBankTransfers(params?: {
+    where?: string;
+    order?: string;
+    modifiedAfter?: string;
+  }): Promise<{ BankTransfers: XeroBankTransfer[] }> {
+    let query: Record<string, any> = {};
+    if (params?.where) query.where = params.where;
+    if (params?.order) query.order = params.order;
+
+    let headers: Record<string, string> = {};
+    if (params?.modifiedAfter) {
+      headers['If-Modified-Since'] = params.modifiedAfter;
+    }
+
+    let response = await this.axios.get('/BankTransfers', { params: query, headers });
+    return response.data as { BankTransfers: XeroBankTransfer[] };
+  }
+
+  async getBankTransfer(bankTransferId: string): Promise<XeroBankTransfer> {
+    let response = await this.axios.get(`/BankTransfers/${bankTransferId}`);
+    let data = response.data as { BankTransfers: XeroBankTransfer[] };
+    return data.BankTransfers[0]!;
+  }
+
+  async createBankTransfer(transfer: Partial<XeroBankTransfer>): Promise<XeroBankTransfer> {
+    let response = await this.axios.put('/BankTransfers', {
+      BankTransfers: [transfer]
+    });
+    let data = response.data as { BankTransfers: XeroBankTransfer[] };
+    return data.BankTransfers[0]!;
   }
 
   // ─── Accounts ─────────────────────────────────────────────────

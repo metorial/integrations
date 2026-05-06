@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { lambdaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -10,6 +11,7 @@ export let manageDurableExecution = SlateTool.create(spec, {
   instructions: [
     'Use **action** to specify: "get", "get_history", "get_state", "list", "stop", "callback_success", "callback_failure", or "callback_heartbeat".',
     'For "list", provide a functionName. For most other actions, provide a durableExecutionArn.',
+    'For "get_state", provide checkpointToken.',
     'For callback actions, provide a callbackId.'
   ]
 })
@@ -36,6 +38,10 @@ export let manageDurableExecution = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Callback ID (required for callback actions)'),
+      checkpointToken: z
+        .string()
+        .optional()
+        .describe('Checkpoint token required when retrieving durable execution state'),
       callbackResult: z.any().optional().describe('Result payload for callback_success'),
       stopErrorMessage: z
         .string()
@@ -85,7 +91,8 @@ export let manageDurableExecution = SlateTool.create(spec, {
     let { action } = ctx.input;
 
     if (action === 'list') {
-      if (!ctx.input.functionName) throw new Error('functionName is required for list');
+      if (!ctx.input.functionName)
+        throw lambdaServiceError('functionName is required for list');
       let result = await client.listDurableExecutionsByFunction(
         ctx.input.functionName,
         ctx.input.statusFilter,
@@ -105,7 +112,8 @@ export let manageDurableExecution = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.durableExecutionArn) throw new Error('durableExecutionArn is required');
+      if (!ctx.input.durableExecutionArn)
+        throw lambdaServiceError('durableExecutionArn is required');
       let result = await client.getDurableExecution(ctx.input.durableExecutionArn);
       return {
         output: {
@@ -124,7 +132,8 @@ export let manageDurableExecution = SlateTool.create(spec, {
     }
 
     if (action === 'get_history') {
-      if (!ctx.input.durableExecutionArn) throw new Error('durableExecutionArn is required');
+      if (!ctx.input.durableExecutionArn)
+        throw lambdaServiceError('durableExecutionArn is required');
       let result = await client.getDurableExecutionHistory(
         ctx.input.durableExecutionArn,
         undefined,
@@ -137,8 +146,16 @@ export let manageDurableExecution = SlateTool.create(spec, {
     }
 
     if (action === 'get_state') {
-      if (!ctx.input.durableExecutionArn) throw new Error('durableExecutionArn is required');
-      let result = await client.getDurableExecutionState(ctx.input.durableExecutionArn);
+      if (!ctx.input.durableExecutionArn)
+        throw lambdaServiceError('durableExecutionArn is required');
+      if (!ctx.input.checkpointToken)
+        throw lambdaServiceError('checkpointToken is required for get_state');
+      let result = await client.getDurableExecutionState(
+        ctx.input.durableExecutionArn,
+        ctx.input.checkpointToken,
+        undefined,
+        ctx.input.maxItems
+      );
       return {
         output: { state: result },
         message: `Retrieved state for durable execution.`
@@ -146,7 +163,8 @@ export let manageDurableExecution = SlateTool.create(spec, {
     }
 
     if (action === 'stop') {
-      if (!ctx.input.durableExecutionArn) throw new Error('durableExecutionArn is required');
+      if (!ctx.input.durableExecutionArn)
+        throw lambdaServiceError('durableExecutionArn is required');
       let params: Record<string, any> = {};
       if (ctx.input.stopErrorMessage) params['ErrorMessage'] = ctx.input.stopErrorMessage;
       if (ctx.input.stopErrorType) params['ErrorType'] = ctx.input.stopErrorType;
@@ -160,7 +178,7 @@ export let manageDurableExecution = SlateTool.create(spec, {
     }
 
     if (action === 'callback_success') {
-      if (!ctx.input.callbackId) throw new Error('callbackId is required');
+      if (!ctx.input.callbackId) throw lambdaServiceError('callbackId is required');
       await client.sendDurableExecutionCallbackSuccess(
         ctx.input.callbackId,
         ctx.input.callbackResult
@@ -172,7 +190,7 @@ export let manageDurableExecution = SlateTool.create(spec, {
     }
 
     if (action === 'callback_failure') {
-      if (!ctx.input.callbackId) throw new Error('callbackId is required');
+      if (!ctx.input.callbackId) throw lambdaServiceError('callbackId is required');
       await client.sendDurableExecutionCallbackFailure(ctx.input.callbackId);
       return {
         output: { callbackSent: true },
@@ -181,7 +199,7 @@ export let manageDurableExecution = SlateTool.create(spec, {
     }
 
     // callback_heartbeat
-    if (!ctx.input.callbackId) throw new Error('callbackId is required');
+    if (!ctx.input.callbackId) throw lambdaServiceError('callbackId is required');
     await client.sendDurableExecutionCallbackHeartbeat(ctx.input.callbackId);
     return {
       output: { callbackSent: true },

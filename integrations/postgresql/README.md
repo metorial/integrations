@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/postgresql.png" height="20"> Postgresql
 
-Query, insert, update, and delete data in PostgreSQL relational databases. Manage schemas, tables, indexes, and constraints. Execute complex SQL with joins, subqueries, aggregations, window functions, and CTEs. Create and manage views, materialized views, stored procedures, functions, and triggers. Handle transactions with ACID compliance and configurable isolation levels. Manage database roles, permissions, and row-level security policies. Import and export data in bulk using CSV or binary formats. Listen for real-time event notifications via LISTEN/NOTIFY channels and capture row-level changes through logical replication.
+Query, insert, update, and delete data in PostgreSQL relational databases. Explore schemas and tables, manage schemas, tables, indexes, views, materialized views, and database roles, and poll tables for row changes using timestamp or incrementing columns.
 
 ## Tools
 
@@ -24,6 +24,10 @@ Insert one or more rows into a PostgreSQL table. Provide the data as an array of
 
 List all schemas in the PostgreSQL database with their table counts and sizes. Useful for exploring the database structure and understanding the organization of tables across schemas.
 
+### Manage Schemas
+
+Create, rename, or drop PostgreSQL schemas. Drop operations require explicit confirmation and can optionally cascade to contained objects.
+
 ### List Tables
 
 List all tables in the PostgreSQL database, optionally filtered by schema. Returns table names, schemas, row estimates, and size information. Also supports listing views and materialized views.
@@ -39,6 +43,10 @@ Manage PostgreSQL roles and their privileges. Supports creating and dropping rol
 ### Manage Table
 
 Create, alter, or drop a PostgreSQL table. Supports creating tables with columns, constraints, and foreign keys. For altering tables, supports adding columns, dropping columns, renaming columns, altering column types, and renaming the table.
+
+### Manage Views
+
+Create and drop PostgreSQL views or materialized views, and refresh materialized views. View definitions are restricted to a single read query for safer structured management.
 
 ### Update Rows
 

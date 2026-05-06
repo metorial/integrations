@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
+import { quickBooksServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 let journalLineSchema = z.object({
@@ -49,7 +50,24 @@ export let createJournalEntry = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = createClientFromContext(ctx);
+    let totalDebits = ctx.input.lines
+      .filter(l => l.postingType === 'Debit')
+      .reduce((sum, l) => sum + l.amount, 0);
+    let totalCredits = ctx.input.lines
+      .filter(l => l.postingType === 'Credit')
+      .reduce((sum, l) => sum + l.amount, 0);
+
+    if (totalDebits <= 0 || totalCredits <= 0) {
+      throw quickBooksServiceError(
+        'Journal entries require at least one debit line and one credit line.'
+      );
+    }
+
+    if (Math.round(totalDebits * 100) !== Math.round(totalCredits * 100)) {
+      throw quickBooksServiceError(
+        `Journal entry debits (${totalDebits}) must equal credits (${totalCredits}).`
+      );
+    }
 
     let lines = ctx.input.lines.map(line => {
       let journalLine: any = {
@@ -72,6 +90,7 @@ export let createJournalEntry = SlateTool.create(spec, {
       return journalLine;
     });
 
+    let client = createClientFromContext(ctx);
     let journalEntryData: any = {
       Line: lines
     };
@@ -81,9 +100,6 @@ export let createJournalEntry = SlateTool.create(spec, {
     if (ctx.input.docNumber) journalEntryData.DocNumber = ctx.input.docNumber;
 
     let journalEntry = await client.createJournalEntry(journalEntryData);
-    let totalDebits = ctx.input.lines
-      .filter(l => l.postingType === 'Debit')
-      .reduce((sum, l) => sum + l.amount, 0);
 
     return {
       output: {

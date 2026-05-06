@@ -87,7 +87,10 @@ describe('youtube auth contract', () => {
       scopes: [youtubeScopes.youtubeReadonly]
     });
 
-    expect(callbackResult.scopes).toEqual([youtubeScopes.youtube, youtubeScopes.youtubeForceSsl]);
+    expect(callbackResult.scopes).toEqual([
+      youtubeScopes.youtube,
+      youtubeScopes.youtubeForceSsl
+    ]);
     expect(callbackResult.output).toMatchObject({
       token: 'access-token',
       refreshToken: 'refresh-token'
@@ -128,7 +131,7 @@ describe('youtube auth contract', () => {
           clientSecret: 'client-secret',
           scopes: [youtubeScopes.youtubeReadonly]
         }),
-      { code: 'internal.unexpected', kind: 'internal', status: 500 }
+      { code: 'request.bad', status: 400 }
     );
   });
 

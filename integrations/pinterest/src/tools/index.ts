@@ -13,5 +13,7 @@ export * from './list-campaigns';
 export * from './send-conversions';
 export * from './list-catalogs';
 export * from './get-trends';
+export * from './get-terms';
 export * from './search-pins';
 export * from './manage-audience';
+export * from './save-pin';

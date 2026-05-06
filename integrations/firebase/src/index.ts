@@ -11,7 +11,8 @@ import {
   manageTopicSubscriptions,
   getRemoteConfig,
   updateRemoteConfig,
-  manageStorage
+  manageStorage,
+  getFirebaseApps
 } from './tools';
 import {
   firestoreDocumentChanges,
@@ -33,7 +34,8 @@ export let provider = Slate.create({
     manageTopicSubscriptions,
     getRemoteConfig,
     updateRemoteConfig,
-    manageStorage
+    manageStorage,
+    getFirebaseApps
   ],
   triggers: [inboundWebhook, firestoreDocumentChanges, realtimeDbChanges, userChanges]
 });

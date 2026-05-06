@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DiscordClient } from '../lib/client';
+import { discordServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -154,7 +155,7 @@ export let manageWebhooks = SlateTool.create(spec, {
 
     if (action === 'list_channel') {
       if (!ctx.input.channelId)
-        throw new Error('channelId is required for list_channel action');
+        throw discordServiceError('channelId is required for list_channel action');
 
       let webhooks = await client.getChannelWebhooks(ctx.input.channelId);
       let mapped = webhooks.map(mapWebhook);
@@ -166,7 +167,8 @@ export let manageWebhooks = SlateTool.create(spec, {
     }
 
     if (action === 'list_guild') {
-      if (!ctx.input.guildId) throw new Error('guildId is required for list_guild action');
+      if (!ctx.input.guildId)
+        throw discordServiceError('guildId is required for list_guild action');
 
       let webhooks = await client.getGuildWebhooks(ctx.input.guildId);
       let mapped = webhooks.map(mapWebhook);
@@ -178,8 +180,9 @@ export let manageWebhooks = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.channelId) throw new Error('channelId is required for create action');
-      if (!ctx.input.name) throw new Error('name is required for create action');
+      if (!ctx.input.channelId)
+        throw discordServiceError('channelId is required for create action');
+      if (!ctx.input.name) throw discordServiceError('name is required for create action');
 
       let webhook = await client.createWebhook(ctx.input.channelId, {
         name: ctx.input.name,
@@ -193,7 +196,8 @@ export let manageWebhooks = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.webhookId) throw new Error('webhookId is required for update action');
+      if (!ctx.input.webhookId)
+        throw discordServiceError('webhookId is required for update action');
 
       let data: Record<string, any> = {};
       if (ctx.input.name !== undefined) data.name = ctx.input.name;
@@ -209,7 +213,8 @@ export let manageWebhooks = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.webhookId) throw new Error('webhookId is required for delete action');
+      if (!ctx.input.webhookId)
+        throw discordServiceError('webhookId is required for delete action');
 
       await client.deleteWebhook(ctx.input.webhookId);
 
@@ -220,11 +225,12 @@ export let manageWebhooks = SlateTool.create(spec, {
     }
 
     // action === 'execute'
-    if (!ctx.input.webhookId) throw new Error('webhookId is required for execute action');
+    if (!ctx.input.webhookId)
+      throw discordServiceError('webhookId is required for execute action');
     if (!ctx.input.webhookToken)
-      throw new Error('webhookToken is required for execute action');
+      throw discordServiceError('webhookToken is required for execute action');
     if (!ctx.input.content && !ctx.input.embeds?.length) {
-      throw new Error('content or embeds is required for execute action');
+      throw discordServiceError('content or embeds is required for execute action');
     }
 
     let executeData: Record<string, any> = {};

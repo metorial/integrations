@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { airtableServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -82,14 +83,16 @@ export let manageCommentTool = SlateTool.create(spec, {
       return {
         output: {
           comments: result.comments.map(mapComment),
-          offset: result.offset
+          ...(typeof result.offset === 'string' ? { offset: result.offset } : {})
         },
         message: `Retrieved ${result.comments.length} comment(s) on record **${ctx.input.recordId}**.${result.offset ? ' More comments available.' : ''}`
       };
     }
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.text) throw new Error('text is required to create a comment');
+      if (!ctx.input.text) {
+        throw airtableServiceError('text is required to create a comment');
+      }
 
       let result = await client.createComment(
         ctx.input.tableIdOrName,
@@ -106,8 +109,12 @@ export let manageCommentTool = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.commentId) throw new Error('commentId is required to update a comment');
-      if (!ctx.input.text) throw new Error('text is required to update a comment');
+      if (!ctx.input.commentId) {
+        throw airtableServiceError('commentId is required to update a comment');
+      }
+      if (!ctx.input.text) {
+        throw airtableServiceError('text is required to update a comment');
+      }
 
       let result = await client.updateComment(
         ctx.input.tableIdOrName,
@@ -125,7 +132,9 @@ export let manageCommentTool = SlateTool.create(spec, {
     }
 
     // delete
-    if (!ctx.input.commentId) throw new Error('commentId is required to delete a comment');
+    if (!ctx.input.commentId) {
+      throw airtableServiceError('commentId is required to delete a comment');
+    }
 
     await client.deleteComment(
       ctx.input.tableIdOrName,

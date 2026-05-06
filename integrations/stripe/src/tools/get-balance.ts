@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StripeClient } from '../lib/client';
+import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -97,7 +98,7 @@ export let getBalance = SlateTool.create(spec, {
 
     if (action === 'get_transaction') {
       if (!ctx.input.transactionId)
-        throw new Error('transactionId is required for get_transaction action');
+        throw stripeServiceError('transactionId is required for get_transaction action');
       let txn = await client.getBalanceTransaction(ctx.input.transactionId);
       return {
         output: {

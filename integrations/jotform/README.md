@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/jotform-logo.png" height="20"> Jotform
 
-Create, manage, and collect data through online forms. Build forms programmatically by defining questions, properties, and email notifications. Retrieve, create, update, and delete form submissions with filtering by date, status, or custom fields. Manage form fields/questions, configure form properties, and set up webhooks for submission notifications. Organize forms into folders, generate reports (Excel, CSV, charts), manage sub-user accounts, and download file uploads from submissions. Access user account details and usage statistics.
+Create, manage, and collect data through online forms. Build forms programmatically by defining questions, properties, and email notifications. Retrieve, create, update, and delete form submissions with filtering by date, status, or custom fields. Manage form fields/questions, configure form properties, and set up webhooks for submission notifications. List form folders, generate reports (Excel, CSV, charts), and list uploaded file metadata and download URLs from forms. Access user account details and usage statistics.
 
 ## Tools
 
@@ -48,6 +48,10 @@ List all form folders in the account. Returns folder hierarchy with names, owner
 
 List all forms in the authenticated JotForm account. Supports filtering by status, sorting, and pagination. Use this to browse available forms or find specific forms by title or status.
 
+### List Form Files
+
+List files uploaded through a Jotform form. Returns file metadata and download URLs exposed by the Jotform API.
+
 ### List Reports
 
 List reports across all forms or for a specific form. Reports include Excel, CSV, printable charts, and embeddable HTML tables.
@@ -59,6 +63,10 @@ List form submissions. Can retrieve submissions for a specific form or across al
 ### Manage Webhooks
 
 List, create, or delete webhooks on a JotForm form. Webhooks send HTTP POST notifications to a URL when a form submission is made through the form UI.
+
+### Manage Form Question
+
+List, retrieve, create, update, or delete questions on a Jotform form. Use this when you need field-level control such as renaming a field, changing dropdown options, or adding a new field.
 
 ### Update Form
 

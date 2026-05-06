@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { lambdaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -49,7 +50,7 @@ export let manageTags = SlateTool.create(spec, {
 
     if (action === 'add') {
       if (!ctx.input.tags || Object.keys(ctx.input.tags).length === 0) {
-        throw new Error('tags are required for the add action');
+        throw lambdaServiceError('tags are required for the add action');
       }
       await client.tagResource(resourceArn, ctx.input.tags);
       return {
@@ -60,7 +61,7 @@ export let manageTags = SlateTool.create(spec, {
 
     // remove
     if (!ctx.input.tagKeys || ctx.input.tagKeys.length === 0) {
-      throw new Error('tagKeys are required for the remove action');
+      throw lambdaServiceError('tagKeys are required for the remove action');
     }
     await client.untagResource(resourceArn, ctx.input.tagKeys);
     return {

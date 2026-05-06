@@ -1,9 +1,14 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { facebookApiError } from './lib/errors';
 
 let graphAxios = createAxios({
   baseURL: 'https://graph.facebook.com'
 });
+graphAxios.interceptors.response.use(
+  response => response,
+  error => Promise.reject(facebookApiError(error, 'OAuth request'))
+);
 
 export let auth = SlateAuth.create()
   .output(
@@ -105,11 +110,6 @@ export let auth = SlateAuth.create()
         scope: 'ads_read'
       },
       {
-        title: 'Ads Management',
-        description: 'Create and manage ad campaigns',
-        scope: 'ads_management'
-      },
-      {
         title: 'Business Management',
         description: 'Manage business assets and settings',
         scope: 'business_management'
@@ -131,12 +131,12 @@ export let auth = SlateAuth.create()
       });
 
       return {
-        url: `https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`
+        url: `https://www.facebook.com/v25.0/dialog/oauth?${params.toString()}`
       };
     },
 
     handleCallback: async ctx => {
-      let response = await graphAxios.get('/v21.0/oauth/access_token', {
+      let response = await graphAxios.get('/v25.0/oauth/access_token', {
         params: {
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,

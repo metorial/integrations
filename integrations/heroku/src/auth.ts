@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { herokuApiError, herokuServiceError } from './lib/errors';
 
 let herokuApi = createAxios({
   baseURL: 'https://api.heroku.com'
@@ -8,6 +9,13 @@ let herokuApi = createAxios({
 let herokuIdentity = createAxios({
   baseURL: 'https://id.heroku.com'
 });
+
+for (let axios of [herokuApi, herokuIdentity]) {
+  axios.interceptors.response.use(
+    (response: any) => response,
+    (error: unknown) => Promise.reject(herokuApiError(error))
+  );
+}
 
 export let auth = SlateAuth.create()
   .output(
@@ -90,6 +98,9 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
+      if (!data.access_token) {
+        throw herokuServiceError('Heroku OAuth token response did not include an access token.');
+      }
 
       return {
         output: {
@@ -123,6 +134,11 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
+      if (!data.access_token) {
+        throw herokuServiceError(
+          'Heroku OAuth refresh response did not include an access token.'
+        );
+      }
 
       return {
         output: {
@@ -144,6 +160,9 @@ export let auth = SlateAuth.create()
       });
 
       let account = response.data;
+      if (!account.id || !account.email) {
+        throw herokuServiceError('Heroku profile response did not include account details.');
+      }
 
       return {
         profile: {
@@ -180,6 +199,9 @@ export let auth = SlateAuth.create()
       });
 
       let account = response.data;
+      if (!account.id || !account.email) {
+        throw herokuServiceError('Heroku profile response did not include account details.');
+      }
 
       return {
         profile: {

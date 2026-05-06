@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RedditClient } from '../lib/client';
+import { requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -64,18 +65,20 @@ export let manageWiki = SlateTool.create(spec, {
     }
 
     if (action === 'edit') {
-      await client.editWikiPage(subredditName, pageName!, {
-        content: ctx.input.content!,
+      let page = requireRedditInput(pageName, 'pageName is required for edit action');
+      await client.editWikiPage(subredditName, page, {
+        content: requireRedditInput(ctx.input.content, 'content is required for edit action'),
         reason: ctx.input.reason
       });
       return {
         output: { success: true },
-        message: `Edited wiki page "${pageName}" in r/${subredditName}.`
+        message: `Edited wiki page "${page}" in r/${subredditName}.`
       };
     }
 
     if (action === 'revisions') {
-      let data = await client.getWikiRevisions(subredditName, pageName!, {
+      let page = requireRedditInput(pageName, 'pageName is required for revisions action');
+      let data = await client.getWikiRevisions(subredditName, page, {
         limit: ctx.input.limit ?? 10
       });
       let revisionItems = data?.data ?? [];
@@ -91,12 +94,13 @@ export let manageWiki = SlateTool.create(spec, {
           success: true,
           revisions
         },
-        message: `Found ${revisions.length} revisions for "${pageName}" in r/${subredditName}.`
+        message: `Found ${revisions.length} revisions for "${page}" in r/${subredditName}.`
       };
     }
 
     // read action
-    let data = await client.getWikiPage(subredditName, pageName!);
+    let page = requireRedditInput(pageName, 'pageName is required for read action');
+    let data = await client.getWikiPage(subredditName, page);
     let wikiData = data?.data ?? data;
 
     return {
@@ -109,7 +113,7 @@ export let manageWiki = SlateTool.create(spec, {
           : undefined,
         revisionAuthor: wikiData?.revision_by?.data?.name
       },
-      message: `Retrieved wiki page "${pageName}" from r/${subredditName}.`
+      message: `Retrieved wiki page "${page}" from r/${subredditName}.`
     };
   })
   .build();

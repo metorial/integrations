@@ -7,7 +7,7 @@ export let config = SlateConfig.create(
       .string()
       .optional()
       .describe(
-        'Xero organisation (tenant) ID. Required for multi-tenant apps. If not set, the first connected organisation will be used.'
+        'Xero organisation (tenant) ID. Required for multi-tenant OAuth apps. If not set, the first connected organisation will be used. Custom Connections do not require this value.'
       )
   })
 );

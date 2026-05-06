@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -39,11 +40,11 @@ export let rateVideo = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
 
     if (ctx.input.action === 'rate') {
       if (!ctx.input.rating) {
-        throw new Error('Rating is required when action is "rate"');
+        throw youtubeServiceError('Rating is required when action is "rate"');
       }
       await client.rateVideo(ctx.input.videoId, ctx.input.rating);
       return {

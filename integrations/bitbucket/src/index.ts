@@ -25,7 +25,10 @@ import {
   searchCodeTool,
   listWorkspaceMembersTool,
   manageProjectsTool,
-  createCommitStatusTool
+  createCommitStatusTool,
+  manageWebhooksTool,
+  manageDefaultReviewersTool,
+  manageBranchRestrictionsTool
 } from './tools';
 import {
   repositoryEventsTrigger,
@@ -60,7 +63,10 @@ export let provider = Slate.create({
     searchCodeTool,
     listWorkspaceMembersTool,
     manageProjectsTool,
-    createCommitStatusTool
+    createCommitStatusTool,
+    manageWebhooksTool,
+    manageDefaultReviewersTool,
+    manageBranchRestrictionsTool
   ],
   triggers: [repositoryEventsTrigger, pullRequestEventsTrigger, issueEventsTrigger]
 });

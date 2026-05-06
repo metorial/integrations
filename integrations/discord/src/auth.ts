@@ -1,9 +1,18 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { discordApiError, discordServiceError } from './lib/errors';
 
 let discordApi = createAxios({
   baseURL: 'https://discord.com/api/v10'
 });
+
+let requestDiscordAuth = async <T>(operation: string, request: () => Promise<T>) => {
+  try {
+    return await request();
+  } catch (error) {
+    throw discordApiError(error, operation);
+  }
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -95,11 +104,13 @@ export let auth = SlateAuth.create()
         redirect_uri: ctx.redirectUri
       });
 
-      let response = await discordApi.post('/oauth2/token', params.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
+      let response = await requestDiscordAuth('OAuth token exchange', () =>
+        discordApi.post('/oauth2/token', params.toString(), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+      );
 
       let data = response.data;
 
@@ -119,7 +130,7 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available');
+        throw discordServiceError('No refresh token available');
       }
 
       let params = new URLSearchParams({
@@ -129,11 +140,13 @@ export let auth = SlateAuth.create()
         refresh_token: ctx.output.refreshToken
       });
 
-      let response = await discordApi.post('/oauth2/token', params.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
+      let response = await requestDiscordAuth('OAuth token refresh', () =>
+        discordApi.post('/oauth2/token', params.toString(), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+      );
 
       let data = response.data;
 
@@ -152,11 +165,13 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: any) => {
-      let response = await discordApi.get('/users/@me', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response = await requestDiscordAuth('profile lookup', () =>
+        discordApi.get('/users/@me', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        })
+      );
 
       let user = response.data;
       let avatarUrl = user.avatar
@@ -192,11 +207,13 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: any) => {
-      let response = await discordApi.get('/users/@me', {
-        headers: {
-          Authorization: `Bot ${ctx.output.token}`
-        }
-      });
+      let response = await requestDiscordAuth('bot profile lookup', () =>
+        discordApi.get('/users/@me', {
+          headers: {
+            Authorization: `Bot ${ctx.output.token}`
+          }
+        })
+      );
 
       let user = response.data;
       let avatarUrl = user.avatar

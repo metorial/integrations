@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageDomainsTool = SlateTool.create(spec, {
@@ -50,7 +51,7 @@ export let manageDomainsTool = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let accountId = ctx.input.accountId || ctx.config.accountId;
-    if (!accountId) throw new Error('accountId is required');
+    if (!accountId) throw cloudflareServiceError('accountId is required');
 
     let client = new Client(ctx.auth);
     let { action } = ctx.input;
@@ -72,7 +73,7 @@ export let manageDomainsTool = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.domainName) throw new Error('domainName is required');
+      if (!ctx.input.domainName) throw cloudflareServiceError('domainName is required');
       let response = await client.getDomain(accountId, ctx.input.domainName);
       let d = response.result;
       return {
@@ -92,7 +93,7 @@ export let manageDomainsTool = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.domainName) throw new Error('domainName is required');
+      if (!ctx.input.domainName) throw cloudflareServiceError('domainName is required');
       let response = await client.updateDomain(accountId, ctx.input.domainName, {
         autoRenew: ctx.input.autoRenew,
         locked: ctx.input.locked,
@@ -112,6 +113,6 @@ export let manageDomainsTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

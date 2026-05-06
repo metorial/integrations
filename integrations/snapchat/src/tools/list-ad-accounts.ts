@@ -25,19 +25,35 @@ export let listAdAccounts = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      organizationId: z.string().describe('ID of the organization to list ad accounts for')
+      organizationId: z.string().describe('ID of the organization to list ad accounts for'),
+      limit: z
+        .number()
+        .int()
+        .min(50)
+        .max(1000)
+        .optional()
+        .describe('Maximum number of ad accounts to return, from 50 to 1000'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous nextLink')
     })
   )
   .output(
     z.object({
-      adAccounts: z.array(adAccountSchema).describe('List of ad accounts')
+      adAccounts: z.array(adAccountSchema).describe('List of ad accounts'),
+      nextLink: z
+        .string()
+        .optional()
+        .describe('Pagination URL for the next page, if available')
     })
   )
   .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
-    let accounts = await client.listAdAccounts(ctx.input.organizationId);
+    let result = await client.listAdAccounts(
+      ctx.input.organizationId,
+      ctx.input.limit,
+      ctx.input.cursor
+    );
 
-    let adAccounts = accounts.map((a: any) => ({
+    let adAccounts = result.items.map((a: any) => ({
       adAccountId: a.id,
       name: a.name,
       organizationId: a.organization_id,
@@ -50,7 +66,7 @@ export let listAdAccounts = SlateTool.create(spec, {
     }));
 
     return {
-      output: { adAccounts },
+      output: { adAccounts, nextLink: result.nextLink },
       message: `Found **${adAccounts.length}** ad account(s).`
     };
   })

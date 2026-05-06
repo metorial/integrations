@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ShopifyClient } from '../lib/client';
+import { shopifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -72,7 +73,7 @@ export let manageOrder = SlateTool.create(spec, {
       if (ctx.input.tags !== undefined) updateData.tags = ctx.input.tags;
       order = await client.updateOrder(ctx.input.orderId, updateData);
     } else {
-      throw new Error(`Unknown action: ${ctx.input.action}`);
+      throw shopifyServiceError(`Unknown action: ${ctx.input.action}`);
     }
 
     return {

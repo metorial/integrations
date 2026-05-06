@@ -22,3 +22,6 @@ export {
 export { listViews } from './list-views';
 export { listGroups } from './list-groups';
 export { listHelpCenterCategories } from './list-help-center';
+export { listTicketComments } from './list-ticket-comments';
+export { listTicketFields } from './list-ticket-fields';
+export { listMacros } from './list-macros';

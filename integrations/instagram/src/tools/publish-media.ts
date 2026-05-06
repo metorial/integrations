@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { InstagramClient } from '../lib/client';
+import { instagramServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -14,7 +15,7 @@ export let publishMediaTool = SlateTool.create(spec, {
   ],
   constraints: [
     'Images must be JPEG format, max 8MB. Aspect ratio between 4:5 and 1.91:1.',
-    'Videos must be MP4 or MOV, max 100MB, duration 3-90 seconds for Reels.',
+    'Videos must be MP4 or MOV, max 1GB, duration 3 seconds to 15 minutes for Reels.',
     'Carousel albums require 2-10 items.'
   ]
 })
@@ -35,6 +36,10 @@ export let publishMediaTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Caption for the post. Supports hashtags and mentions.'),
+      altText: z
+        .string()
+        .optional()
+        .describe('Accessibility alt text for image posts. Not supported for Reels or Stories.'),
       locationId: z.string().optional().describe('Facebook Place ID for location tagging'),
       coverUrl: z.string().optional().describe('Custom cover image URL for Reels'),
       shareToFeed: z
@@ -45,8 +50,8 @@ export let publishMediaTool = SlateTool.create(spec, {
         .array(
           z.object({
             username: z.string().describe('Instagram username to tag'),
-            x: z.number().describe('Horizontal position (0.0-1.0)'),
-            y: z.number().describe('Vertical position (0.0-1.0)')
+            x: z.number().min(0).max(1).describe('Horizontal position (0.0-1.0)'),
+            y: z.number().min(0).max(1).describe('Vertical position (0.0-1.0)')
           })
         )
         .optional()
@@ -55,7 +60,11 @@ export let publishMediaTool = SlateTool.create(spec, {
         .array(
           z.object({
             imageUrl: z.string().optional().describe('Image URL for this carousel item'),
-            videoUrl: z.string().optional().describe('Video URL for this carousel item')
+            videoUrl: z.string().optional().describe('Video URL for this carousel item'),
+            altText: z
+              .string()
+              .optional()
+              .describe('Accessibility alt text for image carousel items')
           })
         )
         .optional()
@@ -75,7 +84,8 @@ export let publishMediaTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new InstagramClient({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion
+      apiVersion: ctx.config.apiVersion,
+      apiBaseUrl: ctx.auth.apiBaseUrl
     });
 
     let effectiveUserId = ctx.input.userId || ctx.auth.userId || 'me';
@@ -83,16 +93,31 @@ export let publishMediaTool = SlateTool.create(spec, {
 
     let containerId: string;
 
-    if (mediaType === 'CAROUSEL' && ctx.input.carouselItems) {
+    if (mediaType === 'CAROUSEL') {
+      let carouselItems = ctx.input.carouselItems;
+      if (!carouselItems || carouselItems.length < 2 || carouselItems.length > 10) {
+        throw instagramServiceError('carouselItems must contain 2-10 items for CAROUSEL media');
+      }
+
       ctx.progress('Creating carousel item containers...');
 
       let childIds: string[] = [];
-      for (let item of ctx.input.carouselItems) {
+      for (let item of carouselItems) {
+        if (!item.imageUrl && !item.videoUrl) {
+          throw instagramServiceError('Each carousel item requires either imageUrl or videoUrl');
+        }
+        if (item.imageUrl && item.videoUrl) {
+          throw instagramServiceError(
+            'Each carousel item can include only one of imageUrl or videoUrl'
+          );
+        }
+
         let childContainer = await client.createMediaContainer(effectiveUserId, {
           imageUrl: item.imageUrl,
           videoUrl: item.videoUrl,
+          altText: item.altText,
           isCarouselItem: true,
-          mediaType: item.videoUrl ? 'REELS' : undefined
+          mediaType: item.videoUrl ? 'VIDEO' : 'IMAGE'
         });
         childIds.push(childContainer.id);
 
@@ -111,11 +136,25 @@ export let publishMediaTool = SlateTool.create(spec, {
       });
       containerId = carouselContainer.id;
     } else {
+      if (mediaType === 'IMAGE' && !ctx.input.imageUrl) {
+        throw instagramServiceError('imageUrl is required for IMAGE media');
+      }
+      if (mediaType === 'REELS' && !ctx.input.videoUrl) {
+        throw instagramServiceError('videoUrl is required for REELS media');
+      }
+      if (mediaType === 'STORIES' && !ctx.input.imageUrl && !ctx.input.videoUrl) {
+        throw instagramServiceError('imageUrl or videoUrl is required for STORIES media');
+      }
+      if (ctx.input.imageUrl && ctx.input.videoUrl && mediaType !== 'STORIES') {
+        throw instagramServiceError('Provide only one of imageUrl or videoUrl');
+      }
+
       ctx.progress('Creating media container...');
       let container = await client.createMediaContainer(effectiveUserId, {
         imageUrl: ctx.input.imageUrl,
         videoUrl: ctx.input.videoUrl,
         caption: ctx.input.caption,
+        altText: ctx.input.altText,
         mediaType,
         locationId: ctx.input.locationId,
         userTags: ctx.input.userTags,
@@ -159,9 +198,9 @@ let waitForContainer = async (
     let status = await client.getContainerStatus(containerId);
     if (status.status_code === 'FINISHED') return;
     if (status.status_code === 'ERROR') {
-      throw new Error(`Media container failed: ${status.status || 'Unknown error'}`);
+      throw instagramServiceError(`Media container failed: ${status.status || 'Unknown error'}`);
     }
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
-  throw new Error('Media container processing timed out after 60 seconds');
+  throw instagramServiceError('Media container processing timed out after 60 seconds');
 };

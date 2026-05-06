@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { messengerApiError } from './errors';
 
 export interface ClientConfig {
   token: string;
@@ -20,7 +21,12 @@ export interface TextMessage extends SendMessageOptions {
 export interface AttachmentMessage extends SendMessageOptions {
   attachmentType: 'image' | 'video' | 'audio' | 'file';
   attachmentUrl?: string;
+  attachmentId?: string;
   isReusable?: boolean;
+}
+
+export interface MultiImageMessage extends SendMessageOptions {
+  imageUrls: string[];
 }
 
 export interface QuickReply {
@@ -56,6 +62,7 @@ export interface ReceiptTemplateItem {
 
 export interface MessengerProfileSettings {
   getStartedPayload?: string;
+  accountLinkingUrl?: string;
   greetingTexts?: Array<{ locale: string; text: string }>;
   persistentMenu?: Array<{
     locale: string;
@@ -78,6 +85,12 @@ export interface MessengerProfileSettings {
     payload: string;
   }>;
   whitelistedDomains?: string[];
+}
+
+export interface UploadedAttachment {
+  attachmentId: string;
+  attachmentType: 'image' | 'video' | 'audio' | 'file';
+  reusable: boolean;
 }
 
 export interface UserProfile {
@@ -110,6 +123,15 @@ export class Client {
     });
   }
 
+  private async request<T>(operation: string, run: () => Promise<{ data: T }>): Promise<T> {
+    try {
+      let response = await run();
+      return response.data;
+    } catch (error) {
+      throw messengerApiError(error, operation);
+    }
+  }
+
   // ─── Sending Messages ───────────────────────────────────────
 
   async sendTextMessage(options: TextMessage): Promise<any> {
@@ -135,22 +157,26 @@ export class Client {
       body.tag = options.tag;
     }
 
-    let response = await api.post(`/${this.pageId}/messages`, body);
-    return response.data;
+    return this.request('send text message', () => api.post(`/${this.pageId}/messages`, body));
   }
 
   async sendAttachment(options: AttachmentMessage): Promise<any> {
     let api = this.createApi();
+    let payload: any = options.attachmentId
+      ? {
+          attachment_id: options.attachmentId
+        }
+      : {
+          url: options.attachmentUrl,
+          is_reusable: options.isReusable || false
+        };
 
     let body: any = {
       recipient: { id: options.recipientId },
       message: {
         attachment: {
           type: options.attachmentType,
-          payload: {
-            url: options.attachmentUrl,
-            is_reusable: options.isReusable || false
-          }
+          payload
         }
       },
       messaging_type: options.messagingType || 'RESPONSE'
@@ -160,8 +186,58 @@ export class Client {
       body.tag = options.tag;
     }
 
-    let response = await api.post(`/${this.pageId}/messages`, body);
-    return response.data;
+    return this.request('send attachment', () => api.post(`/${this.pageId}/messages`, body));
+  }
+
+  async sendImageAttachments(options: MultiImageMessage): Promise<any> {
+    let api = this.createApi();
+
+    let body: any = {
+      recipient: { id: options.recipientId },
+      message: {
+        attachments: options.imageUrls.map(url => ({
+          type: 'image',
+          payload: { url }
+        }))
+      },
+      messaging_type: options.messagingType || 'RESPONSE'
+    };
+
+    if (options.tag) {
+      body.tag = options.tag;
+    }
+
+    return this.request('send image attachments', () =>
+      api.post(`/${this.pageId}/messages`, body)
+    );
+  }
+
+  async uploadAttachment(options: {
+    attachmentType: 'image' | 'video' | 'audio' | 'file';
+    attachmentUrl: string;
+    isReusable?: boolean;
+  }): Promise<UploadedAttachment> {
+    let api = this.createApi();
+
+    let response = await this.request<any>('upload attachment', () =>
+      api.post(`/${this.pageId}/message_attachments`, {
+        message: {
+          attachment: {
+            type: options.attachmentType,
+            payload: {
+              url: options.attachmentUrl,
+              is_reusable: options.isReusable ?? true
+            }
+          }
+        }
+      })
+    );
+
+    return {
+      attachmentId: response.attachment_id,
+      attachmentType: options.attachmentType,
+      reusable: options.isReusable ?? true
+    };
   }
 
   // ─── Templates ──────────────────────────────────────────────
@@ -202,8 +278,9 @@ export class Client {
       body.tag = options.tag;
     }
 
-    let response = await api.post(`/${this.pageId}/messages`, body);
-    return response.data;
+    return this.request('send generic template', () =>
+      api.post(`/${this.pageId}/messages`, body)
+    );
   }
 
   async sendButtonTemplate(
@@ -233,8 +310,9 @@ export class Client {
       body.tag = options.tag;
     }
 
-    let response = await api.post(`/${this.pageId}/messages`, body);
-    return response.data;
+    return this.request('send button template', () =>
+      api.post(`/${this.pageId}/messages`, body)
+    );
   }
 
   async sendMediaTemplate(
@@ -279,8 +357,9 @@ export class Client {
       body.tag = options.tag;
     }
 
-    let response = await api.post(`/${this.pageId}/messages`, body);
-    return response.data;
+    return this.request('send media template', () =>
+      api.post(`/${this.pageId}/messages`, body)
+    );
   }
 
   async sendReceiptTemplate(
@@ -344,8 +423,9 @@ export class Client {
       body.tag = options.tag;
     }
 
-    let response = await api.post(`/${this.pageId}/messages`, body);
-    return response.data;
+    return this.request('send receipt template', () =>
+      api.post(`/${this.pageId}/messages`, body)
+    );
   }
 
   private formatButton(btn: ButtonItem): any {
@@ -373,12 +453,12 @@ export class Client {
   ): Promise<any> {
     let api = this.createApi();
 
-    let response = await api.post(`/${this.pageId}/messages`, {
-      recipient: { id: recipientId },
-      sender_action: action
-    });
-
-    return response.data;
+    return this.request('send sender action', () =>
+      api.post(`/${this.pageId}/messages`, {
+        recipient: { id: recipientId },
+        sender_action: action
+      })
+    );
   }
 
   // ─── User Profile ──────────────────────────────────────────
@@ -395,13 +475,13 @@ export class Client {
       'gender'
     ];
 
-    let response = await api.get(`/${recipientId}`, {
-      params: {
-        fields: profileFields.join(',')
-      }
-    });
-
-    let data = response.data as any;
+    let data = await this.request<any>('get user profile', () =>
+      api.get(`/${recipientId}`, {
+        params: {
+          fields: profileFields.join(',')
+        }
+      })
+    );
     return {
       recipientId,
       firstName: data.first_name,
@@ -418,13 +498,15 @@ export class Client {
   async getMessengerProfile(fields: string[]): Promise<any> {
     let api = this.createApi();
 
-    let response = await api.get(`/${this.pageId}/messenger_profile`, {
-      params: {
-        fields: fields.join(',')
-      }
-    });
+    let response = await this.request<any>('get Messenger profile', () =>
+      api.get(`/${this.pageId}/messenger_profile`, {
+        params: {
+          fields: fields.join(',')
+        }
+      })
+    );
 
-    return response.data.data;
+    return response.data;
   }
 
   async setMessengerProfile(settings: MessengerProfileSettings): Promise<any> {
@@ -434,6 +516,10 @@ export class Client {
 
     if (settings.getStartedPayload !== undefined) {
       payload.get_started = { payload: settings.getStartedPayload };
+    }
+
+    if (settings.accountLinkingUrl !== undefined) {
+      payload.account_linking_url = settings.accountLinkingUrl;
     }
 
     if (settings.greetingTexts !== undefined) {
@@ -462,18 +548,19 @@ export class Client {
       payload.whitelisted_domains = settings.whitelistedDomains;
     }
 
-    let response = await api.post(`/${this.pageId}/messenger_profile`, payload);
-    return response.data;
+    return this.request('set Messenger profile', () =>
+      api.post(`/${this.pageId}/messenger_profile`, payload)
+    );
   }
 
   async deleteMessengerProfileFields(fields: string[]): Promise<any> {
     let api = this.createApi();
 
-    let response = await api.delete(`/${this.pageId}/messenger_profile`, {
-      data: { fields }
-    });
-
-    return response.data;
+    return this.request('delete Messenger profile fields', () =>
+      api.delete(`/${this.pageId}/messenger_profile`, {
+        data: { fields }
+      })
+    );
   }
 
   private formatMenuAction(action: any): any {
@@ -513,8 +600,9 @@ export class Client {
       body.metadata = metadata;
     }
 
-    let response = await api.post(`/${this.pageId}/pass_thread_control`, body);
-    return response.data;
+    return this.request('pass thread control', () =>
+      api.post(`/${this.pageId}/pass_thread_control`, body)
+    );
   }
 
   async takeThreadControl(recipientId: string, metadata?: string): Promise<any> {
@@ -528,8 +616,9 @@ export class Client {
       body.metadata = metadata;
     }
 
-    let response = await api.post(`/${this.pageId}/take_thread_control`, body);
-    return response.data;
+    return this.request('take thread control', () =>
+      api.post(`/${this.pageId}/take_thread_control`, body)
+    );
   }
 
   async requestThreadControl(recipientId: string, metadata?: string): Promise<any> {
@@ -543,7 +632,33 @@ export class Client {
       body.metadata = metadata;
     }
 
-    let response = await api.post(`/${this.pageId}/request_thread_control`, body);
-    return response.data;
+    return this.request('request thread control', () =>
+      api.post(`/${this.pageId}/request_thread_control`, body)
+    );
+  }
+
+  async getThreadOwner(recipientId: string): Promise<{ ownerAppId?: string; raw: any }> {
+    let api = this.createApi();
+    let response = await this.request<any>('get thread owner', () =>
+      api.get(`/${this.pageId}/thread_owner`, {
+        params: {
+          recipient: JSON.stringify({ id: recipientId })
+        }
+      })
+    );
+
+    return {
+      ownerAppId: response.data?.[0]?.thread_owner?.app_id,
+      raw: response
+    };
+  }
+
+  async listSecondaryReceivers(): Promise<Array<{ id: string; name?: string }>> {
+    let api = this.createApi();
+    let response = await this.request<any>('list secondary receivers', () =>
+      api.get(`/${this.pageId}/secondary_receivers`)
+    );
+
+    return response.data || [];
   }
 }

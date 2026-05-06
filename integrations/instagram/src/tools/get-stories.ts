@@ -37,7 +37,8 @@ export let getStoriesTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new InstagramClient({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion
+      apiVersion: ctx.config.apiVersion,
+      apiBaseUrl: ctx.auth.apiBaseUrl
     });
 
     let effectiveUserId = ctx.input.userId || ctx.auth.userId || 'me';

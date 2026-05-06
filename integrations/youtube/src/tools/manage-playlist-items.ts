@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -58,10 +59,11 @@ export let managePlaylistItems = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
 
     if (ctx.input.action === 'list') {
-      if (!ctx.input.playlistId) throw new Error('playlistId is required for listing items');
+      if (!ctx.input.playlistId)
+        throw youtubeServiceError('playlistId is required for listing items');
 
       let response = await client.listPlaylistItems({
         part: ['snippet', 'contentDetails', 'status'],
@@ -89,8 +91,8 @@ export let managePlaylistItems = SlateTool.create(spec, {
         message: `Listed **${items.length}** items from playlist.${response.nextPageToken ? ' More pages available.' : ''}`
       };
     } else if (ctx.input.action === 'add') {
-      if (!ctx.input.playlistId) throw new Error('playlistId is required');
-      if (!ctx.input.videoId) throw new Error('videoId is required');
+      if (!ctx.input.playlistId) throw youtubeServiceError('playlistId is required');
+      if (!ctx.input.videoId) throw youtubeServiceError('videoId is required');
 
       let item = await client.addPlaylistItem({
         part: ['snippet'],
@@ -114,9 +116,9 @@ export let managePlaylistItems = SlateTool.create(spec, {
         message: `Added video \`${ctx.input.videoId}\` to playlist at position ${item.snippet?.position ?? 'end'}.`
       };
     } else if (ctx.input.action === 'update') {
-      if (!ctx.input.playlistItemId) throw new Error('playlistItemId is required');
-      if (!ctx.input.playlistId) throw new Error('playlistId is required');
-      if (!ctx.input.videoId) throw new Error('videoId is required');
+      if (!ctx.input.playlistItemId) throw youtubeServiceError('playlistItemId is required');
+      if (!ctx.input.playlistId) throw youtubeServiceError('playlistId is required');
+      if (!ctx.input.videoId) throw youtubeServiceError('videoId is required');
 
       let item = await client.updatePlaylistItem({
         part: ['snippet'],
@@ -140,7 +142,7 @@ export let managePlaylistItems = SlateTool.create(spec, {
         message: `Updated playlist item position to ${item.snippet?.position ?? 'unknown'}.`
       };
     } else {
-      if (!ctx.input.playlistItemId) throw new Error('playlistItemId is required');
+      if (!ctx.input.playlistItemId) throw youtubeServiceError('playlistItemId is required');
 
       await client.deletePlaylistItem(ctx.input.playlistItemId);
 

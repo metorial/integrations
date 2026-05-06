@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { vercelServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -82,7 +83,7 @@ export let manageDnsTool = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.name || !ctx.input.type || !ctx.input.value) {
-        throw new Error('name, type, and value are required for create');
+        throw vercelServiceError('name, type, and value are required for create');
       }
       let result = await client.createDnsRecord(domain, {
         name: ctx.input.name,
@@ -101,7 +102,7 @@ export let manageDnsTool = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.recordId) throw new Error('recordId is required for update');
+      if (!ctx.input.recordId) throw vercelServiceError('recordId is required for update');
       let data: Record<string, any> = {};
       if (ctx.input.name) data.name = ctx.input.name;
       if (ctx.input.type) data.type = ctx.input.type;
@@ -120,7 +121,7 @@ export let manageDnsTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.recordId) throw new Error('recordId is required for delete');
+      if (!ctx.input.recordId) throw vercelServiceError('recordId is required for delete');
       await client.deleteDnsRecord(domain, ctx.input.recordId);
       return {
         output: { success: true },
@@ -128,6 +129,6 @@ export let manageDnsTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw vercelServiceError(`Unknown action: ${action}`);
   })
   .build();

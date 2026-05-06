@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwitterClient } from '../lib/client';
+import { twitterServiceError } from '../lib/errors';
 import { userSchema, mapUser } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -43,25 +44,27 @@ export let manageBlockMute = SlateTool.create(spec, {
     let { action, userId, targetUserId, maxResults, paginationToken } = ctx.input;
 
     if (action === 'block') {
-      if (!targetUserId) throw new Error('targetUserId is required to block a user.');
+      if (!targetUserId) throw twitterServiceError('targetUserId is required to block a user.');
       await client.blockUser(userId, targetUserId);
       return { output: { success: true }, message: `Blocked user ${targetUserId}.` };
     }
 
     if (action === 'unblock') {
-      if (!targetUserId) throw new Error('targetUserId is required to unblock a user.');
+      if (!targetUserId)
+        throw twitterServiceError('targetUserId is required to unblock a user.');
       await client.unblockUser(userId, targetUserId);
       return { output: { success: true }, message: `Unblocked user ${targetUserId}.` };
     }
 
     if (action === 'mute') {
-      if (!targetUserId) throw new Error('targetUserId is required to mute a user.');
+      if (!targetUserId) throw twitterServiceError('targetUserId is required to mute a user.');
       await client.muteUser(userId, targetUserId);
       return { output: { success: true }, message: `Muted user ${targetUserId}.` };
     }
 
     if (action === 'unmute') {
-      if (!targetUserId) throw new Error('targetUserId is required to unmute a user.');
+      if (!targetUserId)
+        throw twitterServiceError('targetUserId is required to unmute a user.');
       await client.unmuteUser(userId, targetUserId);
       return { output: { success: true }, message: `Unmuted user ${targetUserId}.` };
     }
@@ -84,6 +87,6 @@ export let manageBlockMute = SlateTool.create(spec, {
       };
     }
 
-    throw new Error('Invalid action.');
+    throw twitterServiceError('Invalid action.');
   })
   .build();

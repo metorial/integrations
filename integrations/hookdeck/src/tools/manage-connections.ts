@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { hookdeckServiceError, requireHookdeckInput } from '../lib/errors';
 import { z } from 'zod';
 
 let connectionSchema = z.object({
@@ -17,6 +18,7 @@ let connectionSchema = z.object({
     .optional()
     .describe('Connection rules (filter, retry, transform, delay, deduplicate)'),
   pausedAt: z.string().nullable().optional().describe('Timestamp if paused'),
+  disabledAt: z.string().nullable().optional().describe('Timestamp if disabled'),
   createdAt: z.string().describe('Creation timestamp'),
   updatedAt: z.string().describe('Last update timestamp')
 });
@@ -24,7 +26,7 @@ let connectionSchema = z.object({
 export let manageConnections = SlateTool.create(spec, {
   name: 'Manage Connections',
   key: 'manage_connections',
-  description: `Create, update, delete, list, pause, or unpause Hookdeck connections. A connection routes events from a source to a destination, optionally applying rules (filters, retries, transformations, delays, deduplication).`,
+  description: `Create, update, delete, list, enable, disable, pause, or unpause Hookdeck connections. A connection routes events from a source to a destination, optionally applying rules (filters, retries, transformations, delays, deduplication).`,
   instructions: [
     'When creating, provide either sourceId or an inline source object, and either destinationId or an inline destination object.',
     'Rules array supports types: retry, filter, transform, delay, deduplicate. Order in the array determines execution order.',
@@ -38,7 +40,17 @@ export let manageConnections = SlateTool.create(spec, {
   .input(
     z.object({
       action: z
-        .enum(['list', 'get', 'create', 'update', 'delete', 'pause', 'unpause'])
+        .enum([
+          'list',
+          'get',
+          'create',
+          'update',
+          'delete',
+          'enable',
+          'disable',
+          'pause',
+          'unpause'
+        ])
         .describe('Action to perform'),
       connectionId: z
         .string()
@@ -97,6 +109,7 @@ export let manageConnections = SlateTool.create(spec, {
         destinationId: dest.id as string,
         rules: c.rules as Record<string, unknown>[] | undefined,
         pausedAt: (c.paused_at as string | null) ?? null,
+        disabledAt: (c.disabled_at as string | null) ?? null,
         createdAt: c.created_at as string,
         updatedAt: c.updated_at as string
       };
@@ -121,7 +134,8 @@ export let manageConnections = SlateTool.create(spec, {
         };
       }
       case 'get': {
-        let conn = await client.getConnection(ctx.input.connectionId!);
+        let connectionId = requireHookdeckInput(ctx.input.connectionId, 'connectionId', 'get');
+        let conn = await client.getConnection(connectionId);
         return {
           output: { connection: mapConnection(conn) },
           message: `Retrieved connection **${conn.name}** (\`${conn.id}\`).`
@@ -147,6 +161,16 @@ export let manageConnections = SlateTool.create(spec, {
         }
         if (ctx.input.rules) data.rules = ctx.input.rules;
 
+        if (!data.source_id && !data.source) {
+          throw hookdeckServiceError('sourceId or sourceName is required for "create".');
+        }
+
+        if (!data.destination_id && !data.destination) {
+          throw hookdeckServiceError(
+            'destinationId or destinationName is required for "create".'
+          );
+        }
+
         let conn = await client.createConnection(data as any);
         return {
           output: { connection: mapConnection(conn) },
@@ -154,7 +178,12 @@ export let manageConnections = SlateTool.create(spec, {
         };
       }
       case 'update': {
-        let conn = await client.updateConnection(ctx.input.connectionId!, {
+        let connectionId = requireHookdeckInput(
+          ctx.input.connectionId,
+          'connectionId',
+          'update'
+        );
+        let conn = await client.updateConnection(connectionId, {
           name: ctx.input.name,
           description: ctx.input.description,
           rules: ctx.input.rules
@@ -165,21 +194,60 @@ export let manageConnections = SlateTool.create(spec, {
         };
       }
       case 'delete': {
-        let result = await client.deleteConnection(ctx.input.connectionId!);
+        let connectionId = requireHookdeckInput(
+          ctx.input.connectionId,
+          'connectionId',
+          'delete'
+        );
+        let result = await client.deleteConnection(connectionId);
         return {
           output: { deletedId: result.id },
           message: `Deleted connection \`${result.id}\`.`
         };
       }
+      case 'enable': {
+        let connectionId = requireHookdeckInput(
+          ctx.input.connectionId,
+          'connectionId',
+          'enable'
+        );
+        let conn = await client.enableConnection(connectionId);
+        return {
+          output: { connection: mapConnection(conn) },
+          message: `Enabled connection **${conn.name}** (\`${conn.id}\`).`
+        };
+      }
+      case 'disable': {
+        let connectionId = requireHookdeckInput(
+          ctx.input.connectionId,
+          'connectionId',
+          'disable'
+        );
+        let conn = await client.disableConnection(connectionId);
+        return {
+          output: { connection: mapConnection(conn) },
+          message: `Disabled connection **${conn.name}** (\`${conn.id}\`).`
+        };
+      }
       case 'pause': {
-        let conn = await client.pauseConnection(ctx.input.connectionId!);
+        let connectionId = requireHookdeckInput(
+          ctx.input.connectionId,
+          'connectionId',
+          'pause'
+        );
+        let conn = await client.pauseConnection(connectionId);
         return {
           output: { connection: mapConnection(conn) },
           message: `Paused connection **${conn.name}** (\`${conn.id}\`). Events will be queued.`
         };
       }
       case 'unpause': {
-        let conn = await client.unpauseConnection(ctx.input.connectionId!);
+        let connectionId = requireHookdeckInput(
+          ctx.input.connectionId,
+          'connectionId',
+          'unpause'
+        );
+        let conn = await client.unpauseConnection(connectionId);
         return {
           output: { connection: mapConnection(conn) },
           message: `Unpaused connection **${conn.name}** (\`${conn.id}\`). Queued events will begin delivery.`

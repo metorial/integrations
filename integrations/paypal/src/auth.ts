@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { paypalApiError } from './lib/errors';
 
 let getBaseUrl = (environment?: string) =>
   environment === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
@@ -33,12 +34,17 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.input.clientId}:${ctx.input.clientSecret}`);
 
-      let response = await client.post('/v1/oauth2/token', 'grant_type=client_credentials', {
-        headers: {
-          Authorization: `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
+      let response;
+      try {
+        response = await client.post('/v1/oauth2/token', 'grant_type=client_credentials', {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        });
+      } catch (error) {
+        throw paypalApiError(error, 'token exchange');
+      }
 
       let data = response.data as {
         access_token: string;

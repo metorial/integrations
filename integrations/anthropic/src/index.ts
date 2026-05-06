@@ -8,7 +8,9 @@ import {
   manageOrganizationMembers,
   manageWorkspaces,
   manageApiKeys,
-  getOrganization
+  getOrganization,
+  manageFiles,
+  getUsageReport
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,7 +25,9 @@ export let provider = Slate.create({
     manageOrganizationMembers,
     manageWorkspaces,
     manageApiKeys,
-    getOrganization
+    getOrganization,
+    manageFiles,
+    getUsageReport
   ],
   triggers: [inboundWebhook]
 });

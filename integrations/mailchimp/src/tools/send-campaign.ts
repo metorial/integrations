@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MailchimpClient } from '../lib/client';
+import { mailchimpServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -81,6 +82,10 @@ export let sendCampaignTool = SlateTool.create(spec, {
         };
       }
       case 'schedule': {
+        if (!ctx.input.scheduleTime) {
+          throw mailchimpServiceError('scheduleTime is required when action is "schedule".');
+        }
+
         await client.scheduleCampaign(campaignId, ctx.input.scheduleTime!, ctx.input.timewarp);
         return {
           output: { campaignId, action: 'schedule', success: true },
@@ -102,14 +107,18 @@ export let sendCampaignTool = SlateTool.create(spec, {
         };
       }
       case 'test': {
+        if (!ctx.input.testEmails || ctx.input.testEmails.length === 0) {
+          throw mailchimpServiceError('testEmails is required when action is "test".');
+        }
+
         await client.sendTestEmail(
           campaignId,
-          ctx.input.testEmails!,
+          ctx.input.testEmails,
           ctx.input.sendType ?? 'html'
         );
         return {
           output: { campaignId, action: 'test', success: true },
-          message: `Test email sent for campaign **${campaignId}** to ${ctx.input.testEmails!.join(', ')}.`
+          message: `Test email sent for campaign **${campaignId}** to ${ctx.input.testEmails.join(', ')}.`
         };
       }
       case 'replicate': {

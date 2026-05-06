@@ -13,9 +13,11 @@ import {
   manageFollow,
   manageBlockMute,
   sendDirectMessage,
+  deleteDirectMessage,
   getDirectMessages,
   manageList,
-  manageReplyVisibility
+  manageReplyVisibility,
+  uploadMedia
 } from './tools';
 import {
   newMention,
@@ -40,9 +42,11 @@ export let provider = Slate.create({
     manageFollow,
     manageBlockMute,
     sendDirectMessage,
+    deleteDirectMessage,
     getDirectMessages,
     manageList,
-    manageReplyVisibility
+    manageReplyVisibility,
+    uploadMedia
   ],
   triggers: [inboundWebhook, newMention, newPostFromSearch, newFollower, newDirectMessage]
 });

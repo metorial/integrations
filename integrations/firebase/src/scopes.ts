@@ -23,6 +23,7 @@ export let firebaseActionScopes = {
   getRemoteConfig: firestoreOrAdmin,
   updateRemoteConfig: firestoreOrAdmin,
   manageStorage: firestoreOrAdmin,
+  getFirebaseApps: firestoreOrAdmin,
   firestoreDocumentChanges: firestoreOrAdmin,
   realtimeDbChanges: realtimeOrCloud,
   userChanges: firestoreOrAdmin,

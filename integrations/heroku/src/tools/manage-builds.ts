@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { herokuServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -70,7 +71,8 @@ export let manageBuilds = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.buildId) throw new Error('buildId is required for "get" action.');
+      if (!ctx.input.buildId)
+        throw herokuServiceError('buildId is required for "get" action.');
       let build = await client.getBuild(appIdOrName, ctx.input.buildId);
       return {
         output: { builds: [mapBuild(build)] },
@@ -79,7 +81,8 @@ export let manageBuilds = SlateTool.create(spec, {
     }
 
     // create
-    if (!ctx.input.sourceUrl) throw new Error('sourceUrl is required for "create" action.');
+    if (!ctx.input.sourceUrl)
+      throw herokuServiceError('sourceUrl is required for "create" action.');
     let build = await client.createBuild(appIdOrName, {
       sourceUrl: ctx.input.sourceUrl,
       sourceVersion: ctx.input.sourceVersion,

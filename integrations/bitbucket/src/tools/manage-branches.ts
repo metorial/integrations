@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { bitbucketServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -77,7 +78,7 @@ Use action "list" to browse branches, "create" to create a new branch from a tar
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.branchName || !ctx.input.target) {
-        throw new Error('branchName and target are required to create a branch');
+        throw bitbucketServiceError('branchName and target are required to create a branch');
       }
 
       let branch = await client.createBranch(ctx.input.repoSlug, {
@@ -98,7 +99,7 @@ Use action "list" to browse branches, "create" to create a new branch from a tar
 
     // delete
     if (!ctx.input.branchName) {
-      throw new Error('branchName is required to delete a branch');
+      throw bitbucketServiceError('branchName is required to delete a branch');
     }
 
     await client.deleteBranch(ctx.input.repoSlug, ctx.input.branchName);

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StripeClient } from '../lib/client';
+import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -59,7 +60,7 @@ export let createPaymentLink = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.lineItems || ctx.input.lineItems.length === 0) {
-        throw new Error('lineItems are required for create action');
+        throw stripeServiceError('lineItems are required for create action');
       }
 
       let params: Record<string, any> = {
@@ -85,7 +86,7 @@ export let createPaymentLink = SlateTool.create(spec, {
 
     if (action === 'get') {
       if (!ctx.input.paymentLinkId)
-        throw new Error('paymentLinkId is required for get action');
+        throw stripeServiceError('paymentLinkId is required for get action');
       let link = await client.getPaymentLink(ctx.input.paymentLinkId);
       return {
         output: {

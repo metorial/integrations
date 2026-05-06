@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageLoadBalancerTool = SlateTool.create(spec, {
@@ -114,7 +115,7 @@ export let manageLoadBalancerTool = SlateTool.create(spec, {
     let accountId = ctx.input.accountId || ctx.config.accountId;
 
     if (action === 'list') {
-      if (!ctx.input.zoneId) throw new Error('zoneId is required');
+      if (!ctx.input.zoneId) throw cloudflareServiceError('zoneId is required');
       let response = await client.listLoadBalancers(ctx.input.zoneId);
       let loadBalancers = response.result.map((lb: any) => ({
         loadBalancerId: lb.id,
@@ -130,7 +131,7 @@ export let manageLoadBalancerTool = SlateTool.create(spec, {
 
     if (action === 'get') {
       if (!ctx.input.zoneId || !ctx.input.loadBalancerId)
-        throw new Error('zoneId and loadBalancerId are required');
+        throw cloudflareServiceError('zoneId and loadBalancerId are required');
       let response = await client.getLoadBalancer(ctx.input.zoneId, ctx.input.loadBalancerId);
       let lb = response.result;
       return {
@@ -146,7 +147,9 @@ export let manageLoadBalancerTool = SlateTool.create(spec, {
         !ctx.input.fallbackPool ||
         !ctx.input.defaultPools
       ) {
-        throw new Error('zoneId, name, fallbackPool, and defaultPools are required');
+        throw cloudflareServiceError(
+          'zoneId, name, fallbackPool, and defaultPools are required'
+        );
       }
       let response = await client.createLoadBalancer(ctx.input.zoneId, {
         name: ctx.input.name,
@@ -166,7 +169,7 @@ export let manageLoadBalancerTool = SlateTool.create(spec, {
 
     if (action === 'delete') {
       if (!ctx.input.zoneId || !ctx.input.loadBalancerId)
-        throw new Error('zoneId and loadBalancerId are required');
+        throw cloudflareServiceError('zoneId and loadBalancerId are required');
       await client.deleteLoadBalancer(ctx.input.zoneId, ctx.input.loadBalancerId);
       return {
         output: { deleted: true },
@@ -175,7 +178,7 @@ export let manageLoadBalancerTool = SlateTool.create(spec, {
     }
 
     if (action === 'list_pools') {
-      if (!accountId) throw new Error('accountId is required');
+      if (!accountId) throw cloudflareServiceError('accountId is required');
       let response = await client.listPools(accountId);
       let pools = response.result.map((p: any) => ({
         poolId: p.id,
@@ -190,9 +193,9 @@ export let manageLoadBalancerTool = SlateTool.create(spec, {
     }
 
     if (action === 'create_pool') {
-      if (!accountId) throw new Error('accountId is required');
+      if (!accountId) throw cloudflareServiceError('accountId is required');
       if (!ctx.input.name || !ctx.input.origins)
-        throw new Error('name and origins are required');
+        throw cloudflareServiceError('name and origins are required');
       let response = await client.createPool(accountId, {
         name: ctx.input.name,
         origins: ctx.input.origins,
@@ -206,7 +209,7 @@ export let manageLoadBalancerTool = SlateTool.create(spec, {
 
     if (action === 'delete_pool') {
       if (!accountId || !ctx.input.poolId)
-        throw new Error('accountId and poolId are required');
+        throw cloudflareServiceError('accountId and poolId are required');
       await client.deletePool(accountId, ctx.input.poolId);
       return {
         output: { deleted: true },
@@ -215,7 +218,7 @@ export let manageLoadBalancerTool = SlateTool.create(spec, {
     }
 
     if (action === 'list_monitors') {
-      if (!accountId) throw new Error('accountId is required');
+      if (!accountId) throw cloudflareServiceError('accountId is required');
       let response = await client.listMonitors(accountId);
       let monitors = response.result.map((m: any) => ({
         monitorId: m.id,
@@ -229,7 +232,7 @@ export let manageLoadBalancerTool = SlateTool.create(spec, {
     }
 
     if (action === 'create_monitor') {
-      if (!accountId) throw new Error('accountId is required');
+      if (!accountId) throw cloudflareServiceError('accountId is required');
       let response = await client.createMonitor(accountId, {
         type: ctx.input.monitorType,
         description: ctx.input.description,
@@ -242,6 +245,6 @@ export let manageLoadBalancerTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

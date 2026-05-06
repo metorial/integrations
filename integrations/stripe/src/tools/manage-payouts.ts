@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StripeClient } from '../lib/client';
+import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -65,8 +66,8 @@ export let managePayouts = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (ctx.input.amount === undefined)
-        throw new Error('amount is required for create action');
-      if (!ctx.input.currency) throw new Error('currency is required for create action');
+        throw stripeServiceError('amount is required for create action');
+      if (!ctx.input.currency) throw stripeServiceError('currency is required for create action');
 
       let params: Record<string, any> = {
         amount: ctx.input.amount,
@@ -93,7 +94,7 @@ export let managePayouts = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.payoutId) throw new Error('payoutId is required for get action');
+      if (!ctx.input.payoutId) throw stripeServiceError('payoutId is required for get action');
       let payout = await client.getPayout(ctx.input.payoutId);
       return {
         output: {

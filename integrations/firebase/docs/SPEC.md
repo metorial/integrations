@@ -42,6 +42,8 @@ The Firebase Authentication REST API itself uses a Web API Key (found in Firebas
 - Firebase Project ID
 - Service Account Key JSON (for server-to-server auth)
 - Database URL (for Realtime Database, e.g., `https://<DATABASE_NAME>.firebaseio.com`)
+- Firebase Web API key (for Firebase Authentication user creation via the Identity Toolkit REST API)
+- Storage bucket name (optional; used when the default bucket is not `<projectId>.appspot.com`)
 
 ## Features
 
@@ -50,7 +52,6 @@ The Firebase Authentication REST API itself uses a Web API Key (found in Firebas
 The Firebase Admin SDK provides an API for managing your Firebase users with elevated privileges. The admin user management API gives you the ability to programmatically retrieve, create, update, and delete users without requiring a user's existing credentials. It supports authentication using passwords, phone numbers, popular federated identity providers like Google, Facebook and Twitter, and more.
 
 - Create, update, delete, and list user accounts.
-- Generate and verify custom tokens and ID tokens.
 - You may want to implement fine-grained access control for users already signed in. A combination of custom user claims and application security rules provides this capability.
 
 ### Cloud Firestore (Document Database)
@@ -59,7 +60,6 @@ Cloud Firestore is a flexible, scalable database for mobile, web, and server dev
 
 - Create, read, update, and delete documents organized in collections.
 - Run queries with filters, ordering, and compound conditions.
-- Support for transactions and batch writes.
 - All REST API endpoints exist under the base URL `https://firestore.googleapis.com/v1/`.
 - Documents are accessed via paths: `/projects/{PROJECT_ID}/databases/(default)/documents/{collection}/{document}`.
 
@@ -85,8 +85,16 @@ Firebase Cloud Messaging (FCM) is a reliable cross-platform messaging solution.
 
 Cloud Storage stores files such as images, videos, and audio as well as other user-generated content.
 
-- Upload, download, and delete files.
+- Upload, list, fetch metadata and download URLs, copy, and delete files.
 - Managed via the Google Cloud Storage JSON API, authenticated with Firebase credentials.
+
+### Firebase App Management
+
+The Firebase Management REST API exposes project apps and SDK configuration artifacts.
+
+- List Android, iOS, and Web apps associated with a Firebase project.
+- Retrieve an individual app by app ID or resource name.
+- Download SDK configuration artifacts such as `google-services.json`, `GoogleService-Info.plist`, and Web app config metadata.
 
 ### Remote Config
 

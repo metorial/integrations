@@ -1,6 +1,6 @@
-# <img src="https://provider-logos.metorial-cdn.com/twitter.svg" height="20"> Twitterx
+# <img src="https://provider-logos.metorial-cdn.com/twitter.svg" height="20"> Twitter
 
-Create, read, delete, and search posts (tweets) on Twitter/X. Manage user profiles, follows, blocks, and mutes. Send and receive direct messages in one-to-one and group conversations. Access home, user, and mentions timelines. Like, retweet, bookmark, and quote posts. Create and manage curated lists of accounts. Search recent and historical posts using advanced query operators for keywords, hashtags, mentions, dates, and more. Upload images, videos, and GIFs for media attachments. Stream real-time posts matching filtered rules. Access trending topics by location and discover live audio Spaces. Retrieve engagement metrics including impressions, likes, and replies. Receive real-time webhook events for post creation, direct messages, follows, and other account activity.
+Create, read, delete, and search posts (tweets) on Twitter/X. Manage user profiles, follows, blocks, and mutes. Send, read, and delete direct messages in one-to-one and group conversations. Access home, user, and mentions timelines. Like, retweet, bookmark, and quote posts. Create and manage curated lists of accounts. Search recent posts using advanced query operators for keywords, hashtags, mentions, dates, and more. Upload image and subtitle media for post and direct message attachments. Retrieve engagement metrics including impressions, likes, and replies.
 
 ## Tools
 
@@ -11,6 +11,10 @@ Create a new post (tweet) on Twitter/X. Supports plain text posts, replies to ex
 ### Delete Post
 
 Delete an existing post (tweet) on Twitter/X. Only the author of the post can delete it.
+
+### Delete Direct Message
+
+Delete a direct message event for the authenticated user.
 
 ### Get Direct Messages
 
@@ -62,7 +66,11 @@ Search for recent posts on Twitter/X using a query. Supports Twitter's powerful 
 
 ### Send Direct Message
 
-Send a direct message to a user or into an existing conversation. Can also create a new group conversation with an initial message.
+Send a direct message to a user or into an existing conversation. Can also create a new group conversation with an initial message and optionally attach uploaded media.
+
+### Upload Media
+
+Upload image or subtitle media for use in posts and direct messages, or check upload processing status.
 
 ## License
 

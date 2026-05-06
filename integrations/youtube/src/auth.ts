@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { youtubeOAuthError, youtubeServiceError } from './lib/errors';
 import { youtubeScopes } from './scopes';
 
 let googleAxios = createAxios({
@@ -14,6 +15,8 @@ export let auth = SlateAuth.create()
   .output(
     z.object({
       token: z.string(),
+      apiKey: z.string().optional(),
+      authType: z.enum(['oauth', 'apiKey']).optional(),
       refreshToken: z.string().optional(),
       expiresAt: z.string().optional()
     })
@@ -81,21 +84,26 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response = await googleAxios.post(
-        '/token',
-        new URLSearchParams({
-          code: ctx.code,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri,
-          grant_type: 'authorization_code'
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await googleAxios.post(
+          '/token',
+          new URLSearchParams({
+            code: ctx.code,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri,
+            grant_type: 'authorization_code'
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw youtubeOAuthError('callback', error);
+      }
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -107,6 +115,7 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
+          authType: 'oauth',
           refreshToken: data.refresh_token,
           expiresAt
         },
@@ -116,23 +125,28 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available');
+        throw youtubeServiceError('No refresh token available');
       }
 
-      let response = await googleAxios.post(
-        '/token',
-        new URLSearchParams({
-          refresh_token: ctx.output.refreshToken,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          grant_type: 'refresh_token'
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await googleAxios.post(
+          '/token',
+          new URLSearchParams({
+            refresh_token: ctx.output.refreshToken,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            grant_type: 'refresh_token'
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw youtubeOAuthError('refresh', error);
+      }
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -142,6 +156,7 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
+          authType: 'oauth',
           refreshToken: ctx.output.refreshToken,
           expiresAt
         }
@@ -153,11 +168,16 @@ export let auth = SlateAuth.create()
       input: any;
       scopes: string[];
     }) => {
-      let response = await userInfoAxios.get('/oauth2/v2/userinfo', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response;
+      try {
+        response = await userInfoAxios.get('/oauth2/v2/userinfo', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw youtubeOAuthError('profile lookup', error);
+      }
 
       let data = response.data;
 
@@ -183,7 +203,9 @@ export let auth = SlateAuth.create()
     getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey
+          token: ctx.input.apiKey,
+          apiKey: ctx.input.apiKey,
+          authType: 'apiKey'
         }
       };
     }

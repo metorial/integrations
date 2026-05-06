@@ -1,5 +1,6 @@
 import { SlateAuth } from 'slates';
 import { z } from 'zod';
+import { postgresServiceError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -98,23 +99,36 @@ let parseConnectionString = (
   try {
     url = new URL(connStr);
   } catch {
-    throw new Error(
+    throw postgresServiceError(
       'Invalid PostgreSQL connection string format. Expected: postgresql://user:password@host:port/dbname'
+    );
+  }
+
+  if (url.protocol !== 'postgresql:' && url.protocol !== 'postgres:') {
+    throw postgresServiceError(
+      'Invalid PostgreSQL connection string protocol. Use postgresql:// or postgres://.'
     );
   }
 
   let sslModeParam = url.searchParams.get('sslmode') || 'disable';
   let validSslModes = ['disable', 'require', 'verify-ca', 'verify-full'] as const;
-  let sslMode: (typeof validSslModes)[number] = validSslModes.includes(sslModeParam as any)
-    ? (sslModeParam as (typeof validSslModes)[number])
-    : 'disable';
+  if (!validSslModes.includes(sslModeParam as (typeof validSslModes)[number])) {
+    throw postgresServiceError(
+      `Unsupported sslmode "${sslModeParam}". Supported values are disable, require, verify-ca, and verify-full.`
+    );
+  }
+
+  let port = url.port ? parseInt(url.port, 10) : 5432;
+  if (!Number.isInteger(port) || port <= 0 || port > 65535) {
+    throw postgresServiceError('Invalid PostgreSQL port in connection string.');
+  }
 
   return {
     host: url.hostname || 'localhost',
-    port: url.port ? parseInt(url.port, 10) : 5432,
+    port,
     database: url.pathname.replace(/^\//, '') || 'postgres',
     username: decodeURIComponent(url.username || 'postgres'),
     password: decodeURIComponent(url.password || ''),
-    sslMode
+    sslMode: sslModeParam as (typeof validSslModes)[number]
   };
 };

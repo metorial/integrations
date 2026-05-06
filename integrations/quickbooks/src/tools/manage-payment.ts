@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
+import { quickBooksServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 let linkedInvoiceSchema = z.object({
@@ -55,8 +56,6 @@ export let createPayment = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = createClientFromContext(ctx);
-
     let paymentData: any = {
       CustomerRef: { value: ctx.input.customerId },
       TotalAmt: ctx.input.totalAmount
@@ -71,6 +70,25 @@ export let createPayment = SlateTool.create(spec, {
     if (ctx.input.privateNote) paymentData.PrivateNote = ctx.input.privateNote;
 
     if (ctx.input.linkedInvoices && ctx.input.linkedInvoices.length > 0) {
+      let hasMissingLineAmount = ctx.input.linkedInvoices.some(
+        inv => inv.amount === undefined
+      );
+      if (ctx.input.linkedInvoices.length > 1 && hasMissingLineAmount) {
+        throw quickBooksServiceError(
+          'Payments linked to multiple invoices require an amount for each invoice.'
+        );
+      }
+
+      let appliedAmount = ctx.input.linkedInvoices.reduce(
+        (sum, inv) => sum + (inv.amount ?? ctx.input.totalAmount),
+        0
+      );
+      if (Math.round(appliedAmount * 100) !== Math.round(ctx.input.totalAmount * 100)) {
+        throw quickBooksServiceError(
+          `Linked invoice amounts (${appliedAmount}) must equal totalAmount (${ctx.input.totalAmount}).`
+        );
+      }
+
       paymentData.Line = ctx.input.linkedInvoices.map(inv => ({
         Amount: inv.amount ?? ctx.input.totalAmount,
         LinkedTxn: [
@@ -82,6 +100,7 @@ export let createPayment = SlateTool.create(spec, {
       }));
     }
 
+    let client = createClientFromContext(ctx);
     let payment = await client.createPayment(paymentData);
 
     return {

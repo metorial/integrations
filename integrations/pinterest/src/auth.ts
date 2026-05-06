@@ -1,9 +1,15 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { pinterestApiError, pinterestServiceError } from './lib/errors';
 
 let httpClient = createAxios({
   baseURL: 'https://api.pinterest.com/v5'
 });
+
+httpClient.interceptors.response.use(
+  response => response,
+  error => Promise.reject(pinterestApiError(error, 'OAuth request'))
+);
 
 export let auth = SlateAuth.create()
   .output(
@@ -119,7 +125,13 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+      if (!data.access_token) {
+        throw pinterestServiceError('Pinterest OAuth response did not include an access token.');
+      }
+
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
 
       return {
         output: {
@@ -152,7 +164,15 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+      if (!data.access_token) {
+        throw pinterestServiceError(
+          'Pinterest OAuth refresh response did not include an access token.'
+        );
+      }
+
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
 
       return {
         output: {
@@ -171,6 +191,9 @@ export let auth = SlateAuth.create()
       });
 
       let user = response.data;
+      if (!user.username) {
+        throw pinterestServiceError('Pinterest profile response did not include a username.');
+      }
 
       return {
         profile: {

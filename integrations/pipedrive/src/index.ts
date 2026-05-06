@@ -14,11 +14,15 @@ import {
   manageProducts,
   getProducts,
   manageNotes,
+  getNotes,
   managePipelines,
   getPipelines,
   searchPipedrive,
   manageDealProducts,
-  getUsers
+  getUsers,
+  getFields,
+  getActivityTypes,
+  convertLeadToDeal
 } from './tools';
 import {
   dealEvents,
@@ -47,11 +51,15 @@ export let provider = Slate.create({
     manageProducts.build(),
     getProducts.build(),
     manageNotes.build(),
+    getNotes.build(),
     managePipelines.build(),
     getPipelines.build(),
     searchPipedrive.build(),
     manageDealProducts.build(),
-    getUsers.build()
+    getUsers.build(),
+    getFields.build(),
+    getActivityTypes.build(),
+    convertLeadToDeal.build()
   ],
   triggers: [
     dealEvents.build(),

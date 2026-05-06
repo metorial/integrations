@@ -16,6 +16,9 @@ let mediaItemSchema = z.object({
     .describe('ISO 8601 timestamp of when the media was published'),
   likeCount: z.number().optional().describe('Number of likes'),
   commentsCount: z.number().optional().describe('Number of comments'),
+  isCommentEnabled: z.boolean().optional().describe('Whether comments are enabled'),
+  mediaProductType: z.string().optional().describe('Product surface such as FEED, REELS, or STORY'),
+  altText: z.string().optional().describe('Accessibility alt text when available'),
   username: z.string().optional().describe('Username of the media owner'),
   children: z
     .array(
@@ -69,7 +72,8 @@ export let getMediaTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new InstagramClient({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion
+      apiVersion: ctx.config.apiVersion,
+      apiBaseUrl: ctx.auth.apiBaseUrl
     });
 
     if (ctx.input.mediaId) {
@@ -94,6 +98,9 @@ export let getMediaTool = SlateTool.create(spec, {
               timestamp: media.timestamp,
               likeCount: media.like_count,
               commentsCount: media.comments_count,
+              isCommentEnabled: media.is_comment_enabled,
+              mediaProductType: media.media_product_type,
+              altText: media.alt_text,
               username: media.username,
               children
             }
@@ -118,7 +125,10 @@ export let getMediaTool = SlateTool.create(spec, {
       permalink: m.permalink,
       timestamp: m.timestamp,
       likeCount: m.like_count,
-      commentsCount: m.comments_count
+      commentsCount: m.comments_count,
+      isCommentEnabled: m.is_comment_enabled,
+      mediaProductType: m.media_product_type,
+      altText: m.alt_text
     }));
 
     return {
