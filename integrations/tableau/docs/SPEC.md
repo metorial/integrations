@@ -17,7 +17,7 @@ Supported sign-in methods:
 - Connected app JWT
 - Unified access token JWT by setting `isUat: true`
 
-Tableau credentials tokens expire. Tableau Cloud tokens are documented as valid for 120 minutes, while Tableau Server tokens are typically valid for 240 minutes unless the server setting has changed. The integration records a conservative estimated expiration and reports a user-facing `ServiceError` if a stored token is already expired.
+Tableau credentials tokens expire. Tableau Cloud tokens are documented as valid for 120 minutes, while Tableau Server tokens are typically valid for 240 minutes unless the server setting has changed. The integration records a conservative estimated expiration and can refresh PAT and username/password profiles by signing in again with the stored auth input. Non-refreshable auth methods report a user-facing `ServiceError` if a stored token is already expired.
 
 ## Tools
 

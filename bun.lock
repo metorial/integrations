@@ -400,11 +400,11 @@
     },
     "integrations/airtable": {
       "name": "@slates-integrations/airtable",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -593,11 +593,11 @@
     },
     "integrations/anthropic": {
       "name": "@slates-integrations/anthropic",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -906,10 +906,10 @@
     },
     "integrations/attio": {
       "name": "@slates-integrations/attio",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -942,7 +942,7 @@
     },
     "integrations/aws": {
       "name": "@slates-integrations/amazon-web-services",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
         "@aws-sdk/client-cloudwatch": "^3.1043.0",
         "@aws-sdk/client-dynamodb": "^3.1043.0",
@@ -956,7 +956,7 @@
         "@lowerdeck/error": "^1.1.0",
         "@slates/aws-sdk-http-handler": "1.0.0-rc.1",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -989,13 +989,13 @@
     },
     "integrations/aws-lambda": {
       "name": "@slates-integrations/aws-lambda",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
         "@aws-sdk/client-lambda": "^3.1043.0",
         "@lowerdeck/error": "^1.1.0",
         "@slates/aws-sdk-http-handler": "1.0.0-rc.1",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -1004,14 +1004,14 @@
     },
     "integrations/aws-s3": {
       "name": "@slates-integrations/aws-s3",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@aws-sdk/client-s3": "^3.1043.0",
         "@aws-sdk/s3-request-presigner": "^3.1043.0",
         "@lowerdeck/error": "^1.1.0",
         "@slates/aws-sdk-http-handler": "1.0.0-rc.1",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -1093,11 +1093,11 @@
     },
     "integrations/azure-devops": {
       "name": "@slates-integrations/azure-devops",
-      "version": "0.2.0-rc.7",
+      "version": "0.2.0-rc.8",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -1434,11 +1434,11 @@
     },
     "integrations/bitbucket": {
       "name": "@slates-integrations/bitbucket",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -2035,11 +2035,11 @@
     },
     "integrations/calendly": {
       "name": "@slates-integrations/calendly",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -2408,11 +2408,11 @@
     },
     "integrations/clickhouse": {
       "name": "@slates-integrations/clickhouse",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -2517,11 +2517,11 @@
     },
     "integrations/cloudflare": {
       "name": "@slates-integrations/cloudflare",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -2722,11 +2722,11 @@
     },
     "integrations/confluence": {
       "name": "@slates-integrations/confluence",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -3443,11 +3443,11 @@
     },
     "integrations/digital-ocean": {
       "name": "@slates-integrations/digital-ocean",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -3456,11 +3456,11 @@
     },
     "integrations/discord": {
       "name": "@slates-integrations/discord",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -4300,11 +4300,11 @@
     },
     "integrations/excel-online": {
       "name": "@slates-integrations/excel-online",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -4350,11 +4350,11 @@
     },
     "integrations/facebook": {
       "name": "@slates-integrations/facebook",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -4459,10 +4459,10 @@
     },
     "integrations/figma": {
       "name": "@slates-integrations/figma",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -4555,15 +4555,15 @@
     },
     "integrations/firebase": {
       "name": "@slates-integrations/firebase",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -4966,11 +4966,11 @@
     },
     "integrations/gemini": {
       "name": "@slates-integrations/gemini",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -5147,10 +5147,10 @@
     },
     "integrations/github": {
       "name": "@slates-integrations/github",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -5171,11 +5171,11 @@
     },
     "integrations/gitlab": {
       "name": "@slates-integrations/gitlab",
-      "version": "0.2.0-rc.7",
+      "version": "0.2.0-rc.8",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -5232,14 +5232,14 @@
     },
     "integrations/gmail": {
       "name": "@slates-integrations/gmail",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5322,42 +5322,42 @@
     },
     "integrations/google-ads": {
       "name": "@slates-integrations/google-ads",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
     },
     "integrations/google-analytics": {
       "name": "@slates-integrations/google-analytics",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
     },
     "integrations/google-calendar": {
       "name": "@slates-integrations/google-calendar",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5448,70 +5448,71 @@
     },
     "integrations/google-docs": {
       "name": "@slates-integrations/google-docs",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
     },
     "integrations/google-drive": {
       "name": "@slates-integrations/google-drive",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
     },
     "integrations/google-forms": {
       "name": "@slates-integrations/google-forms",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.3",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
     },
     "integrations/google-maps": {
       "name": "@slates-integrations/google-maps",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
     },
     "integrations/google-meet": {
       "name": "@slates-integrations/google-meet",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.5",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5546,14 +5547,14 @@
     },
     "integrations/google-sheets": {
       "name": "@slates-integrations/google-sheets",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5938,11 +5939,11 @@
     },
     "integrations/heroku": {
       "name": "@slates-integrations/heroku",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -6071,11 +6072,11 @@
     },
     "integrations/hookdeck": {
       "name": "@slates-integrations/hookdeck",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -6144,15 +6145,15 @@
     },
     "integrations/hubspot": {
       "name": "@slates-integrations/hubspot",
-      "version": "0.2.0-rc.8",
+      "version": "0.2.0-rc.9",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -6411,11 +6412,11 @@
     },
     "integrations/instagram": {
       "name": "@slates-integrations/instagram",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -6448,11 +6449,11 @@
     },
     "integrations/intercom": {
       "name": "@slates-integrations/intercom",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -6605,11 +6606,11 @@
     },
     "integrations/jira": {
       "name": "@slates-integrations/jira",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -6642,11 +6643,11 @@
     },
     "integrations/jotform": {
       "name": "@slates-integrations/jotform",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -7123,11 +7124,11 @@
     },
     "integrations/linear": {
       "name": "@slates-integrations/linear",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -7148,10 +7149,10 @@
     },
     "integrations/linkedin": {
       "name": "@slates-integrations/linkedin",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -7436,11 +7437,11 @@
     },
     "integrations/mailchimp": {
       "name": "@slates-integrations/mailchimp",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -7689,11 +7690,11 @@
     },
     "integrations/messenger": {
       "name": "@slates-integrations/facebook-messenger",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -7762,11 +7763,11 @@
     },
     "integrations/microsoft-teams": {
       "name": "@slates-integrations/microsoft-teams",
-      "version": "0.2.0-rc.6",
+      "version": "0.2.0-rc.7",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -8172,11 +8173,11 @@
     },
     "integrations/netlify": {
       "name": "@slates-integrations/netlify",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -8341,10 +8342,10 @@
     },
     "integrations/notion": {
       "name": "@slates-integrations/notion",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -8509,11 +8510,11 @@
     },
     "integrations/onedrive": {
       "name": "@slates-integrations/onedrive",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -8585,11 +8586,11 @@
     },
     "integrations/openai": {
       "name": "@slates-integrations/openai",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -8694,11 +8695,11 @@
     },
     "integrations/outlook": {
       "name": "@slates-integrations/microsoft-outlook",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -8924,11 +8925,11 @@
     },
     "integrations/paypal": {
       "name": "@slates-integrations/paypal",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -9177,11 +9178,11 @@
     },
     "integrations/pinterest": {
       "name": "@slates-integrations/pinterest",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -9190,11 +9191,11 @@
     },
     "integrations/pipedrive": {
       "name": "@slates-integrations/pipedrive",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -9407,11 +9408,11 @@
     },
     "integrations/postgresql": {
       "name": "@slates-integrations/postgresql",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -9723,11 +9724,11 @@
     },
     "integrations/quickbooks": {
       "name": "@slates-integrations/quickbooks",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -9880,11 +9881,11 @@
     },
     "integrations/reddit": {
       "name": "@slates-integrations/reddit",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -10349,11 +10350,11 @@
     },
     "integrations/salesforce": {
       "name": "@slates-integrations/salesforce",
-      "version": "0.2.0-rc.7",
+      "version": "0.2.0-rc.8",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -10866,12 +10867,12 @@
     },
     "integrations/sharepoint": {
       "name": "@slates-integrations/sharepoint",
-      "version": "0.2.0-rc.6",
+      "version": "0.2.0-rc.7",
       "dependencies": {
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@lowerdeck/error": "^1.1.0",
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -10916,11 +10917,11 @@
     },
     "integrations/shopify": {
       "name": "@slates-integrations/shopify",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -11157,16 +11158,16 @@
     },
     "integrations/slack": {
       "name": "@slates-integrations/slack",
-      "version": "0.2.0-rc.10",
+      "version": "0.2.0-rc.11",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
-        "@slates/slack-tools": "1.0.0-rc.4",
+        "@slates/slack-tools": "1.0.0-rc.5",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -11233,11 +11234,11 @@
     },
     "integrations/snapchat": {
       "name": "@slates-integrations/snapchat",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -11642,11 +11643,11 @@
     },
     "integrations/stripe": {
       "name": "@slates-integrations/stripe",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -11789,11 +11790,11 @@
     },
     "integrations/svix": {
       "name": "@slates-integrations/svix",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -11838,11 +11839,11 @@
     },
     "integrations/tableau": {
       "name": "@slates-integrations/tableau",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.8",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -11959,10 +11960,10 @@
     },
     "integrations/telegram": {
       "name": "@slates-integrations/telegram",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12115,11 +12116,11 @@
     },
     "integrations/tiktok": {
       "name": "@slates-integrations/tiktok",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12428,11 +12429,11 @@
     },
     "integrations/twilio": {
       "name": "@slates-integrations/twilio",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12477,11 +12478,11 @@
     },
     "integrations/twitter": {
       "name": "@slates-integrations/twitter",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12502,11 +12503,11 @@
     },
     "integrations/typeform": {
       "name": "@slates-integrations/typeform",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12707,11 +12708,11 @@
     },
     "integrations/vercel": {
       "name": "@slates-integrations/vercel",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12960,10 +12961,10 @@
     },
     "integrations/whatsapp": {
       "name": "@slates-integrations/whatsapp-business",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13238,11 +13239,11 @@
     },
     "integrations/xero": {
       "name": "@slates-integrations/xero",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13287,15 +13288,15 @@
     },
     "integrations/youtube": {
       "name": "@slates-integrations/youtube",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -13316,11 +13317,11 @@
     },
     "integrations/zapier": {
       "name": "@slates-integrations/zapier",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13329,11 +13330,11 @@
     },
     "integrations/zendesk": {
       "name": "@slates-integrations/zendesk",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13414,10 +13415,11 @@
     },
     "integrations/zoho": {
       "name": "@slates-integrations/zoho",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.5",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13510,11 +13512,11 @@
     },
     "integrations/zoom": {
       "name": "@slates-integrations/zoom",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
