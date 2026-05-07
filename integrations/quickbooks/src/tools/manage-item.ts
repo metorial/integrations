@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
+import { quickBooksServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 let itemOutputSchema = z.object({
@@ -52,6 +53,20 @@ export let createItem = SlateTool.create(spec, {
   )
   .output(itemOutputSchema)
   .handleInvocation(async ctx => {
+    if (ctx.input.itemType === 'Inventory') {
+      let missing = [
+        ['expenseAccountId', ctx.input.expenseAccountId],
+        ['assetAccountId', ctx.input.assetAccountId],
+        ['quantityOnHand', ctx.input.quantityOnHand]
+      ]
+        .filter(([, value]) => value === undefined || value === '')
+        .map(([field]) => field);
+
+      if (missing.length > 0) {
+        throw quickBooksServiceError(`Inventory items require ${missing.join(', ')}.`);
+      }
+    }
+
     let client = createClientFromContext(ctx);
 
     let itemData: any = {

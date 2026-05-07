@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { bitbucketServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -114,7 +115,9 @@ export let managePipelinesTool = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'get') {
-      if (!ctx.input.pipelineUuid) throw new Error('pipelineUuid is required for get action');
+      if (!ctx.input.pipelineUuid) {
+        throw bitbucketServiceError('pipelineUuid is required for get action');
+      }
 
       let p = await client.getPipeline(ctx.input.repoSlug, ctx.input.pipelineUuid);
 
@@ -196,7 +199,9 @@ export let managePipelinesTool = SlateTool.create(spec, {
     }
 
     // stop
-    if (!ctx.input.pipelineUuid) throw new Error('pipelineUuid is required for stop action');
+    if (!ctx.input.pipelineUuid) {
+      throw bitbucketServiceError('pipelineUuid is required for stop action');
+    }
 
     await client.stopPipeline(ctx.input.repoSlug, ctx.input.pipelineUuid);
 

@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { withFirebaseApiError } from './errors';
 
 let googleAuthAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -86,17 +87,19 @@ export let exchangeJwtForAccessToken = async (
   accessToken: string;
   expiresIn: number;
 }> => {
-  let response = await googleAuthAxios.post(
-    '/token',
-    new URLSearchParams({
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      assertion: jwt
-    }).toString(),
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+  let response = await withFirebaseApiError('service account token exchange', () =>
+    googleAuthAxios.post(
+      '/token',
+      new URLSearchParams({
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: jwt
+      }).toString(),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
-    }
+    )
   );
 
   return {

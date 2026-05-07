@@ -3,7 +3,9 @@ import { spec } from './spec';
 import {
   getSubreddit,
   getPost,
+  getContentInfo,
   searchReddit,
+  listUserContent,
   submitPost,
   managePost,
   submitComment,
@@ -24,7 +26,9 @@ export let provider = Slate.create({
   tools: [
     getSubreddit,
     getPost,
+    getContentInfo,
     searchReddit,
+    listUserContent,
     submitPost,
     managePost,
     submitComment,

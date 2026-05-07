@@ -8,3 +8,5 @@ export { manageTable } from './manage-table';
 export { manageIndexes } from './manage-indexes';
 export { listSchemas } from './list-schemas';
 export { manageRoles } from './manage-roles';
+export { manageSchemas } from './manage-schemas';
+export { manageViews } from './manage-views';

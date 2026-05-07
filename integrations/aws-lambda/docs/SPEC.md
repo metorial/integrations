@@ -38,7 +38,7 @@ Create, update, configure, and delete Lambda functions. You can upload function 
 
 ### Function Invocation
 
-Invoke Lambda functions synchronously (RequestResponse), asynchronously (Event), or with response streaming. Synchronous invocation returns the function result in the response. Asynchronous invocation queues the event and returns immediately. Response streaming allows delivering large payloads incrementally.
+Invoke Lambda functions synchronously (RequestResponse) or asynchronously (Event). Synchronous invocation returns the function result in the response. Asynchronous invocation queues the event and returns immediately.
 
 ### Versions and Aliases
 
@@ -62,11 +62,15 @@ Configure reserved concurrency to guarantee a function always has access to a se
 
 ### Asynchronous Invocation Configuration
 
-Configure how Lambda handles asynchronous invocations, including maximum retry attempts, maximum event age, and destination routing for successful or failed invocations (to SQS, SNS, Lambda, or EventBridge).
+Configure how Lambda handles asynchronous invocations, including maximum retry attempts, maximum event age, and destination routing for successful or failed invocations (to SQS, SNS, Lambda, S3, or EventBridge).
 
-### Code Signing
+### Runtime Management
 
-Create and manage code signing configurations to ensure only trusted code runs in your functions. Associate signing profiles to enforce that deployment packages are signed by approved publishers.
+Control whether Lambda applies runtime patches automatically, only when the function is updated, or through a pinned manual runtime version ARN.
+
+### Recursive Loop Detection
+
+Read and configure Lambda's recursive loop detection behavior. The default `Terminate` mode stops detected recursive invocation loops; `Allow` should be reserved for intentional recursive designs with guardrails.
 
 ### Permissions Management
 

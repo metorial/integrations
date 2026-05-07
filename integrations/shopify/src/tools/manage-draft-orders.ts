@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ShopifyClient } from '../lib/client';
+import { shopifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -132,7 +133,7 @@ Supports:
     }
 
     if (ctx.input.action === 'get') {
-      if (!ctx.input.draftOrderId) throw new Error('draftOrderId is required');
+      if (!ctx.input.draftOrderId) throw shopifyServiceError('draftOrderId is required');
       let d = await client.getDraftOrder(ctx.input.draftOrderId);
       return {
         output: { draftOrder: mapDraftOrder(d) },
@@ -178,7 +179,7 @@ Supports:
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.draftOrderId) throw new Error('draftOrderId is required');
+      if (!ctx.input.draftOrderId) throw shopifyServiceError('draftOrderId is required');
       let data: Record<string, any> = {};
       if (ctx.input.lineItems) {
         data.line_items = ctx.input.lineItems.map(li => {
@@ -202,7 +203,7 @@ Supports:
     }
 
     if (ctx.input.action === 'complete') {
-      if (!ctx.input.draftOrderId) throw new Error('draftOrderId is required');
+      if (!ctx.input.draftOrderId) throw shopifyServiceError('draftOrderId is required');
       let d = await client.completeDraftOrder(
         ctx.input.draftOrderId,
         ctx.input.paymentPending
@@ -214,7 +215,7 @@ Supports:
     }
 
     if (ctx.input.action === 'send_invoice') {
-      if (!ctx.input.draftOrderId) throw new Error('draftOrderId is required');
+      if (!ctx.input.draftOrderId) throw shopifyServiceError('draftOrderId is required');
       let invoiceData: Record<string, any> = {};
       if (ctx.input.invoiceTo) invoiceData.to = ctx.input.invoiceTo;
       if (ctx.input.invoiceSubject) invoiceData.subject = ctx.input.invoiceSubject;
@@ -228,7 +229,7 @@ Supports:
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.draftOrderId) throw new Error('draftOrderId is required');
+      if (!ctx.input.draftOrderId) throw shopifyServiceError('draftOrderId is required');
       await client.deleteDraftOrder(ctx.input.draftOrderId);
       return {
         output: { deleted: true },
@@ -236,6 +237,6 @@ Supports:
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw shopifyServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

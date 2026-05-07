@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { lambdaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -84,7 +85,7 @@ export let manageAlias = SlateTool.create(spec, {
       };
     }
 
-    if (!aliasName) throw new Error('aliasName is required for this action');
+    if (!aliasName) throw lambdaServiceError('aliasName is required for this action');
 
     if (action === 'get') {
       let result = await client.getAlias(functionName, aliasName);
@@ -110,7 +111,7 @@ export let manageAlias = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.functionVersion)
-        throw new Error('functionVersion is required for creating an alias');
+        throw lambdaServiceError('functionVersion is required for creating an alias');
       let params: Record<string, any> = {
         Name: aliasName,
         FunctionVersion: ctx.input.functionVersion

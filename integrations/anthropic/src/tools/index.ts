@@ -6,3 +6,5 @@ export { manageOrganizationMembers } from './manage-organization-members';
 export { manageWorkspaces } from './manage-workspaces';
 export { manageApiKeys } from './manage-api-keys';
 export { getOrganization } from './get-organization';
+export { manageFiles } from './manage-files';
+export { getUsageReport } from './get-usage-report';

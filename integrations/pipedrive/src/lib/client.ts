@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { pipedriveApiError } from './errors';
 
 export interface PipedriveClientConfig {
   token: string;
@@ -17,7 +18,7 @@ export class PipedriveClient {
     this.isApiToken = config.isApiToken ?? false;
   }
 
-  private get http() {
+  private createHttp(apiVersion: 'v1' | 'v2') {
     let headers: Record<string, string> = {};
     if (this.isApiToken) {
       headers['x-api-token'] = this.token;
@@ -25,10 +26,25 @@ export class PipedriveClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
-    return createAxios({
-      baseURL: `https://${this.companyDomain}.pipedrive.com/api/v1`,
+    let http = createAxios({
+      baseURL: `https://${this.companyDomain}.pipedrive.com/api/${apiVersion}`,
       headers
     });
+
+    http.interceptors.response.use(
+      (response: any) => response,
+      (error: unknown) => Promise.reject(pipedriveApiError(error))
+    );
+
+    return http;
+  }
+
+  private get http() {
+    return this.createHttp('v1');
+  }
+
+  private get httpV2() {
+    return this.createHttp('v2');
   }
 
   // ── Deals ──
@@ -140,6 +156,16 @@ export class PipedriveClient {
 
   async deleteLead(leadId: string) {
     let response = await this.http.delete(`/leads/${leadId}`);
+    return response.data;
+  }
+
+  async convertLeadToDeal(leadId: string, data: Record<string, any>) {
+    let response = await this.httpV2.post(`/leads/${leadId}/convert/deal`, data);
+    return response.data;
+  }
+
+  async getLeadConversionStatus(leadId: string, conversionId: string) {
+    let response = await this.httpV2.get(`/leads/${leadId}/convert/status/${conversionId}`);
     return response.data;
   }
 
@@ -360,18 +386,37 @@ export class PipedriveClient {
   async getNotes(params?: {
     start?: number;
     limit?: number;
+    userId?: number;
     dealId?: number;
     personId?: number;
     orgId?: number;
     leadId?: string;
+    sort?: string;
+    startDate?: string;
+    endDate?: string;
+    updatedSince?: string;
+    pinnedToDealFlag?: number;
+    pinnedToPersonFlag?: number;
+    pinnedToOrganizationFlag?: number;
+    pinnedToLeadFlag?: number;
   }) {
     let response = await this.http.get('/notes', {
       params: {
-        ...params,
+        start: params?.start,
+        limit: params?.limit,
+        sort: params?.sort,
+        user_id: params?.userId,
         deal_id: params?.dealId,
         person_id: params?.personId,
         org_id: params?.orgId,
-        lead_id: params?.leadId
+        lead_id: params?.leadId,
+        start_date: params?.startDate,
+        end_date: params?.endDate,
+        updated_since: params?.updatedSince,
+        pinned_to_deal_flag: params?.pinnedToDealFlag,
+        pinned_to_person_flag: params?.pinnedToPersonFlag,
+        pinned_to_organization_flag: params?.pinnedToOrganizationFlag,
+        pinned_to_lead_flag: params?.pinnedToLeadFlag
       }
     });
     return response.data;
@@ -565,29 +610,61 @@ export class PipedriveClient {
 
   // ── Deal Fields ──
 
-  async getDealFields(params?: { start?: number; limit?: number }) {
-    let response = await this.http.get('/dealFields', { params });
+  async getDealFields(params?: { cursor?: string; limit?: number; includeFields?: string }) {
+    let response = await this.httpV2.get('/dealFields', {
+      params: {
+        cursor: params?.cursor,
+        limit: params?.limit,
+        include_fields: params?.includeFields
+      }
+    });
     return response.data;
   }
 
   // ── Person Fields ──
 
-  async getPersonFields(params?: { start?: number; limit?: number }) {
-    let response = await this.http.get('/personFields', { params });
+  async getPersonFields(params?: { cursor?: string; limit?: number; includeFields?: string }) {
+    let response = await this.httpV2.get('/personFields', {
+      params: {
+        cursor: params?.cursor,
+        limit: params?.limit,
+        include_fields: params?.includeFields
+      }
+    });
     return response.data;
   }
 
   // ── Organization Fields ──
 
-  async getOrganizationFields(params?: { start?: number; limit?: number }) {
-    let response = await this.http.get('/organizationFields', { params });
+  async getOrganizationFields(params?: {
+    cursor?: string;
+    limit?: number;
+    includeFields?: string;
+  }) {
+    let response = await this.httpV2.get('/organizationFields', {
+      params: {
+        cursor: params?.cursor,
+        limit: params?.limit,
+        include_fields: params?.includeFields
+      }
+    });
     return response.data;
   }
 
   // ── Product Fields ──
 
-  async getProductFields(params?: { start?: number; limit?: number }) {
-    let response = await this.http.get('/productFields', { params });
+  async getProductFields(params?: {
+    cursor?: string;
+    limit?: number;
+    includeFields?: string;
+  }) {
+    let response = await this.httpV2.get('/productFields', {
+      params: {
+        cursor: params?.cursor,
+        limit: params?.limit,
+        include_fields: params?.includeFields
+      }
+    });
     return response.data;
   }
 }

@@ -12,6 +12,6 @@ export let config = SlateConfig.create(
       .describe(
         'Site content URL identifier (e.g., "my-site"). Leave empty for the default site.'
       ),
-    apiVersion: z.string().default('3.27').describe('Tableau REST API version (e.g., "3.27")')
+    apiVersion: z.string().default('3.28').describe('Tableau REST API version (e.g., "3.28")')
   })
 );

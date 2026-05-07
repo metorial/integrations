@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { shopifyApiError, shopifyServiceError } from './errors';
 
 export class ShopifyClient {
   private http: AxiosInstance;
@@ -8,6 +9,10 @@ export class ShopifyClient {
 
   constructor(config: { token: string; shopDomain: string; apiVersion: string }) {
     this.shopDomain = config.shopDomain.replace('.myshopify.com', '').trim();
+    if (!this.shopDomain) {
+      throw shopifyServiceError('shopDomain is required.');
+    }
+
     this.apiVersion = config.apiVersion;
     this.http = createAxios({
       baseURL: `https://${this.shopDomain}.myshopify.com/admin/api/${this.apiVersion}`,
@@ -16,6 +21,24 @@ export class ShopifyClient {
         'Content-Type': 'application/json'
       }
     });
+
+    this.http.interceptors.response.use(
+      response => response,
+      error => Promise.reject(shopifyApiError(error))
+    );
+  }
+
+  private metafieldsPath(resource: string, resourceId?: string, metafieldId?: string) {
+    if (resource === 'shop') {
+      return metafieldId ? `/metafields/${metafieldId}.json` : '/metafields.json';
+    }
+
+    if (!resourceId) {
+      throw shopifyServiceError('resourceId is required for resource metafields.');
+    }
+
+    let basePath = `/${resource}/${resourceId}/metafields`;
+    return metafieldId ? `${basePath}/${metafieldId}.json` : `${basePath}.json`;
   }
 
   // ---- Products ----
@@ -225,8 +248,12 @@ export class ShopifyClient {
   }
 
   async getCustomer(customerId: string) {
-    let response = await this.http.get(`/customers/${customerId}.json`);
-    return response.data.customer;
+    let customers = await this.listCustomers({ ids: customerId, limit: 1 });
+    let customer = customers[0];
+    if (!customer) {
+      throw shopifyServiceError(`Customer ${customerId} was not found.`);
+    }
+    return customer;
   }
 
   async createCustomer(customer: Record<string, any>) {
@@ -720,27 +747,48 @@ export class ShopifyClient {
 
   async listMetafields(
     resource: string,
-    resourceId: string,
+    resourceId?: string,
     params?: { limit?: number; namespace?: string }
   ) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.namespace) queryParams.namespace = params.namespace;
-    let response = await this.http.get(`/${resource}/${resourceId}/metafields.json`, {
+    let response = await this.http.get(this.metafieldsPath(resource, resourceId), {
       params: queryParams
     });
     return response.data.metafields;
   }
 
-  async createMetafield(resource: string, resourceId: string, metafield: Record<string, any>) {
-    let response = await this.http.post(`/${resource}/${resourceId}/metafields.json`, {
+  async getMetafield(resource: string, resourceId: string | undefined, metafieldId: string) {
+    let response = await this.http.get(this.metafieldsPath(resource, resourceId, metafieldId));
+    return response.data.metafield;
+  }
+
+  async createMetafield(
+    resource: string,
+    resourceId: string | undefined,
+    metafield: Record<string, any>
+  ) {
+    let response = await this.http.post(this.metafieldsPath(resource, resourceId), {
       metafield
     });
     return response.data.metafield;
   }
 
-  async deleteMetafield(resource: string, resourceId: string, metafieldId: string) {
-    await this.http.delete(`/${resource}/${resourceId}/metafields/${metafieldId}.json`);
+  async updateMetafield(
+    resource: string,
+    resourceId: string | undefined,
+    metafieldId: string,
+    metafield: Record<string, any>
+  ) {
+    let response = await this.http.put(this.metafieldsPath(resource, resourceId, metafieldId), {
+      metafield: { id: metafieldId, ...metafield }
+    });
+    return response.data.metafield;
+  }
+
+  async deleteMetafield(resource: string, resourceId: string | undefined, metafieldId: string) {
+    await this.http.delete(this.metafieldsPath(resource, resourceId, metafieldId));
   }
 
   // ---- Pages ----

@@ -23,6 +23,7 @@ export let manageTopicSubscriptions = SlateTool.create(spec, {
       deviceTokens: z
         .array(z.string())
         .min(1)
+        .max(1000)
         .describe('FCM registration tokens of devices to subscribe/unsubscribe')
     })
   )

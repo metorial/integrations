@@ -13,7 +13,11 @@ import {
   getBalance,
   manageCoupons,
   manageDisputes,
-  searchCharges
+  searchCharges,
+  manageSetupIntents,
+  managePaymentMethods,
+  createBillingPortalSession,
+  manageTaxRates
 } from './tools';
 import {
   paymentEvents,
@@ -39,7 +43,11 @@ export let provider = Slate.create({
     getBalance,
     manageCoupons,
     manageDisputes,
-    searchCharges
+    searchCharges,
+    manageSetupIntents,
+    managePaymentMethods,
+    createBillingPortalSession,
+    manageTaxRates
   ],
   triggers: [
     paymentEvents,

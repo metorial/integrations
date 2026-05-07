@@ -15,3 +15,8 @@ export * from './send-message';
 export * from './manage-events';
 export * from './list-admins';
 export * from './create-note';
+export * from './list-teams';
+export * from './get-segments';
+export * from './manage-data-attributes';
+export * from './manage-subscriptions';
+export * from './get-notes';

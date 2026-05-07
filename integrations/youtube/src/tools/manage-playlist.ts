@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -42,11 +43,11 @@ export let managePlaylist = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.title) {
-        throw new Error('Title is required when creating a playlist');
+        throw youtubeServiceError('Title is required when creating a playlist');
       }
       let playlist = await client.createPlaylist({
         part: ['snippet', 'status'],
@@ -68,10 +69,22 @@ export let managePlaylist = SlateTool.create(spec, {
       };
     } else if (ctx.input.action === 'update') {
       if (!ctx.input.playlistId) {
-        throw new Error('Playlist ID is required when updating');
+        throw youtubeServiceError('Playlist ID is required when updating');
+      }
+      if (
+        ctx.input.title === undefined &&
+        ctx.input.description === undefined &&
+        ctx.input.privacyStatus === undefined &&
+        ctx.input.defaultLanguage === undefined
+      ) {
+        throw youtubeServiceError('At least one playlist field to update must be provided');
+      }
+      let parts = ['snippet'];
+      if (ctx.input.privacyStatus !== undefined) {
+        parts.push('status');
       }
       let playlist = await client.updatePlaylist({
-        part: ['snippet', 'status'],
+        part: parts,
         playlistId: ctx.input.playlistId,
         title: ctx.input.title,
         description: ctx.input.description,
@@ -90,7 +103,7 @@ export let managePlaylist = SlateTool.create(spec, {
       };
     } else {
       if (!ctx.input.playlistId) {
-        throw new Error('Playlist ID is required when deleting');
+        throw youtubeServiceError('Playlist ID is required when deleting');
       }
       await client.deletePlaylist(ctx.input.playlistId);
 

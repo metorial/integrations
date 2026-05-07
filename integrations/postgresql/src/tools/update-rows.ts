@@ -6,6 +6,7 @@ import {
   escapeLiteral,
   qualifiedTableName
 } from '../lib/helpers';
+import { postgresServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let updateRows = SlateTool.create(spec, {
@@ -66,7 +67,9 @@ Supports returning updated rows and allows complex WHERE conditions.`,
     });
 
     if (setClauses.length === 0) {
-      throw new Error('At least one column must be specified in the "set" parameter');
+      throw postgresServiceError(
+        'At least one column must be specified in the "set" parameter'
+      );
     }
 
     let sql = `UPDATE ${fullTableName} SET ${setClauses.join(', ')}`;

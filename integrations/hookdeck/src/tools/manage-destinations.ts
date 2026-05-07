@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { requireHookdeckInput } from '../lib/errors';
 import { z } from 'zod';
 
 let destinationSchema = z.object({
@@ -135,15 +136,21 @@ export let manageDestinations = SlateTool.create(spec, {
         };
       }
       case 'get': {
-        let dest = await client.getDestination(ctx.input.destinationId!);
+        let destinationId = requireHookdeckInput(
+          ctx.input.destinationId,
+          'destinationId',
+          'get'
+        );
+        let dest = await client.getDestination(destinationId);
         return {
           output: { destination: mapDestination(dest) },
           message: `Retrieved destination **${dest.name}** (\`${dest.id}\`).`
         };
       }
       case 'create': {
+        let name = requireHookdeckInput(ctx.input.name, 'name', 'create');
         let dest = await client.createDestination({
-          name: ctx.input.name!,
+          name,
           description: ctx.input.description,
           type: ctx.input.type,
           config: buildConfig()
@@ -154,7 +161,12 @@ export let manageDestinations = SlateTool.create(spec, {
         };
       }
       case 'update': {
-        let dest = await client.updateDestination(ctx.input.destinationId!, {
+        let destinationId = requireHookdeckInput(
+          ctx.input.destinationId,
+          'destinationId',
+          'update'
+        );
+        let dest = await client.updateDestination(destinationId, {
           name: ctx.input.name,
           description: ctx.input.description,
           type: ctx.input.type,
@@ -166,21 +178,36 @@ export let manageDestinations = SlateTool.create(spec, {
         };
       }
       case 'delete': {
-        let result = await client.deleteDestination(ctx.input.destinationId!);
+        let destinationId = requireHookdeckInput(
+          ctx.input.destinationId,
+          'destinationId',
+          'delete'
+        );
+        let result = await client.deleteDestination(destinationId);
         return {
           output: { deletedId: result.id },
           message: `Deleted destination \`${result.id}\`.`
         };
       }
       case 'enable': {
-        let dest = await client.enableDestination(ctx.input.destinationId!);
+        let destinationId = requireHookdeckInput(
+          ctx.input.destinationId,
+          'destinationId',
+          'enable'
+        );
+        let dest = await client.enableDestination(destinationId);
         return {
           output: { destination: mapDestination(dest) },
           message: `Enabled destination **${dest.name}** (\`${dest.id}\`).`
         };
       }
       case 'disable': {
-        let dest = await client.disableDestination(ctx.input.destinationId!);
+        let destinationId = requireHookdeckInput(
+          ctx.input.destinationId,
+          'destinationId',
+          'disable'
+        );
+        let dest = await client.disableDestination(destinationId);
         return {
           output: { destination: mapDestination(dest) },
           message: `Disabled destination **${dest.name}** (\`${dest.id}\`).`

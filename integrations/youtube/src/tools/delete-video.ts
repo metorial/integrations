@@ -25,7 +25,7 @@ export let deleteVideo = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
 
     await client.deleteVideo(ctx.input.videoId);
 

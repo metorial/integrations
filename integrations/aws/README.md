@@ -6,11 +6,11 @@ Manage AWS cloud infrastructure and services. Launch, configure, and terminate E
 
 ### Manage CloudWatch
 
-Manage Amazon CloudWatch metrics and alarms. Supports listing and describing alarms, creating or updating metric alarms, deleting alarms, retrieving metric statistics, and listing available metrics. Use this to monitor AWS resources, configure alerting thresholds, and query time-series metric data.
+Manage Amazon CloudWatch metrics and alarms. Supports listing and describing alarms, creating or updating metric alarms, deleting alarms, publishing custom metric data, retrieving metric statistics, and listing available metrics. Use this to monitor AWS resources, configure alerting thresholds, and query time-series metric data.
 
 ### Manage DynamoDB
 
-Manage AWS DynamoDB tables and items. Supports listing, describing, creating, and deleting tables, as well as putting, getting, querying, scanning, and deleting items. Accepts plain JSON objects for items and keys -- automatic conversion to/from DynamoDB attribute format is handled internally.
+Manage AWS DynamoDB tables and items. Supports listing, describing, creating, and deleting tables, as well as putting, getting, updating, querying, scanning, and deleting items. Accepts plain JSON objects for items and keys -- automatic conversion to/from DynamoDB attribute format is handled internally.
 
 ### Manage EC2 Instances
 
@@ -18,7 +18,7 @@ List, start, stop, terminate, or reboot Amazon EC2 instances. Use the list opera
 
 ### Manage IAM
 
-Manage AWS IAM users, roles, and policy attachments. Supports listing, creating, and deleting users; listing and inspecting roles; and attaching or detaching managed policies to users and roles.
+Manage AWS IAM users, roles, and policy attachments. Supports listing, creating, and deleting users; listing, creating, deleting, and inspecting roles; and attaching or detaching managed policies to users and roles.
 
 ### Manage Lambda
 
@@ -30,11 +30,15 @@ Manage Amazon S3 buckets and objects. Supports listing buckets, creating and del
 
 ### Manage SNS
 
-Manage AWS SNS (Simple Notification Service) topics and subscriptions. Supports listing topics, creating and deleting topics, publishing messages, listing subscriptions for a topic, subscribing endpoints (email, SQS, Lambda, HTTP/HTTPS), and unsubscribing. Set the **operation** field to choose the action.
+Manage AWS SNS (Simple Notification Service) topics and subscriptions. Supports listing topics, creating and deleting topics, getting and setting topic attributes, publishing messages, listing subscriptions for a topic, subscribing endpoints (email, SQS, Lambda, HTTP/HTTPS), and unsubscribing. Set the **operation** field to choose the action.
 
 ### Manage SQS
 
-Manage Amazon SQS (Simple Queue Service) queues and messages. Supports listing queues, creating and deleting queues, sending and receiving messages, deleting messages, retrieving queue attributes, and purging all messages from a queue.
+Manage Amazon SQS (Simple Queue Service) queues and messages. Supports listing queues, resolving queue URLs, creating and deleting queues, sending and receiving messages, deleting messages, changing message visibility, retrieving and setting queue attributes, and purging all messages from a queue.
+
+### Manage STS
+
+Inspect the authenticated AWS Security Token Service identity. Use this to confirm which AWS account and principal the configured credentials resolve to before running account-level operations.
 
 ## License
 

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ZoomClient } from '../lib/client';
+import { zoomServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -76,7 +77,7 @@ export let manageMeetingRegistrants = SlateTool.create(spec, {
 
     if (ctx.input.action === 'add') {
       if (!ctx.input.registrant) {
-        throw new Error('Registrant details are required when adding a new registrant');
+        throw zoomServiceError('Registrant details are required when adding a new registrant');
       }
 
       let result = await client.addMeetingRegistrant(ctx.input.meetingId, {

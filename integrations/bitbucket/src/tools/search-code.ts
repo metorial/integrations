@@ -42,8 +42,7 @@ export let searchCodeTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, workspace: ctx.config.workspace });
 
-    // search code is workspace-scoped, but we pass an empty repoSlug since the API endpoint is /workspaces/{workspace}/search/code
-    let result = await client.searchCode('', ctx.input.searchQuery, {
+    let result = await client.searchCode(ctx.input.searchQuery, {
       page: ctx.input.page,
       pageLen: ctx.input.pageLen
     });

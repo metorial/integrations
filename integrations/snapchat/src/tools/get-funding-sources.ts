@@ -29,19 +29,35 @@ export let getFundingSources = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      organizationId: z.string().describe('Organization ID to list funding sources for')
+      organizationId: z.string().describe('Organization ID to list funding sources for'),
+      limit: z
+        .number()
+        .int()
+        .min(50)
+        .max(1000)
+        .optional()
+        .describe('Maximum number of funding sources to return, from 50 to 1000'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous nextLink')
     })
   )
   .output(
     z.object({
-      fundingSources: z.array(fundingSourceSchema).describe('List of funding sources')
+      fundingSources: z.array(fundingSourceSchema).describe('List of funding sources'),
+      nextLink: z
+        .string()
+        .optional()
+        .describe('Pagination URL for the next page, if available')
     })
   )
   .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
-    let results = await client.listFundingSources(ctx.input.organizationId);
+    let result = await client.listFundingSources(
+      ctx.input.organizationId,
+      ctx.input.limit,
+      ctx.input.cursor
+    );
 
-    let fundingSources = results.map((f: any) => ({
+    let fundingSources = result.items.map((f: any) => ({
       fundingSourceId: f.id,
       type: f.type,
       status: f.status,
@@ -55,7 +71,7 @@ export let getFundingSources = SlateTool.create(spec, {
     }));
 
     return {
-      output: { fundingSources },
+      output: { fundingSources, nextLink: result.nextLink },
       message: `Found **${fundingSources.length}** funding source(s).`
     };
   })

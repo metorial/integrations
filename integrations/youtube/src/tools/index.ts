@@ -1,4 +1,5 @@
 export * from './search-content';
+export * from './list-videos';
 export * from './get-video';
 export * from './update-video';
 export * from './delete-video';
@@ -7,6 +8,7 @@ export * from './get-channel';
 export * from './update-channel';
 export * from './manage-playlist';
 export * from './list-playlists';
+export * from './list-metadata';
 export * from './manage-playlist-items';
 export * from './manage-comments';
 export * from './list-comments';

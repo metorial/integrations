@@ -27,9 +27,11 @@ let youtubeWrite = anyOf(
 
 export let youtubeActionScopes = {
   searchContent: youtubeRead,
+  listVideos: youtubeRead,
   getVideo: youtubeRead,
   getChannel: youtubeRead,
   listPlaylists: youtubeRead,
+  listMetadata: youtubeRead,
   listComments: youtubeRead,
   listActivities: youtubeRead,
   listCaptions: anyOf(

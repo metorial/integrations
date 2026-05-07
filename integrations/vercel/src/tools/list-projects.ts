@@ -52,7 +52,8 @@ export let listProjectsTool = SlateTool.create(spec, {
       limit: ctx.input.limit
     });
 
-    let projects = (result.projects || []).map((p: any) => ({
+    let projectItems = Array.isArray(result) ? result : result.projects || [];
+    let projects = projectItems.map((p: any) => ({
       projectId: p.id,
       name: p.name,
       framework: p.framework || null,

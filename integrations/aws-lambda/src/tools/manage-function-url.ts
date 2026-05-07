@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { lambdaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -95,7 +96,7 @@ export let manageFunctionUrl = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.authType)
-        throw new Error('authType is required for creating a function URL');
+        throw lambdaServiceError('authType is required for creating a function URL');
       let result = await client.createFunctionUrlConfig(
         functionName,
         buildParams(),

@@ -40,7 +40,7 @@ export let listEvents = SlateTool.create(spec, {
     z.object({
       eventId: z.string().optional().describe('Get a specific event by ID'),
       status: z
-        .enum(['SUCCESSFUL', 'FAILED', 'PENDING', 'PAUSED'])
+        .enum(['SUCCESSFUL', 'FAILED', 'PENDING', 'PAUSED', 'QUEUED', 'HOLD', 'CANCELLED'])
         .optional()
         .describe('Filter by event status'),
       connectionId: z.string().optional().describe('Filter by connection ID'),
@@ -110,7 +110,7 @@ export let listEvents = SlateTool.create(spec, {
       created_at: createdAt,
       limit: ctx.input.limit,
       next: ctx.input.cursor,
-      orderBy: ctx.input.orderBy,
+      order_by: ctx.input.orderBy,
       dir: ctx.input.dir
     });
 

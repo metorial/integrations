@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { facebookServiceError } from '../lib/errors';
 
 export let managePost = SlateTool.create(spec, {
   name: 'Manage Post',
@@ -43,6 +44,10 @@ For Page posts, provide \`pageId\` so the correct Page access token is used.`,
         output: { success: true, postId: ctx.input.postId },
         message: `Deleted post **${ctx.input.postId}**.`
       };
+    }
+
+    if (!ctx.input.message || ctx.input.message.trim().length === 0) {
+      throw facebookServiceError('message is required for update action');
     }
 
     await client.updatePost(ctx.input.postId, { message: ctx.input.message }, pageAccessToken);

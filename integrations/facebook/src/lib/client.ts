@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { facebookApiError, facebookServiceError } from './errors';
 
 export interface PaginatedResponse<T> {
   data: T[];
@@ -34,6 +35,7 @@ export interface FacebookComment {
   like_count?: number;
   comment_count?: number;
   parent?: { id: string };
+  is_hidden?: boolean;
 }
 
 export interface FacebookPage {
@@ -79,10 +81,14 @@ export class Client {
 
   constructor(config: { token: string; apiVersion?: string }) {
     this.token = config.token;
-    this.apiVersion = config.apiVersion || 'v21.0';
+    this.apiVersion = config.apiVersion || 'v25.0';
     this.axios = createAxios({
       baseURL: `https://graph.facebook.com/${this.apiVersion}`
     });
+    this.axios.interceptors.response.use(
+      response => response,
+      error => Promise.reject(facebookApiError(error))
+    );
   }
 
   private get defaultParams() {
@@ -135,8 +141,8 @@ export class Client {
     let pages = await this.getMyPages('id,access_token');
     let page = pages.find(p => p.id === pageId);
     if (!page || !page.access_token) {
-      throw new Error(
-        `Could not retrieve access token for page ${pageId}. Ensure you have the pages_manage_posts permission and are an admin of this page.`
+      throw facebookServiceError(
+        `Could not retrieve an access token for page ${pageId}. Ensure the authenticated user can manage this Page and has granted the required Page permissions.`
       );
     }
     return page.access_token;
@@ -267,14 +273,21 @@ export class Client {
 
   async getComments(
     objectId: string,
-    options: { limit?: number; after?: string } = {}
+    options: {
+      limit?: number;
+      after?: string;
+      filter?: 'toplevel' | 'stream';
+      order?: 'chronological' | 'reverse_chronological';
+    } = {}
   ): Promise<PaginatedResponse<FacebookComment>> {
     let response = await this.axios.get(`/${objectId}/comments`, {
       params: {
         ...this.defaultParams,
-        fields: 'id,message,created_time,from,like_count,comment_count,parent',
+        fields: 'id,message,created_time,from,like_count,comment_count,parent,is_hidden',
         limit: options.limit || 25,
-        ...(options.after ? { after: options.after } : {})
+        ...(options.after ? { after: options.after } : {}),
+        ...(options.filter ? { filter: options.filter } : {}),
+        ...(options.order ? { order: options.order } : {})
       }
     });
     return response.data;
@@ -343,6 +356,7 @@ export class Client {
     let response = await this.axios.get(`/${objectId}/reactions`, {
       params: {
         ...this.defaultParams,
+        fields: 'id,name,type',
         limit: options.limit || 25,
         ...(options.after ? { after: options.after } : {}),
         ...(options.type ? { type: options.type } : {})
@@ -487,9 +501,7 @@ export class Client {
 
   // ── Ad Campaigns ──────────────────────────────────────
 
-  async getAdAccounts(
-    userId: string = 'me'
-  ): Promise<
+  async getAdAccounts(userId: string = 'me'): Promise<
     Array<{
       id: string;
       name: string;

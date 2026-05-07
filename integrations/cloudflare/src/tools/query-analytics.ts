@@ -35,7 +35,7 @@ export let queryAnalyticsTool = SlateTool.create(spec, {
     return {
       output: {
         data: response.data,
-        errors: response.errors
+        errors: Array.isArray(response.errors) ? response.errors : undefined
       },
       message: response.errors?.length
         ? `Query completed with **${response.errors.length}** error(s).`

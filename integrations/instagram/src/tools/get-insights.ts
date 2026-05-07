@@ -22,7 +22,7 @@ let insightValueSchema = z.object({
 export let getInsightsTool = SlateTool.create(spec, {
   name: 'Get Insights',
   key: 'get_insights',
-  description: `Retrieve analytics and performance insights for an Instagram account or specific media post. Account-level insights include impressions, reach, profile views, and audience demographics. Media-level insights include impressions, reach, engagement, saves, and shares.`,
+  description: `Retrieve analytics and performance insights for an Instagram account or specific media post. Account-level insights include reach, profile views, and audience metrics. Media-level insights include reach, views, saves, likes, comments, and shares.`,
   instructions: [
     'For account insights, provide a `period` (e.g. "day", "week", "days_28", "lifetime").',
     'Use `since` and `until` as ISO date strings to specify a date range for account insights.',
@@ -59,6 +59,14 @@ export let getInsightsTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('End date for account insights (ISO 8601 date string)'),
+      metricType: z
+        .enum(['time_series', 'total_value'])
+        .optional()
+        .describe('Metric type for account insights when required by selected metrics.'),
+      breakdown: z
+        .string()
+        .optional()
+        .describe('Optional account-insight breakdown such as media_product_type.'),
       userId: z
         .string()
         .optional()
@@ -73,18 +81,12 @@ export let getInsightsTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new InstagramClient({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion
+      apiVersion: ctx.config.apiVersion,
+      apiBaseUrl: ctx.auth.apiBaseUrl
     });
 
     if (ctx.input.mediaId) {
-      let defaultMetrics = [
-        'impressions',
-        'reach',
-        'engagement',
-        'saved',
-        'video_views',
-        'shares'
-      ];
+      let defaultMetrics = ['reach', 'saved', 'likes', 'comments', 'shares', 'views'];
       let metrics = ctx.input.metrics || defaultMetrics;
 
       let result = await client.getMediaInsights(ctx.input.mediaId, metrics);
@@ -108,20 +110,16 @@ export let getInsightsTool = SlateTool.create(spec, {
 
     let effectiveUserId = ctx.input.userId || ctx.auth.userId || 'me';
     let period = ctx.input.period || 'day';
-    let defaultMetrics = [
-      'impressions',
-      'reach',
-      'profile_views',
-      'accounts_engaged',
-      'total_interactions'
-    ];
+    let defaultMetrics = ['reach', 'profile_views'];
     let metrics = ctx.input.metrics || defaultMetrics;
 
     let result = await client.getAccountInsights(effectiveUserId, {
       metrics,
       period,
       since: ctx.input.since,
-      until: ctx.input.until
+      until: ctx.input.until,
+      metricType: ctx.input.metricType,
+      breakdown: ctx.input.breakdown
     });
 
     let insights = (result.data || []).map((i: any) => ({

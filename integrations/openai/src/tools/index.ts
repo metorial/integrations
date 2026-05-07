@@ -8,3 +8,4 @@ export * from './manage-fine-tuning';
 export * from './manage-files';
 export * from './manage-vector-stores';
 export * from './manage-batches';
+export * from './manage-audio';

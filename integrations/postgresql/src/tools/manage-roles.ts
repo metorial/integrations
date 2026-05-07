@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
+import { postgresServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageRoles = SlateTool.create(spec, {
@@ -149,7 +150,8 @@ export let manageRoles = SlateTool.create(spec, {
         message: `Found **${roles.length}** role(s).`
       };
     } else if (ctx.input.action === 'create') {
-      if (!ctx.input.roleName) throw new Error('roleName is required for create action');
+      if (!ctx.input.roleName)
+        throw postgresServiceError('roleName is required for create action');
 
       let options: string[] = [];
       if (ctx.input.canLogin) options.push('LOGIN');
@@ -161,15 +163,19 @@ export let manageRoles = SlateTool.create(spec, {
 
       sql = `CREATE ROLE ${escapeIdentifier(ctx.input.roleName)} ${options.join(' ')}`;
     } else if (ctx.input.action === 'drop') {
-      if (!ctx.input.roleName) throw new Error('roleName is required for drop action');
+      if (!ctx.input.roleName)
+        throw postgresServiceError('roleName is required for drop action');
       let ifExists = ctx.input.ifExists ? 'IF EXISTS ' : '';
       sql = `DROP ROLE ${ifExists}${escapeIdentifier(ctx.input.roleName)}`;
     } else if (ctx.input.action === 'grant' || ctx.input.action === 'revoke') {
       if (!ctx.input.privileges?.length)
-        throw new Error('privileges are required for grant/revoke actions');
+        throw postgresServiceError('privileges are required for grant/revoke actions');
       if (!ctx.input.on)
-        throw new Error('on (object specification) is required for grant/revoke actions');
-      if (!ctx.input.grantee) throw new Error('grantee is required for grant/revoke actions');
+        throw postgresServiceError(
+          'on (object specification) is required for grant/revoke actions'
+        );
+      if (!ctx.input.grantee)
+        throw postgresServiceError('grantee is required for grant/revoke actions');
 
       let privs = ctx.input.privileges.join(', ');
       let objectType = ctx.input.on.objectType;
@@ -191,7 +197,7 @@ export let manageRoles = SlateTool.create(spec, {
 
       sql = `${verb} ${privs} ON ${objectType} ${objectName} ${preposition} ${escapeIdentifier(ctx.input.grantee)}`;
     } else {
-      throw new Error(`Unknown action: ${ctx.input.action}`);
+      throw postgresServiceError(`Unknown action: ${ctx.input.action}`);
     }
 
     ctx.info(`Executing: ${sql}`);

@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { stripeApiError, stripeServiceError } from './lib/errors';
 
 let stripeAxios = createAxios({
   baseURL: 'https://api.stripe.com'
@@ -9,10 +10,29 @@ let connectAxios = createAxios({
   baseURL: 'https://connect.stripe.com'
 });
 
+stripeAxios.interceptors.response.use(
+  response => response,
+  error => {
+    throw stripeApiError(error, 'profile request');
+  }
+);
+
+connectAxios.interceptors.response.use(
+  response => response,
+  error => {
+    throw stripeApiError(error, 'OAuth request');
+  }
+);
+
 export let auth = SlateAuth.create()
   .output(
     z.object({
-      token: z.string().describe('Stripe API secret key or OAuth access token')
+      token: z.string().describe('Stripe API secret key or OAuth access token'),
+      refreshToken: z.string().optional().describe('Stripe Connect OAuth refresh token'),
+      connectedAccountId: z
+        .string()
+        .optional()
+        .describe('Connected Stripe account ID returned by OAuth')
     })
   )
   .addTokenAuth({
@@ -93,19 +113,28 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
+      if (!data.access_token) {
+        throw stripeServiceError('Stripe OAuth response did not include an access token.');
+      }
 
       return {
         output: {
-          token: data.access_token
+          token: data.access_token,
+          refreshToken: data.refresh_token,
+          connectedAccountId: data.stripe_user_id
         }
       };
     },
     handleTokenRefresh: async ctx => {
+      if (!ctx.output.refreshToken) {
+        throw stripeServiceError('Stripe OAuth refresh requires a refresh token.');
+      }
+
       let response = await connectAxios.post(
         '/oauth/token',
         new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: ctx.output.token,
+          refresh_token: ctx.output.refreshToken,
           client_secret: ctx.clientSecret
         }).toString(),
         {
@@ -116,14 +145,23 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
+      if (!data.access_token) {
+        throw stripeServiceError('Stripe OAuth refresh response did not include an access token.');
+      }
 
       return {
         output: {
-          token: data.access_token
+          token: data.access_token,
+          refreshToken: data.refresh_token || ctx.output.refreshToken,
+          connectedAccountId: data.stripe_user_id || ctx.output.connectedAccountId
         }
       };
     },
-    getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; connectedAccountId?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await stripeAxios.get('/v1/account', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`

@@ -1,5 +1,50 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { digitalOceanApiError, digitalOceanValidationError } from './lib/errors';
+
+let buildExpiresAt = (expiresIn: unknown) =>
+  typeof expiresIn === 'number'
+    ? new Date(Date.now() + expiresIn * 1000).toISOString()
+    : undefined;
+
+let oauthOutputFromGrant = (data: any) => {
+  if (!data?.access_token) {
+    throw digitalOceanValidationError(
+      'DigitalOcean OAuth response did not include an access token.'
+    );
+  }
+
+  return {
+    token: data.access_token,
+    refreshToken: data.refresh_token,
+    expiresAt: buildExpiresAt(data.expires_in)
+  };
+};
+
+let getProfileFromToken = async (token: string) => {
+  let axios = createAxios({
+    baseURL: 'https://api.digitalocean.com/v2',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  try {
+    let response = await axios.get('/account');
+    let account = response.data.account;
+
+    return {
+      profile: {
+        id: account.uuid,
+        email: account.email,
+        name: account.name || account.email,
+        team: account.team?.name
+      }
+    };
+  } catch (error) {
+    throw digitalOceanApiError(error, 'get account profile');
+  }
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -44,78 +89,63 @@ export let auth = SlateAuth.create()
     handleCallback: async ctx => {
       let axios = createAxios();
 
-      let response = await axios.post('https://cloud.digitalocean.com/v1/oauth/token', {
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri
-      });
+      try {
+        let response = await axios.post(
+          'https://cloud.digitalocean.com/v1/oauth/token',
+          null,
+          {
+            params: {
+              grant_type: 'authorization_code',
+              code: ctx.code,
+              client_id: ctx.clientId,
+              client_secret: ctx.clientSecret,
+              redirect_uri: ctx.redirectUri
+            }
+          }
+        );
 
-      let data = response.data;
-
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
-
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt
-        }
-      };
+        return {
+          output: oauthOutputFromGrant(response.data)
+        };
+      } catch (error) {
+        throw digitalOceanApiError(error, 'exchange OAuth code');
+      }
     },
 
     handleTokenRefresh: async ctx => {
+      if (!ctx.output.refreshToken) {
+        throw digitalOceanValidationError(
+          'DigitalOcean OAuth refresh requires a refresh token.'
+        );
+      }
+
       let axios = createAxios();
 
-      let response = await axios.post('https://cloud.digitalocean.com/v1/oauth/token', {
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret
-      });
+      try {
+        let response = await axios.post(
+          'https://cloud.digitalocean.com/v1/oauth/refresh',
+          null,
+          {
+            params: {
+              grant_type: 'refresh_token',
+              refresh_token: ctx.output.refreshToken
+            }
+          }
+        );
 
-      let data = response.data;
-
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
-
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt
-        }
-      };
+        return {
+          output: oauthOutputFromGrant(response.data)
+        };
+      } catch (error) {
+        throw digitalOceanApiError(error, 'refresh OAuth token');
+      }
     },
 
     getProfile: async (ctx: {
       output: { token: string; refreshToken?: string; expiresAt?: string };
       input: {};
       scopes: string[];
-    }) => {
-      let axios = createAxios({
-        baseURL: 'https://api.digitalocean.com/v2',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
-
-      let response = await axios.get('/account');
-      let account = response.data.account;
-
-      return {
-        profile: {
-          id: account.uuid,
-          email: account.email,
-          name: account.name || account.email,
-          team: account.team?.name
-        }
-      };
-    }
+    }) => getProfileFromToken(ctx.output.token)
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -137,24 +167,5 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: {
       output: { token: string; refreshToken?: string; expiresAt?: string };
       input: { token: string };
-    }) => {
-      let axios = createAxios({
-        baseURL: 'https://api.digitalocean.com/v2',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
-
-      let response = await axios.get('/account');
-      let account = response.data.account;
-
-      return {
-        profile: {
-          id: account.uuid,
-          email: account.email,
-          name: account.name || account.email,
-          team: account.team?.name
-        }
-      };
-    }
+    }) => getProfileFromToken(ctx.output.token)
   });

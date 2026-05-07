@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { tableauServiceError } from '../lib/errors';
 
 export let manageUsers = SlateTool.create(spec, {
   name: 'Manage Users',
@@ -91,7 +92,9 @@ export let manageUsers = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      let u = await client.getUser(ctx.input.userId!);
+      if (!ctx.input.userId) throw tableauServiceError('userId is required for get action.');
+
+      let u = await client.getUser(ctx.input.userId);
       return {
         output: {
           user: {
@@ -109,9 +112,14 @@ export let manageUsers = SlateTool.create(spec, {
     }
 
     if (action === 'add') {
+      if (!ctx.input.username)
+        throw tableauServiceError('username is required for add action.');
+      if (!ctx.input.siteRole)
+        throw tableauServiceError('siteRole is required for add action.');
+
       let u = await client.addUser(
-        ctx.input.username!,
-        ctx.input.siteRole!,
+        ctx.input.username,
+        ctx.input.siteRole,
         ctx.input.authSetting
       );
       return {
@@ -128,7 +136,18 @@ export let manageUsers = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      let u = await client.updateUser(ctx.input.userId!, {
+      if (!ctx.input.userId)
+        throw tableauServiceError('userId is required for update action.');
+      if (
+        ctx.input.fullName === undefined &&
+        ctx.input.email === undefined &&
+        ctx.input.siteRole === undefined &&
+        ctx.input.authSetting === undefined
+      ) {
+        throw tableauServiceError('Provide at least one field to update a user.');
+      }
+
+      let u = await client.updateUser(ctx.input.userId, {
         fullName: ctx.input.fullName,
         email: ctx.input.email,
         siteRole: ctx.input.siteRole,
@@ -150,13 +169,16 @@ export let manageUsers = SlateTool.create(spec, {
     }
 
     if (action === 'remove') {
-      await client.removeUser(ctx.input.userId!);
+      if (!ctx.input.userId)
+        throw tableauServiceError('userId is required for remove action.');
+
+      await client.removeUser(ctx.input.userId);
       return {
         output: { removed: true },
         message: `Removed user \`${ctx.input.userId}\` from the site.`
       };
     }
 
-    return { output: {}, message: `Unknown action: ${action}` };
+    throw tableauServiceError(`Unknown action: ${action}`);
   })
   .build();

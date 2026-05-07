@@ -1,6 +1,16 @@
 # <img src="logo.svg" height="20"> Gemini
 
-Generate text, chat responses, and structured outputs using Google's multimodal Gemini AI models. Process and understand mixed inputs including text, images, audio, video, and PDF documents. Generate images via Imagen and native models, generate videos via Veo, and create music with granular creative controls. Execute Python code within the model environment. Produce text, image, video, and audio embeddings for semantic search and classification. Upload and manage files for use in prompts. Fine-tune models with custom training data. Use built-in tools including Google Search grounding, URL context fetching, and computer use automation. Cache context for repeated use across requests. Count tokens before sending requests. Stream real-time voice and video interactions via the Live API over WebSockets. Call external functions and chain multiple tool invocations to fulfill complex requests.
+Use Google's Gemini Developer API to generate text, process multimodal prompts, create images, generate embeddings, count tokens, upload and manage files, inspect model metadata, and manage explicit context caches.
+
+Supported workflows include:
+
+- Text generation with system instructions, safety settings, structured JSON output, thinking controls, code execution, Google Search grounding, and URL Context.
+- Multimodal prompts with inline data or uploaded File API references.
+- Image generation through native Gemini image models and Imagen models.
+- Text embeddings with single and batch inputs.
+- File API upload, list, get, and delete operations.
+- Cached content create, list, get, update, and delete operations.
+- Model list/get metadata and token counting.
 
 ## License
 

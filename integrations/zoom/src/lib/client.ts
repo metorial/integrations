@@ -1,8 +1,14 @@
 import { createAxios } from 'slates';
+import { zoomApiError } from './errors';
 
 let api = createAxios({
   baseURL: 'https://api.zoom.us/v2'
 });
+
+api.interceptors.response.use(
+  response => response,
+  error => Promise.reject(zoomApiError(error))
+);
 
 export interface PaginatedResponse<T> {
   page_count?: number;
@@ -162,6 +168,14 @@ export class ZoomClient {
     return response.data;
   }
 
+  async getMeetingInvitation(meetingId: number | string) {
+    let response = await api.get(
+      `/meetings/${encodeURIComponent(String(meetingId))}/invitation`,
+      { headers: this.headers }
+    );
+    return response.data;
+  }
+
   async listMeetingRegistrants(
     meetingId: number | string,
     params?: {
@@ -228,8 +242,20 @@ export class ZoomClient {
     return response.data;
   }
 
-  async getWebinar(webinarId: number | string) {
-    let response = await api.get(`/webinars/${webinarId}`, { headers: this.headers });
+  async getWebinar(
+    webinarId: number | string,
+    params?: { occurrenceId?: string; showPreviousOccurrences?: boolean }
+  ) {
+    let query = new URLSearchParams();
+    if (params?.occurrenceId) query.set('occurrence_id', params.occurrenceId);
+    if (params?.showPreviousOccurrences !== undefined) {
+      query.set('show_previous_occurrences', String(params.showPreviousOccurrences));
+    }
+
+    let response = await api.get(
+      `/webinars/${encodeURIComponent(String(webinarId))}?${query.toString()}`,
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -242,15 +268,38 @@ export class ZoomClient {
     return response.data;
   }
 
-  async updateWebinar(webinarId: number | string, webinarData: Record<string, any>) {
-    let response = await api.patch(`/webinars/${webinarId}`, webinarData, {
-      headers: this.headers
-    });
+  async updateWebinar(
+    webinarId: number | string,
+    webinarData: Record<string, any>,
+    params?: { occurrenceId?: string }
+  ) {
+    let query = new URLSearchParams();
+    if (params?.occurrenceId) query.set('occurrence_id', params.occurrenceId);
+
+    let response = await api.patch(
+      `/webinars/${encodeURIComponent(String(webinarId))}?${query.toString()}`,
+      webinarData,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
-  async deleteWebinar(webinarId: number | string) {
-    let response = await api.delete(`/webinars/${webinarId}`, { headers: this.headers });
+  async deleteWebinar(
+    webinarId: number | string,
+    params?: { occurrenceId?: string; cancelWebinarReminder?: boolean }
+  ) {
+    let query = new URLSearchParams();
+    if (params?.occurrenceId) query.set('occurrence_id', params.occurrenceId);
+    if (params?.cancelWebinarReminder !== undefined) {
+      query.set('cancel_webinar_reminder', String(params.cancelWebinarReminder));
+    }
+
+    let response = await api.delete(
+      `/webinars/${encodeURIComponent(String(webinarId))}?${query.toString()}`,
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -390,19 +439,49 @@ export class ZoomClient {
       toChannel?: string;
       toContact?: string;
       date?: string;
+      from?: string;
+      to?: string;
       pageSize?: number;
       nextPageToken?: string;
+      includeDeletedAndEditedMessage?: boolean;
     }
   ) {
     let query = new URLSearchParams();
     if (params.toChannel) query.set('to_channel', params.toChannel);
     if (params.toContact) query.set('to_contact', params.toContact);
     if (params.date) query.set('date', params.date);
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
     if (params.pageSize) query.set('page_size', String(params.pageSize));
     if (params.nextPageToken) query.set('next_page_token', params.nextPageToken);
+    if (params.includeDeletedAndEditedMessage !== undefined) {
+      query.set(
+        'include_deleted_and_edited_message',
+        String(params.includeDeletedAndEditedMessage)
+      );
+    }
 
     let response = await api.get(
       `/chat/users/${encodeURIComponent(userId)}/messages?${query.toString()}`,
+      { headers: this.headers }
+    );
+    return response.data;
+  }
+
+  async getChatMessage(
+    messageId: string,
+    userId: string,
+    params: {
+      toChannel?: string;
+      toContact?: string;
+    }
+  ) {
+    let query = new URLSearchParams();
+    if (params.toChannel) query.set('to_channel', params.toChannel);
+    if (params.toContact) query.set('to_contact', params.toContact);
+
+    let response = await api.get(
+      `/chat/users/${encodeURIComponent(userId)}/messages/${encodeURIComponent(messageId)}?${query.toString()}`,
       { headers: this.headers }
     );
     return response.data;
@@ -568,22 +647,58 @@ export class ZoomClient {
 
   // ─── Meeting Polls ───────────────────────────────────────
 
-  async listMeetingPolls(meetingId: number | string) {
-    let response = await api.get(`/meetings/${meetingId}/polls`, { headers: this.headers });
+  async listMeetingPolls(meetingId: number | string, params?: { anonymous?: boolean }) {
+    let query = new URLSearchParams();
+    if (params?.anonymous !== undefined) query.set('anonymous', String(params.anonymous));
+
+    let response = await api.get(
+      `/meetings/${encodeURIComponent(String(meetingId))}/polls?${query.toString()}`,
+      { headers: this.headers }
+    );
+    return response.data;
+  }
+
+  async getMeetingPoll(meetingId: number | string, pollId: number | string) {
+    let response = await api.get(
+      `/meetings/${encodeURIComponent(String(meetingId))}/polls/${encodeURIComponent(String(pollId))}`,
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async createMeetingPoll(meetingId: number | string, pollData: Record<string, any>) {
-    let response = await api.post(`/meetings/${meetingId}/polls`, pollData, {
-      headers: this.headers
-    });
+    let response = await api.post(
+      `/meetings/${encodeURIComponent(String(meetingId))}/polls`,
+      pollData,
+      {
+        headers: this.headers
+      }
+    );
+    return response.data;
+  }
+
+  async updateMeetingPoll(
+    meetingId: number | string,
+    pollId: number | string,
+    pollData: Record<string, any>
+  ) {
+    let response = await api.put(
+      `/meetings/${encodeURIComponent(String(meetingId))}/polls/${encodeURIComponent(String(pollId))}`,
+      pollData,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async deleteMeetingPoll(meetingId: number | string, pollId: number | string) {
-    let response = await api.delete(`/meetings/${meetingId}/polls/${pollId}`, {
-      headers: this.headers
-    });
+    let response = await api.delete(
+      `/meetings/${encodeURIComponent(String(meetingId))}/polls/${encodeURIComponent(String(pollId))}`,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 }

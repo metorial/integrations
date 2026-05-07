@@ -7,15 +7,20 @@ import type {
   HerokuAddonAttachment,
   HerokuRelease,
   HerokuBuild,
+  HerokuBuildpackInstallation,
   HerokuDomain,
   HerokuCollaborator,
   HerokuPipeline,
   HerokuPipelineCoupling,
+  HerokuPipelinePromotion,
+  HerokuPipelinePromotionTarget,
   HerokuLogDrain,
+  HerokuLogSession,
   HerokuSniEndpoint,
   HerokuWebhook,
   HerokuAccount
 } from './types';
+import { herokuApiError } from './errors';
 
 let HEROKU_HEADERS = {
   Accept: 'application/vnd.heroku+json; version=3',
@@ -63,7 +68,7 @@ let mapFormation = (data: any): HerokuFormation => ({
   command: data.command || '',
   type: data.type || '',
   quantity: data.quantity || 0,
-  size: data.size || '',
+  size: data.dyno_size?.name || data.size || '',
   createdAt: data.created_at || '',
   updatedAt: data.updated_at || ''
 });
@@ -122,6 +127,12 @@ let mapBuild = (data: any): HerokuBuild => ({
   slugId: data.slug?.id || null
 });
 
+let mapBuildpackInstallation = (data: any): HerokuBuildpackInstallation => ({
+  ordinal: data.ordinal ?? 0,
+  buildpackName: data.buildpack?.name || '',
+  buildpackUrl: data.buildpack?.url || ''
+});
+
 let mapDomain = (data: any): HerokuDomain => ({
   domainId: data.id,
   appName: data.app?.name || '',
@@ -162,11 +173,37 @@ let mapPipelineCoupling = (data: any): HerokuPipelineCoupling => ({
   updatedAt: data.updated_at || ''
 });
 
+let mapPipelinePromotion = (data: any): HerokuPipelinePromotion => ({
+  promotionId: data.id,
+  pipelineId: data.pipeline?.id || '',
+  sourceAppId: data.source?.app?.id || '',
+  sourceReleaseId: data.source?.release?.id || '',
+  status: data.status || '',
+  createdAt: data.created_at || '',
+  updatedAt: data.updated_at || null
+});
+
+let mapPipelinePromotionTarget = (data: any): HerokuPipelinePromotionTarget => ({
+  targetId: data.id,
+  appId: data.app?.id || '',
+  promotionId: data.pipeline_promotion?.id || '',
+  releaseId: data.release?.id || null,
+  status: data.status || '',
+  errorMessage: data.error_message || null
+});
+
 let mapLogDrain = (data: any): HerokuLogDrain => ({
   drainId: data.id,
   appName: data.app?.name || '',
   url: data.url || '',
   token: data.token || '',
+  createdAt: data.created_at || '',
+  updatedAt: data.updated_at || ''
+});
+
+let mapLogSession = (data: any): HerokuLogSession => ({
+  logSessionId: data.id,
+  logplexUrl: data.logplex_url || '',
   createdAt: data.created_at || '',
   updatedAt: data.updated_at || ''
 });
@@ -213,6 +250,11 @@ export class Client {
         ...HEROKU_HEADERS
       }
     });
+
+    this.axios.interceptors.response.use(
+      (response: any) => response,
+      (error: unknown) => Promise.reject(herokuApiError(error))
+    );
   }
 
   // ============ Account ============
@@ -335,7 +377,7 @@ export class Client {
   ): Promise<HerokuFormation> {
     let body: any = {};
     if (params.quantity !== undefined) body.quantity = params.quantity;
-    if (params.size !== undefined) body.size = params.size;
+    if (params.size !== undefined) body.dyno_size = { name: params.size };
 
     let response = await this.axios.patch(
       `/apps/${encodeURIComponent(appIdOrName)}/formation/${encodeURIComponent(processType)}`,
@@ -356,7 +398,7 @@ export class Client {
       updates: updates.map(u => {
         let entry: any = { type: u.type };
         if (u.quantity !== undefined) entry.quantity = u.quantity;
-        if (u.size !== undefined) entry.size = u.size;
+        if (u.size !== undefined) entry.dyno_size = { name: u.size };
         return entry;
       })
     };
@@ -511,6 +553,30 @@ export class Client {
       body
     );
     return mapBuild(response.data);
+  }
+
+  // ============ Buildpack Installations ============
+
+  async listBuildpackInstallations(
+    appIdOrName: string
+  ): Promise<HerokuBuildpackInstallation[]> {
+    let response = await this.axios.get(
+      `/apps/${encodeURIComponent(appIdOrName)}/buildpack-installations`
+    );
+    return (response.data as any[]).map(mapBuildpackInstallation);
+  }
+
+  async updateBuildpackInstallations(
+    appIdOrName: string,
+    buildpacks: string[]
+  ): Promise<HerokuBuildpackInstallation[]> {
+    let response = await this.axios.put(
+      `/apps/${encodeURIComponent(appIdOrName)}/buildpack-installations`,
+      {
+        updates: buildpacks.map(buildpack => ({ buildpack }))
+      }
+    );
+    return (response.data as any[]).map(mapBuildpackInstallation);
   }
 
   // ============ Releases ============
@@ -672,6 +738,39 @@ export class Client {
     await this.axios.delete(`/pipeline-couplings/${encodeURIComponent(couplingId)}`);
   }
 
+  async createPipelinePromotion(params: {
+    pipelineId: string;
+    sourceAppId: string;
+    sourceReleaseId: string;
+    targetAppIds: string[];
+  }): Promise<HerokuPipelinePromotion> {
+    let response = await this.axios.post('/pipeline-promotions', {
+      pipeline: { id: params.pipelineId },
+      source: {
+        app: { id: params.sourceAppId },
+        release: { id: params.sourceReleaseId }
+      },
+      targets: params.targetAppIds.map(appId => ({ app: { id: appId } }))
+    });
+    return mapPipelinePromotion(response.data);
+  }
+
+  async getPipelinePromotion(promotionId: string): Promise<HerokuPipelinePromotion> {
+    let response = await this.axios.get(
+      `/pipeline-promotions/${encodeURIComponent(promotionId)}`
+    );
+    return mapPipelinePromotion(response.data);
+  }
+
+  async listPipelinePromotionTargets(
+    promotionId: string
+  ): Promise<HerokuPipelinePromotionTarget[]> {
+    let response = await this.axios.get(
+      `/pipeline-promotions/${encodeURIComponent(promotionId)}/promotion-targets`
+    );
+    return (response.data as any[]).map(mapPipelinePromotionTarget);
+  }
+
   // ============ Log Drains ============
 
   async listLogDrains(appIdOrName: string): Promise<HerokuLogDrain[]> {
@@ -691,6 +790,32 @@ export class Client {
     await this.axios.delete(
       `/apps/${encodeURIComponent(appIdOrName)}/log-drains/${encodeURIComponent(drainIdOrUrl)}`
     );
+  }
+
+  // ============ Log Sessions ============
+
+  async createLogSession(
+    appIdOrName: string,
+    params: {
+      dynoName?: string;
+      lines?: number;
+      source?: string;
+      tail?: boolean;
+      type?: string;
+    }
+  ): Promise<HerokuLogSession> {
+    let body: any = {};
+    if (params.dynoName) body.dyno_name = params.dynoName;
+    if (params.lines !== undefined) body.lines = params.lines;
+    if (params.source) body.source = params.source;
+    if (params.tail !== undefined) body.tail = params.tail;
+    if (params.type) body.type = params.type;
+
+    let response = await this.axios.post(
+      `/apps/${encodeURIComponent(appIdOrName)}/log-sessions`,
+      body
+    );
+    return mapLogSession(response.data);
   }
 
   // ============ SNI Endpoints ============

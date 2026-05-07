@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TypeformClient } from '../lib/client';
+import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -63,7 +64,10 @@ export let manageWebhook = SlateTool.create(spec, {
     });
 
     // Delete
-    if (ctx.input.delete && ctx.input.tag) {
+    if (ctx.input.delete) {
+      if (!ctx.input.tag) {
+        throw typeformServiceError('tag is required when deleting a webhook.');
+      }
       await client.deleteWebhook(ctx.input.formId, ctx.input.tag);
       return {
         output: {
@@ -76,7 +80,19 @@ export let manageWebhook = SlateTool.create(spec, {
     }
 
     // Create/Update
-    if (ctx.input.tag && ctx.input.url) {
+    if (
+      ctx.input.url ||
+      ctx.input.enabled !== undefined ||
+      ctx.input.secret ||
+      ctx.input.verifySsl !== undefined ||
+      ctx.input.partialResponses !== undefined
+    ) {
+      if (!ctx.input.tag || !ctx.input.url) {
+        throw typeformServiceError(
+          'formId, tag, and url are required to create or update a webhook.'
+        );
+      }
+
       let eventTypes: Record<string, boolean> | undefined;
       if (ctx.input.partialResponses !== undefined) {
         eventTypes = { form_response_partial: ctx.input.partialResponses };

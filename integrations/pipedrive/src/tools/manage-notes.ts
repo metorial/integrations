@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { pipedriveServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -51,7 +52,8 @@ Notes support HTML content and can be pinned to the top of the entity's detail v
     let client = createClient(ctx);
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.noteId) throw new Error('noteId is required for delete action');
+      if (!ctx.input.noteId)
+        throw pipedriveServiceError('noteId is required for delete action');
       await client.deleteNote(ctx.input.noteId);
       return {
         output: { noteId: ctx.input.noteId, deleted: true },
@@ -78,7 +80,8 @@ Notes support HTML content and can be pinned to the top of the entity's detail v
     if (ctx.input.action === 'create') {
       result = await client.createNote(body);
     } else {
-      if (!ctx.input.noteId) throw new Error('noteId is required for update action');
+      if (!ctx.input.noteId)
+        throw pipedriveServiceError('noteId is required for update action');
       result = await client.updateNote(ctx.input.noteId, body);
     }
 

@@ -17,13 +17,22 @@ let messageSchema = z.object({
     .describe('Message content')
 });
 
-let toolDefinitionSchema = z
+let clientToolDefinitionSchema = z
   .object({
     name: z.string().describe('Tool name'),
     description: z.string().optional().describe('Tool description'),
     inputSchema: z.record(z.string(), z.unknown()).describe('JSON Schema for tool input')
   })
-  .describe('Tool definition');
+  .passthrough()
+  .describe('Client tool definition using inputSchema');
+
+let rawToolDefinitionSchema = z
+  .record(z.string(), z.unknown())
+  .describe(
+    'Raw Anthropic tool definition, such as { name, input_schema } or server tools like web_search/code_execution'
+  );
+
+let toolDefinitionSchema = z.union([clientToolDefinitionSchema, rawToolDefinitionSchema]);
 
 let toolChoiceSchema = z
   .record(z.string(), z.unknown())
@@ -78,9 +87,22 @@ Provide a conversation history as messages and configure model parameters to con
       tools: z
         .array(toolDefinitionSchema)
         .optional()
-        .describe('Tool definitions for function calling'),
+        .describe('Client tool or raw Anthropic tool definitions for function calling'),
       toolChoice: toolChoiceSchema,
-      thinking: thinkingSchema
+      thinking: thinkingSchema,
+      metadata: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Request metadata object passed to Anthropic'),
+      mcpServers: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Remote MCP server definitions for the Messages API'),
+      serviceTier: z.string().optional().describe('Anthropic service_tier request option'),
+      betaHeaders: z
+        .array(z.string())
+        .optional()
+        .describe('Anthropic beta headers to send with this request')
     })
   )
   .output(
@@ -110,11 +132,17 @@ Provide a conversation history as messages and configure model parameters to con
       apiVersion: ctx.config.apiVersion
     });
 
-    let tools = ctx.input.tools?.map(t => ({
-      name: t.name,
-      description: t.description,
-      input_schema: t.inputSchema
-    }));
+    let tools = ctx.input.tools?.map(tool => {
+      let rawTool = tool as Record<string, unknown>;
+      if (rawTool.inputSchema !== undefined) {
+        let { inputSchema, ...rest } = rawTool;
+        return {
+          ...rest,
+          input_schema: inputSchema
+        };
+      }
+      return rawTool;
+    });
 
     let messages = ctx.input.messages as Array<{
       role: 'user' | 'assistant';
@@ -131,7 +159,11 @@ Provide a conversation history as messages and configure model parameters to con
       stopSequences: ctx.input.stopSequences,
       tools,
       toolChoice: ctx.input.toolChoice,
-      thinking: ctx.input.thinking
+      thinking: ctx.input.thinking,
+      metadata: ctx.input.metadata,
+      mcpServers: ctx.input.mcpServers,
+      serviceTier: ctx.input.serviceTier,
+      betaHeaders: ctx.input.betaHeaders
     });
 
     let usage = result.usage as Record<string, number> | undefined;
@@ -144,6 +176,8 @@ Provide a conversation history as messages and configure model parameters to con
 
     let summary =
       textContent.length > 200 ? textContent.substring(0, 200) + '...' : textContent;
+    let stopSequence =
+      typeof result.stop_sequence === 'string' ? result.stop_sequence : undefined;
 
     return {
       output: {
@@ -152,7 +186,7 @@ Provide a conversation history as messages and configure model parameters to con
         content,
         model: result.model as string,
         stopReason: result.stop_reason as string,
-        stopSequence: result.stop_sequence as string | undefined,
+        stopSequence,
         inputTokens: usage?.input_tokens ?? 0,
         outputTokens: usage?.output_tokens ?? 0
       },

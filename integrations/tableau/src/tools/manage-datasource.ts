@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { tableauServiceError } from '../lib/errors';
 
 export let manageDatasource = SlateTool.create(spec, {
   name: 'Manage Data Source',
@@ -69,6 +70,17 @@ export let manageDatasource = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
+      if (
+        ctx.input.name === undefined &&
+        ctx.input.description === undefined &&
+        ctx.input.projectId === undefined &&
+        ctx.input.ownerUserId === undefined &&
+        ctx.input.isCertified === undefined &&
+        ctx.input.certificationNote === undefined
+      ) {
+        throw tableauServiceError('Provide at least one field to update a data source.');
+      }
+
       let ds = await client.updateDatasource(datasourceId, {
         name: ctx.input.name,
         description: ctx.input.description,
@@ -112,9 +124,6 @@ export let manageDatasource = SlateTool.create(spec, {
       };
     }
 
-    return {
-      output: { datasourceId },
-      message: `Unknown action: ${action}`
-    };
+    throw tableauServiceError(`Unknown action: ${action}`);
   })
   .build();

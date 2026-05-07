@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MeetClient } from '../lib/client';
+import { googleMeetServiceError } from '../lib/errors';
 import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -116,7 +117,7 @@ export let updateSpaceTool = SlateTool.create(spec, {
     }
 
     if (updateMaskFields.length === 0) {
-      throw new Error('At least one updatable field must be provided.');
+      throw googleMeetServiceError('At least one updatable field must be provided.');
     }
 
     let space = await client.updateSpace(

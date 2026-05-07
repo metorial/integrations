@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { mailchimpApiError, mailchimpServiceError } from './lib/errors';
 
 let oauthAxios = createAxios({
   baseURL: 'https://login.mailchimp.com'
@@ -37,31 +38,48 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let tokenResponse = await oauthAxios.post(
-        '/oauth2/token',
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri,
-          code: ctx.code
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let accessToken: string;
+      let serverPrefix: string;
+
+      try {
+        let tokenResponse = await oauthAxios.post(
+          '/oauth2/token',
+          new URLSearchParams({
+            grant_type: 'authorization_code',
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri,
+            code: ctx.code
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
 
-      let accessToken = tokenResponse.data.access_token as string;
+        accessToken = tokenResponse.data.access_token as string;
+      } catch (error) {
+        throw mailchimpApiError(error, 'OAuth token exchange');
+      }
 
-      let metadataResponse = await oauthAxios.get('/oauth2/metadata', {
-        headers: {
-          Authorization: `OAuth ${accessToken}`
-        }
-      });
+      try {
+        let metadataResponse = await oauthAxios.get('/oauth2/metadata', {
+          headers: {
+            Authorization: `OAuth ${accessToken}`
+          }
+        });
 
-      let serverPrefix = metadataResponse.data.dc as string;
+        serverPrefix = metadataResponse.data.dc as string;
+      } catch (error) {
+        throw mailchimpApiError(error, 'OAuth metadata lookup');
+      }
+
+      if (!accessToken || !serverPrefix) {
+        throw mailchimpServiceError(
+          'Mailchimp OAuth did not return a usable token and data center.'
+        );
+      }
 
       return {
         output: {
@@ -76,11 +94,17 @@ export let auth = SlateAuth.create()
         baseURL: `https://${ctx.output.serverPrefix}.api.mailchimp.com/3.0`
       });
 
-      let response = await apiAxios.get('/', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response;
+
+      try {
+        response = await apiAxios.get('/', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw mailchimpApiError(error, 'profile lookup');
+      }
 
       let data = response.data;
 
@@ -108,12 +132,19 @@ export let auth = SlateAuth.create()
     }),
 
     getOutput: async ctx => {
-      let parts = ctx.input.token.split('-');
+      let token = ctx.input.token.trim();
+      let parts = token.split('-');
       let serverPrefix = parts[parts.length - 1] ?? '';
+
+      if (parts.length < 2 || !/^[a-z]{2}\d+$/i.test(serverPrefix)) {
+        throw mailchimpServiceError(
+          'Mailchimp API key must include a data center suffix, for example "abc123-us19".'
+        );
+      }
 
       return {
         output: {
-          token: ctx.input.token,
+          token,
           serverPrefix
         }
       };
@@ -126,11 +157,17 @@ export let auth = SlateAuth.create()
 
       let encoded = btoa(`anystring:${ctx.output.token}`);
 
-      let response = await apiAxios.get('/', {
-        headers: {
-          Authorization: `Basic ${encoded}`
-        }
-      });
+      let response;
+
+      try {
+        response = await apiAxios.get('/', {
+          headers: {
+            Authorization: `Basic ${encoded}`
+          }
+        });
+      } catch (error) {
+        throw mailchimpApiError(error, 'profile lookup');
+      }
 
       let data = response.data;
 

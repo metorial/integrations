@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwilioClient } from '../lib/client';
+import { twilioServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,7 +17,7 @@ export let sendMessage = SlateTool.create(spec, {
   constraints: [
     'Message body can be up to 1600 characters.',
     'Up to 10 media URLs per MMS message.',
-    'Scheduled messages must use a Messaging Service SID and be between 15 minutes and 7 days in the future.'
+    'Scheduled messages must use a Messaging Service SID and be between 15 minutes and 35 days in the future.'
   ],
   tags: {
     destructive: false,
@@ -52,6 +53,24 @@ export let sendMessage = SlateTool.create(spec, {
         .array(z.string())
         .optional()
         .describe('URLs of media to include (for MMS). Up to 10 URLs.'),
+      contentSid: z
+        .string()
+        .optional()
+        .describe('Twilio Content Template SID (starts with HX) to send templated content.'),
+      contentVariables: z
+        .string()
+        .optional()
+        .describe('JSON string of template variable substitutions for contentSid.'),
+      shortenUrls: z
+        .boolean()
+        .optional()
+        .describe(
+          'Shorten links in the body. Requires a Messaging Service with Link Shortening.'
+        ),
+      sendAsMms: z
+        .boolean()
+        .optional()
+        .describe('Send the message as MMS even if only body text is provided.'),
       statusCallbackUrl: z
         .string()
         .optional()
@@ -85,6 +104,35 @@ export let sendMessage = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (!ctx.input.from && !ctx.input.messagingServiceSid) {
+      throw twilioServiceError(
+        'Either from or messagingServiceSid is required to send a message.'
+      );
+    }
+
+    let hasMedia = (ctx.input.mediaUrls?.length ?? 0) > 0;
+    if (!ctx.input.body && !hasMedia && !ctx.input.contentSid) {
+      throw twilioServiceError(
+        'Message content is required: provide body, mediaUrls, or contentSid.'
+      );
+    }
+
+    if (ctx.input.mediaUrls && ctx.input.mediaUrls.length > 10) {
+      throw twilioServiceError('Twilio MMS messages support up to 10 mediaUrls.');
+    }
+
+    if (ctx.input.sendAt && !ctx.input.messagingServiceSid) {
+      throw twilioServiceError('Scheduled messages require messagingServiceSid.');
+    }
+
+    if (ctx.input.contentVariables && !ctx.input.contentSid) {
+      throw twilioServiceError('contentVariables requires contentSid.');
+    }
+
+    if (ctx.input.shortenUrls && !ctx.input.messagingServiceSid) {
+      throw twilioServiceError('shortenUrls requires messagingServiceSid.');
+    }
+
     let client = new TwilioClient({
       accountSid: ctx.config.accountSid,
       token: ctx.auth.token,
@@ -97,6 +145,10 @@ export let sendMessage = SlateTool.create(spec, {
       body: ctx.input.body,
       messagingServiceSid: ctx.input.messagingServiceSid,
       mediaUrl: ctx.input.mediaUrls,
+      contentSid: ctx.input.contentSid,
+      contentVariables: ctx.input.contentVariables,
+      shortenUrls: ctx.input.shortenUrls,
+      sendAsMms: ctx.input.sendAsMms,
       statusCallback: ctx.input.statusCallbackUrl,
       scheduleType: ctx.input.sendAt ? 'fixed' : undefined,
       sendAt: ctx.input.sendAt

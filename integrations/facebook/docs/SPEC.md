@@ -41,7 +41,7 @@ Common permission scopes include:
 - **User data:** `public_profile`, `email`, `user_posts`, `user_photos`, `user_videos`, `user_location`, `user_birthday`, `user_link`, `user_events`
 - **Pages:** `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `pages_manage_metadata`, `pages_read_user_content`, `pages_manage_engagement`
 - **Messaging:** `pages_messaging`
-- **Ads:** `ads_read`, `ads_management`
+- **Ads:** `ads_read`
 - **Business:** `business_management`
 - **Lead generation:** `leads_retrieval`
 
@@ -61,11 +61,11 @@ Manage Facebook Pages and groups, schedule posts, and access analytics. This inc
 
 ### Content Publishing
 
-Publish posts, photos, videos, and links to user timelines or Pages. Facebook provides Video API for publishing short and long videos, and Live Video API for scheduling live broadcasts, streaming video, and interacting with audiences.
+Publish posts, photos, videos, and links to Pages. Facebook provides Video API for publishing short and long videos, and Live Video API for scheduling live broadcasts, streaming video, and interacting with audiences.
 
 ### Advertising and Marketing
 
-The Facebook Graph API enables developers to integrate advertising capabilities into their applications, allowing them to create targeted ads, track ad performance, and optimize ad campaigns. The Marketing API supports campaign management, audience targeting, ad creative management, and reporting on ad insights. Requires `ads_management` or `ads_read` permissions.
+The Facebook Graph API enables developers to integrate advertising reporting capabilities into their applications, allowing them to read ad accounts, list campaigns, and track campaign performance. This integration exposes read-only Marketing API reporting workflows and requires the `ads_read` permission.
 
 ### Analytics and Insights
 

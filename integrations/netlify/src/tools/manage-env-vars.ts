@@ -6,16 +6,20 @@ import { z } from 'zod';
 let envVarValueSchema = z.object({
   value: z.string().describe('The environment variable value'),
   context: z
-    .enum(['all', 'dev', 'branch-deploy', 'deploy-preview', 'production'])
+    .enum(['all', 'dev', 'dev-server', 'branch', 'branch-deploy', 'deploy-preview', 'production'])
     .describe('Deploy context for this value'),
   contextParameter: z
     .string()
     .optional()
-    .describe('Branch name when context is "branch-deploy"')
+    .describe('Branch name when context is "branch"')
 });
 
 let envVarOutputSchema = z.object({
   key: z.string().describe('Environment variable key'),
+  scopes: z
+    .array(z.string())
+    .optional()
+    .describe('Netlify scopes where the variable is available'),
   values: z.array(
     z.object({
       valueId: z.string().optional().describe('Value identifier'),
@@ -30,6 +34,7 @@ let envVarOutputSchema = z.object({
 
 let mapEnvVar = (envVar: any) => ({
   key: envVar.key,
+  scopes: envVar.scopes,
   values: (envVar.values || []).map((v: any) => ({
     valueId: v.id,
     value: v.value,
@@ -91,10 +96,24 @@ export let setEnvVars = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Site ID to scope the variables to a specific site'),
+      mode: z
+        .enum(['create', 'replace'])
+        .default('create')
+        .describe(
+          'Use "create" for new variables or "replace" to fully replace existing variables by key'
+        ),
       variables: z
         .array(
           z.object({
             key: z.string().describe('Environment variable key'),
+            scopes: z
+              .array(z.enum(['builds', 'functions', 'runtime', 'post-processing']))
+              .optional()
+              .describe('Scopes where this variable is available'),
+            isSecret: z
+              .boolean()
+              .optional()
+              .describe('Whether Netlify should treat values as secret'),
             values: z.array(envVarValueSchema).describe('Values per deploy context')
           })
         )
@@ -111,6 +130,8 @@ export let setEnvVars = SlateTool.create(spec, {
 
     let apiVars = ctx.input.variables.map(v => ({
       key: v.key,
+      scopes: v.scopes,
+      is_secret: v.isSecret,
       values: v.values.map(val => ({
         value: val.value,
         context: val.context,
@@ -118,8 +139,18 @@ export let setEnvVars = SlateTool.create(spec, {
       }))
     }));
 
-    let result = await client.createEnvVars(ctx.input.accountId, apiVars, ctx.input.siteId);
-    let mapped = (Array.isArray(result) ? result : [result]).map(mapEnvVar);
+    let results =
+      ctx.input.mode === 'replace'
+        ? await Promise.all(
+            apiVars.map(v =>
+              client.updateEnvVar(ctx.input.accountId, v.key, v, ctx.input.siteId)
+            )
+          )
+        : [await client.createEnvVars(ctx.input.accountId, apiVars, ctx.input.siteId)];
+
+    let mapped = results.flatMap(result =>
+      (Array.isArray(result) ? result : [result]).map(mapEnvVar)
+    );
 
     return {
       output: { envVars: mapped },

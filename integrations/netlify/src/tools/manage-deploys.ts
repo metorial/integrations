@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { netlifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -146,7 +147,7 @@ export let manageDeploy = SlateTool.create(spec, {
         break;
       case 'restore':
         if (!ctx.input.siteId) {
-          throw new Error('siteId is required for the restore action');
+          throw netlifyServiceError('siteId is required for the restore action');
         }
         deploy = await client.restoreDeploy(ctx.input.siteId, ctx.input.deployId);
         break;

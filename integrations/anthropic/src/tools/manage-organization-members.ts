@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnthropicClient } from '../lib/client';
+import { anthropicServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -14,6 +15,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
     'For "remove_member": provide userId.',
     'For "invite": provide email and role.',
     'For "list_invites": optionally pass limit and afterId for pagination.',
+    'For "get_invite": provide inviteId.',
     'For "delete_invite": provide inviteId.'
   ],
   constraints: [
@@ -34,6 +36,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
           'remove_member',
           'invite',
           'list_invites',
+          'get_invite',
           'delete_invite'
         ])
         .describe('Operation to perform'),
@@ -55,6 +58,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
         .array(z.record(z.string(), z.unknown()))
         .optional()
         .describe('List of invitations'),
+      invite: z.record(z.string(), z.unknown()).optional().describe('Invitation details'),
       member: z
         .record(z.string(), z.unknown())
         .optional()
@@ -82,7 +86,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
       }
       case 'update_member': {
         if (!ctx.input.userId || !ctx.input.role) {
-          throw new Error('userId and role are required for "update_member"');
+          throw anthropicServiceError('userId and role are required for "update_member"');
         }
         let member = await client.updateMember(ctx.input.userId, ctx.input.role);
         return {
@@ -92,7 +96,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
       }
       case 'remove_member': {
         if (!ctx.input.userId) {
-          throw new Error('userId is required for "remove_member"');
+          throw anthropicServiceError('userId is required for "remove_member"');
         }
         await client.removeMember(ctx.input.userId);
         return {
@@ -102,7 +106,7 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
       }
       case 'invite': {
         if (!ctx.input.email || !ctx.input.role) {
-          throw new Error('email and role are required for "invite"');
+          throw anthropicServiceError('email and role are required for "invite"');
         }
         let member = await client.createInvite(ctx.input.email, ctx.input.role);
         return {
@@ -120,9 +124,19 @@ Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin
           message: `Found **${result.invites.length}** invitation(s).`
         };
       }
+      case 'get_invite': {
+        if (!ctx.input.inviteId) {
+          throw anthropicServiceError('inviteId is required for "get_invite"');
+        }
+        let invite = await client.getInvite(ctx.input.inviteId);
+        return {
+          output: { invite },
+          message: `Retrieved invite **${ctx.input.inviteId}**.`
+        };
+      }
       case 'delete_invite': {
         if (!ctx.input.inviteId) {
-          throw new Error('inviteId is required for "delete_invite"');
+          throw anthropicServiceError('inviteId is required for "delete_invite"');
         }
         await client.deleteInvite(ctx.input.inviteId);
         return {

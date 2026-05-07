@@ -5,6 +5,8 @@ export { publishContent } from './publish-content';
 export { managePost } from './manage-post';
 export { manageComments } from './manage-comments';
 export { getPageInsights } from './get-page-insights';
+export { getPostInsights } from './get-post-insights';
+export { getReactions } from './get-reactions';
 export { searchFacebook } from './search-facebook';
 export { getAdInsights } from './get-ad-insights';
 export { getLeads } from './get-leads';

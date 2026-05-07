@@ -1,116 +1,223 @@
-import { createAxios } from 'slates';
-import { signRequest, type AwsCredentials } from './aws-signer';
+import { Buffer } from 'node:buffer';
+import {
+  AddPermissionCommand,
+  CreateAliasCommand,
+  CreateEventSourceMappingCommand,
+  CreateFunctionCommand,
+  CreateFunctionUrlConfigCommand,
+  DeleteAliasCommand,
+  DeleteEventSourceMappingCommand,
+  DeleteFunctionCommand,
+  DeleteFunctionConcurrencyCommand,
+  DeleteFunctionEventInvokeConfigCommand,
+  DeleteFunctionUrlConfigCommand,
+  DeleteLayerVersionCommand,
+  DeleteProvisionedConcurrencyConfigCommand,
+  GetAccountSettingsCommand,
+  GetAliasCommand,
+  GetDurableExecutionCommand,
+  GetDurableExecutionHistoryCommand,
+  GetDurableExecutionStateCommand,
+  GetEventSourceMappingCommand,
+  GetFunctionCommand,
+  GetFunctionConcurrencyCommand,
+  GetFunctionConfigurationCommand,
+  GetFunctionEventInvokeConfigCommand,
+  GetFunctionRecursionConfigCommand,
+  GetFunctionUrlConfigCommand,
+  GetLayerVersionCommand,
+  GetPolicyCommand,
+  GetProvisionedConcurrencyConfigCommand,
+  GetRuntimeManagementConfigCommand,
+  InvokeCommand,
+  LambdaClient as AwsLambdaClient,
+  ListAliasesCommand,
+  ListDurableExecutionsByFunctionCommand,
+  ListEventSourceMappingsCommand,
+  ListFunctionEventInvokeConfigsCommand,
+  ListFunctionsCommand,
+  ListLayerVersionsCommand,
+  ListLayersCommand,
+  ListTagsCommand,
+  ListVersionsByFunctionCommand,
+  PublishLayerVersionCommand,
+  PublishVersionCommand,
+  PutFunctionConcurrencyCommand,
+  PutFunctionEventInvokeConfigCommand,
+  PutFunctionRecursionConfigCommand,
+  PutProvisionedConcurrencyConfigCommand,
+  PutRuntimeManagementConfigCommand,
+  RemovePermissionCommand,
+  SendDurableExecutionCallbackFailureCommand,
+  SendDurableExecutionCallbackHeartbeatCommand,
+  SendDurableExecutionCallbackSuccessCommand,
+  StopDurableExecutionCommand,
+  TagResourceCommand,
+  UntagResourceCommand,
+  UpdateAliasCommand,
+  UpdateEventSourceMappingCommand,
+  UpdateFunctionCodeCommand,
+  UpdateFunctionConfigurationCommand,
+  UpdateFunctionEventInvokeConfigCommand,
+  UpdateFunctionUrlConfigCommand
+} from '@aws-sdk/client-lambda';
+import { createSlatesAwsSdkHttpHandler } from '@slates/aws-sdk-http-handler';
+import { lambdaApiError } from './errors';
+
+export interface AwsCredentials {
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken?: string;
+}
 
 export interface LambdaClientConfig {
   region: string;
   credentials: AwsCredentials;
 }
 
-export class LambdaClient {
-  private baseUrl: string;
-  private region: string;
-  private credentials: AwsCredentials;
+let withoutUndefined = <T extends Record<string, any>>(input: T): T => {
+  let out: Record<string, any> = {};
 
-  constructor(config: LambdaClientConfig) {
-    this.region = config.region;
-    this.credentials = config.credentials;
-    this.baseUrl = `https://lambda.${config.region}.amazonaws.com`;
+  for (let [key, value] of Object.entries(input)) {
+    if (value !== undefined) {
+      out[key] = value;
+    }
   }
 
-  private async request<T = any>(
-    method: string,
-    path: string,
-    options?: {
-      body?: any;
-      queryParams?: Record<string, string>;
-      extraHeaders?: Record<string, string>;
-    }
-  ): Promise<T> {
-    let url = `${this.baseUrl}${path}`;
-    if (options?.queryParams) {
-      let params = new URLSearchParams();
-      for (let [key, value] of Object.entries(options.queryParams)) {
-        if (value !== undefined && value !== '') {
-          params.set(key, value);
-        }
-      }
-      let qs = params.toString();
-      if (qs) {
-        url += `?${qs}`;
-      }
-    }
+  return out as T;
+};
 
-    let body = options?.body ? JSON.stringify(options.body) : undefined;
+let decodeBase64Blob = (value: unknown) =>
+  typeof value === 'string' ? Buffer.from(value, 'base64') : value;
 
-    let headers: Record<string, string> = {
-      'content-type': 'application/json',
-      ...(options?.extraHeaders || {})
+let normalizeCreateFunctionParams = (params: Record<string, any>) => {
+  let out = { ...params };
+
+  if (out.Code && typeof out.Code === 'object' && !Array.isArray(out.Code)) {
+    out.Code = {
+      ...out.Code,
+      ZipFile: decodeBase64Blob(out.Code.ZipFile)
     };
+  }
 
-    let sigHeaders = signRequest({
-      method,
-      url,
-      headers,
-      body,
-      region: this.region,
-      service: 'lambda',
-      credentials: this.credentials
+  return out;
+};
+
+let normalizeZipFileParams = (params: Record<string, any>) => ({
+  ...params,
+  ZipFile: decodeBase64Blob(params.ZipFile)
+});
+
+let normalizeLayerParams = (params: Record<string, any>) => {
+  let out = { ...params };
+
+  if (out.Content && typeof out.Content === 'object' && !Array.isArray(out.Content)) {
+    out.Content = {
+      ...out.Content,
+      ZipFile: decodeBase64Blob(out.Content.ZipFile)
+    };
+  }
+
+  return out;
+};
+
+let encodeJsonPayload = (value: unknown) =>
+  value === undefined ? undefined : Buffer.from(JSON.stringify(value));
+
+let decodeInvokePayload = (payload: unknown) => {
+  if (payload === undefined || payload === null) {
+    return payload;
+  }
+
+  let text =
+    typeof payload === 'string'
+      ? payload
+      : Buffer.from(payload as Uint8Array).toString('utf8');
+
+  if (!text) {
+    return '';
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+};
+
+let buildErrorObject = (params?: Record<string, any>) => {
+  if (!params) return undefined;
+  if (params.Error) return params.Error;
+
+  let error = withoutUndefined({
+    ErrorMessage: params.ErrorMessage,
+    ErrorType: params.ErrorType,
+    ErrorData: params.ErrorData,
+    StackTrace: params.StackTrace
+  });
+
+  return Object.keys(error).length > 0 ? error : undefined;
+};
+
+export class LambdaClient {
+  private client: AwsLambdaClient;
+
+  constructor(config: LambdaClientConfig) {
+    this.client = new AwsLambdaClient({
+      region: config.region,
+      credentials: withoutUndefined({
+        accessKeyId: config.credentials.accessKeyId,
+        secretAccessKey: config.credentials.secretAccessKey,
+        sessionToken: config.credentials.sessionToken || undefined
+      }),
+      requestHandler: createSlatesAwsSdkHttpHandler()
     });
+  }
 
-    let allHeaders = { ...headers, ...sigHeaders };
-
-    let ax = createAxios({ baseURL: this.baseUrl });
-
-    let response = await ax.request({
-      method,
-      url,
-      headers: allHeaders,
-      data: body,
-      validateStatus: () => true
-    });
-
-    if (response.status >= 400) {
-      let errMsg =
-        typeof response.data === 'object' && response.data?.Message
-          ? response.data.Message
-          : typeof response.data === 'string'
-            ? response.data
-            : JSON.stringify(response.data);
-      throw new Error(`AWS Lambda API error (${response.status}): ${errMsg}`);
+  private async send<T>(operation: string, command: any): Promise<T> {
+    try {
+      return (await this.client.send(command)) as T;
+    } catch (error) {
+      throw lambdaApiError(error, operation);
     }
-
-    return response.data as T;
   }
 
   // ---- Function Management ----
 
   async createFunction(params: Record<string, any>): Promise<any> {
-    return this.request('POST', '/2015-03-31/functions', { body: params });
+    return this.send(
+      'CreateFunction',
+      new CreateFunctionCommand(normalizeCreateFunctionParams(params) as any)
+    );
   }
 
   async getFunction(functionName: string, qualifier?: string): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    return this.request('GET', `/2015-03-31/functions/${encodeURIComponent(functionName)}`, {
-      queryParams: qp
-    });
+    return this.send(
+      'GetFunction',
+      new GetFunctionCommand(
+        withoutUndefined({ FunctionName: functionName, Qualifier: qualifier })
+      )
+    );
   }
 
   async getFunctionConfiguration(functionName: string, qualifier?: string): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    return this.request(
-      'GET',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/configuration`,
-      { queryParams: qp }
+    return this.send(
+      'GetFunctionConfiguration',
+      new GetFunctionConfigurationCommand(
+        withoutUndefined({ FunctionName: functionName, Qualifier: qualifier })
+      )
     );
   }
 
   async updateFunctionCode(functionName: string, params: Record<string, any>): Promise<any> {
-    return this.request(
-      'PUT',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/code`,
-      { body: params }
+    return this.send(
+      'UpdateFunctionCode',
+      new UpdateFunctionCodeCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          ...normalizeZipFileParams(params)
+        }) as any
+      )
     );
   }
 
@@ -118,19 +225,22 @@ export class LambdaClient {
     functionName: string,
     params: Record<string, any>
   ): Promise<any> {
-    return this.request(
-      'PUT',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/configuration`,
-      { body: params }
+    return this.send(
+      'UpdateFunctionConfiguration',
+      new UpdateFunctionConfigurationCommand({
+        FunctionName: functionName,
+        ...params
+      } as any)
     );
   }
 
   async deleteFunction(functionName: string, qualifier?: string): Promise<void> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    await this.request('DELETE', `/2015-03-31/functions/${encodeURIComponent(functionName)}`, {
-      queryParams: qp
-    });
+    await this.send(
+      'DeleteFunction',
+      new DeleteFunctionCommand(
+        withoutUndefined({ FunctionName: functionName, Qualifier: qualifier })
+      )
+    );
   }
 
   async listFunctions(
@@ -138,11 +248,16 @@ export class LambdaClient {
     maxItems?: number,
     functionVersion?: string
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (marker) qp['Marker'] = marker;
-    if (maxItems) qp['MaxItems'] = String(maxItems);
-    if (functionVersion) qp['FunctionVersion'] = functionVersion;
-    return this.request('GET', '/2015-03-31/functions', { queryParams: qp });
+    return this.send(
+      'ListFunctions',
+      new ListFunctionsCommand(
+        withoutUndefined({
+          Marker: marker,
+          MaxItems: maxItems,
+          FunctionVersion: functionVersion
+        }) as any
+      )
+    );
   }
 
   // ---- Invocation ----
@@ -155,37 +270,41 @@ export class LambdaClient {
       logType?: string;
       qualifier?: string;
       clientContext?: string;
+      durableExecutionName?: string;
+      tenantId?: string;
     }
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (options?.qualifier) qp['Qualifier'] = options.qualifier;
-
-    let extraHeaders: Record<string, string> = {};
-    if (options?.invocationType)
-      extraHeaders['X-Amz-Invocation-Type'] = options.invocationType;
-    if (options?.logType) extraHeaders['X-Amz-Log-Type'] = options.logType;
-    if (options?.clientContext) extraHeaders['X-Amz-Client-Context'] = options.clientContext;
-
-    return this.request(
-      'POST',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/invocations`,
-      {
-        body: payload,
-        queryParams: qp,
-        extraHeaders
-      }
+    let response: any = await this.send(
+      'Invoke',
+      new InvokeCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          InvocationType: options?.invocationType,
+          LogType: options?.logType,
+          ClientContext: options?.clientContext,
+          DurableExecutionName: options?.durableExecutionName,
+          Payload: encodeJsonPayload(payload),
+          Qualifier: options?.qualifier,
+          TenantId: options?.tenantId
+        }) as any
+      )
     );
+
+    return {
+      ...response,
+      Payload: decodeInvokePayload(response.Payload)
+    };
   }
 
   // ---- Versions ----
 
   async publishVersion(functionName: string, params?: Record<string, any>): Promise<any> {
-    return this.request(
-      'POST',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/versions`,
-      {
-        body: params || {}
-      }
+    return this.send(
+      'PublishVersion',
+      new PublishVersionCommand({
+        FunctionName: functionName,
+        ...(params || {})
+      } as any)
     );
   }
 
@@ -194,30 +313,34 @@ export class LambdaClient {
     marker?: string,
     maxItems?: number
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (marker) qp['Marker'] = marker;
-    if (maxItems) qp['MaxItems'] = String(maxItems);
-    return this.request(
-      'GET',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/versions`,
-      { queryParams: qp }
+    return this.send(
+      'ListVersionsByFunction',
+      new ListVersionsByFunctionCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          Marker: marker,
+          MaxItems: maxItems
+        })
+      )
     );
   }
 
   // ---- Aliases ----
 
   async createAlias(functionName: string, params: Record<string, any>): Promise<any> {
-    return this.request(
-      'POST',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/aliases`,
-      { body: params }
+    return this.send(
+      'CreateAlias',
+      new CreateAliasCommand({
+        FunctionName: functionName,
+        ...params
+      } as any)
     );
   }
 
   async getAlias(functionName: string, aliasName: string): Promise<any> {
-    return this.request(
-      'GET',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/aliases/${encodeURIComponent(aliasName)}`
+    return this.send(
+      'GetAlias',
+      new GetAliasCommand({ FunctionName: functionName, Name: aliasName })
     );
   }
 
@@ -226,52 +349,59 @@ export class LambdaClient {
     aliasName: string,
     params: Record<string, any>
   ): Promise<any> {
-    return this.request(
-      'PUT',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/aliases/${encodeURIComponent(aliasName)}`,
-      { body: params }
+    return this.send(
+      'UpdateAlias',
+      new UpdateAliasCommand({
+        FunctionName: functionName,
+        Name: aliasName,
+        ...params
+      } as any)
     );
   }
 
   async deleteAlias(functionName: string, aliasName: string): Promise<void> {
-    await this.request(
-      'DELETE',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/aliases/${encodeURIComponent(aliasName)}`
+    await this.send(
+      'DeleteAlias',
+      new DeleteAliasCommand({ FunctionName: functionName, Name: aliasName })
     );
   }
 
   async listAliases(functionName: string, marker?: string, maxItems?: number): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (marker) qp['Marker'] = marker;
-    if (maxItems) qp['MaxItems'] = String(maxItems);
-    return this.request(
-      'GET',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/aliases`,
-      { queryParams: qp }
+    return this.send(
+      'ListAliases',
+      new ListAliasesCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          Marker: marker,
+          MaxItems: maxItems
+        })
+      )
     );
   }
 
   // ---- Layers ----
 
   async publishLayerVersion(layerName: string, params: Record<string, any>): Promise<any> {
-    return this.request(
-      'POST',
-      `/2018-10-31/layers/${encodeURIComponent(layerName)}/versions`,
-      { body: params }
+    return this.send(
+      'PublishLayerVersion',
+      new PublishLayerVersionCommand({
+        LayerName: layerName,
+        ...normalizeLayerParams(params)
+      } as any)
     );
   }
 
   async getLayerVersion(layerName: string, versionNumber: number): Promise<any> {
-    return this.request(
-      'GET',
-      `/2018-10-31/layers/${encodeURIComponent(layerName)}/versions/${versionNumber}`
+    return this.send(
+      'GetLayerVersion',
+      new GetLayerVersionCommand({ LayerName: layerName, VersionNumber: versionNumber })
     );
   }
 
   async deleteLayerVersion(layerName: string, versionNumber: number): Promise<void> {
-    await this.request(
-      'DELETE',
-      `/2018-10-31/layers/${encodeURIComponent(layerName)}/versions/${versionNumber}`
+    await this.send(
+      'DeleteLayerVersion',
+      new DeleteLayerVersionCommand({ LayerName: layerName, VersionNumber: versionNumber })
     );
   }
 
@@ -280,11 +410,16 @@ export class LambdaClient {
     maxItems?: number,
     compatibleRuntime?: string
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (marker) qp['Marker'] = marker;
-    if (maxItems) qp['MaxItems'] = String(maxItems);
-    if (compatibleRuntime) qp['CompatibleRuntime'] = compatibleRuntime;
-    return this.request('GET', '/2018-10-31/layers', { queryParams: qp });
+    return this.send(
+      'ListLayers',
+      new ListLayersCommand(
+        withoutUndefined({
+          Marker: marker,
+          MaxItems: maxItems,
+          CompatibleRuntime: compatibleRuntime
+        }) as any
+      )
+    );
   }
 
   async listLayerVersions(
@@ -292,41 +427,45 @@ export class LambdaClient {
     marker?: string,
     maxItems?: number
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (marker) qp['Marker'] = marker;
-    if (maxItems) qp['MaxItems'] = String(maxItems);
-    return this.request(
-      'GET',
-      `/2018-10-31/layers/${encodeURIComponent(layerName)}/versions`,
-      { queryParams: qp }
+    return this.send(
+      'ListLayerVersions',
+      new ListLayerVersionsCommand(
+        withoutUndefined({
+          LayerName: layerName,
+          Marker: marker,
+          MaxItems: maxItems
+        })
+      )
     );
   }
 
   // ---- Event Source Mappings ----
 
   async createEventSourceMapping(params: Record<string, any>): Promise<any> {
-    return this.request('POST', '/2015-03-31/event-source-mappings', { body: params });
+    return this.send(
+      'CreateEventSourceMapping',
+      new CreateEventSourceMappingCommand(params as any)
+    );
   }
 
   async getEventSourceMapping(uuid: string): Promise<any> {
-    return this.request(
-      'GET',
-      `/2015-03-31/event-source-mappings/${encodeURIComponent(uuid)}`
+    return this.send(
+      'GetEventSourceMapping',
+      new GetEventSourceMappingCommand({ UUID: uuid })
     );
   }
 
   async updateEventSourceMapping(uuid: string, params: Record<string, any>): Promise<any> {
-    return this.request(
-      'PUT',
-      `/2015-03-31/event-source-mappings/${encodeURIComponent(uuid)}`,
-      { body: params }
+    return this.send(
+      'UpdateEventSourceMapping',
+      new UpdateEventSourceMappingCommand({ UUID: uuid, ...params } as any)
     );
   }
 
   async deleteEventSourceMapping(uuid: string): Promise<any> {
-    return this.request(
-      'DELETE',
-      `/2015-03-31/event-source-mappings/${encodeURIComponent(uuid)}`
+    return this.send(
+      'DeleteEventSourceMapping',
+      new DeleteEventSourceMappingCommand({ UUID: uuid })
     );
   }
 
@@ -336,12 +475,17 @@ export class LambdaClient {
     marker?: string,
     maxItems?: number
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (functionName) qp['FunctionName'] = functionName;
-    if (eventSourceArn) qp['EventSourceArn'] = eventSourceArn;
-    if (marker) qp['Marker'] = marker;
-    if (maxItems) qp['MaxItems'] = String(maxItems);
-    return this.request('GET', '/2015-03-31/event-source-mappings', { queryParams: qp });
+    return this.send(
+      'ListEventSourceMappings',
+      new ListEventSourceMappingsCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          EventSourceArn: eventSourceArn,
+          Marker: marker,
+          MaxItems: maxItems
+        })
+      )
+    );
   }
 
   // ---- Function URLs ----
@@ -351,22 +495,24 @@ export class LambdaClient {
     params: Record<string, any>,
     qualifier?: string
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    return this.request(
-      'POST',
-      `/2021-10-31/functions/${encodeURIComponent(functionName)}/url`,
-      { body: params, queryParams: qp }
+    return this.send(
+      'CreateFunctionUrlConfig',
+      new CreateFunctionUrlConfigCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          Qualifier: qualifier,
+          ...params
+        }) as any
+      )
     );
   }
 
   async getFunctionUrlConfig(functionName: string, qualifier?: string): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    return this.request(
-      'GET',
-      `/2021-10-31/functions/${encodeURIComponent(functionName)}/url`,
-      { queryParams: qp }
+    return this.send(
+      'GetFunctionUrlConfig',
+      new GetFunctionUrlConfigCommand(
+        withoutUndefined({ FunctionName: functionName, Qualifier: qualifier })
+      )
     );
   }
 
@@ -375,22 +521,24 @@ export class LambdaClient {
     params: Record<string, any>,
     qualifier?: string
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    return this.request(
-      'PUT',
-      `/2021-10-31/functions/${encodeURIComponent(functionName)}/url`,
-      { body: params, queryParams: qp }
+    return this.send(
+      'UpdateFunctionUrlConfig',
+      new UpdateFunctionUrlConfigCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          Qualifier: qualifier,
+          ...params
+        }) as any
+      )
     );
   }
 
   async deleteFunctionUrlConfig(functionName: string, qualifier?: string): Promise<void> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    await this.request(
-      'DELETE',
-      `/2021-10-31/functions/${encodeURIComponent(functionName)}/url`,
-      { queryParams: qp }
+    await this.send(
+      'DeleteFunctionUrlConfig',
+      new DeleteFunctionUrlConfigCommand(
+        withoutUndefined({ FunctionName: functionName, Qualifier: qualifier })
+      )
     );
   }
 
@@ -400,26 +548,26 @@ export class LambdaClient {
     functionName: string,
     reservedConcurrentExecutions: number
   ): Promise<any> {
-    return this.request(
-      'PUT',
-      `/2017-10-31/functions/${encodeURIComponent(functionName)}/concurrency`,
-      {
-        body: { ReservedConcurrentExecutions: reservedConcurrentExecutions }
-      }
+    return this.send(
+      'PutFunctionConcurrency',
+      new PutFunctionConcurrencyCommand({
+        FunctionName: functionName,
+        ReservedConcurrentExecutions: reservedConcurrentExecutions
+      })
     );
   }
 
   async getFunctionConcurrency(functionName: string): Promise<any> {
-    return this.request(
-      'GET',
-      `/2019-09-30/functions/${encodeURIComponent(functionName)}/concurrency`
+    return this.send(
+      'GetFunctionConcurrency',
+      new GetFunctionConcurrencyCommand({ FunctionName: functionName })
     );
   }
 
   async deleteFunctionConcurrency(functionName: string): Promise<void> {
-    await this.request(
-      'DELETE',
-      `/2017-10-31/functions/${encodeURIComponent(functionName)}/concurrency`
+    await this.send(
+      'DeleteFunctionConcurrency',
+      new DeleteFunctionConcurrencyCommand({ FunctionName: functionName })
     );
   }
 
@@ -428,13 +576,13 @@ export class LambdaClient {
     qualifier: string,
     provisionedConcurrentExecutions: number
   ): Promise<any> {
-    return this.request(
-      'PUT',
-      `/2019-09-30/functions/${encodeURIComponent(functionName)}/provisioned-concurrency`,
-      {
-        queryParams: { Qualifier: qualifier },
-        body: { ProvisionedConcurrentExecutions: provisionedConcurrentExecutions }
-      }
+    return this.send(
+      'PutProvisionedConcurrencyConfig',
+      new PutProvisionedConcurrencyConfigCommand({
+        FunctionName: functionName,
+        Qualifier: qualifier,
+        ProvisionedConcurrentExecutions: provisionedConcurrentExecutions
+      })
     );
   }
 
@@ -442,12 +590,12 @@ export class LambdaClient {
     functionName: string,
     qualifier: string
   ): Promise<any> {
-    return this.request(
-      'GET',
-      `/2019-09-30/functions/${encodeURIComponent(functionName)}/provisioned-concurrency`,
-      {
-        queryParams: { Qualifier: qualifier }
-      }
+    return this.send(
+      'GetProvisionedConcurrencyConfig',
+      new GetProvisionedConcurrencyConfigCommand({
+        FunctionName: functionName,
+        Qualifier: qualifier
+      })
     );
   }
 
@@ -455,12 +603,12 @@ export class LambdaClient {
     functionName: string,
     qualifier: string
   ): Promise<void> {
-    await this.request(
-      'DELETE',
-      `/2021-10-31/functions/${encodeURIComponent(functionName)}/provisioned-concurrency`,
-      {
-        queryParams: { Qualifier: qualifier }
-      }
+    await this.send(
+      'DeleteProvisionedConcurrencyConfig',
+      new DeleteProvisionedConcurrencyConfigCommand({
+        FunctionName: functionName,
+        Qualifier: qualifier
+      })
     );
   }
 
@@ -471,12 +619,15 @@ export class LambdaClient {
     params: Record<string, any>,
     qualifier?: string
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    return this.request(
-      'POST',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/policy`,
-      { body: params, queryParams: qp }
+    return this.send(
+      'AddPermission',
+      new AddPermissionCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          Qualifier: qualifier,
+          ...params
+        }) as any
+      )
     );
   }
 
@@ -486,45 +637,43 @@ export class LambdaClient {
     qualifier?: string,
     revisionId?: string
   ): Promise<void> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    if (revisionId) qp['RevisionId'] = revisionId;
-    await this.request(
-      'DELETE',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/policy/${encodeURIComponent(statementId)}`,
-      { queryParams: qp }
+    await this.send(
+      'RemovePermission',
+      new RemovePermissionCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          StatementId: statementId,
+          Qualifier: qualifier,
+          RevisionId: revisionId
+        })
+      )
     );
   }
 
   async getPolicy(functionName: string, qualifier?: string): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    return this.request(
-      'GET',
-      `/2015-03-31/functions/${encodeURIComponent(functionName)}/policy`,
-      { queryParams: qp }
+    return this.send(
+      'GetPolicy',
+      new GetPolicyCommand(
+        withoutUndefined({ FunctionName: functionName, Qualifier: qualifier })
+      )
     );
   }
 
   // ---- Tags ----
 
   async tagResource(arn: string, tags: Record<string, string>): Promise<void> {
-    await this.request('POST', `/2017-03-31/tags/${encodeURIComponent(arn)}`, {
-      body: { Tags: tags }
-    });
+    await this.send('TagResource', new TagResourceCommand({ Resource: arn, Tags: tags }));
   }
 
   async untagResource(arn: string, tagKeys: string[]): Promise<void> {
-    let qp: Record<string, string> = {};
-    // Tag keys are passed as repeated query params
-    // Using comma separation as URLSearchParams doesn't support repeated keys well
-    await this.request('DELETE', `/2017-03-31/tags/${encodeURIComponent(arn)}`, {
-      queryParams: { tagKeys: tagKeys.join(',') }
-    });
+    await this.send(
+      'UntagResource',
+      new UntagResourceCommand({ Resource: arn, TagKeys: tagKeys })
+    );
   }
 
   async listTags(arn: string): Promise<any> {
-    return this.request('GET', `/2017-03-31/tags/${encodeURIComponent(arn)}`);
+    return this.send('ListTags', new ListTagsCommand({ Resource: arn }));
   }
 
   // ---- Async Invocation Configuration ----
@@ -534,22 +683,24 @@ export class LambdaClient {
     params: Record<string, any>,
     qualifier?: string
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    return this.request(
-      'PUT',
-      `/2019-09-25/functions/${encodeURIComponent(functionName)}/event-invoke-config`,
-      { body: params, queryParams: qp }
+    return this.send(
+      'PutFunctionEventInvokeConfig',
+      new PutFunctionEventInvokeConfigCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          Qualifier: qualifier,
+          ...params
+        }) as any
+      )
     );
   }
 
   async getFunctionEventInvokeConfig(functionName: string, qualifier?: string): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    return this.request(
-      'GET',
-      `/2019-09-25/functions/${encodeURIComponent(functionName)}/event-invoke-config`,
-      { queryParams: qp }
+    return this.send(
+      'GetFunctionEventInvokeConfig',
+      new GetFunctionEventInvokeConfigCommand(
+        withoutUndefined({ FunctionName: functionName, Qualifier: qualifier })
+      )
     );
   }
 
@@ -557,21 +708,104 @@ export class LambdaClient {
     functionName: string,
     qualifier?: string
   ): Promise<void> {
-    let qp: Record<string, string> = {};
-    if (qualifier) qp['Qualifier'] = qualifier;
-    await this.request(
-      'DELETE',
-      `/2019-09-25/functions/${encodeURIComponent(functionName)}/event-invoke-config`,
-      { queryParams: qp }
+    await this.send(
+      'DeleteFunctionEventInvokeConfig',
+      new DeleteFunctionEventInvokeConfigCommand(
+        withoutUndefined({ FunctionName: functionName, Qualifier: qualifier })
+      )
+    );
+  }
+
+  async updateFunctionEventInvokeConfig(
+    functionName: string,
+    params: Record<string, any>,
+    qualifier?: string
+  ): Promise<any> {
+    return this.send(
+      'UpdateFunctionEventInvokeConfig',
+      new UpdateFunctionEventInvokeConfigCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          Qualifier: qualifier,
+          ...params
+        }) as any
+      )
+    );
+  }
+
+  async listFunctionEventInvokeConfigs(
+    functionName: string,
+    marker?: string,
+    maxItems?: number
+  ): Promise<any> {
+    return this.send(
+      'ListFunctionEventInvokeConfigs',
+      new ListFunctionEventInvokeConfigsCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          Marker: marker,
+          MaxItems: maxItems
+        })
+      )
+    );
+  }
+
+  // ---- Runtime Management ----
+
+  async getRuntimeManagementConfig(functionName: string, qualifier?: string): Promise<any> {
+    return this.send(
+      'GetRuntimeManagementConfig',
+      new GetRuntimeManagementConfigCommand(
+        withoutUndefined({ FunctionName: functionName, Qualifier: qualifier })
+      )
+    );
+  }
+
+  async putRuntimeManagementConfig(
+    functionName: string,
+    params: Record<string, any>,
+    qualifier?: string
+  ): Promise<any> {
+    return this.send(
+      'PutRuntimeManagementConfig',
+      new PutRuntimeManagementConfigCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          Qualifier: qualifier,
+          ...params
+        }) as any
+      )
+    );
+  }
+
+  // ---- Recursive Loop Detection ----
+
+  async getFunctionRecursionConfig(functionName: string): Promise<any> {
+    return this.send(
+      'GetFunctionRecursionConfig',
+      new GetFunctionRecursionConfigCommand({ FunctionName: functionName })
+    );
+  }
+
+  async putFunctionRecursionConfig(
+    functionName: string,
+    recursiveLoop: 'Allow' | 'Terminate'
+  ): Promise<any> {
+    return this.send(
+      'PutFunctionRecursionConfig',
+      new PutFunctionRecursionConfigCommand({
+        FunctionName: functionName,
+        RecursiveLoop: recursiveLoop
+      })
     );
   }
 
   // ---- Durable Executions ----
 
   async getDurableExecution(durableExecutionArn: string): Promise<any> {
-    return this.request(
-      'GET',
-      `/2025-12-01/durable-executions/${encodeURIComponent(durableExecutionArn)}`
+    return this.send(
+      'GetDurableExecution',
+      new GetDurableExecutionCommand({ DurableExecutionArn: durableExecutionArn })
     );
   }
 
@@ -580,20 +814,34 @@ export class LambdaClient {
     marker?: string,
     maxItems?: number
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (marker) qp['Marker'] = marker;
-    if (maxItems) qp['MaxItems'] = String(maxItems);
-    return this.request(
-      'GET',
-      `/2025-12-01/durable-executions/${encodeURIComponent(durableExecutionArn)}/history`,
-      { queryParams: qp }
+    return this.send(
+      'GetDurableExecutionHistory',
+      new GetDurableExecutionHistoryCommand(
+        withoutUndefined({
+          DurableExecutionArn: durableExecutionArn,
+          Marker: marker,
+          MaxItems: maxItems
+        })
+      )
     );
   }
 
-  async getDurableExecutionState(durableExecutionArn: string): Promise<any> {
-    return this.request(
-      'GET',
-      `/2025-12-01/durable-executions/${encodeURIComponent(durableExecutionArn)}/state`
+  async getDurableExecutionState(
+    durableExecutionArn: string,
+    checkpointToken?: string,
+    marker?: string,
+    maxItems?: number
+  ): Promise<any> {
+    return this.send(
+      'GetDurableExecutionState',
+      new GetDurableExecutionStateCommand(
+        withoutUndefined({
+          DurableExecutionArn: durableExecutionArn,
+          CheckpointToken: checkpointToken,
+          Marker: marker,
+          MaxItems: maxItems
+        }) as any
+      )
     );
   }
 
@@ -603,14 +851,16 @@ export class LambdaClient {
     marker?: string,
     maxItems?: number
   ): Promise<any> {
-    let qp: Record<string, string> = {};
-    if (statuses) qp['Statuses'] = statuses;
-    if (marker) qp['Marker'] = marker;
-    if (maxItems) qp['MaxItems'] = String(maxItems);
-    return this.request(
-      'GET',
-      `/2025-12-01/functions/${encodeURIComponent(functionName)}/durable-executions`,
-      { queryParams: qp }
+    return this.send(
+      'ListDurableExecutionsByFunction',
+      new ListDurableExecutionsByFunctionCommand(
+        withoutUndefined({
+          FunctionName: functionName,
+          Statuses: statuses ? [statuses] : undefined,
+          Marker: marker,
+          MaxItems: maxItems
+        }) as any
+      )
     );
   }
 
@@ -618,18 +868,24 @@ export class LambdaClient {
     durableExecutionArn: string,
     params?: Record<string, any>
   ): Promise<any> {
-    return this.request(
-      'POST',
-      `/2025-12-01/durable-executions/${encodeURIComponent(durableExecutionArn)}/stop`,
-      { body: params || {} }
+    return this.send(
+      'StopDurableExecution',
+      new StopDurableExecutionCommand(
+        withoutUndefined({
+          DurableExecutionArn: durableExecutionArn,
+          Error: buildErrorObject(params)
+        }) as any
+      )
     );
   }
 
   async sendDurableExecutionCallbackSuccess(callbackId: string, result?: any): Promise<any> {
-    return this.request(
-      'POST',
-      `/2025-12-01/durable-execution-callbacks/${encodeURIComponent(callbackId)}/succeed`,
-      { body: result || {} }
+    return this.send(
+      'SendDurableExecutionCallbackSuccess',
+      new SendDurableExecutionCallbackSuccessCommand({
+        CallbackId: callbackId,
+        Result: encodeJsonPayload(result || {})
+      } as any)
     );
   }
 
@@ -637,24 +893,27 @@ export class LambdaClient {
     callbackId: string,
     params?: Record<string, any>
   ): Promise<any> {
-    return this.request(
-      'POST',
-      `/2025-12-01/durable-execution-callbacks/${encodeURIComponent(callbackId)}/fail`,
-      { body: params || {} }
+    return this.send(
+      'SendDurableExecutionCallbackFailure',
+      new SendDurableExecutionCallbackFailureCommand(
+        withoutUndefined({
+          CallbackId: callbackId,
+          Error: buildErrorObject(params)
+        }) as any
+      )
     );
   }
 
   async sendDurableExecutionCallbackHeartbeat(callbackId: string): Promise<any> {
-    return this.request(
-      'POST',
-      `/2025-12-01/durable-execution-callbacks/${encodeURIComponent(callbackId)}/heartbeat`,
-      { body: {} }
+    return this.send(
+      'SendDurableExecutionCallbackHeartbeat',
+      new SendDurableExecutionCallbackHeartbeatCommand({ CallbackId: callbackId })
     );
   }
 
   // ---- Account Settings ----
 
   async getAccountSettings(): Promise<any> {
-    return this.request('GET', '/2015-03-31/account-settings');
+    return this.send('GetAccountSettings', new GetAccountSettingsCommand({}));
   }
 }

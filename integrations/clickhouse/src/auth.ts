@@ -15,9 +15,13 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      keyId: z.string().describe('The API Key ID (used as the username for HTTP Basic Auth)'),
+      keyId: z
+        .string()
+        .min(1)
+        .describe('The API Key ID (used as the username for HTTP Basic Auth)'),
       keySecret: z
         .string()
+        .min(1)
         .describe('The API Key Secret (used as the password for HTTP Basic Auth)')
     }),
 

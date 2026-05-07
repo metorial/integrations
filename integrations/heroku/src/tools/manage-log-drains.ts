@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { herokuServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -56,7 +57,7 @@ export let manageLogDrains = SlateTool.create(spec, {
     }
 
     if (action === 'add') {
-      if (!ctx.input.url) throw new Error('url is required for "add" action.');
+      if (!ctx.input.url) throw herokuServiceError('url is required for "add" action.');
       let drain = await client.addLogDrain(appIdOrName, ctx.input.url);
       return {
         output: { logDrains: [mapDrain(drain)] },
@@ -66,7 +67,7 @@ export let manageLogDrains = SlateTool.create(spec, {
 
     // remove
     if (!ctx.input.drainIdOrUrl)
-      throw new Error('drainIdOrUrl is required for "remove" action.');
+      throw herokuServiceError('drainIdOrUrl is required for "remove" action.');
     await client.removeLogDrain(appIdOrName, ctx.input.drainIdOrUrl);
     return {
       output: { removed: true },

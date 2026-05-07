@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/zendesk.svg" height="20"> Zendesk
 
-Manage customer support tickets, users, organizations, and help center articles. Create, update, and resolve support tickets with assignments, priorities, tags, and comments. Search across tickets, users, and organizations. Manage knowledge base articles, sections, and categories with multi-locale translations. Handle sales CRM data including leads, contacts, and deals. Configure business rules like triggers, automations, and macros for workflow automation. Manage custom objects, SLA policies, ticket views, and omnichannel routing. Create and manage webhooks for event-driven integrations. Moderate community forums with posts and comments. Manage live chat and messaging conversations across channels.
+Manage Zendesk Support tickets, ticket comments, users, organizations, Help Center articles, ticket views, groups, ticket fields, and macros. Create, update, resolve, and delete support tickets with assignments, priorities, tags, comments, and custom fields. Search across tickets, users, groups, and organizations, and inspect Help Center categories and sections before managing articles.
 
 ## Tools
 
@@ -16,6 +16,14 @@ Permanently deletes a support ticket from Zendesk. This action cannot be undone.
 
 Retrieves a single Zendesk support ticket by its ID, including all ticket details such as subject, status, priority, assignee, requester, tags, custom fields, and comments.
 
+### List Ticket Comments
+
+Lists comments on a Zendesk support ticket, including public replies, internal notes, authors, HTML/plain bodies, and attachment metadata.
+
+### List Ticket Fields
+
+Lists Zendesk system and custom ticket fields. Use this before creating or updating tickets with custom field values.
+
 ### List Groups
 
 Lists agent groups in Zendesk. Groups organize agents and are used for ticket assignment and routing.
@@ -23,6 +31,10 @@ Lists agent groups in Zendesk. Groups organize agents and are used for ticket as
 ### List Help Center Categories
 
 Lists Help Center categories and sections. Categories are the top-level containers, and sections organize articles within categories. Useful for understanding the knowledge base structure before creating or managing articles.
+
+### List Macros
+
+Lists shared and personal Zendesk macros available to the current user. Macros define reusable ticket actions agents can apply in Zendesk.
 
 ### List Tickets
 

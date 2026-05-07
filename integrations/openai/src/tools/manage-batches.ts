@@ -31,7 +31,7 @@ let batchOutputSchema = z.object({
 export let createBatch = SlateTool.create(spec, {
   name: 'Create Batch',
   key: 'create_batch',
-  description: `Submit a batch of API requests for asynchronous processing at reduced cost. Supports chat completions and embeddings endpoints. The input must be a JSONL file uploaded via the Files API.`,
+  description: `Submit a batch of API requests for asynchronous processing at reduced cost. Supports Responses, chat completions, embeddings, completions, and moderations endpoints. The input must be a JSONL file uploaded via the Files API.`,
   instructions: [
     'Upload a JSONL file with purpose "batch" before creating a batch. Each line should contain a request object.',
     'The completion_window is typically "24h" for standard processing.'
@@ -47,7 +47,13 @@ export let createBatch = SlateTool.create(spec, {
         .string()
         .describe('ID of the uploaded JSONL file containing batch requests'),
       endpoint: z
-        .enum(['/v1/chat/completions', '/v1/embeddings', '/v1/completions'])
+        .enum([
+          '/v1/responses',
+          '/v1/chat/completions',
+          '/v1/embeddings',
+          '/v1/completions',
+          '/v1/moderations'
+        ])
         .describe('API endpoint for the batch requests'),
       completionWindow: z
         .string()

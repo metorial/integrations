@@ -8,7 +8,8 @@ import {
   manageIamTool,
   manageCloudWatchTool,
   manageSnsTool,
-  manageSqsTool
+  manageSqsTool,
+  manageStsTool
 } from './tools';
 import {
   cloudwatchAlarmChangesTrigger,
@@ -26,7 +27,8 @@ export let provider = Slate.create({
     manageIamTool,
     manageCloudWatchTool,
     manageSnsTool,
-    manageSqsTool
+    manageSqsTool,
+    manageStsTool
   ],
   triggers: [inboundWebhook, cloudwatchAlarmChangesTrigger, ec2InstanceStateChangesTrigger]
 });

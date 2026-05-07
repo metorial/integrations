@@ -24,6 +24,9 @@ Use **GET** for downloads and **PUT** for uploads. URLs are valid for a configur
         ),
       expiresInSeconds: z
         .number()
+        .int()
+        .min(1)
+        .max(604800)
         .optional()
         .describe('URL validity in seconds (default 3600, max 604800 for 7 days)'),
       versionId: z.string().optional().describe('Specific version ID for versioned objects'),

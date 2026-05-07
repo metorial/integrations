@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { stripeApiError } from './errors';
 
 export interface StripeClientConfig {
   token: string;
@@ -23,6 +24,13 @@ export class StripeClient {
       baseURL: 'https://api.stripe.com/v1',
       headers
     });
+
+    this.axios.interceptors.response.use(
+      response => response,
+      error => {
+        throw stripeApiError(error);
+      }
+    );
   }
 
   // --- Helpers ---
@@ -401,8 +409,8 @@ export class StripeClient {
     return this.post(`/setup_intents/${setupIntentId}/confirm`, params);
   }
 
-  async cancelSetupIntent(setupIntentId: string) {
-    return this.post(`/setup_intents/${setupIntentId}/cancel`);
+  async cancelSetupIntent(setupIntentId: string, params?: Record<string, any>) {
+    return this.post(`/setup_intents/${setupIntentId}/cancel`, params);
   }
 
   async listSetupIntents(params?: Record<string, any>) {
@@ -425,6 +433,14 @@ export class StripeClient {
     return this.get('/payment_methods', params);
   }
 
+  async getCustomerPaymentMethod(customerId: string, paymentMethodId: string) {
+    return this.get(`/customers/${customerId}/payment_methods/${paymentMethodId}`);
+  }
+
+  async listCustomerPaymentMethods(customerId: string, params?: Record<string, any>) {
+    return this.get(`/customers/${customerId}/payment_methods`, params);
+  }
+
   async attachPaymentMethod(paymentMethodId: string, params: Record<string, any>) {
     return this.post(`/payment_methods/${paymentMethodId}/attach`, params);
   }
@@ -437,6 +453,14 @@ export class StripeClient {
 
   async createTaxRate(params: Record<string, any>) {
     return this.post('/tax_rates', params);
+  }
+
+  async getTaxRate(taxRateId: string) {
+    return this.get(`/tax_rates/${taxRateId}`);
+  }
+
+  async updateTaxRate(taxRateId: string, params: Record<string, any>) {
+    return this.post(`/tax_rates/${taxRateId}`, params);
   }
 
   async listTaxRates(params?: Record<string, any>) {

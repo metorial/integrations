@@ -7,6 +7,13 @@ export let config = SlateConfig.create(
       .enum(['sandbox', 'production'])
       .default('production')
       .describe('QuickBooks API environment to use'),
-    companyId: z.string().describe('QuickBooks Company ID (Realm ID) for the target company')
+    companyId: z
+      .string()
+      .min(1)
+      .describe('QuickBooks Company ID (Realm ID) for the target company'),
+    webhookVerifierToken: z
+      .string()
+      .optional()
+      .describe('Optional Intuit webhook verifier token for signature validation')
   })
 );

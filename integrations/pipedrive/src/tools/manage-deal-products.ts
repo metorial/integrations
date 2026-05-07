@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { pipedriveServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -80,7 +81,8 @@ export let manageDealProducts = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'remove') {
-      if (!ctx.input.dealProductId) throw new Error('dealProductId is required for remove');
+      if (!ctx.input.dealProductId)
+        throw pipedriveServiceError('dealProductId is required for remove');
       await client.deleteDealProduct(ctx.input.dealId, ctx.input.dealProductId);
       return {
         output: { dealId: ctx.input.dealId, deleted: true },
@@ -124,7 +126,8 @@ export let manageDealProducts = SlateTool.create(spec, {
     }
 
     // update
-    if (!ctx.input.dealProductId) throw new Error('dealProductId is required for update');
+    if (!ctx.input.dealProductId)
+      throw pipedriveServiceError('dealProductId is required for update');
     let result = await client.updateDealProduct(
       ctx.input.dealId,
       ctx.input.dealProductId,

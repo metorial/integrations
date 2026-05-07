@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { withFirebaseApiError } from './errors';
 
 let remoteConfigAxios = createAxios({
   baseURL: 'https://firebaseremoteconfig.googleapis.com/v1'
@@ -56,9 +57,11 @@ export class RemoteConfigClient {
   }
 
   async getTemplate(): Promise<RemoteConfigTemplate> {
-    let response = await remoteConfigAxios.get(`/projects/${this.projectId}/remoteConfig`, {
-      headers: this.headers
-    });
+    let response = await withFirebaseApiError('Remote Config get template', () =>
+      remoteConfigAxios.get(`/projects/${this.projectId}/remoteConfig`, {
+        headers: this.headers
+      })
+    );
 
     return {
       ...response.data,
@@ -77,15 +80,13 @@ export class RemoteConfigClient {
     },
     etag: string
   ): Promise<RemoteConfigTemplate> {
-    let response = await remoteConfigAxios.put(
-      `/projects/${this.projectId}/remoteConfig`,
-      template,
-      {
+    let response = await withFirebaseApiError('Remote Config publish template', () =>
+      remoteConfigAxios.put(`/projects/${this.projectId}/remoteConfig`, template, {
         headers: {
           ...this.headers,
           'If-Match': etag
         }
-      }
+      })
     );
 
     return {
@@ -105,15 +106,14 @@ export class RemoteConfigClient {
     }>;
     nextPageToken?: string;
   }> {
-    let response = await remoteConfigAxios.get(
-      `/projects/${this.projectId}/remoteConfig:listVersions`,
-      {
+    let response = await withFirebaseApiError('Remote Config list versions', () =>
+      remoteConfigAxios.get(`/projects/${this.projectId}/remoteConfig:listVersions`, {
         headers: this.headers,
         params: {
           pageSize: params?.pageSize || 10,
           pageToken: params?.pageToken
         }
-      }
+      })
     );
 
     return {
@@ -123,14 +123,16 @@ export class RemoteConfigClient {
   }
 
   async rollback(versionNumber: string): Promise<RemoteConfigTemplate> {
-    let response = await remoteConfigAxios.post(
-      `/projects/${this.projectId}/remoteConfig:rollback`,
-      {
-        versionNumber
-      },
-      {
-        headers: this.headers
-      }
+    let response = await withFirebaseApiError('Remote Config rollback', () =>
+      remoteConfigAxios.post(
+        `/projects/${this.projectId}/remoteConfig:rollback`,
+        {
+          versionNumber
+        },
+        {
+          headers: this.headers
+        }
+      )
     );
 
     return {

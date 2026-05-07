@@ -18,16 +18,22 @@ describe('google-meet provider contract', () => {
         'update_space',
         'end_active_conference',
         'add_member',
+        'get_member',
         'list_members',
         'remove_member',
         'list_conference_records',
         'get_conference_record',
+        'get_participant',
         'list_participants',
+        'get_participant_session',
         'get_participant_sessions',
         'list_recordings',
         'get_recording',
+        'list_smart_notes',
+        'get_smart_note',
         'list_transcripts',
         'get_transcript',
+        'get_transcript_entry',
         'list_transcript_entries'
       ],
       triggerIds: [
@@ -44,16 +50,22 @@ describe('google-meet provider contract', () => {
         { id: 'update_space', readOnly: false, destructive: false },
         { id: 'end_active_conference', readOnly: false, destructive: true },
         { id: 'add_member', readOnly: false, destructive: false },
+        { id: 'get_member', readOnly: true, destructive: false },
         { id: 'list_members', readOnly: true, destructive: false },
         { id: 'remove_member', readOnly: false, destructive: true },
         { id: 'list_conference_records', readOnly: true, destructive: false },
         { id: 'get_conference_record', readOnly: true, destructive: false },
+        { id: 'get_participant', readOnly: true, destructive: false },
         { id: 'list_participants', readOnly: true, destructive: false },
+        { id: 'get_participant_session', readOnly: true, destructive: false },
         { id: 'get_participant_sessions', readOnly: true, destructive: false },
         { id: 'list_recordings', readOnly: true, destructive: false },
         { id: 'get_recording', readOnly: true, destructive: false },
+        { id: 'list_smart_notes', readOnly: true, destructive: false },
+        { id: 'get_smart_note', readOnly: true, destructive: false },
         { id: 'list_transcripts', readOnly: true, destructive: false },
         { id: 'get_transcript', readOnly: true, destructive: false },
+        { id: 'get_transcript_entry', readOnly: true, destructive: false },
         { id: 'list_transcript_entries', readOnly: true, destructive: false }
       ],
       triggers: [
@@ -65,7 +77,7 @@ describe('google-meet provider contract', () => {
       ]
     });
 
-    expect(contract.actions).toHaveLength(21);
+    expect(contract.actions).toHaveLength(27);
     expect(Object.keys(contract.configSchema.properties ?? {})).toEqual([]);
 
     let expectedScopes = {
@@ -74,16 +86,22 @@ describe('google-meet provider contract', () => {
       update_space: googleMeetActionScopes.updateSpace,
       end_active_conference: googleMeetActionScopes.endActiveConference,
       add_member: googleMeetActionScopes.addMember,
+      get_member: googleMeetActionScopes.getMember,
       list_members: googleMeetActionScopes.listMembers,
       remove_member: googleMeetActionScopes.removeMember,
       list_conference_records: googleMeetActionScopes.listConferenceRecords,
       get_conference_record: googleMeetActionScopes.getConferenceRecord,
+      get_participant: googleMeetActionScopes.getParticipant,
       list_participants: googleMeetActionScopes.listParticipants,
+      get_participant_session: googleMeetActionScopes.getParticipantSession,
       get_participant_sessions: googleMeetActionScopes.getParticipantSessions,
       list_recordings: googleMeetActionScopes.listRecordings,
       get_recording: googleMeetActionScopes.getRecording,
+      list_smart_notes: googleMeetActionScopes.listSmartNotes,
+      get_smart_note: googleMeetActionScopes.getSmartNote,
       list_transcripts: googleMeetActionScopes.listTranscripts,
       get_transcript: googleMeetActionScopes.getTranscript,
+      get_transcript_entry: googleMeetActionScopes.getTranscriptEntry,
       list_transcript_entries: googleMeetActionScopes.listTranscriptEntries,
       inbound_webhook: googleMeetActionScopes.inboundWebhook,
       conference_events: googleMeetActionScopes.conferenceEvents,

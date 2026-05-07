@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { calendlyServiceError } from '../lib/errors';
 
 export let checkAvailability = SlateTool.create(spec, {
   name: 'Check Availability',
@@ -76,22 +77,40 @@ export let checkAvailability = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
     let output: Record<string, any> = {};
     let messages: string[] = [];
+    let hasTimeRange = Boolean(ctx.input.startTime && ctx.input.endTime);
+    let hasPartialTimeRange = Boolean(ctx.input.startTime || ctx.input.endTime) && !hasTimeRange;
 
-    if (ctx.input.eventTypeUri && ctx.input.startTime && ctx.input.endTime) {
+    if (hasPartialTimeRange) {
+      throw calendlyServiceError('Provide both startTime and endTime, or omit both.');
+    }
+
+    if (ctx.input.eventTypeUri && !hasTimeRange) {
+      throw calendlyServiceError(
+        'Provide startTime and endTime when checking event type availability.'
+      );
+    }
+
+    if (!ctx.input.eventTypeUri && !ctx.input.userUri) {
+      throw calendlyServiceError(
+        'Provide eventTypeUri with a time range, or userUri for busy times or availability schedules.'
+      );
+    }
+
+    if (ctx.input.eventTypeUri && hasTimeRange) {
       let availableTimes = await client.getAvailableTimes({
         eventTypeUri: ctx.input.eventTypeUri,
-        startTime: ctx.input.startTime,
-        endTime: ctx.input.endTime
+        startTime: ctx.input.startTime!,
+        endTime: ctx.input.endTime!
       });
       output.availableTimes = availableTimes;
       messages.push(`Found **${availableTimes.length}** available time slots.`);
     }
 
-    if (ctx.input.userUri && ctx.input.startTime && ctx.input.endTime) {
+    if (ctx.input.userUri && hasTimeRange) {
       let busyTimes = await client.getUserBusyTimes({
         userUri: ctx.input.userUri,
-        startTime: ctx.input.startTime,
-        endTime: ctx.input.endTime
+        startTime: ctx.input.startTime!,
+        endTime: ctx.input.endTime!
       });
       output.busyTimes = busyTimes;
       messages.push(`Found **${busyTimes.length}** busy time periods.`);
@@ -111,9 +130,7 @@ export let checkAvailability = SlateTool.create(spec, {
 
     return {
       output,
-      message:
-        messages.join(' ') ||
-        'No availability data requested. Provide eventTypeUri or userUri with appropriate parameters.'
+      message: messages.join(' ')
     };
   })
   .build();

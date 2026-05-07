@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let updateZoneSettingsTool = SlateTool.create(spec, {
@@ -67,8 +68,9 @@ export let updateZoneSettingsTool = SlateTool.create(spec, {
       };
     }
 
-    if (!ctx.input.settingId) throw new Error('settingId is required for update');
-    if (ctx.input.value === undefined) throw new Error('value is required for update');
+    if (!ctx.input.settingId) throw cloudflareServiceError('settingId is required for update');
+    if (ctx.input.value === undefined)
+      throw cloudflareServiceError('value is required for update');
 
     let response = await client.updateZoneSetting(
       ctx.input.zoneId,

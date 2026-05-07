@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { withFirebaseApiError } from './errors';
 
 export class RealtimeDbClient {
   private token: string;
@@ -46,9 +47,11 @@ export class RealtimeDbClient {
 
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
-    let response = await this.axiosInstance.get(`${normalizedPath}.json`, {
-      params
-    });
+    let response = await withFirebaseApiError('Realtime Database get data', () =>
+      this.axiosInstance.get(`${normalizedPath}.json`, {
+        params
+      })
+    );
 
     return response.data;
   }
@@ -56,9 +59,11 @@ export class RealtimeDbClient {
   async setData(path: string, data: any): Promise<any> {
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
-    let response = await this.axiosInstance.put(`${normalizedPath}.json`, data, {
-      params: this.authParams
-    });
+    let response = await withFirebaseApiError('Realtime Database set data', () =>
+      this.axiosInstance.put(`${normalizedPath}.json`, data, {
+        params: this.authParams
+      })
+    );
 
     return response.data;
   }
@@ -66,9 +71,11 @@ export class RealtimeDbClient {
   async pushData(path: string, data: any): Promise<{ generatedKey: string }> {
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
-    let response = await this.axiosInstance.post(`${normalizedPath}.json`, data, {
-      params: this.authParams
-    });
+    let response = await withFirebaseApiError('Realtime Database push data', () =>
+      this.axiosInstance.post(`${normalizedPath}.json`, data, {
+        params: this.authParams
+      })
+    );
 
     return {
       generatedKey: response.data.name
@@ -78,9 +85,11 @@ export class RealtimeDbClient {
   async updateData(path: string, data: Record<string, any>): Promise<any> {
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
-    let response = await this.axiosInstance.patch(`${normalizedPath}.json`, data, {
-      params: this.authParams
-    });
+    let response = await withFirebaseApiError('Realtime Database update data', () =>
+      this.axiosInstance.patch(`${normalizedPath}.json`, data, {
+        params: this.authParams
+      })
+    );
 
     return response.data;
   }
@@ -88,9 +97,11 @@ export class RealtimeDbClient {
   async deleteData(path: string): Promise<void> {
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
-    await this.axiosInstance.delete(`${normalizedPath}.json`, {
-      params: this.authParams
-    });
+    await withFirebaseApiError('Realtime Database delete data', () =>
+      this.axiosInstance.delete(`${normalizedPath}.json`, {
+        params: this.authParams
+      })
+    );
   }
 
   async getShallowData(path: string): Promise<Record<string, boolean> | null> {

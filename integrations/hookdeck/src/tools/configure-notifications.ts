@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { hookdeckServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 let notificationConfigSchema = z.object({
@@ -62,8 +63,12 @@ export let configureNotifications = SlateTool.create(spec, {
         };
       }
       case 'update': {
+        if (ctx.input.enabled === undefined) {
+          throw hookdeckServiceError('enabled is required for "update".');
+        }
+
         let config = await client.updateWebhookNotifications({
-          enabled: ctx.input.enabled!,
+          enabled: ctx.input.enabled,
           source_id: ctx.input.sourceId,
           topics: ctx.input.topics
         });

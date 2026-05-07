@@ -1,7 +1,8 @@
 import { SlateAuth, axios } from 'slates';
 import { z } from 'zod';
-import { getAccountsUrl, datacenterFromLocation } from './lib/urls';
+import { getAccountsUrl, datacenterFromLocation, datacenterFromApiDomain } from './lib/urls';
 import type { Datacenter } from './lib/urls';
+import { zohoApiError, zohoServiceError } from './lib/errors';
 
 let scopes = [
   // CRM scopes
@@ -29,6 +30,11 @@ let scopes = [
     title: 'CRM - COQL',
     description: 'Execute COQL queries against CRM data',
     scope: 'ZohoCRM.coql.READ'
+  },
+  {
+    title: 'CRM - Secure Search',
+    description: 'Search CRM records using the current secure search scope',
+    scope: 'ZohoSearch.securesearch.READ'
   },
   { title: 'CRM - Bulk Read', description: 'Bulk read CRM data', scope: 'ZohoCRM.bulk.READ' },
   {
@@ -106,27 +112,27 @@ let scopes = [
   {
     title: 'People - Full Access',
     description: 'Full access to Zoho People data',
-    scope: 'ZohoPeople.forms.ALL'
+    scope: 'ZOHOPEOPLE.forms.ALL'
   },
   {
     title: 'People - Read',
     description: 'Read access to Zoho People data',
-    scope: 'ZohoPeople.forms.READ'
+    scope: 'ZOHOPEOPLE.forms.READ'
   },
   {
     title: 'People - Attendance',
     description: 'Manage attendance records',
-    scope: 'ZohoPeople.attendance.ALL'
+    scope: 'ZOHOPEOPLE.attendance.ALL'
   },
   {
     title: 'People - Leave',
     description: 'Manage leave records',
-    scope: 'ZohoPeople.leave.ALL'
+    scope: 'ZOHOPEOPLE.leave.ALL'
   },
   {
     title: 'People - Timesheet',
     description: 'Manage timesheets',
-    scope: 'ZohoPeople.timetracker.ALL'
+    scope: 'ZOHOPEOPLE.timetracker.ALL'
   },
 
   // Projects scopes
@@ -134,6 +140,11 @@ let scopes = [
     title: 'Projects - Full Access',
     description: 'Full access to Zoho Projects',
     scope: 'ZohoProjects.portals.ALL'
+  },
+  {
+    title: 'Projects - Manage Projects',
+    description: 'Create, read, update, and delete Zoho Projects projects',
+    scope: 'ZohoProjects.projects.ALL'
   },
   {
     title: 'Projects - Read',
@@ -193,24 +204,41 @@ function createZohoOauth(name: string, key: string, dc: Datacenter) {
     handleCallback: async (ctx: any) => {
       let accountsUrl = getAccountsUrl(dc);
 
-      let response = await axios.post(`${accountsUrl}/oauth/v2/token`, null, {
-        params: {
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          grant_type: 'authorization_code',
-          code: ctx.code,
-          redirect_uri: ctx.redirectUri
-        }
-      });
+      let response;
+      try {
+        response = await axios.post(`${accountsUrl}/oauth/v2/token`, null, {
+          params: {
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            grant_type: 'authorization_code',
+            code: ctx.code,
+            redirect_uri: ctx.redirectUri
+          }
+        });
+      } catch (error) {
+        throw zohoApiError(error, 'OAuth token exchange');
+      }
 
       let data = response.data;
 
       // Prefer the location returned by Zoho -- user may have picked a different DC for login.
-      let resolvedDc: Datacenter = data.location ? datacenterFromLocation(data.location) : dc;
+      let resolvedDc: Datacenter = data.location
+        ? datacenterFromLocation(data.location)
+        : (datacenterFromApiDomain(data.api_domain) ?? dc);
 
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+
+      if (!data.access_token) {
+        throw zohoServiceError('Zoho OAuth token response did not include an access token.');
+      }
+
+      if (!data.refresh_token) {
+        throw zohoServiceError(
+          'Zoho OAuth token response did not include a refresh token. Reconnect and approve offline access.'
+        );
+      }
 
       return {
         output: {
@@ -226,14 +254,25 @@ function createZohoOauth(name: string, key: string, dc: Datacenter) {
       let resolvedDc = (ctx.output.datacenter || dc) as Datacenter;
       let accountsUrl = getAccountsUrl(resolvedDc);
 
-      let response = await axios.post(`${accountsUrl}/oauth/v2/token`, null, {
-        params: {
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken
-        }
-      });
+      if (!ctx.output.refreshToken) {
+        throw zohoServiceError(
+          'Zoho OAuth profile is missing a refresh token. Reconnect the Zoho account to restore automatic refresh.'
+        );
+      }
+
+      let response;
+      try {
+        response = await axios.post(`${accountsUrl}/oauth/v2/token`, null, {
+          params: {
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken
+          }
+        });
+      } catch (error) {
+        throw zohoApiError(error, 'OAuth token refresh');
+      }
 
       let data = response.data;
 
@@ -241,10 +280,14 @@ function createZohoOauth(name: string, key: string, dc: Datacenter) {
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
 
+      if (!data.access_token) {
+        throw zohoServiceError('Zoho OAuth refresh response did not include an access token.');
+      }
+
       return {
         output: {
           token: data.access_token,
-          refreshToken: ctx.output.refreshToken,
+          refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
           datacenter: resolvedDc
         }
@@ -255,11 +298,16 @@ function createZohoOauth(name: string, key: string, dc: Datacenter) {
       let resolvedDc = (ctx.output.datacenter || dc) as Datacenter;
       let accountsUrl = getAccountsUrl(resolvedDc);
 
-      let response = await axios.get(`${accountsUrl}/oauth/user/info`, {
-        headers: {
-          Authorization: `Zoho-oauthtoken ${ctx.output.token}`
-        }
-      });
+      let response;
+      try {
+        response = await axios.get(`${accountsUrl}/oauth/user/info`, {
+          headers: {
+            Authorization: `Zoho-oauthtoken ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw zohoApiError(error, 'profile request');
+      }
 
       let data = response.data;
 

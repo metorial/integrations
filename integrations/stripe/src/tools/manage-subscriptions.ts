@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StripeClient } from '../lib/client';
+import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -112,7 +113,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
     let { action } = ctx.input;
 
     if (action === 'create') {
-      if (!ctx.input.customerId) throw new Error('customerId is required for create action');
+      if (!ctx.input.customerId) throw stripeServiceError('customerId is required for create action');
       let params: Record<string, any> = { customer: ctx.input.customerId };
 
       if (ctx.input.items) {
@@ -123,7 +124,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
       } else if (ctx.input.priceId) {
         params.items = [{ price: ctx.input.priceId }];
       } else {
-        throw new Error('priceId or items is required for create action');
+        throw stripeServiceError('priceId or items is required for create action');
       }
 
       if (ctx.input.trialPeriodDays !== undefined)
@@ -154,7 +155,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
 
     if (action === 'get') {
       if (!ctx.input.subscriptionId)
-        throw new Error('subscriptionId is required for get action');
+        throw stripeServiceError('subscriptionId is required for get action');
       let sub = await client.getSubscription(ctx.input.subscriptionId);
       return {
         output: {
@@ -174,7 +175,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
 
     if (action === 'update') {
       if (!ctx.input.subscriptionId)
-        throw new Error('subscriptionId is required for update action');
+        throw stripeServiceError('subscriptionId is required for update action');
       let params: Record<string, any> = {};
 
       if (ctx.input.items) {
@@ -212,7 +213,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
 
     if (action === 'cancel') {
       if (!ctx.input.subscriptionId)
-        throw new Error('subscriptionId is required for cancel action');
+        throw stripeServiceError('subscriptionId is required for cancel action');
 
       if (ctx.input.cancelAtPeriodEnd) {
         let sub = await client.updateSubscription(ctx.input.subscriptionId, {
@@ -246,7 +247,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
 
     if (action === 'pause') {
       if (!ctx.input.subscriptionId)
-        throw new Error('subscriptionId is required for pause action');
+        throw stripeServiceError('subscriptionId is required for pause action');
       let sub = await client.pauseSubscription(ctx.input.subscriptionId);
       return {
         output: {
@@ -261,7 +262,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
 
     if (action === 'resume') {
       if (!ctx.input.subscriptionId)
-        throw new Error('subscriptionId is required for resume action');
+        throw stripeServiceError('subscriptionId is required for resume action');
       let sub = await client.resumeSubscription(ctx.input.subscriptionId);
       return {
         output: {

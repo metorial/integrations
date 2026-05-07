@@ -1,5 +1,14 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { pipedriveApiError, pipedriveServiceError } from './lib/errors';
+
+let companyDomainFromApiDomain = (apiDomain: unknown) => {
+  if (typeof apiDomain !== 'string' || !apiDomain.trim()) {
+    return undefined;
+  }
+
+  return apiDomain.replace('https://', '').replace('.pipedrive.com', '');
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -7,7 +16,8 @@ export let auth = SlateAuth.create()
       token: z.string(),
       refreshToken: z.string().optional(),
       expiresAt: z.string().optional(),
-      companyDomain: z.string().optional()
+      companyDomain: z.string().optional(),
+      authType: z.enum(['oauth', 'api_token']).optional()
     })
   )
   .addOauth({
@@ -173,22 +183,33 @@ export let auth = SlateAuth.create()
 
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await http.post(
-        'https://oauth.pipedrive.com/oauth/token',
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: ctx.code,
-          redirect_uri: ctx.redirectUri
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await http.post(
+          'https://oauth.pipedrive.com/oauth/token',
+          new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: ctx.code,
+            redirect_uri: ctx.redirectUri
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw pipedriveApiError(error, 'OAuth token exchange');
+      }
 
       let data = response.data;
+      if (!data?.access_token) {
+        throw pipedriveServiceError(
+          'Pipedrive OAuth token response did not include an access token.'
+        );
+      }
+
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -198,33 +219,47 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          companyDomain: data.api_domain
-            ? data.api_domain.replace('https://', '').replace('.pipedrive.com', '')
-            : undefined
+          authType: 'oauth' as const,
+          companyDomain: companyDomainFromApiDomain(data.api_domain)
         }
       };
     },
 
     handleTokenRefresh: async ctx => {
+      if (!ctx.output.refreshToken) {
+        throw pipedriveServiceError('No Pipedrive OAuth refresh token is available.');
+      }
+
       let http = createAxios();
 
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await http.post(
-        'https://oauth.pipedrive.com/oauth/token',
-        new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken || ''
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await http.post(
+          'https://oauth.pipedrive.com/oauth/token',
+          new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw pipedriveApiError(error, 'OAuth token refresh');
+      }
 
       let data = response.data;
+      if (!data?.access_token) {
+        throw pipedriveServiceError(
+          'Pipedrive OAuth refresh response did not include an access token.'
+        );
+      }
+
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -234,7 +269,9 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
-          companyDomain: ctx.output.companyDomain
+          authType: 'oauth' as const,
+          companyDomain:
+            companyDomainFromApiDomain(data.api_domain) ?? ctx.output.companyDomain
         }
       };
     },
@@ -244,11 +281,16 @@ export let auth = SlateAuth.create()
         baseURL: `https://api.pipedrive.com/v1`
       });
 
-      let response = await http.get('/users/me', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response;
+      try {
+        response = await http.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw pipedriveApiError(error, 'OAuth profile lookup');
+      }
 
       let user = response.data?.data;
 
@@ -278,7 +320,8 @@ export let auth = SlateAuth.create()
     getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token
+          token: ctx.input.token,
+          authType: 'api_token' as const
         }
       };
     },
@@ -286,11 +329,16 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: any) => {
       let http = createAxios();
 
-      let response = await http.get(`https://api.pipedrive.com/v1/users/me`, {
-        headers: {
-          'x-api-token': ctx.output.token
-        }
-      });
+      let response;
+      try {
+        response = await http.get(`https://api.pipedrive.com/v1/users/me`, {
+          headers: {
+            'x-api-token': ctx.output.token
+          }
+        });
+      } catch (error) {
+        throw pipedriveApiError(error, 'API token profile lookup');
+      }
 
       let user = response.data?.data;
 

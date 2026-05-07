@@ -5,6 +5,7 @@ export { getCreatorInfo } from './get-creator-info';
 export { postVideo } from './post-video';
 export { postPhoto } from './post-photo';
 export { getPublishStatus } from './get-publish-status';
+export { listAdvertisers } from './list-advertisers';
 export { getCampaigns } from './get-campaigns';
 export { manageCampaign } from './manage-campaign';
 export { getAdGroups } from './get-ad-groups';

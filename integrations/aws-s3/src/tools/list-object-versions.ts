@@ -19,7 +19,13 @@ Use **prefix** to filter versions for a specific object or folder.`,
         .string()
         .optional()
         .describe('Filter versions by key prefix (use exact key for a single object)'),
-      maxKeys: z.number().optional().describe('Maximum number of versions to return'),
+      maxKeys: z
+        .number()
+        .int()
+        .min(1)
+        .max(1000)
+        .optional()
+        .describe('Maximum number of versions to return'),
       keyMarker: z
         .string()
         .optional()

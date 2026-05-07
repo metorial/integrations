@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { PayPalClient } from '../lib/client';
+import { paypalServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -72,7 +73,9 @@ export let manageBillingPlan = SlateTool.create(spec, {
     switch (ctx.input.action) {
       case 'create': {
         if (!ctx.input.productId || !ctx.input.name || !ctx.input.billingCycles) {
-          throw new Error('productId, name, and billingCycles are required for create action');
+          throw paypalServiceError(
+            'productId, name, and billingCycles are required for create action'
+          );
         }
         let cycles = ctx.input.billingCycles.map(c => ({
           frequency: { interval_unit: c.intervalUnit, interval_count: c.intervalCount },
@@ -88,6 +91,7 @@ export let manageBillingPlan = SlateTool.create(spec, {
           description: ctx.input.description,
           billingCycles: cycles
         });
+        plan = await client.getPlan(plan.id);
 
         return {
           output: {
@@ -101,7 +105,7 @@ export let manageBillingPlan = SlateTool.create(spec, {
         };
       }
       case 'get': {
-        if (!ctx.input.planId) throw new Error('planId is required for get action');
+        if (!ctx.input.planId) throw paypalServiceError('planId is required for get action');
         let plan = await client.getPlan(ctx.input.planId);
         return {
           output: {
@@ -135,7 +139,8 @@ export let manageBillingPlan = SlateTool.create(spec, {
         };
       }
       case 'activate': {
-        if (!ctx.input.planId) throw new Error('planId is required for activate action');
+        if (!ctx.input.planId)
+          throw paypalServiceError('planId is required for activate action');
         await client.activatePlan(ctx.input.planId);
         return {
           output: { planId: ctx.input.planId, status: 'ACTIVE' },
@@ -143,7 +148,8 @@ export let manageBillingPlan = SlateTool.create(spec, {
         };
       }
       case 'deactivate': {
-        if (!ctx.input.planId) throw new Error('planId is required for deactivate action');
+        if (!ctx.input.planId)
+          throw paypalServiceError('planId is required for deactivate action');
         await client.deactivatePlan(ctx.input.planId);
         return {
           output: { planId: ctx.input.planId, status: 'INACTIVE' },

@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { zoomApiError, zoomOAuthError, zoomServiceError } from './lib/errors';
 
 let authAxios = createAxios({
   baseURL: 'https://zoom.us'
@@ -212,20 +213,25 @@ export let auth = SlateAuth.create()
     handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await authAxios.post(
-        '/oauth/token',
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: ctx.code,
-          redirect_uri: ctx.redirectUri
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await authAxios.post(
+          '/oauth/token',
+          new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: ctx.code,
+            redirect_uri: ctx.redirectUri
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw zoomOAuthError(error, 'authorization code exchange');
+      }
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -240,21 +246,30 @@ export let auth = SlateAuth.create()
     },
 
     handleTokenRefresh: async ctx => {
+      if (!ctx.output.refreshToken) {
+        throw zoomServiceError('Zoom OAuth refresh token is required to refresh access.');
+      }
+
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await authAxios.post(
-        '/oauth/token',
-        new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken || ''
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await authAxios.post(
+          '/oauth/token',
+          new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw zoomOAuthError(error, 'token refresh');
+      }
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -273,11 +288,16 @@ export let auth = SlateAuth.create()
       input: Record<string, never>;
       scopes: string[];
     }) => {
-      let response = await apiAxios.get('/users/me', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response;
+      try {
+        response = await apiAxios.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw zoomApiError(error, 'get OAuth profile');
+      }
 
       let user = response.data;
 
@@ -309,19 +329,24 @@ export let auth = SlateAuth.create()
     }) => {
       let credentials = btoa(`${ctx.input.clientId}:${ctx.input.clientSecret}`);
 
-      let response = await authAxios.post(
-        '/oauth/token',
-        new URLSearchParams({
-          grant_type: 'account_credentials',
-          account_id: ctx.input.accountId
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await authAxios.post(
+          '/oauth/token',
+          new URLSearchParams({
+            grant_type: 'account_credentials',
+            account_id: ctx.input.accountId
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw zoomOAuthError(error, 'server-to-server token exchange');
+      }
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -339,11 +364,16 @@ export let auth = SlateAuth.create()
       output: { token: string; refreshToken?: string; expiresAt?: string; accountId?: string };
       input: { accountId: string; clientId: string; clientSecret: string };
     }) => {
-      let response = await apiAxios.get('/users/me', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response;
+      try {
+        response = await apiAxios.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw zoomApiError(error, 'get server-to-server profile');
+      }
 
       let user = response.data;
 

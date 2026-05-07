@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { hookdeckServiceError, requireHookdeckInput } from '../lib/errors';
 import { z } from 'zod';
 
 let bookmarkSchema = z.object({
@@ -16,7 +17,7 @@ let bookmarkSchema = z.object({
 export let manageBookmarks = SlateTool.create(spec, {
   name: 'Manage Bookmarks',
   key: 'manage_bookmarks',
-  description: `Create, list, trigger, and delete Hookdeck bookmarks. Bookmarks store and replay common or edge-case requests. Bookmarked data is exempt from archiving. Triggering a bookmark creates a new event (not a retry attempt).`,
+  description: `Create, update, list, trigger, and delete Hookdeck bookmarks. Bookmarks store and replay common or edge-case requests. Bookmarked data is exempt from archiving. Triggering a bookmark creates a new event (not a retry attempt).`,
   instructions: [
     'Use action "create" to bookmark an event by its eventDataId and connectionId.',
     'Use action "trigger" to replay a bookmarked request, creating a new event on the associated connection.'
@@ -29,7 +30,7 @@ export let manageBookmarks = SlateTool.create(spec, {
   .input(
     z.object({
       action: z
-        .enum(['list', 'get', 'create', 'trigger', 'delete'])
+        .enum(['list', 'get', 'create', 'update', 'trigger', 'delete'])
         .describe('Action to perform'),
       bookmarkId: z
         .string()
@@ -90,32 +91,59 @@ export let manageBookmarks = SlateTool.create(spec, {
         };
       }
       case 'get': {
-        let bookmark = await client.getBookmark(ctx.input.bookmarkId!);
+        let bookmarkId = requireHookdeckInput(ctx.input.bookmarkId, 'bookmarkId', 'get');
+        let bookmark = await client.getBookmark(bookmarkId);
         return {
           output: { bookmark: mapBookmark(bookmark) },
           message: `Retrieved bookmark **${bookmark.label}** (\`${bookmark.id}\`).`
         };
       }
       case 'create': {
+        let label = requireHookdeckInput(ctx.input.label, 'label', 'create');
+        let eventDataId = requireHookdeckInput(ctx.input.eventDataId, 'eventDataId', 'create');
+        let connectionId = requireHookdeckInput(
+          ctx.input.connectionId,
+          'connectionId',
+          'create'
+        );
         let bookmark = await client.createBookmark({
-          label: ctx.input.label!,
-          event_data_id: ctx.input.eventDataId!,
-          webhook_id: ctx.input.connectionId!
+          label,
+          event_data_id: eventDataId,
+          webhook_id: connectionId
         });
         return {
           output: { bookmark: mapBookmark(bookmark) },
           message: `Created bookmark **${bookmark.label}** (\`${bookmark.id}\`).`
         };
       }
+      case 'update': {
+        let bookmarkId = requireHookdeckInput(ctx.input.bookmarkId, 'bookmarkId', 'update');
+        if (!ctx.input.label && !ctx.input.eventDataId && !ctx.input.connectionId) {
+          throw hookdeckServiceError(
+            'label, eventDataId, or connectionId is required for "update".'
+          );
+        }
+        let bookmark = await client.updateBookmark(bookmarkId, {
+          label: ctx.input.label,
+          event_data_id: ctx.input.eventDataId,
+          webhook_id: ctx.input.connectionId
+        });
+        return {
+          output: { bookmark: mapBookmark(bookmark) },
+          message: `Updated bookmark **${bookmark.label}** (\`${bookmark.id}\`).`
+        };
+      }
       case 'trigger': {
-        let event = await client.triggerBookmark(ctx.input.bookmarkId!);
+        let bookmarkId = requireHookdeckInput(ctx.input.bookmarkId, 'bookmarkId', 'trigger');
+        let event = await client.triggerBookmark(bookmarkId);
         return {
           output: { triggeredEventId: event.id },
-          message: `Triggered bookmark \`${ctx.input.bookmarkId}\`, created new event \`${event.id}\`.`
+          message: `Triggered bookmark \`${bookmarkId}\`, created new event \`${event.id}\`.`
         };
       }
       case 'delete': {
-        let result = await client.deleteBookmark(ctx.input.bookmarkId!);
+        let bookmarkId = requireHookdeckInput(ctx.input.bookmarkId, 'bookmarkId', 'delete');
+        let result = await client.deleteBookmark(bookmarkId);
         return {
           output: { deletedId: result.id },
           message: `Deleted bookmark \`${result.id}\`.`

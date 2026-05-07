@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { intercomServiceError } from '../lib/errors';
 
 export let manageContacts = SlateTool.create(spec, {
   name: 'Manage Contacts',
@@ -98,7 +99,8 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
     }
 
     if (action === 'update') {
-      if (!ctx.input.contactId) throw new Error('contactId is required for update');
+      if (!ctx.input.contactId)
+        throw intercomServiceError('contactId is required for update');
       let result = await client.updateContact(ctx.input.contactId, {
         role: ctx.input.role,
         externalId: ctx.input.externalId,
@@ -119,7 +121,8 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
     }
 
     if (action === 'archive') {
-      if (!ctx.input.contactId) throw new Error('contactId is required for archive');
+      if (!ctx.input.contactId)
+        throw intercomServiceError('contactId is required for archive');
       let result = await client.archiveContact(ctx.input.contactId);
       return {
         output: mapContact(result),
@@ -128,7 +131,8 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
     }
 
     if (action === 'unarchive') {
-      if (!ctx.input.contactId) throw new Error('contactId is required for unarchive');
+      if (!ctx.input.contactId)
+        throw intercomServiceError('contactId is required for unarchive');
       let result = await client.unarchiveContact(ctx.input.contactId);
       return {
         output: mapContact(result),
@@ -137,7 +141,8 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
     }
 
     if (action === 'delete') {
-      if (!ctx.input.contactId) throw new Error('contactId is required for delete');
+      if (!ctx.input.contactId)
+        throw intercomServiceError('contactId is required for delete');
       await client.deleteContact(ctx.input.contactId);
       return {
         output: { contactId: ctx.input.contactId, deleted: true },
@@ -147,7 +152,9 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
 
     if (action === 'merge') {
       if (!ctx.input.leadContactId || !ctx.input.userContactId) {
-        throw new Error('Both leadContactId and userContactId are required for merge');
+        throw intercomServiceError(
+          'Both leadContactId and userContactId are required for merge'
+        );
       }
       let result = await client.mergeContacts(
         ctx.input.leadContactId,
@@ -159,7 +166,7 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw intercomServiceError(`Unknown action: ${action}`);
   })
   .build();
 

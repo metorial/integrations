@@ -11,11 +11,13 @@ import {
   manageAddons,
   manageConfigVars,
   manageBuilds,
+  manageBuildpacks,
   manageReleases,
   manageDomains,
   manageCollaborators,
   managePipelines,
   manageLogDrains,
+  createLogSession,
   getAccount
 } from './tools';
 import { appWebhook } from './triggers';
@@ -33,11 +35,13 @@ export let provider = Slate.create({
     manageAddons,
     manageConfigVars,
     manageBuilds,
+    manageBuildpacks,
     manageReleases,
     manageDomains,
     manageCollaborators,
     managePipelines,
     manageLogDrains,
+    createLogSession,
     getAccount
   ],
   triggers: [appWebhook]

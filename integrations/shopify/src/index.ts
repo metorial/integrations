@@ -20,7 +20,9 @@ import {
   manageCollections,
   manageDiscounts,
   manageDraftOrders,
-  getShop
+  getShop,
+  managePages,
+  manageMetafields
 } from './tools';
 import {
   orderEvents,
@@ -52,7 +54,9 @@ export let provider = Slate.create({
     manageCollections,
     manageDiscounts,
     manageDraftOrders,
-    getShop
+    getShop,
+    managePages,
+    manageMetafields
   ],
   triggers: [orderEvents, productEvents, customerEvents, inventoryEvents, fulfillmentEvents]
 });

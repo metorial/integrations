@@ -1,11 +1,19 @@
+import {
+  CreateTopicCommand,
+  DeleteTopicCommand,
+  GetTopicAttributesCommand,
+  ListSubscriptionsByTopicCommand,
+  ListTopicsCommand,
+  PublishCommand,
+  SetTopicAttributesCommand,
+  SubscribeCommand,
+  UnsubscribeCommand
+} from '@aws-sdk/client-sns';
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
-import { clientFromContext, flattenParams } from '../lib/helpers';
-import { extractXmlValue, extractXmlValues, extractXmlBlocks } from '../lib/xml';
-
-let SNS_VERSION = '2010-03-31';
-let SNS_SERVICE = 'sns';
+import { clientFromContext } from '../lib/helpers';
+import { awsServiceError } from '../lib/errors';
 
 let topicSchema = z.object({
   topicArn: z.string().describe('ARN of the SNS topic')
@@ -19,15 +27,21 @@ let subscriptionSchema = z.object({
   owner: z.string().describe('AWS account ID of the subscription owner')
 });
 
+let topicAttributesSchema = z
+  .record(z.string(), z.string())
+  .describe('SNS topic attributes as key-value pairs');
+
 export let manageSnsTool = SlateTool.create(spec, {
   name: 'Manage SNS',
   key: 'manage_sns',
-  description: `Manage AWS SNS (Simple Notification Service) topics and subscriptions. Supports listing topics, creating and deleting topics, publishing messages, listing subscriptions for a topic, subscribing endpoints (email, SQS, Lambda, HTTP/HTTPS), and unsubscribing. Set the **operation** field to choose the action.`,
+  description: `Manage AWS SNS (Simple Notification Service) topics and subscriptions. Supports listing topics, creating and deleting topics, getting and setting topic attributes, publishing messages, listing subscriptions for a topic, subscribing endpoints (email, SQS, Lambda, HTTP/HTTPS), and unsubscribing. Set the **operation** field to choose the action.`,
   instructions: [
-    'Set "operation" to one of: "list_topics", "create_topic", "delete_topic", "publish", "list_subscriptions", "subscribe", or "unsubscribe".',
+    'Set "operation" to one of: "list_topics", "create_topic", "delete_topic", "get_topic_attributes", "set_topic_attribute", "publish", "list_subscriptions", "subscribe", or "unsubscribe".',
     'For "list_topics": optionally provide "nextToken" for pagination.',
     'For "create_topic": provide "name" and optionally "tags".',
     'For "delete_topic": provide "topicArn". This also removes all subscriptions.',
+    'For "get_topic_attributes": provide "topicArn".',
+    'For "set_topic_attribute": provide "topicArn", "attributeName", and "attributeValue".',
     'For "publish": provide "topicArn" and "message". Optionally provide "subject" for email subscribers.',
     'For "list_subscriptions": provide "topicArn" and optionally "nextToken".',
     'For "subscribe": provide "topicArn", "protocol", and "endpoint". HTTP/S and email subscriptions require confirmation by the endpoint owner.',
@@ -41,30 +55,26 @@ export let manageSnsTool = SlateTool.create(spec, {
           'list_topics',
           'create_topic',
           'delete_topic',
+          'get_topic_attributes',
+          'set_topic_attribute',
           'publish',
           'list_subscriptions',
           'subscribe',
           'unsubscribe'
         ])
         .describe('The SNS operation to perform'),
-
-      // Common
       topicArn: z
         .string()
         .optional()
         .describe(
           'ARN of the SNS topic (required for delete_topic, publish, list_subscriptions, subscribe)'
         ),
-
-      // list_topics
       nextToken: z
         .string()
         .optional()
         .describe(
           'Pagination token from a previous request (for list_topics and list_subscriptions)'
         ),
-
-      // create_topic
       name: z
         .string()
         .optional()
@@ -80,8 +90,6 @@ export let manageSnsTool = SlateTool.create(spec, {
         )
         .optional()
         .describe('Tags to attach to the topic (for create_topic)'),
-
-      // publish
       message: z
         .string()
         .optional()
@@ -90,8 +98,16 @@ export let manageSnsTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Subject line for email subscribers (for publish, max 100 characters)'),
-
-      // subscribe
+      attributeName: z
+        .string()
+        .optional()
+        .describe(
+          'SNS topic attribute name to set, e.g. DisplayName, Policy, DeliveryPolicy, TracingConfig, KmsMasterKeyId'
+        ),
+      attributeValue: z
+        .string()
+        .optional()
+        .describe('New attribute value for set_topic_attribute'),
       protocol: z
         .enum([
           'email',
@@ -112,8 +128,6 @@ export let manageSnsTool = SlateTool.create(spec, {
         .describe(
           'Endpoint to receive notifications: email address, SQS ARN, Lambda ARN, HTTP/S URL, phone number, etc. (required for subscribe)'
         ),
-
-      // unsubscribe
       subscriptionArn: z
         .string()
         .optional()
@@ -123,44 +137,34 @@ export let manageSnsTool = SlateTool.create(spec, {
   .output(
     z.object({
       operation: z.string().describe('The operation that was performed'),
-
-      // list_topics
       topics: z.array(topicSchema).optional().describe('List of SNS topics (for list_topics)'),
       nextToken: z
         .string()
         .optional()
         .describe('Pagination token for the next page of results'),
-
-      // create_topic
       topicArn: z.string().optional().describe('ARN of the created or affected topic'),
-
-      // delete_topic
       deleted: z
         .boolean()
         .optional()
         .describe('Whether the topic was successfully deleted (for delete_topic)'),
-
-      // publish
       messageId: z
         .string()
         .optional()
         .describe('Unique identifier of the published message (for publish)'),
-
-      // list_subscriptions
+      attributes: topicAttributesSchema
+        .optional()
+        .describe('Topic attributes returned by get_topic_attributes or set_topic_attribute'),
+      updated: z.boolean().optional().describe('Whether a topic attribute was updated'),
       subscriptions: z
         .array(subscriptionSchema)
         .optional()
         .describe('List of subscriptions (for list_subscriptions)'),
-
-      // subscribe
       subscriptionArn: z
         .string()
         .optional()
         .describe(
           'ARN of the subscription, or "pending confirmation" if confirmation is required (for subscribe)'
         ),
-
-      // unsubscribe
       unsubscribed: z
         .boolean()
         .optional()
@@ -171,67 +175,36 @@ export let manageSnsTool = SlateTool.create(spec, {
     let client = clientFromContext(ctx);
     let { operation } = ctx.input;
 
-    // ── List Topics ──────────────────────────────────────────────────
     if (operation === 'list_topics') {
-      let params: Record<string, string> = {};
-      if (ctx.input.nextToken) params['NextToken'] = ctx.input.nextToken;
-
-      let response = await client.queryApi({
-        service: SNS_SERVICE,
-        action: 'ListTopics',
-        params,
-        version: SNS_VERSION
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let memberBlocks = extractXmlBlocks(xml, 'member');
-      let topics = memberBlocks
-        .map(block => {
-          let arn = extractXmlValue(block, 'TopicArn');
-          return arn ? { topicArn: arn } : null;
-        })
-        .filter((t): t is { topicArn: string } => t !== null);
-
-      let nextToken = extractXmlValue(xml, 'NextToken');
+      let response = await client.send('SNS ListTopics', () =>
+        client.sns.send(new ListTopicsCommand({ NextToken: ctx.input.nextToken }))
+      );
+      let topics = (response.Topics ?? [])
+        .map(topic => (topic.TopicArn ? { topicArn: topic.TopicArn } : null))
+        .filter((topic): topic is { topicArn: string } => topic !== null);
 
       return {
         output: {
           operation: 'list_topics',
           topics,
-          nextToken
+          nextToken: response.NextToken
         },
-        message: `Found **${topics.length}** SNS topic(s)${nextToken ? ' (more available)' : ''}.`
+        message: `Found **${topics.length}** SNS topic(s)${response.NextToken ? ' (more available)' : ''}.`
       };
     }
 
-    // ── Create Topic ─────────────────────────────────────────────────
     if (operation === 'create_topic') {
-      if (!ctx.input.name) throw new Error('"name" is required for create_topic.');
+      if (!ctx.input.name) throw awsServiceError('"name" is required for create_topic.');
 
-      let params: Record<string, string> = {
-        Name: ctx.input.name
-      };
-
-      if (ctx.input.tags && ctx.input.tags.length > 0) {
-        let tagParams = flattenParams(
-          'Tags.member',
-          ctx.input.tags.map(t => ({
-            Key: t.key,
-            Value: t.value
-          }))
-        );
-        Object.assign(params, tagParams);
-      }
-
-      let response = await client.postQueryApi({
-        service: SNS_SERVICE,
-        action: 'CreateTopic',
-        params,
-        version: SNS_VERSION
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let topicArn = extractXmlValue(xml, 'TopicArn') ?? '';
+      let response = await client.send('SNS CreateTopic', () =>
+        client.sns.send(
+          new CreateTopicCommand({
+            Name: ctx.input.name,
+            Tags: ctx.input.tags?.map(tag => ({ Key: tag.key, Value: tag.value }))
+          })
+        )
+      );
+      let topicArn = response.TopicArn ?? '';
 
       return {
         output: {
@@ -242,16 +215,13 @@ export let manageSnsTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Delete Topic ─────────────────────────────────────────────────
     if (operation === 'delete_topic') {
-      if (!ctx.input.topicArn) throw new Error('"topicArn" is required for delete_topic.');
+      if (!ctx.input.topicArn)
+        throw awsServiceError('"topicArn" is required for delete_topic.');
 
-      await client.postQueryApi({
-        service: SNS_SERVICE,
-        action: 'DeleteTopic',
-        params: { TopicArn: ctx.input.topicArn },
-        version: SNS_VERSION
-      });
+      await client.send('SNS DeleteTopic', () =>
+        client.sns.send(new DeleteTopicCommand({ TopicArn: ctx.input.topicArn }))
+      );
 
       return {
         output: {
@@ -263,114 +233,149 @@ export let manageSnsTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Publish Message ──────────────────────────────────────────────
-    if (operation === 'publish') {
-      if (!ctx.input.topicArn) throw new Error('"topicArn" is required for publish.');
-      if (!ctx.input.message) throw new Error('"message" is required for publish.');
+    if (operation === 'get_topic_attributes') {
+      if (!ctx.input.topicArn)
+        throw awsServiceError('"topicArn" is required for get_topic_attributes.');
 
-      let params: Record<string, string> = {
-        TopicArn: ctx.input.topicArn,
-        Message: ctx.input.message
+      let response = await client.send('SNS GetTopicAttributes', () =>
+        client.sns.send(new GetTopicAttributesCommand({ TopicArn: ctx.input.topicArn }))
+      );
+      let attributes = response.Attributes ?? {};
+
+      return {
+        output: {
+          operation: 'get_topic_attributes',
+          topicArn: ctx.input.topicArn,
+          attributes
+        },
+        message: `Retrieved **${Object.keys(attributes).length}** attribute(s) for topic \`${ctx.input.topicArn}\`.`
       };
+    }
 
-      if (ctx.input.subject) params['Subject'] = ctx.input.subject;
+    if (operation === 'set_topic_attribute') {
+      if (!ctx.input.topicArn)
+        throw awsServiceError('"topicArn" is required for set_topic_attribute.');
+      if (!ctx.input.attributeName)
+        throw awsServiceError('"attributeName" is required for set_topic_attribute.');
+      if (ctx.input.attributeValue === undefined)
+        throw awsServiceError('"attributeValue" is required for set_topic_attribute.');
 
-      let response = await client.postQueryApi({
-        service: SNS_SERVICE,
-        action: 'Publish',
-        params,
-        version: SNS_VERSION
-      });
+      await client.send('SNS SetTopicAttributes', () =>
+        client.sns.send(
+          new SetTopicAttributesCommand({
+            TopicArn: ctx.input.topicArn,
+            AttributeName: ctx.input.attributeName,
+            AttributeValue: ctx.input.attributeValue
+          })
+        )
+      );
 
-      let xml = typeof response === 'string' ? response : String(response);
-      let messageId = extractXmlValue(xml, 'MessageId') ?? '';
+      return {
+        output: {
+          operation: 'set_topic_attribute',
+          topicArn: ctx.input.topicArn,
+          attributes: {
+            [ctx.input.attributeName]: ctx.input.attributeValue
+          },
+          updated: true
+        },
+        message: `Updated SNS topic attribute **${ctx.input.attributeName}**.`
+      };
+    }
+
+    if (operation === 'publish') {
+      if (!ctx.input.topicArn) throw awsServiceError('"topicArn" is required for publish.');
+      if (!ctx.input.message) throw awsServiceError('"message" is required for publish.');
+
+      let response = await client.send('SNS Publish', () =>
+        client.sns.send(
+          new PublishCommand({
+            TopicArn: ctx.input.topicArn,
+            Message: ctx.input.message,
+            Subject: ctx.input.subject
+          })
+        )
+      );
 
       return {
         output: {
           operation: 'publish',
-          messageId,
+          messageId: response.MessageId ?? '',
           topicArn: ctx.input.topicArn
         },
-        message: `Published message \`${messageId}\` to topic \`${ctx.input.topicArn}\`.`
+        message: `Published message \`${response.MessageId ?? ''}\` to topic \`${ctx.input.topicArn}\`.`
       };
     }
 
-    // ── List Subscriptions ───────────────────────────────────────────
     if (operation === 'list_subscriptions') {
       if (!ctx.input.topicArn)
-        throw new Error('"topicArn" is required for list_subscriptions.');
+        throw awsServiceError('"topicArn" is required for list_subscriptions.');
 
-      let params: Record<string, string> = {
-        TopicArn: ctx.input.topicArn
-      };
-      if (ctx.input.nextToken) params['NextToken'] = ctx.input.nextToken;
+      let response = await client.send('SNS ListSubscriptionsByTopic', () =>
+        client.sns.send(
+          new ListSubscriptionsByTopicCommand({
+            TopicArn: ctx.input.topicArn,
+            NextToken: ctx.input.nextToken
+          })
+        )
+      );
+      let subscriptions = (response.Subscriptions ?? [])
+        .map(subscription => {
+          if (
+            !subscription.SubscriptionArn ||
+            !subscription.TopicArn ||
+            !subscription.Protocol ||
+            !subscription.Endpoint ||
+            !subscription.Owner
+          ) {
+            return null;
+          }
 
-      let response = await client.queryApi({
-        service: SNS_SERVICE,
-        action: 'ListSubscriptionsByTopic',
-        params,
-        version: SNS_VERSION
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let memberBlocks = extractXmlBlocks(xml, 'member');
-      let subscriptions = memberBlocks
-        .map(block => {
-          let subArn = extractXmlValue(block, 'SubscriptionArn');
-          let topicArn = extractXmlValue(block, 'TopicArn');
-          let protocol = extractXmlValue(block, 'Protocol');
-          let endpoint = extractXmlValue(block, 'Endpoint');
-          let owner = extractXmlValue(block, 'Owner');
-          return subArn && topicArn && protocol && endpoint && owner
-            ? { subscriptionArn: subArn, topicArn, protocol, endpoint, owner }
-            : null;
+          return {
+            subscriptionArn: subscription.SubscriptionArn,
+            topicArn: subscription.TopicArn,
+            protocol: subscription.Protocol,
+            endpoint: subscription.Endpoint,
+            owner: subscription.Owner
+          };
         })
         .filter(
           (
-            s
-          ): s is {
+            subscription
+          ): subscription is {
             subscriptionArn: string;
             topicArn: string;
             protocol: string;
             endpoint: string;
             owner: string;
-          } => s !== null
+          } => subscription !== null
         );
-
-      let nextToken = extractXmlValue(xml, 'NextToken');
 
       return {
         output: {
           operation: 'list_subscriptions',
           subscriptions,
-          nextToken
+          nextToken: response.NextToken
         },
-        message: `Found **${subscriptions.length}** subscription(s) for topic \`${ctx.input.topicArn}\`${nextToken ? ' (more available)' : ''}.`
+        message: `Found **${subscriptions.length}** subscription(s) for topic \`${ctx.input.topicArn}\`${response.NextToken ? ' (more available)' : ''}.`
       };
     }
 
-    // ── Subscribe ────────────────────────────────────────────────────
     if (operation === 'subscribe') {
-      if (!ctx.input.topicArn) throw new Error('"topicArn" is required for subscribe.');
-      if (!ctx.input.protocol) throw new Error('"protocol" is required for subscribe.');
-      if (!ctx.input.endpoint) throw new Error('"endpoint" is required for subscribe.');
+      if (!ctx.input.topicArn) throw awsServiceError('"topicArn" is required for subscribe.');
+      if (!ctx.input.protocol) throw awsServiceError('"protocol" is required for subscribe.');
+      if (!ctx.input.endpoint) throw awsServiceError('"endpoint" is required for subscribe.');
 
-      let params: Record<string, string> = {
-        TopicArn: ctx.input.topicArn,
-        Protocol: ctx.input.protocol,
-        Endpoint: ctx.input.endpoint
-      };
-
-      let response = await client.postQueryApi({
-        service: SNS_SERVICE,
-        action: 'Subscribe',
-        params,
-        version: SNS_VERSION
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let subscriptionArn = extractXmlValue(xml, 'SubscriptionArn') ?? 'pending confirmation';
-
+      let response = await client.send('SNS Subscribe', () =>
+        client.sns.send(
+          new SubscribeCommand({
+            TopicArn: ctx.input.topicArn,
+            Protocol: ctx.input.protocol,
+            Endpoint: ctx.input.endpoint
+          })
+        )
+      );
+      let subscriptionArn = response.SubscriptionArn ?? 'pending confirmation';
       let isPending =
         subscriptionArn === 'pending confirmation' ||
         subscriptionArn === 'PendingConfirmation';
@@ -387,17 +392,13 @@ export let manageSnsTool = SlateTool.create(spec, {
       };
     }
 
-    // ── Unsubscribe ──────────────────────────────────────────────────
     if (operation === 'unsubscribe') {
       if (!ctx.input.subscriptionArn)
-        throw new Error('"subscriptionArn" is required for unsubscribe.');
+        throw awsServiceError('"subscriptionArn" is required for unsubscribe.');
 
-      await client.postQueryApi({
-        service: SNS_SERVICE,
-        action: 'Unsubscribe',
-        params: { SubscriptionArn: ctx.input.subscriptionArn },
-        version: SNS_VERSION
-      });
+      await client.send('SNS Unsubscribe', () =>
+        client.sns.send(new UnsubscribeCommand({ SubscriptionArn: ctx.input.subscriptionArn }))
+      );
 
       return {
         output: {
@@ -408,8 +409,8 @@ export let manageSnsTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(
-      `Unknown operation: "${operation}". Expected one of: list_topics, create_topic, delete_topic, publish, list_subscriptions, subscribe, unsubscribe.`
+    throw awsServiceError(
+      `Unknown operation: "${operation}". Expected one of: list_topics, create_topic, delete_topic, get_topic_attributes, set_topic_attribute, publish, list_subscriptions, subscribe, unsubscribe.`
     );
   })
   .build();

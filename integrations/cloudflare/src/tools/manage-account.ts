@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageAccountTool = SlateTool.create(spec, {
@@ -113,7 +114,7 @@ export let manageAccountTool = SlateTool.create(spec, {
     }
 
     if (action === 'get_account') {
-      if (!accountId) throw new Error('accountId is required');
+      if (!accountId) throw cloudflareServiceError('accountId is required');
       let response = await client.getAccount(accountId);
       let a = response.result;
       return {
@@ -123,7 +124,7 @@ export let manageAccountTool = SlateTool.create(spec, {
     }
 
     if (action === 'list_members') {
-      if (!accountId) throw new Error('accountId is required');
+      if (!accountId) throw cloudflareServiceError('accountId is required');
       let response = await client.listAccountMembers(accountId, {
         page: ctx.input.page,
         perPage: ctx.input.perPage
@@ -142,9 +143,9 @@ export let manageAccountTool = SlateTool.create(spec, {
     }
 
     if (action === 'add_member') {
-      if (!accountId) throw new Error('accountId is required');
+      if (!accountId) throw cloudflareServiceError('accountId is required');
       if (!ctx.input.email || !ctx.input.roleIds?.length) {
-        throw new Error('email and roleIds are required');
+        throw cloudflareServiceError('email and roleIds are required');
       }
       let response = await client.addAccountMember(
         accountId,
@@ -159,7 +160,7 @@ export let manageAccountTool = SlateTool.create(spec, {
 
     if (action === 'remove_member') {
       if (!accountId || !ctx.input.memberId)
-        throw new Error('accountId and memberId are required');
+        throw cloudflareServiceError('accountId and memberId are required');
       await client.removeAccountMember(accountId, ctx.input.memberId);
       return {
         output: { deleted: true },
@@ -168,7 +169,7 @@ export let manageAccountTool = SlateTool.create(spec, {
     }
 
     if (action === 'list_roles') {
-      if (!accountId) throw new Error('accountId is required');
+      if (!accountId) throw cloudflareServiceError('accountId is required');
       let response = await client.listAccountRoles(accountId);
       let roles = response.result.map((r: any) => ({
         roleId: r.id,
@@ -182,7 +183,7 @@ export let manageAccountTool = SlateTool.create(spec, {
     }
 
     if (action === 'get_audit_logs') {
-      if (!accountId) throw new Error('accountId is required');
+      if (!accountId) throw cloudflareServiceError('accountId is required');
       let response = await client.getAuditLogs(accountId, {
         since: ctx.input.since,
         before: ctx.input.before,
@@ -202,6 +203,6 @@ export let manageAccountTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

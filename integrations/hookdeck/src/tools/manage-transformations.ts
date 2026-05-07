@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { requireHookdeckInput } from '../lib/errors';
 import { z } from 'zod';
 
 let transformationSchema = z.object({
@@ -104,16 +105,23 @@ export let manageTransformations = SlateTool.create(spec, {
         };
       }
       case 'get': {
-        let t = await client.getTransformation(ctx.input.transformationId!);
+        let transformationId = requireHookdeckInput(
+          ctx.input.transformationId,
+          'transformationId',
+          'get'
+        );
+        let t = await client.getTransformation(transformationId);
         return {
           output: { transformation: mapTransformation(t) },
           message: `Retrieved transformation **${t.name}** (\`${t.id}\`).`
         };
       }
       case 'create': {
+        let name = requireHookdeckInput(ctx.input.name, 'name', 'create');
+        let code = requireHookdeckInput(ctx.input.code, 'code', 'create');
         let t = await client.createTransformation({
-          name: ctx.input.name!,
-          code: ctx.input.code!,
+          name,
+          code,
           env: ctx.input.env
         });
         return {
@@ -122,7 +130,12 @@ export let manageTransformations = SlateTool.create(spec, {
         };
       }
       case 'update': {
-        let t = await client.updateTransformation(ctx.input.transformationId!, {
+        let transformationId = requireHookdeckInput(
+          ctx.input.transformationId,
+          'transformationId',
+          'update'
+        );
+        let t = await client.updateTransformation(transformationId, {
           name: ctx.input.name,
           code: ctx.input.code,
           env: ctx.input.env
@@ -133,7 +146,12 @@ export let manageTransformations = SlateTool.create(spec, {
         };
       }
       case 'delete': {
-        let result = await client.deleteTransformation(ctx.input.transformationId!);
+        let transformationId = requireHookdeckInput(
+          ctx.input.transformationId,
+          'transformationId',
+          'delete'
+        );
+        let result = await client.deleteTransformation(transformationId);
         return {
           output: { deletedId: result.id },
           message: `Deleted transformation \`${result.id}\`.`

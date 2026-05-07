@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { pipedriveServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -57,7 +58,8 @@ Supports setting name, code, unit, tax, prices, and custom fields.`,
     let client = createClient(ctx);
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.productId) throw new Error('productId is required for delete action');
+      if (!ctx.input.productId)
+        throw pipedriveServiceError('productId is required for delete action');
       await client.deleteProduct(ctx.input.productId);
       return {
         output: { productId: ctx.input.productId, deleted: true },
@@ -88,7 +90,8 @@ Supports setting name, code, unit, tax, prices, and custom fields.`,
     if (ctx.input.action === 'create') {
       result = await client.createProduct(body);
     } else {
-      if (!ctx.input.productId) throw new Error('productId is required for update action');
+      if (!ctx.input.productId)
+        throw pipedriveServiceError('productId is required for update action');
       result = await client.updateProduct(ctx.input.productId, body);
     }
 

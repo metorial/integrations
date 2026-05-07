@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { snapchatApiError, snapchatServiceError } from './lib/errors';
 
 let authAxios = createAxios({
   baseURL: 'https://accounts.snapchat.com/login/oauth2'
@@ -70,79 +71,97 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response = await authAxios.post(
-        '/access_token',
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: ctx.code,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      try {
+        let response = await authAxios.post(
+          '/access_token',
+          new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: ctx.code,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
 
-      let data = response.data;
-      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+        let data = response.data;
+        let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
 
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt
-        }
-      };
+        return {
+          output: {
+            token: data.access_token,
+            refreshToken: data.refresh_token,
+            expiresAt
+          }
+        };
+      } catch (error) {
+        throw snapchatApiError(error, 'OAuth callback');
+      }
     },
 
     handleTokenRefresh: async ctx => {
-      let response = await authAxios.post(
-        '/access_token',
-        new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken || '',
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      if (!ctx.output.refreshToken) {
+        throw snapchatServiceError(
+          'No Snapchat refresh token is available. Reconnect the account.'
+        );
+      }
+
+      try {
+        let response = await authAxios.post(
+          '/access_token',
+          new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
 
-      let data = response.data;
-      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+        let data = response.data;
+        let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
 
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt
-        }
-      };
+        return {
+          output: {
+            token: data.access_token,
+            refreshToken: data.refresh_token,
+            expiresAt
+          }
+        };
+      } catch (error) {
+        throw snapchatApiError(error, 'OAuth token refresh');
+      }
     },
 
     getProfile: async (ctx: any) => {
-      let response = await adsAxios.get('/me', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      try {
+        let response = await adsAxios.get('/me', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
 
-      let me = response.data.me;
+        let me = response.data.me;
 
-      return {
-        profile: {
-          id: me.id,
-          email: me.email,
-          name: me.display_name,
-          organizationId: me.organization_id
-        }
-      };
+        return {
+          profile: {
+            id: me.id,
+            email: me.email,
+            name: me.display_name,
+            organizationId: me.organization_id
+          }
+        };
+      } catch (error) {
+        throw snapchatApiError(error, 'get profile');
+      }
     }
   })
   .addTokenAuth({

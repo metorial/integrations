@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { openAIServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -10,6 +11,37 @@ let messageSchema = z.object({
   content: z.string().describe('Content of the message'),
   name: z.string().optional().describe('Optional name for the message sender')
 });
+
+let buildChatResponseFormat = (responseFormatType?: string, jsonSchema?: any) => {
+  if (!responseFormatType) {
+    return undefined;
+  }
+
+  if (responseFormatType !== 'json_schema') {
+    return { type: responseFormatType };
+  }
+
+  if (!jsonSchema) {
+    throw openAIServiceError('jsonSchema is required when responseFormatType is "json_schema".');
+  }
+
+  let hasFullConfig =
+    typeof jsonSchema === 'object' &&
+    jsonSchema !== null &&
+    typeof jsonSchema.name === 'string' &&
+    jsonSchema.schema !== undefined;
+
+  return {
+    type: 'json_schema',
+    json_schema: hasFullConfig
+      ? jsonSchema
+      : {
+          name: 'response_schema',
+          schema: jsonSchema,
+          strict: true
+        }
+  };
+};
 
 export let generateText = SlateTool.create(spec, {
   name: 'Generate Text',
@@ -84,20 +116,16 @@ export let generateText = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = createClient(ctx);
-
-    let responseFormat: any = undefined;
-    if (ctx.input.responseFormatType) {
-      responseFormat = { type: ctx.input.responseFormatType };
-      if (ctx.input.responseFormatType === 'json_schema' && ctx.input.jsonSchema) {
-        responseFormat.json_schema = ctx.input.jsonSchema;
-      }
-    }
+    let responseFormat = buildChatResponseFormat(
+      ctx.input.responseFormatType,
+      ctx.input.jsonSchema
+    );
 
     let result = await client.createChatCompletion({
       model: ctx.input.model,
       messages: ctx.input.messages,
       temperature: ctx.input.temperature,
-      maxTokens: ctx.input.maxTokens,
+      maxCompletionTokens: ctx.input.maxTokens,
       topP: ctx.input.topP,
       frequencyPenalty: ctx.input.frequencyPenalty,
       presencePenalty: ctx.input.presencePenalty,

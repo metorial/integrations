@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { airtableApiError, airtableServiceError } from './lib/errors';
 
 let api = createAxios({
   baseURL: 'https://airtable.com'
@@ -26,6 +27,39 @@ let sha256Base64Url = async (plain: string): Promise<string> => {
     binary += String.fromCharCode(bytes[i]!);
   }
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+let tokenExpiresAt = (expiresIn: unknown) => {
+  let seconds = typeof expiresIn === 'number' && Number.isFinite(expiresIn) ? expiresIn : 3600;
+  return new Date(Date.now() + seconds * 1000).toISOString();
+};
+
+let getProfileFromToken = async (token: string, operation: string) => {
+  let apiClient = createAxios({
+    baseURL: 'https://api.airtable.com/v0',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  try {
+    let response = await apiClient.get('/meta/whoami');
+    let data = response.data;
+
+    if (!data?.id || !data?.email) {
+      throw airtableServiceError('Airtable profile response did not include an id and email.');
+    }
+
+    return {
+      profile: {
+        id: data.id,
+        email: data.email,
+        name: data.email
+      }
+    };
+  } catch (error) {
+    throw airtableApiError(error, operation);
+  }
 };
 
 export let auth = SlateAuth.create()
@@ -105,6 +139,10 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
+      if (!ctx.callbackState?.codeVerifier) {
+        throw airtableServiceError('Airtable OAuth callback is missing a PKCE code verifier.');
+      }
+
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
       let params = new URLSearchParams({
@@ -114,70 +152,74 @@ export let auth = SlateAuth.create()
         code_verifier: ctx.callbackState.codeVerifier
       });
 
-      let response = await api.post('/oauth2/v1/token', params.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${credentials}`
-        }
-      });
+      let response;
+      try {
+        response = await api.post('/oauth2/v1/token', params.toString(), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`
+          }
+        });
+      } catch (error) {
+        throw airtableApiError(error, 'exchange OAuth code');
+      }
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+      if (!data?.access_token) {
+        throw airtableServiceError('Airtable OAuth token response did not include an access token.');
+      }
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt
+          expiresAt: tokenExpiresAt(data.expires_in)
         }
       };
     },
 
     handleTokenRefresh: async ctx => {
+      if (!ctx.output.refreshToken) {
+        throw airtableServiceError('No Airtable refresh token available.');
+      }
+
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
       let params = new URLSearchParams({
         grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken || ''
+        refresh_token: ctx.output.refreshToken
       });
 
-      let response = await api.post('/oauth2/v1/token', params.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${credentials}`
-        }
-      });
+      let response;
+      try {
+        response = await api.post('/oauth2/v1/token', params.toString(), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`
+          }
+        });
+      } catch (error) {
+        throw airtableApiError(error, 'refresh OAuth token');
+      }
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+      if (!data?.access_token) {
+        throw airtableServiceError(
+          'Airtable OAuth refresh response did not include an access token.'
+        );
+      }
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt
+          expiresAt: tokenExpiresAt(data.expires_in)
         }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
-      let apiClient = createAxios({
-        baseURL: 'https://api.airtable.com/v0',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
-
-      let response = await apiClient.get('/meta/whoami');
-      let data = response.data;
-
-      return {
-        profile: {
-          id: data.id,
-          email: data.email,
-          name: data.email
-        }
-      };
+      return await getProfileFromToken(ctx.output.token, 'get OAuth profile');
     }
   })
   .addTokenAuth({
@@ -198,22 +240,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token?: string }; input: { token: string } }) => {
-      let apiClient = createAxios({
-        baseURL: 'https://api.airtable.com/v0',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
-
-      let response = await apiClient.get('/meta/whoami');
-      let data = response.data;
-
-      return {
-        profile: {
-          id: data.id,
-          email: data.email,
-          name: data.email
-        }
-      };
+      let token = ctx.output.token ?? ctx.input.token;
+      return await getProfileFromToken(token, 'get token profile');
     }
   });

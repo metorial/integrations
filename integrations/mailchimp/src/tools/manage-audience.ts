@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MailchimpClient } from '../lib/client';
+import { mailchimpServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -102,6 +103,12 @@ export let manageAudienceTool = SlateTool.create(spec, {
         };
       }
 
+      if (Object.keys(updateData).length === 0) {
+        throw mailchimpServiceError(
+          'At least one field must be provided to update an audience.'
+        );
+      }
+
       let result = await client.updateList(ctx.input.listId, updateData);
       return {
         output: { listId: result.id, name: result.name },
@@ -110,6 +117,18 @@ export let manageAudienceTool = SlateTool.create(spec, {
     }
 
     // Create
+    if (!ctx.input.name || !ctx.input.permissionReminder) {
+      throw mailchimpServiceError(
+        'name and permissionReminder are required to create an audience.'
+      );
+    }
+    if (!ctx.input.contact) {
+      throw mailchimpServiceError('contact is required to create an audience.');
+    }
+    if (!ctx.input.campaignDefaults) {
+      throw mailchimpServiceError('campaignDefaults is required to create an audience.');
+    }
+
     let createData: Record<string, any> = {
       name: ctx.input.name,
       permission_reminder: ctx.input.permissionReminder,

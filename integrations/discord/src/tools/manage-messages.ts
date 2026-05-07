@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DiscordClient } from '../lib/client';
+import { discordServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -105,7 +106,7 @@ export let manageMessages = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!messageId) throw new Error('messageId is required for get action');
+      if (!messageId) throw discordServiceError('messageId is required for get action');
       let raw = await client.getMessage(channelId, messageId);
       let formatted = formatMessage(raw, channelId);
       return {
@@ -115,8 +116,8 @@ export let manageMessages = SlateTool.create(spec, {
     }
 
     if (action === 'edit') {
-      if (!messageId) throw new Error('messageId is required for edit action');
-      if (!ctx.input.content) throw new Error('content is required for edit action');
+      if (!messageId) throw discordServiceError('messageId is required for edit action');
+      if (!ctx.input.content) throw discordServiceError('content is required for edit action');
       let raw = await client.editMessage(channelId, messageId, { content: ctx.input.content });
       let formatted = formatMessage(raw, channelId);
       return {
@@ -126,7 +127,7 @@ export let manageMessages = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!messageId) throw new Error('messageId is required for delete action');
+      if (!messageId) throw discordServiceError('messageId is required for delete action');
       await client.deleteMessage(channelId, messageId);
       return {
         output: { success: true },
@@ -135,7 +136,7 @@ export let manageMessages = SlateTool.create(spec, {
     }
 
     if (action === 'pin') {
-      if (!messageId) throw new Error('messageId is required for pin action');
+      if (!messageId) throw discordServiceError('messageId is required for pin action');
       await client.pinMessage(channelId, messageId);
       let raw = await client.getMessage(channelId, messageId);
       let formatted = formatMessage(raw, channelId);
@@ -146,7 +147,7 @@ export let manageMessages = SlateTool.create(spec, {
     }
 
     if (action === 'unpin') {
-      if (!messageId) throw new Error('messageId is required for unpin action');
+      if (!messageId) throw discordServiceError('messageId is required for unpin action');
       await client.unpinMessage(channelId, messageId);
       let raw = await client.getMessage(channelId, messageId);
       let formatted = formatMessage(raw, channelId);
@@ -158,12 +159,12 @@ export let manageMessages = SlateTool.create(spec, {
 
     if (action === 'bulk_delete') {
       if (!ctx.input.messageIds || ctx.input.messageIds.length < 2) {
-        throw new Error(
+        throw discordServiceError(
           'messageIds must contain at least 2 message IDs for bulk_delete action'
         );
       }
       if (ctx.input.messageIds.length > 100) {
-        throw new Error(
+        throw discordServiceError(
           'messageIds must contain at most 100 message IDs for bulk_delete action'
         );
       }

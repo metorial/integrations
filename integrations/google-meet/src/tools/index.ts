@@ -6,4 +6,5 @@ export * from './manage-members';
 export * from './list-conference-records';
 export * from './list-participants';
 export * from './get-recordings';
+export * from './get-smart-notes';
 export * from './get-transcripts';

@@ -1,5 +1,3 @@
-Now let me fetch the event payloads page to get the full list of webhook events:Now I have comprehensive information to write the specification.
-
 # Slates Specification for Bitbucket
 
 ## Overview
@@ -12,15 +10,15 @@ Bitbucket Cloud supports the following authentication methods:
 
 ### OAuth 2.0
 
-Bitbucket Cloud REST API integrations and Atlassian Connect for Bitbucket add-ons can use OAuth 2.0 to access resources. For obtaining access/bearer tokens, Bitbucket supports three of RFC-6749's grant flows, plus a custom Bitbucket flow for exchanging JWT tokens for access tokens. Resource Owner Password Credentials Grant (4.3) is no longer supported.
+Bitbucket Cloud REST API integrations and Atlassian Connect for Bitbucket add-ons can use OAuth 2.0 to access resources. For obtaining access/bearer tokens, Bitbucket supports Authorization Code Grant, Client Credentials Grant, and a custom Bitbucket JWT grant for exchanging JWT tokens for access tokens. Implicit Grant (4.2) and Resource Owner Password Credentials Grant (4.3) are no longer supported.
 
 **Supported grant types:**
 
 1. **Authorization Code Grant**: Request authorization from the end user by sending their browser to `https://bitbucket.org/site/oauth2/authorize?client_id={client_id}&response_type=code`. Exchange the returned authorization code for an access token by POSTing to `https://bitbucket.org/site/oauth2/access_token` with `grant_type=authorization_code` and the code, authenticating with `client_id:secret` via HTTP Basic Auth.
 
-2. **Implicit Grant**: Request the end user for authorization by directing the browser to `https://bitbucket.org/site/oauth2/authorize?client_id={client_id}&response_type=token`. The access token is returned in the URL fragment of the callback.
+2. **Client Credentials Grant**: Obtain an access token that represents the owner of the client/consumer by POSTing to `https://bitbucket.org/site/oauth2/access_token` with `grant_type=client_credentials`.
 
-3. **Client Credentials Grant**: Obtain an access token that represents the owner of the client/consumer by POSTing to `https://bitbucket.org/site/oauth2/access_token` with `grant_type=client_credentials`.
+3. **Bitbucket Cloud JWT Grant**: Exchange an Atlassian Connect JWT for an OAuth access token with `grant_type=urn:bitbucket:oauth2:jwt`.
 
 **Setup:** OAuth needs a key and secret (together known as an OAuth consumer). You can create a consumer on any existing workspace. Navigate to Workspace Settings → OAuth consumers → Add consumer. Configure the callback URL and desired permission scopes during consumer creation.
 
@@ -28,7 +26,7 @@ Bitbucket Cloud REST API integrations and Atlassian Connect for Bitbucket add-on
 
 **Scopes:** Scopes are defined on the client/consumer instance. Bitbucket Cloud does not currently support the use of the optional scope parameter on individual grant requests. Available scopes include:
 
-- `repository` / `repository:write` / `repository:admin` — Read, write, or admin access to repositories
+- `repository` / `repository:write` / `repository:admin` / `repository:delete` — Read, write, admin, or delete access to repositories
 - `pullrequest` / `pullrequest:write` — Read or write access to pull requests
 - `issue` / `issue:write` — Read or write access to issues
 - `snippet` / `snippet:write` — Read or write access to snippets

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RedditClient } from '../lib/client';
+import { requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -48,7 +49,10 @@ Use this to modify existing posts after submission.`,
 
     switch (action) {
       case 'edit':
-        await client.editPost(fullname, text ?? '');
+        await client.editPost(
+          fullname,
+          requireRedditInput(text, 'text is required for edit action')
+        );
         break;
       case 'delete':
         await client.deletePost(fullname);

@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/youtube.svg" height="20"> Youtube
 
-Search, upload, and manage YouTube videos, playlists, channels, and live streams. Update video metadata (title, description, tags, privacy), manage captions, moderate comments, and handle subscriptions. Rate videos, set thumbnails and watermarks, report abusive content, and manage live broadcasts with chat moderation. Receive push notifications when channels upload or update videos.
+Search and manage YouTube videos, channels, playlists, comments, captions, ratings, subscriptions, and related metadata through the YouTube Data API.
 
 ## Tools
 
@@ -27,6 +27,14 @@ List all caption tracks for a YouTube video. Returns caption metadata including 
 ### List Comments
 
 List comment threads on a YouTube video or channel. Returns top-level comments with reply counts, or list replies to a specific comment. Supports filtering by search terms and moderation status.
+
+### List YouTube Metadata
+
+List YouTube Data API metadata used by other tools, including upload video categories, supported content regions, and supported interface languages.
+
+### List Videos
+
+List YouTube videos from supported charts or the authenticated user's liked/disliked videos. Use this to retrieve popular videos by region/category or videos the user has rated.
 
 ### List Playlists
 
@@ -58,7 +66,7 @@ Search for videos, channels, and playlists on YouTube. Supports filtering by sea
 
 ### Update Channel
 
-Update branding settings for a YouTube channel. Can modify the channel's title, description, keywords, unsubscribed trailer, and country. Requires channel ownership.
+Update branding settings for a YouTube channel. Can modify the channel description, keywords, unsubscribed trailer, and country. Requires channel ownership.
 
 ### Update Video
 

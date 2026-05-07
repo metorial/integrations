@@ -1,7 +1,76 @@
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
+import { quickBooksServiceError } from '../lib/errors';
 import { z } from 'zod';
+
+let WEBHOOK_ENTITY_NAMES: Record<string, string> = {
+  account: 'Account',
+  bill: 'Bill',
+  billpayment: 'BillPayment',
+  budget: 'Budget',
+  class: 'Class',
+  creditmemo: 'CreditMemo',
+  currency: 'Currency',
+  customer: 'Customer',
+  department: 'Department',
+  deposit: 'Deposit',
+  employee: 'Employee',
+  estimate: 'Estimate',
+  invoice: 'Invoice',
+  item: 'Item',
+  journalcode: 'JournalCode',
+  journalentry: 'JournalEntry',
+  payment: 'Payment',
+  paymentmethod: 'PaymentMethod',
+  preferences: 'Preferences',
+  purchase: 'Purchase',
+  purchaseorder: 'PurchaseOrder',
+  refundreceipt: 'RefundReceipt',
+  salesreceipt: 'SalesReceipt',
+  taxagency: 'TaxAgency',
+  term: 'Term',
+  timeactivity: 'TimeActivity',
+  transfer: 'Transfer',
+  vendor: 'Vendor',
+  vendorcredit: 'VendorCredit'
+};
+
+let parseCloudEventType = (type: unknown) => {
+  if (typeof type !== 'string') return undefined;
+
+  let [, entityName, operation] = type.toLowerCase().split('.');
+  if (!entityName || !operation) return undefined;
+
+  return {
+    entityType: WEBHOOK_ENTITY_NAMES[entityName] ?? entityName,
+    operation
+  };
+};
+
+let verifyWebhookSignature = (d: {
+  body: string;
+  signature: string | null;
+  verifierToken?: string;
+}) => {
+  if (!d.verifierToken) return;
+
+  if (!d.signature) {
+    throw quickBooksServiceError('QuickBooks webhook signature header is missing.');
+  }
+
+  let expected = createHmac('sha256', d.verifierToken).update(d.body).digest('base64');
+  let expectedBuffer = Buffer.from(expected);
+  let actualBuffer = Buffer.from(d.signature);
+
+  if (
+    expectedBuffer.length !== actualBuffer.length ||
+    !timingSafeEqual(expectedBuffer, actualBuffer)
+  ) {
+    throw quickBooksServiceError('QuickBooks webhook signature is invalid.');
+  }
+};
 
 export let entityWebhook = SlateTrigger.create(spec, {
   name: 'Entity Change Webhook',
@@ -35,9 +104,45 @@ export let entityWebhook = SlateTrigger.create(spec, {
   )
   .webhook({
     handleRequest: async ctx => {
-      let body = (await ctx.request.json()) as any;
+      let rawBody = await ctx.request.text();
+      verifyWebhookSignature({
+        body: rawBody,
+        signature: ctx.request.headers.get('intuit-signature'),
+        verifierToken: ctx.config.webhookVerifierToken
+      });
+
+      let body: any;
+      try {
+        body = JSON.parse(rawBody);
+      } catch {
+        throw quickBooksServiceError('QuickBooks webhook payload must be valid JSON.');
+      }
 
       let inputs: any[] = [];
+
+      if (Array.isArray(body)) {
+        for (let event of body) {
+          let parsedType = parseCloudEventType(event?.type);
+          if (
+            !parsedType ||
+            !event?.intuitentityid ||
+            !event?.intuitaccountid ||
+            typeof event.time !== 'string'
+          ) {
+            continue;
+          }
+
+          inputs.push({
+            entityId: event.intuitentityid,
+            entityType: parsedType.entityType,
+            operation: parsedType.operation,
+            lastUpdated: event.time,
+            realmId: event.intuitaccountid
+          });
+        }
+
+        return { inputs };
+      }
 
       let notifications = body?.eventNotifications ?? [];
       for (let notification of notifications) {
@@ -61,8 +166,9 @@ export let entityWebhook = SlateTrigger.create(spec, {
     handleEvent: async ctx => {
       let { entityId, entityType, operation, lastUpdated, realmId } = ctx.input;
       let entityDetails: any = null;
+      let operationLower = operation.toLowerCase();
 
-      if (operation !== 'Delete') {
+      if (operationLower !== 'delete') {
         try {
           let client = createClientFromContext(ctx);
           let response = await client.getEntity(entityType, entityId);
@@ -72,7 +178,6 @@ export let entityWebhook = SlateTrigger.create(spec, {
         }
       }
 
-      let operationLower = operation.toLowerCase();
       let typeLower = entityType.toLowerCase();
 
       return {

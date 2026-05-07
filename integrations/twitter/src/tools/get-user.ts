@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwitterClient } from '../lib/client';
+import { twitterServiceError } from '../lib/errors';
 import { userSchema, mapUser } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -78,6 +79,8 @@ export let getUser = SlateTool.create(spec, {
       };
     }
 
-    throw new Error('Provide a userId, username, usernames array, or set getMe to true.');
+    throw twitterServiceError(
+      'Provide a userId, username, usernames array, or set getMe to true.'
+    );
   })
   .build();

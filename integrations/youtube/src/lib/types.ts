@@ -160,6 +160,7 @@ export interface YouTubePlaylistSnippet {
   description: string;
   thumbnails: YouTubeThumbnails;
   channelTitle: string;
+  defaultLanguage?: string;
   localized?: {
     title: string;
     description: string;

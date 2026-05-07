@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZohoBooksClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { zohoServiceError } from '../lib/errors';
 
 export let booksManageExpense = SlateTool.create(spec, {
   name: 'Books Manage Expense',
@@ -79,7 +80,7 @@ export let booksManageExpense = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'get') {
-      if (!ctx.input.expenseId) throw new Error('expenseId is required for get');
+      if (!ctx.input.expenseId) throw zohoServiceError('expenseId is required for get');
       let result = await client.getExpense(ctx.input.expenseId);
       return {
         output: { expense: result?.expense || result },
@@ -106,6 +107,10 @@ export let booksManageExpense = SlateTool.create(spec, {
     };
 
     if (ctx.input.action === 'create') {
+      if (!ctx.input.accountId) throw zohoServiceError('accountId is required for create');
+      if (!ctx.input.date) throw zohoServiceError('date is required for create');
+      if (ctx.input.amount === undefined)
+        throw zohoServiceError('amount is required for create');
       let result = await client.createExpense(buildData());
       let expense = result?.expense;
       return {
@@ -115,7 +120,7 @@ export let booksManageExpense = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.expenseId) throw new Error('expenseId is required for update');
+      if (!ctx.input.expenseId) throw zohoServiceError('expenseId is required for update');
       let result = await client.updateExpense(ctx.input.expenseId, buildData());
       return {
         output: { expense: result?.expense, apiMessage: result?.message },
@@ -124,7 +129,7 @@ export let booksManageExpense = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.expenseId) throw new Error('expenseId is required for delete');
+      if (!ctx.input.expenseId) throw zohoServiceError('expenseId is required for delete');
       let result = await client.deleteExpense(ctx.input.expenseId);
       return {
         output: { deleted: true, apiMessage: result?.message },
@@ -132,6 +137,6 @@ export let booksManageExpense = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw zohoServiceError('Invalid Books expense action.');
   })
   .build();

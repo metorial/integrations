@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwitterClient } from '../lib/client';
+import { twitterServiceError } from '../lib/errors';
 import { postSchema, mapPost } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -13,6 +14,8 @@ export let createPost = SlateTool.create(spec, {
     'To reply to a post, provide the replyToPostId.',
     'To quote a post, provide the quotePostId.',
     'Media must be uploaded separately first—provide media IDs from a prior upload.',
+    'You may tag users in attached media by providing mediaTaggedUserIds.',
+    'Use replySettings to limit who can reply to the post.',
     'Polls require 2-4 options and a duration in minutes (default 1440 = 24 hours).'
   ],
   constraints: [
@@ -31,13 +34,24 @@ export let createPost = SlateTool.create(spec, {
       quotePostId: z.string().optional().describe('Post ID to quote'),
       mediaIds: z
         .array(z.string())
+        .max(4)
         .optional()
         .describe('Array of media IDs to attach (uploaded separately)'),
+      mediaTaggedUserIds: z
+        .array(z.string())
+        .optional()
+        .describe('User IDs to tag in attached media'),
       pollOptions: z.array(z.string()).optional().describe('Poll options (2-4 choices)'),
       pollDurationMinutes: z
         .number()
+        .min(5)
+        .max(10080)
         .optional()
-        .describe('Poll duration in minutes (default 1440)')
+        .describe('Poll duration in minutes (default 1440)'),
+      replySettings: z
+        .enum(['following', 'mentionedUsers', 'subscribers', 'verified'])
+        .optional()
+        .describe('Who can reply to the post')
     })
   )
   .output(
@@ -47,14 +61,33 @@ export let createPost = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new TwitterClient(ctx.auth.token);
+    let { text, mediaIds, mediaTaggedUserIds, pollOptions } = ctx.input;
+
+    if (text.length > 280) {
+      throw twitterServiceError('Text is limited to 280 characters.');
+    }
+
+    if (pollOptions && (pollOptions.length < 2 || pollOptions.length > 4)) {
+      throw twitterServiceError('Polls require between 2 and 4 options.');
+    }
+
+    if (pollOptions && mediaIds && mediaIds.length > 0) {
+      throw twitterServiceError('Polls and media cannot be combined in the same post.');
+    }
+
+    if (mediaTaggedUserIds && (!mediaIds || mediaIds.length === 0)) {
+      throw twitterServiceError('mediaTaggedUserIds requires at least one media ID.');
+    }
 
     let result = await client.createPost({
-      text: ctx.input.text,
+      text,
       replyToPostId: ctx.input.replyToPostId,
       quotePostId: ctx.input.quotePostId,
-      mediaIds: ctx.input.mediaIds,
-      pollOptions: ctx.input.pollOptions,
-      pollDurationMinutes: ctx.input.pollDurationMinutes
+      mediaIds,
+      mediaTaggedUserIds,
+      pollOptions,
+      pollDurationMinutes: ctx.input.pollDurationMinutes,
+      replySettings: ctx.input.replySettings
     });
 
     let post = mapPost(result.data);

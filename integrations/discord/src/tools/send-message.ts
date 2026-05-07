@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DiscordClient } from '../lib/client';
+import { discordServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -108,6 +109,10 @@ export let sendMessage = SlateTool.create(spec, {
     let client = new DiscordClient({ token: ctx.auth.token, tokenType: ctx.auth.tokenType });
 
     let data: Record<string, any> = {};
+
+    if (!ctx.input.content && !ctx.input.embeds?.length) {
+      throw discordServiceError('content or embeds is required to send a message');
+    }
 
     if (ctx.input.content) {
       data.content = ctx.input.content;

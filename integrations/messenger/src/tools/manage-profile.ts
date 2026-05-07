@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { messengerServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -31,10 +32,10 @@ Provide only the fields you want to update — unspecified fields remain unchang
     'Use action "get" to retrieve current profile settings.',
     'Use action "delete" to remove specific profile fields.',
     'Greeting text supports {{user_first_name}}, {{user_last_name}}, and {{user_full_name}} personalization tokens.',
-    'The persistent menu supports up to 3 top-level items per locale.'
+    'The persistent menu supports up to 20 call-to-action items per locale.'
   ],
   constraints: [
-    'Persistent menu is limited to 3 top-level items per locale.',
+    'Persistent menu is limited to 20 call-to-action items per locale.',
     'Ice breakers are limited to a small number of questions.',
     'Some features may be unavailable for EEA users.'
   ],
@@ -54,6 +55,7 @@ Provide only the fields you want to update — unspecified fields remain unchang
         .array(
           z.enum([
             'get_started',
+            'account_linking_url',
             'greeting',
             'persistent_menu',
             'ice_breakers',
@@ -70,6 +72,10 @@ Provide only the fields you want to update — unspecified fields remain unchang
         .string()
         .optional()
         .describe('Postback payload triggered when the Get Started button is tapped'),
+      accountLinkingUrl: z
+        .string()
+        .optional()
+        .describe('HTTPS URL for linking a Messenger user to an external account'),
       greetingTexts: z
         .array(
           z.object({
@@ -93,9 +99,9 @@ Provide only the fields you want to update — unspecified fields remain unchang
               .describe('Whether to disable the text composer when the menu is active'),
             callToActions: z
               .array(menuActionSchema)
-              .max(3)
+              .max(20)
               .optional()
-              .describe('Top-level menu items (max 3)')
+              .describe('Top-level menu items (max 20)')
           })
         )
         .optional()
@@ -137,6 +143,7 @@ Provide only the fields you want to update — unspecified fields remain unchang
       case 'get': {
         let fields = input.fields || [
           'get_started',
+          'account_linking_url',
           'greeting',
           'persistent_menu',
           'ice_breakers',
@@ -154,8 +161,21 @@ Provide only the fields you want to update — unspecified fields remain unchang
       }
 
       case 'set': {
+        let hasUpdates =
+          input.getStartedPayload !== undefined ||
+          input.accountLinkingUrl !== undefined ||
+          input.greetingTexts !== undefined ||
+          input.persistentMenu !== undefined ||
+          input.iceBreakers !== undefined ||
+          input.whitelistedDomains !== undefined;
+
+        if (!hasUpdates) {
+          throw messengerServiceError('Provide at least one Messenger profile field to set');
+        }
+
         await client.setMessengerProfile({
           getStartedPayload: input.getStartedPayload,
+          accountLinkingUrl: input.accountLinkingUrl,
           greetingTexts: input.greetingTexts,
           persistentMenu: input.persistentMenu,
           iceBreakers: input.iceBreakers,
@@ -164,6 +184,7 @@ Provide only the fields you want to update — unspecified fields remain unchang
 
         let updatedFields: string[] = [];
         if (input.getStartedPayload !== undefined) updatedFields.push('get_started');
+        if (input.accountLinkingUrl !== undefined) updatedFields.push('account_linking_url');
         if (input.greetingTexts !== undefined) updatedFields.push('greeting');
         if (input.persistentMenu !== undefined) updatedFields.push('persistent_menu');
         if (input.iceBreakers !== undefined) updatedFields.push('ice_breakers');
@@ -179,7 +200,7 @@ Provide only the fields you want to update — unspecified fields remain unchang
 
       case 'delete': {
         if (!input.fields || input.fields.length === 0) {
-          throw new Error('Fields are required for delete action');
+          throw messengerServiceError('fields are required for delete action');
         }
 
         await client.deleteMessengerProfileFields(input.fields);

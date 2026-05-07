@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StorageClient } from '../lib/client';
+import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -20,9 +21,10 @@ let storageObjectSchema = z.object({
 export let manageStorage = SlateTool.create(spec, {
   name: 'Manage Cloud Storage',
   key: 'manage_storage',
-  description: `List, get metadata, delete, or copy objects in Firebase Cloud Storage. Supports prefix-based listing for browsing folder-like structures, fetching download URLs, and copying objects between paths.`,
+  description: `List, upload, get metadata, delete, or copy objects in Firebase Cloud Storage. Supports prefix-based listing for browsing folder-like structures, fetching download URLs, and copying objects between paths.`,
   instructions: [
     '"list" shows objects in a bucket, optionally filtered by prefix.',
+    '"upload" stores base64-encoded content at an object path.',
     '"get" retrieves metadata and download URL for a specific object.',
     '"delete" removes an object from storage.',
     '"copy" copies an object to a new location (same or different bucket).',
@@ -36,7 +38,9 @@ export let manageStorage = SlateTool.create(spec, {
   .scopes(firebaseActionScopes.manageStorage)
   .input(
     z.object({
-      operation: z.enum(['list', 'get', 'delete', 'copy']).describe('Operation to perform'),
+      operation: z
+        .enum(['list', 'upload', 'get', 'delete', 'copy'])
+        .describe('Operation to perform'),
       bucket: z
         .string()
         .optional()
@@ -44,7 +48,15 @@ export let manageStorage = SlateTool.create(spec, {
       objectPath: z
         .string()
         .optional()
-        .describe('Full object path (required for get, delete, copy)'),
+        .describe('Full object path (required for upload, get, delete, copy)'),
+      contentBase64: z
+        .string()
+        .optional()
+        .describe('Base64-encoded object content. Required for upload.'),
+      contentType: z
+        .string()
+        .optional()
+        .describe('MIME content type to set when uploading an object.'),
       prefix: z
         .string()
         .optional()
@@ -70,7 +82,7 @@ export let manageStorage = SlateTool.create(spec, {
         .record(z.string(), z.string())
         .optional()
         .describe(
-          'Custom metadata to set on the object (get operation also updates if provided)'
+          'Custom metadata to set on the object (upload and get operation also update if provided)'
         )
     })
   )
@@ -86,7 +98,8 @@ export let manageStorage = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let bucket = ctx.input.bucket || `${ctx.config.projectId}.appspot.com`;
+    let bucket =
+      ctx.input.bucket || ctx.config.storageBucket || `${ctx.config.projectId}.appspot.com`;
     let client = new StorageClient({
       token: ctx.auth.token,
       bucket
@@ -112,8 +125,27 @@ export let manageStorage = SlateTool.create(spec, {
       };
     }
 
+    if (operation === 'upload') {
+      if (!objectPath) throw missingRequiredFieldError('objectPath', 'upload');
+      if (!ctx.input.contentBase64) throw missingRequiredFieldError('contentBase64', 'upload');
+
+      let uploaded = await client.uploadObject({
+        objectPath,
+        contentBase64: ctx.input.contentBase64,
+        contentType: ctx.input.contentType,
+        customMetadata: ctx.input.customMetadata
+      });
+
+      return {
+        output: {
+          object: uploaded
+        },
+        message: `Uploaded **${objectPath}** to bucket \`${bucket}\`.`
+      };
+    }
+
     if (operation === 'get') {
-      if (!objectPath) throw new Error('objectPath is required for get operation');
+      if (!objectPath) throw missingRequiredFieldError('objectPath', 'get');
 
       if (ctx.input.customMetadata) {
         let updated = await client.updateObjectMetadata(objectPath, ctx.input.customMetadata);
@@ -140,7 +172,7 @@ export let manageStorage = SlateTool.create(spec, {
     }
 
     if (operation === 'delete') {
-      if (!objectPath) throw new Error('objectPath is required for delete operation');
+      if (!objectPath) throw missingRequiredFieldError('objectPath', 'delete');
       await client.deleteObject(objectPath);
       return {
         output: { deleted: true },
@@ -149,9 +181,9 @@ export let manageStorage = SlateTool.create(spec, {
     }
 
     if (operation === 'copy') {
-      if (!objectPath) throw new Error('objectPath is required for copy operation');
+      if (!objectPath) throw missingRequiredFieldError('objectPath', 'copy');
       if (!ctx.input.destinationObjectPath)
-        throw new Error('destinationObjectPath is required for copy operation');
+        throw missingRequiredFieldError('destinationObjectPath', 'copy');
 
       let destBucket = ctx.input.destinationBucket || bucket;
       let copiedObject = await client.copyObject(
@@ -169,6 +201,6 @@ export let manageStorage = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown operation: ${operation}`);
+    throw firebaseServiceError(`Unknown operation: ${operation}`);
   })
   .build();

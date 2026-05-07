@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ShopifyClient } from '../lib/client';
+import { shopifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -124,7 +125,7 @@ export let manageCollections = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'get') {
-      if (!ctx.input.collectionId) throw new Error('collectionId is required');
+      if (!ctx.input.collectionId) throw shopifyServiceError('collectionId is required');
       let type = ctx.input.collectionType || 'custom';
       let c =
         type === 'custom'
@@ -162,7 +163,7 @@ export let manageCollections = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.collectionId) throw new Error('collectionId is required');
+      if (!ctx.input.collectionId) throw shopifyServiceError('collectionId is required');
       let type = ctx.input.collectionType || 'custom';
       let data: Record<string, any> = {};
       if (ctx.input.title) data.title = ctx.input.title;
@@ -188,7 +189,7 @@ export let manageCollections = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.collectionId) throw new Error('collectionId is required');
+      if (!ctx.input.collectionId) throw shopifyServiceError('collectionId is required');
       let type = ctx.input.collectionType || 'custom';
       if (type === 'custom') {
         await client.deleteCustomCollection(ctx.input.collectionId);
@@ -201,6 +202,6 @@ export let manageCollections = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw shopifyServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

@@ -10,6 +10,8 @@ export * from './manage-bookmark';
 export * from './manage-follow';
 export * from './manage-block-mute';
 export * from './send-direct-message';
+export * from './delete-direct-message';
 export * from './get-direct-messages';
 export * from './manage-list';
 export * from './manage-reply-visibility';
+export * from './upload-media';

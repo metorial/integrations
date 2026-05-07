@@ -6,3 +6,4 @@ export { manageIamTool } from './manage-iam';
 export { manageCloudWatchTool } from './manage-cloudwatch';
 export { manageSnsTool } from './manage-sns';
 export { manageSqsTool } from './manage-sqs';
+export { manageStsTool } from './manage-sts';

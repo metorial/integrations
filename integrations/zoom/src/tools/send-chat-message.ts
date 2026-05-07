@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ZoomClient } from '../lib/client';
+import { zoomServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -29,6 +30,14 @@ export let sendChatMessage = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (!ctx.input.toChannel && !ctx.input.toContact) {
+      throw zoomServiceError('Provide either toChannel or toContact to send a chat message.');
+    }
+
+    if (ctx.input.toChannel && ctx.input.toContact) {
+      throw zoomServiceError('Provide only one chat recipient: toChannel or toContact.');
+    }
+
     let client = new ZoomClient(ctx.auth.token);
     let result = await client.sendChatMessage(ctx.input.userId, {
       message: ctx.input.message,

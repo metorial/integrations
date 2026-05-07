@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { xeroApiError, xeroServiceError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -168,20 +169,25 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let tokenResponse = await tokenClient.post(
-        '/connect/token',
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: ctx.code,
-          redirect_uri: ctx.redirectUri
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: `Basic ${credentials}`
+      let tokenResponse;
+      try {
+        tokenResponse = await tokenClient.post(
+          '/connect/token',
+          new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: ctx.code,
+            redirect_uri: ctx.redirectUri
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Authorization: `Basic ${credentials}`
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw xeroApiError(error, 'OAuth token exchange');
+      }
 
       let tokenData = tokenResponse.data as {
         access_token: string;
@@ -191,7 +197,7 @@ export let auth = SlateAuth.create()
       };
 
       if (!tokenData.access_token) {
-        throw new Error('Failed to obtain access token from Xero');
+        throw xeroServiceError('Failed to obtain access token from Xero.');
       }
 
       let expiresAt: string | undefined;
@@ -201,12 +207,17 @@ export let auth = SlateAuth.create()
 
       // Fetch tenant ID from connections endpoint
       let connectionsClient = createAxios({ baseURL: 'https://api.xero.com' });
-      let connectionsResponse = await connectionsClient.get('/connections', {
-        headers: {
-          Authorization: `Bearer ${tokenData.access_token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      let connectionsResponse;
+      try {
+        connectionsResponse = await connectionsClient.get('/connections', {
+          headers: {
+            Authorization: `Bearer ${tokenData.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      } catch (error) {
+        throw xeroApiError(error, 'connections lookup');
+      }
 
       let connections = connectionsResponse.data as Array<{
         id: string;
@@ -229,25 +240,30 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available. User must reauthorize.');
+        throw xeroServiceError('No refresh token available. User must reauthorize.');
       }
 
       let tokenClient = createAxios({ baseURL: 'https://identity.xero.com' });
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let tokenResponse = await tokenClient.post(
-        '/connect/token',
-        new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: `Basic ${credentials}`
+      let tokenResponse;
+      try {
+        tokenResponse = await tokenClient.post(
+          '/connect/token',
+          new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Authorization: `Basic ${credentials}`
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw xeroApiError(error, 'OAuth token refresh');
+      }
 
       let tokenData = tokenResponse.data as {
         access_token: string;
@@ -256,7 +272,7 @@ export let auth = SlateAuth.create()
       };
 
       if (!tokenData.access_token) {
-        throw new Error('Failed to refresh access token');
+        throw xeroServiceError('Failed to refresh access token.');
       }
 
       let expiresAt: string | undefined;
@@ -266,12 +282,17 @@ export let auth = SlateAuth.create()
 
       // Re-fetch tenant ID to keep it current
       let connectionsClient = createAxios({ baseURL: 'https://api.xero.com' });
-      let connectionsResponse = await connectionsClient.get('/connections', {
-        headers: {
-          Authorization: `Bearer ${tokenData.access_token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      let connectionsResponse;
+      try {
+        connectionsResponse = await connectionsClient.get('/connections', {
+          headers: {
+            Authorization: `Bearer ${tokenData.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      } catch (error) {
+        throw xeroApiError(error, 'connections lookup');
+      }
 
       let connections = connectionsResponse.data as Array<{
         id: string;
@@ -299,12 +320,17 @@ export let auth = SlateAuth.create()
       let client = createAxios({ baseURL: 'https://api.xero.com' });
 
       // Get connections to show organisation details
-      let connectionsResponse = await client.get('/connections', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      let connectionsResponse;
+      try {
+        connectionsResponse = await client.get('/connections', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      } catch (error) {
+        throw xeroApiError(error, 'profile connections lookup');
+      }
 
       let connections = connectionsResponse.data as Array<{
         id: string;
@@ -370,20 +396,25 @@ export let auth = SlateAuth.create()
       let tokenClient = createAxios({ baseURL: 'https://identity.xero.com' });
       let credentials = btoa(`${ctx.input.clientId}:${ctx.input.clientSecret}`);
 
-      let tokenResponse = await tokenClient.post(
-        '/connect/token',
-        new URLSearchParams({
-          grant_type: 'client_credentials',
-          scope:
-            'accounting.transactions accounting.contacts accounting.settings accounting.reports.read accounting.journals.read accounting.attachments'
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: `Basic ${credentials}`
+      let tokenResponse;
+      try {
+        tokenResponse = await tokenClient.post(
+          '/connect/token',
+          new URLSearchParams({
+            grant_type: 'client_credentials',
+            scope:
+              'accounting.transactions accounting.contacts accounting.settings accounting.reports.read accounting.attachments'
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Authorization: `Basic ${credentials}`
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw xeroApiError(error, 'client credentials token exchange');
+      }
 
       let tokenData = tokenResponse.data as {
         access_token: string;
@@ -391,7 +422,7 @@ export let auth = SlateAuth.create()
       };
 
       if (!tokenData.access_token) {
-        throw new Error('Failed to obtain access token via client credentials');
+        throw xeroServiceError('Failed to obtain access token via client credentials.');
       }
 
       let expiresAt: string | undefined;

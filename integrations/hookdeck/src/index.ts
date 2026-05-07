@@ -11,7 +11,11 @@ import {
   manageBookmarks,
   configureNotifications,
   publishEvent,
-  listRequests
+  listRequests,
+  listAttempts,
+  queryMetrics,
+  manageIssueTriggers,
+  retryRequests
 } from './tools';
 import { issueNotification, eventSuccessful } from './triggers';
 
@@ -28,7 +32,11 @@ export let provider = Slate.create({
     manageBookmarks,
     configureNotifications,
     publishEvent,
-    listRequests
+    listRequests,
+    listAttempts,
+    queryMetrics,
+    manageIssueTriggers,
+    retryRequests
   ],
   triggers: [issueNotification, eventSuccessful]
 });

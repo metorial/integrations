@@ -9,3 +9,4 @@ export * from './manage-table';
 export * from './manage-field';
 export * from './manage-comment';
 export * from './list-bases';
+export * from './upload-attachment';

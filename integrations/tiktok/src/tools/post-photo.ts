@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TikTokConsumerClient } from '../lib/client';
+import { tiktokServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -25,18 +26,27 @@ export let postPhoto = SlateTool.create(spec, {
         .describe('Privacy level for the published photo post.'),
       title: z
         .string()
-        .max(2200)
+        .max(90)
         .optional()
-        .describe('Photo post caption (max 2200 characters).'),
+        .describe('Photo post title (max 90 UTF-16 runes).'),
+      description: z
+        .string()
+        .max(4000)
+        .optional()
+        .describe('Photo post description (max 4000 UTF-16 runes).'),
       photoImageUrls: z
         .array(z.string())
         .min(1)
-        .describe('Public URLs of the images to post.'),
+        .max(35)
+        .describe('Public URLs of the images to post (1-35 images).'),
       photoCoverIndex: z
         .number()
+        .int()
+        .min(0)
         .optional()
         .describe('Zero-based index of the image to use as the cover.'),
       disableComment: z.boolean().optional().describe('Disable comments for this post.'),
+      autoAddMusic: z.boolean().optional().describe('Automatically add recommended music.'),
       brandContentToggle: z.boolean().optional().describe('Mark as paid partnership content.'),
       brandOrganicToggle: z
         .boolean()
@@ -51,13 +61,22 @@ export let postPhoto = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    let photoCoverIndex = ctx.input.photoCoverIndex ?? 0;
+    if (photoCoverIndex >= ctx.input.photoImageUrls.length) {
+      throw tiktokServiceError(
+        'photoCoverIndex must reference an item in photoImageUrls.'
+      );
+    }
+
     let client = new TikTokConsumerClient({ token: ctx.auth.token });
 
     let result = await client.initPhotoPost({
       postInfo: {
         privacyLevel: ctx.input.privacyLevel,
         title: ctx.input.title,
+        description: ctx.input.description,
         disableComment: ctx.input.disableComment,
+        autoAddMusic: ctx.input.autoAddMusic,
         brandContentToggle: ctx.input.brandContentToggle,
         brandOrganicToggle: ctx.input.brandOrganicToggle,
         isAigc: ctx.input.isAigc
@@ -65,7 +84,7 @@ export let postPhoto = SlateTool.create(spec, {
       sourceInfo: {
         source: 'PULL_FROM_URL',
         photoImages: ctx.input.photoImageUrls,
-        photoCoverIndex: ctx.input.photoCoverIndex
+        photoCoverIndex
       }
     });
 

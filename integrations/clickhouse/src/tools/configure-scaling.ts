@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ClickHouseClient } from '../lib/client';
+import { clickhouseServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,7 +10,7 @@ export let configureScaling = SlateTool.create(spec, {
   description: `Update the scaling configuration for a ClickHouse service. Adjust replica memory ranges, number of replicas, idle scaling behavior, and idle timeout.`,
   instructions: [
     'Per-replica memory must be a multiple of 4 GB, range 8-356 GB.',
-    'numReplicas ranges from 1-20 depending on plan and warehouse configuration.'
+    'numReplicas is usually 2-20 for the first service in a warehouse and can be as low as 1 for services in an existing warehouse.'
   ]
 })
   .input(
@@ -58,6 +59,10 @@ export let configureScaling = SlateTool.create(spec, {
     if (ctx.input.idleScaling !== undefined) body.idleScaling = ctx.input.idleScaling;
     if (ctx.input.idleTimeoutMinutes !== undefined)
       body.idleTimeoutMinutes = ctx.input.idleTimeoutMinutes;
+
+    if (Object.keys(body).length === 0) {
+      throw clickhouseServiceError('Provide at least one scaling field to update.');
+    }
 
     let result = await client.updateServiceScaling(ctx.input.serviceId, body);
 

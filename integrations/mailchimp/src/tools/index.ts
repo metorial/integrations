@@ -16,3 +16,6 @@ export * from './search-members';
 export * from './manage-segments';
 export * from './get-audience-activity';
 export * from './add-member-event';
+export * from './manage-merge-fields';
+export * from './manage-interest-groups';
+export * from './manage-file-manager';

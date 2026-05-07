@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { pinterestServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -54,7 +55,7 @@ export let listCatalogs = SlateTool.create(spec, {
       });
     } else if (ctx.input.resource === 'items') {
       if (!ctx.input.feedId) {
-        throw new Error('Feed ID is required when listing catalog items');
+        throw pinterestServiceError('Feed ID is required when listing catalog items');
       }
       result = await client.listCatalogItems({
         feedId: ctx.input.feedId,

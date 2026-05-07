@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -22,7 +23,7 @@ let dropletSchema = z.object({
 export let listDroplets = SlateTool.create(spec, {
   name: 'List Droplets',
   key: 'list_droplets',
-  description: `List Droplets (virtual machines) in your DigitalOcean account. Optionally filter by tag name. Returns key details including status, IP addresses, region, and resource allocation.`,
+  description: `List Droplets (virtual machines) in your DigitalOcean account. Optionally filter by tag name, exact name, or Droplet type. Returns key details including status, IP addresses, region, and resource allocation.`,
   tags: {
     readOnly: true
   }
@@ -30,6 +31,11 @@ export let listDroplets = SlateTool.create(spec, {
   .input(
     z.object({
       tagName: z.string().optional().describe('Filter Droplets by this tag name'),
+      name: z.string().optional().describe('Filter by exact Droplet name (case-insensitive)'),
+      type: z
+        .enum(['droplets', 'gpus'])
+        .optional()
+        .describe('Filter standard Droplets or GPU Droplets'),
       page: z.number().optional().describe('Page number for pagination (default: 1)'),
       perPage: z
         .number()
@@ -46,8 +52,16 @@ export let listDroplets = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
+    if (ctx.input.tagName && (ctx.input.name || ctx.input.type)) {
+      throw digitalOceanValidationError(
+        'tagName cannot be combined with name or type filters'
+      );
+    }
+
     let result = await client.listDroplets({
       tagName: ctx.input.tagName,
+      name: ctx.input.name,
+      type: ctx.input.type,
       page: ctx.input.page,
       perPage: ctx.input.perPage
     });
@@ -77,7 +91,7 @@ export let listDroplets = SlateTool.create(spec, {
 
     return {
       output: { droplets, totalCount },
-      message: `Found **${totalCount}** Droplet(s)${ctx.input.tagName ? ` with tag "${ctx.input.tagName}"` : ''}. Showing page ${ctx.input.page || 1}.`
+      message: `Found **${totalCount}** Droplet(s). Showing page ${ctx.input.page || 1}.`
     };
   })
   .build();

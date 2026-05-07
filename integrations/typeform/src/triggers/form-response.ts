@@ -1,5 +1,6 @@
 import { SlateTrigger } from 'slates';
 import { TypeformClient } from '../lib/client';
+import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -113,7 +114,9 @@ export let formResponse = SlateTrigger.create(spec, {
   .webhook({
     autoRegisterWebhook: async ctx => {
       if (!ctx.config.formId) {
-        throw new Error('formId is required in config for automatic webhook registration');
+        throw typeformServiceError(
+          'formId is required in config for automatic webhook registration.'
+        );
       }
 
       let client = new TypeformClient({

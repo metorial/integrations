@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { jiraApiError } from './errors';
 
 export interface JiraClientConfig {
   token: string;
@@ -33,6 +34,10 @@ export class JiraClient {
         'Content-Type': 'application/json'
       }
     });
+
+    let rejectWithJiraError = (error: unknown) => Promise.reject(jiraApiError(error));
+    this.api.interceptors.response.use(response => response, rejectWithJiraError);
+    this.agileApi.interceptors.response.use(response => response, rejectWithJiraError);
   }
 
   // ---- Issues ----
@@ -198,6 +203,20 @@ export class JiraClient {
         maxResults: params?.maxResults ?? 50
       }
     });
+    return response.data;
+  }
+
+  async updateWorklog(
+    issueIdOrKey: string,
+    worklogId: string,
+    worklog: {
+      timeSpentSeconds?: number;
+      timeSpent?: string;
+      started?: string;
+      comment?: any;
+    }
+  ): Promise<any> {
+    let response = await this.api.put(`/issue/${issueIdOrKey}/worklog/${worklogId}`, worklog);
     return response.data;
   }
 

@@ -1,9 +1,40 @@
 import { SlateAuth, createAxios } from 'slates';
+import { Buffer } from 'node:buffer';
 import { z } from 'zod';
+import { vercelApiError, vercelServiceError } from './lib/errors';
 
 let axiosInstance = createAxios({
   baseURL: 'https://api.vercel.com'
 });
+
+let generateCodeVerifier = () => {
+  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+  let randomValues = new Uint8Array(96);
+  crypto.getRandomValues(randomValues);
+
+  return Array.from(randomValues, value => chars[value % chars.length]!).join('');
+};
+
+let generateCodeChallenge = async (codeVerifier: string) => {
+  let digest = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(codeVerifier)
+  );
+
+  return Buffer.from(digest).toString('base64url');
+};
+
+let requestVercelAuth = async <T>(
+  operation: string,
+  run: () => Promise<{ data: T }>
+) => {
+  try {
+    let response = await run();
+    return response.data;
+  } catch (error) {
+    throw vercelApiError(error, operation);
+  }
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -42,18 +73,21 @@ export let auth = SlateAuth.create()
     ],
 
     getAuthorizationUrl: async ctx => {
+      let codeVerifier = generateCodeVerifier();
+      let codeChallenge = await generateCodeChallenge(codeVerifier);
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         state: ctx.state,
         response_type: 'code',
         scope: ctx.scopes.join(' '),
-        code_challenge: ctx.state,
+        code_challenge: codeChallenge,
         code_challenge_method: 'S256'
       });
 
       return {
-        url: `https://vercel.com/oauth/authorize?${params.toString()}`
+        url: `https://vercel.com/oauth/authorize?${params.toString()}`,
+        callbackState: { codeVerifier }
       };
     },
 
@@ -64,16 +98,19 @@ export let auth = SlateAuth.create()
         client_secret: ctx.clientSecret,
         code: ctx.code,
         redirect_uri: ctx.redirectUri,
-        code_verifier: ctx.state
+        code_verifier: ctx.callbackState?.codeVerifier ?? ctx.state
       });
 
-      let response = await axiosInstance.post('/login/oauth/token', params.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
-
-      let data = response.data;
+      let data = await requestVercelAuth<any>('exchange OAuth code', () =>
+        axiosInstance.post('/login/oauth/token', params.toString(), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+      );
+      if (!data.access_token) {
+        throw vercelServiceError('Vercel OAuth token response did not include an access token.');
+      }
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -99,13 +136,16 @@ export let auth = SlateAuth.create()
         refresh_token: ctx.output.refreshToken
       });
 
-      let response = await axiosInstance.post('/login/oauth/token', params.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
-
-      let data = response.data;
+      let data = await requestVercelAuth<any>('refresh OAuth token', () =>
+        axiosInstance.post('/login/oauth/token', params.toString(), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+      );
+      if (!data.access_token) {
+        throw vercelServiceError('Vercel OAuth refresh response did not include an access token.');
+      }
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -124,13 +164,18 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let response = await axiosInstance.get('/v2/user', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let data = await requestVercelAuth<any>('get OAuth profile', () =>
+        axiosInstance.get('/v2/user', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        })
+      );
 
-      let user = response.data.user;
+      let user = data.user;
+      if (!user) {
+        throw vercelServiceError('Vercel profile response did not include a user.');
+      }
 
       return {
         profile: {
@@ -166,13 +211,18 @@ export let auth = SlateAuth.create()
       output: { token: string; refreshToken?: string; expiresAt?: string };
       input: { token: string };
     }) => {
-      let response = await axiosInstance.get('/v2/user', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let data = await requestVercelAuth<any>('get token profile', () =>
+        axiosInstance.get('/v2/user', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        })
+      );
 
-      let user = response.data.user;
+      let user = data.user;
+      if (!user) {
+        throw vercelServiceError('Vercel profile response did not include a user.');
+      }
 
       return {
         profile: {

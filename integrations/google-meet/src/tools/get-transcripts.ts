@@ -13,6 +13,27 @@ let transcriptSchema = z.object({
   docsUri: z.string().optional().describe('URI to view the transcript document')
 });
 
+let transcriptEntrySchema = z.object({
+  entryName: z.string().describe('Resource name of the entry'),
+  participantName: z
+    .string()
+    .optional()
+    .describe('Resource name of the speaking participant'),
+  text: z.string().optional().describe('Transcribed text'),
+  languageCode: z.string().optional().describe('Language code (e.g., "en-US")'),
+  startTime: z.string().optional().describe('When the entry started'),
+  endTime: z.string().optional().describe('When the entry ended')
+});
+
+let mapTranscriptEntry = (e: any) => ({
+  entryName: e.name || '',
+  participantName: e.participant,
+  text: e.text,
+  languageCode: e.languageCode,
+  startTime: e.startTime,
+  endTime: e.endTime
+});
+
 export let listTranscriptsTool = SlateTool.create(spec, {
   name: 'List Transcripts',
   key: 'list_transcripts',
@@ -104,6 +125,38 @@ export let getTranscriptTool = SlateTool.create(spec, {
   })
   .build();
 
+export let getTranscriptEntryTool = SlateTool.create(spec, {
+  name: 'Get Transcript Entry',
+  key: 'get_transcript_entry',
+  description: `Retrieve one structured transcript entry by resource name. Use this after listing transcript entries when you need the exact speaker, text, language, and timestamps for one segment.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .scopes(googleMeetActionScopes.getTranscriptEntry)
+  .input(
+    z.object({
+      transcriptEntryName: z
+        .string()
+        .describe(
+          'Transcript entry resource name (e.g., "conferenceRecords/abc123/transcripts/def456/entries/ghi789")'
+        )
+    })
+  )
+  .output(transcriptEntrySchema)
+  .handleInvocation(async ctx => {
+    let client = new MeetClient({ token: ctx.auth.token });
+    let entry = await client.getTranscriptEntry(ctx.input.transcriptEntryName);
+    let output = mapTranscriptEntry(entry);
+
+    return {
+      output,
+      message: `Retrieved transcript entry **${output.entryName}**.`
+    };
+  })
+  .build();
+
 export let listTranscriptEntriesTool = SlateTool.create(spec, {
   name: 'List Transcript Entries',
   key: 'list_transcript_entries',
@@ -127,19 +180,7 @@ export let listTranscriptEntriesTool = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      entries: z.array(
-        z.object({
-          entryName: z.string().describe('Resource name of the entry'),
-          participantName: z
-            .string()
-            .optional()
-            .describe('Resource name of the speaking participant'),
-          text: z.string().optional().describe('Transcribed text'),
-          languageCode: z.string().optional().describe('Language code (e.g., "en-US")'),
-          startTime: z.string().optional().describe('When the entry started'),
-          endTime: z.string().optional().describe('When the entry ended')
-        })
-      ),
+      entries: z.array(transcriptEntrySchema),
       nextPageToken: z.string().optional().describe('Token for the next page')
     })
   )
@@ -152,14 +193,7 @@ export let listTranscriptEntriesTool = SlateTool.create(spec, {
       ctx.input.pageToken
     );
 
-    let entries = result.transcriptEntries.map(e => ({
-      entryName: e.name || '',
-      participantName: e.participant,
-      text: e.text,
-      languageCode: e.languageCode,
-      startTime: e.startTime,
-      endTime: e.endTime
-    }));
+    let entries = result.transcriptEntries.map(mapTranscriptEntry);
 
     return {
       output: {

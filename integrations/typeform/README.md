@@ -16,6 +16,10 @@ Permanently delete a typeform and all its associated data including responses, w
 
 Delete specific form responses by their tokens. Supports GDPR Right To Be Forgotten compliance by permanently removing response data.
 
+### Download Response File
+
+Download a file uploaded through a Typeform file upload question. Returns the file as base64 content for storage or forwarding.
+
 ### Get Form Insights
 
 Retrieve analytics and insights for a typeform, including response counts, completion rates, and question-level metrics.
@@ -44,6 +48,10 @@ Retrieve a list of workspaces in your Typeform account. Workspaces organize form
 
 Upload, retrieve, or delete images in your Typeform account. Images can be used in form fields, backgrounds, and choice options.
 
+### Manage Form Messages
+
+Retrieve or update a form's customizable interface messages, such as submit button text, validation copy, progress labels, and file upload prompts.
+
 ### Manage Theme
 
 Create, retrieve, update, or delete a visual theme for typeforms. Themes control colors, fonts, backgrounds, and button styles. Apply themes to forms for consistent branding.
@@ -59,6 +67,10 @@ Create, retrieve, update, or delete webhooks for a typeform. Webhooks send real-
 ### Manage Workspace
 
 Create, retrieve, update, or delete a Typeform workspace. Workspaces organize forms and support team collaboration. You can rename workspaces, add or remove members, and move forms between workspaces.
+
+### Patch Form
+
+Safely update supported form-level properties without replacing the full form definition. Use this for title, public/private status, theme, workspace, SEO metadata, and tracking settings.
 
 ### Update Form
 

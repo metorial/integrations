@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TypeformClient } from '../lib/client';
+import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -8,7 +9,7 @@ export let manageImage = SlateTool.create(spec, {
   key: 'manage_image',
   description: `Upload, retrieve, or delete images in your Typeform account. Images can be used in form fields, backgrounds, and choice options.`,
   instructions: [
-    'To **upload**, provide **base64Image**, **mediaType**, and **fileName** (no imageId).',
+    'To **upload**, provide **fileName** and either **base64Image** or **imageUrl** (no imageId).',
     'To **retrieve**, provide just the **imageId**.',
     'To **delete**, set **delete** to true and provide **imageId**.',
     'To **list** all images, leave all fields empty.'
@@ -25,7 +26,8 @@ export let manageImage = SlateTool.create(spec, {
       mediaType: z
         .string()
         .optional()
-        .describe('Image MIME type (e.g. "image/png", "image/jpeg")'),
+        .describe('Deprecated. Typeform infers media type from the image data or URL.'),
+      imageUrl: z.string().optional().describe('Public URL of the image to upload'),
       fileName: z.string().optional().describe('File name for the uploaded image')
     })
   )
@@ -56,7 +58,10 @@ export let manageImage = SlateTool.create(spec, {
     });
 
     // Delete
-    if (ctx.input.delete && ctx.input.imageId) {
+    if (ctx.input.delete) {
+      if (!ctx.input.imageId) {
+        throw typeformServiceError('imageId is required when deleting an image.');
+      }
       await client.deleteImage(ctx.input.imageId);
       return {
         output: {
@@ -68,10 +73,19 @@ export let manageImage = SlateTool.create(spec, {
     }
 
     // Upload
-    if (ctx.input.base64Image && ctx.input.mediaType && ctx.input.fileName) {
+    if (ctx.input.base64Image || ctx.input.imageUrl || ctx.input.fileName) {
+      if (!ctx.input.fileName || (!ctx.input.base64Image && !ctx.input.imageUrl)) {
+        throw typeformServiceError(
+          'Provide fileName and either base64Image or imageUrl to upload an image.'
+        );
+      }
+      if (ctx.input.base64Image && ctx.input.imageUrl) {
+        throw typeformServiceError('Provide either base64Image or imageUrl, not both.');
+      }
+
       let result = await client.createImage({
         image: ctx.input.base64Image,
-        mediaType: ctx.input.mediaType,
+        url: ctx.input.imageUrl,
         fileName: ctx.input.fileName
       });
       return {

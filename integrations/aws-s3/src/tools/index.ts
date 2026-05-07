@@ -9,3 +9,6 @@ export * from './generate-presigned-url';
 export * from './manage-object-tags';
 export * from './get-bucket-info';
 export * from './list-object-versions';
+export * from './manage-bucket-tags';
+export * from './manage-bucket-policy';
+export * from './manage-bucket-lifecycle';

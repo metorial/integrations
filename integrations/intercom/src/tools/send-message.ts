@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { intercomServiceError } from '../lib/errors';
 
 export let sendMessage = SlateTool.create(spec, {
   name: 'Send Message',
@@ -48,7 +49,9 @@ The message will initiate a new conversation with the target contact.`,
     let client = new Client({ token: ctx.auth.token, region: ctx.config.region });
 
     if (!ctx.input.toContactId && !ctx.input.toEmail && !ctx.input.toUserId) {
-      throw new Error('At least one of toContactId, toEmail, or toUserId is required');
+      throw intercomServiceError(
+        'At least one of toContactId, toEmail, or toUserId is required'
+      );
     }
 
     let result = await client.sendMessage({

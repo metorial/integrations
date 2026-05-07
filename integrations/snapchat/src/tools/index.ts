@@ -17,3 +17,5 @@ export * from './get-campaign-stats';
 export * from './send-conversion-event';
 export * from './manage-pixel';
 export * from './get-funding-sources';
+export * from './get-audience-size';
+export * from './get-bid-estimate';

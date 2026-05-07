@@ -23,6 +23,21 @@ let mapHook = (hook: any) => ({
   updatedAt: hook.updated_at
 });
 
+let hookTypeOutputSchema = z.object({
+  name: z.string().describe('Hook type name'),
+  events: z.array(z.string()).optional().describe('Events supported by this hook type'),
+  fields: z
+    .array(z.record(z.string(), z.any()))
+    .optional()
+    .describe('Configuration fields required by this hook type')
+});
+
+let mapHookType = (hookType: any) => ({
+  name: hookType.name || '',
+  events: hookType.events,
+  fields: hookType.fields
+});
+
 export let listHooks = SlateTool.create(spec, {
   name: 'List Notification Hooks',
   key: 'list_hooks',
@@ -50,6 +65,32 @@ export let listHooks = SlateTool.create(spec, {
     return {
       output: { hooks: mapped },
       message: `Found **${mapped.length}** hook(s) for site **${ctx.input.siteId}**.`
+    };
+  })
+  .build();
+
+export let listHookTypes = SlateTool.create(spec, {
+  name: 'List Notification Hook Types',
+  key: 'list_hook_types',
+  description: `List Netlify notification hook types, required fields, and events supported for creating hooks.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(z.object({}))
+  .output(
+    z.object({
+      hookTypes: z.array(hookTypeOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new Client({ token: ctx.auth.token });
+    let hookTypes = await client.listHookTypes();
+    let mapped = hookTypes.map(mapHookType);
+
+    return {
+      output: { hookTypes: mapped },
+      message: `Found **${mapped.length}** notification hook type(s).`
     };
   })
   .build();

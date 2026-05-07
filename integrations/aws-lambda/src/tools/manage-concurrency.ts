@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { lambdaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -75,7 +76,9 @@ export let manageConcurrency = SlateTool.create(spec, {
         };
       }
       if (!ctx.input.concurrentExecutions && ctx.input.concurrentExecutions !== 0) {
-        throw new Error('concurrentExecutions is required to set reserved concurrency');
+        throw lambdaServiceError(
+          'concurrentExecutions is required to set reserved concurrency'
+        );
       }
       let result = await client.putFunctionConcurrency(
         functionName,
@@ -89,7 +92,7 @@ export let manageConcurrency = SlateTool.create(spec, {
 
     // provisioned
     if (!ctx.input.qualifier)
-      throw new Error('qualifier is required for provisioned concurrency');
+      throw lambdaServiceError('qualifier is required for provisioned concurrency');
 
     if (action === 'get') {
       let result = await client.getProvisionedConcurrencyConfig(
@@ -116,7 +119,9 @@ export let manageConcurrency = SlateTool.create(spec, {
     }
 
     if (!ctx.input.concurrentExecutions) {
-      throw new Error('concurrentExecutions is required to set provisioned concurrency');
+      throw lambdaServiceError(
+        'concurrentExecutions is required to set provisioned concurrency'
+      );
     }
     let result = await client.putProvisionedConcurrencyConfig(
       functionName,

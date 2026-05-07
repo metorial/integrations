@@ -6,7 +6,7 @@ import { z } from 'zod';
 export let addTracking = SlateTool.create(spec, {
   name: 'Add Tracking',
   key: 'add_tracking',
-  description: `Add shipment tracking information to a captured PayPal payment. Associates a carrier and tracking number with a transaction so buyers can track their shipments.`,
+  description: `Add shipment tracking information to a captured PayPal payment or order. Uses Orders v2 tracking when an order ID is provided and falls back to legacy transaction tracking otherwise.`,
   tags: {
     destructive: false,
     readOnly: false
@@ -15,16 +15,30 @@ export let addTracking = SlateTool.create(spec, {
   .input(
     z.object({
       captureId: z.string().describe('PayPal capture/transaction ID to add tracking to'),
+      orderId: z
+        .string()
+        .optional()
+        .describe(
+          'PayPal order ID. Provide this to add tracking through the current Orders v2 API.'
+        ),
       trackingNumber: z.string().describe('Carrier tracking number'),
       carrier: z.string().describe('Shipping carrier (e.g. FEDEX, UPS, USPS, DHL)'),
-      status: z
-        .enum(['SHIPPED', 'ON_HOLD', 'DELIVERED', 'CANCELLED'])
+      carrierNameOther: z
+        .string()
         .optional()
-        .describe('Shipment status. Defaults to SHIPPED.'),
+        .describe('Carrier display name when carrier is OTHER'),
+      status: z
+        .enum(['SHIPPED', 'ON_HOLD', 'DELIVERED', 'CANCELLED', 'LOCAL_PICKUP'])
+        .optional()
+        .describe('Shipment status for legacy transaction tracking. Defaults to SHIPPED.'),
       notifyPayer: z
         .boolean()
         .optional()
-        .describe('Whether to email the tracking info to the buyer. Defaults to true.')
+        .describe('Whether to email tracking info to the buyer. Defaults to false.'),
+      items: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Order item details for Orders v2 tracking')
     })
   )
   .output(
@@ -46,20 +60,32 @@ export let addTracking = SlateTool.create(spec, {
       environment: ctx.auth.environment
     });
 
-    let result = await client.addTracking(ctx.input.captureId, {
-      trackingNumber: ctx.input.trackingNumber,
-      carrier: ctx.input.carrier,
-      status: ctx.input.status,
-      notifyPayer: ctx.input.notifyPayer
-    });
+    let result = ctx.input.orderId
+      ? await client.addOrderTracking(ctx.input.orderId, {
+          captureId: ctx.input.captureId,
+          trackingNumber: ctx.input.trackingNumber,
+          carrier: ctx.input.carrier,
+          carrierNameOther: ctx.input.carrierNameOther,
+          notifyPayer: ctx.input.notifyPayer,
+          items: ctx.input.items
+        })
+      : await client.addTracking(ctx.input.captureId, {
+          trackingNumber: ctx.input.trackingNumber,
+          carrier: ctx.input.carrier,
+          status: ctx.input.status,
+          notifyPayer: ctx.input.notifyPayer
+        });
 
-    let tracker = (result.tracker_identifiers || result.trackers)?.[0] || {};
+    let orderTracker = (result.purchase_units as any[])?.[0]?.shipping?.trackers?.[0];
+    let tracker = orderTracker || (result.tracker_identifiers || result.trackers)?.[0] || {};
 
     return {
       output: {
         trackerId:
-          tracker.tracking_number_id || `${ctx.input.captureId}-${ctx.input.trackingNumber}`,
-        status: ctx.input.status || 'SHIPPED',
+          tracker.id ||
+          tracker.tracking_number_id ||
+          `${ctx.input.captureId}-${ctx.input.trackingNumber}`,
+        status: tracker.status || ctx.input.status || 'SHIPPED',
         trackingNumber: ctx.input.trackingNumber,
         carrier: ctx.input.carrier
       },

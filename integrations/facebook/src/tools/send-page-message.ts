@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { facebookServiceError } from '../lib/errors';
 
 export let sendPageMessage = SlateTool.create(spec, {
   name: 'Send Page Message',
@@ -76,7 +77,7 @@ Requires the \`pages_messaging\` permission.`,
 
     if (ctx.input.action === 'send') {
       if (!ctx.input.recipientId || !ctx.input.messageText) {
-        throw new Error('recipientId and messageText are required for send action');
+        throw facebookServiceError('recipientId and messageText are required for send action');
       }
       let result = await client.sendPageMessage(
         ctx.input.pageId,
@@ -115,7 +116,7 @@ Requires the \`pages_messaging\` permission.`,
 
     // get_messages
     if (!ctx.input.conversationId) {
-      throw new Error('conversationId is required for get_messages action');
+      throw facebookServiceError('conversationId is required for get_messages action');
     }
     let result = await client.getConversationMessages(ctx.input.conversationId, {
       limit: ctx.input.limit,

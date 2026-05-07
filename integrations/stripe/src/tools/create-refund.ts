@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StripeClient } from '../lib/client';
+import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -97,7 +98,7 @@ export let createRefund = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.refundId) throw new Error('refundId is required for get action');
+      if (!ctx.input.refundId) throw stripeServiceError('refundId is required for get action');
       let refund = await client.getRefund(ctx.input.refundId);
       return {
         output: {

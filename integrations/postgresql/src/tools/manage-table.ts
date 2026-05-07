@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
+import { postgresServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 let columnDefinitionSchema = z.object({
@@ -130,7 +131,7 @@ For altering tables, supports adding columns, dropping columns, renaming columns
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.columns || ctx.input.columns.length === 0) {
-        throw new Error('Column definitions are required for create action');
+        throw postgresServiceError('Column definitions are required for create action');
       }
 
       let columnDefs: string[] = [];
@@ -230,7 +231,7 @@ For altering tables, supports adding columns, dropping columns, renaming columns
       }
 
       if (statements.length === 0) {
-        throw new Error(
+        throw postgresServiceError(
           'No alter operations specified. Provide addColumns, dropColumns, renameColumn, alterColumns, or renameTable.'
         );
       }

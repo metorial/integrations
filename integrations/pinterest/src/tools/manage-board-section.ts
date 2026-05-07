@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { pinterestServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -73,7 +74,7 @@ export let manageBoardSection = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.name) {
-        throw new Error('Section name is required for create action');
+        throw pinterestServiceError('Section name is required for create action');
       }
       let result = await client.createBoardSection(ctx.input.boardId, ctx.input.name);
 
@@ -88,7 +89,7 @@ export let manageBoardSection = SlateTool.create(spec, {
 
     if (ctx.input.action === 'update') {
       if (!ctx.input.sectionId || !ctx.input.name) {
-        throw new Error('Section ID and name are required for update action');
+        throw pinterestServiceError('Section ID and name are required for update action');
       }
       let result = await client.updateBoardSection(
         ctx.input.boardId,
@@ -107,7 +108,7 @@ export let manageBoardSection = SlateTool.create(spec, {
 
     if (ctx.input.action === 'delete') {
       if (!ctx.input.sectionId) {
-        throw new Error('Section ID is required for delete action');
+        throw pinterestServiceError('Section ID is required for delete action');
       }
       await client.deleteBoardSection(ctx.input.boardId, ctx.input.sectionId);
 
@@ -119,6 +120,6 @@ export let manageBoardSection = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw pinterestServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

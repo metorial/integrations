@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MailchimpClient } from '../lib/client';
+import { mailchimpServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -50,6 +51,12 @@ export let manageTemplateTool = SlateTool.create(spec, {
       if (ctx.input.html) updateData.html = ctx.input.html;
       if (ctx.input.folderId) updateData.folder_id = ctx.input.folderId;
 
+      if (Object.keys(updateData).length === 0) {
+        throw mailchimpServiceError(
+          'At least one field must be provided to update a template.'
+        );
+      }
+
       let result = await client.updateTemplate(ctx.input.templateId, updateData);
       return {
         output: { templateId: result.id, name: result.name },
@@ -57,9 +64,13 @@ export let manageTemplateTool = SlateTool.create(spec, {
       };
     }
 
+    if (!ctx.input.name || !ctx.input.html) {
+      throw mailchimpServiceError('name and html are required to create a template.');
+    }
+
     let result = await client.createTemplate({
-      name: ctx.input.name!,
-      html: ctx.input.html!,
+      name: ctx.input.name,
+      html: ctx.input.html,
       folderId: ctx.input.folderId
     });
 

@@ -30,6 +30,9 @@ Use the **delimiter** parameter (typically \`/\`) to list only objects at the cu
         .describe('Delimiter for grouping keys (typically "/" for folder-like listing)'),
       maxKeys: z
         .number()
+        .int()
+        .min(1)
+        .max(1000)
         .optional()
         .describe('Maximum number of objects to return (default 1000)'),
       continuationToken: z

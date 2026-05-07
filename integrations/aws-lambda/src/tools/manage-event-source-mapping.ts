@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { lambdaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -123,7 +124,7 @@ export let manageEventSourceMapping = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.mappingUuid) throw new Error('mappingUuid is required');
+      if (!ctx.input.mappingUuid) throw lambdaServiceError('mappingUuid is required');
       let result = await client.getEventSourceMapping(ctx.input.mappingUuid);
       return {
         output: mapResult(result),
@@ -132,7 +133,7 @@ export let manageEventSourceMapping = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.mappingUuid) throw new Error('mappingUuid is required');
+      if (!ctx.input.mappingUuid) throw lambdaServiceError('mappingUuid is required');
       let result = await client.deleteEventSourceMapping(ctx.input.mappingUuid);
       return {
         output: { ...mapResult(result), deleted: true },
@@ -181,7 +182,8 @@ export let manageEventSourceMapping = SlateTool.create(spec, {
     }
 
     // update
-    if (!ctx.input.mappingUuid) throw new Error('mappingUuid is required for update');
+    if (!ctx.input.mappingUuid)
+      throw lambdaServiceError('mappingUuid is required for update');
     let result = await client.updateEventSourceMapping(ctx.input.mappingUuid, buildParams());
     return {
       output: mapResult(result),

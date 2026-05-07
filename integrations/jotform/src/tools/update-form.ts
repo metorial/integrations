@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { jotformServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -10,6 +11,7 @@ export let updateFormTool = SlateTool.create(spec, {
   instructions: [
     'To update form-level settings (title, height, styles, etc.), use the "properties" field.',
     'To add a new question, use "newQuestion" with at least "type" and "text".',
+    'To update an existing question, provide updateQuestionId and updateQuestion.',
     'To delete a question, provide "deleteQuestionId".'
   ]
 })
@@ -24,6 +26,11 @@ export let updateFormTool = SlateTool.create(spec, {
         .record(z.string(), z.any())
         .optional()
         .describe('A new question to add to the form. Must include "type" and "text".'),
+      updateQuestionId: z.string().optional().describe('ID of a question to update'),
+      updateQuestion: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Question properties to update for updateQuestionId'),
       deleteQuestionId: z
         .string()
         .optional()
@@ -35,6 +42,7 @@ export let updateFormTool = SlateTool.create(spec, {
       formId: z.string().describe('ID of the updated form'),
       propertiesUpdated: z.boolean().describe('Whether properties were updated'),
       questionAdded: z.boolean().describe('Whether a new question was added'),
+      questionUpdated: z.boolean().describe('Whether an existing question was updated'),
       questionDeleted: z.boolean().describe('Whether a question was deleted')
     })
   )
@@ -46,6 +54,7 @@ export let updateFormTool = SlateTool.create(spec, {
 
     let propertiesUpdated = false;
     let questionAdded = false;
+    let questionUpdated = false;
     let questionDeleted = false;
 
     if (ctx.input.properties && Object.keys(ctx.input.properties).length > 0) {
@@ -58,6 +67,21 @@ export let updateFormTool = SlateTool.create(spec, {
       questionAdded = true;
     }
 
+    if (ctx.input.updateQuestion && Object.keys(ctx.input.updateQuestion).length > 0) {
+      if (!ctx.input.updateQuestionId) {
+        throw jotformServiceError(
+          'updateQuestionId is required when updateQuestion is provided.'
+        );
+      }
+
+      await client.updateFormQuestion(
+        ctx.input.formId,
+        ctx.input.updateQuestionId,
+        ctx.input.updateQuestion
+      );
+      questionUpdated = true;
+    }
+
     if (ctx.input.deleteQuestionId) {
       await client.deleteFormQuestion(ctx.input.formId, ctx.input.deleteQuestionId);
       questionDeleted = true;
@@ -66,6 +90,7 @@ export let updateFormTool = SlateTool.create(spec, {
     let actions: string[] = [];
     if (propertiesUpdated) actions.push('updated properties');
     if (questionAdded) actions.push('added a question');
+    if (questionUpdated) actions.push('updated a question');
     if (questionDeleted) actions.push('deleted a question');
 
     return {
@@ -73,6 +98,7 @@ export let updateFormTool = SlateTool.create(spec, {
         formId: ctx.input.formId,
         propertiesUpdated,
         questionAdded,
+        questionUpdated,
         questionDeleted
       },
       message:

@@ -1,16 +1,19 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { geminiServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
+
+let isImagenModel = (model: string) => /(^|\/)imagen-/i.test(model);
 
 export let generateImage = SlateTool.create(spec, {
   name: 'Generate Image',
   key: 'generate_image',
   description: `Generate or edit images using Gemini's native image generation capabilities or Imagen models. Supports text-to-image generation and image editing with text prompts. Returns generated images as base64-encoded data.`,
   instructions: [
-    'Use "gemini-2.0-flash-exp" or "imagen-3.0-generate-002" as the model for image generation.',
+    'Use native image models like "gemini-2.5-flash-image" or Imagen models like "imagen-4.0-generate-001".',
     'Set responseMimeType to "image/png" or "image/jpeg" for the desired output format.',
-    'For image editing, provide an existing image via referenceImageBase64 along with your text prompt describing the desired changes.'
+    'For image editing, use a native Gemini image model and provide an existing image via referenceImageBase64 along with your text prompt describing the desired changes.'
   ],
   constraints: [
     'Image generation capabilities vary by model. Not all models support image output.',
@@ -26,7 +29,7 @@ export let generateImage = SlateTool.create(spec, {
       model: z
         .string()
         .describe(
-          'Model ID for image generation (e.g. "gemini-2.0-flash-exp", "imagen-3.0-generate-002")'
+          'Model ID for image generation (e.g. "gemini-2.5-flash-image", "imagen-4.0-generate-001")'
         ),
       prompt: z
         .string()
@@ -53,10 +56,18 @@ export let generateImage = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Aspect ratio (e.g. "1:1", "16:9", "4:3", "3:4", "9:16")'),
+      imageSize: z
+        .enum(['512', '1K', '2K', '4K'])
+        .optional()
+        .describe('Generated image size for models that support it'),
+      personGeneration: z
+        .enum(['dont_allow', 'allow_adult', 'allow_all'])
+        .optional()
+        .describe('Imagen person generation policy'),
       negativePrompt: z
         .string()
         .optional()
-        .describe('Description of what to avoid in the generated image (Imagen models only)')
+        .describe('Deprecated; current Gemini image generation APIs do not support this field')
     })
   )
   .output(
@@ -74,6 +85,54 @@ export let generateImage = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
+    if (ctx.input.referenceImageBase64 && !ctx.input.referenceImageMimeType) {
+      throw geminiServiceError(
+        'referenceImageMimeType is required when referenceImageBase64 is provided.'
+      );
+    }
+
+    if (ctx.input.negativePrompt) {
+      throw geminiServiceError(
+        'negativePrompt is not supported by the current Gemini image generation APIs.'
+      );
+    }
+
+    if (isImagenModel(ctx.input.model)) {
+      if (ctx.input.referenceImageBase64) {
+        throw geminiServiceError(
+          'Reference image editing is only supported for native Gemini image models.'
+        );
+      }
+
+      let result = await client.generateImagenImages(ctx.input.model, {
+        prompt: ctx.input.prompt,
+        numberOfImages: ctx.input.numberOfImages,
+        aspectRatio: ctx.input.aspectRatio,
+        imageSize: ctx.input.imageSize,
+        personGeneration: ctx.input.personGeneration
+      });
+
+      let images = (result.predictions ?? [])
+        .map((prediction: any) => {
+          let image = prediction.image ?? prediction;
+          let base64Data =
+            image.bytesBase64Encoded ?? image.imageBytes ?? image.bytes_base64_encoded;
+          if (!base64Data) return null;
+
+          return {
+            base64Data,
+            mimeType:
+              image.mimeType ?? image.mime_type ?? ctx.input.responseMimeType ?? 'image/png'
+          };
+        })
+        .filter(Boolean);
+
+      return {
+        output: { images },
+        message: `Generated ${images.length} image(s) using **${ctx.input.model}**.`
+      };
+    }
+
     let parts: Array<any> = [{ text: ctx.input.prompt }];
 
     if (ctx.input.referenceImageBase64 && ctx.input.referenceImageMimeType) {
@@ -88,9 +147,14 @@ export let generateImage = SlateTool.create(spec, {
     let generationConfig: Record<string, any> = {};
     if (ctx.input.responseMimeType)
       generationConfig.responseMimeType = ctx.input.responseMimeType;
+    generationConfig.responseModalities = ['IMAGE'];
     if (ctx.input.numberOfImages) generationConfig.candidateCount = ctx.input.numberOfImages;
-    if (ctx.input.aspectRatio) generationConfig.aspectRatio = ctx.input.aspectRatio;
-    if (ctx.input.negativePrompt) generationConfig.negativePrompt = ctx.input.negativePrompt;
+    if (ctx.input.aspectRatio || ctx.input.imageSize) {
+      generationConfig.imageConfig = {};
+      if (ctx.input.aspectRatio)
+        generationConfig.imageConfig.aspectRatio = ctx.input.aspectRatio;
+      if (ctx.input.imageSize) generationConfig.imageConfig.imageSize = ctx.input.imageSize;
+    }
 
     let result = await client.generateContent(ctx.input.model, {
       contents: [{ role: 'user', parts }],
@@ -101,10 +165,11 @@ export let generateImage = SlateTool.create(spec, {
 
     for (let candidate of result.candidates ?? []) {
       for (let part of candidate.content?.parts ?? []) {
-        if (part.inlineData) {
+        let inlineData = part.inlineData ?? part.inline_data;
+        if (inlineData) {
           images.push({
-            base64Data: part.inlineData.data,
-            mimeType: part.inlineData.mimeType
+            base64Data: inlineData.data,
+            mimeType: inlineData.mimeType ?? inlineData.mime_type ?? 'image/png'
           });
         }
       }

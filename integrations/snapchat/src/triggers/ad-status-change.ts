@@ -51,7 +51,7 @@ export let adStatusChange = SlateTrigger.create(spec, {
       }
 
       let client = new SnapchatClient(ctx.auth.token);
-      let ads = await client.listAds(adSquadId);
+      let ads = (await client.listAds(adSquadId)).items;
 
       let previousState: Record<string, string> =
         (ctx.input.state as Record<string, string>) ?? {};

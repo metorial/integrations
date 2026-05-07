@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { withFirebaseApiError } from './errors';
 
 let firestoreAxios = createAxios({
   baseURL: 'https://firestore.googleapis.com/v1'
@@ -127,11 +128,10 @@ export class FirestoreClient {
     createTime: string;
     updateTime: string;
   }> {
-    let response = await firestoreAxios.get(
-      `${this.basePath}/${collectionPath}/${documentId}`,
-      {
+    let response = await withFirebaseApiError('Firestore get document', () =>
+      firestoreAxios.get(`${this.basePath}/${collectionPath}/${documentId}`, {
         headers: this.headers
-      }
+      })
     );
 
     let doc = response.data as FirestoreDocument;
@@ -159,15 +159,17 @@ export class FirestoreClient {
       params['documentId'] = documentId;
     }
 
-    let response = await firestoreAxios.post(
-      `${this.basePath}/${collectionPath}`,
-      {
-        fields: encodeFirestoreFields(fields)
-      },
-      {
-        headers: this.headers,
-        params
-      }
+    let response = await withFirebaseApiError('Firestore create document', () =>
+      firestoreAxios.post(
+        `${this.basePath}/${collectionPath}`,
+        {
+          fields: encodeFirestoreFields(fields)
+        },
+        {
+          headers: this.headers,
+          params
+        }
+      )
     );
 
     let doc = response.data as FirestoreDocument;
@@ -199,15 +201,17 @@ export class FirestoreClient {
       params['updateMask.fieldPaths'] = updateMask;
     }
 
-    let response = await firestoreAxios.patch(
-      `${this.basePath}/${collectionPath}/${documentId}`,
-      {
-        fields: encodeFirestoreFields(fields)
-      },
-      {
-        headers: this.headers,
-        params
-      }
+    let response = await withFirebaseApiError('Firestore update document', () =>
+      firestoreAxios.patch(
+        `${this.basePath}/${collectionPath}/${documentId}`,
+        {
+          fields: encodeFirestoreFields(fields)
+        },
+        {
+          headers: this.headers,
+          params
+        }
+      )
     );
 
     let doc = response.data as FirestoreDocument;
@@ -219,9 +223,11 @@ export class FirestoreClient {
   }
 
   async deleteDocument(collectionPath: string, documentId: string): Promise<void> {
-    await firestoreAxios.delete(`${this.basePath}/${collectionPath}/${documentId}`, {
-      headers: this.headers
-    });
+    await withFirebaseApiError('Firestore delete document', () =>
+      firestoreAxios.delete(`${this.basePath}/${collectionPath}/${documentId}`, {
+        headers: this.headers
+      })
+    );
   }
 
   async listDocuments(
@@ -241,14 +247,16 @@ export class FirestoreClient {
     }>;
     nextPageToken?: string;
   }> {
-    let response = await firestoreAxios.get(`${this.basePath}/${collectionPath}`, {
-      headers: this.headers,
-      params: {
-        pageSize: params?.pageSize || 20,
-        pageToken: params?.pageToken,
-        orderBy: params?.orderBy
-      }
-    });
+    let response = await withFirebaseApiError('Firestore list documents', () =>
+      firestoreAxios.get(`${this.basePath}/${collectionPath}`, {
+        headers: this.headers,
+        params: {
+          pageSize: params?.pageSize || 20,
+          pageToken: params?.pageToken,
+          orderBy: params?.orderBy
+        }
+      })
+    );
 
     let documents = (response.data.documents || []).map((doc: FirestoreDocument) => {
       let name = doc.name || '';
@@ -342,14 +350,16 @@ export class FirestoreClient {
       ? `${this.basePath}/${collectionPath.split('/').slice(0, -1).join('/')}`
       : this.basePath;
 
-    let response = await firestoreAxios.post(
-      `${parentPath}:runQuery`,
-      {
-        structuredQuery
-      },
-      {
-        headers: this.headers
-      }
+    let response = await withFirebaseApiError('Firestore run query', () =>
+      firestoreAxios.post(
+        `${parentPath}:runQuery`,
+        {
+          structuredQuery
+        },
+        {
+          headers: this.headers
+        }
+      )
     );
 
     return (response.data || [])

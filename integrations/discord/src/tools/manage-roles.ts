@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DiscordClient } from '../lib/client';
+import { discordServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -176,6 +177,6 @@ export let manageRoles = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw discordServiceError(`Unknown action: ${action}`);
   })
   .build();

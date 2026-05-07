@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StripeClient } from '../lib/client';
+import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -84,8 +85,8 @@ export let createCheckoutSession = SlateTool.create(spec, {
     let { action } = ctx.input;
 
     if (action === 'create') {
-      if (!ctx.input.mode) throw new Error('mode is required for create action');
-      if (!ctx.input.successUrl) throw new Error('successUrl is required for create action');
+      if (!ctx.input.mode) throw stripeServiceError('mode is required for create action');
+      if (!ctx.input.successUrl) throw stripeServiceError('successUrl is required for create action');
 
       let params: Record<string, any> = {
         mode: ctx.input.mode,
@@ -122,7 +123,7 @@ export let createCheckoutSession = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.sessionId) throw new Error('sessionId is required for get action');
+      if (!ctx.input.sessionId) throw stripeServiceError('sessionId is required for get action');
       let session = await client.getCheckoutSession(ctx.input.sessionId);
       return {
         output: {

@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { zapierApiError, zapierServiceError } from './lib/errors';
 
 let http = createAxios({
   baseURL: 'https://zapier.com'
@@ -25,9 +26,14 @@ export let auth = SlateAuth.create()
         scope: 'zap'
       },
       {
-        title: 'Zaps (All)',
-        description: 'Read access to all Zaps across the account',
+        title: 'Zaps (All Owned)',
+        description: 'Read access to all owned Zaps across the account',
         scope: 'zap:all'
+      },
+      {
+        title: 'Zaps (All Account)',
+        description: 'Read access to owned and shared Zaps across the account',
+        scope: 'zap:account:all'
       },
       {
         title: 'Zaps (Write)',
@@ -35,19 +41,24 @@ export let auth = SlateAuth.create()
         scope: 'zap:write'
       },
       {
-        title: 'Authentications (Read)',
-        description: 'Read access to authentications',
-        scope: 'authentication'
+        title: 'Connections (Read)',
+        description: 'Read access to Zapier app authentications',
+        scope: 'connection:read'
       },
       {
-        title: 'Authentications (Write)',
-        description: 'Create new authentications',
-        scope: 'authentication:write'
+        title: 'Connections (Write)',
+        description: 'Create new Zapier app authentications',
+        scope: 'connection:write'
       },
       {
         title: 'Zap Runs',
         description: 'Read access to Zap run history',
         scope: 'zap:runs'
+      },
+      {
+        title: 'Action Runs',
+        description: 'Run actions and retrieve action run results',
+        scope: 'action:run'
       }
     ],
 
@@ -67,69 +78,77 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
+      try {
+        let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await http.post(
-        '/oauth/token/',
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: ctx.code,
-          redirect_uri: ctx.redirectUri
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+        let response = await http.post(
+          '/oauth/token/',
+          new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: ctx.code,
+            redirect_uri: ctx.redirectUri
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
 
-      let data = response.data;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
+        let data = response.data;
+        let expiresAt = data.expires_in
+          ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+          : undefined;
 
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt
-        }
-      };
+        return {
+          output: {
+            token: data.access_token,
+            refreshToken: data.refresh_token,
+            expiresAt
+          }
+        };
+      } catch (error) {
+        throw zapierApiError(error, 'OAuth token exchange');
+      }
     },
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available');
+        throw zapierServiceError('No Zapier refresh token is available.');
       }
 
-      let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
+      try {
+        let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await http.post(
-        '/oauth/token/',
-        new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+        let response = await http.post(
+          '/oauth/token/',
+          new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
 
-      let data = response.data;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
+        let data = response.data;
+        let expiresAt = data.expires_in
+          ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+          : undefined;
 
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt
-        }
-      };
+        return {
+          output: {
+            token: data.access_token,
+            refreshToken: data.refresh_token ?? ctx.output.refreshToken,
+            expiresAt
+          }
+        };
+      } catch (error) {
+        throw zapierApiError(error, 'OAuth token refresh');
+      }
     }
   });

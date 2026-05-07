@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { pipedriveServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -58,7 +59,8 @@ Supports setting subject, type, due date/time, duration, location, notes, and co
     let client = createClient(ctx);
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.activityId) throw new Error('activityId is required for delete action');
+      if (!ctx.input.activityId)
+        throw pipedriveServiceError('activityId is required for delete action');
       await client.deleteActivity(ctx.input.activityId);
       return {
         output: { activityId: ctx.input.activityId, deleted: true },
@@ -84,7 +86,8 @@ Supports setting subject, type, due date/time, duration, location, notes, and co
     if (ctx.input.action === 'create') {
       result = await client.createActivity(body);
     } else {
-      if (!ctx.input.activityId) throw new Error('activityId is required for update action');
+      if (!ctx.input.activityId)
+        throw pipedriveServiceError('activityId is required for update action');
       result = await client.updateActivity(ctx.input.activityId, body);
     }
 

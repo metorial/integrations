@@ -60,7 +60,16 @@ export let operationalWebhooksTrigger = SlateTrigger.create(spec, {
       let endpoint = await client.createOperationalWebhookEndpoint({
         url: ctx.input.webhookBaseUrl,
         description: 'Slates operational webhook endpoint',
-        filterTypes: ['endpoint.disabled', 'message.attempt.exhausted']
+        filterTypes: [
+          'endpoint.created',
+          'endpoint.deleted',
+          'endpoint.disabled',
+          'endpoint.enabled',
+          'endpoint.updated',
+          'message.attempt.exhausted',
+          'message.attempt.failing',
+          'message.attempt.recovered'
+        ]
       });
 
       return {

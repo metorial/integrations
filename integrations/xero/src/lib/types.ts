@@ -55,6 +55,15 @@ export interface XeroContact {
   Discount?: number;
 }
 
+export interface XeroContactGroup {
+  ContactGroupID?: string;
+  Name?: string;
+  Status?: string;
+  Contacts?: XeroContact[];
+  HasValidationErrors?: boolean;
+  ValidationErrors?: Array<{ Message?: string }>;
+}
+
 export interface XeroLineItem {
   LineItemID?: string;
   Description?: string;
@@ -179,6 +188,23 @@ export interface XeroBankTransaction {
   Total?: number;
   UpdatedDateUTC?: string;
   HasAttachments?: boolean;
+}
+
+export interface XeroBankTransfer {
+  BankTransferID?: string;
+  FromBankAccount?: { AccountID?: string; Code?: string; Name?: string };
+  ToBankAccount?: { AccountID?: string; Code?: string; Name?: string };
+  Amount?: number;
+  DateString?: string;
+  Date?: string;
+  Reference?: string;
+  CurrencyRate?: number;
+  FromBankTransactionID?: string;
+  ToBankTransactionID?: string;
+  FromIsReconciled?: boolean;
+  ToIsReconciled?: boolean;
+  HasAttachments?: boolean;
+  CreatedDateUTC?: string;
 }
 
 export interface XeroAccount {

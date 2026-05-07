@@ -1,12 +1,16 @@
 # <img src="https://provider-logos.metorial-cdn.com/reddit.svg" height="20"> Reddit
 
-Browse, search, and interact with Reddit communities (subreddits). Submit text, link, or image posts to subreddits. Comment on posts and reply to comments. Upvote and downvote content. Edit and delete your own posts and comments. Save and unsave content. Search Reddit for posts matching keywords. Fetch subreddit information, rules, and posts sorted by hot, new, top, or controversial. Access user profiles, post/comment history, and karma data. Send and receive private messages. Subscribe and unsubscribe from subreddits. Manage subreddit moderation tasks including approving or removing posts and comments, accessing mod logs, configuring subreddit settings, and managing bans. Set and manage user and post flairs. Read and edit subreddit wiki pages. Give awards to posts and comments.
+Browse, search, and interact with Reddit communities (subreddits). Submit text and link posts to subreddits. Comment on posts and reply to comments. Upvote and downvote content. Edit and delete your own posts and comments. Save and unsave content, including reading saved categories. Search Reddit for posts and subreddits. Resolve posts, comments, and subreddits by fullname or URL. Fetch subreddit information, rules, and posts sorted by hot, new, top, or controversial. Access user profiles, account history listings, and karma data. Send and receive private messages. Subscribe and unsubscribe from subreddits. Manage subreddit moderation tasks including approving or removing posts and comments and accessing mod queues, reports, and logs. Set and manage user and post flairs. Read and edit subreddit wiki pages.
 
 ## Tools
 
 ### Get Post
 
 Retrieve a specific Reddit post with its comments. Returns the post details and a tree of comments sorted by the specified order.
+
+### Get Content Info
+
+Look up Reddit posts, comments, or subreddits by fullname, Reddit URL, or subreddit name using Reddit's batch info endpoint. Use this when you already have IDs from another workflow and need normalized metadata before acting on the content.
 
 ### Get Subreddit
 
@@ -15,6 +19,10 @@ Retrieve information about a subreddit including its description, subscriber cou
 ### Get User
 
 Retrieve a Reddit user's public profile information, including karma, account age, and optionally their recent posts or comments. Use without a username to get the authenticated user's own profile.
+
+### List User Content
+
+List a Reddit user's overview, posts, comments, saved items, hidden items, voted items, or gilded items. Use this for account history workflows that need saved/hidden/voted listings rather than only public profile metadata.
 
 ### Manage Comment
 
@@ -46,7 +54,7 @@ Perform moderation actions on posts and comments in subreddits you moderate. Sup
 
 ### Save Content
 
-Save or unsave a post or comment to your Reddit saved items.
+Save or unsave a post or comment to your Reddit saved items, or list saved categories available to the authenticated account.
 
 ### Search Reddit
 

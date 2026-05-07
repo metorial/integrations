@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { vercelServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -97,7 +98,8 @@ export let manageDomainsTool = SlateTool.create(spec, {
     }
 
     if (action === 'list_project') {
-      if (!projectIdOrName) throw new Error('projectIdOrName is required for list_project');
+      if (!projectIdOrName)
+        throw vercelServiceError('projectIdOrName is required for list_project');
       let result = await client.listProjectDomains(projectIdOrName);
       let domains = (result.domains || []).map((d: any) => ({
         name: d.name,
@@ -112,7 +114,7 @@ export let manageDomainsTool = SlateTool.create(spec, {
     }
 
     if (action === 'add') {
-      if (!domain) throw new Error('domain is required');
+      if (!domain) throw vercelServiceError('domain is required');
       let result = await client.addDomain(domain);
       return {
         output: {
@@ -124,7 +126,7 @@ export let manageDomainsTool = SlateTool.create(spec, {
     }
 
     if (action === 'remove') {
-      if (!domain) throw new Error('domain is required');
+      if (!domain) throw vercelServiceError('domain is required');
       await client.removeDomain(domain);
       return {
         output: { success: true },
@@ -134,7 +136,7 @@ export let manageDomainsTool = SlateTool.create(spec, {
 
     if (action === 'add_to_project') {
       if (!domain || !projectIdOrName)
-        throw new Error('domain and projectIdOrName are required');
+        throw vercelServiceError('domain and projectIdOrName are required');
       let result = await client.addProjectDomain(projectIdOrName, domain, {
         redirect: ctx.input.redirect,
         redirectStatusCode: ctx.input.redirectStatusCode,
@@ -151,7 +153,7 @@ export let manageDomainsTool = SlateTool.create(spec, {
 
     if (action === 'remove_from_project') {
       if (!domain || !projectIdOrName)
-        throw new Error('domain and projectIdOrName are required');
+        throw vercelServiceError('domain and projectIdOrName are required');
       await client.removeProjectDomain(projectIdOrName, domain);
       return {
         output: { success: true },
@@ -161,7 +163,7 @@ export let manageDomainsTool = SlateTool.create(spec, {
 
     if (action === 'verify') {
       if (!domain || !projectIdOrName)
-        throw new Error('domain and projectIdOrName are required');
+        throw vercelServiceError('domain and projectIdOrName are required');
       let result = await client.verifyProjectDomain(projectIdOrName, domain);
       return {
         output: {
@@ -172,6 +174,6 @@ export let manageDomainsTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw vercelServiceError(`Unknown action: ${action}`);
   })
   .build();

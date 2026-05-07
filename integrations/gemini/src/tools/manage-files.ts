@@ -22,6 +22,57 @@ let fileSchema = z.object({
     .describe('Processing state of the file (PROCESSING, ACTIVE, FAILED)')
 });
 
+let mapFile = (file: any) => ({
+  fileName: file.name,
+  displayName: file.displayName,
+  mimeType: file.mimeType,
+  sizeBytes: file.sizeBytes,
+  createTime: file.createTime,
+  updateTime: file.updateTime,
+  expirationTime: file.expirationTime,
+  sha256Hash: file.sha256Hash,
+  uri: file.uri,
+  state: file.state
+});
+
+export let uploadFile = SlateTool.create(spec, {
+  name: 'Upload File',
+  key: 'upload_file',
+  description: `Upload a text, image, audio, video, or document file to the Gemini File API for reuse in generation requests. Returns the file URI needed for fileData parts in Generate Text and cached content workflows.`,
+  instructions: [
+    'Provide fileData as base64-encoded bytes and set the correct MIME type.',
+    'Use the returned uri in generate_text messages with a fileData part.',
+    'Files are temporary and should be deleted when no longer needed.'
+  ],
+  tags: {
+    readOnly: false,
+    destructive: false
+  }
+})
+  .input(
+    z.object({
+      displayName: z.string().optional().describe('Human-readable display name for the file'),
+      mimeType: z.string().describe('MIME type of the file (e.g. "text/plain")'),
+      fileData: z.string().describe('Base64-encoded file bytes')
+    })
+  )
+  .output(fileSchema)
+  .handleInvocation(async ctx => {
+    let client = createClient(ctx);
+    let result = await client.uploadFile({
+      displayName: ctx.input.displayName,
+      mimeType: ctx.input.mimeType,
+      fileData: ctx.input.fileData
+    });
+    let file = mapFile(result.file ?? result);
+
+    return {
+      output: file,
+      message: `Uploaded file **${file.displayName ?? file.fileName}** (${file.mimeType ?? ctx.input.mimeType}).`
+    };
+  })
+  .build();
+
 export let listFiles = SlateTool.create(spec, {
   name: 'List Files',
   key: 'list_files',
@@ -56,18 +107,7 @@ export let listFiles = SlateTool.create(spec, {
       pageToken: ctx.input.pageToken
     });
 
-    let files = (result.files ?? []).map((f: any) => ({
-      fileName: f.name,
-      displayName: f.displayName,
-      mimeType: f.mimeType,
-      sizeBytes: f.sizeBytes,
-      createTime: f.createTime,
-      updateTime: f.updateTime,
-      expirationTime: f.expirationTime,
-      sha256Hash: f.sha256Hash,
-      uri: f.uri,
-      state: f.state
-    }));
+    let files = (result.files ?? []).map(mapFile);
 
     return {
       output: {
@@ -101,19 +141,10 @@ export let getFile = SlateTool.create(spec, {
 
     let f = await client.getFile(ctx.input.fileName);
 
+    let file = mapFile(f);
+
     return {
-      output: {
-        fileName: f.name,
-        displayName: f.displayName,
-        mimeType: f.mimeType,
-        sizeBytes: f.sizeBytes,
-        createTime: f.createTime,
-        updateTime: f.updateTime,
-        expirationTime: f.expirationTime,
-        sha256Hash: f.sha256Hash,
-        uri: f.uri,
-        state: f.state
-      },
+      output: file,
       message: `Retrieved file **${f.displayName ?? f.name}** (${f.mimeType ?? 'unknown type'}, state: ${f.state ?? 'unknown'}).`
     };
   })

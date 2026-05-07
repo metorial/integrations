@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SnapchatClient } from '../lib/client';
+import { snapchatServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -17,6 +18,10 @@ let adSquadOutputSchema = z.object({
   startTime: z.string().optional().describe('Start time'),
   endTime: z.string().optional().describe('End time'),
   optimizationGoal: z.string().optional().describe('Optimization goal'),
+  deliveryConstraint: z.string().optional().describe('Delivery constraint'),
+  bidStrategy: z.string().optional().describe('Bid strategy'),
+  pixelId: z.string().optional().describe('Associated Snap Pixel ID'),
+  pacingType: z.string().optional().describe('Pacing type'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
@@ -51,6 +56,26 @@ export let manageAdSquad = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Optimization goal (e.g., IMPRESSIONS, SWIPES, APP_INSTALLS, CONVERSIONS)'),
+      deliveryConstraint: z
+        .string()
+        .optional()
+        .describe('Delivery constraint (DAILY_BUDGET or LIFETIME_BUDGET)'),
+      bidStrategy: z
+        .string()
+        .optional()
+        .describe('Bid strategy (AUTO_BID, LOWEST_COST_WITH_MAX_BID, TARGET_COST)'),
+      autoBid: z.boolean().optional().describe('Whether auto bid is enabled'),
+      targetBid: z.boolean().optional().describe('Whether target bid is enabled'),
+      placementV2: z
+        .any()
+        .optional()
+        .describe('Placement v2 object, e.g. { config: "AUTOMATIC" }'),
+      pixelId: z.string().optional().describe('Snap Pixel ID to associate with the ad squad'),
+      pacingType: z.string().optional().describe('Pacing type (STANDARD or ACCELERATED)'),
+      conversionWindow: z
+        .string()
+        .optional()
+        .describe('Delivery optimization conversion window'),
       targeting: z
         .any()
         .optional()
@@ -61,6 +86,31 @@ export let manageAdSquad = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let { campaignId, adSquadId, ...fields } = ctx.input;
+
+    if (!adSquadId) {
+      if (!fields.name) throw snapchatServiceError('name is required to create an ad squad.');
+      if (!fields.type) throw snapchatServiceError('type is required to create an ad squad.');
+      if (!fields.billingEvent) {
+        throw snapchatServiceError('billingEvent is required to create an ad squad.');
+      }
+      if (!fields.optimizationGoal) {
+        throw snapchatServiceError('optimizationGoal is required to create an ad squad.');
+      }
+      if (!fields.targeting) {
+        throw snapchatServiceError('targeting is required to create an ad squad.');
+      }
+      if (!fields.placementV2) {
+        throw snapchatServiceError('placementV2 is required to create an ad squad.');
+      }
+      if (!fields.bidStrategy) {
+        throw snapchatServiceError('bidStrategy is required to create an ad squad.');
+      }
+      if (!fields.dailyBudgetMicro && !fields.lifetimeBudgetMicro) {
+        throw snapchatServiceError(
+          'Either dailyBudgetMicro or lifetimeBudgetMicro is required to create an ad squad.'
+        );
+      }
+    }
 
     let adSquadData: Record<string, any> = {};
     if (adSquadId) adSquadData.id = adSquadId;
@@ -76,6 +126,14 @@ export let manageAdSquad = SlateTool.create(spec, {
     if (fields.startTime) adSquadData.start_time = fields.startTime;
     if (fields.endTime) adSquadData.end_time = fields.endTime;
     if (fields.optimizationGoal) adSquadData.optimization_goal = fields.optimizationGoal;
+    if (fields.deliveryConstraint) adSquadData.delivery_constraint = fields.deliveryConstraint;
+    if (fields.bidStrategy) adSquadData.bid_strategy = fields.bidStrategy;
+    if (fields.autoBid !== undefined) adSquadData.auto_bid = fields.autoBid;
+    if (fields.targetBid !== undefined) adSquadData.target_bid = fields.targetBid;
+    if (fields.placementV2) adSquadData.placement_v2 = fields.placementV2;
+    if (fields.pixelId) adSquadData.pixel_id = fields.pixelId;
+    if (fields.pacingType) adSquadData.pacing_type = fields.pacingType;
+    if (fields.conversionWindow) adSquadData.conversion_window = fields.conversionWindow;
     if (fields.targeting) adSquadData.targeting = fields.targeting;
 
     let result: any;
@@ -83,6 +141,10 @@ export let manageAdSquad = SlateTool.create(spec, {
       result = await client.updateAdSquad(campaignId, adSquadData);
     } else {
       result = await client.createAdSquad(campaignId, adSquadData);
+    }
+
+    if (!result) {
+      throw snapchatServiceError('Snapchat did not return an ad squad in the API response.');
     }
 
     let output = {
@@ -99,6 +161,10 @@ export let manageAdSquad = SlateTool.create(spec, {
       startTime: result.start_time,
       endTime: result.end_time,
       optimizationGoal: result.optimization_goal,
+      deliveryConstraint: result.delivery_constraint,
+      bidStrategy: result.bid_strategy,
+      pixelId: result.pixel_id,
+      pacingType: result.pacing_type,
       createdAt: result.created_at,
       updatedAt: result.updated_at
     };

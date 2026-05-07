@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { netlifyApiError } from './errors';
 
 export class Client {
   private api: AxiosInstance;
@@ -12,6 +13,11 @@ export class Client {
         'Content-Type': 'application/json'
       }
     });
+
+    this.api.interceptors.response.use(
+      response => response,
+      error => Promise.reject(netlifyApiError(error))
+    );
   }
 
   // ---- Sites ----
@@ -120,7 +126,14 @@ export class Client {
     accountId: string,
     envVars: Array<{
       key: string;
-      values: Array<{ value: string; context: string; id?: string }>;
+      values: Array<{
+        value: string;
+        context: string;
+        context_parameter?: string;
+        id?: string;
+      }>;
+      scopes?: string[];
+      is_secret?: boolean;
     }>,
     siteId?: string
   ) {
@@ -135,7 +148,17 @@ export class Client {
   async updateEnvVar(
     accountId: string,
     key: string,
-    body: { key: string; values: Array<{ value: string; context: string; id?: string }> },
+    body: {
+      key: string;
+      values: Array<{
+        value: string;
+        context: string;
+        context_parameter?: string;
+        id?: string;
+      }>;
+      scopes?: string[];
+      is_secret?: boolean;
+    },
     siteId?: string
   ) {
     let params: Record<string, string> = {};
@@ -143,6 +166,24 @@ export class Client {
       params.site_id = siteId;
     }
     let response = await this.api.put(
+      `/accounts/${accountId}/env/${encodeURIComponent(key)}`,
+      body,
+      { params }
+    );
+    return response.data;
+  }
+
+  async setEnvVarValue(
+    accountId: string,
+    key: string,
+    body: { value: string; context: string; context_parameter?: string },
+    siteId?: string
+  ) {
+    let params: Record<string, string> = {};
+    if (siteId) {
+      params.site_id = siteId;
+    }
+    let response = await this.api.patch(
       `/accounts/${accountId}/env/${encodeURIComponent(key)}`,
       body,
       { params }
@@ -169,23 +210,46 @@ export class Client {
     await this.api.delete(`/sites/${siteId}/forms/${formId}`);
   }
 
-  async listFormSubmissions(formId: string, params?: { page?: number; perPage?: number }) {
+  async listFormSubmissions(
+    formId: string,
+    params?: { page?: number; perPage?: number; state?: 'verified' | 'spam' }
+  ) {
     let response = await this.api.get(`/forms/${formId}/submissions`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage
+        per_page: params?.perPage,
+        state: params?.state === 'spam' ? 'spam' : undefined
       }
     });
     return response.data;
   }
 
-  async listSiteSubmissions(siteId: string, params?: { page?: number; perPage?: number }) {
+  async listSiteSubmissions(
+    siteId: string,
+    params?: { page?: number; perPage?: number; state?: 'verified' | 'spam' }
+  ) {
     let response = await this.api.get(`/sites/${siteId}/submissions`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage
+        per_page: params?.perPage,
+        state: params?.state === 'spam' ? 'spam' : undefined
       }
     });
+    return response.data;
+  }
+
+  async getFormSubmission(submissionId: string) {
+    let response = await this.api.get(`/submissions/${submissionId}`);
+    return response.data;
+  }
+
+  async markSubmissionSpam(submissionId: string) {
+    let response = await this.api.put(`/submissions/${submissionId}/spam`);
+    return response.data;
+  }
+
+  async markSubmissionHam(submissionId: string) {
+    let response = await this.api.put(`/submissions/${submissionId}/ham`);
     return response.data;
   }
 
@@ -368,19 +432,75 @@ export class Client {
     return response.data;
   }
 
+  async getBuildHook(siteId: string, buildHookId: string) {
+    let response = await this.api.get(`/sites/${siteId}/build_hooks/${buildHookId}`);
+    return response.data;
+  }
+
   async createBuildHook(siteId: string, body: { title: string; branch?: string }) {
     let response = await this.api.post(`/sites/${siteId}/build_hooks`, body);
     return response.data;
+  }
+
+  async updateBuildHook(
+    siteId: string,
+    buildHookId: string,
+    body: { title?: string; branch?: string }
+  ) {
+    await this.api.put(`/sites/${siteId}/build_hooks/${buildHookId}`, body);
   }
 
   async deleteBuildHook(siteId: string, buildHookId: string) {
     await this.api.delete(`/sites/${siteId}/build_hooks/${buildHookId}`);
   }
 
+  // ---- Builds ----
+
+  async listBuilds(siteId: string, params?: { page?: number; perPage?: number }) {
+    let response = await this.api.get(`/sites/${siteId}/builds`, {
+      params: {
+        page: params?.page,
+        per_page: params?.perPage
+      }
+    });
+    return response.data;
+  }
+
+  async getBuild(buildId: string) {
+    let response = await this.api.get(`/builds/${buildId}`);
+    return response.data;
+  }
+
+  async createBuild(
+    siteId: string,
+    params?: {
+      branch?: string;
+      clearCache?: boolean;
+      image?: string;
+      templateId?: string;
+      title?: string;
+    }
+  ) {
+    let response = await this.api.post(`/sites/${siteId}/builds`, undefined, {
+      params: {
+        branch: params?.branch,
+        clear_cache: params?.clearCache,
+        image: params?.image,
+        template_id: params?.templateId,
+        title: params?.title
+      }
+    });
+    return response.data;
+  }
+
   // ---- CDN Purge ----
 
-  async purgeCache(siteId: string) {
-    await this.api.post(`/purge`, { site_id: siteId });
+  async purgeCache(params: { siteId?: string; siteSlug?: string; cacheTags?: string[] }) {
+    await this.api.post(`/purge`, {
+      site_id: params.siteId,
+      site_slug: params.siteSlug,
+      cache_tags: params.cacheTags
+    });
   }
 
   // ---- User ----
@@ -404,6 +524,20 @@ export class Client {
 
   async updateSiteMetadata(siteId: string, metadata: Record<string, any>) {
     let response = await this.api.put(`/sites/${siteId}/metadata`, metadata);
+    return response.data;
+  }
+
+  // ---- Site Files ----
+
+  async listSiteFiles(siteId: string) {
+    let response = await this.api.get(`/sites/${siteId}/files`);
+    return response.data;
+  }
+
+  async getSiteFile(siteId: string, filePath: string) {
+    let normalizedPath = filePath.replace(/^\/+/, '');
+    let encodedPath = normalizedPath.split('/').map(encodeURIComponent).join('/');
+    let response = await this.api.get(`/sites/${siteId}/files/${encodedPath}`);
     return response.data;
   }
 }

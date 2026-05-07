@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DiscordClient } from '../lib/client';
+import { discordServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -162,7 +163,7 @@ export let manageAutoModerationTool = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ruleId) throw new Error('ruleId is required for get action');
+      if (!ruleId) throw discordServiceError('ruleId is required for get action');
       let raw = await client.getAutoModerationRule(guildId, ruleId);
       let rule = formatRule(raw);
       return {
@@ -172,12 +173,12 @@ export let manageAutoModerationTool = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!input.name) throw new Error('name is required for create action');
+      if (!input.name) throw discordServiceError('name is required for create action');
       if (input.eventType === undefined)
-        throw new Error('eventType is required for create action');
+        throw discordServiceError('eventType is required for create action');
       if (input.triggerType === undefined)
-        throw new Error('triggerType is required for create action');
-      if (!input.actions) throw new Error('actions is required for create action');
+        throw discordServiceError('triggerType is required for create action');
+      if (!input.actions) throw discordServiceError('actions is required for create action');
 
       let data: Record<string, any> = {
         name: input.name,
@@ -211,7 +212,7 @@ export let manageAutoModerationTool = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ruleId) throw new Error('ruleId is required for update action');
+      if (!ruleId) throw discordServiceError('ruleId is required for update action');
 
       let data: Record<string, any> = {};
 
@@ -252,7 +253,7 @@ export let manageAutoModerationTool = SlateTool.create(spec, {
     }
 
     // delete
-    if (!ruleId) throw new Error('ruleId is required for delete action');
+    if (!ruleId) throw discordServiceError('ruleId is required for delete action');
     await client.deleteAutoModerationRule(guildId, ruleId);
     return {
       output: {},

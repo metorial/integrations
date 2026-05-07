@@ -3,10 +3,17 @@ import { ClickHouseClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let assignedRoleSchema = z.object({
+  roleId: z.string().optional(),
+  roleName: z.string().optional(),
+  roleType: z.string().optional()
+});
+
 let invitationSchema = z.object({
   invitationId: z.string().describe('Unique identifier of the invitation'),
   email: z.string().describe('Email address of the invitee'),
-  role: z.string().optional().describe('Role assigned to the invitation'),
+  role: z.string().optional().describe('Deprecated role assigned to the invitation'),
+  assignedRoles: z.array(assignedRoleSchema).optional().describe('Current assigned roles'),
   createdAt: z.string().optional().describe('When the invitation was created'),
   expireAt: z.string().optional().describe('When the invitation expires')
 });
@@ -14,7 +21,7 @@ let invitationSchema = z.object({
 export let listInvitations = SlateTool.create(spec, {
   name: 'List Invitations',
   key: 'list_invitations',
-  description: `List all pending invitations for the organization. Shows who has been invited, their assigned role, and expiration dates.`,
+  description: `List all pending invitations for the organization. Shows who has been invited, their assigned roles, deprecated role, and expiration dates.`,
   tags: {
     readOnly: true
   }
@@ -40,6 +47,7 @@ export let listInvitations = SlateTool.create(spec, {
           invitationId: inv.id,
           email: inv.email,
           role: inv.role,
+          assignedRoles: inv.assignedRoles,
           createdAt: inv.createdAt,
           expireAt: inv.expireAt
         }))
@@ -60,15 +68,16 @@ export let createInvitation = SlateTool.create(spec, {
       role: z
         .enum(['admin', 'developer'])
         .optional()
-        .describe('Role to assign (admin or developer)'),
-      assignedRoleIds: z.array(z.string()).optional().describe('Specific role IDs to assign')
+        .describe('Deprecated role to assign (admin or developer)'),
+      assignedRoleIds: z.array(z.string()).optional().describe('Current role IDs to assign')
     })
   )
   .output(
     z.object({
       invitationId: z.string().describe('ID of the created invitation'),
       email: z.string(),
-      role: z.string().optional()
+      role: z.string().optional(),
+      assignedRoles: z.array(assignedRoleSchema).optional()
     })
   )
   .handleInvocation(async ctx => {
@@ -87,9 +96,10 @@ export let createInvitation = SlateTool.create(spec, {
       output: {
         invitationId: result.id,
         email: result.email || ctx.input.email,
-        role: result.role
+        role: result.role,
+        assignedRoles: result.assignedRoles
       },
-      message: `Invitation sent to **${ctx.input.email}** with role **${ctx.input.role || 'default'}**.`
+      message: `Invitation sent to **${ctx.input.email}**.`
     };
   })
   .build();

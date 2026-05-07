@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
+import { postgresServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageIndexes = SlateTool.create(spec, {
@@ -60,10 +61,10 @@ Can create unique indexes, partial indexes with WHERE conditions, and multi-colu
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.tableName) {
-        throw new Error('tableName is required for create action');
+        throw postgresServiceError('tableName is required for create action');
       }
       if (!ctx.input.columns || ctx.input.columns.length === 0) {
-        throw new Error('columns are required for create action');
+        throw postgresServiceError('columns are required for create action');
       }
 
       let fullTableName = qualifiedTableName(ctx.input.tableName, schema);
@@ -78,7 +79,8 @@ Can create unique indexes, partial indexes with WHERE conditions, and multi-colu
     } else {
       let ifExists = ctx.input.ifExists ? 'IF EXISTS ' : '';
       let cascade = ctx.input.cascade ? ' CASCADE' : '';
-      sql = `DROP INDEX ${ifExists}${escapeIdentifier(ctx.input.indexName)}${cascade}`;
+      let fullIndexName = qualifiedTableName(ctx.input.indexName, schema);
+      sql = `DROP INDEX ${ifExists}${fullIndexName}${cascade}`;
     }
 
     ctx.info(`Executing: ${sql}`);

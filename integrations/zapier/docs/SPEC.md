@@ -43,9 +43,12 @@ The various endpoints of the Zapier Workflow API require different OAuth scopes.
 
 - `zap` — Read access to Zaps and apps
 - `zap:all` — Read access to all Zaps across the account
+- `zap:account:all` — Read access to owned and shared Zaps across the account
 - `zap:write` — Create and modify Zaps and workflow steps
-- `authentication` — Read access to authentications
-- `authentication:write` — Create new authentications
+- `connection:read` — Read access to app authentications
+- `connection:write` — Create new app authentications
+- `zap:runs` — Read access to Zap run history
+- `action:run` — Create and retrieve asynchronous Action Runs
 
 ### Token Usage
 
@@ -88,6 +91,10 @@ An Authentication contains various fields, often credentials such as API tokens,
 ### Workflow Steps
 
 Create a new Workflow Step based on a single provided step, which returns a webhook URL that can be used to invoke the Workflow Step and retrieve a response. Field values can be hardcoded or contain mapped values surrounded with double curly braces. This enables executing individual actions on demand via webhook invocation.
+
+### Action Runs
+
+Create one-off asynchronous Action Runs for selected actions without creating a saved Zap, then retrieve the run by ID to inspect queued/running/success/error state, results, and errors. Zapier currently documents Action Runs as limited beta API access.
 
 ### Zap Templates
 

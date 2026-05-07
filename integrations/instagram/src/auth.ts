@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { instagramApiError } from './lib/errors';
 
 let graphApi = createAxios({
   baseURL: 'https://graph.facebook.com'
@@ -9,13 +10,22 @@ let instagramApi = createAxios({
   baseURL: 'https://api.instagram.com'
 });
 
+let instagramGraphApi = createAxios({
+  baseURL: 'https://graph.instagram.com'
+});
+
+let facebookGraphBaseUrl = 'https://graph.facebook.com';
+let instagramGraphBaseUrl = 'https://graph.instagram.com';
+let authApiVersion = 'v21.0';
+
 export let auth = SlateAuth.create()
   .output(
     z.object({
       token: z.string(),
       refreshToken: z.string().optional(),
       expiresAt: z.string().optional(),
-      userId: z.string().optional()
+      userId: z.string().optional(),
+      apiBaseUrl: z.string().optional()
     })
   )
   .addOauth({
@@ -43,6 +53,11 @@ export let auth = SlateAuth.create()
         title: 'Manage Comments',
         description: 'Manage comments on media',
         scope: 'instagram_business_manage_comments'
+      },
+      {
+        title: 'Manage Insights',
+        description: 'Access analytics and insights',
+        scope: 'instagram_business_manage_insights'
       }
     ],
 
@@ -61,85 +76,98 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let tokenResponse = await instagramApi.post(
-        '/oauth/access_token',
-        new URLSearchParams({
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          grant_type: 'authorization_code',
-          redirect_uri: ctx.redirectUri,
-          code: ctx.code
-        }).toString(),
-        {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }
-      );
+      try {
+        let tokenResponse = await instagramApi.post(
+          '/oauth/access_token',
+          new URLSearchParams({
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            grant_type: 'authorization_code',
+            redirect_uri: ctx.redirectUri,
+            code: ctx.code
+          }).toString(),
+          {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+          }
+        );
 
-      let shortLivedToken = tokenResponse.data.access_token;
-      let userId = String(tokenResponse.data.user_id);
+        let shortLivedToken = tokenResponse.data.access_token;
+        let userId = String(tokenResponse.data.user_id);
 
-      let longLivedResponse = await graphApi.get('/access_token', {
-        params: {
-          grant_type: 'fb_exchange_token',
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          fb_exchange_token: shortLivedToken
-        }
-      });
+        let longLivedResponse = await instagramGraphApi.get('/access_token', {
+          params: {
+            grant_type: 'ig_exchange_token',
+            client_secret: ctx.clientSecret,
+            access_token: shortLivedToken
+          }
+        });
 
-      let longLivedToken = longLivedResponse.data.access_token;
-      let expiresIn = longLivedResponse.data.expires_in as number;
-      let expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+        let longLivedToken = longLivedResponse.data.access_token;
+        let expiresIn = longLivedResponse.data.expires_in as number;
+        let expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
-      return {
-        output: {
-          token: longLivedToken,
-          expiresAt,
-          userId
-        }
-      };
+        return {
+          output: {
+            token: longLivedToken,
+            expiresAt,
+            userId,
+            apiBaseUrl: instagramGraphBaseUrl
+          }
+        };
+      } catch (error) {
+        throw instagramApiError(error, 'Instagram OAuth callback');
+      }
     },
 
     handleTokenRefresh: async ctx => {
-      let response = await graphApi.get('/refresh_access_token', {
-        params: {
-          grant_type: 'ig_refresh_token',
-          access_token: ctx.output.token
-        }
-      });
+      try {
+        let response = await instagramGraphApi.get('/refresh_access_token', {
+          params: {
+            grant_type: 'ig_refresh_token',
+            access_token: ctx.output.token
+          }
+        });
 
-      let newToken = response.data.access_token;
-      let expiresIn = response.data.expires_in as number;
-      let expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+        let newToken = response.data.access_token;
+        let expiresIn = response.data.expires_in as number;
+        let expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
-      return {
-        output: {
-          ...ctx.output,
-          token: newToken,
-          expiresAt
-        }
-      };
+        return {
+          output: {
+            ...ctx.output,
+            token: newToken,
+            expiresAt,
+            apiBaseUrl: instagramGraphBaseUrl
+          }
+        };
+      } catch (error) {
+        throw instagramApiError(error, 'Instagram token refresh');
+      }
     },
 
     getProfile: async (ctx: any) => {
-      let response = await graphApi.get('/me', {
-        params: {
-          fields:
-            'id,username,name,profile_picture_url,account_type,followers_count,media_count',
-          access_token: ctx.output.token
-        }
-      });
+      try {
+        let response = await instagramGraphApi.get(`/${authApiVersion}/me`, {
+          params: {
+            fields:
+              'id,username,name,profile_picture_url,account_type,followers_count,media_count',
+            access_token: ctx.output.token
+          }
+        });
 
-      return {
-        profile: {
-          id: response.data.id,
-          name: response.data.name || response.data.username,
-          email: undefined,
-          imageUrl: response.data.profile_picture_url,
-          username: response.data.username,
-          accountType: response.data.account_type
-        }
-      };
+        return {
+          profile: {
+            id: response.data.id,
+            name: response.data.name || response.data.username,
+            email: undefined,
+            imageUrl: response.data.profile_picture_url,
+            username: response.data.username,
+            accountType: response.data.account_type
+          }
+        };
+      } catch (error) {
+        throw instagramApiError(error, 'Instagram profile request');
+      }
     }
   })
   .addOauth({
@@ -195,91 +223,100 @@ export let auth = SlateAuth.create()
       });
 
       return {
-        url: `https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`
+        url: `https://www.facebook.com/${authApiVersion}/dialog/oauth?${params.toString()}`
       };
     },
 
     handleCallback: async ctx => {
-      let tokenResponse = await graphApi.get('/v21.0/oauth/access_token', {
-        params: {
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri,
-          code: ctx.code
-        }
-      });
+      try {
+        let tokenResponse = await graphApi.get(`/${authApiVersion}/oauth/access_token`, {
+          params: {
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri,
+            code: ctx.code
+          }
+        });
 
-      let shortLivedToken = tokenResponse.data.access_token;
+        let shortLivedToken = tokenResponse.data.access_token;
 
-      let longLivedResponse = await graphApi.get('/v21.0/oauth/access_token', {
-        params: {
-          grant_type: 'fb_exchange_token',
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          fb_exchange_token: shortLivedToken
-        }
-      });
+        let longLivedResponse = await graphApi.get(`/${authApiVersion}/oauth/access_token`, {
+          params: {
+            grant_type: 'fb_exchange_token',
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            fb_exchange_token: shortLivedToken
+          }
+        });
 
-      let longLivedToken = longLivedResponse.data.access_token;
-      let expiresIn = longLivedResponse.data.expires_in as number;
-      let expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+        let longLivedToken = longLivedResponse.data.access_token;
+        let expiresIn = longLivedResponse.data.expires_in as number;
+        let expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
-      // Get the Instagram Business Account ID via the user's pages
-      let pagesResponse = await graphApi.get('/v21.0/me/accounts', {
-        params: { access_token: longLivedToken }
-      });
+        let pagesResponse = await graphApi.get(`/${authApiVersion}/me/accounts`, {
+          params: { access_token: longLivedToken }
+        });
 
-      let userId: string | undefined;
-      let pages = pagesResponse.data.data as Array<{ id: string; access_token: string }>;
-      if (pages && pages.length > 0) {
-        for (let page of pages) {
-          try {
-            let igResponse = await graphApi.get(`/v21.0/${page.id}`, {
-              params: {
-                fields: 'instagram_business_account',
-                access_token: longLivedToken
+        let userId: string | undefined;
+        let pages = pagesResponse.data.data as Array<{ id: string; access_token: string }>;
+        if (pages && pages.length > 0) {
+          for (let page of pages) {
+            try {
+              let igResponse = await graphApi.get(`/${authApiVersion}/${page.id}`, {
+                params: {
+                  fields: 'instagram_business_account',
+                  access_token: longLivedToken
+                }
+              });
+              if (igResponse.data.instagram_business_account) {
+                userId = igResponse.data.instagram_business_account.id;
+                break;
               }
-            });
-            if (igResponse.data.instagram_business_account) {
-              userId = igResponse.data.instagram_business_account.id;
-              break;
+            } catch {
+              // Page may not have an IG business account
             }
-          } catch {
-            // Page may not have an IG business account
           }
         }
-      }
 
-      return {
-        output: {
-          token: longLivedToken,
-          expiresAt,
-          userId
-        }
-      };
+        return {
+          output: {
+            token: longLivedToken,
+            expiresAt,
+            userId,
+            apiBaseUrl: facebookGraphBaseUrl
+          }
+        };
+      } catch (error) {
+        throw instagramApiError(error, 'Facebook OAuth callback');
+      }
     },
 
     handleTokenRefresh: async ctx => {
-      let response = await graphApi.get('/v21.0/oauth/access_token', {
-        params: {
-          grant_type: 'fb_exchange_token',
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          fb_exchange_token: ctx.output.token
-        }
-      });
+      try {
+        let response = await graphApi.get(`/${authApiVersion}/oauth/access_token`, {
+          params: {
+            grant_type: 'fb_exchange_token',
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            fb_exchange_token: ctx.output.token
+          }
+        });
 
-      let newToken = response.data.access_token;
-      let expiresIn = response.data.expires_in as number;
-      let expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+        let newToken = response.data.access_token;
+        let expiresIn = response.data.expires_in as number;
+        let expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
-      return {
-        output: {
-          ...ctx.output,
-          token: newToken,
-          expiresAt
-        }
-      };
+        return {
+          output: {
+            ...ctx.output,
+            token: newToken,
+            expiresAt,
+            apiBaseUrl: facebookGraphBaseUrl
+          }
+        };
+      } catch (error) {
+        throw instagramApiError(error, 'Facebook token refresh');
+      }
     },
 
     getProfile: async (ctx: any) => {
@@ -292,20 +329,24 @@ export let auth = SlateAuth.create()
         };
       }
 
-      let response = await graphApi.get(`/v21.0/${ctx.output.userId}`, {
-        params: {
-          fields: 'id,username,name,profile_picture_url,followers_count,media_count',
-          access_token: ctx.output.token
-        }
-      });
+      try {
+        let response = await graphApi.get(`/${authApiVersion}/${ctx.output.userId}`, {
+          params: {
+            fields: 'id,username,name,profile_picture_url,followers_count,media_count',
+            access_token: ctx.output.token
+          }
+        });
 
-      return {
-        profile: {
-          id: response.data.id,
-          name: response.data.name || response.data.username,
-          imageUrl: response.data.profile_picture_url,
-          username: response.data.username
-        }
-      };
+        return {
+          profile: {
+            id: response.data.id,
+            name: response.data.name || response.data.username,
+            imageUrl: response.data.profile_picture_url,
+            username: response.data.username
+          }
+        };
+      } catch (error) {
+        throw instagramApiError(error, 'Facebook Instagram profile request');
+      }
     }
   });

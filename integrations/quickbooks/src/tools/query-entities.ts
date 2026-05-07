@@ -3,6 +3,9 @@ import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
 import { z } from 'zod';
 
+let escapeQuickBooksQueryValue = (value: string) =>
+  value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
 export let queryEntities = SlateTool.create(spec, {
   name: 'Query Entities',
   key: 'query_entities',
@@ -48,11 +51,16 @@ export let queryEntities = SlateTool.create(spec, {
       orderBy: z.string().optional().describe('ORDER BY clause, e.g., "TxnDate DESC"'),
       maxResults: z
         .number()
+        .int()
+        .min(1)
+        .max(1000)
         .optional()
         .default(100)
         .describe('Maximum number of results to return'),
       startPosition: z
         .number()
+        .int()
+        .min(1)
         .optional()
         .describe('Starting position for pagination (1-based)')
     })
@@ -98,6 +106,7 @@ export let searchCustomersAndVendors = SlateTool.create(spec, {
     z.object({
       searchTerm: z
         .string()
+        .min(1)
         .describe('Search term to match against display name, company name, or email'),
       contactType: z
         .enum(['customer', 'vendor', 'both'])
@@ -142,7 +151,8 @@ export let searchCustomersAndVendors = SlateTool.create(spec, {
     let customers: any[] | undefined;
     let vendors: any[] | undefined;
 
-    let nameFilter = `DisplayName LIKE '%${ctx.input.searchTerm}%'`;
+    let escapedSearchTerm = escapeQuickBooksQueryValue(ctx.input.searchTerm);
+    let nameFilter = `DisplayName LIKE '%${escapedSearchTerm}%'`;
     if (ctx.input.activeOnly) {
       nameFilter += ` AND Active = true`;
     }

@@ -1,12 +1,13 @@
 import { SlateTool } from 'slates';
 import { PayPalClient } from '../lib/client';
+import { paypalServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
 export let manageSubscription = SlateTool.create(spec, {
   name: 'Manage Subscription',
   key: 'manage_subscription',
-  description: `Manage an existing PayPal subscription. Retrieve details, suspend, cancel, reactivate, or list transactions for a subscription.`,
+  description: `Manage PayPal subscriptions. List subscriptions, retrieve details, suspend, cancel, reactivate, or list transactions for a subscription.`,
   tags: {
     destructive: false,
     readOnly: false
@@ -15,10 +16,40 @@ export let manageSubscription = SlateTool.create(spec, {
   .input(
     z.object({
       action: z
-        .enum(['get', 'suspend', 'cancel', 'activate', 'listTransactions'])
+        .enum(['list', 'get', 'suspend', 'cancel', 'activate', 'listTransactions'])
         .describe('Action to perform'),
-      subscriptionId: z.string().describe('PayPal subscription ID'),
+      subscriptionId: z
+        .string()
+        .optional()
+        .describe('PayPal subscription ID (required except for list)'),
       reason: z.string().optional().describe('Reason for suspend/cancel/activate actions'),
+      planIds: z
+        .array(z.string())
+        .optional()
+        .describe('Plan IDs to filter subscriptions by for list'),
+      statuses: z
+        .array(
+          z.enum([
+            'APPROVAL_PENDING',
+            'APPROVED',
+            'ACTIVE',
+            'SUSPENDED',
+            'CANCELLED',
+            'EXPIRED'
+          ])
+        )
+        .optional()
+        .describe('Subscription statuses to filter by for list'),
+      createdAfter: z
+        .string()
+        .optional()
+        .describe('Filter list results created after this ISO time'),
+      createdBefore: z
+        .string()
+        .optional()
+        .describe('Filter list results created before this ISO time'),
+      page: z.number().optional().describe('Page number for list'),
+      pageSize: z.number().optional().describe('Page size for list'),
       startTime: z
         .string()
         .optional()
@@ -34,6 +65,7 @@ export let manageSubscription = SlateTool.create(spec, {
       subscriberEmail: z.string().optional().describe('Subscriber email'),
       startTime: z.string().optional().describe('Subscription start time'),
       nextBillingTime: z.string().optional().describe('Next billing date'),
+      subscriptions: z.array(z.any()).optional().describe('Subscription list results'),
       transactions: z.array(z.any()).optional().describe('Subscription transactions'),
       subscription: z.any().optional().describe('Full subscription details')
     })
@@ -46,9 +78,42 @@ export let manageSubscription = SlateTool.create(spec, {
       environment: ctx.auth.environment
     });
 
+    let requireSubscriptionId = () => {
+      if (!ctx.input.subscriptionId) {
+        throw paypalServiceError(`subscriptionId is required for ${ctx.input.action} action`);
+      }
+      return ctx.input.subscriptionId;
+    };
+
     switch (ctx.input.action) {
+      case 'list': {
+        let result = await client.listSubscriptions({
+          planIds: ctx.input.planIds,
+          statuses: ctx.input.statuses,
+          createdAfter: ctx.input.createdAfter,
+          createdBefore: ctx.input.createdBefore,
+          page: ctx.input.page,
+          pageSize: ctx.input.pageSize,
+          totalRequired: true
+        });
+        let subscriptions = (result.subscriptions || []) as any[];
+        return {
+          output: {
+            subscriptionId: '',
+            subscriptions: subscriptions.map((sub: any) => ({
+              subscriptionId: sub.id,
+              status: sub.status,
+              planId: sub.plan_id,
+              subscriberEmail: sub.subscriber?.email_address,
+              startTime: sub.start_time
+            }))
+          },
+          message: `Found ${subscriptions.length} subscription(s).`
+        };
+      }
       case 'get': {
-        let sub = await client.getSubscription(ctx.input.subscriptionId);
+        let subscriptionId = requireSubscriptionId();
+        let sub = await client.getSubscription(subscriptionId);
         return {
           output: {
             subscriptionId: sub.id,
@@ -63,59 +128,65 @@ export let manageSubscription = SlateTool.create(spec, {
         };
       }
       case 'suspend': {
+        let subscriptionId = requireSubscriptionId();
         await client.suspendSubscription(
-          ctx.input.subscriptionId,
+          subscriptionId,
           ctx.input.reason || 'Suspended by integration'
         );
         return {
           output: {
-            subscriptionId: ctx.input.subscriptionId,
+            subscriptionId,
             status: 'SUSPENDED'
           },
-          message: `Subscription \`${ctx.input.subscriptionId}\` suspended.`
+          message: `Subscription \`${subscriptionId}\` suspended.`
         };
       }
       case 'cancel': {
+        let subscriptionId = requireSubscriptionId();
         await client.cancelSubscription(
-          ctx.input.subscriptionId,
+          subscriptionId,
           ctx.input.reason || 'Cancelled by integration'
         );
         return {
           output: {
-            subscriptionId: ctx.input.subscriptionId,
+            subscriptionId,
             status: 'CANCELLED'
           },
-          message: `Subscription \`${ctx.input.subscriptionId}\` cancelled.`
+          message: `Subscription \`${subscriptionId}\` cancelled.`
         };
       }
       case 'activate': {
+        let subscriptionId = requireSubscriptionId();
         await client.activateSubscription(
-          ctx.input.subscriptionId,
+          subscriptionId,
           ctx.input.reason || 'Reactivated by integration'
         );
         return {
           output: {
-            subscriptionId: ctx.input.subscriptionId,
+            subscriptionId,
             status: 'ACTIVE'
           },
-          message: `Subscription \`${ctx.input.subscriptionId}\` reactivated.`
+          message: `Subscription \`${subscriptionId}\` reactivated.`
         };
       }
       case 'listTransactions': {
         if (!ctx.input.startTime || !ctx.input.endTime) {
-          throw new Error('startTime and endTime are required for listTransactions action');
+          throw paypalServiceError(
+            'startTime and endTime are required for listTransactions action'
+          );
         }
-        let result = await client.listSubscriptionTransactions(ctx.input.subscriptionId, {
+        let subscriptionId = requireSubscriptionId();
+        let result = await client.listSubscriptionTransactions(subscriptionId, {
           startTime: ctx.input.startTime,
           endTime: ctx.input.endTime
         });
         let transactions = (result.transactions || []) as any[];
         return {
           output: {
-            subscriptionId: ctx.input.subscriptionId,
+            subscriptionId,
             transactions
           },
-          message: `Found ${transactions.length} transaction(s) for subscription \`${ctx.input.subscriptionId}\`.`
+          message: `Found ${transactions.length} transaction(s) for subscription \`${subscriptionId}\`.`
         };
       }
     }

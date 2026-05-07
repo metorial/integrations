@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { youtubeApiError, youtubeServiceError } from './errors';
 import type {
   YouTubeVideo,
   YouTubeListResponse,
@@ -13,16 +14,64 @@ import type {
   YouTubeActivity
 } from './types';
 
+type YouTubeAuthConfig = {
+  token?: string;
+  apiKey?: string;
+  authType?: string;
+};
+
+type AxiosResponse<T> = {
+  data: T;
+};
+
 export class Client {
   private axios;
+  private apiKey?: string;
 
-  constructor(private config: { token: string }) {
+  constructor(private config: YouTubeAuthConfig) {
+    this.apiKey =
+      config.authType === 'apiKey' || config.apiKey
+        ? (config.apiKey ?? config.token)
+        : undefined;
+    let oauthToken = this.apiKey ? undefined : config.token;
+
+    if (!this.apiKey && !oauthToken) {
+      throw youtubeServiceError('YouTube credentials are missing');
+    }
+
     this.axios = createAxios({
       baseURL: 'https://www.googleapis.com/youtube/v3',
-      headers: {
-        Authorization: `Bearer ${config.token}`
-      }
+      headers: oauthToken
+        ? {
+            Authorization: `Bearer ${oauthToken}`
+          }
+        : undefined
     });
+  }
+
+  static fromAuth(auth: YouTubeAuthConfig) {
+    return new Client(auth);
+  }
+
+  private withAuthParams(params: Record<string, unknown>) {
+    return this.apiKey
+      ? {
+          ...params,
+          key: this.apiKey
+        }
+      : params;
+  }
+
+  private async request<T>(
+    operation: string,
+    run: () => Promise<AxiosResponse<T>>
+  ): Promise<T> {
+    try {
+      let response = await run();
+      return response.data;
+    } catch (error) {
+      throw youtubeApiError(error, operation);
+    }
   }
 
   // --- Videos ---
@@ -37,19 +86,20 @@ export class Client {
     regionCode?: string;
     videoCategoryId?: string;
   }): Promise<YouTubeListResponse<YouTubeVideo>> {
-    let response = await this.axios.get('/videos', {
-      params: {
-        part: params.part.join(','),
-        id: params.videoId,
-        chart: params.chart,
-        myRating: params.myRating,
-        maxResults: params.maxResults,
-        pageToken: params.pageToken,
-        regionCode: params.regionCode,
-        videoCategoryId: params.videoCategoryId
-      }
-    });
-    return response.data;
+    return await this.request('list videos', () =>
+      this.axios.get('/videos', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          id: params.videoId,
+          chart: params.chart,
+          myRating: params.myRating,
+          maxResults: params.maxResults,
+          pageToken: params.pageToken,
+          regionCode: params.regionCode,
+          videoCategoryId: params.videoCategoryId
+        })
+      })
+    );
   }
 
   async updateVideo(params: {
@@ -68,52 +118,96 @@ export class Client {
       license?: string;
       embeddable?: boolean;
       publicStatsViewable?: boolean;
-      madeForKids?: boolean;
       selfDeclaredMadeForKids?: boolean;
     };
   }): Promise<YouTubeVideo> {
+    let current = await this.listVideos({
+      part: ['snippet', 'status'],
+      videoId: params.videoId
+    });
+    let currentVideo = current.items[0];
+    if (!currentVideo) {
+      throw youtubeServiceError(`Video ${params.videoId} was not found`);
+    }
+
     let body: Record<string, any> = {
       id: params.videoId
     };
     if (params.snippet) {
-      body.snippet = params.snippet;
+      let currentSnippet = currentVideo.snippet;
+      let title = params.snippet.title ?? currentSnippet?.title;
+      let categoryId = params.snippet.categoryId ?? currentSnippet?.categoryId;
+
+      if (!title) {
+        throw youtubeServiceError('Video title is required when updating snippet metadata');
+      }
+
+      if (!categoryId) {
+        throw youtubeServiceError(
+          'Video categoryId is required when updating snippet metadata'
+        );
+      }
+
+      body.snippet = {
+        title,
+        categoryId,
+        description: params.snippet.description ?? currentSnippet?.description,
+        tags: params.snippet.tags ?? currentSnippet?.tags,
+        defaultLanguage: params.snippet.defaultLanguage ?? currentSnippet?.defaultLanguage
+      };
     }
     if (params.status) {
-      body.status = params.status;
+      let currentStatus = currentVideo.status;
+      body.status = {
+        privacyStatus: params.status.privacyStatus ?? currentStatus?.privacyStatus,
+        publishAt: params.status.publishAt ?? currentStatus?.publishAt,
+        license: params.status.license ?? currentStatus?.license,
+        embeddable: params.status.embeddable ?? currentStatus?.embeddable,
+        publicStatsViewable:
+          params.status.publicStatsViewable ?? currentStatus?.publicStatsViewable,
+        selfDeclaredMadeForKids:
+          params.status.selfDeclaredMadeForKids ?? currentStatus?.selfDeclaredMadeForKids
+      };
     }
 
-    let response = await this.axios.put('/videos', body, {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('update video', () =>
+      this.axios.put('/videos', body, {
+        params: this.withAuthParams({
+          part: params.part.join(',')
+        })
+      })
+    );
   }
 
   async deleteVideo(videoId: string): Promise<void> {
-    await this.axios.delete('/videos', {
-      params: { id: videoId }
-    });
+    await this.request('delete video', () =>
+      this.axios.delete('/videos', {
+        params: this.withAuthParams({ id: videoId })
+      })
+    );
   }
 
   async rateVideo(videoId: string, rating: string): Promise<void> {
-    await this.axios.post('/videos/rate', null, {
-      params: {
-        id: videoId,
-        rating
-      }
-    });
+    await this.request('rate video', () =>
+      this.axios.post('/videos/rate', null, {
+        params: this.withAuthParams({
+          id: videoId,
+          rating
+        })
+      })
+    );
   }
 
   async getVideoRating(
     videoIds: string[]
   ): Promise<{ items: Array<{ videoId: string; rating: string }> }> {
-    let response = await this.axios.get('/videos/getRating', {
-      params: {
-        id: videoIds.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('get video rating', () =>
+      this.axios.get('/videos/getRating', {
+        params: this.withAuthParams({
+          id: videoIds.join(',')
+        })
+      })
+    );
   }
 
   // --- Search ---
@@ -139,30 +233,31 @@ export class Client {
     location?: string;
     locationRadius?: string;
   }): Promise<YouTubeListResponse<YouTubeSearchResult>> {
-    let response = await this.axios.get('/search', {
-      params: {
-        q: params.query,
-        part: (params.part || ['snippet']).join(','),
-        type: params.type?.join(','),
-        channelId: params.channelId,
-        maxResults: params.maxResults || 25,
-        pageToken: params.pageToken,
-        order: params.order,
-        publishedAfter: params.publishedAfter,
-        publishedBefore: params.publishedBefore,
-        regionCode: params.regionCode,
-        relevanceLanguage: params.relevanceLanguage,
-        videoDuration: params.videoDuration,
-        videoDefinition: params.videoDefinition,
-        videoType: params.videoType,
-        videoCaption: params.videoCaption,
-        topicId: params.topicId,
-        eventType: params.eventType,
-        location: params.location,
-        locationRadius: params.locationRadius
-      }
-    });
-    return response.data;
+    return await this.request('search content', () =>
+      this.axios.get('/search', {
+        params: this.withAuthParams({
+          q: params.query,
+          part: (params.part || ['snippet']).join(','),
+          type: params.type?.join(','),
+          channelId: params.channelId,
+          maxResults: params.maxResults || 25,
+          pageToken: params.pageToken,
+          order: params.order,
+          publishedAfter: params.publishedAfter,
+          publishedBefore: params.publishedBefore,
+          regionCode: params.regionCode,
+          relevanceLanguage: params.relevanceLanguage,
+          videoDuration: params.videoDuration,
+          videoDefinition: params.videoDefinition,
+          videoType: params.videoType,
+          videoCaption: params.videoCaption,
+          topicId: params.topicId,
+          eventType: params.eventType,
+          location: params.location,
+          locationRadius: params.locationRadius
+        })
+      })
+    );
   }
 
   // --- Channels ---
@@ -175,17 +270,18 @@ export class Client {
     maxResults?: number;
     pageToken?: string;
   }): Promise<YouTubeListResponse<YouTubeChannel>> {
-    let response = await this.axios.get('/channels', {
-      params: {
-        part: params.part.join(','),
-        id: params.channelId,
-        forUsername: params.forUsername,
-        mine: params.mine,
-        maxResults: params.maxResults,
-        pageToken: params.pageToken
-      }
-    });
-    return response.data;
+    return await this.request('list channels', () =>
+      this.axios.get('/channels', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          id: params.channelId,
+          forUsername: params.forUsername,
+          mine: params.mine,
+          maxResults: params.maxResults,
+          pageToken: params.pageToken
+        })
+      })
+    );
   }
 
   async updateChannel(params: {
@@ -201,19 +297,38 @@ export class Client {
       };
     };
   }): Promise<YouTubeChannel> {
+    let current = await this.listChannels({
+      part: ['brandingSettings'],
+      channelId: params.channelId
+    });
+    let currentChannel = current.items[0];
+    if (!currentChannel) {
+      throw youtubeServiceError(`Channel ${params.channelId} was not found`);
+    }
+
+    let currentBrandingSettings = currentChannel.brandingSettings ?? {};
+    let currentChannelSettings = currentBrandingSettings.channel ?? {};
     let body: Record<string, any> = {
       id: params.channelId
     };
     if (params.brandingSettings) {
-      body.brandingSettings = params.brandingSettings;
+      body.brandingSettings = {
+        ...currentBrandingSettings,
+        ...params.brandingSettings,
+        channel: {
+          ...currentChannelSettings,
+          ...params.brandingSettings.channel
+        }
+      };
     }
 
-    let response = await this.axios.put('/channels', body, {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('update channel', () =>
+      this.axios.put('/channels', body, {
+        params: this.withAuthParams({
+          part: params.part.join(',')
+        })
+      })
+    );
   }
 
   // --- Playlists ---
@@ -226,17 +341,18 @@ export class Client {
     maxResults?: number;
     pageToken?: string;
   }): Promise<YouTubeListResponse<YouTubePlaylist>> {
-    let response = await this.axios.get('/playlists', {
-      params: {
-        part: params.part.join(','),
-        id: params.playlistId,
-        channelId: params.channelId,
-        mine: params.mine,
-        maxResults: params.maxResults,
-        pageToken: params.pageToken
-      }
-    });
-    return response.data;
+    return await this.request('list playlists', () =>
+      this.axios.get('/playlists', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          id: params.playlistId,
+          channelId: params.channelId,
+          mine: params.mine,
+          maxResults: params.maxResults,
+          pageToken: params.pageToken
+        })
+      })
+    );
   }
 
   async createPlaylist(params: {
@@ -259,12 +375,13 @@ export class Client {
       body.status = { privacyStatus: params.privacyStatus };
     }
 
-    let response = await this.axios.post('/playlists', body, {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('create playlist', () =>
+      this.axios.post('/playlists', body, {
+        params: this.withAuthParams({
+          part: params.part.join(',')
+        })
+      })
+    );
   }
 
   async updatePlaylist(params: {
@@ -275,30 +392,49 @@ export class Client {
     privacyStatus?: string;
     defaultLanguage?: string;
   }): Promise<YouTubePlaylist> {
+    let current = await this.listPlaylists({
+      part: ['snippet', 'status'],
+      playlistId: params.playlistId
+    });
+    let currentPlaylist = current.items[0];
+    if (!currentPlaylist) {
+      throw youtubeServiceError(`Playlist ${params.playlistId} was not found`);
+    }
+
+    let title = params.title ?? currentPlaylist.snippet?.title;
+    if (!title) {
+      throw youtubeServiceError('Playlist title is required when updating a playlist');
+    }
+
     let body: Record<string, any> = {
       id: params.playlistId,
       snippet: {
-        title: params.title,
-        description: params.description,
-        defaultLanguage: params.defaultLanguage
+        title,
+        description: params.description ?? currentPlaylist.snippet?.description,
+        defaultLanguage: params.defaultLanguage ?? currentPlaylist.snippet?.defaultLanguage
       }
     };
-    if (params.privacyStatus) {
-      body.status = { privacyStatus: params.privacyStatus };
+    if (params.part.includes('status')) {
+      body.status = {
+        privacyStatus: params.privacyStatus ?? currentPlaylist.status?.privacyStatus
+      };
     }
 
-    let response = await this.axios.put('/playlists', body, {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('update playlist', () =>
+      this.axios.put('/playlists', body, {
+        params: this.withAuthParams({
+          part: params.part.join(',')
+        })
+      })
+    );
   }
 
   async deletePlaylist(playlistId: string): Promise<void> {
-    await this.axios.delete('/playlists', {
-      params: { id: playlistId }
-    });
+    await this.request('delete playlist', () =>
+      this.axios.delete('/playlists', {
+        params: this.withAuthParams({ id: playlistId })
+      })
+    );
   }
 
   // --- Playlist Items ---
@@ -310,16 +446,17 @@ export class Client {
     pageToken?: string;
     videoId?: string;
   }): Promise<YouTubeListResponse<YouTubePlaylistItem>> {
-    let response = await this.axios.get('/playlistItems', {
-      params: {
-        part: params.part.join(','),
-        playlistId: params.playlistId,
-        maxResults: params.maxResults,
-        pageToken: params.pageToken,
-        videoId: params.videoId
-      }
-    });
-    return response.data;
+    return await this.request('list playlist items', () =>
+      this.axios.get('/playlistItems', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          playlistId: params.playlistId,
+          maxResults: params.maxResults,
+          pageToken: params.pageToken,
+          videoId: params.videoId
+        })
+      })
+    );
   }
 
   async addPlaylistItem(params: {
@@ -341,12 +478,13 @@ export class Client {
       body.snippet.position = params.position;
     }
 
-    let response = await this.axios.post('/playlistItems', body, {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('add playlist item', () =>
+      this.axios.post('/playlistItems', body, {
+        params: this.withAuthParams({
+          part: params.part.join(',')
+        })
+      })
+    );
   }
 
   async updatePlaylistItem(params: {
@@ -370,18 +508,21 @@ export class Client {
       body.snippet.position = params.position;
     }
 
-    let response = await this.axios.put('/playlistItems', body, {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('update playlist item', () =>
+      this.axios.put('/playlistItems', body, {
+        params: this.withAuthParams({
+          part: params.part.join(',')
+        })
+      })
+    );
   }
 
   async deletePlaylistItem(playlistItemId: string): Promise<void> {
-    await this.axios.delete('/playlistItems', {
-      params: { id: playlistItemId }
-    });
+    await this.request('delete playlist item', () =>
+      this.axios.delete('/playlistItems', {
+        params: this.withAuthParams({ id: playlistItemId })
+      })
+    );
   }
 
   // --- Comment Threads ---
@@ -398,21 +539,22 @@ export class Client {
     searchTerms?: string;
     moderationStatus?: string;
   }): Promise<YouTubeListResponse<YouTubeCommentThread>> {
-    let response = await this.axios.get('/commentThreads', {
-      params: {
-        part: params.part.join(','),
-        videoId: params.videoId,
-        channelId: params.channelId,
-        allThreadsRelatedToChannelId: params.allThreadsRelatedToChannelId,
-        id: params.commentThreadId,
-        maxResults: params.maxResults,
-        pageToken: params.pageToken,
-        order: params.order,
-        searchTerms: params.searchTerms,
-        moderationStatus: params.moderationStatus
-      }
-    });
-    return response.data;
+    return await this.request('list comment threads', () =>
+      this.axios.get('/commentThreads', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          videoId: params.videoId,
+          channelId: params.channelId,
+          allThreadsRelatedToChannelId: params.allThreadsRelatedToChannelId,
+          id: params.commentThreadId,
+          maxResults: params.maxResults,
+          pageToken: params.pageToken,
+          order: params.order,
+          searchTerms: params.searchTerms,
+          moderationStatus: params.moderationStatus
+        })
+      })
+    );
   }
 
   async createCommentThread(params: {
@@ -433,12 +575,13 @@ export class Client {
       }
     };
 
-    let response = await this.axios.post('/commentThreads', body, {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('create comment thread', () =>
+      this.axios.post('/commentThreads', body, {
+        params: this.withAuthParams({
+          part: params.part.join(',')
+        })
+      })
+    );
   }
 
   // --- Comments ---
@@ -449,15 +592,16 @@ export class Client {
     maxResults?: number;
     pageToken?: string;
   }): Promise<YouTubeListResponse<YouTubeComment>> {
-    let response = await this.axios.get('/comments', {
-      params: {
-        part: params.part.join(','),
-        parentId: params.parentId,
-        maxResults: params.maxResults,
-        pageToken: params.pageToken
-      }
-    });
-    return response.data;
+    return await this.request('list comments', () =>
+      this.axios.get('/comments', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          parentId: params.parentId,
+          maxResults: params.maxResults,
+          pageToken: params.pageToken
+        })
+      })
+    );
   }
 
   async createComment(params: {
@@ -472,12 +616,13 @@ export class Client {
       }
     };
 
-    let response = await this.axios.post('/comments', body, {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('create comment', () =>
+      this.axios.post('/comments', body, {
+        params: this.withAuthParams({
+          part: params.part.join(',')
+        })
+      })
+    );
   }
 
   async updateComment(params: {
@@ -492,18 +637,21 @@ export class Client {
       }
     };
 
-    let response = await this.axios.put('/comments', body, {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('update comment', () =>
+      this.axios.put('/comments', body, {
+        params: this.withAuthParams({
+          part: params.part.join(',')
+        })
+      })
+    );
   }
 
   async deleteComment(commentId: string): Promise<void> {
-    await this.axios.delete('/comments', {
-      params: { id: commentId }
-    });
+    await this.request('delete comment', () =>
+      this.axios.delete('/comments', {
+        params: this.withAuthParams({ id: commentId })
+      })
+    );
   }
 
   async setCommentModerationStatus(params: {
@@ -511,13 +659,15 @@ export class Client {
     moderationStatus: string;
     banAuthor?: boolean;
   }): Promise<void> {
-    await this.axios.post('/comments/setModerationStatus', null, {
-      params: {
-        id: params.commentIds.join(','),
-        moderationStatus: params.moderationStatus,
-        banAuthor: params.banAuthor
-      }
-    });
+    await this.request('set comment moderation status', () =>
+      this.axios.post('/comments/setModerationStatus', null, {
+        params: this.withAuthParams({
+          id: params.commentIds.join(','),
+          moderationStatus: params.moderationStatus,
+          banAuthor: params.banAuthor
+        })
+      })
+    );
   }
 
   // --- Subscriptions ---
@@ -532,19 +682,20 @@ export class Client {
     pageToken?: string;
     order?: string;
   }): Promise<YouTubeListResponse<YouTubeSubscription>> {
-    let response = await this.axios.get('/subscriptions', {
-      params: {
-        part: params.part.join(','),
-        mine: params.mine,
-        channelId: params.channelId,
-        forChannelId: params.forChannelId,
-        id: params.subscriptionId,
-        maxResults: params.maxResults,
-        pageToken: params.pageToken,
-        order: params.order
-      }
-    });
-    return response.data;
+    return await this.request('list subscriptions', () =>
+      this.axios.get('/subscriptions', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          mine: params.mine,
+          channelId: params.channelId,
+          forChannelId: params.forChannelId,
+          id: params.subscriptionId,
+          maxResults: params.maxResults,
+          pageToken: params.pageToken,
+          order: params.order
+        })
+      })
+    );
   }
 
   async createSubscription(params: {
@@ -560,18 +711,21 @@ export class Client {
       }
     };
 
-    let response = await this.axios.post('/subscriptions', body, {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('create subscription', () =>
+      this.axios.post('/subscriptions', body, {
+        params: this.withAuthParams({
+          part: params.part.join(',')
+        })
+      })
+    );
   }
 
   async deleteSubscription(subscriptionId: string): Promise<void> {
-    await this.axios.delete('/subscriptions', {
-      params: { id: subscriptionId }
-    });
+    await this.request('delete subscription', () =>
+      this.axios.delete('/subscriptions', {
+        params: this.withAuthParams({ id: subscriptionId })
+      })
+    );
   }
 
   // --- Captions ---
@@ -580,19 +734,22 @@ export class Client {
     part: string[];
     videoId: string;
   }): Promise<YouTubeListResponse<YouTubeCaption>> {
-    let response = await this.axios.get('/captions', {
-      params: {
-        part: params.part.join(','),
-        videoId: params.videoId
-      }
-    });
-    return response.data;
+    return await this.request('list captions', () =>
+      this.axios.get('/captions', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          videoId: params.videoId
+        })
+      })
+    );
   }
 
   async deleteCaption(captionId: string): Promise<void> {
-    await this.axios.delete('/captions', {
-      params: { id: captionId }
-    });
+    await this.request('delete caption', () =>
+      this.axios.delete('/captions', {
+        params: this.withAuthParams({ id: captionId })
+      })
+    );
   }
 
   // --- Activities ---
@@ -606,18 +763,19 @@ export class Client {
     publishedAfter?: string;
     publishedBefore?: string;
   }): Promise<YouTubeListResponse<YouTubeActivity>> {
-    let response = await this.axios.get('/activities', {
-      params: {
-        part: params.part.join(','),
-        channelId: params.channelId,
-        mine: params.mine,
-        maxResults: params.maxResults,
-        pageToken: params.pageToken,
-        publishedAfter: params.publishedAfter,
-        publishedBefore: params.publishedBefore
-      }
-    });
-    return response.data;
+    return await this.request('list activities', () =>
+      this.axios.get('/activities', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          channelId: params.channelId,
+          mine: params.mine,
+          maxResults: params.maxResults,
+          pageToken: params.pageToken,
+          publishedAfter: params.publishedAfter,
+          publishedBefore: params.publishedBefore
+        })
+      })
+    );
   }
 
   // --- Video Categories ---
@@ -626,43 +784,52 @@ export class Client {
     part: string[];
     regionCode?: string;
     videoCategoryId?: string;
+    hl?: string;
   }): Promise<
     YouTubeListResponse<{
       id: string;
       snippet: { channelId: string; title: string; assignable: boolean };
     }>
   > {
-    let response = await this.axios.get('/videoCategories', {
-      params: {
-        part: params.part.join(','),
-        regionCode: params.regionCode,
-        id: params.videoCategoryId
-      }
-    });
-    return response.data;
+    return await this.request('list video categories', () =>
+      this.axios.get('/videoCategories', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          regionCode: params.regionCode,
+          id: params.videoCategoryId,
+          hl: params.hl
+        })
+      })
+    );
   }
 
   // --- i18n ---
 
   async listRegions(params: {
     part: string[];
+    hl?: string;
   }): Promise<YouTubeListResponse<{ id: string; snippet: { gl: string; name: string } }>> {
-    let response = await this.axios.get('/i18nRegions', {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('list i18n regions', () =>
+      this.axios.get('/i18nRegions', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          hl: params.hl
+        })
+      })
+    );
   }
 
   async listLanguages(params: {
     part: string[];
+    hl?: string;
   }): Promise<YouTubeListResponse<{ id: string; snippet: { hl: string; name: string } }>> {
-    let response = await this.axios.get('/i18nLanguages', {
-      params: {
-        part: params.part.join(',')
-      }
-    });
-    return response.data;
+    return await this.request('list i18n languages', () =>
+      this.axios.get('/i18nLanguages', {
+        params: this.withAuthParams({
+          part: params.part.join(','),
+          hl: params.hl
+        })
+      })
+    );
   }
 }

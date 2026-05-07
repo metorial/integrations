@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { intercomServiceError } from '../lib/errors';
 
 export let manageCompanies = SlateTool.create(spec, {
   name: 'Manage Companies',
@@ -90,7 +91,7 @@ The create and update operations use the same endpoint — if a company with the
 
     if (action === 'delete') {
       if (!ctx.input.intercomCompanyId)
-        throw new Error('intercomCompanyId is required for delete');
+        throw intercomServiceError('intercomCompanyId is required for delete');
       await client.deleteCompany(ctx.input.intercomCompanyId);
       return {
         output: { intercomCompanyId: ctx.input.intercomCompanyId, deleted: true },
@@ -100,7 +101,7 @@ The create and update operations use the same endpoint — if a company with the
 
     if (action === 'attach_contact') {
       if (!ctx.input.contactId || !ctx.input.intercomCompanyId) {
-        throw new Error(
+        throw intercomServiceError(
           'Both contactId and intercomCompanyId are required for attach_contact'
         );
       }
@@ -116,7 +117,7 @@ The create and update operations use the same endpoint — if a company with the
 
     if (action === 'detach_contact') {
       if (!ctx.input.contactId || !ctx.input.intercomCompanyId) {
-        throw new Error(
+        throw intercomServiceError(
           'Both contactId and intercomCompanyId are required for detach_contact'
         );
       }
@@ -130,7 +131,7 @@ The create and update operations use the same endpoint — if a company with the
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw intercomServiceError(`Unknown action: ${action}`);
   })
   .build();
 

@@ -25,7 +25,8 @@ describe('firebase provider contract', () => {
         'manage_topic_subscriptions',
         'get_remote_config',
         'update_remote_config',
-        'manage_storage'
+        'manage_storage',
+        'get_firebase_apps'
       ],
       triggerIds: [
         'inbound_webhook',
@@ -45,7 +46,8 @@ describe('firebase provider contract', () => {
         { id: 'manage_topic_subscriptions', readOnly: false, destructive: false },
         { id: 'get_remote_config', readOnly: true, destructive: false },
         { id: 'update_remote_config', readOnly: false, destructive: true },
-        { id: 'manage_storage', readOnly: false, destructive: true }
+        { id: 'manage_storage', readOnly: false, destructive: true },
+        { id: 'get_firebase_apps', readOnly: true, destructive: false }
       ],
       triggers: [
         { id: 'inbound_webhook', invocationType: 'webhook' },
@@ -55,10 +57,12 @@ describe('firebase provider contract', () => {
       ]
     });
 
-    expect(contract.actions).toHaveLength(15);
+    expect(contract.actions).toHaveLength(16);
     expect(Object.keys(contract.configSchema.properties ?? {}).sort()).toEqual([
       'databaseUrl',
-      'projectId'
+      'projectId',
+      'storageBucket',
+      'webApiKey'
     ]);
 
     let expectedScopes = {
@@ -73,6 +77,7 @@ describe('firebase provider contract', () => {
       get_remote_config: firebaseActionScopes.getRemoteConfig,
       update_remote_config: firebaseActionScopes.updateRemoteConfig,
       manage_storage: firebaseActionScopes.manageStorage,
+      get_firebase_apps: firebaseActionScopes.getFirebaseApps,
       firestore_document_changes: firebaseActionScopes.firestoreDocumentChanges,
       realtime_db_changes: firebaseActionScopes.realtimeDbChanges,
       user_changes: firebaseActionScopes.userChanges,
@@ -91,7 +96,9 @@ describe('firebase provider contract', () => {
     let serviceAccount = await client.getAuthMethod('service_account');
     expect(serviceAccount.authenticationMethod.type).toBe('auth.custom');
 
-    let scopeTitles = new Set((oauth.authenticationMethod.scopes ?? []).map(scope => scope.title));
+    let scopeTitles = new Set(
+      (oauth.authenticationMethod.scopes ?? []).map(scope => scope.title)
+    );
     expect(scopeTitles.has('Cloud Platform')).toBe(true);
     expect(scopeTitles.has('Realtime Database')).toBe(true);
   });

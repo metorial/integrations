@@ -19,7 +19,9 @@ import {
   getCampaignStats,
   sendConversionEvent,
   managePixel,
-  getFundingSources
+  getFundingSources,
+  getAudienceSize,
+  getBidEstimate
 } from './tools';
 import { campaignStatusChange, adStatusChange, inboundWebhook } from './triggers';
 
@@ -44,7 +46,9 @@ export let provider = Slate.create({
     getCampaignStats,
     sendConversionEvent,
     managePixel,
-    getFundingSources
+    getFundingSources,
+    getAudienceSize,
+    getBidEstimate
   ],
   triggers: [inboundWebhook, campaignStatusChange, adStatusChange]
 });

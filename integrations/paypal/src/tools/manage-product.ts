@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { PayPalClient } from '../lib/client';
+import { paypalServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -60,7 +61,7 @@ export let manageProduct = SlateTool.create(spec, {
     switch (ctx.input.action) {
       case 'create': {
         if (!ctx.input.name || !ctx.input.type) {
-          throw new Error('name and type are required for create action');
+          throw paypalServiceError('name and type are required for create action');
         }
         let product = await client.createProduct({
           name: ctx.input.name,
@@ -70,6 +71,7 @@ export let manageProduct = SlateTool.create(spec, {
           imageUrl: ctx.input.imageUrl,
           homeUrl: ctx.input.homeUrl
         });
+        product = await client.getProduct(product.id);
         return {
           output: {
             productId: product.id,
@@ -82,7 +84,8 @@ export let manageProduct = SlateTool.create(spec, {
         };
       }
       case 'get': {
-        if (!ctx.input.productId) throw new Error('productId is required for get action');
+        if (!ctx.input.productId)
+          throw paypalServiceError('productId is required for get action');
         let product = await client.getProduct(ctx.input.productId);
         return {
           output: {

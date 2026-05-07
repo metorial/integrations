@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let purgeCacheTool = SlateTool.create(spec, {
@@ -9,8 +10,8 @@ export let purgeCacheTool = SlateTool.create(spec, {
   description: `Purge cached content for a Cloudflare zone. Supports purging everything, specific URLs, cache tags, or hostnames. Use this to force Cloudflare to re-fetch content from the origin server.`,
   instructions: [
     'Set purgeAll to true to clear the entire cache for the zone.',
-    'Alternatively, provide specific URLs, tags, or hosts to purge selectively.',
-    'Cache tag and host purging require an Enterprise plan.'
+    'Alternatively, provide specific URLs, tags, hosts, or prefixes to purge selectively.',
+    'Prefix values use host/path form, e.g. "www.example.com/assets".'
   ],
   tags: {
     destructive: true
@@ -21,8 +22,12 @@ export let purgeCacheTool = SlateTool.create(spec, {
       zoneId: z.string().describe('Zone ID to purge cache for'),
       purgeAll: z.boolean().optional().describe('Purge all cached content'),
       urls: z.array(z.string()).optional().describe('Specific URLs to purge from cache'),
-      tags: z.array(z.string()).optional().describe('Cache tags to purge (Enterprise only)'),
-      hosts: z.array(z.string()).optional().describe('Hostnames to purge (Enterprise only)')
+      tags: z.array(z.string()).optional().describe('Cache tags to purge'),
+      hosts: z.array(z.string()).optional().describe('Hostnames to purge'),
+      prefixes: z
+        .array(z.string())
+        .optional()
+        .describe('URL prefixes to purge, in host/path form (e.g. www.example.com/assets)')
     })
   )
   .output(
@@ -67,6 +72,14 @@ export let purgeCacheTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error('Specify purgeAll, urls, tags, or hosts to purge');
+    if (ctx.input.prefixes?.length) {
+      await client.purgeFilesByPrefixes(zoneId, ctx.input.prefixes);
+      return {
+        output: { zoneId, purged: true },
+        message: `Purged cache for **${ctx.input.prefixes.length}** prefix(es).`
+      };
+    }
+
+    throw cloudflareServiceError('Specify purgeAll, urls, tags, hosts, or prefixes to purge');
   })
   .build();

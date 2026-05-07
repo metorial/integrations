@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -120,7 +121,9 @@ export let manageDNSRecords = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.type || !ctx.input.name || !ctx.input.recordData) {
-        throw new Error('type, name, and recordData are required for create action');
+        throw digitalOceanValidationError(
+          'type, name, and recordData are required for create action'
+        );
       }
 
       let record = await client.createDomainRecord(ctx.input.domainName, {
@@ -151,7 +154,9 @@ export let manageDNSRecords = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.recordId) throw new Error('recordId is required for update action');
+      if (!ctx.input.recordId) {
+        throw digitalOceanValidationError('recordId is required for update action');
+      }
 
       let updateParams: any = {};
       if (ctx.input.type) updateParams.type = ctx.input.type;
@@ -186,7 +191,9 @@ export let manageDNSRecords = SlateTool.create(spec, {
     }
 
     // delete
-    if (!ctx.input.recordId) throw new Error('recordId is required for delete action');
+    if (!ctx.input.recordId) {
+      throw digitalOceanValidationError('recordId is required for delete action');
+    }
     await client.deleteDomainRecord(ctx.input.domainName, ctx.input.recordId);
 
     return {

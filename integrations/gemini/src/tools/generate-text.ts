@@ -121,12 +121,20 @@ export let generateText = SlateTool.create(spec, {
         .optional()
         .describe('Enable the built-in code execution tool'),
       enableGoogleSearch: z.boolean().optional().describe('Enable Google Search grounding'),
+      enableUrlContext: z
+        .boolean()
+        .optional()
+        .describe('Enable the URL Context tool for prompts that include URLs'),
       thinkingBudget: z
         .number()
         .optional()
         .describe(
           'Token budget for model thinking/reasoning (for models that support dynamic thinking)'
-        )
+        ),
+      thinkingLevel: z
+        .enum(['MINIMAL', 'LOW', 'MEDIUM', 'HIGH'])
+        .optional()
+        .describe('Thinking level for Gemini 3 and later models')
     })
   )
   .output(
@@ -155,6 +163,35 @@ export let generateText = SlateTool.create(spec, {
         )
         .optional()
         .describe('Citation sources if grounding was used'),
+      groundingSources: z
+        .array(
+          z.object({
+            uri: z.string().optional(),
+            title: z.string().optional(),
+            sourceUri: z.string().optional(),
+            imageUri: z.string().optional(),
+            domain: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Grounding source chunks returned by Google Search or related tools'),
+      webSearchQueries: z
+        .array(z.string())
+        .optional()
+        .describe('Web search queries issued by grounding'),
+      urlContextMetadata: z
+        .object({
+          urlMetadata: z
+            .array(
+              z.object({
+                retrievedUrl: z.string().optional(),
+                urlRetrievalStatus: z.string().optional()
+              })
+            )
+            .optional()
+        })
+        .optional()
+        .describe('URL retrieval metadata when URL Context was used'),
       promptTokenCount: z.number().describe('Number of tokens in the prompt'),
       candidateTokenCount: z.number().describe('Number of tokens in the response'),
       totalTokenCount: z.number().describe('Total tokens used'),
@@ -179,19 +216,32 @@ export let generateText = SlateTool.create(spec, {
     if (ctx.input.thinkingBudget !== undefined) {
       generationConfig.thinkingConfig = { thinkingBudget: ctx.input.thinkingBudget };
     }
+    if (ctx.input.thinkingLevel) {
+      generationConfig.thinkingConfig = {
+        ...(generationConfig.thinkingConfig ?? {}),
+        thinkingLevel: ctx.input.thinkingLevel
+      };
+    }
 
     let systemInstruction = ctx.input.systemInstruction
       ? { parts: [{ text: ctx.input.systemInstruction }] }
       : undefined;
 
     let tools: Array<any> | undefined = undefined;
-    if (ctx.input.enableCodeExecution || ctx.input.enableGoogleSearch) {
+    if (
+      ctx.input.enableCodeExecution ||
+      ctx.input.enableGoogleSearch ||
+      ctx.input.enableUrlContext
+    ) {
       tools = [];
       if (ctx.input.enableCodeExecution) {
         tools.push({ codeExecution: {} });
       }
       if (ctx.input.enableGoogleSearch) {
-        tools.push({ googleSearchRetrieval: {} });
+        tools.push({ googleSearch: {} });
+      }
+      if (ctx.input.enableUrlContext) {
+        tools.push({ urlContext: {} });
       }
     }
 
@@ -225,6 +275,24 @@ export let generateText = SlateTool.create(spec, {
       uri: c.uri
     }));
 
+    let groundingMetadata = candidate?.groundingMetadata ?? {};
+    let groundingSources = groundingMetadata.groundingChunks?.map((chunk: any) => ({
+      uri: chunk.web?.uri ?? chunk.retrievedContext?.uri ?? chunk.maps?.uri,
+      title: chunk.web?.title ?? chunk.retrievedContext?.title ?? chunk.maps?.title,
+      sourceUri: chunk.image?.sourceUri,
+      imageUri: chunk.image?.imageUri,
+      domain: chunk.image?.domain
+    }));
+
+    let urlContextMetadata = candidate?.urlContextMetadata
+      ? {
+          urlMetadata: candidate.urlContextMetadata.urlMetadata?.map((metadata: any) => ({
+            retrievedUrl: metadata.retrievedUrl,
+            urlRetrievalStatus: metadata.urlRetrievalStatus
+          }))
+        }
+      : undefined;
+
     let usageMetadata = result.usageMetadata ?? {};
 
     return {
@@ -233,6 +301,9 @@ export let generateText = SlateTool.create(spec, {
         finishReason,
         safetyRatings,
         citationSources,
+        groundingSources,
+        webSearchQueries: groundingMetadata.webSearchQueries,
+        urlContextMetadata,
         promptTokenCount: usageMetadata.promptTokenCount ?? 0,
         candidateTokenCount: usageMetadata.candidatesTokenCount ?? 0,
         totalTokenCount: usageMetadata.totalTokenCount ?? 0,

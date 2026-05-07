@@ -19,32 +19,20 @@ export let getTrends = SlateTool.create(spec, {
           'CA',
           'DE',
           'FR',
-          'GB',
-          'IT',
           'ES',
-          'NL',
-          'BR',
-          'MX',
+          'IT',
+          'DE+AT+CH',
+          'GB+IE',
+          'IT+ES+PT+GR+MT',
+          'PL+RO+HU+SK+CZ',
+          'SE+DK+FI+NO',
+          'NL+BE+LU',
           'AR',
-          'AU',
-          'NZ',
-          'JP',
-          'IN',
-          'SE',
-          'CH',
-          'AT',
-          'BE',
-          'CZ',
-          'DK',
-          'FI',
-          'GR',
-          'HU',
-          'IE',
-          'NO',
-          'PL',
-          'PT',
-          'RO',
-          'SK'
+          'BR',
+          'CO',
+          'MX',
+          'MX+AR+CO+CL',
+          'AU+NZ'
         ])
         .describe('Region/country code for trends'),
       trendType: z
@@ -59,8 +47,18 @@ export let getTrends = SlateTool.create(spec, {
         .array(z.enum(['18-24', '25-34', '35-44', '45-49', '50-54', '55-64', '65+']))
         .optional()
         .describe('Filter by age demographic'),
+      includeKeywords: z
+        .array(z.string())
+        .optional()
+        .describe('Only include trends containing at least one of these keywords'),
+      normalizeAgainstGroup: z
+        .boolean()
+        .optional()
+        .describe('Normalize trend scores against the selected audience group'),
       limit: z
         .number()
+        .min(1)
+        .max(50)
         .optional()
         .describe('Maximum number of trending topics to return (default 50)')
     })
@@ -79,10 +77,12 @@ export let getTrends = SlateTool.create(spec, {
       interests: ctx.input.interests,
       genders: ctx.input.genders,
       ages: ctx.input.ages,
+      includeKeywords: ctx.input.includeKeywords,
+      normalizeAgainstGroup: ctx.input.normalizeAgainstGroup,
       limit: ctx.input.limit
     });
 
-    let trends = result.trends || [];
+    let trends = result.trends || result.items || [];
 
     return {
       output: {

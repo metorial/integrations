@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZohoDeskClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { zohoServiceError } from '../lib/errors';
 
 export let deskManageTicket = SlateTool.create(spec, {
   name: 'Desk Manage Ticket',
@@ -62,6 +63,7 @@ export let deskManageTicket = SlateTool.create(spec, {
     });
 
     if (ctx.input.action === 'create') {
+      if (!ctx.input.subject) throw zohoServiceError('subject is required for create');
       let data: Record<string, any> = {};
       if (ctx.input.subject) data.subject = ctx.input.subject;
       if (ctx.input.description) data.description = ctx.input.description;
@@ -87,7 +89,7 @@ export let deskManageTicket = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.ticketId) throw new Error('ticketId is required for update');
+      if (!ctx.input.ticketId) throw zohoServiceError('ticketId is required for update');
       let data: Record<string, any> = {};
       if (ctx.input.subject) data.subject = ctx.input.subject;
       if (ctx.input.description) data.description = ctx.input.description;
@@ -111,7 +113,7 @@ export let deskManageTicket = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.ticketId) throw new Error('ticketId is required for delete');
+      if (!ctx.input.ticketId) throw zohoServiceError('ticketId is required for delete');
       await client.deleteTicket(ctx.input.ticketId);
       return {
         output: { ticketId: ctx.input.ticketId, deleted: true },
@@ -119,6 +121,6 @@ export let deskManageTicket = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw zohoServiceError('Invalid Desk ticket action.');
   })
   .build();

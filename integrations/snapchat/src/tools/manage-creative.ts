@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SnapchatClient } from '../lib/client';
+import { snapchatServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -60,6 +61,14 @@ export let manageCreative = SlateTool.create(spec, {
     let client = new SnapchatClient(ctx.auth.token);
     let { adAccountId, creativeId, ...fields } = ctx.input;
 
+    if (!creativeId) {
+      if (!fields.name) throw snapchatServiceError('name is required to create a creative.');
+      if (!fields.type) throw snapchatServiceError('type is required to create a creative.');
+      if (!fields.brandName) {
+        throw snapchatServiceError('brandName is required to create a creative.');
+      }
+    }
+
     let creativeData: Record<string, any> = {};
     if (creativeId) creativeData.id = creativeId;
     if (fields.name) creativeData.name = fields.name;
@@ -80,6 +89,10 @@ export let manageCreative = SlateTool.create(spec, {
       result = await client.updateCreative(adAccountId, creativeData);
     } else {
       result = await client.createCreative(adAccountId, creativeData);
+    }
+
+    if (!result) {
+      throw snapchatServiceError('Snapchat did not return a creative in the API response.');
     }
 
     let output = {

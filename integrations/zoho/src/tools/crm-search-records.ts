@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZohoCrmClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { zohoServiceError } from '../lib/errors';
 
 export let crmSearchRecords = SlateTool.create(spec, {
   name: 'CRM Search Records',
@@ -42,6 +43,16 @@ export let crmSearchRecords = SlateTool.create(spec, {
         .describe(
           'COQL query string (e.g., "select Last_Name, Email from Leads where Company = \'Acme\'")'
         ),
+      fields: z.string().optional().describe('Comma-separated field API names to return'),
+      converted: z
+        .enum(['true', 'false', 'both'])
+        .optional()
+        .describe('Converted-record filter'),
+      approved: z.enum(['true', 'false', 'both']).optional().describe('Approval-state filter'),
+      userType: z
+        .string()
+        .optional()
+        .describe('Users module type filter, such as "ActiveUsers" or "CurrentUser"'),
       page: z.number().optional().describe('Page number for pagination'),
       perPage: z.number().optional().describe('Records per page (max 200)')
     })
@@ -70,7 +81,7 @@ export let crmSearchRecords = SlateTool.create(spec, {
       };
     }
 
-    if (!ctx.input.module) throw new Error('module is required when not using COQL');
+    if (!ctx.input.module) throw zohoServiceError('module is required when not using COQL');
 
     let result = await client.searchRecords(ctx.input.module, {
       criteria: ctx.input.criteria,
@@ -78,7 +89,11 @@ export let crmSearchRecords = SlateTool.create(spec, {
       phone: ctx.input.phone,
       word: ctx.input.word,
       page: ctx.input.page,
-      perPage: ctx.input.perPage
+      perPage: ctx.input.perPage,
+      fields: ctx.input.fields,
+      converted: ctx.input.converted,
+      approved: ctx.input.approved,
+      userType: ctx.input.userType
     });
 
     let records = result?.data || [];

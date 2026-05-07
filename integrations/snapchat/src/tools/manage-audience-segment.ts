@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SnapchatClient } from '../lib/client';
+import { snapchatServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -53,6 +54,15 @@ export let manageAudienceSegment = SlateTool.create(spec, {
     let client = new SnapchatClient(ctx.auth.token);
     let { adAccountId, segmentId, ...fields } = ctx.input;
 
+    if (!segmentId) {
+      if (!fields.name) {
+        throw snapchatServiceError('name is required to create an audience segment.');
+      }
+      if (!fields.sourceType) {
+        throw snapchatServiceError('sourceType is required to create an audience segment.');
+      }
+    }
+
     let segmentData: Record<string, any> = {};
     if (segmentId) segmentData.id = segmentId;
     if (fields.name) segmentData.name = fields.name;
@@ -66,6 +76,12 @@ export let manageAudienceSegment = SlateTool.create(spec, {
       result = await client.updateSegment(adAccountId, segmentData);
     } else {
       result = await client.createSegment(adAccountId, segmentData);
+    }
+
+    if (!result) {
+      throw snapchatServiceError(
+        'Snapchat did not return an audience segment in the API response.'
+      );
     }
 
     let output = {

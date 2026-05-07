@@ -1,6 +1,7 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 import { googleMeetScopes } from './scopes';
+import { googleMeetOAuthError, googleMeetServiceError } from './lib/errors';
 
 let googleAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -79,89 +80,101 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response = await googleAxios.post(
-        '/token',
-        new URLSearchParams({
-          code: ctx.code,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri,
-          grant_type: 'authorization_code'
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      try {
+        let response = await googleAxios.post(
+          '/token',
+          new URLSearchParams({
+            code: ctx.code,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri,
+            grant_type: 'authorization_code'
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
 
-      let data = response.data;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
-      let grantedScopes =
-        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
+        let data = response.data;
+        let expiresAt = data.expires_in
+          ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+          : undefined;
+        let grantedScopes =
+          typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt
-        },
-        scopes: grantedScopes
-      };
+        return {
+          output: {
+            token: data.access_token,
+            refreshToken: data.refresh_token,
+            expiresAt
+          },
+          scopes: grantedScopes
+        };
+      } catch (error) {
+        throw googleMeetOAuthError('authorization callback', error);
+      }
     },
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available');
+        throw googleMeetServiceError('No refresh token available for Google Meet OAuth refresh.');
       }
 
-      let response = await googleAxios.post(
-        '/token',
-        new URLSearchParams({
-          refresh_token: ctx.output.refreshToken,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          grant_type: 'refresh_token'
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      try {
+        let response = await googleAxios.post(
+          '/token',
+          new URLSearchParams({
+            refresh_token: ctx.output.refreshToken,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            grant_type: 'refresh_token'
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
 
-      let data = response.data;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
+        let data = response.data;
+        let expiresAt = data.expires_in
+          ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+          : undefined;
 
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: ctx.output.refreshToken,
-          expiresAt
-        }
-      };
+        return {
+          output: {
+            token: data.access_token,
+            refreshToken: ctx.output.refreshToken,
+            expiresAt
+          }
+        };
+      } catch (error) {
+        throw googleMeetOAuthError('token refresh', error);
+      }
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
-      let response = await userInfoAxios.get('/oauth2/v2/userinfo', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      try {
+        let response = await userInfoAxios.get('/oauth2/v2/userinfo', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
 
-      let data = response.data;
+        let data = response.data;
 
-      return {
-        profile: {
-          id: data.id,
-          email: data.email,
-          name: data.name,
-          imageUrl: data.picture
-        }
-      };
+        return {
+          profile: {
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            imageUrl: data.picture
+          }
+        };
+      } catch (error) {
+        throw googleMeetOAuthError('profile lookup', error);
+      }
     }
   });

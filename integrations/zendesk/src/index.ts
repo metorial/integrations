@@ -24,7 +24,10 @@ import {
   deleteArticle,
   listViews,
   listGroups,
-  listHelpCenterCategories
+  listHelpCenterCategories,
+  listTicketComments,
+  listTicketFields,
+  listMacros
 } from './tools';
 import { ticketEvents, userEvents, organizationEvents, articleEvents } from './triggers';
 
@@ -54,7 +57,10 @@ export let provider = Slate.create({
     deleteArticle,
     listViews,
     listGroups,
-    listHelpCenterCategories
+    listHelpCenterCategories,
+    listTicketComments,
+    listTicketFields,
+    listMacros
   ],
   triggers: [ticketEvents, userEvents, organizationEvents, articleEvents]
 });

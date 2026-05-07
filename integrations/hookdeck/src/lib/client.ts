@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { hookdeckApiError } from './errors';
 import type {
   PaginationParams,
   PaginatedResponse,
@@ -10,20 +11,48 @@ import type {
   HookdeckIssue,
   HookdeckTransformation,
   HookdeckBookmark,
-  HookdeckIssueTrigger
+  HookdeckIssueTrigger,
+  HookdeckAttempt,
+  HookdeckMetricsResponse,
+  HookdeckBulkOperation
 } from './types';
+
+type DataResponse<T> = {
+  data: T;
+};
+
+type IssueTriggerInput = {
+  name?: string | null;
+  type?: string;
+  configs?: Record<string, unknown>;
+  channels?: Record<string, unknown> | null;
+};
 
 export class Client {
   private axios;
+  private authHeader: string;
 
   constructor(config: { token: string; apiVersion: string }) {
+    this.authHeader = `Bearer ${config.token}`;
     this.axios = createAxios({
       baseURL: `https://api.hookdeck.com/${config.apiVersion}`,
       headers: {
-        Authorization: `Bearer ${config.token}`,
+        Authorization: this.authHeader,
         'Content-Type': 'application/json'
       }
     });
+  }
+
+  private async request<T>(
+    operation: string,
+    run: () => Promise<DataResponse<T>>
+  ): Promise<T> {
+    try {
+      let response = await run();
+      return response.data;
+    } catch (error) {
+      throw hookdeckApiError(error, operation);
+    }
   }
 
   // ---- Sources ----
@@ -31,13 +60,11 @@ export class Client {
   async listSources(
     params?: PaginationParams & { name?: string }
   ): Promise<PaginatedResponse<HookdeckSource>> {
-    let response = await this.axios.get('/sources', { params });
-    return response.data;
+    return this.request('list sources', () => this.axios.get('/sources', { params }));
   }
 
   async getSource(sourceId: string): Promise<HookdeckSource> {
-    let response = await this.axios.get(`/sources/${sourceId}`);
-    return response.data;
+    return this.request('retrieve source', () => this.axios.get(`/sources/${sourceId}`));
   }
 
   async createSource(data: {
@@ -47,8 +74,7 @@ export class Client {
     verification?: Record<string, unknown>;
     config?: Record<string, unknown>;
   }): Promise<HookdeckSource> {
-    let response = await this.axios.post('/sources', data);
-    return response.data;
+    return this.request('create source', () => this.axios.post('/sources', data));
   }
 
   async updateSource(
@@ -61,23 +87,21 @@ export class Client {
       config?: Record<string, unknown>;
     }
   ): Promise<HookdeckSource> {
-    let response = await this.axios.put(`/sources/${sourceId}`, data);
-    return response.data;
+    return this.request('update source', () => this.axios.put(`/sources/${sourceId}`, data));
   }
 
   async deleteSource(sourceId: string): Promise<{ id: string }> {
-    let response = await this.axios.delete(`/sources/${sourceId}`);
-    return response.data;
+    return this.request('delete source', () => this.axios.delete(`/sources/${sourceId}`));
   }
 
   async disableSource(sourceId: string): Promise<HookdeckSource> {
-    let response = await this.axios.put(`/sources/${sourceId}/disable`);
-    return response.data;
+    return this.request('disable source', () =>
+      this.axios.put(`/sources/${sourceId}/disable`)
+    );
   }
 
   async enableSource(sourceId: string): Promise<HookdeckSource> {
-    let response = await this.axios.put(`/sources/${sourceId}/enable`);
-    return response.data;
+    return this.request('enable source', () => this.axios.put(`/sources/${sourceId}/enable`));
   }
 
   // ---- Destinations ----
@@ -85,13 +109,15 @@ export class Client {
   async listDestinations(
     params?: PaginationParams & { name?: string }
   ): Promise<PaginatedResponse<HookdeckDestination>> {
-    let response = await this.axios.get('/destinations', { params });
-    return response.data;
+    return this.request('list destinations', () =>
+      this.axios.get('/destinations', { params })
+    );
   }
 
   async getDestination(destinationId: string): Promise<HookdeckDestination> {
-    let response = await this.axios.get(`/destinations/${destinationId}`);
-    return response.data;
+    return this.request('retrieve destination', () =>
+      this.axios.get(`/destinations/${destinationId}`)
+    );
   }
 
   async createDestination(data: {
@@ -100,8 +126,7 @@ export class Client {
     type?: string;
     config?: Record<string, unknown>;
   }): Promise<HookdeckDestination> {
-    let response = await this.axios.post('/destinations', data);
-    return response.data;
+    return this.request('create destination', () => this.axios.post('/destinations', data));
   }
 
   async updateDestination(
@@ -113,23 +138,27 @@ export class Client {
       config?: Record<string, unknown>;
     }
   ): Promise<HookdeckDestination> {
-    let response = await this.axios.put(`/destinations/${destinationId}`, data);
-    return response.data;
+    return this.request('update destination', () =>
+      this.axios.put(`/destinations/${destinationId}`, data)
+    );
   }
 
   async deleteDestination(destinationId: string): Promise<{ id: string }> {
-    let response = await this.axios.delete(`/destinations/${destinationId}`);
-    return response.data;
+    return this.request('delete destination', () =>
+      this.axios.delete(`/destinations/${destinationId}`)
+    );
   }
 
   async disableDestination(destinationId: string): Promise<HookdeckDestination> {
-    let response = await this.axios.put(`/destinations/${destinationId}/disable`);
-    return response.data;
+    return this.request('disable destination', () =>
+      this.axios.put(`/destinations/${destinationId}/disable`)
+    );
   }
 
   async enableDestination(destinationId: string): Promise<HookdeckDestination> {
-    let response = await this.axios.put(`/destinations/${destinationId}/enable`);
-    return response.data;
+    return this.request('enable destination', () =>
+      this.axios.put(`/destinations/${destinationId}/enable`)
+    );
   }
 
   // ---- Connections ----
@@ -141,26 +170,35 @@ export class Client {
       destination_id?: string;
     }
   ): Promise<PaginatedResponse<HookdeckConnection>> {
-    let response = await this.axios.get('/connections', { params });
-    return response.data;
+    return this.request('list connections', () => this.axios.get('/connections', { params }));
   }
 
   async getConnection(connectionId: string): Promise<HookdeckConnection> {
-    let response = await this.axios.get(`/connections/${connectionId}`);
-    return response.data;
+    return this.request('retrieve connection', () =>
+      this.axios.get(`/connections/${connectionId}`)
+    );
   }
 
   async createConnection(data: {
     name?: string;
     description?: string;
     source_id?: string;
-    source?: { name: string; description?: string };
+    source?: {
+      name: string;
+      description?: string;
+      type?: string;
+      config?: Record<string, unknown>;
+    };
     destination_id?: string;
-    destination?: { name: string; description?: string; config?: Record<string, unknown> };
+    destination?: {
+      name: string;
+      description?: string;
+      type?: string;
+      config?: Record<string, unknown>;
+    };
     rules?: Record<string, unknown>[];
   }): Promise<HookdeckConnection> {
-    let response = await this.axios.post('/connections', data);
-    return response.data;
+    return this.request('create connection', () => this.axios.post('/connections', data));
   }
 
   async updateConnection(
@@ -171,23 +209,39 @@ export class Client {
       rules?: Record<string, unknown>[];
     }
   ): Promise<HookdeckConnection> {
-    let response = await this.axios.put(`/connections/${connectionId}`, data);
-    return response.data;
+    return this.request('update connection', () =>
+      this.axios.put(`/connections/${connectionId}`, data)
+    );
   }
 
   async deleteConnection(connectionId: string): Promise<{ id: string }> {
-    let response = await this.axios.delete(`/connections/${connectionId}`);
-    return response.data;
+    return this.request('delete connection', () =>
+      this.axios.delete(`/connections/${connectionId}`)
+    );
+  }
+
+  async disableConnection(connectionId: string): Promise<HookdeckConnection> {
+    return this.request('disable connection', () =>
+      this.axios.put(`/connections/${connectionId}/disable`)
+    );
+  }
+
+  async enableConnection(connectionId: string): Promise<HookdeckConnection> {
+    return this.request('enable connection', () =>
+      this.axios.put(`/connections/${connectionId}/enable`)
+    );
   }
 
   async pauseConnection(connectionId: string): Promise<HookdeckConnection> {
-    let response = await this.axios.put(`/connections/${connectionId}/pause`);
-    return response.data;
+    return this.request('pause connection', () =>
+      this.axios.put(`/connections/${connectionId}/pause`)
+    );
   }
 
   async unpauseConnection(connectionId: string): Promise<HookdeckConnection> {
-    let response = await this.axios.put(`/connections/${connectionId}/unpause`);
-    return response.data;
+    return this.request('unpause connection', () =>
+      this.axios.put(`/connections/${connectionId}/unpause`)
+    );
   }
 
   // ---- Events ----
@@ -201,28 +255,35 @@ export class Client {
       created_at?: Record<string, string>;
     }
   ): Promise<PaginatedResponse<HookdeckEvent>> {
-    let response = await this.axios.get('/events', { params });
-    return response.data;
+    return this.request('list events', () => this.axios.get('/events', { params }));
   }
 
   async getEvent(eventId: string): Promise<HookdeckEvent> {
-    let response = await this.axios.get(`/events/${eventId}`);
-    return response.data;
+    return this.request('retrieve event', () => this.axios.get(`/events/${eventId}`));
   }
 
   async retryEvent(eventId: string): Promise<HookdeckEvent> {
-    let response = await this.axios.post(`/events/${eventId}/retry`);
-    return response.data;
+    return this.request('retry event', () => this.axios.post(`/events/${eventId}/retry`));
+  }
+
+  async cancelEvent(eventId: string): Promise<HookdeckEvent> {
+    return this.request('cancel event', () => this.axios.put(`/events/${eventId}/cancel`));
   }
 
   async muteEvent(eventId: string): Promise<HookdeckEvent> {
-    let response = await this.axios.put(`/events/${eventId}/mute`);
-    return response.data;
+    return this.request('mute event', () => this.axios.put(`/events/${eventId}/mute`));
   }
 
-  async bulkRetryEvents(query: Record<string, unknown>): Promise<{ id: string }> {
-    let response = await this.axios.post('/bulk/events/retry', { query });
-    return response.data;
+  async bulkRetryEvents(query: Record<string, unknown>): Promise<HookdeckBulkOperation> {
+    return this.request('bulk retry events', () =>
+      this.axios.post('/bulk/events/retry', { query })
+    );
+  }
+
+  async bulkCancelEvents(query: Record<string, unknown>): Promise<HookdeckBulkOperation> {
+    return this.request('bulk cancel events', () =>
+      this.axios.post('/bulk/events/cancel', { query })
+    );
   }
 
   // ---- Requests ----
@@ -232,20 +293,44 @@ export class Client {
       source_id?: string;
       status?: string;
       rejection_cause?: string;
+      created_at?: Record<string, string>;
     }
   ): Promise<PaginatedResponse<HookdeckRequest>> {
-    let response = await this.axios.get('/requests', { params });
-    return response.data;
+    return this.request('list requests', () => this.axios.get('/requests', { params }));
   }
 
   async getRequest(requestId: string): Promise<HookdeckRequest> {
-    let response = await this.axios.get(`/requests/${requestId}`);
-    return response.data;
+    return this.request('retrieve request', () => this.axios.get(`/requests/${requestId}`));
   }
 
   async retryRequest(requestId: string): Promise<{ id: string }> {
-    let response = await this.axios.post(`/requests/${requestId}/retry`);
-    return response.data;
+    return this.request('retry request', () =>
+      this.axios.post(`/requests/${requestId}/retry`)
+    );
+  }
+
+  async bulkRetryRequests(query: Record<string, unknown>): Promise<HookdeckBulkOperation> {
+    return this.request('bulk retry requests', () =>
+      this.axios.post('/bulk/requests/retry', { query })
+    );
+  }
+
+  async planBulkRetryRequests(query: Record<string, unknown>): Promise<unknown> {
+    return this.request('plan bulk request retry', () =>
+      this.axios.post('/bulk/requests/retry/plan', { query })
+    );
+  }
+
+  async getBulkRequestRetry(bulkRetryId: string): Promise<HookdeckBulkOperation> {
+    return this.request('retrieve bulk request retry', () =>
+      this.axios.get(`/bulk/requests/retry/${bulkRetryId}`)
+    );
+  }
+
+  async cancelBulkRequestRetry(bulkRetryId: string): Promise<HookdeckBulkOperation> {
+    return this.request('cancel bulk request retry', () =>
+      this.axios.post(`/bulk/requests/retry/${bulkRetryId}/cancel`)
+    );
   }
 
   // ---- Issues ----
@@ -256,23 +341,19 @@ export class Client {
       status?: string;
     }
   ): Promise<PaginatedResponse<HookdeckIssue>> {
-    let response = await this.axios.get('/issues', { params });
-    return response.data;
+    return this.request('list issues', () => this.axios.get('/issues', { params }));
   }
 
   async getIssue(issueId: string): Promise<HookdeckIssue> {
-    let response = await this.axios.get(`/issues/${issueId}`);
-    return response.data;
+    return this.request('retrieve issue', () => this.axios.get(`/issues/${issueId}`));
   }
 
   async updateIssue(issueId: string, data: { status: string }): Promise<HookdeckIssue> {
-    let response = await this.axios.put(`/issues/${issueId}`, data);
-    return response.data;
+    return this.request('update issue', () => this.axios.put(`/issues/${issueId}`, data));
   }
 
-  async dismissIssue(issueId: string): Promise<HookdeckIssue> {
-    let response = await this.axios.put(`/issues/${issueId}/dismiss`);
-    return response.data;
+  async dismissIssue(issueId: string): Promise<{ id?: string }> {
+    return this.request('dismiss issue', () => this.axios.delete(`/issues/${issueId}`));
   }
 
   // ---- Issue Triggers ----
@@ -280,31 +361,48 @@ export class Client {
   async listIssueTriggers(
     params?: PaginationParams
   ): Promise<PaginatedResponse<HookdeckIssueTrigger>> {
-    let response = await this.axios.get('/issue-triggers', { params });
-    return response.data;
+    return this.request('list issue triggers', () =>
+      this.axios.get('/issue-triggers', { params })
+    );
   }
 
-  async createIssueTrigger(data: {
-    type: string;
-    configs?: Record<string, unknown>;
-  }): Promise<HookdeckIssueTrigger> {
-    let response = await this.axios.post('/issue-triggers', data);
-    return response.data;
+  async getIssueTrigger(triggerId: string): Promise<HookdeckIssueTrigger> {
+    return this.request('retrieve issue trigger', () =>
+      this.axios.get(`/issue-triggers/${triggerId}`)
+    );
+  }
+
+  async createIssueTrigger(data: IssueTriggerInput): Promise<HookdeckIssueTrigger> {
+    return this.request('create issue trigger', () =>
+      this.axios.post('/issue-triggers', data)
+    );
   }
 
   async updateIssueTrigger(
     triggerId: string,
-    data: {
-      configs?: Record<string, unknown>;
-    }
+    data: IssueTriggerInput
   ): Promise<HookdeckIssueTrigger> {
-    let response = await this.axios.put(`/issue-triggers/${triggerId}`, data);
-    return response.data;
+    return this.request('update issue trigger', () =>
+      this.axios.put(`/issue-triggers/${triggerId}`, data)
+    );
   }
 
   async deleteIssueTrigger(triggerId: string): Promise<{ id: string }> {
-    let response = await this.axios.delete(`/issue-triggers/${triggerId}`);
-    return response.data;
+    return this.request('delete issue trigger', () =>
+      this.axios.delete(`/issue-triggers/${triggerId}`)
+    );
+  }
+
+  async disableIssueTrigger(triggerId: string): Promise<HookdeckIssueTrigger> {
+    return this.request('disable issue trigger', () =>
+      this.axios.put(`/issue-triggers/${triggerId}/disable`)
+    );
+  }
+
+  async enableIssueTrigger(triggerId: string): Promise<HookdeckIssueTrigger> {
+    return this.request('enable issue trigger', () =>
+      this.axios.put(`/issue-triggers/${triggerId}/enable`)
+    );
   }
 
   // ---- Transformations ----
@@ -312,13 +410,15 @@ export class Client {
   async listTransformations(
     params?: PaginationParams & { name?: string }
   ): Promise<PaginatedResponse<HookdeckTransformation>> {
-    let response = await this.axios.get('/transformations', { params });
-    return response.data;
+    return this.request('list transformations', () =>
+      this.axios.get('/transformations', { params })
+    );
   }
 
   async getTransformation(transformationId: string): Promise<HookdeckTransformation> {
-    let response = await this.axios.get(`/transformations/${transformationId}`);
-    return response.data;
+    return this.request('retrieve transformation', () =>
+      this.axios.get(`/transformations/${transformationId}`)
+    );
   }
 
   async createTransformation(data: {
@@ -326,8 +426,9 @@ export class Client {
     code: string;
     env?: Record<string, string>;
   }): Promise<HookdeckTransformation> {
-    let response = await this.axios.post('/transformations', data);
-    return response.data;
+    return this.request('create transformation', () =>
+      this.axios.post('/transformations', data)
+    );
   }
 
   async updateTransformation(
@@ -338,13 +439,15 @@ export class Client {
       env?: Record<string, string>;
     }
   ): Promise<HookdeckTransformation> {
-    let response = await this.axios.put(`/transformations/${transformationId}`, data);
-    return response.data;
+    return this.request('update transformation', () =>
+      this.axios.put(`/transformations/${transformationId}`, data)
+    );
   }
 
   async deleteTransformation(transformationId: string): Promise<{ id: string }> {
-    let response = await this.axios.delete(`/transformations/${transformationId}`);
-    return response.data;
+    return this.request('delete transformation', () =>
+      this.axios.delete(`/transformations/${transformationId}`)
+    );
   }
 
   // ---- Bookmarks ----
@@ -352,13 +455,11 @@ export class Client {
   async listBookmarks(
     params?: PaginationParams
   ): Promise<PaginatedResponse<HookdeckBookmark>> {
-    let response = await this.axios.get('/bookmarks', { params });
-    return response.data;
+    return this.request('list bookmarks', () => this.axios.get('/bookmarks', { params }));
   }
 
   async getBookmark(bookmarkId: string): Promise<HookdeckBookmark> {
-    let response = await this.axios.get(`/bookmarks/${bookmarkId}`);
-    return response.data;
+    return this.request('retrieve bookmark', () => this.axios.get(`/bookmarks/${bookmarkId}`));
   }
 
   async createBookmark(data: {
@@ -366,18 +467,32 @@ export class Client {
     event_data_id: string;
     webhook_id: string;
   }): Promise<HookdeckBookmark> {
-    let response = await this.axios.post('/bookmarks', data);
-    return response.data;
+    return this.request('create bookmark', () => this.axios.post('/bookmarks', data));
+  }
+
+  async updateBookmark(
+    bookmarkId: string,
+    data: {
+      label?: string;
+      event_data_id?: string;
+      webhook_id?: string;
+    }
+  ): Promise<HookdeckBookmark> {
+    return this.request('update bookmark', () =>
+      this.axios.put(`/bookmarks/${bookmarkId}`, data)
+    );
   }
 
   async triggerBookmark(bookmarkId: string): Promise<HookdeckEvent> {
-    let response = await this.axios.post(`/bookmarks/${bookmarkId}/trigger`);
-    return response.data;
+    return this.request('trigger bookmark', () =>
+      this.axios.post(`/bookmarks/${bookmarkId}/trigger`)
+    );
   }
 
   async deleteBookmark(bookmarkId: string): Promise<{ id: string }> {
-    let response = await this.axios.delete(`/bookmarks/${bookmarkId}`);
-    return response.data;
+    return this.request('delete bookmark', () =>
+      this.axios.delete(`/bookmarks/${bookmarkId}`)
+    );
   }
 
   // ---- Notifications ----
@@ -387,8 +502,9 @@ export class Client {
     source_id?: string | null;
     topics: string[];
   }> {
-    let response = await this.axios.get('/notifications/webhooks');
-    return response.data;
+    return this.request('retrieve webhook notifications', () =>
+      this.axios.get('/notifications/webhooks')
+    );
   }
 
   async updateWebhookNotifications(data: {
@@ -400,8 +516,9 @@ export class Client {
     source_id?: string | null;
     topics: string[];
   }> {
-    let response = await this.axios.put('/notifications/webhooks', data);
-    return response.data;
+    return this.request('update webhook notifications', () =>
+      this.axios.put('/notifications/webhooks', data)
+    );
   }
 
   // ---- Publish API ----
@@ -415,12 +532,12 @@ export class Client {
     let publishAxios = createAxios({
       baseURL: 'https://hkdk.events/v1',
       headers: {
-        Authorization: this.axios.defaults.headers.common?.['Authorization'] as string,
+        Authorization: this.authHeader,
         'Content-Type': 'application/json'
       }
     });
-    let response = await publishAxios.post('/publish', data);
-    return response.data;
+
+    return this.request('publish event', () => publishAxios.post('/publish', data));
   }
 
   // ---- Attempts ----
@@ -428,9 +545,24 @@ export class Client {
   async listAttempts(
     params?: PaginationParams & {
       event_id?: string;
+      status?: string;
     }
-  ): Promise<PaginatedResponse<Record<string, unknown>>> {
-    let response = await this.axios.get('/attempts', { params });
-    return response.data;
+  ): Promise<PaginatedResponse<HookdeckAttempt>> {
+    return this.request('list attempts', () => this.axios.get('/attempts', { params }));
+  }
+
+  async getAttempt(attemptId: string): Promise<HookdeckAttempt> {
+    return this.request('retrieve attempt', () => this.axios.get(`/attempts/${attemptId}`));
+  }
+
+  // ---- Metrics ----
+
+  async queryMetrics(
+    metric: string,
+    params: Record<string, unknown>
+  ): Promise<HookdeckMetricsResponse> {
+    return this.request('query metrics', () =>
+      this.axios.get(`/metrics/${metric}`, { params })
+    );
   }
 }

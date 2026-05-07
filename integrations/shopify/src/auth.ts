@@ -1,5 +1,7 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { SHOPIFY_DEFAULT_API_VERSION } from './config';
+import { shopifyApiError, shopifyServiceError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -126,6 +128,9 @@ export let auth = SlateAuth.create()
 
     getAuthorizationUrl: async ctx => {
       let shopDomain = ctx.input.shopDomain.replace('.myshopify.com', '').trim();
+      if (!shopDomain) {
+        throw shopifyServiceError('shopDomain is required.');
+      }
       let scopeString = ctx.scopes.join(',');
       let url = `https://${shopDomain}.myshopify.com/admin/oauth/authorize?client_id=${encodeURIComponent(ctx.clientId)}&scope=${encodeURIComponent(scopeString)}&redirect_uri=${encodeURIComponent(ctx.redirectUri)}&state=${encodeURIComponent(ctx.state)}`;
 
@@ -137,15 +142,27 @@ export let auth = SlateAuth.create()
 
     handleCallback: async ctx => {
       let shopDomain = ctx.input.shopDomain.replace('.myshopify.com', '').trim();
+      if (!shopDomain) {
+        throw shopifyServiceError('shopDomain is required.');
+      }
       let http = createAxios({
         baseURL: `https://${shopDomain}.myshopify.com`
       });
 
-      let response = await http.post('/admin/oauth/access_token', {
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code
-      });
+      let response;
+      try {
+        response = await http.post('/admin/oauth/access_token', {
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code
+        });
+      } catch (error) {
+        throw shopifyApiError(error, 'OAuth token exchange');
+      }
+
+      if (!response.data.access_token) {
+        throw shopifyServiceError('Shopify OAuth token response did not include an access token.');
+      }
 
       return {
         output: {
@@ -162,6 +179,9 @@ export let auth = SlateAuth.create()
       scopes: string[];
     }) => {
       let shopDomain = ctx.output.shopDomain || ctx.input.shopDomain;
+      if (!shopDomain) {
+        throw shopifyServiceError('shopDomain is required.');
+      }
       let http = createAxios({
         baseURL: `https://${shopDomain}.myshopify.com`,
         headers: {
@@ -169,8 +189,16 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await http.get('/admin/api/2024-10/shop.json');
+      let response;
+      try {
+        response = await http.get(`/admin/api/${SHOPIFY_DEFAULT_API_VERSION}/shop.json`);
+      } catch (error) {
+        throw shopifyApiError(error, 'profile lookup');
+      }
       let shop = response.data.shop;
+      if (!shop) {
+        throw shopifyServiceError('Shopify profile response did not include a shop.');
+      }
 
       return {
         profile: {

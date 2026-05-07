@@ -18,7 +18,10 @@ import {
   searchMembersTool,
   manageSegmentsTool,
   getAudienceActivityTool,
-  addMemberEventTool
+  addMemberEventTool,
+  manageMergeFieldsTool,
+  manageInterestGroupsTool,
+  manageFileManagerTool
 } from './tools';
 import { audienceWebhookTrigger, campaignActivityTrigger } from './triggers';
 
@@ -42,7 +45,10 @@ export let provider = Slate.create({
     searchMembersTool,
     manageSegmentsTool,
     getAudienceActivityTool,
-    addMemberEventTool
+    addMemberEventTool,
+    manageMergeFieldsTool,
+    manageInterestGroupsTool,
+    manageFileManagerTool
   ],
   triggers: [audienceWebhookTrigger, campaignActivityTrigger]
 });

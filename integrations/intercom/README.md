@@ -20,6 +20,14 @@ Retrieve a single contact by their Intercom ID or external ID. Returns full cont
 
 Retrieve a single conversation with full details including the source message and all conversation parts (replies, notes, assignments, etc.). Limited to 500 parts.
 
+### Get Notes
+
+Retrieve an Intercom note by ID or list notes attached to a contact or company. Notes capture internal teammate context for customer records.
+
+### Get Segments
+
+List workspace segments, retrieve one segment, or list the segments attached to a contact. Segments group contacts by rules configured in Intercom.
+
 ### List Admins
 
 List all admins (teammates) in the Intercom workspace. Useful for finding admin IDs needed for other operations like assigning conversations or sending messages.
@@ -27,6 +35,10 @@ List all admins (teammates) in the Intercom workspace. Useful for finding admin 
 ### List Companies
 
 List or search companies in Intercom. Supports both listing all companies with pagination and searching with Intercom's query syntax.
+
+### List Teams
+
+List Intercom teams or retrieve a single team by ID. Teams are used as assignment targets for conversations and tickets.
 
 ### Manage Articles
 
@@ -44,9 +56,17 @@ Create, update, archive, unarchive, merge, or delete contacts (users and leads) 
 
 Perform actions on Intercom conversations: create new conversations, reply, assign to teammates/teams, add notes, close, open, or snooze. Combines multiple conversation management operations into a single tool.
 
+### Manage Data Attributes
+
+List, create, update, or archive Intercom custom data attributes for contacts and companies. Data attributes define metadata fields used by contacts, companies, and conversations.
+
 ### Manage Data Events
 
 Submit or list custom data events for contacts. Data events track user activity and can trigger automations or be used for segmentation. Use "submit" to track a new event, or "list" to retrieve events for a contact.
+
+### Manage Subscriptions
+
+List subscription types and manage a contact's subscription preferences. Subscription types control opt-in and opt-out consent for non-essential communications.
 
 ### Manage Tags
 

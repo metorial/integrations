@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let manageStreamTool = SlateTool.create(spec, {
@@ -86,7 +87,7 @@ export let manageStreamTool = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let accountId = ctx.input.accountId || ctx.config.accountId;
-    if (!accountId) throw new Error('accountId is required');
+    if (!accountId) throw cloudflareServiceError('accountId is required');
 
     let client = new Client(ctx.auth);
     let { action } = ctx.input;
@@ -110,7 +111,7 @@ export let manageStreamTool = SlateTool.create(spec, {
     }
 
     if (action === 'get_video') {
-      if (!ctx.input.videoId) throw new Error('videoId is required');
+      if (!ctx.input.videoId) throw cloudflareServiceError('videoId is required');
       let response = await client.getStreamVideo(accountId, ctx.input.videoId);
       let v = response.result;
       return {
@@ -130,7 +131,7 @@ export let manageStreamTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete_video') {
-      if (!ctx.input.videoId) throw new Error('videoId is required');
+      if (!ctx.input.videoId) throw cloudflareServiceError('videoId is required');
       await client.deleteStreamVideo(accountId, ctx.input.videoId);
       return {
         output: { deleted: true },
@@ -172,7 +173,7 @@ export let manageStreamTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete_live_input') {
-      if (!ctx.input.liveInputId) throw new Error('liveInputId is required');
+      if (!ctx.input.liveInputId) throw cloudflareServiceError('liveInputId is required');
       await client.deleteStreamLiveInput(accountId, ctx.input.liveInputId);
       return {
         output: { deleted: true },
@@ -180,6 +181,6 @@ export let manageStreamTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

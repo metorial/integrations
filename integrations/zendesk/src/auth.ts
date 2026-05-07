@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { zendeskApiError, zendeskServiceError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -63,24 +64,36 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let http = createAxios();
+      let data: any;
 
-      let response = await http.post(
-        `https://${ctx.input.subdomain}.zendesk.com/oauth/tokens`,
-        {
-          grant_type: 'authorization_code',
-          code: ctx.code,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri,
-          scope: ctx.scopes.join(' ')
-        },
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      try {
+        let http = createAxios();
 
-      let data = response.data;
+        let response = await http.post(
+          `https://${ctx.input.subdomain}.zendesk.com/oauth/tokens`,
+          {
+            grant_type: 'authorization_code',
+            code: ctx.code,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri,
+            scope: ctx.scopes.join(' ')
+          },
+          {
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+
+        data = response.data;
+      } catch (error) {
+        throw zendeskApiError(error, 'OAuth authorization code exchange');
+      }
+
+      if (typeof data.access_token !== 'string' || !data.access_token) {
+        throw zendeskServiceError(
+          'Zendesk OAuth token response did not include an access token.'
+        );
+      }
 
       return {
         output: {
@@ -100,23 +113,35 @@ export let auth = SlateAuth.create()
         return { output: ctx.output };
       }
 
-      let http = createAxios();
+      let data: any;
 
-      let response = await http.post(
-        `https://${ctx.input.subdomain}.zendesk.com/oauth/tokens`,
-        {
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          scope: ctx.scopes.join(' ')
-        },
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      try {
+        let http = createAxios();
 
-      let data = response.data;
+        let response = await http.post(
+          `https://${ctx.input.subdomain}.zendesk.com/oauth/tokens`,
+          {
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            scope: ctx.scopes.join(' ')
+          },
+          {
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+
+        data = response.data;
+      } catch (error) {
+        throw zendeskApiError(error, 'OAuth token refresh');
+      }
+
+      if (typeof data.access_token !== 'string' || !data.access_token) {
+        throw zendeskServiceError(
+          'Zendesk OAuth refresh response did not include an access token.'
+        );
+      }
 
       return {
         output: {
@@ -132,15 +157,25 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: any) => {
-      let http = createAxios({
-        baseURL: `https://${ctx.input.subdomain}.zendesk.com/api/v2`,
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let user: any;
 
-      let response = await http.get('/users/me.json');
-      let user = response.data.user;
+      try {
+        let http = createAxios({
+          baseURL: `https://${ctx.input.subdomain}.zendesk.com/api/v2`,
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+
+        let response = await http.get('/users/me.json');
+        user = response.data.user;
+      } catch (error) {
+        throw zendeskApiError(error, 'OAuth profile fetch');
+      }
+
+      if (!user) {
+        throw zendeskServiceError('Zendesk profile response did not include a user.');
+      }
 
       return {
         profile: {
@@ -177,15 +212,25 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: any) => {
-      let http = createAxios({
-        baseURL: `https://${ctx.input.subdomain}.zendesk.com/api/v2`,
-        headers: {
-          Authorization: `Basic ${ctx.output.token}`
-        }
-      });
+      let user: any;
 
-      let response = await http.get('/users/me.json');
-      let user = response.data.user;
+      try {
+        let http = createAxios({
+          baseURL: `https://${ctx.input.subdomain}.zendesk.com/api/v2`,
+          headers: {
+            Authorization: `Basic ${ctx.output.token}`
+          }
+        });
+
+        let response = await http.get('/users/me.json');
+        user = response.data.user;
+      } catch (error) {
+        throw zendeskApiError(error, 'API token profile fetch');
+      }
+
+      if (!user) {
+        throw zendeskServiceError('Zendesk profile response did not include a user.');
+      }
 
       return {
         profile: {

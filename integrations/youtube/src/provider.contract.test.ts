@@ -16,6 +16,7 @@ describe('youtube provider contract', () => {
       },
       toolIds: [
         'search_content',
+        'list_videos',
         'get_video',
         'update_video',
         'delete_video',
@@ -24,6 +25,7 @@ describe('youtube provider contract', () => {
         'update_channel',
         'manage_playlist',
         'list_playlists',
+        'list_metadata',
         'manage_playlist_items',
         'manage_comments',
         'list_comments',
@@ -35,12 +37,14 @@ describe('youtube provider contract', () => {
       authMethodIds: ['oauth2', 'api_key'],
       tools: [
         { id: 'search_content', readOnly: true, destructive: false },
+        { id: 'list_videos', readOnly: true, destructive: false },
         { id: 'get_video', readOnly: true, destructive: false },
         { id: 'update_video', readOnly: false, destructive: false },
         { id: 'delete_video', readOnly: false, destructive: true },
         { id: 'get_channel', readOnly: true, destructive: false },
         { id: 'update_channel', readOnly: false, destructive: false },
         { id: 'list_playlists', readOnly: true, destructive: false },
+        { id: 'list_metadata', readOnly: true, destructive: false },
         { id: 'list_comments', readOnly: true, destructive: false },
         { id: 'list_activities', readOnly: true, destructive: false }
       ],
@@ -51,11 +55,12 @@ describe('youtube provider contract', () => {
       ]
     });
 
-    expect(contract.actions).toHaveLength(18);
+    expect(contract.actions).toHaveLength(20);
     expect(Object.keys(contract.configSchema.properties ?? {})).toEqual([]);
 
     let expectedScopes = {
       search_content: youtubeActionScopes.searchContent,
+      list_videos: youtubeActionScopes.listVideos,
       get_video: youtubeActionScopes.getVideo,
       update_video: youtubeActionScopes.updateVideo,
       delete_video: youtubeActionScopes.deleteVideo,
@@ -64,6 +69,7 @@ describe('youtube provider contract', () => {
       update_channel: youtubeActionScopes.updateChannel,
       manage_playlist: youtubeActionScopes.managePlaylist,
       list_playlists: youtubeActionScopes.listPlaylists,
+      list_metadata: youtubeActionScopes.listMetadata,
       manage_playlist_items: youtubeActionScopes.managePlaylistItems,
       manage_comments: youtubeActionScopes.manageComments,
       list_comments: youtubeActionScopes.listComments,
@@ -87,7 +93,9 @@ describe('youtube provider contract', () => {
     let apiKey = await client.getAuthMethod('api_key');
     expect(apiKey.authenticationMethod.type).toBe('auth.token');
 
-    let scopeTitles = new Set((oauth.authenticationMethod.scopes ?? []).map(scope => scope.title));
+    let scopeTitles = new Set(
+      (oauth.authenticationMethod.scopes ?? []).map(scope => scope.title)
+    );
     expect(scopeTitles.has('Manage Account')).toBe(true);
     expect(scopeTitles.has('Read Only')).toBe(true);
   });

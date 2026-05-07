@@ -10,7 +10,9 @@ import {
   manageTable,
   manageIndexes,
   listSchemas,
-  manageRoles
+  manageRoles,
+  manageSchemas,
+  manageViews
 } from './tools';
 import { tableChanges, inboundWebhook } from './triggers';
 
@@ -26,7 +28,9 @@ export let provider = Slate.create({
     manageTable,
     manageIndexes,
     listSchemas,
-    manageRoles
+    manageRoles,
+    manageSchemas,
+    manageViews
   ],
   triggers: [inboundWebhook, tableChanges]
 });

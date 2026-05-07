@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RemoteConfigClient } from '../lib/client';
+import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -96,9 +97,8 @@ export let updateRemoteConfig = SlateTool.create(spec, {
     let { operation } = ctx.input;
 
     if (operation === 'publish') {
-      if (!ctx.input.etag) throw new Error('etag is required for publish operation');
-      if (!ctx.input.parameters)
-        throw new Error('parameters are required for publish operation');
+      if (!ctx.input.etag) throw missingRequiredFieldError('etag', 'publish');
+      if (!ctx.input.parameters) throw missingRequiredFieldError('parameters', 'publish');
 
       let template = await client.publishTemplate(
         {
@@ -123,7 +123,7 @@ export let updateRemoteConfig = SlateTool.create(spec, {
 
     if (operation === 'rollback') {
       if (!ctx.input.rollbackVersionNumber)
-        throw new Error('rollbackVersionNumber is required for rollback operation');
+        throw missingRequiredFieldError('rollbackVersionNumber', 'rollback');
 
       let template = await client.rollback(ctx.input.rollbackVersionNumber);
 
@@ -139,6 +139,6 @@ export let updateRemoteConfig = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown operation: ${operation}`);
+    throw firebaseServiceError(`Unknown operation: ${operation}`);
   })
   .build();

@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { quickBooksApiError } from './errors';
 
 export interface QuickBooksClientConfig {
   token: string;
@@ -26,6 +27,10 @@ export class QuickBooksClient {
         'Content-Type': 'application/json'
       }
     });
+    this.axios.interceptors.response.use(
+      response => response,
+      error => Promise.reject(quickBooksApiError(error))
+    );
   }
 
   private get basePath(): string {
@@ -253,6 +258,14 @@ export class QuickBooksClient {
 
   async getSalesReceipt(salesReceiptId: string): Promise<any> {
     let response = await this.axios.get(`${this.basePath}/salesreceipt/${salesReceiptId}`);
+    return response.data?.SalesReceipt ?? response.data;
+  }
+
+  async deleteSalesReceipt(salesReceiptId: string, syncToken: string): Promise<any> {
+    let response = await this.axios.post(`${this.basePath}/salesreceipt?operation=delete`, {
+      Id: salesReceiptId,
+      SyncToken: syncToken
+    });
     return response.data?.SalesReceipt ?? response.data;
   }
 

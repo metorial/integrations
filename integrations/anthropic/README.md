@@ -16,9 +16,17 @@ Retrieve information about the organization associated with the current Admin AP
 
 List available Claude models and their details. Retrieve information about context window size, capabilities, and model identifiers. Optionally fetch details for a specific model by providing its ID.
 
+### Get Usage Report
+
+Retrieve Anthropic Admin API usage and cost reports for an organization. Use message usage reports for token and server-tool usage, and cost reports for USD spend attribution. Requires an Admin API key (sk-ant-admin...).
+
 ### Manage API Keys
 
-List and update organization API keys via the Admin API. View active, inactive, or archived keys filtered by workspace. Update keys to activate, deactivate, or rename them. Requires an Admin API key (sk-ant-admin...).
+List, retrieve, and update organization API keys via the Admin API. View active, inactive, or archived keys filtered by workspace. Update keys to activate, deactivate, or rename them. Requires an Admin API key (sk-ant-admin...).
+
+### Manage Files
+
+Upload, list, retrieve metadata for, download, or delete Anthropic Files API files. Uploaded files can be referenced from Messages requests by file ID; generated downloadable files can be retrieved as base64 content.
 
 ### Manage Message Batch
 
@@ -32,7 +40,7 @@ Manage organization members and invites via the Admin API. List members, update 
 
 Manage organization workspaces and their members via the Admin API. Create, list, update, archive workspaces, and manage workspace membership. Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin...).
 
-### ...
+### Send Message
 
 Send a message to Claude and receive a generated response. Supports multi-turn conversations, system prompts, tool use (function calling), extended thinking, and vision (images). Provide a conversation history as messages and configure model parameters to control the response.
 

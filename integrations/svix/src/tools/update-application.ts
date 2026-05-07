@@ -17,6 +17,10 @@ export let updateApplication = SlateTool.create(spec, {
       name: z.string().describe('Updated display name for the application'),
       uid: z.string().optional().describe('Updated custom UID for the application'),
       rateLimit: z.number().optional().describe('Updated rate limit'),
+      throttleRate: z
+        .number()
+        .optional()
+        .describe('Updated maximum messages per second for this application'),
       metadata: z
         .record(z.string(), z.string())
         .optional()
@@ -28,6 +32,7 @@ export let updateApplication = SlateTool.create(spec, {
       applicationId: z.string().describe('Svix application ID'),
       name: z.string().describe('Updated name'),
       uid: z.string().optional().describe('Updated UID'),
+      throttleRate: z.number().optional().describe('Updated message throttle rate'),
       updatedAt: z.string().describe('When the application was updated')
     })
   )
@@ -42,6 +47,7 @@ export let updateApplication = SlateTool.create(spec, {
       name: ctx.input.name,
       uid: ctx.input.uid,
       rateLimit: ctx.input.rateLimit,
+      throttleRate: ctx.input.throttleRate,
       metadata: ctx.input.metadata
     });
 
@@ -49,7 +55,8 @@ export let updateApplication = SlateTool.create(spec, {
       output: {
         applicationId: app.id,
         name: app.name,
-        uid: app.uid,
+        uid: app.uid ?? undefined,
+        throttleRate: app.throttleRate ?? undefined,
         updatedAt: app.updatedAt
       },
       message: `Updated application **${app.name}** (\`${app.id}\`).`

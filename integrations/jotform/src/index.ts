@@ -16,7 +16,9 @@ import {
   listFoldersTool,
   manageWebhooksTool,
   listReportsTool,
-  createReportTool
+  createReportTool,
+  listFormFilesTool,
+  manageFormQuestionTool
 } from './tools';
 import { formSubmissionWebhookTrigger, newSubmissionPollingTrigger } from './triggers';
 
@@ -38,7 +40,9 @@ export let provider = Slate.create({
     listFoldersTool,
     manageWebhooksTool,
     listReportsTool,
-    createReportTool
+    createReportTool,
+    listFormFilesTool,
+    manageFormQuestionTool
   ],
   triggers: [formSubmissionWebhookTrigger, newSubmissionPollingTrigger]
 });

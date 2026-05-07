@@ -6,6 +6,7 @@ import {
   escapeLiteral,
   qualifiedTableName
 } from '../lib/helpers';
+import { postgresServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let insertRows = SlateTool.create(spec, {
@@ -98,7 +99,9 @@ Supports inserting multiple rows in a single operation and can optionally return
     } else if (ctx.input.onConflict === 'update') {
       let conflictCols = ctx.input.conflictColumns;
       if (!conflictCols?.length) {
-        throw new Error('conflictColumns must be specified when onConflict is "update"');
+        throw postgresServiceError(
+          'conflictColumns must be specified when onConflict is "update"'
+        );
       }
       let conflictTarget = `(${conflictCols.map(escapeIdentifier).join(', ')})`;
       let updateCols = columns.filter(c => !conflictCols.includes(c));

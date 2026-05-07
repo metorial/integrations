@@ -93,6 +93,12 @@ export interface HerokuBuild {
   slugId: string | null;
 }
 
+export interface HerokuBuildpackInstallation {
+  ordinal: number;
+  buildpackName: string;
+  buildpackUrl: string;
+}
+
 export interface HerokuDomain {
   domainId: string;
   appName: string;
@@ -140,6 +146,32 @@ export interface HerokuLogDrain {
   token: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface HerokuLogSession {
+  logSessionId: string;
+  logplexUrl: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HerokuPipelinePromotion {
+  promotionId: string;
+  pipelineId: string;
+  sourceAppId: string;
+  sourceReleaseId: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface HerokuPipelinePromotionTarget {
+  targetId: string;
+  appId: string;
+  promotionId: string;
+  releaseId: string | null;
+  status: string;
+  errorMessage: string | null;
 }
 
 export interface HerokuSniEndpoint {

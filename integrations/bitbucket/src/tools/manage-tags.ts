@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { bitbucketServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -73,7 +74,7 @@ Use action "list" to browse tags, "create" to create a new tag at a specific com
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.tagName || !ctx.input.target) {
-        throw new Error('tagName and target are required to create a tag');
+        throw bitbucketServiceError('tagName and target are required to create a tag');
       }
 
       let body: Record<string, any> = {
@@ -97,7 +98,7 @@ Use action "list" to browse tags, "create" to create a new tag at a specific com
 
     // delete
     if (!ctx.input.tagName) {
-      throw new Error('tagName is required to delete a tag');
+      throw bitbucketServiceError('tagName is required to delete a tag');
     }
 
     await client.deleteTag(ctx.input.repoSlug, ctx.input.tagName);

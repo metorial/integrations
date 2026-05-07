@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { netlifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -126,7 +127,7 @@ export let manageDnsRecords = SlateTool.create(spec, {
       }
       case 'create': {
         if (!ctx.input.recordType || !ctx.input.hostname || !ctx.input.value) {
-          throw new Error(
+          throw netlifyServiceError(
             'recordType, hostname, and value are required for creating a DNS record'
           );
         }
@@ -151,7 +152,7 @@ export let manageDnsRecords = SlateTool.create(spec, {
       }
       case 'delete': {
         if (!ctx.input.recordId) {
-          throw new Error('recordId is required for deleting a DNS record');
+          throw netlifyServiceError('recordId is required for deleting a DNS record');
         }
         await client.deleteDnsRecord(ctx.input.zoneId, ctx.input.recordId);
         return {
@@ -194,7 +195,7 @@ export let manageDnsZone = SlateTool.create(spec, {
     switch (ctx.input.action) {
       case 'create': {
         if (!ctx.input.name || !ctx.input.accountSlug) {
-          throw new Error('name and accountSlug are required for creating a DNS zone');
+          throw netlifyServiceError('name and accountSlug are required for creating a DNS zone');
         }
         let zone = await client.createDnsZone({
           name: ctx.input.name,
@@ -212,7 +213,7 @@ export let manageDnsZone = SlateTool.create(spec, {
       }
       case 'delete': {
         if (!ctx.input.zoneId) {
-          throw new Error('zoneId is required for deleting a DNS zone');
+          throw netlifyServiceError('zoneId is required for deleting a DNS zone');
         }
         await client.deleteDnsZone(ctx.input.zoneId);
         return {

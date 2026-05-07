@@ -1,5 +1,6 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { calendlyApiError } from './errors';
 
 export interface PaginationParams {
   count?: number;
@@ -85,6 +86,27 @@ export interface Invitee {
   noShow: Record<string, any> | null;
   cancellation?: Record<string, any> | null;
   payment?: Record<string, any> | null;
+}
+
+export interface CreateInviteeParams {
+  eventTypeUri: string;
+  startTime: string;
+  invitee: {
+    name: string;
+    email: string;
+    timezone: string;
+    firstName?: string;
+    lastName?: string;
+    textReminderNumber?: string;
+  };
+  location?: Record<string, any>;
+  eventGuests?: string[];
+  questionsAndAnswers?: Array<{
+    question: string;
+    answer: string;
+    position?: number;
+  }>;
+  tracking?: Record<string, any>;
 }
 
 export interface User {
@@ -208,6 +230,11 @@ export class Client {
         'Content-Type': 'application/json'
       }
     });
+
+    this.axios.interceptors.response.use(
+      response => response,
+      error => Promise.reject(calendlyApiError(error))
+    );
   }
 
   // Users
@@ -304,6 +331,37 @@ export class Client {
     let response = await this.axios.get(
       `/scheduled_events/${eventUuid}/invitees/${inviteeUuid}`
     );
+    return mapKeys(response.data.resource) as Invitee;
+  }
+
+  async createEventInvitee(params: CreateInviteeParams): Promise<Invitee> {
+    let body: Record<string, any> = {
+      event_type: params.eventTypeUri,
+      start_time: params.startTime,
+      invitee: {
+        name: params.invitee.name,
+        email: params.invitee.email,
+        timezone: params.invitee.timezone
+      }
+    };
+
+    if (params.invitee.firstName) body.invitee.first_name = params.invitee.firstName;
+    if (params.invitee.lastName) body.invitee.last_name = params.invitee.lastName;
+    if (params.invitee.textReminderNumber) {
+      body.invitee.text_reminder_number = params.invitee.textReminderNumber;
+    }
+    if (params.location) body.location = params.location;
+    if (params.eventGuests?.length) body.event_guests = params.eventGuests;
+    if (params.questionsAndAnswers?.length) {
+      body.questions_and_answers = params.questionsAndAnswers.map(answer => ({
+        question: answer.question,
+        answer: answer.answer,
+        ...(answer.position !== undefined ? { position: answer.position } : {})
+      }));
+    }
+    if (params.tracking) body.tracking = params.tracking;
+
+    let response = await this.axios.post('/invitees', body);
     return mapKeys(response.data.resource) as Invitee;
   }
 

@@ -23,14 +23,18 @@ export let listOrganizations = SlateTool.create(spec, {
   .input(z.object({}))
   .output(
     z.object({
-      organizations: z.array(organizationSchema).describe('List of organizations')
+      organizations: z.array(organizationSchema).describe('List of organizations'),
+      nextLink: z
+        .string()
+        .optional()
+        .describe('Pagination URL for the next page, if available')
     })
   )
   .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
-    let orgs = await client.listOrganizations();
+    let result = await client.listOrganizations();
 
-    let organizations = orgs.map((org: any) => ({
+    let organizations = result.items.map((org: any) => ({
       organizationId: org.id,
       name: org.name,
       type: org.type,
@@ -40,7 +44,7 @@ export let listOrganizations = SlateTool.create(spec, {
     }));
 
     return {
-      output: { organizations },
+      output: { organizations, nextLink: result.nextLink },
       message: `Found **${organizations.length}** organization(s).`
     };
   })

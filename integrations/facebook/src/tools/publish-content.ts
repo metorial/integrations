@@ -2,15 +2,19 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { facebookServiceError } from '../lib/errors';
+
+let isBlank = (value: string | undefined) => !value || value.trim().length === 0;
 
 export let publishContent = SlateTool.create(spec, {
   name: 'Publish Content',
   key: 'publish_content',
-  description: `Publish a post, photo, or video to a Facebook Page or user timeline.
-For Pages, the tool automatically retrieves the Page access token. Supports scheduling posts for future publication.
+  description: `Publish a post, photo, or video to a Facebook Page.
+The tool automatically retrieves the Page access token. Supports scheduling feed posts for future publication.
 Use \`contentType\` to specify whether you are posting text, a photo, or a video.`,
   instructions: [
-    'For Page posts, provide the `pageId`. For user timeline posts, omit `pageId`.',
+    'Provide the `pageId` for the Page that should publish the content.',
+    'For post publishing, provide `message`, `link`, or both.',
     'Photo publishing requires a publicly accessible `photoUrl`.',
     'Video publishing requires a publicly accessible `videoUrl`.',
     'To schedule a post, provide `scheduledPublishTime` as a Unix timestamp (must be 10 min to 6 months in the future).'
@@ -21,7 +25,7 @@ Use \`contentType\` to specify whether you are posting text, a photo, or a video
 })
   .input(
     z.object({
-      pageId: z.string().optional().describe('Page ID to publish to. Omit for user timeline.'),
+      pageId: z.string().describe('Page ID to publish to'),
       contentType: z
         .enum(['post', 'photo', 'video'])
         .default('post')
@@ -49,17 +53,52 @@ Use \`contentType\` to specify whether you are posting text, a photo, or a video
     })
   )
   .handleInvocation(async ctx => {
+    let pageId = ctx.input.pageId?.trim();
+
+    if (!pageId) {
+      throw facebookServiceError('pageId is required to publish Facebook Page content');
+    }
+
+    if (
+      ctx.input.contentType === 'post' &&
+      isBlank(ctx.input.message) &&
+      isBlank(ctx.input.link)
+    ) {
+      throw facebookServiceError(
+        'message or link is required to publish a Facebook Page post'
+      );
+    }
+
+    if (ctx.input.contentType === 'photo' && isBlank(ctx.input.photoUrl)) {
+      throw facebookServiceError('photoUrl is required to publish a Facebook Page photo');
+    }
+
+    if (ctx.input.contentType === 'video' && isBlank(ctx.input.videoUrl)) {
+      throw facebookServiceError('videoUrl is required to publish a Facebook Page video');
+    }
+
+    if (ctx.input.scheduledPublishTime !== undefined) {
+      let now = Math.floor(Date.now() / 1000);
+      let minScheduledTime = now + 10 * 60;
+      let maxScheduledTime = now + 6 * 30 * 24 * 60 * 60;
+
+      if (
+        ctx.input.scheduledPublishTime < minScheduledTime ||
+        ctx.input.scheduledPublishTime > maxScheduledTime
+      ) {
+        throw facebookServiceError(
+          'scheduledPublishTime must be between 10 minutes and 6 months in the future'
+        );
+      }
+    }
+
     let client = new Client({
       token: ctx.auth.token,
       apiVersion: ctx.config.apiVersion
     });
 
-    let targetId = ctx.input.pageId || 'me';
-    let pageAccessToken: string | undefined;
-
-    if (ctx.input.pageId) {
-      pageAccessToken = await client.getPageAccessToken(ctx.input.pageId);
-    }
+    let targetId = pageId;
+    let pageAccessToken = await client.getPageAccessToken(pageId);
 
     let result: { id: string; post_id?: string };
 

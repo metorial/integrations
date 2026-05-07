@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RealtimeDbClient } from '../lib/client';
+import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -73,7 +74,7 @@ Requires the **databaseUrl** to be configured in the project settings.`,
   )
   .handleInvocation(async ctx => {
     if (!ctx.config.databaseUrl) {
-      throw new Error(
+      throw firebaseServiceError(
         'databaseUrl must be configured in project settings for Realtime Database operations'
       );
     }
@@ -94,7 +95,7 @@ Requires the **databaseUrl** to be configured in the project settings.`,
     }
 
     if (operation === 'set') {
-      if (data === undefined) throw new Error('data is required for set operation');
+      if (data === undefined) throw missingRequiredFieldError('data', 'set');
       let result = await client.setData(path, data);
       return {
         output: { data: result },
@@ -103,7 +104,7 @@ Requires the **databaseUrl** to be configured in the project settings.`,
     }
 
     if (operation === 'push') {
-      if (data === undefined) throw new Error('data is required for push operation');
+      if (data === undefined) throw missingRequiredFieldError('data', 'push');
       let result = await client.pushData(path, data);
       return {
         output: { generatedKey: result.generatedKey },
@@ -112,7 +113,7 @@ Requires the **databaseUrl** to be configured in the project settings.`,
     }
 
     if (operation === 'update') {
-      if (data === undefined) throw new Error('data is required for update operation');
+      if (data === undefined) throw missingRequiredFieldError('data', 'update');
       let result = await client.updateData(path, data);
       return {
         output: { data: result },
@@ -128,6 +129,6 @@ Requires the **databaseUrl** to be configured in the project settings.`,
       };
     }
 
-    throw new Error(`Unknown operation: ${operation}`);
+    throw firebaseServiceError(`Unknown operation: ${operation}`);
   })
   .build();

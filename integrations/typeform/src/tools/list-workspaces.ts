@@ -3,6 +3,23 @@ import { TypeformClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let getHref = (value: any) => {
+  if (typeof value?.href === 'string') return value.href;
+  if (Array.isArray(value)) {
+    return value.find((item: any) => typeof item?.href === 'string')?.href;
+  }
+  return undefined;
+};
+
+let getFormCount = (workspace: any) => {
+  if (typeof workspace.forms?.count === 'number') return workspace.forms.count;
+  if (Array.isArray(workspace.forms)) {
+    let count = workspace.forms.find((item: any) => typeof item?.count === 'number')?.count;
+    return typeof count === 'number' ? count : workspace.forms.length;
+  }
+  return undefined;
+};
+
 export let listWorkspaces = SlateTool.create(spec, {
   name: 'List Workspaces',
   key: 'list_workspaces',
@@ -27,7 +44,9 @@ export let listWorkspaces = SlateTool.create(spec, {
             workspaceId: z.string().describe('Workspace ID'),
             name: z.string().describe('Workspace name'),
             shared: z.boolean().optional().describe('Whether the workspace is shared'),
-            selfUrl: z.string().optional().describe('API URL for this workspace')
+            selfUrl: z.string().optional().describe('API URL for this workspace'),
+            accountId: z.string().optional().describe('Account/organization ID'),
+            formCount: z.number().optional().describe('Number of forms in the workspace')
           })
         )
         .describe('Array of workspaces')
@@ -49,7 +68,9 @@ export let listWorkspaces = SlateTool.create(spec, {
       workspaceId: w.id,
       name: w.name,
       shared: w.shared,
-      selfUrl: w.self?.href
+      selfUrl: getHref(w.self),
+      accountId: w.account_id,
+      formCount: getFormCount(w)
     }));
 
     return {

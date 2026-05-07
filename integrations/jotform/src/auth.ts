@@ -1,5 +1,7 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth } from 'slates';
 import { z } from 'zod';
+import { Client } from './lib/client';
+import { jotformServiceError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -25,15 +27,16 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
-      let http = createAxios({
-        baseURL: 'https://api.jotform.com',
-        headers: {
-          APIKEY: ctx.output.token
-        }
+      let client = new Client({
+        token: ctx.output.token,
+        apiDomain: 'https://api.jotform.com'
       });
 
-      let response = await http.get('/user');
-      let user = response.data.content;
+      let user = await client.getUser();
+
+      if (!user?.username) {
+        throw jotformServiceError('Jotform profile response did not include a username.');
+      }
 
       return {
         profile: {

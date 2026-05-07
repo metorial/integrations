@@ -7,3 +7,4 @@ export * from './search-hashtags';
 export * from './send-message';
 export * from './get-mentions';
 export * from './get-stories';
+export * from './get-publishing-limit';

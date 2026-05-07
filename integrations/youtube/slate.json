@@ -1,21 +1,16 @@
 {
   "name": "@google/youtube",
-  "description": "Search, upload, and manage YouTube videos, playlists, channels, and live streams. Update video metadata (title, description, tags, privacy), manage captions, moderate comments, and handle subscriptions. Rate videos, set thumbnails and watermarks, report abusive content, and manage live broadcasts with chat moderation. Receive push notifications when channels upload or update videos.",
-  "categories": [
-    "document-processing",
-    "news-and-media",
-    "scheduling-and-calendars"
-  ],
+  "description": "Search and manage YouTube videos, channels, playlists, comments, captions, ratings, subscriptions, and related metadata through the YouTube Data API.",
+  "categories": ["document-processing", "news-and-media", "scheduling-and-calendars"],
   "skills": [
     "search videos and channels",
-    "upload and manage videos",
+    "list and manage videos",
     "manage playlists and items",
     "post and moderate comments",
     "manage captions and subtitles",
-    "manage live broadcasts",
     "manage subscriptions",
-    "set video thumbnails",
     "rate videos",
+    "list video categories and regions",
     "receive channel notifications"
   ],
   "logoUrl": "https://provider-logos.metorial-cdn.com/youtube.svg"

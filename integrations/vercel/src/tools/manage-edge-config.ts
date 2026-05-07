@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { vercelServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -101,7 +102,8 @@ export let manageEdgeConfigTool = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.edgeConfigId) throw new Error('edgeConfigId is required');
+      if (!ctx.input.edgeConfigId)
+        throw vercelServiceError('edgeConfigId is required');
       let ec = await client.getEdgeConfig(ctx.input.edgeConfigId);
       return {
         output: {
@@ -118,7 +120,7 @@ export let manageEdgeConfigTool = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.slug) throw new Error('slug is required for create');
+      if (!ctx.input.slug) throw vercelServiceError('slug is required for create');
       let ec = await client.createEdgeConfig({ slug: ctx.input.slug });
       return {
         output: {
@@ -134,7 +136,8 @@ export let manageEdgeConfigTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.edgeConfigId) throw new Error('edgeConfigId is required');
+      if (!ctx.input.edgeConfigId)
+        throw vercelServiceError('edgeConfigId is required');
       await client.deleteEdgeConfig(ctx.input.edgeConfigId);
       return {
         output: { success: true },
@@ -143,7 +146,8 @@ export let manageEdgeConfigTool = SlateTool.create(spec, {
     }
 
     if (action === 'get_items') {
-      if (!ctx.input.edgeConfigId) throw new Error('edgeConfigId is required');
+      if (!ctx.input.edgeConfigId)
+        throw vercelServiceError('edgeConfigId is required');
       let result = await client.getEdgeConfigItems(ctx.input.edgeConfigId);
       let items = (Array.isArray(result) ? result : []).map((item: any) => ({
         key: item.key,
@@ -159,7 +163,7 @@ export let manageEdgeConfigTool = SlateTool.create(spec, {
 
     if (action === 'update_items') {
       if (!ctx.input.edgeConfigId || !ctx.input.items) {
-        throw new Error('edgeConfigId and items are required');
+        throw vercelServiceError('edgeConfigId and items are required');
       }
       await client.updateEdgeConfigItems(ctx.input.edgeConfigId, ctx.input.items);
       return {
@@ -168,6 +172,6 @@ export let manageEdgeConfigTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw vercelServiceError(`Unknown action: ${action}`);
   })
   .build();

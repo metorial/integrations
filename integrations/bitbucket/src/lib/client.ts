@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { bitbucketApiError } from './errors';
 
 export class Client {
   private api: ReturnType<typeof createAxios>;
@@ -15,6 +16,10 @@ export class Client {
         'Content-Type': 'application/json'
       }
     });
+    this.api.interceptors?.response.use(
+      (response: any) => response,
+      (error: unknown) => Promise.reject(bitbucketApiError(error))
+    );
   }
 
   // ─── Repositories ───
@@ -653,11 +658,7 @@ export class Client {
 
   // ─── Code Search ───
 
-  async searchCode(
-    repoSlug: string,
-    searchQuery: string,
-    opts?: { page?: number; pageLen?: number }
-  ) {
+  async searchCode(searchQuery: string, opts?: { page?: number; pageLen?: number }) {
     let params: Record<string, string> = {
       search_query: searchQuery
     };
@@ -679,36 +680,78 @@ export class Client {
 
   // ─── Default Reviewers ───
 
-  async listDefaultReviewers(repoSlug: string) {
+  async listDefaultReviewers(
+    repoSlug: string,
+    opts?: { page?: number; pageLen?: number }
+  ) {
+    let params: Record<string, string> = {};
+    if (opts?.page) params.page = String(opts.page);
+    if (opts?.pageLen) params.pagelen = String(opts.pageLen);
+
     let response = await this.api.get(
-      `/repositories/${this.params.workspace}/${repoSlug}/default-reviewers`
+      `/repositories/${this.params.workspace}/${repoSlug}/default-reviewers`,
+      { params }
+    );
+    return response.data;
+  }
+
+  async listEffectiveDefaultReviewers(
+    repoSlug: string,
+    opts?: { page?: number; pageLen?: number }
+  ) {
+    let params: Record<string, string> = {};
+    if (opts?.page) params.page = String(opts.page);
+    if (opts?.pageLen) params.pagelen = String(opts.pageLen);
+
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/effective-default-reviewers`,
+      { params }
+    );
+    return response.data;
+  }
+
+  async getDefaultReviewer(repoSlug: string, userSlug: string) {
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/default-reviewers/${encodeURIComponent(userSlug)}`
     );
     return response.data;
   }
 
   async addDefaultReviewer(repoSlug: string, userSlug: string) {
     let response = await this.api.put(
-      `/repositories/${this.params.workspace}/${repoSlug}/default-reviewers/${userSlug}`
+      `/repositories/${this.params.workspace}/${repoSlug}/default-reviewers/${encodeURIComponent(userSlug)}`
     );
     return response.data;
   }
 
   async removeDefaultReviewer(repoSlug: string, userSlug: string) {
     await this.api.delete(
-      `/repositories/${this.params.workspace}/${repoSlug}/default-reviewers/${userSlug}`
+      `/repositories/${this.params.workspace}/${repoSlug}/default-reviewers/${encodeURIComponent(userSlug)}`
     );
   }
 
   // ─── Branch Restrictions ───
 
-  async listBranchRestrictions(repoSlug: string, opts?: { page?: number; pageLen?: number }) {
+  async listBranchRestrictions(
+    repoSlug: string,
+    opts?: { kind?: string; pattern?: string; page?: number; pageLen?: number }
+  ) {
     let params: Record<string, string> = {};
+    if (opts?.kind) params.kind = opts.kind;
+    if (opts?.pattern) params.pattern = opts.pattern;
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
     let response = await this.api.get(
       `/repositories/${this.params.workspace}/${repoSlug}/branch-restrictions`,
       { params }
+    );
+    return response.data;
+  }
+
+  async getBranchRestriction(repoSlug: string, restrictionId: string | number) {
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/branch-restrictions/${restrictionId}`
     );
     return response.data;
   }
@@ -721,7 +764,19 @@ export class Client {
     return response.data;
   }
 
-  async deleteBranchRestriction(repoSlug: string, restrictionId: number) {
+  async updateBranchRestriction(
+    repoSlug: string,
+    restrictionId: string | number,
+    body: Record<string, any>
+  ) {
+    let response = await this.api.put(
+      `/repositories/${this.params.workspace}/${repoSlug}/branch-restrictions/${restrictionId}`,
+      body
+    );
+    return response.data;
+  }
+
+  async deleteBranchRestriction(repoSlug: string, restrictionId: string | number) {
     await this.api.delete(
       `/repositories/${this.params.workspace}/${repoSlug}/branch-restrictions/${restrictionId}`
     );

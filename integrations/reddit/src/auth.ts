@@ -1,5 +1,7 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { redditApiError } from './lib/errors';
+import { REDDIT_USER_AGENT } from './lib/client';
 
 export let auth = SlateAuth.create()
   .output(
@@ -139,16 +141,22 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await http.post(
-        'https://www.reddit.com/api/v1/access_token',
-        params.toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await http.post(
+          'https://www.reddit.com/api/v1/access_token',
+          params.toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'User-Agent': REDDIT_USER_AGENT
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw redditApiError(error, 'OAuth callback');
+      }
 
       let data = response.data;
 
@@ -174,16 +182,22 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await http.post(
-        'https://www.reddit.com/api/v1/access_token',
-        params.toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response;
+      try {
+        response = await http.post(
+          'https://www.reddit.com/api/v1/access_token',
+          params.toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'User-Agent': REDDIT_USER_AGENT
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw redditApiError(error, 'OAuth token refresh');
+      }
 
       let data = response.data;
 
@@ -199,11 +213,17 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://oauth.reddit.com',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`,
+          'User-Agent': REDDIT_USER_AGENT
         }
       });
 
-      let response = await http.get('/api/v1/me');
+      let response;
+      try {
+        response = await http.get('/api/v1/me');
+      } catch (error) {
+        throw redditApiError(error, 'profile lookup');
+      }
       let user = response.data;
 
       return {

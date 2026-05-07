@@ -55,6 +55,103 @@ export let addCommentTool = SlateTool.create(spec, {
   })
   .build();
 
+export let updateCommentTool = SlateTool.create(spec, {
+  name: 'Update Comment',
+  key: 'update_comment',
+  description: `Update an existing comment on a Jira issue. Supports plain text or Atlassian Document Format (ADF) bodies.`,
+  tags: {
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      issueIdOrKey: z.string().describe('The issue key or ID containing the comment.'),
+      commentId: z.string().describe('The comment ID to update.'),
+      body: z.any().describe('Updated comment body as a plain text string or ADF object.')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.string().describe('The ID of the updated comment.'),
+      issueIdOrKey: z.string().describe('The issue key or ID.'),
+      updated: z.string().optional().describe('Last updated timestamp.'),
+      body: z.any().describe('Updated comment body in ADF format.')
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new JiraClient({
+      token: ctx.auth.token,
+      cloudId: ctx.auth.cloudId,
+      refreshToken: ctx.auth.refreshToken
+    });
+
+    let body = ctx.input.body;
+    if (typeof body === 'string') {
+      body = {
+        version: 1,
+        type: 'doc',
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: body }] }]
+      };
+    }
+
+    let comment = await client.updateComment(
+      ctx.input.issueIdOrKey,
+      ctx.input.commentId,
+      body
+    );
+
+    return {
+      output: {
+        commentId: comment.id,
+        issueIdOrKey: ctx.input.issueIdOrKey,
+        updated: comment.updated,
+        body: comment.body
+      },
+      message: `Updated comment **${comment.id}** on **${ctx.input.issueIdOrKey}**.`
+    };
+  })
+  .build();
+
+export let deleteCommentTool = SlateTool.create(spec, {
+  name: 'Delete Comment',
+  key: 'delete_comment',
+  description: `Delete a comment from a Jira issue.`,
+  tags: {
+    destructive: true,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      issueIdOrKey: z.string().describe('The issue key or ID containing the comment.'),
+      commentId: z.string().describe('The comment ID to delete.')
+    })
+  )
+  .output(
+    z.object({
+      issueIdOrKey: z.string().describe('The issue key or ID.'),
+      commentId: z.string().describe('The deleted comment ID.')
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new JiraClient({
+      token: ctx.auth.token,
+      cloudId: ctx.auth.cloudId,
+      refreshToken: ctx.auth.refreshToken
+    });
+
+    await client.deleteComment(ctx.input.issueIdOrKey, ctx.input.commentId);
+
+    return {
+      output: {
+        issueIdOrKey: ctx.input.issueIdOrKey,
+        commentId: ctx.input.commentId
+      },
+      message: `Deleted comment **${ctx.input.commentId}** from **${ctx.input.issueIdOrKey}**.`
+    };
+  })
+  .build();
+
 export let listCommentsTool = SlateTool.create(spec, {
   name: 'List Comments',
   key: 'list_comments',

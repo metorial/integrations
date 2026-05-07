@@ -11,10 +11,14 @@ let fieldInputSchema = z.object({
       'long_text',
       'email',
       'date',
+      'calendly',
+      'contact_info',
       'multiple_choice',
       'dropdown',
       'rating',
+      'ranking',
       'opinion_scale',
+      'nps',
       'file_upload',
       'number',
       'website',
@@ -23,6 +27,8 @@ let fieldInputSchema = z.object({
       'statement',
       'picture_choice',
       'phone_number',
+      'matrix',
+      'multi_format',
       'group',
       'payment'
     ])
@@ -68,7 +74,7 @@ export let createForm = SlateTool.create(spec, {
         .describe(
           'Workspace API URL to create the form in (e.g. https://api.typeform.com/workspaces/{id})'
         ),
-      fields: z.array(fieldInputSchema).describe('Array of form fields/questions'),
+      fields: z.array(fieldInputSchema).min(1).describe('Array of form fields/questions'),
       welcomeScreenTitle: z.string().optional().describe('Title for the welcome screen'),
       welcomeScreenDescription: z
         .string()

@@ -8,13 +8,16 @@ import {
   deleteProjectTool,
   listDeploymentsTool,
   getDeploymentTool,
+  getDeploymentEventsTool,
   createDeploymentTool,
   cancelDeploymentTool,
+  manageAliasesTool,
   manageDomainsTool,
   manageEnvVarsTool,
   manageDnsTool,
   manageTeamsTool,
   manageEdgeConfigTool,
+  manageDeployHooksTool,
   promoteDeploymentTool
 } from './tools';
 import {
@@ -33,13 +36,16 @@ export let provider = Slate.create({
     deleteProjectTool,
     listDeploymentsTool,
     getDeploymentTool,
+    getDeploymentEventsTool,
     createDeploymentTool,
     cancelDeploymentTool,
+    manageAliasesTool,
     manageDomainsTool,
     manageEnvVarsTool,
     manageDnsTool,
     manageTeamsTool,
     manageEdgeConfigTool,
+    manageDeployHooksTool,
     promoteDeploymentTool
   ],
   triggers: [deploymentEventsTrigger, projectEventsTrigger, domainEventsTrigger]

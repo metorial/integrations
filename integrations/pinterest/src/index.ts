@@ -16,8 +16,10 @@ import {
   sendConversions,
   listCatalogs,
   getTrends,
+  getTerms,
   searchPins,
-  manageAudience
+  manageAudience,
+  savePin
 } from './tools';
 import { newPin, newBoard, inboundWebhook } from './triggers';
 
@@ -39,8 +41,10 @@ export let provider = Slate.create({
     sendConversions,
     listCatalogs,
     getTrends,
+    getTerms,
     searchPins,
-    manageAudience
+    manageAudience,
+    savePin
   ],
   triggers: [inboundWebhook, newPin, newBoard]
 });

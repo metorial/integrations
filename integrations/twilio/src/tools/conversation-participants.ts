@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwilioClient } from '../lib/client';
+import { twilioServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -83,6 +84,18 @@ export let conversationParticipants = SlateTool.create(spec, {
     });
 
     if (ctx.input.action === 'add') {
+      if (!ctx.input.identity && !ctx.input.messagingBindingAddress) {
+        throw twilioServiceError(
+          'Provide identity for a chat participant or messagingBindingAddress for an SMS/WhatsApp participant.'
+        );
+      }
+
+      if (ctx.input.messagingBindingAddress && !ctx.input.messagingBindingProxyAddress) {
+        throw twilioServiceError(
+          'messagingBindingProxyAddress is required when adding an SMS/WhatsApp participant.'
+        );
+      }
+
       let result = await client.addConversationParticipant(ctx.input.conversationSid, {
         identity: ctx.input.identity,
         messagingBindingAddress: ctx.input.messagingBindingAddress,
@@ -108,7 +121,7 @@ export let conversationParticipants = SlateTool.create(spec, {
 
     if (ctx.input.action === 'remove') {
       if (!ctx.input.participantSid)
-        throw new Error('participantSid is required for remove action');
+        throw twilioServiceError('participantSid is required for remove action');
       await client.removeConversationParticipant(
         ctx.input.conversationSid,
         ctx.input.participantSid
@@ -119,6 +132,6 @@ export let conversationParticipants = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw twilioServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

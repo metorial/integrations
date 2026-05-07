@@ -1,6 +1,6 @@
 {
-  "name": "@metorial/twitterx",
-  "description": "Create, read, delete, and search posts (tweets) on Twitter/X. Manage user profiles, follows, blocks, and mutes. Send and receive direct messages in one-to-one and group conversations. Access home, user, and mentions timelines. Like, retweet, bookmark, and quote posts. Create and manage curated lists of accounts. Search recent and historical posts using advanced query operators for keywords, hashtags, mentions, dates, and more. Upload images, videos, and GIFs for media attachments. Stream real-time posts matching filtered rules. Access trending topics by location and discover live audio Spaces. Retrieve engagement metrics including impressions, likes, and replies. Receive real-time webhook events for post creation, direct messages, follows, and other account activity.",
+  "name": "@metorial/twitter",
+  "description": "Create, read, delete, and search posts (tweets) on Twitter/X. Manage user profiles, follows, blocks, and mutes. Send, read, and delete direct messages in one-to-one and group conversations. Access home, user, and mentions timelines. Like, retweet, bookmark, and quote posts. Create and manage curated lists of accounts. Search recent posts using advanced query operators for keywords, hashtags, mentions, dates, and more. Upload image and subtitle media for post and direct message attachments. Retrieve engagement metrics including impressions, likes, and replies.",
   "categories": [
     "email-and-messaging",
     "news-and-media"
@@ -14,8 +14,8 @@
     "like and retweet posts",
     "upload media attachments",
     "manage bookmarks and lists",
-    "stream real-time posts",
-    "retrieve trending topics"
+    "delete direct messages",
+    "retrieve quote posts"
   ],
   "logoUrl": "https://provider-logos.metorial-cdn.com/twitter.svg"
 }

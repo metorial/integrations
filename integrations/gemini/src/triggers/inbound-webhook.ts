@@ -11,7 +11,7 @@ export let inboundWebhook = SlateTrigger.create(spec, {
   name: 'Inbound Webhook',
   key: 'inbound_webhook',
   description:
-    'Receives HTTP POST at the Slates webhook URL. Parses JSON into payload (or stores raw body if not JSON). Configure your provider to POST here when supported.'
+    'Receives arbitrary HTTP POSTs at the Slates webhook URL. This is a generic manual inbound trigger, not a Gemini-native event subscription.'
 })
   .input(
     z.object({

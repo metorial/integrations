@@ -4,17 +4,33 @@ Manage sales pipelines, deals, leads, contacts, activities, and products in Pipe
 
 ## Tools
 
+### Convert Lead To Deal
+
+Convert a Pipedrive lead into a deal. The conversion transfers related notes, files, emails, and activities to the created deal when Pipedrive completes the job.
+
 ### Get Activities
 
 Retrieve activities from Pipedrive. Fetch a single activity by ID or list activities with optional filtering by user, type, or completion status. Returns activity properties including subject, type, due date, linked entities, and completion status.
+
+### Get Activity Types
+
+Retrieve Pipedrive activity types. Use this to discover the activity type keys accepted by activity create and update operations.
 
 ### Get Deals
 
 Retrieve one or more deals from Pipedrive. Fetch a single deal by ID or list deals with optional filtering by pipeline, stage, status, user, or filter. Returns deal properties including title, value, stage, linked contacts, and timestamps.
 
+### Get Fields
+
+Retrieve Pipedrive field metadata for deals, persons, organizations, or products. Use this to discover custom field keys and option values before creating or updating records.
+
 ### Get Leads
 
 Retrieve leads from the Pipedrive Leads Inbox. Fetch a single lead by ID or list leads with optional filtering by archived status. Returns lead properties including title, linked contacts, value, labels, and timestamps.
+
+### Get Notes
+
+Retrieve notes from Pipedrive. Fetch a single note by ID or list notes attached to deals, persons, organizations, or leads.
 
 ### Get Organizations
 

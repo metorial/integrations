@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { tableauServiceError } from '../lib/errors';
 
 export let manageJobs = SlateTool.create(spec, {
   name: 'Manage Jobs',
@@ -83,7 +84,9 @@ export let manageJobs = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      let j = await client.getJob(ctx.input.jobId!);
+      if (!ctx.input.jobId) throw tableauServiceError('jobId is required for get action.');
+
+      let j = await client.getJob(ctx.input.jobId);
       return {
         output: {
           job: {
@@ -103,13 +106,15 @@ export let manageJobs = SlateTool.create(spec, {
     }
 
     if (action === 'cancel') {
-      await client.cancelJob(ctx.input.jobId!);
+      if (!ctx.input.jobId) throw tableauServiceError('jobId is required for cancel action.');
+
+      await client.cancelJob(ctx.input.jobId);
       return {
         output: { cancelled: true },
         message: `Cancelled job \`${ctx.input.jobId}\`.`
       };
     }
 
-    return { output: {}, message: `Unknown action: ${action}` };
+    throw tableauServiceError(`Unknown action: ${action}`);
   })
   .build();

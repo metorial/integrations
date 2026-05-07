@@ -1,8 +1,14 @@
 import { createAxios } from 'slates';
+import { pinterestApiError } from './errors';
 
 let httpClient = createAxios({
   baseURL: 'https://api.pinterest.com/v5'
 });
+
+httpClient.interceptors.response.use(
+  response => response,
+  error => Promise.reject(pinterestApiError(error))
+);
 
 export interface PaginatedResponse<T> {
   items: T[];
@@ -95,16 +101,22 @@ export class Client {
     mediaSource: {
       sourceType: string;
       url?: string;
+      data?: string;
       contentType?: string;
       mediaId?: string;
       coverImageUrl?: string;
+      coverImageData?: string;
       coverImageContentType?: string;
+      coverImageKeyFrameTime?: number;
+      index?: number;
+      isAffiliateLink?: boolean;
+      isStandard?: boolean;
       items?: Array<{
         title?: string;
         description?: string;
         link?: string;
-        sourceType: string;
-        url: string;
+        url?: string;
+        data?: string;
         contentType?: string;
       }>;
     };
@@ -126,20 +138,36 @@ export class Client {
 
     let ms = body.media_source;
     if (params.mediaSource.url) ms.url = params.mediaSource.url;
-    if (params.mediaSource.contentType) ms.content_type = params.mediaSource.contentType;
+    if (params.mediaSource.data) ms.data = params.mediaSource.data;
+    if (
+      params.mediaSource.contentType &&
+      params.mediaSource.sourceType !== 'image_url' &&
+      params.mediaSource.sourceType !== 'multiple_image_urls'
+    ) {
+      ms.content_type = params.mediaSource.contentType;
+    }
     if (params.mediaSource.mediaId) ms.media_id = params.mediaSource.mediaId;
     if (params.mediaSource.coverImageUrl)
       ms.cover_image_url = params.mediaSource.coverImageUrl;
+    if (params.mediaSource.coverImageData)
+      ms.cover_image_data = params.mediaSource.coverImageData;
     if (params.mediaSource.coverImageContentType)
       ms.cover_image_content_type = params.mediaSource.coverImageContentType;
+    if (params.mediaSource.coverImageKeyFrameTime !== undefined)
+      ms.cover_image_key_frame_time = params.mediaSource.coverImageKeyFrameTime;
+    if (params.mediaSource.index !== undefined) ms.index = params.mediaSource.index;
+    if (params.mediaSource.isAffiliateLink !== undefined)
+      ms.is_affiliate_link = params.mediaSource.isAffiliateLink;
+    if (params.mediaSource.isStandard !== undefined)
+      ms.is_standard = params.mediaSource.isStandard;
     if (params.mediaSource.items) {
       ms.items = params.mediaSource.items.map(item => ({
         title: item.title,
         description: item.description,
         link: item.link,
-        source_type: item.sourceType,
         url: item.url,
-        content_type: item.contentType
+        data: item.data,
+        content_type: item.data ? item.contentType : undefined
       }));
     }
 
@@ -215,20 +243,31 @@ export class Client {
     return response.data;
   }
 
-  async deletePin(pinId: string) {
+  async deletePin(pinId: string, adAccountId?: string) {
+    let params: Record<string, string> = {};
+    if (adAccountId) params.ad_account_id = adAccountId;
+
     await httpClient.delete(`/pins/${pinId}`, {
-      headers: this.headers()
+      headers: this.headers(),
+      params
     });
   }
 
-  async savePin(pinId: string, boardId: string, boardSectionId?: string) {
+  async savePin(
+    pinId: string,
+    params: { boardId: string; boardSectionId?: string; adAccountId?: string }
+  ) {
     let body: Record<string, any> = {
-      board_id: boardId
+      board_id: params.boardId
     };
-    if (boardSectionId) body.board_section_id = boardSectionId;
+    if (params.boardSectionId) body.board_section_id = params.boardSectionId;
+
+    let queryParams: Record<string, string> = {};
+    if (params.adAccountId) queryParams.ad_account_id = params.adAccountId;
 
     let response = await httpClient.post(`/pins/${pinId}/save`, body, {
-      headers: this.headers()
+      headers: this.headers(),
+      params: queryParams
     });
 
     return response.data;
@@ -771,21 +810,49 @@ export class Client {
     interests?: string[];
     genders?: string[];
     ages?: string[];
+    includeKeywords?: string[];
     normalizeAgainstGroup?: boolean;
     limit?: number;
   }) {
-    let queryParams: Record<string, any> = {
-      region: params.region,
-      trend_type: params.trendType
-    };
+    let queryParams: Record<string, any> = {};
     if (params.interests?.length) queryParams.interests = params.interests.join(',');
     if (params.genders?.length) queryParams.genders = params.genders.join(',');
     if (params.ages?.length) queryParams.ages = params.ages.join(',');
+    if (params.includeKeywords?.length)
+      queryParams.include_keywords = params.includeKeywords.join(',');
     if (params.normalizeAgainstGroup !== undefined)
       queryParams.normalize_against_group = params.normalizeAgainstGroup;
     if (params.limit) queryParams.limit = params.limit;
 
-    let response = await httpClient.get('/trends/results', {
+    let response = await httpClient.get(
+      `/trends/keywords/${params.region}/top/${params.trendType}`,
+      {
+        headers: this.headers(),
+        params: queryParams
+      }
+    );
+
+    return response.data;
+  }
+
+  async getRelatedTerms(terms: string[]) {
+    let response = await httpClient.get('/terms/related', {
+      headers: this.headers(),
+      params: {
+        terms: terms.join(',')
+      }
+    });
+
+    return response.data;
+  }
+
+  async getSuggestedTerms(term: string, limit?: number) {
+    let queryParams: Record<string, any> = {
+      term
+    };
+    if (limit) queryParams.limit = limit;
+
+    let response = await httpClient.get('/terms/suggested', {
       headers: this.headers(),
       params: queryParams
     });

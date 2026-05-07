@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { zapierApiError } from './errors';
 
 let http = createAxios({
   baseURL: 'https://api.zapier.com'
@@ -135,8 +136,22 @@ export interface ZapRun {
     status: string | null;
     startTime: string | null;
   }[];
-  dataIn: Record<string, any> | null;
-  dataOut: Record<string, any> | null;
+  dataIn: unknown;
+  dataOut: unknown;
+}
+
+export interface ZapierActionRunCreated {
+  type: string;
+  id: string;
+}
+
+export interface ZapierActionRun {
+  type: string;
+  id?: string;
+  runId?: string;
+  status: string;
+  results?: unknown;
+  errors?: unknown[];
 }
 
 // Utility to convert snake_case response keys to camelCase for our interfaces
@@ -171,6 +186,18 @@ export class Client {
     };
   }
 
+  private async request<T>(
+    operation: string,
+    run: () => Promise<{ data: unknown }>
+  ): Promise<T> {
+    try {
+      let response = await run();
+      return transformKeys(response.data) as T;
+    } catch (error) {
+      throw zapierApiError(error, operation);
+    }
+  }
+
   // ---- Apps ----
 
   async getApps(
@@ -187,12 +214,12 @@ export class Client {
     if (params?.category) queryParams.category = params.category;
     if (params?.ids) queryParams.ids = params.ids;
 
-    let response = await http.get('/v2/apps', {
-      headers: this.headers,
-      params: queryParams
-    });
-
-    return transformKeys(response.data);
+    return await this.request<PaginatedResponse<ZapierApp>>('list apps', () =>
+      http.get('/v2/apps', {
+        headers: this.headers,
+        params: queryParams
+      })
+    );
   }
 
   // ---- Zaps ----
@@ -215,12 +242,12 @@ export class Client {
       }
     }
 
-    let response = await http.get('/v2/zaps', {
-      headers: this.headers,
-      params: queryParams
-    });
-
-    return transformKeys(response.data);
+    return await this.request<PaginatedResponse<Zap>>('list zaps', () =>
+      http.get('/v2/zaps', {
+        headers: this.headers,
+        params: queryParams
+      })
+    );
   }
 
   async createZap(
@@ -238,16 +265,16 @@ export class Client {
     let queryParams: Record<string, string> = {};
     if (expand) queryParams.expand = expand;
 
-    let response = await http.post(
-      '/v2/zaps',
-      { data },
-      {
-        headers: { ...this.headers, 'Content-Type': 'application/json' },
-        params: queryParams
-      }
+    return await this.request<Zap>('create zap', () =>
+      http.post(
+        '/v2/zaps',
+        { data },
+        {
+          headers: { ...this.headers, 'Content-Type': 'application/json' },
+          params: queryParams
+        }
+      )
     );
-
-    return transformKeys(response.data);
   }
 
   // ---- Actions ----
@@ -261,12 +288,12 @@ export class Client {
     };
     if (params.actionType) queryParams.action_type = params.actionType;
 
-    let response = await http.get('/v2/actions', {
-      headers: this.headers,
-      params: queryParams
-    });
-
-    return transformKeys(response.data);
+    return await this.request<PaginatedResponse<ZapAction>>('list actions', () =>
+      http.get('/v2/actions', {
+        headers: this.headers,
+        params: queryParams
+      })
+    );
   }
 
   async getInputFields(
@@ -276,15 +303,15 @@ export class Client {
       inputs: Record<string, any>;
     }
   ): Promise<PaginatedResponse<any>> {
-    let response = await http.post(
-      `/v2/actions/${actionId}/inputs`,
-      { data },
-      {
-        headers: { ...this.headers, 'Content-Type': 'application/json' }
-      }
+    return await this.request<PaginatedResponse<any>>('get action input fields', () =>
+      http.post(
+        `/v2/actions/${actionId}/inputs`,
+        { data },
+        {
+          headers: { ...this.headers, 'Content-Type': 'application/json' }
+        }
+      )
     );
-
-    return transformKeys(response.data);
   }
 
   async getOutputFields(
@@ -294,15 +321,15 @@ export class Client {
       inputs: Record<string, any>;
     }
   ): Promise<PaginatedResponse<any>> {
-    let response = await http.post(
-      `/v2/actions/${actionId}/outputs`,
-      { data },
-      {
-        headers: { ...this.headers, 'Content-Type': 'application/json' }
-      }
+    return await this.request<PaginatedResponse<any>>('get action output fields', () =>
+      http.post(
+        `/v2/actions/${actionId}/outputs`,
+        { data },
+        {
+          headers: { ...this.headers, 'Content-Type': 'application/json' }
+        }
+      )
     );
-
-    return transformKeys(response.data);
   }
 
   async getChoices(
@@ -313,15 +340,15 @@ export class Client {
       inputs: Record<string, any>;
     }
   ): Promise<PaginatedResponse<any>> {
-    let response = await http.post(
-      `/v2/actions/${actionId}/inputs/${fieldId}/choices`,
-      { data },
-      {
-        headers: { ...this.headers, 'Content-Type': 'application/json' }
-      }
+    return await this.request<PaginatedResponse<any>>('get input field choices', () =>
+      http.post(
+        `/v2/actions/${actionId}/inputs/${fieldId}/choices`,
+        { data },
+        {
+          headers: { ...this.headers, 'Content-Type': 'application/json' }
+        }
+      )
     );
-
-    return transformKeys(response.data);
   }
 
   async testStep(
@@ -329,17 +356,43 @@ export class Client {
     data: {
       authentication: string | null;
       inputs: Record<string, any>;
+      limit?: number;
+      offset?: number;
     }
   ): Promise<any> {
-    let response = await http.post(
-      `/v2/actions/${actionId}/test`,
-      { data },
-      {
-        headers: { ...this.headers, 'Content-Type': 'application/json' }
-      }
+    return await this.request<any>('test action step', () =>
+      http.post(
+        `/v2/actions/${actionId}/test`,
+        { data },
+        {
+          headers: { ...this.headers, 'Content-Type': 'application/json' }
+        }
+      )
     );
+  }
 
-    return transformKeys(response.data);
+  async createActionRun(data: {
+    action: string;
+    authentication: string | null;
+    inputs: Record<string, any>;
+  }): Promise<{ data: ZapierActionRunCreated }> {
+    return await this.request<{ data: ZapierActionRunCreated }>('create action run', () =>
+      http.post(
+        '/v2/action-runs',
+        { data },
+        {
+          headers: { ...this.headers, 'Content-Type': 'application/json' }
+        }
+      )
+    );
+  }
+
+  async getActionRun(actionRunId: string): Promise<{ data: ZapierActionRun }> {
+    return await this.request<{ data: ZapierActionRun }>('get action run', () =>
+      http.get(`/v2/action-runs/${actionRunId}`, {
+        headers: this.headers
+      })
+    );
   }
 
   // ---- Authentications ----
@@ -355,12 +408,14 @@ export class Client {
     if (params.limit) queryParams.limit = String(params.limit);
     if (params.offset) queryParams.offset = String(params.offset);
 
-    let response = await http.get('/v2/authentications', {
-      headers: this.headers,
-      params: queryParams
-    });
-
-    return transformKeys(response.data);
+    return await this.request<PaginatedResponse<ZapAuthentication>>(
+      'list authentications',
+      () =>
+        http.get('/v2/authentications', {
+          headers: this.headers,
+          params: queryParams
+        })
+    );
   }
 
   async createAuthentication(data: {
@@ -368,21 +423,23 @@ export class Client {
     app: string;
     authenticationFields: Record<string, string>;
   }): Promise<PaginatedResponse<ZapAuthentication>> {
-    let response = await http.post(
-      '/v2/authentications',
-      {
-        data: {
-          title: data.title,
-          app: data.app,
-          authentication_fields: data.authenticationFields
-        }
-      },
-      {
-        headers: { ...this.headers, 'Content-Type': 'application/json' }
-      }
+    return await this.request<PaginatedResponse<ZapAuthentication>>(
+      'create authentication',
+      () =>
+        http.post(
+          '/v2/authentications',
+          {
+            data: {
+              title: data.title,
+              app: data.app,
+              authentication_fields: data.authenticationFields
+            }
+          },
+          {
+            headers: { ...this.headers, 'Content-Type': 'application/json' }
+          }
+        )
     );
-
-    return transformKeys(response.data);
   }
 
   // ---- Zap Templates ----
@@ -399,13 +456,12 @@ export class Client {
     if (params?.apps) queryParams.apps = params.apps;
     if (params?.clientId) queryParams.client_id = params.clientId;
 
-    let response = await http.get('/v1/zap-templates', {
-      headers: this.headers,
-      params: queryParams
-    });
-
-    // Zap templates endpoint returns an array directly
-    return transformKeys(response.data);
+    return await this.request<ZapTemplate[]>('get zap templates', () =>
+      http.get('/v1/zap-templates', {
+        headers: this.headers,
+        params: queryParams
+      })
+    );
   }
 
   // ---- Categories ----
@@ -420,12 +476,17 @@ export class Client {
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let response = await http.get('/v1/categories', {
-      headers: this.headers,
-      params: queryParams
-    });
-
-    return transformKeys(response.data);
+    return await this.request<{
+      next: string | null;
+      previous: string | null;
+      count: number;
+      objects: ZapCategory[];
+    }>('list categories', () =>
+      http.get('/v1/categories', {
+        headers: this.headers,
+        params: queryParams
+      })
+    );
   }
 
   // ---- Zap Runs ----
@@ -448,12 +509,12 @@ export class Client {
     if (params?.statuses) queryParams.statuses = params.statuses;
     if (params?.search) queryParams.search = params.search;
 
-    let response = await http.get('/v2/zap-runs', {
-      headers: this.headers,
-      params: queryParams
-    });
-
-    return transformKeys(response.data);
+    return await this.request<PaginatedResponse<ZapRun>>('get zap runs', () =>
+      http.get('/v2/zap-runs', {
+        headers: this.headers,
+        params: queryParams
+      })
+    );
   }
 
   // ---- Workflow Steps ----
@@ -465,14 +526,14 @@ export class Client {
       authentication: string | null;
     };
   }): Promise<any> {
-    let response = await http.post(
-      '/v2/workflow-steps',
-      { data },
-      {
-        headers: { ...this.headers, 'Content-Type': 'application/json' }
-      }
+    return await this.request<any>('create workflow step', () =>
+      http.post(
+        '/v2/workflow-steps',
+        { data },
+        {
+          headers: { ...this.headers, 'Content-Type': 'application/json' }
+        }
+      )
     );
-
-    return transformKeys(response.data);
   }
 }

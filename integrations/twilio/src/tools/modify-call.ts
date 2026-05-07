@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwilioClient } from '../lib/client';
+import { twilioServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -45,6 +46,14 @@ export let modifyCall = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (!ctx.input.status && !ctx.input.twimlUrl && !ctx.input.twiml) {
+      throw twilioServiceError('Provide status, twimlUrl, or twiml to modify a call.');
+    }
+
+    if (ctx.input.twimlUrl && ctx.input.twiml) {
+      throw twilioServiceError('Provide either twimlUrl or twiml, not both.');
+    }
+
     let client = new TwilioClient({
       accountSid: ctx.config.accountSid,
       token: ctx.auth.token,

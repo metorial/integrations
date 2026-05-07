@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -267,7 +268,7 @@ export let manageNodePools = SlateTool.create(spec, {
 
     if (ctx.input.action === 'add') {
       if (!ctx.input.name || !ctx.input.size || ctx.input.count === undefined) {
-        throw new Error('name, size, and count are required for add action');
+        throw digitalOceanValidationError('name, size, and count are required for add action');
       }
 
       let np = await client.addKubernetesNodePool(ctx.input.clusterId, {
@@ -298,7 +299,9 @@ export let manageNodePools = SlateTool.create(spec, {
     }
 
     // delete
-    if (!ctx.input.nodePoolId) throw new Error('nodePoolId is required for delete action');
+    if (!ctx.input.nodePoolId) {
+      throw digitalOceanValidationError('nodePoolId is required for delete action');
+    }
     await client.deleteKubernetesNodePool(ctx.input.clusterId, ctx.input.nodePoolId);
 
     return {

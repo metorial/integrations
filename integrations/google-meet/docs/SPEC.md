@@ -48,6 +48,7 @@ Create meeting spaces to connect users over video, and retrieve meeting spaces b
 
 A space member is a user configured to have a role in the meeting space. These users can join the meeting space without requesting permission ("knocking"). While meeting organizers can automatically enter the meeting space, additional members can be configured to join without knocking. Members can be configured to have a role such as COHOST, which gives them the same abilities to manage the meeting as the meeting organizer.
 
+- Space member methods are available through the Google Workspace Developer Preview v2beta endpoint.
 - Create, list, get, and delete members from a meeting space.
 
 ### Conference Records
@@ -65,7 +66,7 @@ Get meeting artifacts including recordings, transcripts, and transcript entries.
 
 - Retrieve recording metadata and download recording files via Google Drive.
 - Retrieve transcript metadata and individual transcript entries (speaker, text, timestamps).
-- Retrieve smart notes files in a conference record (Developer Preview).
+- Retrieve smart notes metadata and the generated Google Docs destination for a conference record.
 - Artifacts are usually ready to be fetched soon after a conference ends.
 - Downloading the actual files requires the `drive.readonly` or `drive.meet.readonly` scope.
 

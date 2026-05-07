@@ -15,3 +15,5 @@ export { manageTags } from './manage-tags';
 export { configureAsyncInvocation } from './configure-async-invocation';
 export { manageDurableExecution } from './manage-durable-execution';
 export { getAccountSettings } from './get-account-settings';
+export { manageRuntimeManagement } from './manage-runtime-management';
+export { manageRecursionConfig } from './manage-recursion-config';

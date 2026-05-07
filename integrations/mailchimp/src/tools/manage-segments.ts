@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MailchimpClient } from '../lib/client';
+import { mailchimpServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -83,6 +84,25 @@ export let manageSegmentsTool = SlateTool.create(spec, {
       return {
         output: { deleted: true },
         message: `Segment **${ctx.input.segmentId}** has been deleted.`
+      };
+    }
+
+    if (ctx.input.delete && !ctx.input.segmentId) {
+      throw mailchimpServiceError('segmentId is required to delete a segment.');
+    }
+
+    if (ctx.input.segmentId && !ctx.input.name) {
+      let result = await client.getSegment(ctx.input.listId, ctx.input.segmentId);
+      return {
+        output: {
+          segment: {
+            segmentId: result.id,
+            name: result.name,
+            type: result.type,
+            memberCount: result.member_count ?? 0
+          }
+        },
+        message: `Retrieved segment **${result.name}**.`
       };
     }
 

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { lambdaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -58,7 +59,8 @@ export let managePermission = SlateTool.create(spec, {
     }
 
     if (action === 'remove') {
-      if (!ctx.input.statementId) throw new Error('statementId is required for remove');
+      if (!ctx.input.statementId)
+        throw lambdaServiceError('statementId is required for remove');
       await client.removePermission(functionName, ctx.input.statementId, qualifier);
       return {
         output: { removed: true },
@@ -67,9 +69,10 @@ export let managePermission = SlateTool.create(spec, {
     }
 
     // add
-    if (!ctx.input.statementId) throw new Error('statementId is required for add');
-    if (!ctx.input.permissionAction) throw new Error('permissionAction is required for add');
-    if (!ctx.input.principal) throw new Error('principal is required for add');
+    if (!ctx.input.statementId) throw lambdaServiceError('statementId is required for add');
+    if (!ctx.input.permissionAction)
+      throw lambdaServiceError('permissionAction is required for add');
+    if (!ctx.input.principal) throw lambdaServiceError('principal is required for add');
 
     let params: Record<string, any> = {
       StatementId: ctx.input.statementId,

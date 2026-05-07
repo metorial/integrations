@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { airtableServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -66,9 +67,11 @@ export let manageTableTool = SlateTool.create(spec, {
     });
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.tableName) throw new Error('tableName is required when creating a table');
+      if (!ctx.input.tableName) {
+        throw airtableServiceError('tableName is required when creating a table');
+      }
       if (!ctx.input.fields || ctx.input.fields.length === 0)
-        throw new Error('fields are required when creating a table');
+        throw airtableServiceError('fields are required when creating a table');
 
       let mappedFields = ctx.input.fields.map(f => ({
         name: f.fieldName,
@@ -97,7 +100,9 @@ export let manageTableTool = SlateTool.create(spec, {
         message: `Created table **${result.name}** (${result.id}) with ${ctx.input.fields.length} field(s).`
       };
     } else {
-      if (!ctx.input.tableId) throw new Error('tableId is required when updating a table');
+      if (!ctx.input.tableId) {
+        throw airtableServiceError('tableId is required when updating a table');
+      }
 
       let updates: { name?: string; description?: string } = {};
       if (ctx.input.tableName) updates.name = ctx.input.tableName;

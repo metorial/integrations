@@ -1,5 +1,43 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import {
+  assertBusinessSuccess,
+  assertConsumerSuccess,
+  tiktokOAuthError,
+  tiktokServiceError
+} from './lib/errors';
+
+let requireToken = (
+  data: Record<string, any>,
+  operation: string
+): {
+  accessToken: string;
+  refreshToken?: string;
+  expiresAt?: string;
+  openId?: string;
+} => {
+  if (typeof data.error === 'string') {
+    throw tiktokServiceError(
+      `TikTok OAuth ${operation} failed: ${data.error_description ?? data.error}`
+    );
+  }
+
+  if (typeof data.access_token !== 'string' || data.access_token.length === 0) {
+    throw tiktokServiceError(`TikTok OAuth ${operation} did not return an access token.`);
+  }
+
+  let expiresAt =
+    typeof data.expires_in === 'number'
+      ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+      : undefined;
+
+  return {
+    accessToken: data.access_token,
+    refreshToken: typeof data.refresh_token === 'string' ? data.refresh_token : undefined,
+    expiresAt,
+    openId: typeof data.open_id === 'string' ? data.open_id : undefined
+  };
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -7,7 +45,9 @@ export let auth = SlateAuth.create()
       token: z.string(),
       refreshToken: z.string().optional(),
       expiresAt: z.string().optional(),
-      openId: z.string().optional()
+      openId: z.string().optional(),
+      businessAppId: z.string().optional(),
+      businessSecret: z.string().optional()
     })
   )
   .addOauth({
@@ -63,70 +103,72 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let axios = createAxios();
-      let response = await axios.post(
-        'https://open.tiktokapis.com/v2/oauth/token/',
-        new URLSearchParams({
-          client_key: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          code: ctx.code,
-          grant_type: 'authorization_code',
-          redirect_uri: ctx.redirectUri
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      try {
+        let axios = createAxios();
+        let response = await axios.post(
+          'https://open.tiktokapis.com/v2/oauth/token/',
+          new URLSearchParams({
+            client_key: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            code: ctx.code,
+            grant_type: 'authorization_code',
+            redirect_uri: ctx.redirectUri
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+        let token = requireToken(response.data, 'authorization code exchange');
 
-      let data = response.data;
-
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
-
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt,
-          openId: data.open_id
-        }
-      };
+        return {
+          output: {
+            token: token.accessToken,
+            refreshToken: token.refreshToken,
+            expiresAt: token.expiresAt,
+            openId: token.openId
+          }
+        };
+      } catch (error) {
+        throw tiktokOAuthError('authorization code exchange', error);
+      }
     },
 
     handleTokenRefresh: async ctx => {
-      let axios = createAxios();
-      let response = await axios.post(
-        'https://open.tiktokapis.com/v2/oauth/token/',
-        new URLSearchParams({
-          client_key: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken ?? ''
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      try {
+        if (!ctx.output.refreshToken) {
+          throw tiktokServiceError('TikTok OAuth refresh requires a refresh token.');
+        }
+
+        let axios = createAxios();
+        let response = await axios.post(
+          'https://open.tiktokapis.com/v2/oauth/token/',
+          new URLSearchParams({
+            client_key: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+        let token = requireToken(response.data, 'token refresh');
 
-      let data = response.data;
-
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
-
-      return {
-        output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
-          openId: data.open_id ?? ctx.output.openId
-        }
-      };
+        return {
+          output: {
+            token: token.accessToken,
+            refreshToken: token.refreshToken ?? ctx.output.refreshToken,
+            expiresAt: token.expiresAt,
+            openId: token.openId ?? ctx.output.openId
+          }
+        };
+      } catch (error) {
+        throw tiktokOAuthError('token refresh', error);
+      }
     },
 
     getProfile: async (ctx: {
@@ -134,34 +176,39 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let axios = createAxios();
-      let fields = ['open_id', 'display_name', 'avatar_url'];
+      try {
+        let axios = createAxios();
+        let fields = ['open_id', 'display_name', 'avatar_url'];
 
-      if (ctx.scopes.includes('user.info.profile')) {
-        fields.push('username', 'bio_description', 'is_verified');
-      }
+        if (ctx.scopes.includes('user.info.profile')) {
+          fields.push('username', 'bio_description', 'is_verified');
+        }
 
-      let response = await axios.get(
-        `https://open.tiktokapis.com/v2/user/info/?fields=${fields.join(',')}`,
-        {
-          headers: {
-            Authorization: `Bearer ${ctx.output.token}`
+        let response = await axios.get(
+          `https://open.tiktokapis.com/v2/user/info/?fields=${fields.join(',')}`,
+          {
+            headers: {
+              Authorization: `Bearer ${ctx.output.token}`
+            }
           }
-        }
-      );
+        );
+        assertConsumerSuccess(response.data, 'profile fetch');
 
-      let user = response.data?.data?.user ?? {};
+        let user = response.data?.data?.user ?? {};
 
-      return {
-        profile: {
-          id: user.open_id,
-          name: user.display_name,
-          imageUrl: user.avatar_url,
-          username: user.username,
-          bio: user.bio_description,
-          verified: user.is_verified
-        }
-      };
+        return {
+          profile: {
+            id: user.open_id,
+            name: user.display_name,
+            imageUrl: user.avatar_url,
+            username: user.username,
+            bio: user.bio_description,
+            verified: user.is_verified
+          }
+        };
+      } catch (error) {
+        throw tiktokOAuthError('profile fetch', error);
+      }
     }
   })
   .addOauth({
@@ -189,29 +236,39 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let axios = createAxios();
-      let response = await axios.post(
-        'https://business-api.tiktok.com/open_api/v1.3/oauth2/access_token/',
-        {
-          app_id: ctx.input.appId,
-          secret: ctx.input.secret,
-          auth_code: ctx.code
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
+      try {
+        let axios = createAxios();
+        let response = await axios.post(
+          'https://business-api.tiktok.com/open_api/v1.3/oauth2/access_token/',
+          {
+            app_id: ctx.input.appId,
+            secret: ctx.input.secret,
+            auth_code: ctx.code
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
           }
-        }
-      );
+        );
+        assertBusinessSuccess(response.data, 'authorization code exchange');
 
-      let data = response.data?.data ?? response.data;
+        let data = response.data?.data ?? response.data;
+        let token = requireToken(data, 'business authorization code exchange');
 
-      return {
-        output: {
-          token: data.access_token,
-          openId: undefined
-        },
-        input: ctx.input
-      };
+        return {
+          output: {
+            token: token.accessToken,
+            refreshToken: token.refreshToken,
+            expiresAt: token.expiresAt,
+            openId: token.openId,
+            businessAppId: ctx.input.appId,
+            businessSecret: ctx.input.secret
+          },
+          input: ctx.input
+        };
+      } catch (error) {
+        throw tiktokOAuthError('business authorization code exchange', error);
+      }
     }
   });

@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let listWorkersTool = SlateTool.create(spec, {
@@ -34,7 +35,7 @@ export let listWorkersTool = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let accountId = ctx.input.accountId || ctx.config.accountId;
-    if (!accountId) throw new Error('accountId is required');
+    if (!accountId) throw cloudflareServiceError('accountId is required');
 
     let client = new Client(ctx.auth);
     let response = await client.listWorkers(accountId);

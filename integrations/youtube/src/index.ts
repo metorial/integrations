@@ -2,6 +2,7 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchContent,
+  listVideos,
   getVideo,
   updateVideo,
   deleteVideo,
@@ -10,6 +11,7 @@ import {
   updateChannel,
   managePlaylist,
   listPlaylists,
+  listMetadata,
   managePlaylistItems,
   manageComments,
   listComments,
@@ -23,6 +25,7 @@ export let provider = Slate.create({
   spec,
   tools: [
     searchContent,
+    listVideos,
     getVideo,
     updateVideo,
     deleteVideo,
@@ -31,6 +34,7 @@ export let provider = Slate.create({
     updateChannel,
     managePlaylist,
     listPlaylists,
+    listMetadata,
     managePlaylistItems,
     manageComments,
     listComments,

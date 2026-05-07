@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { pipedriveServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -52,7 +53,8 @@ Supports setting title, labels, value, expected close date, linked person/organi
     let client = createClient(ctx);
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.leadId) throw new Error('leadId is required for delete action');
+      if (!ctx.input.leadId)
+        throw pipedriveServiceError('leadId is required for delete action');
       await client.deleteLead(ctx.input.leadId);
       return {
         output: { leadId: ctx.input.leadId, deleted: true },
@@ -74,7 +76,8 @@ Supports setting title, labels, value, expected close date, linked person/organi
     if (ctx.input.action === 'create') {
       result = await client.createLead(body);
     } else {
-      if (!ctx.input.leadId) throw new Error('leadId is required for update action');
+      if (!ctx.input.leadId)
+        throw pipedriveServiceError('leadId is required for update action');
       result = await client.updateLead(ctx.input.leadId, body);
     }
 

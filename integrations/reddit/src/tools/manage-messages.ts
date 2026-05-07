@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RedditClient } from '../lib/client';
+import { requireRedditArrayInput, requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -64,9 +65,12 @@ Supports retrieving inbox, unread, and sent message folders.`,
 
     if (action === 'send') {
       await client.sendMessage({
-        to: ctx.input.recipientUsername!,
-        subject: ctx.input.subject!,
-        text: ctx.input.text!
+        to: requireRedditInput(
+          ctx.input.recipientUsername,
+          'recipientUsername is required for send action'
+        ),
+        subject: requireRedditInput(ctx.input.subject, 'subject is required for send action'),
+        text: requireRedditInput(ctx.input.text, 'text is required for send action')
       });
 
       return {
@@ -78,22 +82,30 @@ Supports retrieving inbox, unread, and sent message folders.`,
     }
 
     if (action === 'mark_read') {
-      await client.markMessagesRead(ctx.input.messageIds!);
+      let messageIds = requireRedditArrayInput(
+        ctx.input.messageIds,
+        'messageIds is required for mark_read action'
+      ) as string[];
+      await client.markMessagesRead(messageIds);
       return {
         output: {
           success: true
         },
-        message: `Marked ${ctx.input.messageIds!.length} message(s) as read.`
+        message: `Marked ${messageIds.length} message(s) as read.`
       };
     }
 
     if (action === 'mark_unread') {
-      await client.markMessagesUnread(ctx.input.messageIds!);
+      let messageIds = requireRedditArrayInput(
+        ctx.input.messageIds,
+        'messageIds is required for mark_unread action'
+      ) as string[];
+      await client.markMessagesUnread(messageIds);
       return {
         output: {
           success: true
         },
-        message: `Marked ${ctx.input.messageIds!.length} message(s) as unread.`
+        message: `Marked ${messageIds.length} message(s) as unread.`
       };
     }
 

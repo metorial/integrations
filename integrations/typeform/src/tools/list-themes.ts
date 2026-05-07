@@ -34,7 +34,8 @@ export let listThemes = SlateTool.create(spec, {
               })
               .optional()
               .describe('Theme colors'),
-            font: z.string().optional().describe('Theme font')
+            font: z.string().optional().describe('Theme font'),
+            roundedCorners: z.string().optional().describe('Rounded corner style')
           })
         )
         .describe('Array of themes')
@@ -55,7 +56,8 @@ export let listThemes = SlateTool.create(spec, {
       themeId: t.id,
       name: t.name,
       colors: t.colors,
-      font: t.font
+      font: t.font,
+      roundedCorners: t.rounded_corners
     }));
 
     return {

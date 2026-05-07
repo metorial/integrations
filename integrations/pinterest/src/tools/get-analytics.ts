@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { pinterestServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -90,7 +91,7 @@ export let getAnalytics = SlateTool.create(spec, {
       });
     } else if (ctx.input.scope === 'pin') {
       if (!ctx.input.pinId) {
-        throw new Error('Pin ID is required when scope is "pin"');
+        throw pinterestServiceError('Pin ID is required when scope is "pin"');
       }
       analytics = await client.getPinAnalytics(ctx.input.pinId, {
         startDate: ctx.input.startDate,
@@ -106,7 +107,7 @@ export let getAnalytics = SlateTool.create(spec, {
       });
     } else if (ctx.input.scope === 'ad_account') {
       if (!ctx.input.adAccountId) {
-        throw new Error('Ad account ID is required when scope is "ad_account"');
+        throw pinterestServiceError('Ad account ID is required when scope is "ad_account"');
       }
       analytics = await client.getAdAccountAnalytics(ctx.input.adAccountId, {
         startDate: ctx.input.startDate,

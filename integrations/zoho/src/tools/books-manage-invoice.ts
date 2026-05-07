@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZohoBooksClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { zohoServiceError } from '../lib/errors';
 
 let lineItemSchema = z.object({
   itemId: z.string().optional().describe('Item ID from Zoho Books inventory'),
@@ -84,6 +85,9 @@ export let booksManageInvoice = SlateTool.create(spec, {
     });
 
     if (ctx.input.action === 'create') {
+      if (!ctx.input.customerId) throw zohoServiceError('customerId is required for create');
+      if (!ctx.input.lineItems?.length)
+        throw zohoServiceError('lineItems is required for create');
       let data: Record<string, any> = {};
       if (ctx.input.customerId) data.customer_id = ctx.input.customerId;
       if (ctx.input.invoiceNumber) data.invoice_number = ctx.input.invoiceNumber;
@@ -121,7 +125,7 @@ export let booksManageInvoice = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.invoiceId) throw new Error('invoiceId is required for update');
+      if (!ctx.input.invoiceId) throw zohoServiceError('invoiceId is required for update');
       let data: Record<string, any> = {};
       if (ctx.input.customerId) data.customer_id = ctx.input.customerId;
       if (ctx.input.date) data.date = ctx.input.date;
@@ -157,7 +161,7 @@ export let booksManageInvoice = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.invoiceId) throw new Error('invoiceId is required for delete');
+      if (!ctx.input.invoiceId) throw zohoServiceError('invoiceId is required for delete');
       let result = await client.deleteInvoice(ctx.input.invoiceId);
       return {
         output: { invoiceId: ctx.input.invoiceId, deleted: true, message: result?.message },
@@ -166,9 +170,10 @@ export let booksManageInvoice = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'status') {
-      if (!ctx.input.invoiceId) throw new Error('invoiceId is required for status change');
+      if (!ctx.input.invoiceId)
+        throw zohoServiceError('invoiceId is required for status change');
       if (!ctx.input.statusAction)
-        throw new Error('statusAction is required for status change');
+        throw zohoServiceError('statusAction is required for status change');
       let result = await client.markInvoiceStatus(ctx.input.invoiceId, ctx.input.statusAction);
       return {
         output: {
@@ -180,6 +185,6 @@ export let booksManageInvoice = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw zohoServiceError('Invalid Books invoice action.');
   })
   .build();

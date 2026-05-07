@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { netlifyApiError } from './lib/errors';
 
 let netlifyApi = createAxios({
   baseURL: 'https://api.netlify.com'
@@ -30,15 +31,20 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response = await netlifyApi.post('/oauth/token', null, {
-        params: {
-          grant_type: 'authorization_code',
-          code: ctx.code,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri
-        }
-      });
+      let response;
+      try {
+        response = await netlifyApi.post('/oauth/token', null, {
+          params: {
+            grant_type: 'authorization_code',
+            code: ctx.code,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri
+          }
+        });
+      } catch (error) {
+        throw netlifyApiError(error, 'OAuth token exchange');
+      }
 
       return {
         output: {
@@ -48,11 +54,16 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
-      let response = await netlifyApi.get('/api/v1/user', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response;
+      try {
+        response = await netlifyApi.get('/api/v1/user', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw netlifyApiError(error, 'get OAuth profile');
+      }
 
       let user = response.data;
       return {
@@ -83,11 +94,16 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
-      let response = await netlifyApi.get('/api/v1/user', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response;
+      try {
+        response = await netlifyApi.get('/api/v1/user', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw netlifyApiError(error, 'get token profile');
+      }
 
       let user = response.data;
       return {

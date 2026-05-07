@@ -3,12 +3,6 @@ import { ClickHouseClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let assignedRoleSchema = z.object({
-  roleId: z.string().optional(),
-  roleName: z.string().optional(),
-  roleType: z.string().optional()
-});
-
 export let getOrganization = SlateTool.create(spec, {
   name: 'Get Organization',
   key: 'get_organization',
@@ -56,14 +50,28 @@ export let getOrganization = SlateTool.create(spec, {
     });
 
     let org = await client.getOrganization();
+    let privateEndpoints = Array.isArray(org.privateEndpoints) ? org.privateEndpoints : [];
+    let byocConfig = Array.isArray(org.byocConfig) ? org.byocConfig : [];
 
     return {
       output: {
         organizationId: org.id,
         name: org.name,
         createdAt: org.createdAt,
-        privateEndpoints: org.privateEndpoints,
-        byocConfig: org.byocConfig
+        privateEndpoints: privateEndpoints.map((endpoint: any) => ({
+          endpointId: endpoint.endpointId || endpoint.id,
+          cloudProvider: endpoint.cloudProvider,
+          region: endpoint.region,
+          description: endpoint.description
+        })),
+        byocConfig: byocConfig.map((config: any) => ({
+          byocId: config.byocId || config.id,
+          state: config.state,
+          accountName: config.accountName,
+          regionId: config.regionId,
+          cloudProvider: config.cloudProvider,
+          displayName: config.displayName
+        }))
       },
       message: `Organization **${org.name}** (${org.id}) created at ${org.createdAt}.`
     };

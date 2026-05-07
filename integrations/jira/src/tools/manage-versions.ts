@@ -179,3 +179,51 @@ export let updateVersionTool = SlateTool.create(spec, {
     };
   })
   .build();
+
+export let deleteVersionTool = SlateTool.create(spec, {
+  name: 'Delete Version',
+  key: 'delete_version',
+  description: `Delete a Jira project version. Optionally move affected or fixed issues to replacement versions.`,
+  tags: {
+    destructive: true,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      versionId: z.string().describe('The version ID to delete.'),
+      moveFixIssuesTo: z
+        .string()
+        .optional()
+        .describe('Version ID to move issues with this fix version to.'),
+      moveAffectedIssuesTo: z
+        .string()
+        .optional()
+        .describe('Version ID to move issues with this affected version to.')
+    })
+  )
+  .output(
+    z.object({
+      versionId: z.string().describe('The deleted version ID.')
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new JiraClient({
+      token: ctx.auth.token,
+      cloudId: ctx.auth.cloudId,
+      refreshToken: ctx.auth.refreshToken
+    });
+
+    await client.deleteVersion(ctx.input.versionId, {
+      moveFixIssuesTo: ctx.input.moveFixIssuesTo,
+      moveAffectedIssuesTo: ctx.input.moveAffectedIssuesTo
+    });
+
+    return {
+      output: {
+        versionId: ctx.input.versionId
+      },
+      message: `Deleted version **${ctx.input.versionId}**.`
+    };
+  })
+  .build();

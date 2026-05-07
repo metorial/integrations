@@ -26,6 +26,7 @@ The Business Login approach uses OAuth 2.0 to authenticate users directly throug
   - `instagram_business_content_publish` — Publish media
   - `instagram_business_manage_messages` — Manage direct messages
   - `instagram_business_manage_comments` — Manage comments
+  - `instagram_business_manage_insights` — Access analytics and insights
 
 ### Method 2: Facebook Login for Business
 
@@ -51,7 +52,7 @@ The token you receive is short-lived (typically 1 hour). Exchange it for a long-
 
 ### Content Publishing
 
-The Graph API's publishing endpoints help brands to post and schedule media directly. Apps can create media containers for images, videos, or carousels and then publish them to the Instagram Feed via API calls. Instagram now treats Reels and Stories as publishable media types. Publishing follows a two-step process: first create a media container, then publish it.
+The Graph API's publishing endpoints help brands to post and schedule media directly. Apps can create media containers for images, videos, or carousels and then publish them to the Instagram Feed via API calls. Instagram now treats Reels and Stories as publishable media types. Publishing follows a two-step process: first create a media container, then publish it. Apps can also inspect the content publishing limit endpoint to avoid publishing-window quota failures.
 
 ### Media Management
 
@@ -59,11 +60,11 @@ Retrieve and manage media (photos, videos, Reels, Stories, carousels) from an In
 
 ### Comment Moderation
 
-Features include: retrieving comments on media, replying to comments, deleting comments, hiding/unhiding comments, and enabling/disabling comments on media. Requires the `instagram_manage_comments` permission.
+Features include: retrieving comments and replies on media, creating top-level comments, replying to comments, deleting comments, hiding/unhiding comments, and enabling/disabling comments on media. Requires the `instagram_manage_comments` permission.
 
 ### Insights and Analytics
 
-The API provides detailed analytics, offering a better understanding of performance. Businesses can access valuable insights, keeping track of their organic content's performance more effectively on third-party tools. Available metrics include impressions, reach, engagement, saves, shares, and audience demographics at both the media and account level. Story insights include exits, replies, reach, taps forward/back, and impressions.
+The API provides detailed analytics, offering a better understanding of performance. Businesses can access valuable insights, keeping track of their organic content's performance more effectively on third-party tools. Available metrics include reach, views, likes, comments, saves, shares, total interactions, and audience demographics depending on media type, period, and API version. Story insights include exits, replies, reach, taps forward/back, and impressions where supported.
 
 ### Hashtag Search
 

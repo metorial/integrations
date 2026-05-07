@@ -1,5 +1,16 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { MESSENGER_DEFAULT_API_VERSION } from './config';
+import { messengerOAuthError, messengerServiceError } from './lib/errors';
+
+let graphRequest = async <T>(operation: string, run: () => Promise<{ data: T }>) => {
+  try {
+    let response = await run();
+    return response.data;
+  } catch (error) {
+    throw messengerOAuthError(operation, error);
+  }
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -47,51 +58,67 @@ export let auth = SlateAuth.create()
 
     getAuthorizationUrl: async ctx => {
       let scopeString = ctx.scopes.join(',');
-      let url = `https://www.facebook.com/v21.0/dialog/oauth?client_id=${encodeURIComponent(ctx.clientId)}&redirect_uri=${encodeURIComponent(ctx.redirectUri)}&state=${encodeURIComponent(ctx.state)}&scope=${encodeURIComponent(scopeString)}`;
+      let url = `https://www.facebook.com/${MESSENGER_DEFAULT_API_VERSION}/dialog/oauth?client_id=${encodeURIComponent(ctx.clientId)}&redirect_uri=${encodeURIComponent(ctx.redirectUri)}&state=${encodeURIComponent(ctx.state)}&scope=${encodeURIComponent(scopeString)}`;
 
       return { url, input: ctx.input };
     },
 
     handleCallback: async ctx => {
-      let graphApi = createAxios({ baseURL: 'https://graph.facebook.com/v21.0' });
+      let graphApi = createAxios({
+        baseURL: `https://graph.facebook.com/${MESSENGER_DEFAULT_API_VERSION}`
+      });
 
       // Exchange code for user access token
-      let tokenResponse = await graphApi.get('/oauth/access_token', {
-        params: {
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri,
-          code: ctx.code
-        }
-      });
+      let tokenResponse = await graphRequest<any>('exchange authorization code', () =>
+        graphApi.get('/oauth/access_token', {
+          params: {
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri,
+            code: ctx.code
+          }
+        })
+      );
 
-      let userAccessToken = tokenResponse.data.access_token as string;
+      let userAccessToken = tokenResponse.access_token as string | undefined;
+      if (!userAccessToken) {
+        throw messengerServiceError('Facebook OAuth token response did not include an access token');
+      }
 
       // Exchange short-lived token for long-lived token
-      let longLivedResponse = await graphApi.get('/oauth/access_token', {
-        params: {
-          grant_type: 'fb_exchange_token',
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          fb_exchange_token: userAccessToken
-        }
-      });
+      let longLivedResponse = await graphRequest<any>('exchange long-lived token', () =>
+        graphApi.get('/oauth/access_token', {
+          params: {
+            grant_type: 'fb_exchange_token',
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            fb_exchange_token: userAccessToken
+          }
+        })
+      );
 
-      let longLivedUserToken = longLivedResponse.data.access_token as string;
+      let longLivedUserToken = longLivedResponse.access_token as string | undefined;
+      if (!longLivedUserToken) {
+        throw messengerServiceError(
+          'Facebook OAuth long-lived token response did not include an access token'
+        );
+      }
 
       // Get list of pages the user manages
-      let pagesResponse = await graphApi.get('/me/accounts', {
-        params: { access_token: longLivedUserToken }
-      });
+      let pagesResponse = await graphRequest<any>('list managed pages', () =>
+        graphApi.get('/me/accounts', {
+          params: { access_token: longLivedUserToken }
+        })
+      );
 
-      let pages = pagesResponse.data.data as Array<{
+      let pages = pagesResponse.data as Array<{
         id: string;
         name: string;
         access_token: string;
       }>;
 
       if (!pages || pages.length === 0) {
-        throw new Error(
+        throw messengerServiceError(
           'No Facebook Pages found. Please ensure you have admin access to at least one Page.'
         );
       }
@@ -101,7 +128,7 @@ export let auth = SlateAuth.create()
       let page = targetPageId ? pages.find(p => p.id === targetPageId) : pages[0];
 
       if (!page) {
-        throw new Error(
+        throw messengerServiceError(
           `Page with ID ${targetPageId} not found. Available pages: ${pages.map(p => `${p.name} (${p.id})`).join(', ')}`
         );
       }
@@ -130,21 +157,23 @@ export let auth = SlateAuth.create()
       input: { pageId?: string };
       scopes: string[];
     }) => {
-      let graphApi = createAxios({ baseURL: 'https://graph.facebook.com/v21.0' });
-
-      let pageId = ctx.output.pageId || 'me';
-      let response = await graphApi.get(`/${pageId}`, {
-        params: {
-          fields: 'id,name,picture',
-          access_token: ctx.output.token
-        }
+      let graphApi = createAxios({
+        baseURL: `https://graph.facebook.com/${MESSENGER_DEFAULT_API_VERSION}`
       });
 
-      let data = response.data as {
+      let pageId = ctx.output.pageId || 'me';
+      let data = await graphRequest<{
         id?: string;
         name?: string;
         picture?: { data?: { url?: string } };
-      };
+      }>('get OAuth profile', () =>
+        graphApi.get(`/${pageId}`, {
+          params: {
+            fields: 'id,name,picture',
+            access_token: ctx.output.token
+          }
+        })
+      );
 
       return {
         profile: {
@@ -178,21 +207,23 @@ export let auth = SlateAuth.create()
       output: { token: string; pageId?: string };
       input: { token: string; pageId?: string };
     }) => {
-      let graphApi = createAxios({ baseURL: 'https://graph.facebook.com/v21.0' });
-
-      let pageId = ctx.output.pageId || 'me';
-      let response = await graphApi.get(`/${pageId}`, {
-        params: {
-          fields: 'id,name,picture',
-          access_token: ctx.output.token
-        }
+      let graphApi = createAxios({
+        baseURL: `https://graph.facebook.com/${MESSENGER_DEFAULT_API_VERSION}`
       });
 
-      let data = response.data as {
+      let pageId = ctx.output.pageId || 'me';
+      let data = await graphRequest<{
         id?: string;
         name?: string;
         picture?: { data?: { url?: string } };
-      };
+      }>('get token auth profile', () =>
+        graphApi.get(`/${pageId}`, {
+          params: {
+            fields: 'id,name,picture',
+            access_token: ctx.output.token
+          }
+        })
+      );
 
       return {
         profile: {

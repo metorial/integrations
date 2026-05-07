@@ -1,7 +1,13 @@
+import { Buffer } from 'node:buffer';
 import { createAxios } from 'slates';
+import { withFirebaseApiError } from './errors';
 
 let storageAxios = createAxios({
   baseURL: 'https://storage.googleapis.com'
+});
+
+let storageUploadAxios = createAxios({
+  baseURL: 'https://storage.googleapis.com/upload/storage/v1'
 });
 
 export interface StorageObject {
@@ -55,15 +61,17 @@ export class StorageClient {
     prefixes?: string[];
     nextPageToken?: string;
   }> {
-    let response = await storageAxios.get(`/storage/v1/b/${this.bucket}/o`, {
-      headers: this.headers,
-      params: {
-        prefix: params?.prefix,
-        delimiter: params?.delimiter,
-        maxResults: params?.maxResults || 100,
-        pageToken: params?.pageToken
-      }
-    });
+    let response = await withFirebaseApiError('Cloud Storage list objects', () =>
+      storageAxios.get(`/storage/v1/b/${this.bucket}/o`, {
+        headers: this.headers,
+        params: {
+          prefix: params?.prefix,
+          delimiter: params?.delimiter,
+          maxResults: params?.maxResults || 100,
+          pageToken: params?.pageToken
+        }
+      })
+    );
 
     return {
       objects: (response.data.items || []).map(mapStorageObject),
@@ -74,26 +82,32 @@ export class StorageClient {
 
   async getObjectMetadata(objectPath: string): Promise<StorageObject> {
     let encodedPath = encodeURIComponent(objectPath);
-    let response = await storageAxios.get(`/storage/v1/b/${this.bucket}/o/${encodedPath}`, {
-      headers: this.headers
-    });
+    let response = await withFirebaseApiError('Cloud Storage get object metadata', () =>
+      storageAxios.get(`/storage/v1/b/${this.bucket}/o/${encodedPath}`, {
+        headers: this.headers
+      })
+    );
 
     return mapStorageObject(response.data);
   }
 
   async deleteObject(objectPath: string): Promise<void> {
     let encodedPath = encodeURIComponent(objectPath);
-    await storageAxios.delete(`/storage/v1/b/${this.bucket}/o/${encodedPath}`, {
-      headers: this.headers
-    });
+    await withFirebaseApiError('Cloud Storage delete object', () =>
+      storageAxios.delete(`/storage/v1/b/${this.bucket}/o/${encodedPath}`, {
+        headers: this.headers
+      })
+    );
   }
 
   async getDownloadUrl(objectPath: string): Promise<string> {
     let encodedPath = encodeURIComponent(objectPath);
-    let response = await storageAxios.get(`/storage/v1/b/${this.bucket}/o/${encodedPath}`, {
-      headers: this.headers,
-      params: { alt: 'json' }
-    });
+    let response = await withFirebaseApiError('Cloud Storage get download URL', () =>
+      storageAxios.get(`/storage/v1/b/${this.bucket}/o/${encodedPath}`, {
+        headers: this.headers,
+        params: { alt: 'json' }
+      })
+    );
 
     return response.data.mediaLink || '';
   }
@@ -106,12 +120,14 @@ export class StorageClient {
     let encodedSource = encodeURIComponent(sourceObjectPath);
     let encodedDest = encodeURIComponent(destinationObjectPath);
 
-    let response = await storageAxios.post(
-      `/storage/v1/b/${this.bucket}/o/${encodedSource}/copyTo/b/${destinationBucket}/o/${encodedDest}`,
-      {},
-      {
-        headers: this.headers
-      }
+    let response = await withFirebaseApiError('Cloud Storage copy object', () =>
+      storageAxios.post(
+        `/storage/v1/b/${this.bucket}/o/${encodedSource}/copyTo/b/${destinationBucket}/o/${encodedDest}`,
+        {},
+        {
+          headers: this.headers
+        }
+      )
     );
 
     return mapStorageObject(response.data);
@@ -122,15 +138,47 @@ export class StorageClient {
     metadata: Record<string, string>
   ): Promise<StorageObject> {
     let encodedPath = encodeURIComponent(objectPath);
-    let response = await storageAxios.patch(
-      `/storage/v1/b/${this.bucket}/o/${encodedPath}`,
-      {
-        metadata
-      },
-      {
-        headers: this.headers
-      }
+    let response = await withFirebaseApiError('Cloud Storage update object metadata', () =>
+      storageAxios.patch(
+        `/storage/v1/b/${this.bucket}/o/${encodedPath}`,
+        {
+          metadata
+        },
+        {
+          headers: this.headers
+        }
+      )
     );
+
+    return mapStorageObject(response.data);
+  }
+
+  async uploadObject(params: {
+    objectPath: string;
+    contentBase64: string;
+    contentType?: string;
+    customMetadata?: Record<string, string>;
+  }): Promise<StorageObject> {
+    let response = await withFirebaseApiError('Cloud Storage upload object', () =>
+      storageUploadAxios.post(
+        `/b/${this.bucket}/o`,
+        Buffer.from(params.contentBase64, 'base64'),
+        {
+          headers: {
+            ...this.headers,
+            'Content-Type': params.contentType || 'application/octet-stream'
+          },
+          params: {
+            uploadType: 'media',
+            name: params.objectPath
+          }
+        }
+      )
+    );
+
+    if (params.customMetadata) {
+      return this.updateObjectMetadata(params.objectPath, params.customMetadata);
+    }
 
     return mapStorageObject(response.data);
   }

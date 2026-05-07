@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { lambdaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -84,6 +85,10 @@ export let updateFunction = SlateTool.create(spec, {
     let codeUpdated = false;
     let configUpdated = false;
     let lastResult: any = {};
+
+    if (!ctx.input.code && !ctx.input.configuration) {
+      throw lambdaServiceError('Provide code, configuration, or both to update a function.');
+    }
 
     if (ctx.input.code) {
       let codeParams: Record<string, any> = {};

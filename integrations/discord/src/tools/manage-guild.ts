@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DiscordClient } from '../lib/client';
+import { discordServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -100,7 +101,7 @@ export let manageGuild = SlateTool.create(spec, {
     let { action, guildId } = ctx.input;
 
     if (action === 'get') {
-      if (!guildId) throw new Error('guildId is required for the get action');
+      if (!guildId) throw discordServiceError('guildId is required for the get action');
 
       let guild = await client.getGuild(guildId, ctx.input.withCounts);
 
@@ -144,7 +145,7 @@ export let manageGuild = SlateTool.create(spec, {
     }
 
     // action === 'update'
-    if (!guildId) throw new Error('guildId is required for the update action');
+    if (!guildId) throw discordServiceError('guildId is required for the update action');
 
     let updateData: Record<string, any> = {};
     if (ctx.input.name !== undefined) updateData.name = ctx.input.name;

@@ -1,20 +1,97 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { tableauApiError, tableauServiceError } from './errors';
 
 export interface TableauClientConfig {
   serverUrl: string;
   apiVersion: string;
   siteId: string;
   token: string;
+  userId?: string;
+  expiresAt?: string;
 }
+
+export type ViewExportFormat = 'csv' | 'image' | 'pdf';
+
+export interface ViewExportOptions {
+  maxAgeMinutes?: number;
+  filters?: Record<string, string | number | boolean>;
+  imageResolution?: 'high';
+  vizHeight?: number;
+  vizWidth?: number;
+  pdfPageType?: string;
+  pdfOrientation?: 'Portrait' | 'Landscape';
+}
+
+export interface CollectionItemInput {
+  contentLuid: string;
+  contentType: string;
+  contentName?: string;
+}
+
+let applyTableauErrorInterceptor = (http: AxiosInstance) => {
+  http.interceptors.response.use(
+    response => response,
+    error => Promise.reject(tableauApiError(error))
+  );
+};
+
+let buildViewExportParams = (options?: ViewExportOptions) => {
+  let params: Record<string, string> = {};
+
+  if (options?.maxAgeMinutes !== undefined) {
+    params.maxAge = String(options.maxAgeMinutes);
+  }
+  if (options?.imageResolution !== undefined) {
+    params.resolution = options.imageResolution;
+  }
+  if (options?.vizHeight !== undefined) {
+    params.vizHeight = String(options.vizHeight);
+  }
+  if (options?.vizWidth !== undefined) {
+    params.vizWidth = String(options.vizWidth);
+  }
+  if (options?.pdfPageType !== undefined) {
+    params.type = options.pdfPageType;
+  }
+  if (options?.pdfOrientation !== undefined) {
+    params.orientation = options.pdfOrientation;
+  }
+
+  for (let [field, value] of Object.entries(options?.filters || {})) {
+    params[`vf_${field}`] = String(value);
+  }
+
+  return params;
+};
+
+let encodeResponseData = (data: unknown) => Buffer.from(data as any).toString('base64');
+
+let unwrapCollection = (result: any) => result?.collection ?? result;
+
+let assertCollectionBatchSucceeded = (result: any, action: string) => {
+  let errors = Array.isArray(result?.errors) ? result.errors : [];
+  if (errors.length === 0) return;
+
+  let details = errors
+    .map((error: any) => error?.errorMessage || error?.message || error?.errorCode)
+    .filter(Boolean)
+    .join('; ');
+  throw tableauServiceError(
+    `Tableau collection ${action} failed${details ? `: ${details}` : '.'}`
+  );
+};
 
 export class TableauClient {
   private http: AxiosInstance;
+  private resourceHttp: AxiosInstance;
   private siteId: string;
+  private userId?: string;
 
   constructor(config: TableauClientConfig) {
     let baseUrl = config.serverUrl.replace(/\/+$/, '');
     this.siteId = config.siteId;
+    this.userId = config.userId;
 
     this.http = createAxios({
       baseURL: `${baseUrl}/api/${config.apiVersion}`,
@@ -24,6 +101,24 @@ export class TableauClient {
         Accept: 'application/json'
       }
     });
+
+    this.resourceHttp = createAxios({
+      baseURL: `${baseUrl}/api/-`,
+      headers: {
+        'X-Tableau-Auth': config.token,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    });
+
+    applyTableauErrorInterceptor(this.http);
+    applyTableauErrorInterceptor(this.resourceHttp);
+
+    if (config.expiresAt && Date.parse(config.expiresAt) <= Date.now()) {
+      throw tableauServiceError(
+        'Tableau credentials token is expired. Reconnect the Tableau authentication profile to get a fresh token.'
+      );
+    }
   }
 
   // --- Workbooks ---
@@ -189,17 +284,58 @@ export class TableauClient {
     return response.data;
   }
 
-  async getViewData(viewId: string): Promise<string> {
+  async getViewData(viewId: string, options?: ViewExportOptions): Promise<string> {
     let response = await this.http.get(`/sites/${this.siteId}/views/${viewId}/data`, {
-      headers: { Accept: 'text/csv' }
+      params: buildViewExportParams(options),
+      responseType: 'text',
+      headers: { Accept: '*/*' }
     });
     return response.data;
   }
 
+  async exportView(
+    viewId: string,
+    format: ViewExportFormat,
+    options?: ViewExportOptions
+  ): Promise<{
+    data: string;
+    contentType: string;
+    encoding: 'text' | 'base64';
+  }> {
+    if (format === 'csv') {
+      let data = await this.getViewData(viewId, options);
+      return {
+        data,
+        contentType: 'text/csv',
+        encoding: 'text'
+      };
+    }
+
+    let endpoint = format === 'image' ? 'image' : 'pdf';
+    let contentType = format === 'image' ? 'image/png' : 'application/pdf';
+    let response = await this.http.get(`/sites/${this.siteId}/views/${viewId}/${endpoint}`, {
+      params: buildViewExportParams(options),
+      responseType: 'arraybuffer',
+      headers: { Accept: '*/*' }
+    });
+
+    return {
+      data: encodeResponseData(response.data),
+      contentType,
+      encoding: 'base64'
+    };
+  }
+
   // --- Custom Views ---
 
-  async queryCustomViews(): Promise<any> {
-    let response = await this.http.get(`/sites/${this.siteId}/customviews`);
+  async queryCustomViews(params?: { pageSize?: number; pageNumber?: number }): Promise<any> {
+    let queryParams: Record<string, string> = {};
+    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
+    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
+
+    let response = await this.http.get(`/sites/${this.siteId}/customviews`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -227,6 +363,34 @@ export class TableauClient {
 
   async deleteCustomView(customViewId: string): Promise<void> {
     await this.http.delete(`/sites/${this.siteId}/customviews/${customViewId}`);
+  }
+
+  async exportCustomView(
+    customViewId: string,
+    format: ViewExportFormat,
+    options?: ViewExportOptions
+  ): Promise<{
+    data: string;
+    contentType: string;
+    encoding: 'text' | 'base64';
+  }> {
+    let endpoint = format === 'csv' ? 'data' : format;
+    let contentType =
+      format === 'csv' ? 'text/csv' : format === 'image' ? 'image/png' : 'application/pdf';
+    let response = await this.http.get(
+      `/sites/${this.siteId}/customviews/${customViewId}/${endpoint}`,
+      {
+        params: buildViewExportParams(options),
+        responseType: format === 'csv' ? 'text' : 'arraybuffer',
+        headers: { Accept: '*/*' }
+      }
+    );
+
+    return {
+      data: format === 'csv' ? response.data : encodeResponseData(response.data),
+      contentType,
+      encoding: format === 'csv' ? 'text' : 'base64'
+    };
   }
 
   // --- Users ---
@@ -667,23 +831,35 @@ export class TableauClient {
 
   // --- Collections ---
 
-  async queryCollections(params?: { pageSize?: number; pageNumber?: number }): Promise<any> {
+  async queryCollections(params?: {
+    pageSize?: number;
+    pageNumber?: number;
+    filter?: string;
+    sort?: string;
+  }): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
     if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
+    if (params?.filter) queryParams['filter'] = params.filter;
+    if (params?.sort) queryParams['sort'] = params.sort;
 
-    let response = await this.http.get(`/sites/${this.siteId}/collections`, {
+    let response = await this.resourceHttp.get(`/collections`, {
       params: queryParams
     });
     return response.data;
+  }
+
+  async getCollection(collectionId: string): Promise<any> {
+    let response = await this.resourceHttp.get(`/collections/${collectionId}`);
+    return unwrapCollection(response.data);
   }
 
   async createCollection(name: string, description?: string): Promise<any> {
     let collection: Record<string, any> = { name };
     if (description) collection.description = description;
 
-    let response = await this.http.post(`/sites/${this.siteId}/collections`, { collection });
-    return response.data.collection;
+    let response = await this.resourceHttp.post(`/collections`, collection);
+    return response.data;
   }
 
   async updateCollection(
@@ -691,20 +867,87 @@ export class TableauClient {
     updates: {
       name?: string;
       description?: string;
+      ownerId?: string;
     }
   ): Promise<any> {
-    let collection: Record<string, any> = {};
-    if (updates.name !== undefined) collection.name = updates.name;
-    if (updates.description !== undefined) collection.description = updates.description;
+    let current = await this.getCollection(collectionId);
+    let ownerLuid = updates.ownerId ?? this.userId;
 
-    let response = await this.http.put(`/sites/${this.siteId}/collections/${collectionId}`, {
-      collection
-    });
-    return response.data.collection;
+    if (!ownerLuid) {
+      throw tableauServiceError(
+        'ownerId is required to update a collection when the authenticated Tableau user ID is unavailable.'
+      );
+    }
+
+    let collection: Record<string, any> = { luid: collectionId };
+    if (updates.name !== undefined) {
+      collection.name = updates.name;
+    } else if (typeof current.name === 'string') {
+      collection.name = current.name;
+    }
+    if (updates.description !== undefined) {
+      collection.description = updates.description;
+    } else if (typeof current.description === 'string') {
+      collection.description = current.description;
+    }
+    collection.ownerLuid = ownerLuid;
+
+    let response = await this.resourceHttp.post(`/collections/batchUpdate`, [collection]);
+    assertCollectionBatchSucceeded(response.data, 'update');
+    return await this.getCollection(collectionId);
   }
 
   async deleteCollection(collectionId: string): Promise<void> {
-    await this.http.delete(`/sites/${this.siteId}/collections/${collectionId}`);
+    await this.resourceHttp.delete(`/collections/${collectionId}`);
+  }
+
+  async listCollectionItems(
+    collectionId: string,
+    params?: {
+      pageSize?: number;
+      pageNumber?: number;
+      filter?: string;
+      sort?: string;
+    }
+  ): Promise<any> {
+    let queryParams: Record<string, string> = {};
+    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
+    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
+    if (params?.filter) queryParams['filter'] = params.filter;
+    if (params?.sort) queryParams['sort'] = params.sort;
+
+    let response = await this.resourceHttp.get(`/collections/${collectionId}/items`, {
+      params: queryParams
+    });
+    return response.data;
+  }
+
+  async addItemsToCollection(
+    collectionId: string,
+    items: CollectionItemInput[]
+  ): Promise<any> {
+    let response = await this.resourceHttp.post(
+      `/collections/${collectionId}/items/batchCreate`,
+      {
+        items
+      }
+    );
+    assertCollectionBatchSucceeded(response.data, 'add items');
+    return response.data;
+  }
+
+  async removeItemsFromCollection(
+    collectionId: string,
+    items: CollectionItemInput[]
+  ): Promise<any> {
+    let response = await this.resourceHttp.post(
+      `/collections/${collectionId}/items/batchDelete`,
+      {
+        items
+      }
+    );
+    assertCollectionBatchSucceeded(response.data, 'remove items');
+    return response.data;
   }
 
   // --- Site ---

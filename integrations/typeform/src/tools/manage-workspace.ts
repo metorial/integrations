@@ -1,7 +1,23 @@
 import { SlateTool } from 'slates';
 import { TypeformClient } from '../lib/client';
+import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
+
+let getWorkspaceFormCount = (workspace: any) => {
+  if (typeof workspace.forms?.count === 'number') return workspace.forms.count;
+  if (Array.isArray(workspace.forms)) {
+    let count = workspace.forms.find((item: any) => typeof item?.count === 'number')?.count;
+    return typeof count === 'number' ? count : workspace.forms.length;
+  }
+  return (workspace.forms?.items || []).length;
+};
+
+let getWorkspaceMemberCount = (workspace: any) => {
+  if (Array.isArray(workspace.members)) return workspace.members.length;
+  if (typeof workspace.members?.count === 'number') return workspace.members.count;
+  return (workspace.members?.items || []).length;
+};
 
 export let manageWorkspace = SlateTool.create(spec, {
   name: 'Manage Workspace',
@@ -26,6 +42,10 @@ export let manageWorkspace = SlateTool.create(spec, {
       name: z.string().optional().describe('Workspace name (for create or rename)'),
       delete: z.boolean().optional().describe('Set to true to delete the workspace'),
       addMembers: z.array(z.string()).optional().describe('Email addresses of members to add'),
+      memberRole: z
+        .enum(['owner', 'member'])
+        .optional()
+        .describe('Role to assign when adding members (default: member)'),
       removeMembers: z
         .array(z.string())
         .optional()
@@ -48,7 +68,10 @@ export let manageWorkspace = SlateTool.create(spec, {
     });
 
     // Delete
-    if (ctx.input.delete && ctx.input.workspaceId) {
+    if (ctx.input.delete) {
+      if (!ctx.input.workspaceId) {
+        throw typeformServiceError('workspaceId is required when deleting a workspace.');
+      }
       await client.deleteWorkspace(ctx.input.workspaceId);
       return {
         output: {
@@ -66,8 +89,8 @@ export let manageWorkspace = SlateTool.create(spec, {
         output: {
           workspaceId: result.id,
           name: result.name,
-          formCount: (result.forms?.items || []).length,
-          memberCount: (result.members?.items || []).length
+          formCount: getWorkspaceFormCount(result),
+          memberCount: getWorkspaceMemberCount(result)
         },
         message: `Created workspace **${result.name}**.`
       };
@@ -84,7 +107,11 @@ export let manageWorkspace = SlateTool.create(spec, {
       }
       if (ctx.input.addMembers) {
         for (let email of ctx.input.addMembers) {
-          operations.push({ op: 'add', path: '/members', value: { email } });
+          operations.push({
+            op: 'add',
+            path: '/members',
+            value: { email, role: ctx.input.memberRole ?? 'member' }
+          });
         }
       }
       if (ctx.input.removeMembers) {
@@ -100,8 +127,8 @@ export let manageWorkspace = SlateTool.create(spec, {
         output: {
           workspaceId: result.id,
           name: result.name,
-          formCount: (result.forms?.items || []).length,
-          memberCount: (result.members?.items || []).length
+          formCount: getWorkspaceFormCount(result),
+          memberCount: getWorkspaceMemberCount(result)
         },
         message: `Updated workspace **${result.name}**.`
       };
@@ -114,14 +141,14 @@ export let manageWorkspace = SlateTool.create(spec, {
         output: {
           workspaceId: result.id,
           name: result.name,
-          formCount: (result.forms?.items || []).length,
-          memberCount: (result.members?.items || []).length
+          formCount: getWorkspaceFormCount(result),
+          memberCount: getWorkspaceMemberCount(result)
         },
-        message: `Retrieved workspace **${result.name}** with **${(result.forms?.items || []).length}** forms.`
+        message: `Retrieved workspace **${result.name}** with **${getWorkspaceFormCount(result)}** forms.`
       };
     }
 
-    throw new Error(
+    throw typeformServiceError(
       'Provide either a name to create a workspace, or a workspaceId to retrieve/update/delete one.'
     );
   })

@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 export let managePagesTool = SlateTool.create(spec, {
@@ -73,7 +74,7 @@ export let managePagesTool = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let accountId = ctx.input.accountId || ctx.config.accountId;
-    if (!accountId) throw new Error('accountId is required');
+    if (!accountId) throw cloudflareServiceError('accountId is required');
 
     let client = new Client(ctx.auth);
     let { action } = ctx.input;
@@ -93,7 +94,7 @@ export let managePagesTool = SlateTool.create(spec, {
     }
 
     if (action === 'get_project') {
-      if (!ctx.input.projectName) throw new Error('projectName is required');
+      if (!ctx.input.projectName) throw cloudflareServiceError('projectName is required');
       let response = await client.getPagesProject(accountId, ctx.input.projectName);
       let p = response.result;
       return {
@@ -111,7 +112,7 @@ export let managePagesTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete_project') {
-      if (!ctx.input.projectName) throw new Error('projectName is required');
+      if (!ctx.input.projectName) throw cloudflareServiceError('projectName is required');
       await client.deletePagesProject(accountId, ctx.input.projectName);
       return {
         output: { deleted: true },
@@ -120,7 +121,7 @@ export let managePagesTool = SlateTool.create(spec, {
     }
 
     if (action === 'list_deployments') {
-      if (!ctx.input.projectName) throw new Error('projectName is required');
+      if (!ctx.input.projectName) throw cloudflareServiceError('projectName is required');
       let response = await client.listPagesDeployments(accountId, ctx.input.projectName);
       let deployments = response.result.map((d: any) => ({
         deploymentId: d.id,
@@ -137,7 +138,7 @@ export let managePagesTool = SlateTool.create(spec, {
 
     if (action === 'get_deployment') {
       if (!ctx.input.projectName || !ctx.input.deploymentId) {
-        throw new Error('projectName and deploymentId are required');
+        throw cloudflareServiceError('projectName and deploymentId are required');
       }
       let response = await client.getPagesDeployment(
         accountId,
@@ -159,7 +160,7 @@ export let managePagesTool = SlateTool.create(spec, {
 
     if (action === 'rollback_deployment') {
       if (!ctx.input.projectName || !ctx.input.deploymentId) {
-        throw new Error('projectName and deploymentId are required');
+        throw cloudflareServiceError('projectName and deploymentId are required');
       }
       let response = await client.rollbackPagesDeployment(
         accountId,
@@ -180,7 +181,7 @@ export let managePagesTool = SlateTool.create(spec, {
 
     if (action === 'delete_deployment') {
       if (!ctx.input.projectName || !ctx.input.deploymentId) {
-        throw new Error('projectName and deploymentId are required');
+        throw cloudflareServiceError('projectName and deploymentId are required');
       }
       await client.deletePagesDeployment(
         accountId,
@@ -193,6 +194,6 @@ export let managePagesTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw cloudflareServiceError(`Unknown action: ${action}`);
   })
   .build();

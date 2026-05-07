@@ -1,8 +1,17 @@
+import {
+  CopyObjectCommand,
+  CreateBucketCommand,
+  DeleteBucketCommand,
+  DeleteObjectCommand,
+  HeadObjectCommand,
+  ListBucketsCommand,
+  ListObjectsV2Command
+} from '@aws-sdk/client-s3';
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 import { clientFromContext } from '../lib/helpers';
-import { extractXmlValue, extractXmlValues, extractXmlBlocks } from '../lib/xml';
+import { awsServiceError } from '../lib/errors';
 
 let bucketSchema = z.object({
   name: z.string().describe('Bucket name'),
@@ -57,6 +66,9 @@ let outputSchema = z.object({
   copySourceBucket: z.string().optional().describe('Source bucket for copy operations'),
   copySourceKey: z.string().optional().describe('Source key for copy operations')
 });
+
+let encodeCopySource = (bucket: string, key: string) =>
+  `${bucket}/${key.split('/').map(encodeURIComponent).join('/')}`;
 
 export let manageS3Tool = SlateTool.create(spec, {
   name: 'Manage S3',
@@ -142,19 +154,13 @@ export let manageS3Tool = SlateTool.create(spec, {
     let client = clientFromContext(ctx);
     let { operation } = ctx.input;
 
-    // ── List Buckets ────────────────────────────────────────────────
     if (operation === 'list_buckets') {
-      let response = await client.request({
-        service: 's3',
-        method: 'GET',
-        path: '/'
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-      let bucketBlocks = extractXmlBlocks(xml, 'Bucket');
-      let buckets = bucketBlocks.map(block => ({
-        name: extractXmlValue(block, 'Name') ?? '',
-        creationDate: extractXmlValue(block, 'CreationDate')
+      let response = await client.send('S3 ListBuckets', () =>
+        client.s3.send(new ListBucketsCommand({}))
+      );
+      let buckets = (response.Buckets ?? []).map(bucket => ({
+        name: bucket.Name ?? '',
+        creationDate: bucket.CreationDate?.toISOString()
       }));
 
       return {
@@ -166,29 +172,26 @@ export let manageS3Tool = SlateTool.create(spec, {
       };
     }
 
-    // ── Create Bucket ───────────────────────────────────────────────
     if (operation === 'create_bucket') {
-      if (!ctx.input.bucket) throw new Error('bucket is required for create_bucket');
+      if (!ctx.input.bucket) throw awsServiceError('bucket is required for create_bucket');
 
       let bucketName = ctx.input.bucket;
       let region = ctx.config.region;
 
-      // S3 requires a LocationConstraint for any region other than us-east-1
-      let body: string | undefined;
-      let headers: Record<string, string> = {};
-
-      if (region && region !== 'us-east-1') {
-        body = `<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>${region}</LocationConstraint></CreateBucketConfiguration>`;
-        headers['Content-Type'] = 'application/xml';
-      }
-
-      await client.request({
-        service: 's3',
-        method: 'PUT',
-        path: `/${bucketName}`,
-        body,
-        headers
-      });
+      await client.send('S3 CreateBucket', () =>
+        client.s3.send(
+          new CreateBucketCommand({
+            Bucket: bucketName,
+            ...(region && region !== 'us-east-1'
+              ? {
+                  CreateBucketConfiguration: {
+                    LocationConstraint: region as any
+                  }
+                }
+              : {})
+          })
+        )
+      );
 
       return {
         output: {
@@ -199,17 +202,14 @@ export let manageS3Tool = SlateTool.create(spec, {
       };
     }
 
-    // ── Delete Bucket ───────────────────────────────────────────────
     if (operation === 'delete_bucket') {
-      if (!ctx.input.bucket) throw new Error('bucket is required for delete_bucket');
+      if (!ctx.input.bucket) throw awsServiceError('bucket is required for delete_bucket');
 
       let bucketName = ctx.input.bucket;
 
-      await client.request({
-        service: 's3',
-        method: 'DELETE',
-        path: `/${bucketName}`
-      });
+      await client.send('S3 DeleteBucket', () =>
+        client.s3.send(new DeleteBucketCommand({ Bucket: bucketName }))
+      );
 
       return {
         output: {
@@ -220,124 +220,80 @@ export let manageS3Tool = SlateTool.create(spec, {
       };
     }
 
-    // ── List Objects ────────────────────────────────────────────────
     if (operation === 'list_objects') {
-      if (!ctx.input.bucket) throw new Error('bucket is required for list_objects');
+      if (!ctx.input.bucket) throw awsServiceError('bucket is required for list_objects');
 
       let bucketName = ctx.input.bucket;
-      let params: Record<string, string> = {
-        'list-type': '2'
-      };
+      let response = await client.send('S3 ListObjectsV2', () =>
+        client.s3.send(
+          new ListObjectsV2Command({
+            Bucket: bucketName,
+            Prefix: ctx.input.prefix,
+            Delimiter: ctx.input.delimiter,
+            MaxKeys: ctx.input.maxKeys,
+            ContinuationToken: ctx.input.continuationToken
+          })
+        )
+      );
 
-      if (ctx.input.prefix) params['prefix'] = ctx.input.prefix;
-      if (ctx.input.delimiter) params['delimiter'] = ctx.input.delimiter;
-      if (ctx.input.maxKeys !== undefined) params['max-keys'] = String(ctx.input.maxKeys);
-      if (ctx.input.continuationToken)
-        params['continuation-token'] = ctx.input.continuationToken;
-
-      let response = await client.request({
-        service: 's3',
-        method: 'GET',
-        path: `/${bucketName}`,
-        params
-      });
-
-      let xml = typeof response === 'string' ? response : String(response);
-
-      let contentBlocks = extractXmlBlocks(xml, 'Contents');
-      let objects = contentBlocks.map(block => {
-        let sizeStr = extractXmlValue(block, 'Size');
-        return {
-          key: extractXmlValue(block, 'Key') ?? '',
-          size: sizeStr ? parseInt(sizeStr, 10) : undefined,
-          lastModified: extractXmlValue(block, 'LastModified'),
-          storageClass: extractXmlValue(block, 'StorageClass'),
-          etag: extractXmlValue(block, 'ETag')
-        };
-      });
-
-      let isTruncatedStr = extractXmlValue(xml, 'IsTruncated');
-      let isTruncated = isTruncatedStr === 'true';
-      let nextContinuationToken = extractXmlValue(xml, 'NextContinuationToken');
-
-      let commonPrefixBlocks = extractXmlBlocks(xml, 'CommonPrefixes');
-      let commonPrefixes = commonPrefixBlocks
-        .map(block => extractXmlValue(block, 'Prefix'))
-        .filter((p): p is string => p !== undefined);
+      let objects = (response.Contents ?? []).map(object => ({
+        key: object.Key ?? '',
+        size: object.Size,
+        lastModified: object.LastModified?.toISOString(),
+        storageClass: object.StorageClass,
+        etag: object.ETag
+      }));
+      let commonPrefixes = (response.CommonPrefixes ?? [])
+        .map(prefix => prefix.Prefix)
+        .filter((prefix): prefix is string => typeof prefix === 'string');
 
       let prefixLabel = ctx.input.prefix ? ` with prefix "${ctx.input.prefix}"` : '';
-      let truncatedLabel = isTruncated ? ' (more results available)' : '';
+      let truncatedLabel = response.IsTruncated ? ' (more results available)' : '';
 
       return {
         output: {
           operation: 'list_objects',
           bucket: bucketName,
           objects,
-          isTruncated,
-          nextContinuationToken: isTruncated ? nextContinuationToken : undefined,
+          isTruncated: response.IsTruncated ?? false,
+          nextContinuationToken: response.IsTruncated
+            ? response.NextContinuationToken
+            : undefined,
           commonPrefixes: commonPrefixes.length > 0 ? commonPrefixes : undefined
         },
         message: `Found **${objects.length}** object(s) in bucket **${bucketName}**${prefixLabel}${truncatedLabel}.${commonPrefixes.length > 0 ? ` Also found **${commonPrefixes.length}** common prefix(es).` : ''}`
       };
     }
 
-    // ── Get Object Metadata ─────────────────────────────────────────
     if (operation === 'get_object_metadata') {
-      if (!ctx.input.bucket) throw new Error('bucket is required for get_object_metadata');
-      if (!ctx.input.key) throw new Error('key is required for get_object_metadata');
+      if (!ctx.input.bucket)
+        throw awsServiceError('bucket is required for get_object_metadata');
+      if (!ctx.input.key) throw awsServiceError('key is required for get_object_metadata');
 
       let bucketName = ctx.input.bucket;
       let objectKey = ctx.input.key;
-      let encodedKey = objectKey.split('/').map(encodeURIComponent).join('/');
-
-      let response = await client.request({
-        service: 's3',
-        method: 'HEAD',
-        path: `/${bucketName}/${encodedKey}`
-      });
-
-      // HEAD responses return headers as the response data
-      // The response may be empty string/object; metadata comes from response headers
-      // Since the client returns response.data, for HEAD requests we need to handle
-      // the case where axios may return headers differently
-      let headers = typeof response === 'object' && response !== null ? response : {};
-
-      // Extract user-defined metadata (x-amz-meta-* headers)
-      let userMetadata: Record<string, string> = {};
-      if (typeof headers === 'object') {
-        for (let [headerKey, headerValue] of Object.entries(headers)) {
-          let lowerKey = String(headerKey).toLowerCase();
-          if (lowerKey.startsWith('x-amz-meta-')) {
-            let metaKey = lowerKey.replace('x-amz-meta-', '');
-            userMetadata[metaKey] = String(headerValue);
-          }
-        }
-      }
-
-      let contentLength = headers['content-length'] ?? headers['Content-Length'];
-      let contentType = headers['content-type'] ?? headers['Content-Type'];
-      let lastModified = headers['last-modified'] ?? headers['Last-Modified'];
-      let etag = headers['etag'] ?? headers['ETag'];
-      let storageClass = headers['x-amz-storage-class'] ?? headers['X-Amz-Storage-Class'];
-      let serverSideEncryption =
-        headers['x-amz-server-side-encryption'] ?? headers['X-Amz-Server-Side-Encryption'];
-      let versionId = headers['x-amz-version-id'] ?? headers['X-Amz-Version-Id'];
+      let response = await client.send('S3 HeadObject', () =>
+        client.s3.send(new HeadObjectCommand({ Bucket: bucketName, Key: objectKey }))
+      );
 
       let metadata = {
         key: objectKey,
         bucket: bucketName,
-        contentType: contentType ? String(contentType) : undefined,
-        contentLength: contentLength ? parseInt(String(contentLength), 10) : undefined,
-        lastModified: lastModified ? String(lastModified) : undefined,
-        etag: etag ? String(etag) : undefined,
-        storageClass: storageClass ? String(storageClass) : undefined,
-        serverSideEncryption: serverSideEncryption ? String(serverSideEncryption) : undefined,
-        versionId: versionId ? String(versionId) : undefined,
-        metadata: Object.keys(userMetadata).length > 0 ? userMetadata : undefined
+        contentType: response.ContentType,
+        contentLength: response.ContentLength,
+        lastModified: response.LastModified?.toISOString(),
+        etag: response.ETag,
+        storageClass: response.StorageClass,
+        serverSideEncryption: response.ServerSideEncryption,
+        versionId: response.VersionId,
+        metadata:
+          response.Metadata && Object.keys(response.Metadata).length > 0
+            ? response.Metadata
+            : undefined
       };
 
-      let sizeLabel = contentLength
-        ? ` (${formatBytes(parseInt(String(contentLength), 10))})`
+      let sizeLabel = response.ContentLength
+        ? ` (${formatBytes(response.ContentLength)})`
         : '';
 
       return {
@@ -351,20 +307,16 @@ export let manageS3Tool = SlateTool.create(spec, {
       };
     }
 
-    // ── Delete Object ───────────────────────────────────────────────
     if (operation === 'delete_object') {
-      if (!ctx.input.bucket) throw new Error('bucket is required for delete_object');
-      if (!ctx.input.key) throw new Error('key is required for delete_object');
+      if (!ctx.input.bucket) throw awsServiceError('bucket is required for delete_object');
+      if (!ctx.input.key) throw awsServiceError('key is required for delete_object');
 
       let bucketName = ctx.input.bucket;
       let objectKey = ctx.input.key;
-      let encodedKey = objectKey.split('/').map(encodeURIComponent).join('/');
 
-      await client.request({
-        service: 's3',
-        method: 'DELETE',
-        path: `/${bucketName}/${encodedKey}`
-      });
+      await client.send('S3 DeleteObject', () =>
+        client.s3.send(new DeleteObjectCommand({ Bucket: bucketName, Key: objectKey }))
+      );
 
       return {
         output: {
@@ -376,32 +328,29 @@ export let manageS3Tool = SlateTool.create(spec, {
       };
     }
 
-    // ── Copy Object ─────────────────────────────────────────────────
     if (operation === 'copy_object') {
-      if (!ctx.input.sourceBucket) throw new Error('sourceBucket is required for copy_object');
-      if (!ctx.input.sourceKey) throw new Error('sourceKey is required for copy_object');
+      if (!ctx.input.sourceBucket)
+        throw awsServiceError('sourceBucket is required for copy_object');
+      if (!ctx.input.sourceKey) throw awsServiceError('sourceKey is required for copy_object');
       if (!ctx.input.destinationBucket)
-        throw new Error('destinationBucket is required for copy_object');
+        throw awsServiceError('destinationBucket is required for copy_object');
       if (!ctx.input.destinationKey)
-        throw new Error('destinationKey is required for copy_object');
+        throw awsServiceError('destinationKey is required for copy_object');
 
       let sourceBucket = ctx.input.sourceBucket;
       let sourceKey = ctx.input.sourceKey;
       let destinationBucket = ctx.input.destinationBucket;
       let destinationKey = ctx.input.destinationKey;
 
-      let encodedSourceKey = sourceKey.split('/').map(encodeURIComponent).join('/');
-      let encodedDestKey = destinationKey.split('/').map(encodeURIComponent).join('/');
-      let copySource = `/${sourceBucket}/${encodedSourceKey}`;
-
-      await client.request({
-        service: 's3',
-        method: 'PUT',
-        path: `/${destinationBucket}/${encodedDestKey}`,
-        headers: {
-          'x-amz-copy-source': copySource
-        }
-      });
+      await client.send('S3 CopyObject', () =>
+        client.s3.send(
+          new CopyObjectCommand({
+            Bucket: destinationBucket,
+            Key: destinationKey,
+            CopySource: encodeCopySource(sourceBucket, sourceKey)
+          })
+        )
+      );
 
       let sameLocation = sourceBucket === destinationBucket && sourceKey === destinationKey;
       let locationDesc =
@@ -423,7 +372,7 @@ export let manageS3Tool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown operation: ${operation}`);
+    throw awsServiceError(`Unknown operation: ${operation}`);
   })
   .build();
 

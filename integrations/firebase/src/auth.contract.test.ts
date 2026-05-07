@@ -132,7 +132,7 @@ describe('firebase auth contract', () => {
           clientSecret: 'client-secret',
           scopes: [firebaseScopes.cloudPlatform]
         }),
-      { code: 'internal.unexpected', kind: 'internal', status: 500 }
+      { code: 'request.bad', status: 400 }
     );
   });
 

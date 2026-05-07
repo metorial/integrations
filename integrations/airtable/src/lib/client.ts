@@ -1,8 +1,10 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { airtableApiError } from './errors';
 import type {
   AirtableRecord,
   AirtableListRecordsResponse,
+  AirtableListCommentsResponse,
   AirtableBaseSchema,
   AirtableComment,
   AirtableWebhook,
@@ -12,6 +14,7 @@ import type {
 
 export class Client {
   private api: AxiosInstance;
+  private contentApi: AxiosInstance;
   private baseId: string;
 
   constructor(config: { token: string; baseId: string }) {
@@ -23,6 +26,25 @@ export class Client {
         'Content-Type': 'application/json'
       }
     });
+    this.contentApi = createAxios({
+      baseURL: 'https://content.airtable.com/v0',
+      headers: {
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
+  private async request<T>(
+    operation: string,
+    run: () => Promise<{ data: T }>
+  ): Promise<T> {
+    try {
+      let response = await run();
+      return response.data;
+    } catch (error) {
+      throw airtableApiError(error, operation);
+    }
   }
 
   // ─── Records ─────────────────────────────────────────────────────────
@@ -67,10 +89,11 @@ export class Client {
     if (options?.returnFieldsByFieldId)
       params['returnFieldsByFieldId'] = options.returnFieldsByFieldId;
 
-    let response = await this.api.get(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, {
-      params
-    });
-    return response.data;
+    return await this.request('list records', () =>
+      this.api.get(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, {
+        params
+      })
+    );
   }
 
   async getRecord(
@@ -82,11 +105,11 @@ export class Client {
     if (options?.returnFieldsByFieldId)
       params['returnFieldsByFieldId'] = options.returnFieldsByFieldId;
 
-    let response = await this.api.get(
-      `/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}`,
-      { params }
+    return await this.request('get record', () =>
+      this.api.get(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}`, {
+        params
+      })
     );
-    return response.data;
   }
 
   async createRecords(
@@ -100,11 +123,9 @@ export class Client {
     if (options?.typecast) body['typecast'] = true;
     if (options?.returnFieldsByFieldId) body['returnFieldsByFieldId'] = true;
 
-    let response = await this.api.post(
-      `/${this.baseId}/${encodeURIComponent(tableIdOrName)}`,
-      body
+    return await this.request('create records', () =>
+      this.api.post(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, body)
     );
-    return response.data;
   }
 
   async updateRecords(
@@ -119,12 +140,11 @@ export class Client {
     if (options?.returnFieldsByFieldId) body['returnFieldsByFieldId'] = true;
 
     let method = options?.method || 'PATCH';
-    let response =
+    return await this.request('update records', () =>
       method === 'PUT'
-        ? await this.api.put(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, body)
-        : await this.api.patch(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, body);
-
-    return response.data;
+        ? this.api.put(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, body)
+        : this.api.patch(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, body)
+    );
   }
 
   async upsertRecords(
@@ -146,11 +166,9 @@ export class Client {
     if (options?.typecast) body['typecast'] = true;
     if (options?.returnFieldsByFieldId) body['returnFieldsByFieldId'] = true;
 
-    let response = await this.api.patch(
-      `/${this.baseId}/${encodeURIComponent(tableIdOrName)}`,
-      body
+    return await this.request('upsert records', () =>
+      this.api.patch(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, body)
     );
-    return response.data;
   }
 
   async deleteRecords(
@@ -160,18 +178,36 @@ export class Client {
     let params = new URLSearchParams();
     recordIds.forEach(id => params.append('records[]', id));
 
-    let response = await this.api.delete(
-      `/${this.baseId}/${encodeURIComponent(tableIdOrName)}`,
-      { params }
+    return await this.request('delete records', () =>
+      this.api.delete(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, { params })
     );
-    return response.data;
+  }
+
+  async uploadAttachment(
+    recordId: string,
+    attachmentFieldIdOrName: string,
+    file: string,
+    filename: string,
+    contentType: string
+  ): Promise<AirtableRecord> {
+    return await this.request('upload attachment', () =>
+      this.contentApi.post(
+        `/${this.baseId}/${encodeURIComponent(recordId)}/${encodeURIComponent(attachmentFieldIdOrName)}/uploadAttachment`,
+        {
+          file,
+          filename,
+          contentType
+        }
+      )
+    );
   }
 
   // ─── Schema ──────────────────────────────────────────────────────────
 
   async getBaseSchema(): Promise<AirtableBaseSchema> {
-    let response = await this.api.get(`/meta/bases/${this.baseId}/tables`);
-    return response.data;
+    return await this.request('get base schema', () =>
+      this.api.get(`/meta/bases/${this.baseId}/tables`)
+    );
   }
 
   async createTable(
@@ -187,42 +223,46 @@ export class Client {
     let body: Record<string, any> = { name, fields };
     if (description) body['description'] = description;
 
-    let response = await this.api.post(`/meta/bases/${this.baseId}/tables`, body);
-    return response.data;
+    return await this.request('create table', () =>
+      this.api.post(`/meta/bases/${this.baseId}/tables`, body)
+    );
   }
 
   async updateTable(
     tableIdOrName: string,
     updates: { name?: string; description?: string }
   ): Promise<any> {
-    let response = await this.api.patch(
-      `/meta/bases/${this.baseId}/tables/${encodeURIComponent(tableIdOrName)}`,
-      updates
+    return await this.request('update table', () =>
+      this.api.patch(
+        `/meta/bases/${this.baseId}/tables/${encodeURIComponent(tableIdOrName)}`,
+        updates
+      )
     );
-    return response.data;
   }
 
   async createField(
-    tableIdOrName: string,
+    tableId: string,
     field: { name: string; type: string; description?: string; options?: Record<string, any> }
   ): Promise<any> {
-    let response = await this.api.post(
-      `/meta/bases/${this.baseId}/tables/${encodeURIComponent(tableIdOrName)}/fields`,
-      field
+    return await this.request('create field', () =>
+      this.api.post(
+        `/meta/bases/${this.baseId}/tables/${encodeURIComponent(tableId)}/fields`,
+        field
+      )
     );
-    return response.data;
   }
 
   async updateField(
-    tableIdOrName: string,
-    fieldIdOrName: string,
+    tableId: string,
+    fieldId: string,
     updates: { name?: string; description?: string; options?: Record<string, any> }
   ): Promise<any> {
-    let response = await this.api.patch(
-      `/meta/bases/${this.baseId}/tables/${encodeURIComponent(tableIdOrName)}/fields/${encodeURIComponent(fieldIdOrName)}`,
-      updates
+    return await this.request('update field', () =>
+      this.api.patch(
+        `/meta/bases/${this.baseId}/tables/${encodeURIComponent(tableId)}/fields/${encodeURIComponent(fieldId)}`,
+        updates
+      )
     );
-    return response.data;
   }
 
   // ─── Comments ────────────────────────────────────────────────────────
@@ -231,16 +271,16 @@ export class Client {
     tableIdOrName: string,
     recordId: string,
     options?: { offset?: string; pageSize?: number }
-  ): Promise<{ comments: AirtableComment[]; offset?: string }> {
+  ): Promise<AirtableListCommentsResponse> {
     let params: Record<string, any> = {};
     if (options?.offset) params['offset'] = options.offset;
     if (options?.pageSize) params['pageSize'] = options.pageSize;
 
-    let response = await this.api.get(
-      `/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}/comments`,
-      { params }
+    return await this.request('list comments', () =>
+      this.api.get(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}/comments`, {
+        params
+      })
     );
-    return response.data;
   }
 
   async createComment(
@@ -248,11 +288,11 @@ export class Client {
     recordId: string,
     text: string
   ): Promise<AirtableComment> {
-    let response = await this.api.post(
-      `/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}/comments`,
-      { text }
+    return await this.request('create comment', () =>
+      this.api.post(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}/comments`, {
+        text
+      })
     );
-    return response.data;
   }
 
   async updateComment(
@@ -261,11 +301,12 @@ export class Client {
     commentId: string,
     text: string
   ): Promise<AirtableComment> {
-    let response = await this.api.patch(
-      `/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}/comments/${commentId}`,
-      { text }
+    return await this.request('update comment', () =>
+      this.api.patch(
+        `/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}/comments/${commentId}`,
+        { text }
+      )
     );
-    return response.data;
   }
 
   async deleteComment(
@@ -273,8 +314,10 @@ export class Client {
     recordId: string,
     commentId: string
   ): Promise<void> {
-    await this.api.delete(
-      `/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}/comments/${commentId}`
+    await this.request('delete comment', () =>
+      this.api.delete(
+        `/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}/comments/${commentId}`
+      )
     );
   }
 
@@ -291,25 +334,30 @@ export class Client {
       };
     }
   ): Promise<CreateWebhookResponse> {
-    let response = await this.api.post(`/bases/${this.baseId}/webhooks`, {
-      notificationUrl,
-      specification
-    });
-    return response.data;
+    return await this.request('create webhook', () =>
+      this.api.post(`/bases/${this.baseId}/webhooks`, {
+        notificationUrl,
+        specification
+      })
+    );
   }
 
   async listWebhooks(): Promise<{ webhooks: AirtableWebhook[] }> {
-    let response = await this.api.get(`/bases/${this.baseId}/webhooks`);
-    return response.data;
+    return await this.request('list webhooks', () =>
+      this.api.get(`/bases/${this.baseId}/webhooks`)
+    );
   }
 
   async deleteWebhook(webhookId: string): Promise<void> {
-    await this.api.delete(`/bases/${this.baseId}/webhooks/${webhookId}`);
+    await this.request('delete webhook', () =>
+      this.api.delete(`/bases/${this.baseId}/webhooks/${webhookId}`)
+    );
   }
 
   async refreshWebhook(webhookId: string): Promise<{ expirationTime: string }> {
-    let response = await this.api.post(`/bases/${this.baseId}/webhooks/${webhookId}/refresh`);
-    return response.data;
+    return await this.request('refresh webhook', () =>
+      this.api.post(`/bases/${this.baseId}/webhooks/${webhookId}/refresh`)
+    );
   }
 
   async getWebhookPayloads(
@@ -319,30 +367,35 @@ export class Client {
     let params: Record<string, any> = {};
     if (cursor !== undefined) params['cursor'] = cursor;
 
-    let response = await this.api.get(`/bases/${this.baseId}/webhooks/${webhookId}/payloads`, {
-      params
-    });
-    return response.data;
+    return await this.request('get webhook payloads', () =>
+      this.api.get(`/bases/${this.baseId}/webhooks/${webhookId}/payloads`, {
+        params
+      })
+    );
   }
 
   // ─── Collaborators ──────────────────────────────────────────────────
 
   async addBaseCollaborator(userId: string, permissionLevel: string): Promise<any> {
-    let response = await this.api.post(`/meta/bases/${this.baseId}/collaborators`, {
-      collaborators: [{ user: { id: userId }, permissionLevel }]
-    });
-    return response.data;
+    return await this.request('add base collaborator', () =>
+      this.api.post(`/meta/bases/${this.baseId}/collaborators`, {
+        collaborators: [{ user: { id: userId }, permissionLevel }]
+      })
+    );
   }
 
   async updateBaseCollaborator(userId: string, permissionLevel: string): Promise<any> {
-    let response = await this.api.patch(`/meta/bases/${this.baseId}/collaborators/${userId}`, {
-      permissionLevel
-    });
-    return response.data;
+    return await this.request('update base collaborator', () =>
+      this.api.patch(`/meta/bases/${this.baseId}/collaborators/${userId}`, {
+        permissionLevel
+      })
+    );
   }
 
   async deleteBaseCollaborator(userId: string): Promise<void> {
-    await this.api.delete(`/meta/bases/${this.baseId}/collaborators/${userId}`);
+    await this.request('delete base collaborator', () =>
+      this.api.delete(`/meta/bases/${this.baseId}/collaborators/${userId}`)
+    );
   }
 
   // ─── Bases ───────────────────────────────────────────────────────────
@@ -354,7 +407,6 @@ export class Client {
     let params: Record<string, any> = {};
     if (options?.offset) params['offset'] = options.offset;
 
-    let response = await this.api.get('/meta/bases', { params });
-    return response.data;
+    return await this.request('list bases', () => this.api.get('/meta/bases', { params }));
   }
 }

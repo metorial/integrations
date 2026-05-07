@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { pipedriveServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -54,7 +55,8 @@ Use this tool to configure your sales process structure. Stages define the steps
 
     if (resourceType === 'pipeline') {
       if (action === 'delete') {
-        if (!ctx.input.pipelineId) throw new Error('pipelineId is required for delete');
+        if (!ctx.input.pipelineId)
+          throw pipedriveServiceError('pipelineId is required for delete');
         await client.deletePipeline(ctx.input.pipelineId);
         return {
           output: { pipelineId: ctx.input.pipelineId, deleted: true },
@@ -73,7 +75,8 @@ Use this tool to configure your sales process structure. Stages define the steps
       if (action === 'create') {
         result = await client.createPipeline(body);
       } else {
-        if (!ctx.input.pipelineId) throw new Error('pipelineId is required for update');
+        if (!ctx.input.pipelineId)
+          throw pipedriveServiceError('pipelineId is required for update');
         result = await client.updatePipeline(ctx.input.pipelineId, body);
       }
 
@@ -93,7 +96,7 @@ Use this tool to configure your sales process structure. Stages define the steps
 
     // Stage management
     if (action === 'delete') {
-      if (!ctx.input.stageId) throw new Error('stageId is required for delete');
+      if (!ctx.input.stageId) throw pipedriveServiceError('stageId is required for delete');
       await client.deleteStage(ctx.input.stageId);
       return {
         output: { stageId: ctx.input.stageId, deleted: true },
@@ -113,7 +116,7 @@ Use this tool to configure your sales process structure. Stages define the steps
     if (action === 'create') {
       result = await client.createStage(body);
     } else {
-      if (!ctx.input.stageId) throw new Error('stageId is required for update');
+      if (!ctx.input.stageId) throw pipedriveServiceError('stageId is required for update');
       result = await client.updateStage(ctx.input.stageId, body);
     }
 

@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { geminiApiError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -29,7 +30,11 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await axios.get('/models', { params: { pageSize: 1 } });
+      try {
+        await axios.get('/models', { params: { pageSize: 1 } });
+      } catch (error) {
+        throw geminiApiError(error, 'validate API key');
+      }
 
       return {
         profile: {

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwilioClient } from '../lib/client';
+import { twilioServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -70,7 +71,7 @@ export let sendConversationMessage = SlateTool.create(spec, {
     });
 
     if (ctx.input.action === 'send') {
-      if (!ctx.input.body) throw new Error('body is required for send action');
+      if (!ctx.input.body) throw twilioServiceError('body is required for send action');
       let result = await client.sendConversationMessage(ctx.input.conversationSid, {
         body: ctx.input.body,
         author: ctx.input.author,
@@ -94,6 +95,6 @@ export let sendConversationMessage = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw twilioServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

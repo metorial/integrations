@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ShopifyClient } from '../lib/client';
+import { shopifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -88,9 +89,12 @@ export let manageInventory = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'set') {
-      if (!ctx.input.inventoryItemId) throw new Error('inventoryItemId is required for set');
-      if (!ctx.input.locationId) throw new Error('locationId is required for set');
-      if (ctx.input.available === undefined) throw new Error('available is required for set');
+      if (!ctx.input.inventoryItemId)
+        throw shopifyServiceError('inventoryItemId is required for set');
+      if (!ctx.input.locationId)
+        throw shopifyServiceError('locationId is required for set');
+      if (ctx.input.available === undefined)
+        throw shopifyServiceError('available is required for set');
 
       let level = await client.setInventoryLevel({
         inventoryItemId: ctx.input.inventoryItemId,
@@ -105,10 +109,11 @@ export let manageInventory = SlateTool.create(spec, {
 
     if (ctx.input.action === 'adjust') {
       if (!ctx.input.inventoryItemId)
-        throw new Error('inventoryItemId is required for adjust');
-      if (!ctx.input.locationId) throw new Error('locationId is required for adjust');
+        throw shopifyServiceError('inventoryItemId is required for adjust');
+      if (!ctx.input.locationId)
+        throw shopifyServiceError('locationId is required for adjust');
       if (ctx.input.adjustment === undefined)
-        throw new Error('adjustment is required for adjust');
+        throw shopifyServiceError('adjustment is required for adjust');
 
       let level = await client.adjustInventoryLevel({
         inventoryItemId: ctx.input.inventoryItemId,
@@ -121,6 +126,6 @@ export let manageInventory = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw shopifyServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StripeClient } from '../lib/client';
+import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -148,7 +149,7 @@ export let manageCustomers = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.customerId) throw new Error('customerId is required for get action');
+      if (!ctx.input.customerId) throw stripeServiceError('customerId is required for get action');
       let customer = await client.getCustomer(ctx.input.customerId);
       return {
         output: {
@@ -164,7 +165,7 @@ export let manageCustomers = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.customerId) throw new Error('customerId is required for update action');
+      if (!ctx.input.customerId) throw stripeServiceError('customerId is required for update action');
       let params: Record<string, any> = {};
       if (ctx.input.email !== undefined) params.email = ctx.input.email;
       if (ctx.input.name !== undefined) params.name = ctx.input.name;
@@ -200,7 +201,7 @@ export let manageCustomers = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.customerId) throw new Error('customerId is required for delete action');
+      if (!ctx.input.customerId) throw stripeServiceError('customerId is required for delete action');
       let result = await client.deleteCustomer(ctx.input.customerId);
       return {
         output: {

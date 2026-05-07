@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwitterClient } from '../lib/client';
+import { twitterServiceError } from '../lib/errors';
 import { postSchema, mapPost } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -38,7 +39,7 @@ export let manageBookmark = SlateTool.create(spec, {
     let { action, userId, postId, maxResults, paginationToken } = ctx.input;
 
     if (action === 'add') {
-      if (!postId) throw new Error('postId is required to add a bookmark.');
+      if (!postId) throw twitterServiceError('postId is required to add a bookmark.');
       await client.addBookmark(userId, postId);
       return {
         output: { success: true },
@@ -47,7 +48,7 @@ export let manageBookmark = SlateTool.create(spec, {
     }
 
     if (action === 'remove') {
-      if (!postId) throw new Error('postId is required to remove a bookmark.');
+      if (!postId) throw twitterServiceError('postId is required to remove a bookmark.');
       await client.removeBookmark(userId, postId);
       return {
         output: { success: true },
@@ -64,6 +65,6 @@ export let manageBookmark = SlateTool.create(spec, {
       };
     }
 
-    throw new Error('Invalid action.');
+    throw twitterServiceError('Invalid action.');
   })
   .build();

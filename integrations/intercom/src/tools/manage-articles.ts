@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { intercomServiceError } from '../lib/errors';
 
 export let manageArticles = SlateTool.create(spec, {
   name: 'Manage Articles',
@@ -58,7 +59,7 @@ Supports multilingual content through translated content fields.`,
 
     if (action === 'create') {
       if (!ctx.input.title || !ctx.input.authorId) {
-        throw new Error('title and authorId are required for create');
+        throw intercomServiceError('title and authorId are required for create');
       }
       let result = await client.createArticle({
         title: ctx.input.title,
@@ -77,7 +78,8 @@ Supports multilingual content through translated content fields.`,
     }
 
     if (action === 'update') {
-      if (!ctx.input.articleId) throw new Error('articleId is required for update');
+      if (!ctx.input.articleId)
+        throw intercomServiceError('articleId is required for update');
       let result = await client.updateArticle(ctx.input.articleId, {
         title: ctx.input.title,
         authorId: ctx.input.authorId,
@@ -95,7 +97,8 @@ Supports multilingual content through translated content fields.`,
     }
 
     if (action === 'delete') {
-      if (!ctx.input.articleId) throw new Error('articleId is required for delete');
+      if (!ctx.input.articleId)
+        throw intercomServiceError('articleId is required for delete');
       await client.deleteArticle(ctx.input.articleId);
       return {
         output: { articleId: ctx.input.articleId, deleted: true },
@@ -103,7 +106,7 @@ Supports multilingual content through translated content fields.`,
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw intercomServiceError(`Unknown action: ${action}`);
   })
   .build();
 

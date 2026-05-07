@@ -12,6 +12,10 @@ Schedule a new Zoom meeting for a user. Supports instant meetings, scheduled mee
 
 Schedule a new Zoom webinar. Requires the Zoom Webinar add-on. Supports configuring registration, panelists, Q&A, and recording settings.
 
+### Delete Webinar
+
+Delete a scheduled Zoom webinar.
+
 ### Delete Meeting
 
 Delete a scheduled Zoom meeting. This permanently removes the meeting and cannot be undone.
@@ -36,9 +40,21 @@ Retrieve a report for a past meeting including duration, participant count, and 
 
 Retrieve detailed information about a specific Zoom meeting by its ID. Returns meeting configuration, settings, join URLs, and scheduling details.
 
+### Get Meeting Invitation
+
+Retrieve the formatted invitation text and SIP dial-in links for a Zoom meeting.
+
 ### Get User
 
 Retrieve detailed profile information for a specific Zoom user including their settings, permissions, and account details.
+
+### Get User Settings
+
+Retrieve a Zoom user's meeting, recording, telephony, and feature settings.
+
+### Get Webinar
+
+Retrieve detailed information about a specific Zoom webinar by its ID.
 
 ### List Chat Channels
 
@@ -64,6 +80,14 @@ List all webinars scheduled by a Zoom user. Requires the Webinar add-on. Support
 
 List existing registrants or add a new registrant to a Zoom meeting. When adding a registrant, provide their email and name. When listing, supports filtering by status and pagination.
 
+### Manage Meeting Polls
+
+List, create, retrieve, update, or delete polls for a Zoom meeting.
+
+### Manage Chat Messages
+
+List, retrieve, update, or delete Zoom Team Chat messages in a channel or direct conversation.
+
 ### Send Chat Message
 
 Send a Zoom Team Chat message to a channel or directly to a contact. Provide either a channel ID or contact email as the recipient.
@@ -71,6 +95,10 @@ Send a Zoom Team Chat message to a channel or directly to a contact. Provide eit
 ### Update Meeting
 
 Update an existing Zoom meeting's topic, schedule, duration, settings, or other properties. Only provided fields will be updated.
+
+### Update Webinar
+
+Update an existing Zoom webinar's topic, schedule, duration, agenda, or settings.
 
 ## License
 

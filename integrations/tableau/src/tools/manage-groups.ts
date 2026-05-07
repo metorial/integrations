@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { tableauServiceError } from '../lib/errors';
 
 export let manageGroups = SlateTool.create(spec, {
   name: 'Manage Groups',
@@ -87,7 +88,9 @@ export let manageGroups = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      let g = await client.createGroup(ctx.input.name!, ctx.input.minimumSiteRole);
+      if (!ctx.input.name) throw tableauServiceError('name is required for create action.');
+
+      let g = await client.createGroup(ctx.input.name, ctx.input.minimumSiteRole);
       return {
         output: { group: { groupId: g.id, name: g.name, minimumSiteRole: g.minimumSiteRole } },
         message: `Created group **${g.name}**.`
@@ -95,7 +98,13 @@ export let manageGroups = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      let g = await client.updateGroup(ctx.input.groupId!, {
+      if (!ctx.input.groupId)
+        throw tableauServiceError('groupId is required for update action.');
+      if (ctx.input.name === undefined && ctx.input.minimumSiteRole === undefined) {
+        throw tableauServiceError('Provide name or minimumSiteRole to update a group.');
+      }
+
+      let g = await client.updateGroup(ctx.input.groupId, {
         name: ctx.input.name,
         minimumSiteRole: ctx.input.minimumSiteRole
       });
@@ -106,7 +115,10 @@ export let manageGroups = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      await client.deleteGroup(ctx.input.groupId!);
+      if (!ctx.input.groupId)
+        throw tableauServiceError('groupId is required for delete action.');
+
+      await client.deleteGroup(ctx.input.groupId);
       return {
         output: { deleted: true },
         message: `Deleted group \`${ctx.input.groupId}\`.`
@@ -114,7 +126,12 @@ export let manageGroups = SlateTool.create(spec, {
     }
 
     if (action === 'addUser') {
-      await client.addUserToGroup(ctx.input.groupId!, ctx.input.userId!);
+      if (!ctx.input.groupId)
+        throw tableauServiceError('groupId is required for addUser action.');
+      if (!ctx.input.userId)
+        throw tableauServiceError('userId is required for addUser action.');
+
+      await client.addUserToGroup(ctx.input.groupId, ctx.input.userId);
       return {
         output: { userAdded: true },
         message: `Added user \`${ctx.input.userId}\` to group \`${ctx.input.groupId}\`.`
@@ -122,7 +139,13 @@ export let manageGroups = SlateTool.create(spec, {
     }
 
     if (action === 'removeUser') {
-      await client.removeUserFromGroup(ctx.input.groupId!, ctx.input.userId!);
+      if (!ctx.input.groupId) {
+        throw tableauServiceError('groupId is required for removeUser action.');
+      }
+      if (!ctx.input.userId)
+        throw tableauServiceError('userId is required for removeUser action.');
+
+      await client.removeUserFromGroup(ctx.input.groupId, ctx.input.userId);
       return {
         output: { userRemoved: true },
         message: `Removed user \`${ctx.input.userId}\` from group \`${ctx.input.groupId}\`.`
@@ -130,7 +153,11 @@ export let manageGroups = SlateTool.create(spec, {
     }
 
     if (action === 'listUsers') {
-      let result = await client.getUsersInGroup(ctx.input.groupId!, {
+      if (!ctx.input.groupId) {
+        throw tableauServiceError('groupId is required for listUsers action.');
+      }
+
+      let result = await client.getUsersInGroup(ctx.input.groupId, {
         pageSize: ctx.input.pageSize,
         pageNumber: ctx.input.pageNumber
       });
@@ -146,6 +173,6 @@ export let manageGroups = SlateTool.create(spec, {
       };
     }
 
-    return { output: {}, message: `Unknown action: ${action}` };
+    throw tableauServiceError(`Unknown action: ${action}`);
   })
   .build();

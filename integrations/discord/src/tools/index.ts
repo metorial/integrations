@@ -11,3 +11,5 @@ export * from './manage-webhooks';
 export * from './get-audit-log';
 export * from './manage-scheduled-events';
 export * from './manage-auto-moderation';
+export * from './manage-application-commands';
+export * from './manage-emojis';

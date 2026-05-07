@@ -11,7 +11,12 @@ export let getLabels = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      contentId: z.string().describe('The content ID (page, blog post, or attachment)')
+      contentId: z.string().describe('The content ID (page, blog post, or attachment)'),
+      contentType: z
+        .enum(['page', 'blogpost', 'attachment'])
+        .optional()
+        .default('page')
+        .describe('The type of content to read labels from')
     })
   )
   .output(
@@ -26,7 +31,7 @@ export let getLabels = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
-    let response = await client.getContentLabels(ctx.input.contentId);
+    let response = await client.getContentLabels(ctx.input.contentId, ctx.input.contentType);
 
     let labels = response.results.map(l => ({
       name: l.name,
@@ -35,7 +40,7 @@ export let getLabels = SlateTool.create(spec, {
 
     return {
       output: { labels },
-      message: `Found **${labels.length}** labels on content ${ctx.input.contentId}`
+      message: `Found **${labels.length}** labels on ${ctx.input.contentType} ${ctx.input.contentId}`
     };
   })
   .build();

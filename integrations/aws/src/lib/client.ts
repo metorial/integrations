@@ -1,5 +1,14 @@
-import { createAxios } from 'slates';
-import { signRequest, AwsCredentials } from './signing';
+import { CloudWatchClient } from '@aws-sdk/client-cloudwatch';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { EC2Client } from '@aws-sdk/client-ec2';
+import { IAMClient } from '@aws-sdk/client-iam';
+import { LambdaClient } from '@aws-sdk/client-lambda';
+import { S3Client } from '@aws-sdk/client-s3';
+import { SNSClient } from '@aws-sdk/client-sns';
+import { SQSClient } from '@aws-sdk/client-sqs';
+import { STSClient } from '@aws-sdk/client-sts';
+import { createSlatesAwsSdkHttpHandler } from '@slates/aws-sdk-http-handler';
+import { awsApiError } from './errors';
 
 export interface AwsClientConfig {
   accessKeyId: string;
@@ -8,9 +17,26 @@ export interface AwsClientConfig {
   region: string;
 }
 
+type AwsSdkCredentials = {
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken?: string;
+};
+
 export class AwsClient {
-  private credentials: AwsCredentials;
-  private region: string;
+  readonly region: string;
+  readonly credentials: AwsSdkCredentials;
+
+  #cloudWatch?: CloudWatchClient;
+  #dynamoDb?: DynamoDBClient;
+  #ec2?: EC2Client;
+  #iam?: IAMClient;
+  #lambda?: LambdaClient;
+  #s3?: S3Client;
+  #sns?: SNSClient;
+  #sqs?: SQSClient;
+  #sts?: STSClient;
+  #requestHandler = createSlatesAwsSdkHttpHandler();
 
   constructor(config: AwsClientConfig) {
     this.credentials = {
@@ -21,156 +47,56 @@ export class AwsClient {
     this.region = config.region;
   }
 
-  private getEndpoint(service: string, region?: string): string {
-    let r = region ?? this.region;
-    if (service === 's3') {
-      return `https://s3.${r}.amazonaws.com`;
-    }
-    if (service === 'iam') {
-      return 'https://iam.amazonaws.com';
-    }
-    if (service === 'sts') {
-      return 'https://sts.amazonaws.com';
-    }
-    if (service === 'cloudfront') {
-      return 'https://cloudfront.amazonaws.com';
-    }
-    return `https://${service}.${r}.amazonaws.com`;
-  }
-
-  async request(options: {
-    service: string;
-    method: string;
-    path?: string;
-    params?: Record<string, string>;
-    body?: string;
-    headers?: Record<string, string>;
-    region?: string;
-  }): Promise<any> {
-    let ax = createAxios();
-    let endpoint = this.getEndpoint(options.service, options.region);
-    let url = `${endpoint}${options.path ?? '/'}`;
-    let region = options.region ?? this.region;
-
-    if (options.service === 'iam') {
-      region = 'us-east-1';
-    }
-
-    let headers: Record<string, string> = {
-      ...options.headers
-    };
-
-    if (options.body && !headers['Content-Type']) {
-      headers['Content-Type'] = 'application/x-www-form-urlencoded';
-    }
-
-    let signed = await signRequest({
-      method: options.method,
-      url,
-      headers,
-      params: options.params,
-      body: options.body ?? '',
-      credentials: this.credentials,
+  private clientConfig(region = this.region) {
+    return {
       region,
-      service: options.service
-    });
-
-    let response = await ax.request({
-      method: options.method,
-      url,
-      headers: signed.headers,
-      params: signed.params,
-      data: options.body
-    });
-
-    return response.data;
-  }
-
-  async queryApi(options: {
-    service: string;
-    action: string;
-    params?: Record<string, string>;
-    version?: string;
-    region?: string;
-  }): Promise<any> {
-    let allParams: Record<string, string> = {
-      Action: options.action,
-      ...(options.version ? { Version: options.version } : {}),
-      ...(options.params ?? {})
+      credentials: this.credentials,
+      requestHandler: this.#requestHandler
     };
-
-    return this.request({
-      service: options.service,
-      method: 'GET',
-      params: allParams,
-      region: options.region
-    });
   }
 
-  async postQueryApi(options: {
-    service: string;
-    action: string;
-    params?: Record<string, string>;
-    version?: string;
-    region?: string;
-  }): Promise<any> {
-    let allParams: Record<string, string> = {
-      Action: options.action,
-      ...(options.version ? { Version: options.version } : {}),
-      ...(options.params ?? {})
-    };
-
-    let body = Object.entries(allParams)
-      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-      .join('&');
-
-    return this.request({
-      service: options.service,
-      method: 'POST',
-      body,
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      region: options.region
-    });
+  get cloudWatch() {
+    return (this.#cloudWatch ??= new CloudWatchClient(this.clientConfig()));
   }
 
-  async jsonApi(options: {
-    service: string;
-    target: string;
-    payload: Record<string, any>;
-    region?: string;
-  }): Promise<any> {
-    let body = JSON.stringify(options.payload);
-
-    return this.request({
-      service: options.service,
-      method: 'POST',
-      body,
-      headers: {
-        'Content-Type': 'application/x-amz-json-1.0',
-        'X-Amz-Target': options.target
-      },
-      region: options.region
-    });
+  get dynamoDb() {
+    return (this.#dynamoDb ??= new DynamoDBClient(this.clientConfig()));
   }
 
-  async jsonApi11(options: {
-    service: string;
-    target: string;
-    payload: Record<string, any>;
-    region?: string;
-  }): Promise<any> {
-    let body = JSON.stringify(options.payload);
+  get ec2() {
+    return (this.#ec2 ??= new EC2Client(this.clientConfig()));
+  }
 
-    return this.request({
-      service: options.service,
-      method: 'POST',
-      body,
-      headers: {
-        'Content-Type': 'application/x-amz-json-1.1',
-        'X-Amz-Target': options.target
-      },
-      region: options.region
-    });
+  get iam() {
+    return (this.#iam ??= new IAMClient(this.clientConfig('us-east-1')));
+  }
+
+  get lambda() {
+    return (this.#lambda ??= new LambdaClient(this.clientConfig()));
+  }
+
+  get s3() {
+    return (this.#s3 ??= new S3Client(this.clientConfig()));
+  }
+
+  get sns() {
+    return (this.#sns ??= new SNSClient(this.clientConfig()));
+  }
+
+  get sqs() {
+    return (this.#sqs ??= new SQSClient(this.clientConfig()));
+  }
+
+  get sts() {
+    return (this.#sts ??= new STSClient(this.clientConfig('us-east-1')));
+  }
+
+  async send<T>(operation: string, run: () => Promise<T>): Promise<T> {
+    try {
+      return await run();
+    } catch (error) {
+      throw awsApiError(error, operation);
+    }
   }
 }
 

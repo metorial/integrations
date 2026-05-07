@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StripeClient } from '../lib/client';
+import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -101,8 +102,8 @@ export let managePaymentIntents = SlateTool.create(spec, {
     let { action } = ctx.input;
 
     if (action === 'create') {
-      if (!ctx.input.amount) throw new Error('amount is required for create action');
-      if (!ctx.input.currency) throw new Error('currency is required for create action');
+      if (!ctx.input.amount) throw stripeServiceError('amount is required for create action');
+      if (!ctx.input.currency) throw stripeServiceError('currency is required for create action');
 
       let params: Record<string, any> = {
         amount: ctx.input.amount,
@@ -136,7 +137,7 @@ export let managePaymentIntents = SlateTool.create(spec, {
 
     if (action === 'get') {
       if (!ctx.input.paymentIntentId)
-        throw new Error('paymentIntentId is required for get action');
+        throw stripeServiceError('paymentIntentId is required for get action');
       let pi = await client.getPaymentIntent(ctx.input.paymentIntentId);
       return {
         output: {
@@ -154,7 +155,7 @@ export let managePaymentIntents = SlateTool.create(spec, {
 
     if (action === 'update') {
       if (!ctx.input.paymentIntentId)
-        throw new Error('paymentIntentId is required for update action');
+        throw stripeServiceError('paymentIntentId is required for update action');
       let params: Record<string, any> = {};
       if (ctx.input.amount !== undefined) params.amount = ctx.input.amount;
       if (ctx.input.currency) params.currency = ctx.input.currency;
@@ -181,7 +182,7 @@ export let managePaymentIntents = SlateTool.create(spec, {
 
     if (action === 'confirm') {
       if (!ctx.input.paymentIntentId)
-        throw new Error('paymentIntentId is required for confirm action');
+        throw stripeServiceError('paymentIntentId is required for confirm action');
       let params: Record<string, any> = {};
       if (ctx.input.paymentMethodId) params.payment_method = ctx.input.paymentMethodId;
       let pi = await client.confirmPaymentIntent(ctx.input.paymentIntentId, params);
@@ -200,7 +201,7 @@ export let managePaymentIntents = SlateTool.create(spec, {
 
     if (action === 'capture') {
       if (!ctx.input.paymentIntentId)
-        throw new Error('paymentIntentId is required for capture action');
+        throw stripeServiceError('paymentIntentId is required for capture action');
       let params: Record<string, any> = {};
       if (ctx.input.amountToCapture !== undefined)
         params.amount_to_capture = ctx.input.amountToCapture;
@@ -220,7 +221,7 @@ export let managePaymentIntents = SlateTool.create(spec, {
 
     if (action === 'cancel') {
       if (!ctx.input.paymentIntentId)
-        throw new Error('paymentIntentId is required for cancel action');
+        throw stripeServiceError('paymentIntentId is required for cancel action');
       let params: Record<string, any> = {};
       if (ctx.input.cancellationReason)
         params.cancellation_reason = ctx.input.cancellationReason;

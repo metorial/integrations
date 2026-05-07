@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { pipedriveServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -67,7 +68,8 @@ Supports setting name, email, phone, organization, and custom fields.`,
     let client = createClient(ctx);
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.personId) throw new Error('personId is required for delete action');
+      if (!ctx.input.personId)
+        throw pipedriveServiceError('personId is required for delete action');
       await client.deletePerson(ctx.input.personId);
       return {
         output: { personId: ctx.input.personId, deleted: true },
@@ -89,7 +91,8 @@ Supports setting name, email, phone, organization, and custom fields.`,
     if (ctx.input.action === 'create') {
       result = await client.createPerson(body);
     } else {
-      if (!ctx.input.personId) throw new Error('personId is required for update action');
+      if (!ctx.input.personId)
+        throw pipedriveServiceError('personId is required for update action');
       result = await client.updatePerson(ctx.input.personId, body);
     }
 

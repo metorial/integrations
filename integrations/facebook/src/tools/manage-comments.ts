@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+import { facebookServiceError } from '../lib/errors';
 
 export let manageComments = SlateTool.create(spec, {
   name: 'Manage Comments',
@@ -35,7 +36,15 @@ Use \`action\` to specify the operation: **list** to retrieve comments, **create
         .number()
         .optional()
         .describe('Max comments to return (for list action, default: 25)'),
-      after: z.string().optional().describe('Pagination cursor (for list action)')
+      after: z.string().optional().describe('Pagination cursor (for list action)'),
+      filter: z
+        .enum(['toplevel', 'stream'])
+        .optional()
+        .describe('Comment filter for list action. Use stream to include replies.'),
+      order: z
+        .enum(['chronological', 'reverse_chronological'])
+        .optional()
+        .describe('Comment ordering for list action')
     })
   )
   .output(
@@ -49,7 +58,9 @@ Use \`action\` to specify the operation: **list** to retrieve comments, **create
             authorId: z.string().optional().describe('Comment author ID'),
             authorName: z.string().optional().describe('Comment author name'),
             likeCount: z.number().optional().describe('Number of likes on the comment'),
-            replyCount: z.number().optional().describe('Number of replies to the comment')
+            replyCount: z.number().optional().describe('Number of replies to the comment'),
+            parentCommentId: z.string().optional().describe('Parent comment ID for replies'),
+            isHidden: z.boolean().optional().describe('Whether the comment is hidden')
           })
         )
         .optional()
@@ -76,7 +87,9 @@ Use \`action\` to specify the operation: **list** to retrieve comments, **create
     if (ctx.input.action === 'list') {
       let result = await client.getComments(ctx.input.objectId, {
         limit: ctx.input.limit,
-        after: ctx.input.after
+        after: ctx.input.after,
+        filter: ctx.input.filter,
+        order: ctx.input.order
       });
 
       return {
@@ -88,7 +101,9 @@ Use \`action\` to specify the operation: **list** to retrieve comments, **create
             authorId: c.from?.id,
             authorName: c.from?.name,
             likeCount: c.like_count,
-            replyCount: c.comment_count
+            replyCount: c.comment_count,
+            parentCommentId: c.parent?.id,
+            isHidden: c.is_hidden
           })),
           nextCursor: result.paging?.cursors?.after
         },
@@ -97,9 +112,13 @@ Use \`action\` to specify the operation: **list** to retrieve comments, **create
     }
 
     if (ctx.input.action === 'create') {
+      if (!ctx.input.message || ctx.input.message.trim().length === 0) {
+        throw facebookServiceError('message is required for create action');
+      }
+
       let result = await client.postComment(
         ctx.input.objectId,
-        ctx.input.message || '',
+        ctx.input.message,
         pageAccessToken
       );
       return {
@@ -109,7 +128,11 @@ Use \`action\` to specify the operation: **list** to retrieve comments, **create
     }
 
     if (ctx.input.action === 'update') {
-      await client.updateComment(ctx.input.objectId, ctx.input.message || '', pageAccessToken);
+      if (!ctx.input.message || ctx.input.message.trim().length === 0) {
+        throw facebookServiceError('message is required for update action');
+      }
+
+      await client.updateComment(ctx.input.objectId, ctx.input.message, pageAccessToken);
       return {
         output: { success: true, commentId: ctx.input.objectId },
         message: `Updated comment **${ctx.input.objectId}**.`

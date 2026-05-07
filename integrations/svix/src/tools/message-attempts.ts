@@ -8,8 +8,12 @@ let attemptSchema = z.object({
   messageId: z.string().describe('Associated message ID'),
   endpointId: z.string().describe('Target endpoint ID'),
   responseBody: z.string().describe('Response body from the endpoint'),
+  responseDurationMs: z.number().describe('Endpoint response duration in milliseconds'),
   responseStatusCode: z.number().describe('HTTP status code returned'),
-  status: z.number().describe('Attempt status: 0=Success, 1=Pending, 2=Failed, 3=Sending'),
+  status: z
+    .number()
+    .describe('Attempt status: 0=Success, 1=Pending, 2=Failed, 3=Sending, 4=Canceled'),
+  statusText: z.string().describe('Attempt status text'),
   timestamp: z.string().describe('When the attempt was made'),
   triggerType: z.number().describe('What triggered the attempt: 0=Scheduled, 1=Manual'),
   url: z.string().describe('URL the message was sent to')
@@ -29,10 +33,25 @@ export let listAttemptsByMessage = SlateTool.create(spec, {
       messageId: z.string().describe('Message ID to list attempts for'),
       limit: z.number().optional().describe('Maximum number of attempts to return'),
       iterator: z.string().optional().describe('Pagination cursor'),
+      order: z
+        .enum(['ascending', 'descending'])
+        .optional()
+        .describe('Sort order for returned attempts'),
       status: z
         .number()
         .optional()
-        .describe('Filter by status: 0=Success, 1=Pending, 2=Failed, 3=Sending'),
+        .describe('Filter by status: 0=Success, 1=Pending, 2=Failed, 3=Sending, 4=Canceled'),
+      statusCodeClass: z
+        .number()
+        .optional()
+        .describe('Filter by HTTP status code class: 0, 100, 200, 300, 400, or 500'),
+      channel: z.string().optional().describe('Filter by channel'),
+      tag: z.string().optional().describe('Filter by tag'),
+      eventTypes: z.array(z.string()).optional().describe('Filter by event types'),
+      expandedStatuses: z
+        .boolean()
+        .optional()
+        .describe('Whether to expand status values where supported by Svix'),
       before: z.string().optional().describe('Only return attempts before this ISO timestamp'),
       after: z.string().optional().describe('Only return attempts after this ISO timestamp')
     })
@@ -57,7 +76,13 @@ export let listAttemptsByMessage = SlateTool.create(spec, {
       {
         limit: ctx.input.limit,
         iterator: ctx.input.iterator,
+        order: ctx.input.order,
         status: ctx.input.status,
+        statusCodeClass: ctx.input.statusCodeClass,
+        channel: ctx.input.channel,
+        tag: ctx.input.tag,
+        eventTypes: ctx.input.eventTypes,
+        expandedStatuses: ctx.input.expandedStatuses,
         before: ctx.input.before,
         after: ctx.input.after
       }
@@ -68,8 +93,10 @@ export let listAttemptsByMessage = SlateTool.create(spec, {
       messageId: a.msgId,
       endpointId: a.endpointId,
       responseBody: a.response,
+      responseDurationMs: a.responseDurationMs,
       responseStatusCode: a.responseStatusCode,
       status: a.status,
+      statusText: a.statusText,
       timestamp: a.timestamp,
       triggerType: a.triggerType,
       url: a.url
@@ -79,7 +106,7 @@ export let listAttemptsByMessage = SlateTool.create(spec, {
       output: {
         attempts,
         hasMore: !result.done,
-        iterator: result.iterator
+        iterator: result.iterator ?? undefined
       },
       message: `Found **${attempts.length}** attempt(s) for message \`${ctx.input.messageId}\`.`
     };
@@ -100,10 +127,25 @@ export let listAttemptsByEndpoint = SlateTool.create(spec, {
       endpointId: z.string().describe('Endpoint ID or UID'),
       limit: z.number().optional().describe('Maximum number of attempts to return'),
       iterator: z.string().optional().describe('Pagination cursor'),
+      order: z
+        .enum(['ascending', 'descending'])
+        .optional()
+        .describe('Sort order for returned attempts'),
       status: z
         .number()
         .optional()
-        .describe('Filter by status: 0=Success, 1=Pending, 2=Failed, 3=Sending'),
+        .describe('Filter by status: 0=Success, 1=Pending, 2=Failed, 3=Sending, 4=Canceled'),
+      statusCodeClass: z
+        .number()
+        .optional()
+        .describe('Filter by HTTP status code class: 0, 100, 200, 300, 400, or 500'),
+      channel: z.string().optional().describe('Filter by channel'),
+      tag: z.string().optional().describe('Filter by tag'),
+      eventTypes: z.array(z.string()).optional().describe('Filter by event types'),
+      expandedStatuses: z
+        .boolean()
+        .optional()
+        .describe('Whether to expand status values where supported by Svix'),
       before: z.string().optional().describe('Only return attempts before this ISO timestamp'),
       after: z.string().optional().describe('Only return attempts after this ISO timestamp')
     })
@@ -128,7 +170,13 @@ export let listAttemptsByEndpoint = SlateTool.create(spec, {
       {
         limit: ctx.input.limit,
         iterator: ctx.input.iterator,
+        order: ctx.input.order,
         status: ctx.input.status,
+        statusCodeClass: ctx.input.statusCodeClass,
+        channel: ctx.input.channel,
+        tag: ctx.input.tag,
+        eventTypes: ctx.input.eventTypes,
+        expandedStatuses: ctx.input.expandedStatuses,
         before: ctx.input.before,
         after: ctx.input.after
       }
@@ -139,8 +187,10 @@ export let listAttemptsByEndpoint = SlateTool.create(spec, {
       messageId: a.msgId,
       endpointId: a.endpointId,
       responseBody: a.response,
+      responseDurationMs: a.responseDurationMs,
       responseStatusCode: a.responseStatusCode,
       status: a.status,
+      statusText: a.statusText,
       timestamp: a.timestamp,
       triggerType: a.triggerType,
       url: a.url
@@ -150,7 +200,7 @@ export let listAttemptsByEndpoint = SlateTool.create(spec, {
       output: {
         attempts,
         hasMore: !result.done,
-        iterator: result.iterator
+        iterator: result.iterator ?? undefined
       },
       message: `Found **${attempts.length}** attempt(s) for endpoint \`${ctx.input.endpointId}\`.`
     };

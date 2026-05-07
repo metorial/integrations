@@ -14,11 +14,21 @@ let CDC_ENTITIES = [
   'Estimate',
   'SalesReceipt',
   'Purchase',
+  'PurchaseOrder',
   'JournalEntry',
   'BillPayment',
   'CreditMemo',
+  'RefundReceipt',
   'Deposit',
-  'Transfer'
+  'Transfer',
+  'VendorCredit',
+  'Class',
+  'Department',
+  'Employee',
+  'PaymentMethod',
+  'Term',
+  'Budget',
+  'Currency'
 ];
 
 export let entityPolling = SlateTrigger.create(spec, {

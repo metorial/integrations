@@ -4,6 +4,8 @@ export * from './list-datasources';
 export * from './manage-datasource';
 export * from './list-views';
 export * from './get-view-data';
+export * from './export-view';
+export * from './manage-custom-views';
 export * from './manage-users';
 export * from './manage-groups';
 export * from './manage-projects';

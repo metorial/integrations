@@ -17,7 +17,9 @@ import {
   manageTags,
   configureAsyncInvocation,
   manageDurableExecution,
-  getAccountSettings
+  getAccountSettings,
+  manageRuntimeManagement,
+  manageRecursionConfig
 } from './tools/index';
 import { functionChanges, inboundWebhook } from './triggers/index';
 
@@ -40,7 +42,9 @@ export let provider = Slate.create({
     manageTags,
     configureAsyncInvocation,
     manageDurableExecution,
-    getAccountSettings
+    getAccountSettings,
+    manageRuntimeManagement,
+    manageRecursionConfig
   ],
   triggers: [inboundWebhook, functionChanges]
 });

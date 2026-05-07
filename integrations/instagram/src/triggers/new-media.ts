@@ -41,7 +41,8 @@ export let newMediaTrigger = SlateTrigger.create(spec, {
     pollEvents: async ctx => {
       let client = new InstagramClient({
         token: ctx.auth.token,
-        apiVersion: ctx.config.apiVersion
+        apiVersion: ctx.config.apiVersion,
+        apiBaseUrl: ctx.auth.apiBaseUrl
       });
 
       let effectiveUserId = ctx.auth.userId || 'me';

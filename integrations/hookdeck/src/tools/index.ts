@@ -9,3 +9,7 @@ export * from './manage-bookmarks';
 export * from './configure-notifications';
 export * from './publish-event';
 export * from './list-requests';
+export * from './list-attempts';
+export * from './query-metrics';
+export * from './manage-issue-triggers';
+export * from './retry-requests';

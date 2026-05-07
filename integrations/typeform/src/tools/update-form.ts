@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TypeformClient } from '../lib/client';
+import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -19,7 +20,11 @@ export let updateForm = SlateTool.create(spec, {
     z.object({
       formId: z.string().describe('ID of the form to update'),
       title: z.string().optional().describe('Updated form title'),
-      fields: z.array(z.any()).optional().describe('Complete array of field definitions'),
+      fields: z
+        .array(z.any())
+        .min(1)
+        .optional()
+        .describe('Complete array of field definitions, including existing field IDs'),
       welcomeScreens: z.array(z.any()).optional().describe('Welcome screens array'),
       thankYouScreens: z.array(z.any()).optional().describe('Thank-you screens array'),
       themeUrl: z.string().optional().describe('Theme API URL to apply'),
@@ -38,6 +43,12 @@ export let updateForm = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (!ctx.input.title || !ctx.input.fields) {
+      throw typeformServiceError(
+        'Update Form uses Typeform PUT and requires a complete title and fields array. Use Patch Form for title, status, theme, workspace, or tracking changes.'
+      );
+    }
+
     let client = new TypeformClient({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl

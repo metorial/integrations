@@ -1,20 +1,17 @@
 {
   "name": "@amazon/aws-s3",
-  "description": "Store, retrieve, and manage objects in Amazon S3 buckets. Upload and download files up to 5 TB, create and configure buckets, generate presigned URLs for temporary access, and manage object versions. Set access controls via bucket policies and ACLs, configure lifecycle rules to transition or expire objects, enable replication across regions, and encrypt objects at rest. Tag objects and buckets with key-value pairs, lock objects with WORM policies, enable server access logging, and host static websites. Receive event notifications when objects are created, deleted, restored, tagged, or transitioned between storage classes.",
-  "categories": [
-    "apis-and-http-requests"
-  ],
+  "description": "Store, retrieve, and manage objects in Amazon S3 buckets. Upload and download text objects, create and delete buckets, generate presigned URLs for temporary access, manage object versions, configure bucket policies and lifecycle rules, and tag objects and buckets.",
+  "categories": ["apis-and-http-requests"],
   "skills": [
     "upload and download objects",
-    "create and manage buckets",
+    "create and delete buckets",
     "generate presigned URLs",
     "manage object versions",
-    "configure access controls",
+    "configure bucket policies",
     "set lifecycle rules",
     "tag objects and buckets",
-    "enable cross-region replication",
-    "encrypt objects at rest",
-    "host static websites"
+    "copy objects",
+    "poll for object changes"
   ],
   "logoUrl": "https://provider-logos.metorial-cdn.com/amazon.svg"
 }

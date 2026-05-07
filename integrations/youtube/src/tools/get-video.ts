@@ -66,7 +66,7 @@ export let getVideo = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
 
     let response = await client.listVideos({
       part: ['snippet', 'statistics', 'contentDetails', 'status'],

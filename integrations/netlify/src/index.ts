@@ -14,6 +14,8 @@ import {
   deleteEnvVar,
   listForms,
   listFormSubmissions,
+  getFormSubmission,
+  manageFormSubmissionState,
   deleteFormSubmission,
   listDnsZones,
   manageDnsRecords,
@@ -23,15 +25,20 @@ import {
   updateSnippet,
   deleteSnippet,
   listHooks,
+  listHookTypes,
   createHook,
   updateHook,
   deleteHook,
+  manageBuildHooks,
+  manageBuilds,
   listSplitTests,
   createSplitTest,
   updateSplitTest,
   toggleSplitTest,
   purgeCache,
-  listAccounts
+  listAccounts,
+  manageSiteMetadata,
+  manageSiteFiles
 } from './tools';
 import { deployEvents, formSubmissionEvents } from './triggers';
 
@@ -51,6 +58,8 @@ export let provider = Slate.create({
     deleteEnvVar,
     listForms,
     listFormSubmissions,
+    getFormSubmission,
+    manageFormSubmissionState,
     deleteFormSubmission,
     listDnsZones,
     manageDnsRecords,
@@ -60,15 +69,20 @@ export let provider = Slate.create({
     updateSnippet,
     deleteSnippet,
     listHooks,
+    listHookTypes,
     createHook,
     updateHook,
     deleteHook,
+    manageBuildHooks,
+    manageBuilds,
     listSplitTests,
     createSplitTest,
     updateSplitTest,
     toggleSplitTest,
     purgeCache,
-    listAccounts
+    listAccounts,
+    manageSiteMetadata,
+    manageSiteFiles
   ],
   triggers: [deployEvents, formSubmissionEvents]
 });

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -147,7 +148,9 @@ export let manageFirewall = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.name) throw new Error('name is required for create action');
+      if (!ctx.input.name) {
+        throw digitalOceanValidationError('name is required for create action');
+      }
 
       let firewall = await client.createFirewall({
         name: ctx.input.name,
@@ -187,7 +190,9 @@ export let manageFirewall = SlateTool.create(spec, {
     }
 
     // delete
-    if (!ctx.input.firewallId) throw new Error('firewallId is required for delete action');
+    if (!ctx.input.firewallId) {
+      throw digitalOceanValidationError('firewallId is required for delete action');
+    }
     await client.deleteFirewall(ctx.input.firewallId);
 
     return {
@@ -272,7 +277,7 @@ export let manageVPC = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.name || !ctx.input.region) {
-        throw new Error('name and region are required for create action');
+        throw digitalOceanValidationError('name and region are required for create action');
       }
       let vpc = await client.createVPC({
         name: ctx.input.name,
@@ -287,7 +292,9 @@ export let manageVPC = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.vpcId) throw new Error('vpcId is required for update action');
+      if (!ctx.input.vpcId) {
+        throw digitalOceanValidationError('vpcId is required for update action');
+      }
       let vpc = await client.updateVPC(ctx.input.vpcId, {
         name: ctx.input.name,
         description: ctx.input.description
@@ -299,7 +306,9 @@ export let manageVPC = SlateTool.create(spec, {
     }
 
     // delete
-    if (!ctx.input.vpcId) throw new Error('vpcId is required for delete action');
+    if (!ctx.input.vpcId) {
+      throw digitalOceanValidationError('vpcId is required for delete action');
+    }
     await client.deleteVPC(ctx.input.vpcId);
 
     return {
@@ -327,7 +336,8 @@ export let manageReservedIPs = SlateTool.create(spec, {
         .number()
         .optional()
         .describe('Droplet ID (for create with Droplet or assign)'),
-      region: z.string().optional().describe('Region slug (for create without Droplet)')
+      region: z.string().optional().describe('Region slug (for create without Droplet)'),
+      projectId: z.string().optional().describe('Project UUID for a region-reserved IP')
     })
   )
   .output(
@@ -372,9 +382,14 @@ export let manageReservedIPs = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'create') {
+      if (!ctx.input.region && !ctx.input.dropletId) {
+        throw digitalOceanValidationError('region or dropletId is required for create action');
+      }
+
       let ip = await client.createReservedIP({
         region: ctx.input.region,
-        dropletId: ctx.input.dropletId
+        dropletId: ctx.input.dropletId,
+        projectId: ctx.input.projectId
       });
       return {
         output: { reservedIp: mapIp(ip) },
@@ -384,7 +399,9 @@ export let manageReservedIPs = SlateTool.create(spec, {
 
     if (ctx.input.action === 'assign') {
       if (!ctx.input.reservedIp || !ctx.input.dropletId) {
-        throw new Error('reservedIp and dropletId are required for assign action');
+        throw digitalOceanValidationError(
+          'reservedIp and dropletId are required for assign action'
+        );
       }
       let action = await client.assignReservedIP(ctx.input.reservedIp, ctx.input.dropletId);
       return {
@@ -394,7 +411,9 @@ export let manageReservedIPs = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'unassign') {
-      if (!ctx.input.reservedIp) throw new Error('reservedIp is required for unassign action');
+      if (!ctx.input.reservedIp) {
+        throw digitalOceanValidationError('reservedIp is required for unassign action');
+      }
       let action = await client.unassignReservedIP(ctx.input.reservedIp);
       return {
         output: { actionId: action.id },
@@ -403,7 +422,9 @@ export let manageReservedIPs = SlateTool.create(spec, {
     }
 
     // delete
-    if (!ctx.input.reservedIp) throw new Error('reservedIp is required for delete action');
+    if (!ctx.input.reservedIp) {
+      throw digitalOceanValidationError('reservedIp is required for delete action');
+    }
     await client.deleteReservedIP(ctx.input.reservedIp);
 
     return {

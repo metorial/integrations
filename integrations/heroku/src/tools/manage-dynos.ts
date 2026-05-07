@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { herokuServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -87,7 +88,7 @@ export let manageDynos = SlateTool.create(spec, {
 
     if (action === 'run') {
       if (!ctx.input.command) {
-        throw new Error('Command is required for "run" action.');
+        throw herokuServiceError('Command is required for "run" action.');
       }
       let dyno = await client.runDyno(appIdOrName, {
         command: ctx.input.command,

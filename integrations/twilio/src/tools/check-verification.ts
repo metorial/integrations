@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TwilioClient } from '../lib/client';
+import { twilioServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -45,6 +46,16 @@ export let checkVerification = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (!ctx.input.to && !ctx.input.verificationSid) {
+      throw twilioServiceError(
+        'Provide either to or verificationSid to check a verification.'
+      );
+    }
+
+    if (ctx.input.to && ctx.input.verificationSid) {
+      throw twilioServiceError('Provide only one of to or verificationSid.');
+    }
+
     let client = new TwilioClient({
       accountSid: ctx.config.accountSid,
       token: ctx.auth.token,

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SnapchatClient } from '../lib/client';
+import { snapchatServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -38,6 +39,15 @@ export let manageAd = SlateTool.create(spec, {
     let client = new SnapchatClient(ctx.auth.token);
     let { adSquadId, adId, ...fields } = ctx.input;
 
+    if (!adId) {
+      if (!fields.name) throw snapchatServiceError('name is required to create an ad.');
+      if (!fields.creativeId) {
+        throw snapchatServiceError('creativeId is required to create an ad.');
+      }
+      if (!fields.status) throw snapchatServiceError('status is required to create an ad.');
+      if (!fields.type) throw snapchatServiceError('type is required to create an ad.');
+    }
+
     let adData: Record<string, any> = {};
     if (adId) adData.id = adId;
     if (fields.name) adData.name = fields.name;
@@ -50,6 +60,10 @@ export let manageAd = SlateTool.create(spec, {
       result = await client.updateAd(adSquadId, adData);
     } else {
       result = await client.createAd(adSquadId, adData);
+    }
+
+    if (!result) {
+      throw snapchatServiceError('Snapchat did not return an ad in the API response.');
     }
 
     let output = {

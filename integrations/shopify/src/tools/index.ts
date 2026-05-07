@@ -18,3 +18,5 @@ export * from './manage-collections';
 export * from './manage-discounts';
 export * from './manage-draft-orders';
 export * from './get-shop';
+export * from './manage-pages';
+export * from './manage-metafields';

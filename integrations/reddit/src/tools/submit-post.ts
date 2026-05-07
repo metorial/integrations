@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RedditClient } from '../lib/client';
+import { requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -42,10 +43,14 @@ Optionally set flair, mark as NSFW or spoiler, and control inbox reply notificat
 
     let result: any;
     if (ctx.input.postType === 'link') {
+      let linkUrl = requireRedditInput(
+        ctx.input.linkUrl,
+        'linkUrl is required when postType is link'
+      );
       result = await client.submitLinkPost({
         subreddit: ctx.input.subredditName,
         title: ctx.input.title,
-        url: ctx.input.linkUrl!,
+        url: linkUrl,
         flairId: ctx.input.flairId,
         flairText: ctx.input.flairText,
         nsfw: ctx.input.isNsfw,

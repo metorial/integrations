@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AuthClient } from '../lib/client';
+import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -73,13 +74,14 @@ export let manageUser = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new AuthClient({
       token: ctx.auth.token,
-      projectId: ctx.config.projectId
+      projectId: ctx.config.projectId,
+      apiKey: ctx.config.webApiKey
     });
 
     let { operation, userId } = ctx.input;
 
     if (operation === 'get') {
-      if (!userId) throw new Error('userId is required for get operation');
+      if (!userId) throw missingRequiredFieldError('userId', 'get');
       let user = await client.getUser(userId);
       return {
         output: user,
@@ -104,7 +106,7 @@ export let manageUser = SlateTool.create(spec, {
     }
 
     if (operation === 'update') {
-      if (!userId) throw new Error('userId is required for update operation');
+      if (!userId) throw missingRequiredFieldError('userId', 'update');
       let user = await client.updateUser(userId, {
         email: ctx.input.email,
         password: ctx.input.password,
@@ -126,7 +128,7 @@ export let manageUser = SlateTool.create(spec, {
     }
 
     if (operation === 'delete') {
-      if (!userId) throw new Error('userId is required for delete operation');
+      if (!userId) throw missingRequiredFieldError('userId', 'delete');
       await client.deleteUser(userId);
       return {
         output: {
@@ -137,6 +139,6 @@ export let manageUser = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown operation: ${operation}`);
+    throw firebaseServiceError(`Unknown operation: ${operation}`);
   })
   .build();

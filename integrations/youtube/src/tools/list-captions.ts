@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -50,10 +51,11 @@ export let listCaptions = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = Client.fromAuth(ctx.auth);
 
     if (ctx.input.action === 'list') {
-      if (!ctx.input.videoId) throw new Error('videoId is required for listing captions');
+      if (!ctx.input.videoId)
+        throw youtubeServiceError('videoId is required for listing captions');
 
       let response = await client.listCaptions({
         part: ['snippet'],
@@ -79,7 +81,8 @@ export let listCaptions = SlateTool.create(spec, {
         message: `Found **${captions.length}** caption track(s) for video \`${ctx.input.videoId}\`.`
       };
     } else {
-      if (!ctx.input.captionId) throw new Error('captionId is required for deleting');
+      if (!ctx.input.captionId)
+        throw youtubeServiceError('captionId is required for deleting');
 
       await client.deleteCaption(ctx.input.captionId);
 

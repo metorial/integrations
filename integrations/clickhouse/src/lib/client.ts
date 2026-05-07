@@ -1,4 +1,33 @@
 import { createAxios } from 'slates';
+import { clickhouseApiError } from './errors';
+import { parseClickHouseResponse } from './query-results';
+
+let serializeParams = (params: Record<string, any>) => {
+  let search = new URLSearchParams();
+
+  for (let [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null) continue;
+
+    if (Array.isArray(value)) {
+      for (let item of value) {
+        if (item !== undefined && item !== null) search.append(key, String(item));
+      }
+      continue;
+    }
+
+    search.append(key, String(value));
+  }
+
+  return search.toString();
+};
+
+let parseMaybeJson = (value: string) => {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+};
 
 export class ClickHouseClient {
   private axios;
@@ -9,8 +38,14 @@ export class ClickHouseClient {
       headers: {
         Authorization: `Basic ${params.token}`,
         'Content-Type': 'application/json'
-      }
+      },
+      paramsSerializer: { serialize: serializeParams }
     });
+
+    this.axios.interceptors.response.use(
+      response => response,
+      error => Promise.reject(clickhouseApiError(error))
+    );
   }
 
   private get orgPath() {
@@ -82,6 +117,18 @@ export class ClickHouseClient {
     return res.data;
   }
 
+  // ── Roles ─────────────────────────────────────────────────
+
+  async listRoles() {
+    let res = await this.axios.get(`${this.orgPath}/roles`);
+    return res.data.result;
+  }
+
+  async getRole(roleId: string) {
+    let res = await this.axios.get(`${this.orgPath}/roles/${roleId}`);
+    return res.data.result;
+  }
+
   // ── Services ──────────────────────────────────────────────
 
   async listServices(filter?: string[]) {
@@ -111,13 +158,13 @@ export class ClickHouseClient {
     return res.data;
   }
 
-  async updateServiceState(serviceId: string, command: 'start' | 'stop') {
+  async updateServiceState(serviceId: string, command: 'start' | 'stop' | 'awake') {
     let res = await this.axios.patch(`${this.servicePath(serviceId)}/state`, { command });
     return res.data.result;
   }
 
   async updateServiceScaling(serviceId: string, body: Record<string, any>) {
-    let res = await this.axios.patch(`${this.servicePath(serviceId)}/scaling`, body);
+    let res = await this.axios.patch(`${this.servicePath(serviceId)}/replicaScaling`, body);
     return res.data.result;
   }
 
@@ -210,10 +257,10 @@ export class ClickHouseClient {
     return res.data;
   }
 
-  async updateClickPipeState(serviceId: string, clickpipeId: string, state: string) {
+  async updateClickPipeState(serviceId: string, clickpipeId: string, command: string) {
     let res = await this.axios.patch(
       `${this.servicePath(serviceId)}/clickpipes/${clickpipeId}/state`,
-      { state }
+      { command }
     );
     return res.data.result;
   }
@@ -225,6 +272,38 @@ export class ClickHouseClient {
   ) {
     let res = await this.axios.patch(
       `${this.servicePath(serviceId)}/clickpipes/${clickpipeId}/scaling`,
+      body
+    );
+    return res.data.result;
+  }
+
+  async getClickPipeSettings(serviceId: string, clickpipeId: string) {
+    let res = await this.axios.get(
+      `${this.servicePath(serviceId)}/clickpipes/${clickpipeId}/settings`
+    );
+    return res.data.result;
+  }
+
+  async updateClickPipeSettings(
+    serviceId: string,
+    clickpipeId: string,
+    body: Record<string, any>
+  ) {
+    let res = await this.axios.put(
+      `${this.servicePath(serviceId)}/clickpipes/${clickpipeId}/settings`,
+      body
+    );
+    return res.data.result;
+  }
+
+  async getCdcClickPipesScaling(serviceId: string) {
+    let res = await this.axios.get(`${this.servicePath(serviceId)}/clickpipesCdcScaling`);
+    return res.data.result;
+  }
+
+  async updateCdcClickPipesScaling(serviceId: string, body: Record<string, any>) {
+    let res = await this.axios.patch(
+      `${this.servicePath(serviceId)}/clickpipesCdcScaling`,
       body
     );
     return res.data.result;
@@ -394,5 +473,68 @@ export class ClickHouseClient {
   async deleteQueryEndpoint(serviceId: string) {
     let res = await this.axios.delete(`${this.servicePath(serviceId)}/serviceQueryEndpoint`);
     return res.data;
+  }
+
+  async runQueryEndpoint(params: {
+    endpointId: string;
+    format?: string;
+    queryVariables?: Record<string, any>;
+    endpointVersion?: '1' | '2';
+    requestTimeoutMs?: number;
+    clickhouseSettings?: Record<string, string | number | boolean>;
+  }) {
+    let url = new URL(
+      `https://console-api.clickhouse.cloud/.api/query-endpoints/${encodeURIComponent(
+        params.endpointId
+      )}/run`
+    );
+
+    if (params.endpointVersion === '2' && params.format) {
+      url.searchParams.set('format', params.format);
+    }
+
+    if (params.requestTimeoutMs !== undefined) {
+      url.searchParams.set('request_timeout', String(params.requestTimeoutMs));
+    }
+
+    for (let [key, value] of Object.entries(params.clickhouseSettings || {})) {
+      url.searchParams.set(key, String(value));
+    }
+
+    let body: Record<string, any> = {};
+    if (params.queryVariables) body.queryVariables = params.queryVariables;
+    if (params.endpointVersion !== '2' && params.format) body.format = params.format;
+
+    try {
+      let res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${this.params.token}`,
+          'Content-Type': 'application/json',
+          ...(params.endpointVersion
+            ? { 'x-clickhouse-endpoint-version': params.endpointVersion }
+            : {})
+        },
+        body: JSON.stringify(body)
+      });
+      let raw = await res.text();
+
+      if (!res.ok) {
+        throw clickhouseApiError(
+          {
+            response: {
+              status: res.status,
+              statusText: res.statusText,
+              data: parseMaybeJson(raw)
+            }
+          },
+          'query endpoint run'
+        );
+      }
+
+      return parseClickHouseResponse(raw, params.format);
+    } catch (error) {
+      throw clickhouseApiError(error, 'query endpoint run');
+    }
   }
 }

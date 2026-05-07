@@ -1,9 +1,15 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { bitbucketApiError, bitbucketServiceError } from './lib/errors';
 
 let api = createAxios({
   baseURL: 'https://api.bitbucket.org/2.0'
 });
+
+api.interceptors?.response.use(
+  response => response,
+  error => Promise.reject(bitbucketApiError(error))
+);
 
 export let auth = SlateAuth.create()
   .output(
@@ -44,6 +50,11 @@ export let auth = SlateAuth.create()
         title: 'Repository Admin',
         description: 'Admin access to repositories',
         scope: 'repository:admin'
+      },
+      {
+        title: 'Repository Delete',
+        description: 'Delete repositories',
+        scope: 'repository:delete'
       },
       {
         title: 'Pull Request Read',
@@ -146,7 +157,7 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available');
+        throw bitbucketServiceError('No refresh token available');
       }
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);

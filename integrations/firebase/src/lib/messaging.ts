@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { withFirebaseApiError } from './errors';
 
 let fcmAxios = createAxios({
   baseURL: 'https://fcm.googleapis.com/v1'
@@ -64,15 +65,21 @@ export class MessagingClient {
     };
   }
 
-  async sendMessage(message: FcmMessage): Promise<{ messageId: string }> {
-    let response = await fcmAxios.post(
-      `/projects/${this.projectId}/messages:send`,
-      {
-        message
-      },
-      {
-        headers: this.headers
-      }
+  async sendMessage(
+    message: FcmMessage,
+    params?: { validateOnly?: boolean }
+  ): Promise<{ messageId: string }> {
+    let response = await withFirebaseApiError('Cloud Messaging send message', () =>
+      fcmAxios.post(
+        `/projects/${this.projectId}/messages:send`,
+        {
+          validate_only: params?.validateOnly,
+          message
+        },
+        {
+          headers: this.headers
+        }
+      )
     );
 
     return {
@@ -92,18 +99,20 @@ export class MessagingClient {
       baseURL: 'https://iid.googleapis.com'
     });
 
-    let response = await iidAxios.post(
-      `/iid/v1:batchAdd`,
-      {
-        to: `/topics/${topic}`,
-        registration_tokens: tokens
-      },
-      {
-        headers: {
-          ...this.headers,
-          access_token_auth: 'true'
+    let response = await withFirebaseApiError('Cloud Messaging subscribe topic', () =>
+      iidAxios.post(
+        `/iid/v1:batchAdd`,
+        {
+          to: `/topics/${topic}`,
+          registration_tokens: tokens
+        },
+        {
+          headers: {
+            ...this.headers,
+            access_token_auth: 'true'
+          }
         }
-      }
+      )
     );
 
     let results = response.data.results || [];
@@ -135,18 +144,20 @@ export class MessagingClient {
       baseURL: 'https://iid.googleapis.com'
     });
 
-    let response = await iidAxios.post(
-      `/iid/v1:batchRemove`,
-      {
-        to: `/topics/${topic}`,
-        registration_tokens: tokens
-      },
-      {
-        headers: {
-          ...this.headers,
-          access_token_auth: 'true'
+    let response = await withFirebaseApiError('Cloud Messaging unsubscribe topic', () =>
+      iidAxios.post(
+        `/iid/v1:batchRemove`,
+        {
+          to: `/topics/${topic}`,
+          registration_tokens: tokens
+        },
+        {
+          headers: {
+            ...this.headers,
+            access_token_auth: 'true'
+          }
         }
-      }
+      )
     );
 
     let results = response.data.results || [];

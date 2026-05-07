@@ -88,12 +88,32 @@ export let getResponses = SlateTool.create(spec, {
         .describe('Filter responses submitted before this date (ISO 8601 or Unix timestamp)'),
       after: z.string().optional().describe('Response token for forward pagination'),
       before: z.string().optional().describe('Response token for backward pagination'),
+      includedResponseIds: z
+        .array(z.string())
+        .optional()
+        .describe('Only include these response IDs'),
+      excludedResponseIds: z
+        .array(z.string())
+        .optional()
+        .describe('Exclude these response IDs'),
       sort: z.string().optional().describe('Sort order, e.g. "submitted_at,desc"'),
       query: z.string().optional().describe('Search responses for text matches'),
       responseType: z
         .enum(['completed', 'partial', 'started'])
         .optional()
-        .describe('Filter by response completion status')
+        .describe('Filter by one response completion status'),
+      responseTypes: z
+        .array(z.enum(['completed', 'partial', 'started']))
+        .optional()
+        .describe('Filter by multiple response completion statuses'),
+      fields: z
+        .array(z.string())
+        .optional()
+        .describe('Only include answers for these field IDs'),
+      answeredFields: z
+        .array(z.string())
+        .optional()
+        .describe('Only include responses that answered at least one of these field IDs')
     })
   )
   .output(
@@ -115,9 +135,14 @@ export let getResponses = SlateTool.create(spec, {
       until: ctx.input.until,
       after: ctx.input.after,
       before: ctx.input.before,
+      includedResponseIds: ctx.input.includedResponseIds?.join(','),
+      excludedResponseIds: ctx.input.excludedResponseIds?.join(','),
       sort: ctx.input.sort,
       query: ctx.input.query,
-      responseType: ctx.input.responseType
+      responseType: ctx.input.responseType,
+      responseTypes: ctx.input.responseTypes,
+      fields: ctx.input.fields,
+      answeredFields: ctx.input.answeredFields
     });
 
     let responses = (result.items || []).map((r: any) => {

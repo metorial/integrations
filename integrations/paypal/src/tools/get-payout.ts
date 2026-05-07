@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { PayPalClient } from '../lib/client';
+import { paypalServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -64,7 +65,7 @@ export let getPayout = SlateTool.create(spec, {
     }
 
     if (!ctx.input.payoutBatchId) {
-      throw new Error('Either payoutBatchId or payoutItemId must be provided');
+      throw paypalServiceError('Either payoutBatchId or payoutItemId must be provided');
     }
 
     let batch = await client.getPayoutBatch(ctx.input.payoutBatchId);

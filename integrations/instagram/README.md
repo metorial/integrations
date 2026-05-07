@@ -1,16 +1,20 @@
 # <img src="https://provider-logos.metorial-cdn.com/instagram.svg" height="20"> Instagram
 
-Publish photos, videos, Reels, Stories, and carousels to Instagram. Retrieve and manage media with metadata such as captions, timestamps, and permalinks. Moderate comments by replying, deleting, hiding, or disabling them. Access account and media-level insights including impressions, reach, engagement, saves, shares, and audience demographics. Search public posts by hashtag. Discover and retrieve mentions of your brand and other business/creator account profiles. Send and receive direct messages including text, media, and story replies within the 24-hour messaging window. Tag products on media for commerce. Receive real-time webhook notifications for new comments, mentions, story insights, and incoming messages.
+Publish photos, videos, Reels, Stories, and carousels to Instagram. Retrieve and manage media with metadata such as captions, timestamps, and permalinks. Moderate comments by creating, replying, deleting, hiding, or disabling them. Access account and media-level insights including reach, views, saves, likes, comments, shares, and audience demographics. Search public posts by hashtag. Discover and retrieve mentions of your brand and other business/creator account profiles. Send and receive direct messages including text, media, and story replies within the 24-hour messaging window. Tag products on media for commerce. Receive real-time webhook notifications for new comments, mentions, story insights, and incoming messages.
 
 ## Tools
 
 ### Get Insights
 
-Retrieve analytics and performance insights for an Instagram account or specific media post. Account-level insights include impressions, reach, profile views, and audience demographics. Media-level insights include impressions, reach, engagement, saves, and shares.
+Retrieve analytics and performance insights for an Instagram account or specific media post. Account-level insights include reach, profile views, and audience metrics. Media-level insights include reach, views, saves, likes, comments, and shares.
 
 ### Get Media
 
 Retrieve Instagram media. Fetch a single post by media ID for full details including carousel children, or list recent media from an account with pagination support.
+
+### Get Publishing Limit
+
+Retrieve the authenticated Instagram professional account's current API content publishing quota usage for the rolling publishing window.
 
 ### Get Mentions
 
@@ -26,7 +30,7 @@ Retrieve currently active (non-expired) stories from an Instagram account. Stori
 
 ### Manage Comments
 
-Retrieve, reply to, delete, or hide/unhide comments on Instagram media. Also supports enabling or disabling comments on a specific post. Use the \
+Create, retrieve, reply to, delete, or hide/unhide comments on Instagram media. Also supports listing replies and enabling or disabling comments on a specific post.
 
 ### Publish Media
 
@@ -38,7 +42,7 @@ Search for recent or top public posts tagged with a specific hashtag. This is th
 
 ### Send Message
 
-Send a direct message to an Instagram user, or send a private reply to a comment. Supports text messages and image attachments. Also supports fetching recent conversations.
+Send a direct message to an Instagram user, or send a private reply to a comment. Supports text messages, image attachments, and media-share attachments. Also supports fetching recent conversations.
 
 ## License
 

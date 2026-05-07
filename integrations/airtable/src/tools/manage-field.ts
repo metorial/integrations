@@ -1,12 +1,13 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { airtableServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
 export let manageFieldTool = SlateTool.create(spec, {
   name: 'Manage Field',
   key: 'manage_field',
-  description: `Create a new field or update an existing field in a table within the configured Airtable base. Supports setting field type, name, description, and type-specific options.`,
+  description: `Create a new field or update an existing field in a table within the configured Airtable base. Airtable's metadata API requires table and field IDs for this operation.`,
   instructions: [
     'To create a field, set **action** to "create" and provide fieldName, fieldType, and optionally options.',
     'To update a field, set **action** to "update" and provide fieldId with the changes.',
@@ -21,7 +22,7 @@ export let manageFieldTool = SlateTool.create(spec, {
       action: z
         .enum(['create', 'update'])
         .describe('Whether to create a new field or update an existing one'),
-      tableIdOrName: z.string().describe('Table ID or name containing the field'),
+      tableIdOrName: z.string().describe('Table ID containing the field'),
       fieldId: z.string().optional().describe('Field ID to update (required for update)'),
       fieldName: z.string().optional().describe('Name for the field'),
       fieldType: z
@@ -52,8 +53,12 @@ export let manageFieldTool = SlateTool.create(spec, {
     });
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.fieldName) throw new Error('fieldName is required when creating a field');
-      if (!ctx.input.fieldType) throw new Error('fieldType is required when creating a field');
+      if (!ctx.input.fieldName) {
+        throw airtableServiceError('fieldName is required when creating a field');
+      }
+      if (!ctx.input.fieldType) {
+        throw airtableServiceError('fieldType is required when creating a field');
+      }
 
       let result = await client.createField(ctx.input.tableIdOrName, {
         name: ctx.input.fieldName,
@@ -72,7 +77,9 @@ export let manageFieldTool = SlateTool.create(spec, {
         message: `Created field **${result.name}** (${result.type}) in table **${ctx.input.tableIdOrName}**.`
       };
     } else {
-      if (!ctx.input.fieldId) throw new Error('fieldId is required when updating a field');
+      if (!ctx.input.fieldId) {
+        throw airtableServiceError('fieldId is required when updating a field');
+      }
 
       let updates: { name?: string; description?: string; options?: Record<string, any> } = {};
       if (ctx.input.fieldName) updates.name = ctx.input.fieldName;

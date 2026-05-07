@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/snapchat.png" height="20"> Snapchat
 
-Manage Snapchat advertising campaigns, creatives, and audiences. Create and update the full ad hierarchy including organizations, ad accounts, campaigns, ad squads, and ads. Upload media assets and build ad creatives across formats like Snap Ads, Story Ads, Collection Ads, and AR Lens ads. Target users by demographics, location, interests, and behaviors. Build custom audiences from customer lists, Snap Pixel events, or lookalike segments. Pull campaign performance reports with metrics such as impressions, swipe-ups, spend, and conversions at hourly, daily, or lifetime granularity. Send web, app, and offline conversion events to Snapchat via the Conversions API. Retrieve creator and business public profile data including Stories, Spotlights, and engagement statistics. Collect and retrieve leads from in-app lead generation forms. Manage organization members, roles, funding sources, billing, and Snap Pixels.
+Manage Snapchat advertising campaigns, creatives, audiences, reporting, and conversion events. Create and update the core ad hierarchy including organizations, ad accounts, campaigns, ad squads, and ads. Create media containers, build ad creatives, manage customer audience segments, estimate audience size and bid ranges, pull campaign performance reports, send or validate Conversions API events, and read funding sources and Snap Pixels.
 
 ## Tools
 
@@ -19,6 +19,14 @@ Permanently delete a Snapchat campaign by ID. This action cannot be undone — a
 ### Get Campaign Stats
 
 Pull performance statistics for a Snapchat campaign, ad squad, ad, or ad account. Retrieve metrics such as impressions, swipe-ups, spend, conversions, and more with configurable granularity and time range.
+
+### Get Audience Size
+
+Estimate Snapchat reach for an existing ad squad or a prospective ad squad spec before launch. Use this to validate targeting breadth and budget planning.
+
+### Get Bid Estimate
+
+Retrieve Snapchat bid estimate ranges for an existing ad squad or for a prospective targeting spec. Use this before creating or adjusting ad squads to choose realistic bids.
 
 ### Get Funding Sources
 
@@ -74,7 +82,7 @@ Create or update a Snapchat ad creative. Creatives define the visual content and
 
 ### Manage Pixel
 
-Create a new Snap Pixel or retrieve existing pixels for a Snapchat ad account. Snap Pixels are used to track website events for conversion tracking and audience building.
+List, retrieve, or update Snap Pixels for a Snapchat ad account. Snap Pixels are created in Ads Manager; the Marketing API supports reading and updating existing pixels.
 
 ### Send Conversion Event
 
