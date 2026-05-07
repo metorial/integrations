@@ -34,6 +34,20 @@ let tokenExpiresAt = (expiresIn: unknown) => {
   return new Date(Date.now() + seconds * 1000).toISOString();
 };
 
+type AirtableAuthOutput = {
+  token: string;
+  refreshToken?: string;
+  expiresAt?: string;
+};
+
+type AirtableOAuthRefreshContext = {
+  output: AirtableAuthOutput;
+  input: {};
+  clientId: string;
+  clientSecret: string;
+  scopes: string[];
+};
+
 let getProfileFromToken = async (token: string, operation: string) => {
   let apiClient = createAxios({
     baseURL: 'https://api.airtable.com/v0',
@@ -178,7 +192,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: AirtableOAuthRefreshContext) => {
       if (!ctx.output.refreshToken) {
         throw airtableServiceError('No Airtable refresh token available.');
       }
@@ -218,7 +232,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: { output: AirtableAuthOutput; input: {}; scopes: string[] }) => {
       return await getProfileFromToken(ctx.output.token, 'get OAuth profile');
     }
   })
