@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { tableauServiceError } from '../lib/errors';
 
 export let manageFavorites = SlateTool.create(spec, {
   name: 'Manage Favorites',
@@ -40,11 +41,18 @@ export let manageFavorites = SlateTool.create(spec, {
     }
 
     if (action === 'add') {
+      if (!ctx.input.resourceType) {
+        throw tableauServiceError('resourceType is required for add action.');
+      }
+      if (!ctx.input.resourceId) {
+        throw tableauServiceError('resourceId is required for add action.');
+      }
+
       await client.addFavorite(
         userId,
-        ctx.input.resourceType!,
-        ctx.input.resourceId!,
-        ctx.input.label || ctx.input.resourceType!
+        ctx.input.resourceType,
+        ctx.input.resourceId,
+        ctx.input.label || ctx.input.resourceType
       );
       return {
         output: { added: true },
@@ -53,17 +61,20 @@ export let manageFavorites = SlateTool.create(spec, {
     }
 
     if (action === 'remove') {
-      await client.deleteFavorite(
-        userId,
-        ctx.input.resourceType! + 's',
-        ctx.input.resourceId!
-      );
+      if (!ctx.input.resourceType) {
+        throw tableauServiceError('resourceType is required for remove action.');
+      }
+      if (!ctx.input.resourceId) {
+        throw tableauServiceError('resourceId is required for remove action.');
+      }
+
+      await client.deleteFavorite(userId, ctx.input.resourceType + 's', ctx.input.resourceId);
       return {
         output: { removed: true },
         message: `Removed ${ctx.input.resourceType} \`${ctx.input.resourceId}\` from favorites.`
       };
     }
 
-    return { output: {}, message: `Unknown action: ${action}` };
+    throw tableauServiceError(`Unknown action: ${action}`);
   })
   .build();

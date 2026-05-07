@@ -14,6 +14,10 @@ export let crmGetModules = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      status: z
+        .string()
+        .optional()
+        .describe('Filter modules by status, e.g. "visible" or "user_hidden,system_hidden"'),
       includeUsers: z.boolean().optional().describe('Also fetch and include CRM user list'),
       userType: z
         .string()
@@ -56,7 +60,7 @@ export let crmGetModules = SlateTool.create(spec, {
     let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
     let client = new ZohoCrmClient({ token: ctx.auth.token, datacenter: dc });
 
-    let modulesResult = await client.getModules();
+    let modulesResult = await client.getModules({ status: ctx.input.status });
     let modules = (modulesResult?.modules || []).map((m: any) => ({
       moduleId: m.id,
       apiName: m.api_name,

@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { normalizeBoolean } from '../lib/normalizers';
 
 export let listWorkbooks = SlateTool.create(spec, {
   name: 'List Workbooks',
@@ -65,7 +66,7 @@ export let listWorkbooks = SlateTool.create(spec, {
       description: w.description,
       contentUrl: w.contentUrl,
       webpageUrl: w.webpageUrl,
-      showTabs: w.showTabs,
+      showTabs: normalizeBoolean(w.showTabs),
       size: w.size ? Number(w.size) : undefined,
       createdAt: w.createdAt,
       updatedAt: w.updatedAt,

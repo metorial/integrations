@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { tableauServiceError } from '../lib/errors';
 
 export let manageProjects = SlateTool.create(spec, {
   name: 'Manage Projects',
@@ -90,7 +91,9 @@ export let manageProjects = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      let p = await client.createProject(ctx.input.name!, {
+      if (!ctx.input.name) throw tableauServiceError('name is required for create action.');
+
+      let p = await client.createProject(ctx.input.name, {
         description: ctx.input.description,
         parentProjectId: ctx.input.parentProjectId,
         contentPermissions: ctx.input.contentPermissions
@@ -110,7 +113,19 @@ export let manageProjects = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      let p = await client.updateProject(ctx.input.projectId!, {
+      if (!ctx.input.projectId) {
+        throw tableauServiceError('projectId is required for update action.');
+      }
+      if (
+        ctx.input.name === undefined &&
+        ctx.input.description === undefined &&
+        ctx.input.parentProjectId === undefined &&
+        ctx.input.contentPermissions === undefined
+      ) {
+        throw tableauServiceError('Provide at least one field to update a project.');
+      }
+
+      let p = await client.updateProject(ctx.input.projectId, {
         name: ctx.input.name,
         description: ctx.input.description,
         parentProjectId: ctx.input.parentProjectId,
@@ -131,13 +146,17 @@ export let manageProjects = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      await client.deleteProject(ctx.input.projectId!);
+      if (!ctx.input.projectId) {
+        throw tableauServiceError('projectId is required for delete action.');
+      }
+
+      await client.deleteProject(ctx.input.projectId);
       return {
         output: { deleted: true },
         message: `Deleted project \`${ctx.input.projectId}\`.`
       };
     }
 
-    return { output: {}, message: `Unknown action: ${action}` };
+    throw tableauServiceError(`Unknown action: ${action}`);
   })
   .build();

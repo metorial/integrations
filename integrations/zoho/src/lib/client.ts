@@ -1,18 +1,44 @@
 import { createAxios } from 'slates';
 import { getApiBaseUrl, getDeskBaseUrl, getPeopleBaseUrl, getProjectsBaseUrl } from './urls';
 import type { Datacenter } from './urls';
+import { zohoApiError } from './errors';
+
+let createZohoAxios = (config: Parameters<typeof createAxios>[0], operation: string) => {
+  let http = createAxios(config);
+  let interceptors = (http as any).interceptors;
+
+  interceptors?.response?.use(
+    (response: unknown) => response,
+    (error: unknown) => Promise.reject(zohoApiError(error, operation))
+  );
+
+  return http;
+};
+
+let toFormData = (data: Record<string, any>) => {
+  let form = new URLSearchParams();
+  for (let [key, value] of Object.entries(data)) {
+    if (value !== undefined && value !== null) {
+      form.set(key, String(value));
+    }
+  }
+  return form;
+};
 
 export class ZohoCrmClient {
   private http;
 
   constructor(opts: { token: string; datacenter: Datacenter }) {
     let baseUrl = getApiBaseUrl(opts.datacenter);
-    this.http = createAxios({
-      baseURL: `${baseUrl}/crm/v7`,
-      headers: {
-        Authorization: `Zoho-oauthtoken ${opts.token}`
-      }
-    });
+    this.http = createZohoAxios(
+      {
+        baseURL: `${baseUrl}/crm/v7`,
+        headers: {
+          Authorization: `Zoho-oauthtoken ${opts.token}`
+        }
+      },
+      'CRM request'
+    );
   }
 
   async getRecords(
@@ -25,6 +51,10 @@ export class ZohoCrmClient {
       sortOrder?: string;
       cvid?: string;
       ids?: string;
+      pageToken?: string;
+      converted?: 'true' | 'false' | 'both';
+      territoryId?: string;
+      includeChild?: boolean;
     }
   ) {
     let response = await this.http.get(`/${module}`, {
@@ -32,17 +62,23 @@ export class ZohoCrmClient {
         fields: params?.fields,
         page: params?.page,
         per_page: params?.perPage,
+        page_token: params?.pageToken,
         sort_by: params?.sortBy,
         sort_order: params?.sortOrder,
         cvid: params?.cvid,
-        ids: params?.ids
+        ids: params?.ids,
+        converted: params?.converted,
+        territory_id: params?.territoryId,
+        include_child: params?.includeChild
       }
     });
     return response.data;
   }
 
-  async getRecord(module: string, recordId: string) {
-    let response = await this.http.get(`/${module}/${recordId}`);
+  async getRecord(module: string, recordId: string, fields?: string) {
+    let response = await this.http.get(`/${module}/${recordId}`, {
+      params: { fields }
+    });
     return response.data;
   }
 
@@ -79,6 +115,10 @@ export class ZohoCrmClient {
       word?: string;
       page?: number;
       perPage?: number;
+      fields?: string;
+      converted?: 'true' | 'false' | 'both';
+      approved?: 'true' | 'false' | 'both';
+      userType?: string;
     }
   ) {
     let response = await this.http.get(`/${module}/search`, {
@@ -88,7 +128,41 @@ export class ZohoCrmClient {
         phone: params.phone,
         word: params.word,
         page: params.page,
-        per_page: params.perPage
+        per_page: params.perPage,
+        fields: params.fields,
+        converted: params.converted,
+        approved: params.approved,
+        type: params.userType
+      }
+    });
+    return response.data;
+  }
+
+  async getRelatedRecords(
+    module: string,
+    recordId: string,
+    relatedListApiName: string,
+    params: {
+      fields: string;
+      page?: number;
+      perPage?: number;
+      pageToken?: string;
+      ids?: string;
+      sortBy?: string;
+      sortOrder?: string;
+      converted?: 'true' | 'false' | 'both';
+    }
+  ) {
+    let response = await this.http.get(`/${module}/${recordId}/${relatedListApiName}`, {
+      params: {
+        fields: params.fields,
+        page: params.page,
+        per_page: params.perPage,
+        page_token: params.pageToken,
+        ids: params.ids,
+        sort_by: params.sortBy,
+        sort_order: params.sortOrder,
+        converted: params.converted
       }
     });
     return response.data;
@@ -99,8 +173,12 @@ export class ZohoCrmClient {
     return response.data;
   }
 
-  async getModules() {
-    let response = await this.http.get('/settings/modules');
+  async getModules(params?: { status?: string }) {
+    let response = await this.http.get('/settings/modules', {
+      params: {
+        status: params?.status
+      }
+    });
     return response.data;
   }
 
@@ -156,13 +234,16 @@ export class ZohoDeskClient {
 
   constructor(opts: { token: string; datacenter: Datacenter; orgId: string }) {
     let baseUrl = getDeskBaseUrl(opts.datacenter);
-    this.http = createAxios({
-      baseURL: `${baseUrl}/api/v1`,
-      headers: {
-        Authorization: `Zoho-oauthtoken ${opts.token}`,
-        orgId: opts.orgId
-      }
-    });
+    this.http = createZohoAxios(
+      {
+        baseURL: `${baseUrl}/api/v1`,
+        headers: {
+          Authorization: `Zoho-oauthtoken ${opts.token}`,
+          orgId: opts.orgId
+        }
+      },
+      'Desk request'
+    );
   }
 
   async listTickets(params?: {
@@ -202,7 +283,9 @@ export class ZohoDeskClient {
   }
 
   async deleteTicket(ticketId: string) {
-    let response = await this.http.delete(`/tickets/${ticketId}`);
+    let response = await this.http.post('/tickets/moveToTrash', {
+      ticketIds: [ticketId]
+    });
     return response.data;
   }
 
@@ -227,7 +310,22 @@ export class ZohoDeskClient {
   }
 
   async deleteContact(contactId: string) {
-    let response = await this.http.delete(`/contacts/${contactId}`);
+    let response = await this.http.post('/contacts/moveToTrash', {
+      contactIds: [contactId]
+    });
+    return response.data;
+  }
+
+  static async listOrganizations(token: string, datacenter: Datacenter) {
+    let baseUrl = getDeskBaseUrl(datacenter);
+    let http = createZohoAxios(
+      {
+        baseURL: `${baseUrl}/api/v1`,
+        headers: { Authorization: `Zoho-oauthtoken ${token}` }
+      },
+      'Desk organizations request'
+    );
+    let response = await http.get('/organizations');
     return response.data;
   }
 
@@ -281,23 +379,29 @@ export class ZohoBooksClient {
 
   constructor(opts: { token: string; datacenter: Datacenter; organizationId: string }) {
     let baseUrl = getApiBaseUrl(opts.datacenter);
-    this.http = createAxios({
-      baseURL: `${baseUrl}/books/v3`,
-      headers: {
-        Authorization: `Zoho-oauthtoken ${opts.token}`
+    this.http = createZohoAxios(
+      {
+        baseURL: `${baseUrl}/books/v3`,
+        headers: {
+          Authorization: `Zoho-oauthtoken ${opts.token}`
+        },
+        params: {
+          organization_id: opts.organizationId
+        }
       },
-      params: {
-        organization_id: opts.organizationId
-      }
-    });
+      'Books request'
+    );
   }
 
   static async listOrganizations(token: string, datacenter: Datacenter) {
     let baseUrl = getApiBaseUrl(datacenter);
-    let http = createAxios({
-      baseURL: `${baseUrl}/books/v3`,
-      headers: { Authorization: `Zoho-oauthtoken ${token}` }
-    });
+    let http = createZohoAxios(
+      {
+        baseURL: `${baseUrl}/books/v3`,
+        headers: { Authorization: `Zoho-oauthtoken ${token}` }
+      },
+      'Books organizations request'
+    );
     let response = await http.get('/organizations');
     return response.data;
   }
@@ -432,12 +536,15 @@ export class ZohoPeopleClient {
 
   constructor(opts: { token: string; datacenter: Datacenter }) {
     let baseUrl = getPeopleBaseUrl(opts.datacenter);
-    this.http = createAxios({
-      baseURL: `${baseUrl}/people/api`,
-      headers: {
-        Authorization: `Zoho-oauthtoken ${opts.token}`
-      }
-    });
+    this.http = createZohoAxios(
+      {
+        baseURL: `${baseUrl}/people/api`,
+        headers: {
+          Authorization: `Zoho-oauthtoken ${opts.token}`
+        }
+      },
+      'People request'
+    );
   }
 
   async getFormRecords(
@@ -451,12 +558,17 @@ export class ZohoPeopleClient {
   ) {
     let response = await this.http.get(`/forms/${formLinkName}/getRecords`, {
       params: {
-        sIndex: params?.sIndex ?? 0,
+        sIndex: params?.sIndex ?? 1,
         limit: params?.limit ?? 200,
         searchColumn: params?.searchColumn,
         searchValue: params?.searchValue
       }
     });
+    return response.data;
+  }
+
+  async listForms() {
+    let response = await this.http.get('/forms');
     return response.data;
   }
 
@@ -497,12 +609,28 @@ export class ZohoProjectsClient {
 
   constructor(opts: { token: string; datacenter: Datacenter; portalId: string }) {
     let baseUrl = getProjectsBaseUrl(opts.datacenter);
-    this.http = createAxios({
-      baseURL: `${baseUrl}/restapi/portal/${opts.portalId}`,
-      headers: {
-        Authorization: `Zoho-oauthtoken ${opts.token}`
-      }
-    });
+    this.http = createZohoAxios(
+      {
+        baseURL: `${baseUrl}/restapi/portal/${opts.portalId}`,
+        headers: {
+          Authorization: `Zoho-oauthtoken ${opts.token}`
+        }
+      },
+      'Projects request'
+    );
+  }
+
+  static async listPortals(token: string, datacenter: Datacenter) {
+    let baseUrl = getProjectsBaseUrl(datacenter);
+    let http = createZohoAxios(
+      {
+        baseURL: `${baseUrl}/restapi`,
+        headers: { Authorization: `Zoho-oauthtoken ${token}` }
+      },
+      'Projects portals request'
+    );
+    let response = await http.get('/portals/');
+    return response.data;
   }
 
   async listProjects(params?: {
@@ -530,12 +658,12 @@ export class ZohoProjectsClient {
   }
 
   async createProject(data: Record<string, any>) {
-    let response = await this.http.post('/projects/', data);
+    let response = await this.http.post('/projects/', toFormData(data));
     return response.data;
   }
 
   async updateProject(projectId: string, data: Record<string, any>) {
-    let response = await this.http.put(`/projects/${projectId}/`, data);
+    let response = await this.http.post(`/projects/${projectId}/`, toFormData(data));
     return response.data;
   }
 
@@ -568,12 +696,15 @@ export class ZohoProjectsClient {
   }
 
   async createTask(projectId: string, data: Record<string, any>) {
-    let response = await this.http.post(`/projects/${projectId}/tasks/`, data);
+    let response = await this.http.post(`/projects/${projectId}/tasks/`, toFormData(data));
     return response.data;
   }
 
   async updateTask(projectId: string, taskId: string, data: Record<string, any>) {
-    let response = await this.http.put(`/projects/${projectId}/tasks/${taskId}/`, data);
+    let response = await this.http.post(
+      `/projects/${projectId}/tasks/${taskId}/`,
+      toFormData(data)
+    );
     return response.data;
   }
 

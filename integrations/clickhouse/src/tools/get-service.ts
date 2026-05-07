@@ -56,7 +56,7 @@ export let getService = SlateTool.create(spec, {
         .array(
           z.object({
             key: z.string(),
-            value: z.string()
+            value: z.string().nullable().optional()
           })
         )
         .optional()

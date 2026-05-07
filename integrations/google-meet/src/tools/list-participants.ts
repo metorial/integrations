@@ -40,6 +40,53 @@ let mapParticipant = (p: any) => {
   };
 };
 
+let participantSessionSchema = z.object({
+  sessionName: z.string().describe('Resource name of the session'),
+  startTime: z.string().optional().describe('When the session started'),
+  endTime: z
+    .string()
+    .optional()
+    .describe('When the session ended (empty if still active)')
+});
+
+let mapParticipantSession = (s: any) => ({
+  sessionName: s.name || '',
+  startTime: s.startTime,
+  endTime: s.endTime
+});
+
+export let getParticipantTool = SlateTool.create(spec, {
+  name: 'Get Participant',
+  key: 'get_participant',
+  description: `Retrieve one participant in a conference record by resource name, including participant type and first/last join times.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .scopes(googleMeetActionScopes.getParticipant)
+  .input(
+    z.object({
+      participantName: z
+        .string()
+        .describe(
+          'Participant resource name (e.g., "conferenceRecords/abc123/participants/def456")'
+        )
+    })
+  )
+  .output(participantSchema)
+  .handleInvocation(async ctx => {
+    let client = new MeetClient({ token: ctx.auth.token });
+    let participant = await client.getParticipant(ctx.input.participantName);
+    let output = mapParticipant(participant);
+
+    return {
+      output,
+      message: `Retrieved participant **${output.participantName}**.`
+    };
+  })
+  .build();
+
 export let listParticipantsTool = SlateTool.create(spec, {
   name: 'List Participants',
   key: 'list_participants',
@@ -88,6 +135,38 @@ export let listParticipantsTool = SlateTool.create(spec, {
   })
   .build();
 
+export let getParticipantSessionTool = SlateTool.create(spec, {
+  name: 'Get Participant Session',
+  key: 'get_participant_session',
+  description: `Retrieve one join/leave session for a participant in a conference record by resource name.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .scopes(googleMeetActionScopes.getParticipantSession)
+  .input(
+    z.object({
+      participantSessionName: z
+        .string()
+        .describe(
+          'Participant session resource name (e.g., "conferenceRecords/abc123/participants/def456/participantSessions/ghi789")'
+        )
+    })
+  )
+  .output(participantSessionSchema)
+  .handleInvocation(async ctx => {
+    let client = new MeetClient({ token: ctx.auth.token });
+    let session = await client.getParticipantSession(ctx.input.participantSessionName);
+    let output = mapParticipantSession(session);
+
+    return {
+      output,
+      message: `Retrieved participant session **${output.sessionName}**.`
+    };
+  })
+  .build();
+
 export let getParticipantSessionsTool = SlateTool.create(spec, {
   name: 'Get Participant Sessions',
   key: 'get_participant_sessions',
@@ -111,16 +190,7 @@ export let getParticipantSessionsTool = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      sessions: z.array(
-        z.object({
-          sessionName: z.string().describe('Resource name of the session'),
-          startTime: z.string().optional().describe('When the session started'),
-          endTime: z
-            .string()
-            .optional()
-            .describe('When the session ended (empty if still active)')
-        })
-      ),
+      sessions: z.array(participantSessionSchema),
       nextPageToken: z.string().optional().describe('Token for the next page')
     })
   )
@@ -133,11 +203,7 @@ export let getParticipantSessionsTool = SlateTool.create(spec, {
       ctx.input.pageToken
     );
 
-    let sessions = result.participantSessions.map(s => ({
-      sessionName: s.name || '',
-      startTime: s.startTime,
-      endTime: s.endTime
-    }));
+    let sessions = result.participantSessions.map(mapParticipantSession);
 
     return {
       output: {

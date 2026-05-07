@@ -6,16 +6,16 @@ import { z } from 'zod';
 export let controlServiceState = SlateTool.create(spec, {
   name: 'Control Service State',
   key: 'control_service_state',
-  description: `Start or stop a ClickHouse service. A service must be stopped before it can be deleted. Note: **start** does not wake idle services — to wake an idle service, ping it directly at its endpoint.`,
+  description: `Start, stop, or wake an idle ClickHouse service. A service must be stopped before it can be deleted.`,
   constraints: [
-    'The start command does not wake idle services. Ping the service endpoint directly to wake it.',
+    'Use awake to wake an idle service without changing stopped services.',
     'A service must be stopped before it can be deleted.'
   ]
 })
   .input(
     z.object({
-      serviceId: z.string().describe('ID of the service to start or stop'),
-      command: z.enum(['start', 'stop']).describe('The state transition command')
+      serviceId: z.string().describe('ID of the service to start, stop, or wake'),
+      command: z.enum(['start', 'stop', 'awake']).describe('The state transition command')
     })
   )
   .output(

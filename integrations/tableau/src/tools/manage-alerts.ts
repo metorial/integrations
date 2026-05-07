@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { tableauServiceError } from '../lib/errors';
 
 export let manageAlerts = SlateTool.create(spec, {
   name: 'Manage Data-Driven Alerts',
@@ -75,7 +76,9 @@ export let manageAlerts = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      let a = await client.getAlert(ctx.input.alertId!);
+      if (!ctx.input.alertId) throw tableauServiceError('alertId is required for get action.');
+
+      let a = await client.getAlert(ctx.input.alertId);
       return {
         output: {
           alert: {
@@ -93,7 +96,10 @@ export let manageAlerts = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      await client.deleteAlert(ctx.input.alertId!);
+      if (!ctx.input.alertId)
+        throw tableauServiceError('alertId is required for delete action.');
+
+      await client.deleteAlert(ctx.input.alertId);
       return {
         output: { deleted: true },
         message: `Deleted alert \`${ctx.input.alertId}\`.`
@@ -101,7 +107,13 @@ export let manageAlerts = SlateTool.create(spec, {
     }
 
     if (action === 'addUser') {
-      await client.addUserToAlert(ctx.input.alertId!, ctx.input.userId!);
+      if (!ctx.input.alertId) {
+        throw tableauServiceError('alertId is required for addUser action.');
+      }
+      if (!ctx.input.userId)
+        throw tableauServiceError('userId is required for addUser action.');
+
+      await client.addUserToAlert(ctx.input.alertId, ctx.input.userId);
       return {
         output: { userAdded: true },
         message: `Added user \`${ctx.input.userId}\` to alert \`${ctx.input.alertId}\`.`
@@ -109,13 +121,19 @@ export let manageAlerts = SlateTool.create(spec, {
     }
 
     if (action === 'removeUser') {
-      await client.removeUserFromAlert(ctx.input.alertId!, ctx.input.userId!);
+      if (!ctx.input.alertId) {
+        throw tableauServiceError('alertId is required for removeUser action.');
+      }
+      if (!ctx.input.userId)
+        throw tableauServiceError('userId is required for removeUser action.');
+
+      await client.removeUserFromAlert(ctx.input.alertId, ctx.input.userId);
       return {
         output: { userRemoved: true },
         message: `Removed user \`${ctx.input.userId}\` from alert \`${ctx.input.alertId}\`.`
       };
     }
 
-    return { output: {}, message: `Unknown action: ${action}` };
+    throw tableauServiceError(`Unknown action: ${action}`);
   })
   .build();

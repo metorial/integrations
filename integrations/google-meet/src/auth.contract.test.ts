@@ -138,7 +138,7 @@ describe('google-meet auth contract', () => {
           clientSecret: 'client-secret',
           scopes: [googleMeetScopes.spaceReadonly]
         }),
-      { code: 'internal.unexpected', kind: 'internal', status: 500 }
+      { code: 'request.bad', kind: 'request', status: 400 }
     );
   });
 

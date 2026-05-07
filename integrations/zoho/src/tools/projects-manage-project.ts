@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZohoProjectsClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { zohoServiceError } from '../lib/errors';
 
 export let projectsManageProject = SlateTool.create(spec, {
   name: 'Projects Manage Project',
@@ -75,7 +76,7 @@ export let projectsManageProject = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'get') {
-      if (!ctx.input.projectId) throw new Error('projectId is required for get');
+      if (!ctx.input.projectId) throw zohoServiceError('projectId is required for get');
       let result = await client.getProject(ctx.input.projectId);
       let project = result?.projects?.[0] || result;
       return {
@@ -85,6 +86,7 @@ export let projectsManageProject = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'create') {
+      if (!ctx.input.name) throw zohoServiceError('name is required for create');
       let data: Record<string, any> = {};
       if (ctx.input.name) data.name = ctx.input.name;
       if (ctx.input.description) data.description = ctx.input.description;
@@ -102,7 +104,7 @@ export let projectsManageProject = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.projectId) throw new Error('projectId is required for update');
+      if (!ctx.input.projectId) throw zohoServiceError('projectId is required for update');
       let data: Record<string, any> = {};
       if (ctx.input.name) data.name = ctx.input.name;
       if (ctx.input.description) data.description = ctx.input.description;
@@ -120,7 +122,7 @@ export let projectsManageProject = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.projectId) throw new Error('projectId is required for delete');
+      if (!ctx.input.projectId) throw zohoServiceError('projectId is required for delete');
       await client.deleteProject(ctx.input.projectId);
       return {
         output: { deleted: true },
@@ -129,7 +131,7 @@ export let projectsManageProject = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'list_tasks') {
-      if (!ctx.input.projectId) throw new Error('projectId is required for list_tasks');
+      if (!ctx.input.projectId) throw zohoServiceError('projectId is required for list_tasks');
       let result = await client.listTasks(ctx.input.projectId, {
         index: ctx.input.index,
         range: ctx.input.range,
@@ -143,7 +145,8 @@ export let projectsManageProject = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'list_milestones') {
-      if (!ctx.input.projectId) throw new Error('projectId is required for list_milestones');
+      if (!ctx.input.projectId)
+        throw zohoServiceError('projectId is required for list_milestones');
       let result = await client.listMilestones(ctx.input.projectId, {
         index: ctx.input.index,
         range: ctx.input.range,
@@ -156,6 +159,6 @@ export let projectsManageProject = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw zohoServiceError('Invalid Projects project action.');
   })
   .build();

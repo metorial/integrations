@@ -12,6 +12,7 @@
     "list meeting participants",
     "access recording metadata",
     "retrieve transcript entries",
+    "retrieve smart notes metadata",
     "subscribe to meeting events",
     "set moderation modes",
     "configure auto-recording"

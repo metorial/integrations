@@ -1,20 +1,28 @@
 import { SlateTool } from 'slates';
 import { ClickHouseClient } from '../lib/client';
+import { clickhouseServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
+
+let assignedRoleSchema = z.object({
+  roleId: z.string().optional(),
+  roleName: z.string().optional(),
+  roleType: z.string().optional()
+});
 
 let memberSchema = z.object({
   userId: z.string().describe('Unique user ID'),
   name: z.string().optional().describe('Display name of the member'),
   email: z.string().optional().describe('Email address of the member'),
-  role: z.string().optional().describe('Role of the member (admin or developer)'),
+  role: z.string().optional().describe('Deprecated role of the member (admin or developer)'),
+  assignedRoles: z.array(assignedRoleSchema).optional().describe('Current assigned roles'),
   joinedAt: z.string().optional().describe('When the member joined the organization')
 });
 
 export let listMembers = SlateTool.create(spec, {
   name: 'List Members',
   key: 'list_members',
-  description: `List all members in the organization. Returns each member's user ID, name, email, role, and join date.`,
+  description: `List all members in the organization. Returns each member's user ID, name, email, assigned roles, deprecated role, and join date.`,
   tags: {
     readOnly: true
   }
@@ -41,6 +49,7 @@ export let listMembers = SlateTool.create(spec, {
           name: m.name,
           email: m.email,
           role: m.role,
+          assignedRoles: m.assignedRoles,
           joinedAt: m.joinedAt
         }))
       },
@@ -60,17 +69,21 @@ export let updateMember = SlateTool.create(spec, {
   .input(
     z.object({
       userId: z.string().describe('The user ID of the member to update'),
-      role: z.enum(['admin', 'developer']).optional().describe('New role for the member'),
+      role: z
+        .enum(['admin', 'developer'])
+        .optional()
+        .describe('Deprecated role to assign to the member'),
       assignedRoleIds: z
         .array(z.string())
         .optional()
-        .describe('List of role IDs to assign to the member')
+        .describe('List of current role IDs to assign to the member')
     })
   )
   .output(
     z.object({
       userId: z.string(),
-      role: z.string().optional()
+      role: z.string().optional(),
+      assignedRoles: z.array(assignedRoleSchema).optional()
     })
   )
   .handleInvocation(async ctx => {
@@ -83,14 +96,19 @@ export let updateMember = SlateTool.create(spec, {
     if (ctx.input.role) body.role = ctx.input.role;
     if (ctx.input.assignedRoleIds) body.assignedRoleIds = ctx.input.assignedRoleIds;
 
+    if (Object.keys(body).length === 0) {
+      throw clickhouseServiceError('Provide role or assignedRoleIds to update a member.');
+    }
+
     let result = await client.updateMember(ctx.input.userId, body);
 
     return {
       output: {
         userId: result.userId || ctx.input.userId,
-        role: result.role
+        role: result.role,
+        assignedRoles: result.assignedRoles
       },
-      message: `Updated member **${ctx.input.userId}** role to **${ctx.input.role || 'custom roles'}**.`
+      message: `Updated member **${ctx.input.userId}** roles.`
     };
   })
   .build();

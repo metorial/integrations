@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { tableauServiceError } from '../lib/errors';
 
 export let manageFlows = SlateTool.create(spec, {
   name: 'Manage Flows',
@@ -89,7 +90,9 @@ export let manageFlows = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      let f = await client.getFlow(ctx.input.flowId!);
+      if (!ctx.input.flowId) throw tableauServiceError('flowId is required for get action.');
+
+      let f = await client.getFlow(ctx.input.flowId);
       return {
         output: {
           flow: {
@@ -108,7 +111,18 @@ export let manageFlows = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      let f = await client.updateFlow(ctx.input.flowId!, {
+      if (!ctx.input.flowId)
+        throw tableauServiceError('flowId is required for update action.');
+      if (
+        ctx.input.name === undefined &&
+        ctx.input.description === undefined &&
+        ctx.input.projectId === undefined &&
+        ctx.input.ownerUserId === undefined
+      ) {
+        throw tableauServiceError('Provide at least one field to update a flow.');
+      }
+
+      let f = await client.updateFlow(ctx.input.flowId, {
         name: ctx.input.name,
         description: ctx.input.description,
         projectId: ctx.input.projectId,
@@ -131,7 +145,10 @@ export let manageFlows = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      await client.deleteFlow(ctx.input.flowId!);
+      if (!ctx.input.flowId)
+        throw tableauServiceError('flowId is required for delete action.');
+
+      await client.deleteFlow(ctx.input.flowId);
       return {
         output: { deleted: true },
         message: `Deleted flow \`${ctx.input.flowId}\`.`
@@ -139,13 +156,15 @@ export let manageFlows = SlateTool.create(spec, {
     }
 
     if (action === 'run') {
-      let job = await client.runFlow(ctx.input.flowId!);
+      if (!ctx.input.flowId) throw tableauServiceError('flowId is required for run action.');
+
+      let job = await client.runFlow(ctx.input.flowId);
       return {
         output: { jobId: job?.id },
         message: `Started flow run for \`${ctx.input.flowId}\`. Job ID: \`${job?.id}\`.`
       };
     }
 
-    return { output: {}, message: `Unknown action: ${action}` };
+    throw tableauServiceError(`Unknown action: ${action}`);
   })
   .build();

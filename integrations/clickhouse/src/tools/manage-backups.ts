@@ -8,6 +8,7 @@ let backupSchema = z.object({
   serviceId: z.string().optional(),
   status: z.string().optional().describe('Backup status'),
   startedAt: z.string().optional().describe('When the backup started'),
+  finishedAt: z.string().optional().describe('When the backup finished'),
   completedAt: z.string().optional().describe('When the backup completed'),
   sizeInBytes: z.number().optional().describe('Backup size in bytes')
 });
@@ -46,11 +47,52 @@ export let listBackups = SlateTool.create(spec, {
           serviceId: b.serviceId,
           status: b.status,
           startedAt: b.startedAt,
-          completedAt: b.completedAt,
+          finishedAt: b.finishedAt,
+          completedAt: b.completedAt || b.finishedAt,
           sizeInBytes: b.sizeInBytes
         }))
       },
       message: `Found **${items.length}** backups for service ${ctx.input.serviceId}.`
+    };
+  })
+  .build();
+
+export let getBackup = SlateTool.create(spec, {
+  name: 'Get Backup',
+  key: 'get_backup',
+  description: `Retrieve details for a specific ClickHouse service backup.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      serviceId: z.string().describe('ID of the service'),
+      backupId: z.string().describe('ID of the backup')
+    })
+  )
+  .output(
+    z.object({
+      backup: z.record(z.string(), z.any()),
+      backupId: z.string(),
+      status: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new ClickHouseClient({
+      token: ctx.auth.token,
+      organizationId: ctx.config.organizationId
+    });
+
+    let backup = await client.getBackup(ctx.input.serviceId, ctx.input.backupId);
+
+    return {
+      output: {
+        backup,
+        backupId: backup.id || ctx.input.backupId,
+        status: backup.status
+      },
+      message: `Retrieved backup **${ctx.input.backupId}**.`
     };
   })
   .build();

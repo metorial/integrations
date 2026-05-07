@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ClickHouseClient } from '../lib/client';
+import { clickhouseServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -19,6 +20,12 @@ let apiKeySchema = z.object({
     .optional()
     .describe('Roles assigned to this key')
 });
+
+let ensureBodyHasFields = (body: Record<string, any>, label: string) => {
+  if (Object.keys(body).length === 0) {
+    throw clickhouseServiceError(`Provide at least one ${label} field to update.`);
+  }
+};
 
 export let listApiKeys = SlateTool.create(spec, {
   name: 'List API Keys',
@@ -58,6 +65,47 @@ export let listApiKeys = SlateTool.create(spec, {
   })
   .build();
 
+export let getApiKey = SlateTool.create(spec, {
+  name: 'Get API Key',
+  key: 'get_api_key',
+  description: `Retrieve details for a ClickHouse Cloud API key. The key secret is not returned by the Cloud API after creation.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      keyId: z.string().describe('ID of the API key')
+    })
+  )
+  .output(
+    z.object({
+      apiKey: z.record(z.string(), z.any()),
+      keyId: z.string(),
+      name: z.string().optional(),
+      state: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new ClickHouseClient({
+      token: ctx.auth.token,
+      organizationId: ctx.config.organizationId
+    });
+
+    let apiKey = await client.getApiKey(ctx.input.keyId);
+
+    return {
+      output: {
+        apiKey,
+        keyId: apiKey.id || ctx.input.keyId,
+        name: apiKey.name,
+        state: apiKey.state
+      },
+      message: `Retrieved API key **${apiKey.name || ctx.input.keyId}**.`
+    };
+  })
+  .build();
+
 export let createApiKey = SlateTool.create(spec, {
   name: 'Create API Key',
   key: 'create_api_key',
@@ -70,9 +118,13 @@ export let createApiKey = SlateTool.create(spec, {
   .input(
     z.object({
       name: z.string().describe('Name for the new API key'),
-      roles: z.array(z.string()).optional().describe('Roles to assign (e.g., ["admin"])'),
-      assignedRoleIds: z.array(z.string()).optional().describe('Specific role IDs to assign'),
+      roles: z
+        .array(z.enum(['admin', 'developer', 'query_endpoints']))
+        .optional()
+        .describe('Deprecated roles to assign (e.g., ["admin"])'),
+      assignedRoleIds: z.array(z.string()).optional().describe('Current role IDs to assign'),
       expireAt: z.string().optional().describe('Expiration date in ISO-8601 format'),
+      state: z.enum(['enabled', 'disabled']).optional().describe('Initial key state'),
       ipAccessList: z
         .array(
           z.object({
@@ -102,18 +154,83 @@ export let createApiKey = SlateTool.create(spec, {
     if (ctx.input.roles) body.roles = ctx.input.roles;
     if (ctx.input.assignedRoleIds) body.assignedRoleIds = ctx.input.assignedRoleIds;
     if (ctx.input.expireAt) body.expireAt = ctx.input.expireAt;
+    if (ctx.input.state) body.state = ctx.input.state;
     if (ctx.input.ipAccessList) body.ipAccessList = ctx.input.ipAccessList;
 
     let result = await client.createApiKey(body);
 
     return {
       output: {
-        keyId: result.id || result.key?.id,
+        keyId: result.keyId || result.id || result.key?.id,
         keySecret: result.keySecret || result.key?.secret,
         name: result.name || result.key?.name,
         state: result.state || result.key?.state
       },
       message: `API key **${ctx.input.name}** created. Store the key secret securely — it cannot be retrieved later.`
+    };
+  })
+  .build();
+
+export let updateApiKey = SlateTool.create(spec, {
+  name: 'Update API Key',
+  key: 'update_api_key',
+  description: `Update a ClickHouse Cloud API key's name, state, role assignments, expiration, or IP allow list.`
+})
+  .input(
+    z.object({
+      keyId: z.string().describe('ID of the API key to update'),
+      name: z.string().optional().describe('Updated API key name'),
+      assignedRoleIds: z.array(z.string()).optional().describe('Updated role IDs'),
+      expireAt: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Updated expiration date in ISO-8601 format, or null to clear'),
+      state: z.enum(['enabled', 'disabled']).optional().describe('Updated key state'),
+      ipAccessList: z
+        .array(
+          z.object({
+            source: z.string().describe('IP address or CIDR range'),
+            description: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Updated IP allow list for the key')
+    })
+  )
+  .output(
+    z.object({
+      apiKey: z.record(z.string(), z.any()),
+      keyId: z.string(),
+      name: z.string().optional(),
+      state: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
+    let body: Record<string, any> = {};
+    if (ctx.input.name !== undefined) body.name = ctx.input.name;
+    if (ctx.input.assignedRoleIds !== undefined)
+      body.assignedRoleIds = ctx.input.assignedRoleIds;
+    if (ctx.input.expireAt !== undefined) body.expireAt = ctx.input.expireAt;
+    if (ctx.input.state !== undefined) body.state = ctx.input.state;
+    if (ctx.input.ipAccessList !== undefined) body.ipAccessList = ctx.input.ipAccessList;
+    ensureBodyHasFields(body, 'API key');
+
+    let client = new ClickHouseClient({
+      token: ctx.auth.token,
+      organizationId: ctx.config.organizationId
+    });
+
+    let apiKey = await client.updateApiKey(ctx.input.keyId, body);
+
+    return {
+      output: {
+        apiKey,
+        keyId: apiKey.id || ctx.input.keyId,
+        name: apiKey.name,
+        state: apiKey.state
+      },
+      message: `Updated API key **${apiKey.name || ctx.input.keyId}**.`
     };
   })
   .build();

@@ -96,9 +96,9 @@ Manage support tickets, contacts, accounts, tasks, calls, and events. A webhook 
 - Supports department-based filtering.
 - Includes instant messaging session and message management.
 
-### Accounting & Finance (Zoho Books / Zoho Billing)
+### Accounting & Finance (Zoho Books)
 
-The Zoho Books API allows you to perform all the operations that you do with the web client. Manage invoices, contacts, expenses, payments, purchase orders, bank transactions, organizations, reporting tags, and more.
+The Zoho Books API allows you to perform many accounting operations that you do with the web client. This generic Zoho package currently implements organizations, invoices, contacts, and expenses.
 
 - There are 8 different domains for Zoho Books' APIs, and you must use the one applicable to your organization.
 - Requires an Organization ID for API calls.
@@ -111,36 +111,18 @@ Manage employee records, forms, leave, attendance, timesheets, and HR processes.
 
 ### Project Management (Zoho Projects)
 
-Zoho Projects provides a comprehensive set of REST APIs to manage your projects, connect third party applications, and transfer or retrieve data from Zoho Projects. Manage projects, tasks, milestones, timesheets, bugs, forums, and custom modules.
+Zoho Projects provides REST APIs to manage projects, connect third party applications, and transfer or retrieve data. This generic Zoho package currently implements portal discovery, project management, task management, and milestone listing.
 
 - Supports custom modules with configurable layouts.
 - Requires a Portal ID in API calls.
 
-### Email (Zoho Mail)
+### Out Of Scope For This Generic Package
 
-Zoho Mail provides REST APIs for managing organizations, domains, groups, users, accounts, and mail policies, as well as for managing and organizing emails, threads, and tasks. It also offers management of notes, bookmarks, and more, including detailed logs.
-
-- Some APIs require Admin authentication, while others can be executed with user authentication. Certain APIs are designed to be executed by both.
-
-### Email Marketing (Zoho Campaigns)
-
-Zoho Campaigns provides APIs to access data to and from other Zoho applications and third-party applications. With the APIs, you can export data in XML or JSON format and develop new applications or integrate with existing business applications.
-
-- Manage mailing lists, campaigns, and subscriber data.
-
-### Analytics (Zoho Analytics)
-
-Zoho Analytics API is built using REST principles, which ensures predictable URLs that make writing applications easy. Import data, create reports and dashboards, and manage workspaces programmatically.
-
-### Custom Apps (Zoho Creator)
-
-Zoho Creator provides RESTful APIs that allow you to interface with your Zoho Creator apps to fetch, add, update, and delete data.
-
-- Interact with custom applications and forms built in Zoho Creator.
+Zoho Mail, Campaigns, Analytics, Creator, Billing, Sign, ZeptoMail, and other product-specific APIs are not implemented in this package. Use dedicated Zoho service integrations when those surfaces are needed.
 
 ## Events
 
-Zoho supports webhooks and notification subscriptions across several of its products, though the mechanism varies by product.
+Zoho supports webhooks and notification subscriptions across several products, though the mechanism varies by product. This package implements CRM notification registration and Desk event request handling.
 
 ### Zoho CRM — Notification API (Watch API)
 
@@ -171,23 +153,3 @@ These APIs help you programmatically create, view, update, or delete webhooks th
 - **IM events**: Message add, session status, message status.
 - **Department events**: Add, update.
 - Optionally include previous state of resource in update payloads.
-
-### Zoho Billing — Workflow Webhooks
-
-Webhooks facilitate communication with third-party applications by sending instant web notifications every time an event occurs in Zoho Billing, configured via HTTP/HTTPS URLs associated with workflow rules.
-
-- Triggered on module record creation or editing, with configurable rule criteria.
-
-### Zoho Sign — Webhooks
-
-A webhook in Zoho Sign automatically sends real-time notifications based on document actions to third-party software or websites.
-
-- Triggered by document-related events (e.g., sent, viewed, signed, completed).
-- Currently supports webhooks only for the enterprise plan.
-
-### Zoho ZeptoMail — Webhooks
-
-The webhooks in ZeptoMail ensure that you're instantly notified about message events on your transactional emails. Stay informed of delivery issues and recipient activity.
-
-- Events: Soft bounce, hard bounce, email open, link click.
-- Simply provide the endpoint URL and choose the events you want to be notified about.

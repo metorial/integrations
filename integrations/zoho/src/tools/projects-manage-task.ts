@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZohoProjectsClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { zohoServiceError } from '../lib/errors';
 
 export let projectsManageTask = SlateTool.create(spec, {
   name: 'Projects Manage Task',
@@ -50,7 +51,7 @@ export let projectsManageTask = SlateTool.create(spec, {
     });
 
     if (ctx.input.action === 'get') {
-      if (!ctx.input.taskId) throw new Error('taskId is required for get');
+      if (!ctx.input.taskId) throw zohoServiceError('taskId is required for get');
       let result = await client.getTask(ctx.input.projectId, ctx.input.taskId);
       let task = result?.tasks?.[0] || result;
       return {
@@ -74,6 +75,7 @@ export let projectsManageTask = SlateTool.create(spec, {
     };
 
     if (ctx.input.action === 'create') {
+      if (!ctx.input.name) throw zohoServiceError('name is required for create');
       let result = await client.createTask(ctx.input.projectId, buildData());
       let task = result?.tasks?.[0] || result;
       return {
@@ -83,7 +85,7 @@ export let projectsManageTask = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.taskId) throw new Error('taskId is required for update');
+      if (!ctx.input.taskId) throw zohoServiceError('taskId is required for update');
       let result = await client.updateTask(ctx.input.projectId, ctx.input.taskId, buildData());
       let task = result?.tasks?.[0] || result;
       return {
@@ -93,7 +95,7 @@ export let projectsManageTask = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.taskId) throw new Error('taskId is required for delete');
+      if (!ctx.input.taskId) throw zohoServiceError('taskId is required for delete');
       await client.deleteTask(ctx.input.projectId, ctx.input.taskId);
       return {
         output: { deleted: true },
@@ -101,6 +103,6 @@ export let projectsManageTask = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw zohoServiceError('Invalid Projects task action.');
   })
   .build();

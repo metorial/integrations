@@ -63,3 +63,15 @@ export let getProjectsBaseUrl = (dc: Datacenter): string => projectsBaseUrls[dc]
 export let datacenterFromLocation = (location: string): Datacenter => {
   return locationToDatacenter[location] ?? 'us';
 };
+
+export let datacenterFromApiDomain = (apiDomain?: string): Datacenter | undefined => {
+  if (!apiDomain) return undefined;
+
+  for (let [dc, baseUrl] of Object.entries(apiBaseUrls)) {
+    if (apiDomain.startsWith(baseUrl)) {
+      return dc as Datacenter;
+    }
+  }
+
+  return undefined;
+};

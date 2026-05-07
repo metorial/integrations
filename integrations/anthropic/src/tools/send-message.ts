@@ -176,6 +176,8 @@ Provide a conversation history as messages and configure model parameters to con
 
     let summary =
       textContent.length > 200 ? textContent.substring(0, 200) + '...' : textContent;
+    let stopSequence =
+      typeof result.stop_sequence === 'string' ? result.stop_sequence : undefined;
 
     return {
       output: {
@@ -184,7 +186,7 @@ Provide a conversation history as messages and configure model parameters to con
         content,
         model: result.model as string,
         stopReason: result.stop_reason as string,
-        stopSequence: result.stop_sequence as string | undefined,
+        stopSequence,
         inputTokens: usage?.input_tokens ?? 0,
         outputTokens: usage?.output_tokens ?? 0
       },

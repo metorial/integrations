@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZohoPeopleClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { zohoServiceError } from '../lib/errors';
 
 export let peopleManageEmployee = SlateTool.create(spec, {
   name: 'People Manage Employee',
@@ -20,7 +21,7 @@ export let peopleManageEmployee = SlateTool.create(spec, {
   .input(
     z.object({
       action: z
-        .enum(['list', 'get', 'create', 'update', 'attendance', 'leave_types'])
+        .enum(['forms', 'list', 'get', 'create', 'update', 'attendance', 'leave_types'])
         .describe('Operation to perform'),
       formLinkName: z
         .string()
@@ -38,7 +39,7 @@ export let peopleManageEmployee = SlateTool.create(spec, {
         .optional()
         .describe('Column to search by (e.g., "EMPLOYEEMAILALIAS")'),
       searchValue: z.string().optional().describe('Value to search for'),
-      startIndex: z.number().optional().describe('Start index for pagination (default 0)'),
+      startIndex: z.number().optional().describe('Start index for pagination (default 1)'),
       limit: z.number().optional().describe('Number of records to return (max 200)'),
       startDate: z
         .string()
@@ -54,6 +55,10 @@ export let peopleManageEmployee = SlateTool.create(spec, {
         .array(z.record(z.string(), z.any()))
         .optional()
         .describe('Employee/form records'),
+      forms: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Available Zoho People forms'),
       record: z
         .record(z.string(), z.any())
         .optional()
@@ -70,8 +75,17 @@ export let peopleManageEmployee = SlateTool.create(spec, {
     let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
     let client = new ZohoPeopleClient({ token: ctx.auth.token, datacenter: dc });
 
+    if (ctx.input.action === 'forms') {
+      let result = await client.listForms();
+      let forms = result?.response?.result || result?.forms || result || [];
+      return {
+        output: { forms: Array.isArray(forms) ? forms : [], apiResponse: result },
+        message: `Retrieved **${Array.isArray(forms) ? forms.length : 0}** Zoho People forms.`
+      };
+    }
+
     if (ctx.input.action === 'list') {
-      if (!ctx.input.formLinkName) throw new Error('formLinkName is required for list');
+      if (!ctx.input.formLinkName) throw zohoServiceError('formLinkName is required for list');
       let result = await client.getFormRecords(ctx.input.formLinkName, {
         sIndex: ctx.input.startIndex,
         limit: ctx.input.limit,
@@ -86,8 +100,8 @@ export let peopleManageEmployee = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'get') {
-      if (!ctx.input.formLinkName) throw new Error('formLinkName is required for get');
-      if (!ctx.input.recordId) throw new Error('recordId is required for get');
+      if (!ctx.input.formLinkName) throw zohoServiceError('formLinkName is required for get');
+      if (!ctx.input.recordId) throw zohoServiceError('recordId is required for get');
       let result = await client.getFormRecordById(ctx.input.formLinkName, ctx.input.recordId);
       return {
         output: { record: result },
@@ -96,8 +110,9 @@ export let peopleManageEmployee = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.formLinkName) throw new Error('formLinkName is required for create');
-      if (!ctx.input.recordData) throw new Error('recordData is required for create');
+      if (!ctx.input.formLinkName)
+        throw zohoServiceError('formLinkName is required for create');
+      if (!ctx.input.recordData) throw zohoServiceError('recordData is required for create');
       let result = await client.insertFormRecord(ctx.input.formLinkName, ctx.input.recordData);
       return {
         output: { record: result, apiResponse: result },
@@ -106,9 +121,10 @@ export let peopleManageEmployee = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.formLinkName) throw new Error('formLinkName is required for update');
-      if (!ctx.input.recordId) throw new Error('recordId is required for update');
-      if (!ctx.input.recordData) throw new Error('recordData is required for update');
+      if (!ctx.input.formLinkName)
+        throw zohoServiceError('formLinkName is required for update');
+      if (!ctx.input.recordId) throw zohoServiceError('recordId is required for update');
+      if (!ctx.input.recordData) throw zohoServiceError('recordData is required for update');
       let result = await client.updateFormRecord(
         ctx.input.formLinkName,
         ctx.input.recordId,
@@ -130,7 +146,7 @@ export let peopleManageEmployee = SlateTool.create(spec, {
 
     if (ctx.input.action === 'attendance') {
       if (!ctx.input.startDate || !ctx.input.endDate)
-        throw new Error('startDate and endDate are required for attendance');
+        throw zohoServiceError('startDate and endDate are required for attendance');
       let result = await client.getAttendanceEntries({
         sdate: ctx.input.startDate,
         edate: ctx.input.endDate,
@@ -142,6 +158,6 @@ export let peopleManageEmployee = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw zohoServiceError('Invalid People action.');
   })
   .build();

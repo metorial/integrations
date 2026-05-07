@@ -2,6 +2,8 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { tableauServiceError } from '../lib/errors';
+import { normalizeBoolean } from '../lib/normalizers';
 
 export let manageWorkbook = SlateTool.create(spec, {
   name: 'Manage Workbook',
@@ -59,7 +61,7 @@ export let manageWorkbook = SlateTool.create(spec, {
           name: wb.name,
           description: wb.description,
           contentUrl: wb.contentUrl,
-          showTabs: wb.showTabs,
+          showTabs: normalizeBoolean(wb.showTabs),
           projectId: wb.project?.id,
           projectName: wb.project?.name,
           ownerId: wb.owner?.id,
@@ -77,6 +79,16 @@ export let manageWorkbook = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
+      if (
+        ctx.input.name === undefined &&
+        ctx.input.description === undefined &&
+        ctx.input.projectId === undefined &&
+        ctx.input.ownerUserId === undefined &&
+        ctx.input.showTabs === undefined
+      ) {
+        throw tableauServiceError('Provide at least one field to update a workbook.');
+      }
+
       let wb = await client.updateWorkbook(workbookId, {
         name: ctx.input.name,
         description: ctx.input.description,
@@ -91,7 +103,7 @@ export let manageWorkbook = SlateTool.create(spec, {
           name: wb.name,
           description: wb.description,
           contentUrl: wb.contentUrl,
-          showTabs: wb.showTabs,
+          showTabs: normalizeBoolean(wb.showTabs),
           projectId: wb.project?.id,
           projectName: wb.project?.name,
           ownerId: wb.owner?.id,
@@ -118,26 +130,31 @@ export let manageWorkbook = SlateTool.create(spec, {
     }
 
     if (action === 'addTags') {
-      await client.addTagsToWorkbook(workbookId, ctx.input.tags || []);
+      if (!ctx.input.tags?.length) {
+        throw tableauServiceError('tags is required for addTags action.');
+      }
+
+      await client.addTagsToWorkbook(workbookId, ctx.input.tags);
       return {
         output: { workbookId },
-        message: `Added tags [${(ctx.input.tags || []).join(', ')}] to workbook \`${workbookId}\`.`
+        message: `Added tags [${ctx.input.tags.join(', ')}] to workbook \`${workbookId}\`.`
       };
     }
 
     if (action === 'removeTags') {
-      for (let tag of ctx.input.tags || []) {
+      if (!ctx.input.tags?.length) {
+        throw tableauServiceError('tags is required for removeTags action.');
+      }
+
+      for (let tag of ctx.input.tags) {
         await client.deleteTagFromWorkbook(workbookId, tag);
       }
       return {
         output: { workbookId },
-        message: `Removed tags [${(ctx.input.tags || []).join(', ')}] from workbook \`${workbookId}\`.`
+        message: `Removed tags [${ctx.input.tags.join(', ')}] from workbook \`${workbookId}\`.`
       };
     }
 
-    return {
-      output: { workbookId },
-      message: `Unknown action: ${action}`
-    };
+    throw tableauServiceError(`Unknown action: ${action}`);
   })
   .build();

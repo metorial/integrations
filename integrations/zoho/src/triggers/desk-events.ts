@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZohoDeskClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { zohoServiceError } from '../lib/errors';
 
 export let deskEvents = SlateTrigger.create(spec, {
   name: 'Desk Events',
@@ -45,7 +46,7 @@ export let deskEvents = SlateTrigger.create(spec, {
 
       // Note: This auto-registration requires orgId. In practice, the user should
       // provide it. We'll throw an informative error if not available.
-      throw new Error(
+      throw zohoServiceError(
         'Zoho Desk webhooks require an organization ID (orgId). Please configure the webhook manually in Zoho Desk settings, pointing to the webhook URL.'
       );
     },

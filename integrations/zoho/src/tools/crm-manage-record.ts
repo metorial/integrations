@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZohoCrmClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { zohoServiceError } from '../lib/errors';
 
 export let crmManageRecord = SlateTool.create(spec, {
   name: 'CRM Manage Record',
@@ -74,7 +75,7 @@ export let crmManageRecord = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.recordId) throw new Error('recordId is required for update');
+      if (!ctx.input.recordId) throw zohoServiceError('recordId is required for update');
       let data = Array.isArray(ctx.input.recordData)
         ? ctx.input.recordData[0] || {}
         : ctx.input.recordData || {};
@@ -97,7 +98,7 @@ export let crmManageRecord = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.recordId) throw new Error('recordId is required for delete');
+      if (!ctx.input.recordId) throw zohoServiceError('recordId is required for delete');
       let result = await client.deleteRecord(ctx.input.module, ctx.input.recordId);
       let results = (result?.data || []).map((r: any) => ({
         recordId: r?.details?.id || ctx.input.recordId,
@@ -111,6 +112,6 @@ export let crmManageRecord = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw zohoServiceError('Invalid CRM record action.');
   })
   .build();

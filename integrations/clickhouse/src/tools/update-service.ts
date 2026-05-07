@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ClickHouseClient } from '../lib/client';
+import { clickhouseServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -34,11 +35,28 @@ export let updateService = SlateTool.create(spec, {
         .enum(['slow', 'default', 'fast'])
         .optional()
         .describe('Release channel for updates'),
+      endpoints: z
+        .array(
+          z.object({
+            protocol: z.enum(['mysql']).describe('Endpoint protocol to change'),
+            enabled: z.boolean().describe('Whether this endpoint protocol should be enabled')
+          })
+        )
+        .optional()
+        .describe('Service endpoints to enable or disable'),
+      privateEndpointIdsAdd: z
+        .array(z.string())
+        .optional()
+        .describe('Private endpoint IDs to attach to the service'),
+      privateEndpointIdsRemove: z
+        .array(z.string())
+        .optional()
+        .describe('Private endpoint IDs to detach from the service'),
       tagsAdd: z
         .array(
           z.object({
             key: z.string(),
-            value: z.string()
+            value: z.string().nullable().optional()
           })
         )
         .optional()
@@ -47,11 +65,15 @@ export let updateService = SlateTool.create(spec, {
         .array(
           z.object({
             key: z.string(),
-            value: z.string()
+            value: z.string().nullable().optional()
           })
         )
         .optional()
-        .describe('Tags to remove')
+        .describe('Tags to remove'),
+      enableCoreDumps: z
+        .boolean()
+        .optional()
+        .describe('Enable or disable underlying infrastructure for collecting core dumps')
     })
   )
   .output(
@@ -71,6 +93,10 @@ export let updateService = SlateTool.create(spec, {
 
     if (ctx.input.name) body.name = ctx.input.name;
     if (ctx.input.releaseChannel) body.releaseChannel = ctx.input.releaseChannel;
+    if (ctx.input.endpoints) body.endpoints = ctx.input.endpoints;
+    if (ctx.input.enableCoreDumps !== undefined) {
+      body.enableCoreDumps = ctx.input.enableCoreDumps;
+    }
 
     if (ctx.input.ipAccessListAdd || ctx.input.ipAccessListRemove) {
       body.ipAccessList = {};
@@ -79,10 +105,22 @@ export let updateService = SlateTool.create(spec, {
         body.ipAccessList.remove = ctx.input.ipAccessListRemove;
     }
 
+    if (ctx.input.privateEndpointIdsAdd || ctx.input.privateEndpointIdsRemove) {
+      body.privateEndpointIds = {};
+      if (ctx.input.privateEndpointIdsAdd)
+        body.privateEndpointIds.add = ctx.input.privateEndpointIdsAdd;
+      if (ctx.input.privateEndpointIdsRemove)
+        body.privateEndpointIds.remove = ctx.input.privateEndpointIdsRemove;
+    }
+
     if (ctx.input.tagsAdd || ctx.input.tagsRemove) {
       body.tags = {};
       if (ctx.input.tagsAdd) body.tags.add = ctx.input.tagsAdd;
       if (ctx.input.tagsRemove) body.tags.remove = ctx.input.tagsRemove;
+    }
+
+    if (Object.keys(body).length === 0) {
+      throw clickhouseServiceError('Provide at least one service field to update.');
     }
 
     let result = await client.updateService(ctx.input.serviceId, body);

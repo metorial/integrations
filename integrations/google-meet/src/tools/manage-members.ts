@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MeetClient } from '../lib/client';
+import { googleMeetServiceError } from '../lib/errors';
 import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -33,11 +34,18 @@ export let addMemberTool = SlateTool.create(spec, {
     z.object({
       memberName: z.string().describe('Resource name of the created member'),
       email: z.string().optional().describe('Email of the member'),
+      user: z.string().optional().describe('User resource name'),
       role: z.string().optional().describe('Assigned role')
     })
   )
   .handleInvocation(async ctx => {
     let client = new MeetClient({ token: ctx.auth.token });
+
+    if (!ctx.input.email && !ctx.input.user) {
+      throw googleMeetServiceError(
+        'Provide either an email address or user resource name when adding a Google Meet space member.'
+      );
+    }
 
     let member = await client.createMember(ctx.input.spaceName, {
       email: ctx.input.email,
@@ -49,9 +57,54 @@ export let addMemberTool = SlateTool.create(spec, {
       output: {
         memberName: member.name || '',
         email: member.email,
+        user: member.user,
         role: member.role
       },
       message: `Added member${ctx.input.email ? ` **${ctx.input.email}**` : ''} to space${ctx.input.role ? ` as **${ctx.input.role}**` : ''}.`
+    };
+  })
+  .build();
+
+export let getMemberTool = SlateTool.create(spec, {
+  name: 'Get Space Member',
+  key: 'get_member',
+  description: `Retrieve a configured member from a Google Meet space. Use this after listing or adding members to inspect the exact user resource and assigned role.`,
+  instructions: ['Uses the v2beta API endpoint for member management.'],
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .scopes(googleMeetActionScopes.getMember)
+  .input(
+    z.object({
+      memberName: z
+        .string()
+        .describe(
+          'Full resource name of the member (e.g., "spaces/abc123/members/def456")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      memberName: z.string().describe('Resource name of the member'),
+      email: z.string().optional().describe('Email of the member'),
+      user: z.string().optional().describe('User resource name'),
+      role: z.string().optional().describe('Member role')
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new MeetClient({ token: ctx.auth.token });
+    let member = await client.getMember(ctx.input.memberName);
+
+    return {
+      output: {
+        memberName: member.name || '',
+        email: member.email,
+        user: member.user,
+        role: member.role
+      },
+      message: `Retrieved member **${member.name}**.`
     };
   })
   .build();

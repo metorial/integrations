@@ -1,6 +1,6 @@
 {
   "name": "@metorial/zoho",
-  "description": "Manage CRM records including leads, contacts, accounts, and deals. Create, read, update, and delete support tickets in Zoho Desk. Handle accounting operations such as invoices, expenses, payments, purchase orders, and bank transactions in Zoho Books. Manage employee records, leave, attendance, and timesheets in Zoho People. Organize projects, tasks, milestones, timesheets, and bugs in Zoho Projects. Administer email accounts, domains, users, and mail policies in Zoho Mail. Run email marketing campaigns and manage mailing lists in Zoho Campaigns. Import data and create reports and dashboards in Zoho Analytics. Interact with custom applications built in Zoho Creator. Supports webhooks and event notifications across CRM, Desk, Billing, Sign, and ZeptoMail for real-time updates on record changes, ticket events, document actions, and email delivery events. Bulk API available for large data operations in CRM. Query CRM data using COQL (CRM Object Query Language).",
+  "description": "Manage core Zoho workflows across CRM, Desk, Books, People, and Projects. Retrieve, search, create, update, delete, and inspect related CRM records. Manage Desk tickets and contacts. Work with Books organizations, invoices, contacts, and expenses. List People forms and manage form/employee, leave, and attendance data. Discover Projects portals and manage projects, tasks, and milestones.",
   "categories": ["crm-and-sales-tools", "financial-data-and-stock-market"],
   "skills": [
     "manage CRM records",
@@ -8,11 +8,9 @@
     "manage support tickets",
     "manage employee HR records",
     "organize projects and tasks",
-    "administer email accounts",
-    "run email marketing campaigns",
-    "generate analytics reports",
-    "bulk data import and export",
-    "subscribe to event webhooks"
+    "discover Zoho organization and portal IDs",
+    "query CRM data using COQL",
+    "subscribe to CRM and Desk event webhooks"
   ],
   "logoUrl": "https://provider-logos.metorial-cdn.com/zoho.png",
   "version": "0.1.2"

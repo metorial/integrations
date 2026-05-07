@@ -8,8 +8,14 @@ import type {
   ParticipantSession,
   Recording,
   Transcript,
-  TranscriptEntry
+  TranscriptEntry,
+  SmartNote
 } from './types';
+import { googleMeetApiError } from './errors';
+
+type AxiosResponse<T> = {
+  data: T;
+};
 
 let meetAxios = createAxios({
   baseURL: 'https://meet.googleapis.com'
@@ -25,6 +31,18 @@ export class MeetClient {
     };
   }
 
+  private async request<T>(
+    operation: string,
+    run: () => Promise<AxiosResponse<T>>
+  ): Promise<T> {
+    try {
+      let response = await run();
+      return response.data;
+    } catch (error) {
+      throw googleMeetApiError(error, operation);
+    }
+  }
+
   // --- Spaces ---
 
   async createSpace(spaceConfig?: SpaceConfig): Promise<Space> {
@@ -32,16 +50,18 @@ export class MeetClient {
     if (spaceConfig) {
       body.config = spaceConfig;
     }
-    let response = await meetAxios.post('/v2/spaces', body, { headers: this.headers });
-    return response.data;
+    return await this.request('create space', () =>
+      meetAxios.post('/v2/spaces', body, { headers: this.headers })
+    );
   }
 
   async getSpace(spaceNameOrCode: string): Promise<Space> {
     let name = spaceNameOrCode.startsWith('spaces/')
       ? spaceNameOrCode
       : `spaces/${spaceNameOrCode}`;
-    let response = await meetAxios.get(`/v2/${name}`, { headers: this.headers });
-    return response.data;
+    return await this.request('get space', () =>
+      meetAxios.get(`/v2/${name}`, { headers: this.headers })
+    );
   }
 
   async updateSpace(
@@ -50,20 +70,23 @@ export class MeetClient {
     updateMask: string
   ): Promise<Space> {
     let name = spaceName.startsWith('spaces/') ? spaceName : `spaces/${spaceName}`;
-    let response = await meetAxios.patch(
-      `/v2/${name}`,
-      { config },
-      {
-        headers: this.headers,
-        params: { updateMask }
-      }
+    return await this.request('update space', () =>
+      meetAxios.patch(
+        `/v2/${name}`,
+        { config },
+        {
+          headers: this.headers,
+          params: { updateMask }
+        }
+      )
     );
-    return response.data;
   }
 
   async endActiveConference(spaceName: string): Promise<void> {
     let name = spaceName.startsWith('spaces/') ? spaceName : `spaces/${spaceName}`;
-    await meetAxios.post(`/v2/${name}:endActiveConference`, {}, { headers: this.headers });
+    await this.request('end active conference', () =>
+      meetAxios.post(`/v2/${name}:endActiveConference`, {}, { headers: this.headers })
+    );
   }
 
   // --- Members (v2beta) ---
@@ -73,15 +96,17 @@ export class MeetClient {
     member: { user?: string; email?: string; role?: string }
   ): Promise<Member> {
     let parent = spaceName.startsWith('spaces/') ? spaceName : `spaces/${spaceName}`;
-    let response = await meetAxios.post(`/v2beta/${parent}/members`, member, {
-      headers: this.headers
-    });
-    return response.data;
+    return await this.request('create member', () =>
+      meetAxios.post(`/v2beta/${parent}/members`, member, {
+        headers: this.headers
+      })
+    );
   }
 
   async getMember(memberName: string): Promise<Member> {
-    let response = await meetAxios.get(`/v2beta/${memberName}`, { headers: this.headers });
-    return response.data;
+    return await this.request('get member', () =>
+      meetAxios.get(`/v2beta/${memberName}`, { headers: this.headers })
+    );
   }
 
   async listMembers(
@@ -94,26 +119,33 @@ export class MeetClient {
     if (pageSize) params.pageSize = pageSize;
     if (pageToken) params.pageToken = pageToken;
 
-    let response = await meetAxios.get(`/v2beta/${parent}/members`, {
-      headers: this.headers,
-      params
-    });
+    let response = await this.request<{ members?: Member[]; nextPageToken?: string }>(
+      'list members',
+      () =>
+        meetAxios.get(`/v2beta/${parent}/members`, {
+          headers: this.headers,
+          params
+        })
+    );
     return {
-      members: response.data.members || [],
-      nextPageToken: response.data.nextPageToken
+      members: response.members || [],
+      nextPageToken: response.nextPageToken
     };
   }
 
   async deleteMember(memberName: string): Promise<void> {
-    await meetAxios.delete(`/v2beta/${memberName}`, { headers: this.headers });
+    await this.request('delete member', () =>
+      meetAxios.delete(`/v2beta/${memberName}`, { headers: this.headers })
+    );
   }
 
   // --- Conference Records ---
 
   async getConferenceRecord(name: string): Promise<ConferenceRecord> {
     let fullName = name.startsWith('conferenceRecords/') ? name : `conferenceRecords/${name}`;
-    let response = await meetAxios.get(`/v2/${fullName}`, { headers: this.headers });
-    return response.data;
+    return await this.request('get conference record', () =>
+      meetAxios.get(`/v2/${fullName}`, { headers: this.headers })
+    );
   }
 
   async listConferenceRecords(
@@ -126,21 +158,27 @@ export class MeetClient {
     if (pageSize) params.pageSize = pageSize;
     if (pageToken) params.pageToken = pageToken;
 
-    let response = await meetAxios.get('/v2/conferenceRecords', {
-      headers: this.headers,
-      params
-    });
+    let response = await this.request<{
+      conferenceRecords?: ConferenceRecord[];
+      nextPageToken?: string;
+    }>('list conference records', () =>
+      meetAxios.get('/v2/conferenceRecords', {
+        headers: this.headers,
+        params
+      })
+    );
     return {
-      conferenceRecords: response.data.conferenceRecords || [],
-      nextPageToken: response.data.nextPageToken
+      conferenceRecords: response.conferenceRecords || [],
+      nextPageToken: response.nextPageToken
     };
   }
 
   // --- Participants ---
 
   async getParticipant(name: string): Promise<Participant> {
-    let response = await meetAxios.get(`/v2/${name}`, { headers: this.headers });
-    return response.data;
+    return await this.request('get participant', () =>
+      meetAxios.get(`/v2/${name}`, { headers: this.headers })
+    );
   }
 
   async listParticipants(
@@ -157,17 +195,27 @@ export class MeetClient {
     if (pageToken) params.pageToken = pageToken;
     if (filter) params.filter = filter;
 
-    let response = await meetAxios.get(`/v2/${parent}/participants`, {
-      headers: this.headers,
-      params
-    });
+    let response = await this.request<{ participants?: Participant[]; nextPageToken?: string }>(
+      'list participants',
+      () =>
+        meetAxios.get(`/v2/${parent}/participants`, {
+          headers: this.headers,
+          params
+        })
+    );
     return {
-      participants: response.data.participants || [],
-      nextPageToken: response.data.nextPageToken
+      participants: response.participants || [],
+      nextPageToken: response.nextPageToken
     };
   }
 
   // --- Participant Sessions ---
+
+  async getParticipantSession(name: string): Promise<ParticipantSession> {
+    return await this.request('get participant session', () =>
+      meetAxios.get(`/v2/${name}`, { headers: this.headers })
+    );
+  }
 
   async listParticipantSessions(
     participantName: string,
@@ -178,21 +226,27 @@ export class MeetClient {
     if (pageSize) params.pageSize = pageSize;
     if (pageToken) params.pageToken = pageToken;
 
-    let response = await meetAxios.get(`/v2/${participantName}/participantSessions`, {
-      headers: this.headers,
-      params
-    });
+    let response = await this.request<{
+      participantSessions?: ParticipantSession[];
+      nextPageToken?: string;
+    }>('list participant sessions', () =>
+      meetAxios.get(`/v2/${participantName}/participantSessions`, {
+        headers: this.headers,
+        params
+      })
+    );
     return {
-      participantSessions: response.data.participantSessions || [],
-      nextPageToken: response.data.nextPageToken
+      participantSessions: response.participantSessions || [],
+      nextPageToken: response.nextPageToken
     };
   }
 
   // --- Recordings ---
 
   async getRecording(name: string): Promise<Recording> {
-    let response = await meetAxios.get(`/v2/${name}`, { headers: this.headers });
-    return response.data;
+    return await this.request('get recording', () =>
+      meetAxios.get(`/v2/${name}`, { headers: this.headers })
+    );
   }
 
   async listRecordings(
@@ -207,21 +261,60 @@ export class MeetClient {
     if (pageSize) params.pageSize = pageSize;
     if (pageToken) params.pageToken = pageToken;
 
-    let response = await meetAxios.get(`/v2/${parent}/recordings`, {
-      headers: this.headers,
-      params
-    });
+    let response = await this.request<{ recordings?: Recording[]; nextPageToken?: string }>(
+      'list recordings',
+      () =>
+        meetAxios.get(`/v2/${parent}/recordings`, {
+          headers: this.headers,
+          params
+        })
+    );
     return {
-      recordings: response.data.recordings || [],
-      nextPageToken: response.data.nextPageToken
+      recordings: response.recordings || [],
+      nextPageToken: response.nextPageToken
+    };
+  }
+
+  // --- Smart Notes ---
+
+  async getSmartNote(name: string): Promise<SmartNote> {
+    return await this.request('get smart note', () =>
+      meetAxios.get(`/v2/${name}`, { headers: this.headers })
+    );
+  }
+
+  async listSmartNotes(
+    conferenceRecordName: string,
+    pageSize?: number,
+    pageToken?: string
+  ): Promise<{ smartNotes: SmartNote[]; nextPageToken?: string }> {
+    let parent = conferenceRecordName.startsWith('conferenceRecords/')
+      ? conferenceRecordName
+      : `conferenceRecords/${conferenceRecordName}`;
+    let params: Record<string, string | number> = {};
+    if (pageSize) params.pageSize = pageSize;
+    if (pageToken) params.pageToken = pageToken;
+
+    let response = await this.request<{ smartNotes?: SmartNote[]; nextPageToken?: string }>(
+      'list smart notes',
+      () =>
+        meetAxios.get(`/v2/${parent}/smartNotes`, {
+          headers: this.headers,
+          params
+        })
+    );
+    return {
+      smartNotes: response.smartNotes || [],
+      nextPageToken: response.nextPageToken
     };
   }
 
   // --- Transcripts ---
 
   async getTranscript(name: string): Promise<Transcript> {
-    let response = await meetAxios.get(`/v2/${name}`, { headers: this.headers });
-    return response.data;
+    return await this.request('get transcript', () =>
+      meetAxios.get(`/v2/${name}`, { headers: this.headers })
+    );
   }
 
   async listTranscripts(
@@ -236,21 +329,26 @@ export class MeetClient {
     if (pageSize) params.pageSize = pageSize;
     if (pageToken) params.pageToken = pageToken;
 
-    let response = await meetAxios.get(`/v2/${parent}/transcripts`, {
-      headers: this.headers,
-      params
-    });
+    let response = await this.request<{ transcripts?: Transcript[]; nextPageToken?: string }>(
+      'list transcripts',
+      () =>
+        meetAxios.get(`/v2/${parent}/transcripts`, {
+          headers: this.headers,
+          params
+        })
+    );
     return {
-      transcripts: response.data.transcripts || [],
-      nextPageToken: response.data.nextPageToken
+      transcripts: response.transcripts || [],
+      nextPageToken: response.nextPageToken
     };
   }
 
   // --- Transcript Entries ---
 
   async getTranscriptEntry(name: string): Promise<TranscriptEntry> {
-    let response = await meetAxios.get(`/v2/${name}`, { headers: this.headers });
-    return response.data;
+    return await this.request('get transcript entry', () =>
+      meetAxios.get(`/v2/${name}`, { headers: this.headers })
+    );
   }
 
   async listTranscriptEntries(
@@ -262,13 +360,18 @@ export class MeetClient {
     if (pageSize) params.pageSize = pageSize;
     if (pageToken) params.pageToken = pageToken;
 
-    let response = await meetAxios.get(`/v2/${transcriptName}/entries`, {
-      headers: this.headers,
-      params
-    });
+    let response = await this.request<{
+      transcriptEntries?: TranscriptEntry[];
+      nextPageToken?: string;
+    }>('list transcript entries', () =>
+      meetAxios.get(`/v2/${transcriptName}/entries`, {
+        headers: this.headers,
+        params
+      })
+    );
     return {
-      transcriptEntries: response.data.transcriptEntries || [],
-      nextPageToken: response.data.nextPageToken
+      transcriptEntries: response.transcriptEntries || [],
+      nextPageToken: response.nextPageToken
     };
   }
 }

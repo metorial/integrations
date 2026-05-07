@@ -103,6 +103,16 @@ export interface Recording {
   driveDestination?: DriveDestination;
 }
 
+// --- Smart Notes Types ---
+
+export interface SmartNote {
+  name?: string;
+  state?: 'STATE_UNSPECIFIED' | 'STARTED' | 'ENDED' | 'FILE_GENERATED';
+  startTime?: string;
+  endTime?: string;
+  docsDestination?: DocsDestination;
+}
+
 // --- Transcript Types ---
 
 export interface DocsDestination {

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZohoBooksClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { zohoServiceError } from '../lib/errors';
 
 export let booksGetInvoices = SlateTool.create(spec, {
   name: 'Books Get Invoices',
@@ -76,7 +77,7 @@ export let booksGetInvoices = SlateTool.create(spec, {
       };
     }
 
-    if (!ctx.input.organizationId) throw new Error('organizationId is required');
+    if (!ctx.input.organizationId) throw zohoServiceError('organizationId is required');
     let client = new ZohoBooksClient({
       token: ctx.auth.token,
       datacenter: dc,

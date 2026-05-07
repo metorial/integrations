@@ -593,7 +593,7 @@
     },
     "integrations/anthropic": {
       "name": "@slates-integrations/anthropic",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
@@ -2408,8 +2408,9 @@
     },
     "integrations/clickhouse": {
       "name": "@slates-integrations/clickhouse",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -11837,8 +11838,9 @@
     },
     "integrations/tableau": {
       "name": "@slates-integrations/tableau",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.5",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",

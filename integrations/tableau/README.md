@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/tableau.png" height="20"> Tableau
 
-Manage Tableau Cloud and Tableau Server resources programmatically. Publish, query, update, download, and delete workbooks, data sources, views, and flows. Export views as images, PDFs, or CSV. Manage users, groups, projects, and granular permissions. Create and monitor extract refresh tasks and scheduled jobs. Query metadata, data lineage, and apply data quality labels to assets. Manage collections, favorites, custom views, and data-driven alerts. Configure connected apps, analytics extensions, and webhooks for event-driven notifications on content and user changes.
+Manage Tableau Cloud and Tableau Server resources programmatically through the Tableau REST API. Query and manage workbooks, data sources, views, custom views, flows, users, groups, projects, permissions, favorites, collections, jobs, and data-driven alerts. Export views as CSV, PNG, or PDF. Authentication supports Tableau personal access tokens, username/password sign-in, and connected-app or unified-access-token JWT sign-in.
 
 ## Tools
 
@@ -11,6 +11,10 @@ Retrieve information about the current Tableau site, including name, URL, storag
 ### Get View Data
 
 Export the underlying data from a Tableau view as CSV. Useful for retrieving the tabular data behind a dashboard visualization.
+
+### Export View
+
+Export a Tableau view as CSV data, a PNG image, or a PDF file. Supports Tableau view filter query parameters and cache max-age controls.
 
 ### List Data Sources
 
@@ -30,7 +34,11 @@ List, get, delete data-driven alerts, and add or remove users from alert recipie
 
 ### Manage Collections
 
-List, create, update, or delete collections. Collections are curated groups of content items for organizational purposes.
+List, get, create, update, or delete collections, and add, remove, or list collection items. Collections are curated groups of Tableau content.
+
+### Manage Custom Views
+
+List, get, update, delete, or export Tableau custom views. Custom views are saved user-specific configurations of workbook views.
 
 ### Manage Data Source
 
