@@ -127,6 +127,17 @@ export type SlateAuthWithCustomData<InputType extends {}, OutputType extends {}>
 
   getOutput: (ctx: { input: InputType }) => Promise<{ output: OutputType }>;
 
+  handleTokenRefresh?: (ctx: {
+    output: OutputType;
+    input: InputType;
+    clientId: string;
+    clientSecret: string;
+    scopes: string[];
+  }) => Promise<{
+    output: OutputType;
+    input?: InputType;
+  }>;
+
   onInputChanged?: (params: {
     previousInput: InputType;
     newInput: InputType;

@@ -413,4 +413,115 @@ export let provider = Slate.create({
       token: 'expired-token-refreshed'
     });
   });
+
+  it('refreshes expired custom auth automatically in the profile-backed client', async () => {
+    let cwd = await createTempDir();
+    let entry = path.join(cwd, 'custom-slate.mjs');
+    await writeFile(
+      entry,
+      `
+import { Slate, SlateAuth, SlateConfig, SlateSpecification, SlateTool } from '@slates/provider';
+import { z } from 'zod';
+
+let config = SlateConfig.create(z.object({})).getDefaultConfig(() => ({}));
+let auth = SlateAuth.create()
+  .output(
+    z.object({
+      token: z.string(),
+      expiresAt: z.string().optional()
+    })
+  )
+  .addCustomAuth({
+    type: 'auth.custom',
+    key: 'custom',
+    name: 'Custom',
+    inputSchema: z.object({
+      tokenPrefix: z.string()
+    }),
+    getOutput: async ctx => ({
+      output: {
+        token: \`\${ctx.input.tokenPrefix}-initial\`,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString()
+      }
+    }),
+    handleTokenRefresh: async ctx => ({
+      output: {
+        token: \`\${ctx.input.tokenPrefix}-refreshed\`,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString()
+      }
+    })
+  });
+
+let spec = SlateSpecification.create({
+  key: 'custom-demo',
+  name: 'Custom Demo',
+  description: 'Custom auth test slate',
+  config,
+  auth
+});
+
+let tool = SlateTool.create(spec, {
+  key: 'whoami',
+  name: 'Who Am I'
+})
+  .input(z.object({}))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
+  .handleInvocation(async ctx => ({
+    output: {
+      token: ctx.auth.token
+    }
+  }))
+  .build();
+
+export let provider = Slate.create({
+  spec,
+  tools: [tool],
+  triggers: []
+});
+`,
+      'utf-8'
+    );
+
+    let store = await SlatesCliStore.open({
+      cwd,
+      scope: {
+        key: 'integrations/demo',
+        name: 'demo'
+      }
+    });
+    let profile = store.upsertProfile({
+      name: 'Demo',
+      target: {
+        type: 'local',
+        entry: './custom-slate.mjs',
+        exportName: 'provider'
+      }
+    });
+    store.setProfileConfig(profile.id, {});
+    store.upsertAuth(profile.id, {
+      authMethodId: 'custom',
+      authType: 'auth.custom',
+      input: {
+        tokenPrefix: 'custom-token'
+      },
+      output: {
+        token: 'expired-token',
+        expiresAt: new Date(Date.now() - 60 * 1000).toISOString()
+      },
+      scopes: []
+    });
+    await store.save();
+
+    let client = await createSlatesClientFromProfile(profile, { cwd, store });
+    let result = await client.invokeTool('whoami', {});
+
+    expect(result.output).toEqual({ token: 'custom-token-refreshed' });
+    expect(store.getAuth(profile.id, 'custom')?.output).toMatchObject({
+      token: 'custom-token-refreshed'
+    });
+  });
 });

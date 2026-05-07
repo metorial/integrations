@@ -70,14 +70,22 @@ export let createSlatesClientFromProfile = async (
 
 let EXPIRY_BUFFER_MS = 60 * 1000;
 
-let shouldRefreshOAuthAuth = (auth: SlatesStoredAuth) => {
-  if (auth.authType !== 'auth.oauth') return false;
-  if (!auth.clientId || !auth.clientSecret) return false;
-  if (typeof auth.output?.refreshToken !== 'string' || !auth.output.refreshToken) return false;
+let hasExpiredOrExpiringOutput = (auth: SlatesStoredAuth) => {
   if (typeof auth.output?.expiresAt !== 'string' || !auth.output.expiresAt) return false;
 
   let expiresAt = Date.parse(auth.output.expiresAt);
   return Number.isFinite(expiresAt) && expiresAt <= Date.now() + EXPIRY_BUFFER_MS;
+};
+
+let shouldRefreshAuth = (auth: SlatesStoredAuth) => {
+  if (!hasExpiredOrExpiringOutput(auth)) return false;
+
+  if (auth.authType === 'auth.oauth') {
+    if (!auth.clientId || !auth.clientSecret) return false;
+    if (typeof auth.output?.refreshToken !== 'string' || !auth.output.refreshToken) return false;
+  }
+
+  return true;
 };
 
 let attachAutoRefresh = (
@@ -95,7 +103,7 @@ let attachAutoRefresh = (
       return;
     }
 
-    if (!shouldRefreshOAuthAuth(storedAuth)) {
+    if (!shouldRefreshAuth(storedAuth)) {
       return;
     }
 
