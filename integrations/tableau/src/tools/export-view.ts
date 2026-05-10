@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createBase64Attachment, createTextAttachment, SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
@@ -24,7 +24,7 @@ let pdfPageTypeSchema = z.enum([
 export let exportView = SlateTool.create(spec, {
   name: 'Export View',
   key: 'export_view',
-  description: `Export a Tableau view as CSV data, a PNG image, or a PDF file. Supports Tableau view filter query parameters and cache max-age controls.`,
+  description: `Export a Tableau view as CSV data, a PNG image, or a PDF file attachment. Supports Tableau view filter query parameters and cache max-age controls.`,
   tags: { readOnly: true }
 })
   .input(
@@ -66,8 +66,7 @@ export let exportView = SlateTool.create(spec, {
       viewId: z.string(),
       format: z.enum(['csv', 'image', 'pdf']),
       contentType: z.string(),
-      csvData: z.string().optional(),
-      contentBase64: z.string().optional()
+      attachmentCount: z.number()
     })
   )
   .handleInvocation(async ctx => {
@@ -98,14 +97,19 @@ export let exportView = SlateTool.create(spec, {
       pdfOrientation: ctx.input.pdfOrientation
     });
 
+    let attachment =
+      ctx.input.format === 'csv'
+        ? createTextAttachment(result.data, 'text/csv')
+        : createBase64Attachment(result.data, result.contentType);
+
     return {
       output: {
         viewId: ctx.input.viewId,
         format: ctx.input.format,
         contentType: result.contentType,
-        csvData: result.encoding === 'text' ? result.data : undefined,
-        contentBase64: result.encoding === 'base64' ? result.data : undefined
+        attachmentCount: 1
       },
+      attachments: [attachment],
       message: `Exported Tableau view \`${ctx.input.viewId}\` as ${ctx.input.format}.`
     };
   })

@@ -115,6 +115,10 @@ export let assignProspectsToFlow = SlateTool.create(spec, {
   .output(
     z.object({
       assignedProspects: z.array(z.any()).optional().describe('Details of assigned prospects'),
+      unassignedProspects: z
+        .array(z.any())
+        .optional()
+        .describe('Prospects that were not assigned'),
       errors: z.array(z.any()).optional().describe('Any errors during assignment')
     })
   )
@@ -132,7 +136,8 @@ export let assignProspectsToFlow = SlateTool.create(spec, {
 
     return {
       output: {
-        assignedProspects: result.assignedProspects,
+        assignedProspects: result.prospectsAssigned || result.assignedProspects,
+        unassignedProspects: result.prospectsNotAssigned,
         errors: result.errors
       },
       message: `Assigned ${ctx.input.crmProspectIds.length} prospect(s) to flow **${ctx.input.flowId}**.`
@@ -154,7 +159,11 @@ export let unassignProspectFromFlow = SlateTool.create(spec, {
       flowId: z
         .string()
         .optional()
-        .describe('Specific flow ID to unassign from (omit to unassign from all flows)')
+        .describe('Specific flow ID to unassign from (omit to unassign from all flows)'),
+      unassignedByUserEmail: z
+        .string()
+        .optional()
+        .describe('Gong user email requesting the unassignment')
     })
   )
   .output(
@@ -162,7 +171,7 @@ export let unassignProspectFromFlow = SlateTool.create(spec, {
       unassignedFlowIds: z
         .array(z.string())
         .optional()
-        .describe('IDs of flows the prospect was removed from')
+        .describe('IDs of flow instances the prospect was removed from')
     })
   )
   .handleInvocation(async ctx => {
@@ -173,10 +182,11 @@ export let unassignProspectFromFlow = SlateTool.create(spec, {
 
     let result = await client.unassignProspectFromFlows({
       crmProspectId: ctx.input.crmProspectId,
-      flowId: ctx.input.flowId
+      flowId: ctx.input.flowId,
+      unassignedByUserEmail: ctx.input.unassignedByUserEmail
     });
 
-    let unassignedFlowIds = result.unassignedFlowIds || [];
+    let unassignedFlowIds = result.unassignedFlowInstanceIds || result.unassignedFlowIds || [];
 
     return {
       output: {

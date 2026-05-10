@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GongClient } from '../lib/client';
+import { gongServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -35,7 +36,7 @@ export let lookupPrivacyData = SlateTool.create(spec, {
     } else if (ctx.input.phoneNumber) {
       result = await client.getDataPrivacyForPhone(ctx.input.phoneNumber);
     } else {
-      throw new Error('Either emailAddress or phoneNumber must be provided.');
+      throw gongServiceError('Either emailAddress or phoneNumber must be provided.');
     }
 
     return {
@@ -77,7 +78,7 @@ export let erasePrivacyData = SlateTool.create(spec, {
     } else if (ctx.input.phoneNumber) {
       await client.eraseDataForPhone(ctx.input.phoneNumber);
     } else {
-      throw new Error('Either emailAddress or phoneNumber must be provided.');
+      throw gongServiceError('Either emailAddress or phoneNumber must be provided.');
     }
 
     return {

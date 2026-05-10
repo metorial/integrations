@@ -25,7 +25,7 @@ Setup steps:
 1. Create an OAuth 2.0 integration in the Atlassian Developer Console (https://developer.atlassian.com/console), provide a name and accept the developer terms.
 2. Configure permissions for the Confluence API and select desired scopes.
 3. Add a callback URL under the Authorization section for OAuth 2.0 (3LO).
-4. Obtain the Client ID and Client Secret from the developer console.
+4. Obtain the Client ID and Client Secret from the app's Settings in the developer console. The Authorization URL generator only shows the authorization URL and does not include the secret.
 
 Key endpoints:
 
@@ -47,11 +47,25 @@ Access tokens expire after 1 hour. Add the `offline_access` scope to obtain a re
 - `read:confluence-props` / `write:confluence-props` — Read/write content properties
 - `manage:confluence-configuration` — Manage global settings
 - `search:confluence` — Search content
+- `read:confluence-content.permission` — View content permissions
 - `read:confluence-user` — Read user information
 - `read:confluence-groups` / `write:confluence-groups` — Read/manage groups
 - `readonly:content.attachment:confluence` — Download attachments
 
-Granular scopes are also available for fine-grained access (e.g., `read:page:confluence`, `write:page:confluence`, `delete:page:confluence`).
+Atlassian recommends classic scopes when they cover an operation, but this integration also uses Confluence REST API v2 endpoints that require granular scopes. Add the Confluence API granular scopes below in the Atlassian Developer Console before running OAuth setup:
+
+- `read:page:confluence`, `write:page:confluence`, `delete:page:confluence`
+- `read:blogpost:confluence`, `write:blogpost:confluence`, `delete:blogpost:confluence`
+- `read:space:confluence`
+- `read:content:confluence`, `write:content:confluence`, `delete:content:confluence`
+- `read:comment:confluence`, `write:comment:confluence`, `delete:comment:confluence`
+- `read:attachment:confluence`, `write:attachment:confluence`, `delete:attachment:confluence`
+- `read:content-details:confluence`, `read:hierarchical-content:confluence`
+- `read:label:confluence`, `write:label:confluence`
+- `read:content.property:confluence`, `write:content.property:confluence`
+- `read:content.restriction:confluence`, `write:content.restriction:confluence`
+- `read:content.permission:confluence`
+- `read:user:confluence`, `read:group:confluence`
 
 ### Confluence Data Center
 

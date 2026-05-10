@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import { confluenceApiError, confluenceServiceError } from './lib/errors';
 
@@ -87,6 +87,11 @@ export let auth = SlateAuth.create()
         scope: 'search:confluence'
       },
       {
+        title: 'Read Content Permissions',
+        description: 'View content permissions in Confluence',
+        scope: 'read:confluence-content.permission'
+      },
+      {
         title: 'Read User',
         description: 'Read user profile information',
         scope: 'read:confluence-user'
@@ -127,6 +132,26 @@ export let auth = SlateAuth.create()
         scope: 'write:page:confluence'
       },
       {
+        title: 'Delete Pages (v2)',
+        description: 'Delete pages via the Confluence v2 API',
+        scope: 'delete:page:confluence'
+      },
+      {
+        title: 'Read Blog Posts (v2)',
+        description: 'Read blog posts via the Confluence v2 API',
+        scope: 'read:blogpost:confluence'
+      },
+      {
+        title: 'Write Blog Posts (v2)',
+        description: 'Create and update blog posts via the Confluence v2 API',
+        scope: 'write:blogpost:confluence'
+      },
+      {
+        title: 'Delete Blog Posts (v2)',
+        description: 'Delete blog posts via the Confluence v2 API',
+        scope: 'delete:blogpost:confluence'
+      },
+      {
         title: 'Read Spaces (v2)',
         description: 'Read spaces via the Confluence v2 API',
         scope: 'read:space:confluence'
@@ -142,6 +167,11 @@ export let auth = SlateAuth.create()
         scope: 'write:content:confluence'
       },
       {
+        title: 'Delete Content (v2)',
+        description: 'Delete content via the Confluence v2 API',
+        scope: 'delete:content:confluence'
+      },
+      {
         title: 'Read Comments (v2)',
         description: 'Read comments via the Confluence v2 API',
         scope: 'read:comment:confluence'
@@ -150,6 +180,11 @@ export let auth = SlateAuth.create()
         title: 'Write Comments (v2)',
         description: 'Create and delete comments via the Confluence v2 API',
         scope: 'write:comment:confluence'
+      },
+      {
+        title: 'Delete Comments (v2)',
+        description: 'Delete comments via the Confluence v2 API',
+        scope: 'delete:comment:confluence'
       },
       {
         title: 'Read Attachments (v2)',
@@ -162,29 +197,64 @@ export let auth = SlateAuth.create()
         scope: 'write:attachment:confluence'
       },
       {
-        title: 'Read Content Metadata (v2)',
-        description: 'Read content metadata including properties via the Confluence v2 API',
-        scope: 'read:content-details:confluence'
-      },
-      {
-        title: 'Delete Pages (v2)',
-        description: 'Delete pages via the Confluence v2 API',
-        scope: 'delete:page:confluence'
-      },
-      {
-        title: 'Delete Content (v2)',
-        description: 'Delete content including blog posts via the Confluence v2 API',
-        scope: 'delete:content:confluence'
-      },
-      {
-        title: 'Delete Comments (v2)',
-        description: 'Delete comments via the Confluence v2 API',
-        scope: 'delete:comment:confluence'
-      },
-      {
         title: 'Delete Attachments (v2)',
         description: 'Delete attachments via the Confluence v2 API',
         scope: 'delete:attachment:confluence'
+      },
+      {
+        title: 'Read Content Metadata (v2)',
+        description: 'Read content metadata via the Confluence v2 API',
+        scope: 'read:content-details:confluence'
+      },
+      {
+        title: 'Read Hierarchical Content (v2)',
+        description: 'Read page children and other content tree relationships',
+        scope: 'read:hierarchical-content:confluence'
+      },
+      {
+        title: 'Read Labels (v2)',
+        description: 'Read labels on Confluence content',
+        scope: 'read:label:confluence'
+      },
+      {
+        title: 'Write Labels (v2)',
+        description: 'Add and remove labels on Confluence content',
+        scope: 'write:label:confluence'
+      },
+      {
+        title: 'Read Content Properties (v2)',
+        description: 'Read content properties via the Confluence v2 API',
+        scope: 'read:content.property:confluence'
+      },
+      {
+        title: 'Write Content Properties (v2)',
+        description: 'Create, update, and delete content properties via the Confluence v2 API',
+        scope: 'write:content.property:confluence'
+      },
+      {
+        title: 'Read Content Restrictions',
+        description: 'Read content restrictions',
+        scope: 'read:content.restriction:confluence'
+      },
+      {
+        title: 'Write Content Restrictions',
+        description: 'Create, update, and delete content restrictions',
+        scope: 'write:content.restriction:confluence'
+      },
+      {
+        title: 'Read Content Permissions',
+        description: 'Check content permissions via the Confluence API',
+        scope: 'read:content.permission:confluence'
+      },
+      {
+        title: 'Read Users (v2)',
+        description: 'Read user details via the Confluence API',
+        scope: 'read:user:confluence'
+      },
+      {
+        title: 'Read Groups (v2)',
+        description: 'Read group details via the Confluence API',
+        scope: 'read:group:confluence'
       }
     ],
 
@@ -252,7 +322,19 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: {
+      output: {
+        token: string;
+        refreshToken?: string;
+        expiresAt?: string;
+        cloudId?: string;
+        baseUrl?: string;
+      };
+      input: {};
+      clientId: string;
+      clientSecret: string;
+      scopes: string[];
+    }) => {
       if (!ctx.output.refreshToken) {
         throw confluenceServiceError(
           'No refresh token available. Ensure the offline_access scope is included.'
@@ -298,25 +380,34 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let response = await authRequest('load Atlassian profile', () =>
-        ax.get('https://api.atlassian.com/me', {
-          headers: { Authorization: `Bearer ${ctx.output.token}` }
-        })
+      if (!ctx.output.cloudId) {
+        throw confluenceServiceError(
+          'No Confluence Cloud site ID is available for this OAuth grant.'
+        );
+      }
+
+      let response = await authRequest('load Confluence current user', () =>
+        ax.get(
+          `https://api.atlassian.com/ex/confluence/${ctx.output.cloudId}/wiki/rest/api/user/current`,
+          {
+            headers: { Authorization: `Bearer ${ctx.output.token}` }
+          }
+        )
       );
 
       let data = response.data as {
-        account_id: string;
-        email: string;
-        name: string;
-        picture: string;
+        accountId: string;
+        email?: string;
+        displayName: string;
+        profilePicture?: { path: string };
       };
 
       return {
         profile: {
-          id: data.account_id,
+          id: data.accountId,
           email: data.email,
-          name: data.name,
-          imageUrl: data.picture
+          name: data.displayName,
+          imageUrl: data.profilePicture?.path
         }
       };
     }

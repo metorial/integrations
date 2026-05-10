@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import { calendlyApiError, calendlyServiceError } from './lib/errors';
 
@@ -94,7 +94,7 @@ export let auth = SlateAuth.create()
       }
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         throw calendlyServiceError('Calendly OAuth refresh token is missing');
       }
