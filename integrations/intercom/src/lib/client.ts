@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { intercomApiError } from './errors';
 
 let regionBaseUrls: Record<string, string> = {

@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { SlateTrigger } from 'slates';
+import { SlateTrigger } from '@slates/provider';
 import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
 import { quickBooksServiceError } from '../lib/errors';

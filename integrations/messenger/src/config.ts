@@ -1,4 +1,4 @@
-import { SlateConfig } from 'slates';
+import { SlateConfig } from '@slates/provider';
 import { z } from 'zod';
 
 export let MESSENGER_DEFAULT_API_VERSION = 'v24.0';

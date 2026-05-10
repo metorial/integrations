@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { z } from 'zod';
 import { Client } from '../lib/client';
 import { netlifyServiceError } from '../lib/errors';

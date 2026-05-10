@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { DiscordClient } from '../lib/client';
 import { discordServiceError } from '../lib/errors';
 import { spec } from '../spec';

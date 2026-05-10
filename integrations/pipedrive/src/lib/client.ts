@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { pipedriveApiError } from './errors';
 
 export interface PipedriveClientConfig {

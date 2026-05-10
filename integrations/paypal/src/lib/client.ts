@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { paypalApiError } from './errors';
 
 let getBaseUrl = (environment?: string) =>

@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { twilioApiError } from './errors';
 
 let coreApi = createAxios({

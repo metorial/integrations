@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { MessagingClient } from '../lib/client';
 import { firebaseServiceError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';

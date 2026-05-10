@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { svixApiError } from './errors';
 
 let BASE_URLS: Record<string, string> = {

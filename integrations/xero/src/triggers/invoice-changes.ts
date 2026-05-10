@@ -1,4 +1,4 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
 import { z } from 'zod';

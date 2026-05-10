@@ -1,4 +1,4 @@
-import { anyOf } from 'slates';
+import { anyOf } from '@slates/provider';
 
 export let firebaseScopes = {
   cloudPlatform: 'https://www.googleapis.com/auth/cloud-platform',

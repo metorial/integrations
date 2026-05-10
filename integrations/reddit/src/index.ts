@@ -1,4 +1,4 @@
-import { Slate } from 'slates';
+import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
   getSubreddit,

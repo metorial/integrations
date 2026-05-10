@@ -10,8 +10,10 @@ let loadProviderClient = async () => {
   oauthPost.mockReset();
   profileGet.mockReset();
 
-  vi.doMock('slates', async () => {
-    let actual = await vi.importActual<typeof import('slates')>('slates');
+  vi.doMock('@slates/provider', async () => {
+    let actual = await vi.importActual<typeof import('@slates/provider')>(
+      '@slates/provider'
+    );
 
     return {
       ...actual,
@@ -34,11 +36,11 @@ let loadProviderClient = async () => {
   });
 
   let { provider } = await import('./index');
-  return createLocalSlateTestClient({ slate: provider });
+  return createLocalSlateTestClient({ slate: provider as any });
 };
 
 afterEach(() => {
-  vi.doUnmock('slates');
+  vi.doUnmock('@slates/provider');
   vi.resetModules();
 });
 

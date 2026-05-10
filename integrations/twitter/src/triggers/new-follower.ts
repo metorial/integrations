@@ -1,4 +1,4 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { TwitterClient } from '../lib/client';
 import { userSchema, mapUser } from '../lib/helpers';
 import { spec } from '../spec';

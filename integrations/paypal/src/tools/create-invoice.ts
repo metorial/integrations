@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { PayPalClient } from '../lib/client';
 import { paypalServiceError } from '../lib/errors';
 import { spec } from '../spec';

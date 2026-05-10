@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { StorageClient } from '../lib/client';
 import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';

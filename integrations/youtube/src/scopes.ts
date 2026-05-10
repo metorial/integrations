@@ -1,4 +1,4 @@
-import { anyOf } from 'slates';
+import { anyOf } from '@slates/provider';
 
 export let youtubeScopes = {
   youtube: 'https://www.googleapis.com/auth/youtube',

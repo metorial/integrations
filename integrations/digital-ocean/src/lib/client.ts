@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import type { AxiosInstance } from 'axios';
 import { digitalOceanApiError } from './errors';
 

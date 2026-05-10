@@ -1,4 +1,4 @@
-import { SlateConfig } from 'slates';
+import { SlateConfig } from '@slates/provider';
 import { z } from 'zod';
 
 export let SHOPIFY_DEFAULT_API_VERSION = '2026-01';

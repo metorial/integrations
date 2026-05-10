@@ -1,4 +1,4 @@
-import { SlateTrigger } from 'slates';
+import { SlateTrigger } from '@slates/provider';
 import { MailchimpClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';

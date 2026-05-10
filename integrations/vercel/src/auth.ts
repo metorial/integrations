@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { Buffer } from 'node:buffer';
 import { z } from 'zod';
 import { vercelApiError, vercelServiceError } from './lib/errors';
@@ -124,7 +124,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }

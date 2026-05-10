@@ -3443,11 +3443,11 @@
     },
     "integrations/digital-ocean": {
       "name": "@slates-integrations/digital-ocean",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -3456,11 +3456,11 @@
     },
     "integrations/discord": {
       "name": "@slates-integrations/discord",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -4350,11 +4350,11 @@
     },
     "integrations/facebook": {
       "name": "@slates-integrations/facebook",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -4555,11 +4555,11 @@
     },
     "integrations/firebase": {
       "name": "@slates-integrations/firebase",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -4966,11 +4966,11 @@
     },
     "integrations/gemini": {
       "name": "@slates-integrations/gemini",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -5940,11 +5940,11 @@
     },
     "integrations/heroku": {
       "name": "@slates-integrations/heroku",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -6073,11 +6073,11 @@
     },
     "integrations/hookdeck": {
       "name": "@slates-integrations/hookdeck",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -6413,11 +6413,11 @@
     },
     "integrations/instagram": {
       "name": "@slates-integrations/instagram",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -6450,11 +6450,11 @@
     },
     "integrations/intercom": {
       "name": "@slates-integrations/intercom",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -6607,11 +6607,11 @@
     },
     "integrations/jira": {
       "name": "@slates-integrations/jira",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -6644,11 +6644,11 @@
     },
     "integrations/jotform": {
       "name": "@slates-integrations/jotform",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -7438,11 +7438,11 @@
     },
     "integrations/mailchimp": {
       "name": "@slates-integrations/mailchimp",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -7691,11 +7691,11 @@
     },
     "integrations/messenger": {
       "name": "@slates-integrations/facebook-messenger",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -8174,11 +8174,11 @@
     },
     "integrations/netlify": {
       "name": "@slates-integrations/netlify",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -8587,11 +8587,11 @@
     },
     "integrations/openai": {
       "name": "@slates-integrations/openai",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -8926,11 +8926,11 @@
     },
     "integrations/paypal": {
       "name": "@slates-integrations/paypal",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -9179,11 +9179,11 @@
     },
     "integrations/pinterest": {
       "name": "@slates-integrations/pinterest",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -9192,11 +9192,11 @@
     },
     "integrations/pipedrive": {
       "name": "@slates-integrations/pipedrive",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -9409,11 +9409,11 @@
     },
     "integrations/postgresql": {
       "name": "@slates-integrations/postgresql",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -9725,11 +9725,11 @@
     },
     "integrations/quickbooks": {
       "name": "@slates-integrations/quickbooks",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -9882,11 +9882,11 @@
     },
     "integrations/reddit": {
       "name": "@slates-integrations/reddit",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -10918,11 +10918,11 @@
     },
     "integrations/shopify": {
       "name": "@slates-integrations/shopify",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -11235,11 +11235,11 @@
     },
     "integrations/snapchat": {
       "name": "@slates-integrations/snapchat",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -11644,11 +11644,11 @@
     },
     "integrations/stripe": {
       "name": "@slates-integrations/stripe",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -11791,11 +11791,11 @@
     },
     "integrations/svix": {
       "name": "@slates-integrations/svix",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12117,11 +12117,11 @@
     },
     "integrations/tiktok": {
       "name": "@slates-integrations/tiktok",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12430,11 +12430,11 @@
     },
     "integrations/twilio": {
       "name": "@slates-integrations/twilio",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12479,11 +12479,11 @@
     },
     "integrations/twitter": {
       "name": "@slates-integrations/twitter",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12504,11 +12504,11 @@
     },
     "integrations/typeform": {
       "name": "@slates-integrations/typeform",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -12709,11 +12709,11 @@
     },
     "integrations/vercel": {
       "name": "@slates-integrations/vercel",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13240,11 +13240,11 @@
     },
     "integrations/xero": {
       "name": "@slates-integrations/xero",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13289,11 +13289,11 @@
     },
     "integrations/youtube": {
       "name": "@slates-integrations/youtube",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13318,11 +13318,11 @@
     },
     "integrations/zapier": {
       "name": "@slates-integrations/zapier",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13331,11 +13331,11 @@
     },
     "integrations/zendesk": {
       "name": "@slates-integrations/zendesk",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13513,11 +13513,11 @@
     },
     "integrations/zoom": {
       "name": "@slates-integrations/zoom",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {

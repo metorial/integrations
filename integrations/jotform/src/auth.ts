@@ -1,4 +1,4 @@
-import { SlateAuth } from 'slates';
+import { SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { Client } from './lib/client';
 import { jotformServiceError } from './lib/errors';

@@ -1,4 +1,4 @@
-import { SlateTrigger } from 'slates';
+import { SlateTrigger } from '@slates/provider';
 import { z } from 'zod';
 import { spec } from '../spec';
 import { ZendeskClient } from '../lib/client';

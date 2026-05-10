@@ -1,4 +1,4 @@
-import { SlateTrigger } from 'slates';
+import { SlateTrigger } from '@slates/provider';
 import { TypeformClient } from '../lib/client';
 import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';
