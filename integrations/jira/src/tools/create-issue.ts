@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { JiraClient } from '../lib/client';
+import { normalizeAdf } from '../lib/adf';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -8,7 +9,7 @@ export let createIssueTool = SlateTool.create(spec, {
   key: 'create_issue',
   description: `Create a new Jira issue in a specified project. Supports setting all standard fields including summary, description, assignee, priority, labels, components, and custom fields. Use the **issueTypeName** field for common types like "Task", "Bug", "Story", "Epic", or "Sub-task".`,
   instructions: [
-    'The description field accepts Atlassian Document Format (ADF). For plain text, wrap it in an ADF paragraph node.',
+    'Pass rich text descriptions as an Atlassian Document Format (ADF) object. Stringified ADF JSON is accepted as a fallback, and plain text strings are converted to an ADF paragraph.',
     'Custom fields can be set via the customFields parameter using their field IDs (e.g., "customfield_10001").'
   ],
   tags: {
@@ -29,7 +30,7 @@ export let createIssueTool = SlateTool.create(spec, {
         .any()
         .optional()
         .describe(
-          'The issue description in Atlassian Document Format (ADF) or a plain text string.'
+          'The issue description as an Atlassian Document Format (ADF) object, stringified ADF JSON, or a plain text string.'
         ),
       assigneeAccountId: z
         .string()
@@ -82,17 +83,7 @@ export let createIssueTool = SlateTool.create(spec, {
     };
 
     if (ctx.input.description) {
-      if (typeof ctx.input.description === 'string') {
-        fields.description = {
-          version: 1,
-          type: 'doc',
-          content: [
-            { type: 'paragraph', content: [{ type: 'text', text: ctx.input.description }] }
-          ]
-        };
-      } else {
-        fields.description = ctx.input.description;
-      }
+      fields.description = normalizeAdf(ctx.input.description);
     }
 
     if (ctx.input.assigneeAccountId) {
