@@ -1,6 +1,7 @@
 import { SlateTool } from '@slates/provider';
 import { DiscordClient } from '../lib/client';
 import { discordServiceError } from '../lib/errors';
+import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -45,6 +46,7 @@ export let manageInvites = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(discordActionScopes.manageInvites)
   .input(
     z.object({
       action: z

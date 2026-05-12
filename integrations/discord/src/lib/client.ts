@@ -11,8 +11,7 @@ export class DiscordClient {
     this.api = createAxios({
       baseURL: 'https://discord.com/api/v10',
       headers: {
-        Authorization: `${authPrefix} ${config.token}`,
-        'Content-Type': 'application/json'
+        Authorization: `${authPrefix} ${config.token}`
       }
     });
 

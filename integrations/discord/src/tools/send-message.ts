@@ -1,6 +1,7 @@
 import { SlateTool } from '@slates/provider';
 import { DiscordClient } from '../lib/client';
 import { discordServiceError } from '../lib/errors';
+import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -78,6 +79,7 @@ export let sendMessage = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(discordActionScopes.sendMessage)
   .input(
     z.object({
       channelId: z.string().describe('The ID of the channel to send the message to'),

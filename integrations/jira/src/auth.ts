@@ -25,6 +25,16 @@ export let auth = SlateAuth.create()
         scope: 'read:jira-work'
       },
       {
+        title: 'Read Jira Issue Details',
+        description: 'Read detailed Jira Software issue data for sprint contents.',
+        scope: 'read:issue-details:jira'
+      },
+      {
+        title: 'Read Jira JQL',
+        description: 'Read Jira JQL data used by Jira Software sprint issue queries.',
+        scope: 'read:jql:jira'
+      },
+      {
         title: 'Write Jira Work',
         description: 'Write access to create/update issues, worklogs, etc.',
         scope: 'write:jira-work'
@@ -65,6 +75,11 @@ export let auth = SlateAuth.create()
         scope: 'read:board-scope:jira-software'
       },
       {
+        title: 'Manage Boards',
+        description: 'Create and manage Jira Software boards.',
+        scope: 'write:board-scope:jira-software'
+      },
+      {
         title: 'Read Sprints',
         description: 'Read sprint data from Jira Software.',
         scope: 'read:sprint:jira-software'
@@ -73,6 +88,11 @@ export let auth = SlateAuth.create()
         title: 'Manage Sprints',
         description: 'Create, update, and move issues to sprints.',
         scope: 'write:sprint:jira-software'
+      },
+      {
+        title: 'Delete Sprints',
+        description: 'Delete Jira Software sprints created during test cleanup.',
+        scope: 'delete:sprint:jira-software'
       },
       {
         title: 'Read Projects',

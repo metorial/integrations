@@ -2,6 +2,9 @@ import { createAxios } from '@slates/provider';
 import type { AxiosInstance } from 'axios';
 import { digitalOceanApiError } from './errors';
 
+let responseArray = <T = any>(value: T[] | null | undefined): T[] =>
+  Array.isArray(value) ? value : [];
+
 export class Client {
   private axios: AxiosInstance;
 
@@ -251,7 +254,7 @@ export class Client {
         tag_name: params?.tagName
       }
     });
-    return { databases: response.data.databases, meta: response.data.meta };
+    return { databases: responseArray(response.data.databases), meta: response.data.meta };
   }
 
   async getDatabaseCluster(databaseId: string): Promise<any> {

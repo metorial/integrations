@@ -32,7 +32,7 @@ export let manageStreamTool = SlateTool.create(spec, {
         .optional()
         .describe('Metadata key-value pairs for live input'),
       recordingMode: z
-        .string()
+        .enum(['off', 'automatic'])
         .optional()
         .describe('Recording mode for live input (off, automatic)')
     })
@@ -141,7 +141,7 @@ export let manageStreamTool = SlateTool.create(spec, {
 
     if (action === 'list_live_inputs') {
       let response = await client.listStreamLiveInputs(accountId);
-      let liveInputs = response.result.map((li: any) => ({
+      let liveInputs = (response.result.liveInputs ?? []).map((li: any) => ({
         liveInputId: li.uid,
         createdAt: li.created,
         rtmpsUrl: li.rtmps?.url,

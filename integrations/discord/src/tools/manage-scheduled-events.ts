@@ -1,6 +1,7 @@
 import { SlateTool } from '@slates/provider';
 import { DiscordClient } from '../lib/client';
 import { discordServiceError } from '../lib/errors';
+import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -55,6 +56,7 @@ export let manageScheduledEventsTool = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(discordActionScopes.manageScheduledEvents)
   .input(
     z.object({
       action: z

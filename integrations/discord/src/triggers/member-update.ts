@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { DiscordClient } from '../lib/client';
+import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let memberUpdate = SlateTrigger.create(spec, {
   description:
     'Triggers when guild members change. Detects member joins, leaves, role changes, and nickname changes by polling the guild members list.'
 })
+  .scopes(discordActionScopes.memberUpdate)
   .input(
     z.object({
       eventType: z

@@ -103,5 +103,16 @@ export let cloudflareApiResponseError = (response: ErrorResponse, operation = 'r
   return serviceError;
 };
 
-export let isCloudflareNotFoundError = (error: unknown) =>
-  error instanceof ServiceError && error.data.upstreamStatus === 404;
+export let isCloudflareNotFoundError = (error: unknown) => {
+  if (error instanceof ServiceError && error.data.upstreamStatus === 404) {
+    return true;
+  }
+
+  let response = isRecord(error) ? (error.response as ErrorResponse | undefined) : undefined;
+  if (response?.status === 404) {
+    return true;
+  }
+
+  let message = error instanceof Error ? error.message : extractCloudflareMessage(error);
+  return /not found|could not find entrypoint ruleset/i.test(message);
+};
