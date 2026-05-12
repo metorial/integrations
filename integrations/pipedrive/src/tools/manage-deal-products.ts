@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { createClient } from '../lib/helpers';
 import { pipedriveServiceError } from '../lib/errors';
 import { spec } from '../spec';

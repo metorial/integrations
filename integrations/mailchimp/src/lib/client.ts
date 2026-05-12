@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { mailchimpApiError, mailchimpServiceError } from './errors';
 
 export class MailchimpClient {

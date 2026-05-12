@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { StripeClient } from '../lib/client';
 import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';

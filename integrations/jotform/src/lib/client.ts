@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import { jotformApiError, jotformApiResponseError } from './errors';
 

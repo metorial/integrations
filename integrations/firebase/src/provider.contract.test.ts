@@ -5,7 +5,7 @@ import { firebaseActionScopes } from './scopes';
 
 describe('firebase provider contract', () => {
   it('exposes the expected provider, tool, trigger, and auth surface', async () => {
-    let client = createLocalSlateTestClient({ slate: provider });
+    let client = createLocalSlateTestClient({ slate: provider as any });
     let contract = await expectSlateContract({
       client,
       provider: {

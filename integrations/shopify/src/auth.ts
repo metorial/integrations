@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import { SHOPIFY_DEFAULT_API_VERSION } from './config';
 import { shopifyApiError, shopifyServiceError } from './lib/errors';

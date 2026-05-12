@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';

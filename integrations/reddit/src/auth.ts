@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import { redditApiError } from './lib/errors';
 import { REDDIT_USER_AGENT } from './lib/client';
@@ -168,7 +168,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }

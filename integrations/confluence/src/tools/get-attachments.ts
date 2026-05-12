@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { confluenceServiceError } from '../lib/errors';

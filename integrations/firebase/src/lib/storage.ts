@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer';
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { withFirebaseApiError } from './errors';
 
 let storageAxios = createAxios({

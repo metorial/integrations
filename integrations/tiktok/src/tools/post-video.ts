@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { TikTokConsumerClient } from '../lib/client';
 import { tiktokServiceError } from '../lib/errors';
 import { spec } from '../spec';

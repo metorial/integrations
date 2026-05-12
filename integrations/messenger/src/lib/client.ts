@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { messengerApiError } from './errors';
 
 export interface ClientConfig {

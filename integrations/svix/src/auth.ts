@@ -1,4 +1,4 @@
-import { SlateAuth } from 'slates';
+import { SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()

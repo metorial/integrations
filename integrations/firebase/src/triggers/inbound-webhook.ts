@@ -1,4 +1,4 @@
-import { SlateTrigger } from 'slates';
+import { SlateTrigger } from '@slates/provider';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';

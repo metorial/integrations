@@ -1,4 +1,4 @@
-import { SlateTrigger } from 'slates';
+import { SlateTrigger } from '@slates/provider';
 import { JiraClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';

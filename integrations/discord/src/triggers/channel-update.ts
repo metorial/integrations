@@ -1,5 +1,6 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { DiscordClient } from '../lib/client';
+import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let channelUpdate = SlateTrigger.create(spec, {
   description:
     'Triggers when channels in a Discord guild are created, deleted, or updated. Polls the guild channels list to detect changes.'
 })
+  .scopes(discordActionScopes.channelUpdate)
   .input(
     z.object({
       eventType: z.enum(['created', 'deleted', 'updated']).describe('Type of channel event'),

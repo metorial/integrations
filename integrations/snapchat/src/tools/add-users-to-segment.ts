@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { SnapchatClient } from '../lib/client';
 import { snapchatServiceError } from '../lib/errors';
 import { spec } from '../spec';

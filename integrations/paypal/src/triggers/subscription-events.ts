@@ -1,4 +1,4 @@
-import { SlateTrigger } from 'slates';
+import { SlateTrigger } from '@slates/provider';
 import { PayPalClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';

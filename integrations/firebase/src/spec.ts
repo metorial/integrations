@@ -1,4 +1,4 @@
-import { SlateSpecification } from 'slates';
+import { SlateSpecification } from '@slates/provider';
 import { auth } from './auth';
 import { config } from './config';
 

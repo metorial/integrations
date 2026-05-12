@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { gongApiError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -99,9 +100,9 @@ export let auth = SlateAuth.create()
         scope: 'api:call-user-access:read'
       },
       {
-        title: 'Manual CRM Associations',
-        description: 'Read manual CRM associations',
-        scope: 'api:crm-calls:manual-association:read'
+        title: 'Call User Access Write',
+        description: 'Grant and revoke individual call user access',
+        scope: 'api:call-user-access:write'
       },
       {
         title: 'Meetings Create',
@@ -140,9 +141,14 @@ export let auth = SlateAuth.create()
       },
       { title: 'Audit Logs Read', description: 'Read audit log data', scope: 'api:logs:read' },
       {
-        title: 'Settings Read',
-        description: 'Read system settings and trackers',
-        scope: 'api:settings:read'
+        title: 'Settings Trackers Read',
+        description: 'Read tracker settings definitions',
+        scope: 'api:settings:trackers:read'
+      },
+      {
+        title: 'Settings Scorecards Read',
+        description: 'Read scorecard settings definitions',
+        scope: 'api:settings:scorecards:read'
       },
       {
         title: 'Workspaces Read',
@@ -171,24 +177,30 @@ export let auth = SlateAuth.create()
     handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let tokenAxios = createAxios({
-        baseURL: 'https://app.gong.io'
-      });
+      let response;
 
-      let response = await tokenAxios.post(
-        '/oauth2/generate-customer-token',
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: ctx.code,
-          redirect_uri: ctx.redirectUri
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+      try {
+        let tokenAxios = createAxios({
+          baseURL: 'https://app.gong.io'
+        });
+
+        response = await tokenAxios.post(
+          '/oauth2/generate-customer-token',
+          new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: ctx.code,
+            redirect_uri: ctx.redirectUri
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw gongApiError(error, 'OAuth token exchange');
+      }
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -207,23 +219,29 @@ export let auth = SlateAuth.create()
     handleTokenRefresh: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let tokenAxios = createAxios({
-        baseURL: 'https://app.gong.io'
-      });
+      let response;
 
-      let response = await tokenAxios.post(
-        '/oauth2/generate-customer-token',
-        new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken || ''
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
+      try {
+        let tokenAxios = createAxios({
+          baseURL: 'https://app.gong.io'
+        });
+
+        response = await tokenAxios.post(
+          '/oauth2/generate-customer-token',
+          new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: ctx.output.refreshToken || ''
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw gongApiError(error, 'OAuth token refresh');
+      }
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();

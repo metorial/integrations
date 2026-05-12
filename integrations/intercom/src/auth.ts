@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import { intercomApiError } from './lib/errors';
 

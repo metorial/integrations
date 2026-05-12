@@ -1,4 +1,4 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { Client } from '../lib/client';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';

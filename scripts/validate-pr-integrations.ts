@@ -59,6 +59,7 @@ type IntegrationComparison = {
   integration: IntegrationPackage;
   head: IntegrationSnapshot;
   base: IntegrationSnapshot | null;
+  baseUnavailableReason?: string;
   providerDiffs: JsonDiffEntry[];
   configSchemaDiffs: JsonDiffEntry[];
   actionChanges: SchemaChangeSet;
@@ -137,6 +138,7 @@ async function main() {
   const { worktreeDir, cleanup } = await createDetachedWorktree(rootDir, baseSha);
 
   let baseSnapshots = new Map<string, IntegrationSnapshot>();
+  let baseSnapshotFailures = new Map<string, string>();
   try {
     const baseIntegrations = await getIntegrationPackages(worktreeDir);
     const baseAffected = affectedIntegrations
@@ -153,8 +155,9 @@ async function main() {
       await buildSharedPackages(worktreeDir);
 
       console.log('\nBuilding and loading base integrations...');
-      await buildAffectedIntegrations(worktreeDir, baseAffected);
-      baseSnapshots = await captureSnapshots(worktreeDir, baseAffected);
+      const baseResult = await captureBaseSnapshots(worktreeDir, baseAffected);
+      baseSnapshots = baseResult.snapshots;
+      baseSnapshotFailures = baseResult.failures;
     }
   } finally {
     await cleanup();
@@ -163,7 +166,12 @@ async function main() {
   const comparisons = affectedIntegrations.map(integration => {
     const head = requireSnapshot(headSnapshots, integration.directory, 'head');
     const base = baseSnapshots.get(integration.directory) ?? null;
-    return compareSnapshots({ integration, head, base });
+    return compareSnapshots({
+      integration,
+      head,
+      base,
+      baseUnavailableReason: baseSnapshotFailures.get(integration.directory)
+    });
   });
 
   const report: ValidationReport = {
@@ -348,6 +356,47 @@ async function captureSnapshots(rootDir: string, integrations: IntegrationPackag
   return snapshots;
 }
 
+async function captureBaseSnapshots(rootDir: string, integrations: IntegrationPackage[]) {
+  try {
+    await buildAffectedIntegrations(rootDir, integrations);
+    return {
+      snapshots: await captureSnapshots(rootDir, integrations),
+      failures: new Map<string, string>()
+    };
+  } catch (error) {
+    console.warn(
+      `Base integration batch build/load failed: ${formatErrorSummary(error)}. Retrying base integrations individually.`
+    );
+    return captureBestEffortBaseSnapshots(rootDir, integrations);
+  }
+}
+
+async function captureBestEffortBaseSnapshots(
+  rootDir: string,
+  integrations: IntegrationPackage[]
+) {
+  const snapshots = new Map<string, IntegrationSnapshot>();
+  const failures = new Map<string, string>();
+
+  for (const integration of integrations) {
+    try {
+      await buildAffectedIntegrations(rootDir, [integration]);
+      snapshots.set(
+        integration.directory,
+        await loadIntegrationSnapshot(rootDir, integration)
+      );
+    } catch (error) {
+      const reason = formatErrorSummary(error);
+      failures.set(integration.directory, reason);
+      console.warn(
+        `Skipping base snapshot for ${integration.directory}: ${reason}. Head validation will continue.`
+      );
+    }
+  }
+
+  return { snapshots, failures };
+}
+
 async function loadIntegrationSnapshot(
   rootDir: string,
   integration: IntegrationPackage
@@ -408,11 +457,13 @@ function compareSnapshots(d: {
   integration: IntegrationPackage;
   head: IntegrationSnapshot;
   base: IntegrationSnapshot | null;
+  baseUnavailableReason?: string;
 }): IntegrationComparison {
   return {
     integration: d.integration,
     head: d.head,
     base: d.base,
+    baseUnavailableReason: d.baseUnavailableReason,
     providerDiffs: diffJson(d.base?.provider ?? null, d.head.provider, 'provider'),
     configSchemaDiffs: diffJson(
       d.base?.configSchema ?? null,
@@ -583,6 +634,14 @@ function formatNames(values: string[]) {
   return values.length === 0 ? '(none)' : values.join(', ');
 }
 
+function formatErrorSummary(error: unknown) {
+  if (error instanceof Error) {
+    return (error.message || error.name).split('\n')[0] ?? error.name;
+  }
+
+  return String(error).split('\n')[0] ?? 'Unknown error';
+}
+
 async function writeOutputs(report: ValidationReport) {
   const summary = renderSummary(report);
   const comment = renderComment(report);
@@ -615,7 +674,12 @@ function renderSummary(report: ValidationReport) {
   for (const comparison of report.comparisons) {
     lines.push(`### \`${comparison.integration.directory}\``);
     lines.push(`- Head provider: \`${comparison.head.providerName}\``);
-    lines.push(`- Base provider: \`${comparison.base?.providerName ?? '(not present)'}\``);
+    lines.push(`- Base provider: \`${formatBaseProviderName(comparison)}\``);
+    if (comparison.baseUnavailableReason) {
+      lines.push(
+        '- Base snapshot: unavailable; base build/load failed, so schema diff is against an empty baseline.'
+      );
+    }
     lines.push(
       `- Head tools (${comparison.head.tools.length}): ${formatSummaryList(
         comparison.head.tools.map(tool => `\`${tool.id}\``)
@@ -669,7 +733,12 @@ function renderComment(report: ValidationReport) {
     lines.push(`<summary><code>${comparison.integration.directory}</code></summary>`);
     lines.push('');
     lines.push(`- Head provider: \`${comparison.head.providerName}\``);
-    lines.push(`- Base provider: \`${comparison.base?.providerName ?? '(not present)'}\``);
+    lines.push(`- Base provider: \`${formatBaseProviderName(comparison)}\``);
+    if (comparison.baseUnavailableReason) {
+      lines.push(
+        '- Base snapshot: unavailable; base build/load failed, so schema diff is against an empty baseline.'
+      );
+    }
     lines.push(
       `- Head actions (${comparison.head.actions.length}): ${formatSummaryList(
         comparison.head.actions.map(action => `\`${action.id}\``)
@@ -712,6 +781,14 @@ function renderComment(report: ValidationReport) {
   }
 
   return lines.join('\n').trimEnd() + '\n';
+}
+
+function formatBaseProviderName(comparison: IntegrationComparison) {
+  if (comparison.baseUnavailableReason) {
+    return '(unavailable; base build/load failed)';
+  }
+
+  return comparison.base?.providerName ?? '(not present)';
 }
 
 function appendDiffSection(lines: string[], title: string, diffs: JsonDiffEntry[]) {

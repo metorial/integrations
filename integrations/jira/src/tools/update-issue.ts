@@ -1,5 +1,6 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { JiraClient } from '../lib/client';
+import { normalizeAdf } from '../lib/adf';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -23,7 +24,9 @@ export let updateIssueTool = SlateTool.create(spec, {
       description: z
         .any()
         .optional()
-        .describe('Updated description in ADF format or plain text string.'),
+        .describe(
+          'Updated description as an ADF object, stringified ADF JSON, or a plain text string.'
+        ),
       assigneeAccountId: z
         .string()
         .optional()
@@ -77,17 +80,7 @@ export let updateIssueTool = SlateTool.create(spec, {
     }
 
     if (ctx.input.description !== undefined) {
-      if (typeof ctx.input.description === 'string') {
-        fields.description = {
-          version: 1,
-          type: 'doc',
-          content: [
-            { type: 'paragraph', content: [{ type: 'text', text: ctx.input.description }] }
-          ]
-        };
-      } else {
-        fields.description = ctx.input.description;
-      }
+      fields.description = normalizeAdf(ctx.input.description);
       hasFieldUpdates = true;
     }
 

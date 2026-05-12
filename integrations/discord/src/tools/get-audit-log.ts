@@ -1,5 +1,6 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { DiscordClient } from '../lib/client';
+import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -31,6 +32,7 @@ export let getAuditLogTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(discordActionScopes.getAuditLog)
   .input(
     z.object({
       guildId: z.string().describe('The ID of the guild to fetch audit logs for'),

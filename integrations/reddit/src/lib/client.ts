@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { redditApiError } from './errors';
 
 export let REDDIT_USER_AGENT = 'web:slates-integrations-reddit:0.2.0-rc.3 (by /u/slates)';

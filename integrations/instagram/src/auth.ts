@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import { instagramApiError } from './lib/errors';
 
@@ -119,7 +119,7 @@ export let auth = SlateAuth.create()
       }
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       try {
         let response = await instagramGraphApi.get('/refresh_access_token', {
           params: {
@@ -291,7 +291,7 @@ export let auth = SlateAuth.create()
       }
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       try {
         let response = await graphApi.get(`/${authApiVersion}/oauth/access_token`, {
           params: {

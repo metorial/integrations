@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { openAIApiError, openAIServiceError } from './errors';
 
 export interface ClientConfig {

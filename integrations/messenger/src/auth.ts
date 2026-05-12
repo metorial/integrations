@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import { MESSENGER_DEFAULT_API_VERSION } from './config';
 import { messengerOAuthError, messengerServiceError } from './lib/errors';
@@ -144,7 +144,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       // Page access tokens derived from long-lived user tokens are non-expiring
       // If token refresh is needed, re-authorize
       return {

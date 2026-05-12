@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { spec } from '../spec';
 import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
 import { postgresServiceError } from '../lib/errors';

@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { ZoomClient } from '../lib/client';
 import { zoomServiceError } from '../lib/errors';
 import { spec } from '../spec';

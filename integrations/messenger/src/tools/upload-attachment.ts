@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
 import { messengerServiceError } from '../lib/errors';
 import { spec } from '../spec';

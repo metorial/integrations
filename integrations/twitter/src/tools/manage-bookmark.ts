@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { TwitterClient } from '../lib/client';
 import { twitterServiceError } from '../lib/errors';
 import { postSchema, mapPost } from '../lib/helpers';

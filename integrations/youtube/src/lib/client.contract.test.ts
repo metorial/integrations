@@ -10,8 +10,10 @@ let loadClient = async () => {
   getMock.mockReset();
   putMock.mockReset();
 
-  vi.doMock('slates', async () => {
-    let actual = await vi.importActual<typeof import('slates')>('slates');
+  vi.doMock('@slates/provider', async () => {
+    let actual = await vi.importActual<typeof import('@slates/provider')>(
+      '@slates/provider'
+    );
 
     return {
       ...actual,
@@ -32,7 +34,7 @@ let loadClient = async () => {
 };
 
 afterEach(() => {
-  vi.doUnmock('slates');
+  vi.doUnmock('@slates/provider');
   vi.resetModules();
 });
 

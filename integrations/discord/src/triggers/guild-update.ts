@@ -1,5 +1,6 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { DiscordClient } from '../lib/client';
+import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -32,6 +33,7 @@ export let guildUpdate = SlateTrigger.create(spec, {
   description:
     'Triggers when a guild (server) setting changes, such as name, description, icon, verification level, owner, or other server-level properties. Polls guilds to detect changes.'
 })
+  .scopes(discordActionScopes.guildUpdate)
   .input(
     z.object({
       guildId: z.string().describe('Guild ID'),

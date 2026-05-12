@@ -1,4 +1,4 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { MailchimpClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';

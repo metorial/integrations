@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import { herokuApiError, herokuServiceError } from './lib/errors';
 
@@ -113,7 +113,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }

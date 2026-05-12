@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { SIMPLE_MEDIA_CATEGORIES, SIMPLE_MEDIA_TYPES, TwitterClient } from '../lib/client';
 import { twitterServiceError } from '../lib/errors';
 import { spec } from '../spec';

@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import { bitbucketApiError, bitbucketServiceError } from './lib/errors';
 
@@ -10,6 +10,8 @@ api.interceptors?.response.use(
   response => response,
   error => Promise.reject(bitbucketApiError(error))
 );
+
+let normalizeCredential = (value: string) => value.trim();
 
 export let auth = SlateAuth.create()
   .output(
@@ -23,90 +25,11 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    scopes: [],
 
-    scopes: [
-      {
-        title: 'Account Read',
-        description: 'Read user account information',
-        scope: 'account'
-      },
-      {
-        title: 'Account Write',
-        description: 'Write user account information',
-        scope: 'account:write'
-      },
-      { title: 'Email', description: 'Read user primary email address', scope: 'email' },
-      {
-        title: 'Repository Read',
-        description: 'Read access to repositories',
-        scope: 'repository'
-      },
-      {
-        title: 'Repository Write',
-        description: 'Write access to repositories',
-        scope: 'repository:write'
-      },
-      {
-        title: 'Repository Admin',
-        description: 'Admin access to repositories',
-        scope: 'repository:admin'
-      },
-      {
-        title: 'Repository Delete',
-        description: 'Delete repositories',
-        scope: 'repository:delete'
-      },
-      {
-        title: 'Pull Request Read',
-        description: 'Read access to pull requests',
-        scope: 'pullrequest'
-      },
-      {
-        title: 'Pull Request Write',
-        description: 'Write access to pull requests',
-        scope: 'pullrequest:write'
-      },
-      { title: 'Issue Read', description: 'Read access to issues', scope: 'issue' },
-      { title: 'Issue Write', description: 'Write access to issues', scope: 'issue:write' },
-      { title: 'Webhook', description: 'Manage webhooks', scope: 'webhook' },
-      { title: 'Pipeline Read', description: 'Read access to pipelines', scope: 'pipeline' },
-      {
-        title: 'Pipeline Write',
-        description: 'Write access to pipelines',
-        scope: 'pipeline:write'
-      },
-      {
-        title: 'Pipeline Variable',
-        description: 'Manage pipeline variables',
-        scope: 'pipeline:variable'
-      },
-      {
-        title: 'Runner Read',
-        description: 'Read access to pipeline runners',
-        scope: 'runner'
-      },
-      {
-        title: 'Runner Write',
-        description: 'Write access to pipeline runners',
-        scope: 'runner:write'
-      },
-      { title: 'Snippet Read', description: 'Read access to snippets', scope: 'snippet' },
-      {
-        title: 'Snippet Write',
-        description: 'Write access to snippets',
-        scope: 'snippet:write'
-      },
-      { title: 'Project Read', description: 'Read access to projects', scope: 'project' },
-      {
-        title: 'Project Admin',
-        description: 'Admin access to projects',
-        scope: 'project:admin'
-      }
-    ],
-
-    getAuthorizationUrl: async ctx => {
+    getAuthorizationUrl: async (ctx: any) => {
       let params = new URLSearchParams({
-        client_id: ctx.clientId,
+        client_id: normalizeCredential(ctx.clientId),
         response_type: 'code',
         state: ctx.state
       });
@@ -115,18 +38,15 @@ export let auth = SlateAuth.create()
         params.set('redirect_uri', ctx.redirectUri);
       }
 
-      let scopes = ctx.scopes as string[] | undefined;
-      if (scopes?.length) {
-        params.set('scope', scopes.join(' '));
-      }
-
       return {
         url: `https://bitbucket.org/site/oauth2/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async ctx => {
-      let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
+    handleCallback: async (ctx: any) => {
+      let clientId = normalizeCredential(ctx.clientId);
+      let clientSecret = normalizeCredential(ctx.clientSecret);
+      let credentials = btoa(`${clientId}:${clientSecret}`);
 
       let response = await api.post(
         'https://bitbucket.org/site/oauth2/access_token',
@@ -155,12 +75,14 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         throw bitbucketServiceError('No refresh token available');
       }
 
-      let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
+      let clientId = normalizeCredential(ctx.clientId);
+      let clientSecret = normalizeCredential(ctx.clientSecret);
+      let credentials = btoa(`${clientId}:${clientSecret}`);
 
       let response = await api.post(
         'https://bitbucket.org/site/oauth2/access_token',

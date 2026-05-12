@@ -1,4 +1,4 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { RealtimeDbClient } from '../lib/client';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';

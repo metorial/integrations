@@ -19,6 +19,8 @@ export let pushDigitalInteraction = SlateTool.create(spec, {
             eventType: z
               .string()
               .describe('Type of event (e.g., "ContentShared", "ContentViewed")'),
+            eventId: z.string().describe('Unique event identifier'),
+            personName: z.string().optional().describe('Name of the person involved'),
             contactEmail: z.string().optional().describe('Email of the contact involved'),
             contactPhone: z.string().optional().describe('Phone number of the contact'),
             contentId: z.string().optional().describe('Identifier for the content'),
@@ -32,6 +34,7 @@ export let pushDigitalInteraction = SlateTool.create(spec, {
               .describe('Additional custom key-value data')
           })
         )
+        .min(1)
         .describe('Digital interaction events to push')
     })
   )
@@ -46,19 +49,25 @@ export let pushDigitalInteraction = SlateTool.create(spec, {
       baseUrl: ctx.auth.baseUrl
     });
 
-    await client.postDigitalInteraction({
-      events: ctx.input.events.map(e => ({
-        eventType: e.eventType,
-        contactEmail: e.contactEmail,
-        contactPhone: e.contactPhone,
-        contentId: e.contentId,
-        contentTitle: e.contentTitle,
-        contentUrl: e.contentUrl,
-        eventTimestamp: e.eventTimestamp,
-        workspaceId: e.workspaceId,
-        customData: e.customData as Record<string, string> | undefined
-      }))
-    });
+    for (let event of ctx.input.events) {
+      await client.postDigitalInteraction({
+        eventId: event.eventId,
+        eventType: event.eventType,
+        timestamp: event.eventTimestamp,
+        content: {
+          contentId: event.contentId,
+          contentTitle: event.contentTitle,
+          contentUrl: event.contentUrl
+        },
+        person: {
+          name: event.personName,
+          email: event.contactEmail,
+          phoneNumber: event.contactPhone
+        },
+        workspaceId: event.workspaceId,
+        customData: event.customData as Record<string, string> | undefined
+      });
+    }
 
     return {
       output: { success: true },

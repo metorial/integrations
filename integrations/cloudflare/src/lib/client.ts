@@ -974,14 +974,18 @@ export class Client {
 
   async listStreamLiveInputs(accountId: string) {
     let response = await this.http.get(`/accounts/${accountId}/stream/live_inputs`);
-    return response.data as CloudflareResponse<any[]>;
+    return response.data as CloudflareResponse<{
+      liveInputs?: any[];
+      range?: number;
+      total?: number;
+    }>;
   }
 
   async createStreamLiveInput(
     accountId: string,
     data: {
       meta?: Record<string, string>;
-      recording?: { mode?: string; timeoutSeconds?: number };
+      recording?: { mode?: 'off' | 'automatic'; timeoutSeconds?: number };
     }
   ) {
     let response = await this.http.post(`/accounts/${accountId}/stream/live_inputs`, {

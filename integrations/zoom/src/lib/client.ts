@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios } from '@slates/provider';
 import { zoomApiError } from './errors';
 
 let api = createAxios({

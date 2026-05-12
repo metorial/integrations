@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import {
   assertBusinessSuccess,
@@ -135,7 +135,7 @@ export let auth = SlateAuth.create()
       }
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       try {
         if (!ctx.output.refreshToken) {
           throw tiktokServiceError('TikTok OAuth refresh requires a refresh token.');

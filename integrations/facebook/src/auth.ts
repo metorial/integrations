@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
 import { facebookApiError } from './lib/errors';
 
@@ -172,7 +172,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       // Facebook long-lived tokens can be refreshed by exchanging them again
       let response = await graphAxios.get('/oauth/access_token', {
         params: {

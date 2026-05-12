@@ -1,5 +1,6 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { DiscordClient } from '../lib/client';
+import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let newMessage = SlateTrigger.create(spec, {
   description:
     'Triggers when a new message is posted in a Discord channel. Polls channel history for new messages.'
 })
+  .scopes(discordActionScopes.newMessage)
   .input(
     z.object({
       messageId: z.string().describe('Message ID'),

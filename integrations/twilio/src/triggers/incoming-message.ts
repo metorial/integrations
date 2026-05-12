@@ -1,4 +1,4 @@
-import { SlateTrigger } from 'slates';
+import { SlateTrigger } from '@slates/provider';
 import { spec } from '../spec';
 import { z } from 'zod';
 import { parseFormUrlEncoded } from '../lib/webhook-parser';

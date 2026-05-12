@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { TypeformClient } from '../lib/client';
 import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';

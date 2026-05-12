@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { AuthClient } from '../lib/client';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
