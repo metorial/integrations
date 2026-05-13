@@ -23,6 +23,9 @@ let numberValue = (value: unknown) => (typeof value === 'number' ? value : undef
 
 let booleanValue = (value: unknown) => (typeof value === 'boolean' ? value : undefined);
 
+let booleanOrNullValue = (value: unknown) =>
+  typeof value === 'boolean' || value === null ? value : undefined;
+
 let stringArray = (value: unknown) =>
   Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
 
@@ -54,10 +57,7 @@ export let summarizeTable = (table: unknown): TableSummary => {
     firstPeriod: stringValue(table.firstPeriod),
     lastPeriod: stringValue(table.lastPeriod),
     variableNames: firstStringArray(table.variableNames),
-    discontinued:
-      typeof table.discontinued === 'boolean' || table.discontinued === null
-        ? table.discontinued
-        : undefined,
+    discontinued: booleanOrNullValue(table.discontinued),
     source: stringValue(table.source),
     subjectCode: stringValue(table.subjectCode),
     timeUnit: stringValue(table.timeUnit),
