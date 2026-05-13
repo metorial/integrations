@@ -23,8 +23,11 @@ let numberValue = (value: unknown) => (typeof value === 'number' ? value : undef
 
 let booleanValue = (value: unknown) => (typeof value === 'boolean' ? value : undefined);
 
-let booleanOrNullValue = (value: unknown) =>
-  typeof value === 'boolean' || value === null ? value : undefined;
+let booleanOrNullValue = (value: unknown): boolean | null | undefined => {
+  if (typeof value === 'boolean') return value;
+  if (value === null) return null;
+  return undefined;
+};
 
 let stringArray = (value: unknown) =>
   Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
