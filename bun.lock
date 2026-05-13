@@ -11440,6 +11440,19 @@
         "typescript": "^5",
       },
     },
+    "integrations/statbank-norway-ssb": {
+      "name": "@slates-integrations/statbank-norway-ssb",
+      "version": "0.1.0-rc.1",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.10",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "typescript": "^5",
+      },
+    },
     "integrations/sslmate-cert-spotter-api": {
       "name": "@slates-integrations/sslmate-cert-spotter-api",
       "version": "0.2.0-rc.2",
@@ -16241,6 +16254,8 @@
     "@slates-integrations/square": ["@slates-integrations/square@workspace:integrations/square"],
 
     "@slates-integrations/squarespace": ["@slates-integrations/squarespace@workspace:integrations/squarespace"],
+
+    "@slates-integrations/statbank-norway-ssb": ["@slates-integrations/statbank-norway-ssb@workspace:integrations/statbank-norway-ssb"],
 
     "@slates-integrations/sslmate-cert-spotter-api": ["@slates-integrations/sslmate-cert-spotter-api@workspace:integrations/sslmate-cert-spotter-api"],
 
