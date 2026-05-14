@@ -11173,7 +11173,7 @@
     },
     "integrations/slack": {
       "name": "@slates-integrations/slack",
-      "version": "0.2.0-rc.11",
+      "version": "0.2.0-rc.12",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@slates/slack-tools": "1.0.0-rc.4",
