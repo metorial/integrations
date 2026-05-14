@@ -3,6 +3,7 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { airtableServiceError } from '../lib/errors';
 import { spec } from '../spec';
+import { baseIdInput } from './base-id';
 import { z } from 'zod';
 
 let MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
@@ -49,6 +50,7 @@ export let uploadAttachmentTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      baseId: baseIdInput,
       recordId: z.string().describe('Record ID to attach the file to (e.g. recXXXXXX)'),
       attachmentFieldIdOrName: z
         .string()
@@ -77,7 +79,7 @@ export let uploadAttachmentTool = SlateTool.create(spec, {
     let { normalized } = decodeBase64File(ctx.input.fileBase64);
     let client = new Client({
       token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      baseId: ctx.input.baseId
     });
 
     let record = await client.uploadAttachment(

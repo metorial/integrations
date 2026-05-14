@@ -1,12 +1,13 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { baseIdInput } from './base-id';
 import { z } from 'zod';
 
 export let deleteRecordsTool = SlateTool.create(spec, {
   name: 'Delete Records',
   key: 'delete_records',
-  description: `Delete one or more records from a table in the configured Airtable base. This action is **irreversible** and permanently removes the specified records.`,
+  description: `Delete one or more records from a table in the specified Airtable base. This action is **irreversible** and permanently removes the specified records.`,
   constraints: ['Maximum of 10 records per request.'],
   tags: {
     destructive: true
@@ -14,6 +15,7 @@ export let deleteRecordsTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      baseId: baseIdInput,
       tableIdOrName: z.string().describe('Table ID (e.g. tblXXXXXX) or table name'),
       recordIds: z
         .array(z.string())
@@ -35,7 +37,7 @@ export let deleteRecordsTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      baseId: ctx.input.baseId
     });
 
     let result = await client.deleteRecords(ctx.input.tableIdOrName, ctx.input.recordIds);

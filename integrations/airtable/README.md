@@ -6,19 +6,19 @@ Create, read, update, and delete records in Airtable bases and tables. Manage ba
 
 ### Create Records
 
-Create one or more records in a table in the configured Airtable base. Provide field values for each record. Enable typecast to automatically convert string values to the appropriate field types.
+Create one or more records in a table in the specified Airtable base. Provide field values for each record. Enable typecast to automatically convert string values to the appropriate field types.
 
 ### Delete Records
 
-Delete one or more records from a table in the configured Airtable base. This action is **irreversible** and permanently removes the specified records.
+Delete one or more records from a table in the specified Airtable base. This action is **irreversible** and permanently removes the specified records.
 
 ### Get Base Schema
 
-Retrieve the full schema of the configured Airtable base, including all tables, their fields (with types and options), and views. Useful for understanding the structure of a base before querying or modifying data.
+Retrieve the full schema of the specified Airtable base, including all tables, their fields (with types and options), and views. Useful for understanding the structure of a base before querying or modifying data.
 
 ### Get Record
 
-Retrieve a single record by its ID from a table in the configured Airtable base. Returns all field values for the specified record.
+Retrieve a single record by its ID from a table in the specified Airtable base. Returns all field values for the specified record.
 
 ### List Bases
 
@@ -26,19 +26,19 @@ List all Airtable bases the authenticated user has access to. Useful for discove
 
 ### List Records
 
-List records from a table in the configured Airtable base. Supports filtering with Airtable formulas, sorting by fields, scoping to a specific view, selecting specific fields, and pagination.
+List records from a table in the specified Airtable base. Supports filtering with Airtable formulas, sorting by fields, scoping to a specific view, selecting specific fields, and pagination.
 
 ### Manage Comment
 
-List, create, update, or delete comments on a record in the configured Airtable base. Use this to read the conversation thread on a record or add new comments.
+List, create, update, or delete comments on a record in the specified Airtable base. Use this to read the conversation thread on a record or add new comments.
 
 ### Manage Field
 
-Create a new field or update an existing field in a table within the configured Airtable base. Supports setting field type, name, description, and type-specific options.
+Create a new field or update an existing field in a table within the specified Airtable base. Supports setting field type, name, description, and type-specific options.
 
 ### Manage Table
 
-Create a new table or update an existing table in the configured Airtable base. When creating, provide the table name and initial fields. When updating, provide the table ID and new name or description.
+Create a new table or update an existing table in the specified Airtable base. When creating, provide the table name and initial fields. When updating, provide the table ID and new name or description.
 
 ### Upload Attachment
 
@@ -46,7 +46,7 @@ Upload a base64-encoded file directly into an Airtable attachment field on an ex
 
 ### Update Records
 
-Update one or more existing records in a table in the configured Airtable base. By default performs a partial update (PATCH) that only modifies specified fields. Set **replaceAllFields** to true to perform a full replacement (PUT) which clears unspecified fields.
+Update one or more existing records in a table in the specified Airtable base. By default performs a partial update (PATCH) that only modifies specified fields. Set **replaceAllFields** to true to perform a full replacement (PUT) which clears unspecified fields.
 
 ### Upsert Records
 

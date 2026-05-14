@@ -1,12 +1,13 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { baseIdInput } from './base-id';
 import { z } from 'zod';
 
 export let updateRecordsTool = SlateTool.create(spec, {
   name: 'Update Records',
   key: 'update_records',
-  description: `Update one or more existing records in a table in the configured Airtable base. By default performs a partial update (PATCH) that only modifies specified fields. Set **replaceAllFields** to true to perform a full replacement (PUT) which clears unspecified fields.`,
+  description: `Update one or more existing records in a table in the specified Airtable base. By default performs a partial update (PATCH) that only modifies specified fields. Set **replaceAllFields** to true to perform a full replacement (PUT) which clears unspecified fields.`,
   constraints: ['Maximum of 10 records per request.'],
   tags: {
     destructive: false
@@ -14,6 +15,7 @@ export let updateRecordsTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      baseId: baseIdInput,
       tableIdOrName: z.string().describe('Table ID (e.g. tblXXXXXX) or table name'),
       records: z
         .array(
@@ -55,7 +57,7 @@ export let updateRecordsTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      baseId: ctx.input.baseId
     });
 
     let mappedRecords = ctx.input.records.map(r => ({

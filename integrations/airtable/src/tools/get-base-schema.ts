@@ -1,17 +1,22 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { baseIdInput } from './base-id';
 import { z } from 'zod';
 
 export let getBaseSchemaTool = SlateTool.create(spec, {
   name: 'Get Base Schema',
   key: 'get_base_schema',
-  description: `Retrieve the full schema of the configured Airtable base, including all tables, their fields (with types and options), and views. Useful for understanding the structure of a base before querying or modifying data.`,
+  description: `Retrieve the full schema of the specified Airtable base, including all tables, their fields (with types and options), and views. Useful for understanding the structure of a base before querying or modifying data.`,
   tags: {
     readOnly: true
   }
 })
-  .input(z.object({}))
+  .input(
+    z.object({
+      baseId: baseIdInput
+    })
+  )
   .output(
     z.object({
       tables: z.array(
@@ -48,7 +53,7 @@ export let getBaseSchemaTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      baseId: ctx.input.baseId
     });
 
     let schema = await client.getBaseSchema();

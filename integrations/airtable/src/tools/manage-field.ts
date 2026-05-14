@@ -2,12 +2,13 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { airtableServiceError } from '../lib/errors';
 import { spec } from '../spec';
+import { baseIdInput } from './base-id';
 import { z } from 'zod';
 
 export let manageFieldTool = SlateTool.create(spec, {
   name: 'Manage Field',
   key: 'manage_field',
-  description: `Create a new field or update an existing field in a table within the configured Airtable base. Airtable's metadata API requires table and field IDs for this operation.`,
+  description: `Create a new field or update an existing field in a table within the specified Airtable base. Airtable's metadata API requires table and field IDs for this operation.`,
   instructions: [
     'To create a field, set **action** to "create" and provide fieldName, fieldType, and optionally options.',
     'To update a field, set **action** to "update" and provide fieldId with the changes.',
@@ -19,6 +20,7 @@ export let manageFieldTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      baseId: baseIdInput,
       action: z
         .enum(['create', 'update'])
         .describe('Whether to create a new field or update an existing one'),
@@ -49,7 +51,7 @@ export let manageFieldTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      baseId: ctx.input.baseId
     });
 
     if (ctx.input.action === 'create') {

@@ -2,18 +2,20 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { airtableServiceError } from '../lib/errors';
 import { spec } from '../spec';
+import { baseIdInput } from './base-id';
 import { z } from 'zod';
 
 export let manageCommentTool = SlateTool.create(spec, {
   name: 'Manage Comment',
   key: 'manage_comment',
-  description: `List, create, update, or delete comments on a record in the configured Airtable base. Use this to read the conversation thread on a record or add new comments.`,
+  description: `List, create, update, or delete comments on a record in the specified Airtable base. Use this to read the conversation thread on a record or add new comments.`,
   tags: {
     destructive: false
   }
 })
   .input(
     z.object({
+      baseId: baseIdInput,
       action: z
         .enum(['list', 'create', 'update', 'delete'])
         .describe('The comment action to perform'),
@@ -63,7 +65,7 @@ export let manageCommentTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      baseId: ctx.input.baseId
     });
 
     let mapComment = (c: any) => ({

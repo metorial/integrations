@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { baseIdInput } from './base-id';
 import { z } from 'zod';
 
 export let upsertRecordsTool = SlateTool.create(spec, {
@@ -18,6 +19,7 @@ export let upsertRecordsTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      baseId: baseIdInput,
       tableIdOrName: z.string().describe('Table ID (e.g. tblXXXXXX) or table name'),
       records: z
         .array(
@@ -55,7 +57,7 @@ export let upsertRecordsTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      baseId: ctx.input.baseId
     });
 
     let result = await client.upsertRecords(

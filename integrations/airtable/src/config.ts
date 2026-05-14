@@ -5,8 +5,9 @@ export let config = SlateConfig.create(
   z.object({
     baseId: z
       .string()
+      .optional()
       .describe(
-        'The Airtable base ID (e.g. appXXXXXXXXXXXXXX). Found in the URL when viewing a base.'
+        'Optional default Airtable base ID (e.g. appXXXXXXXXXXXXXX). Tools ask for baseId when needed; this is only used for webhook trigger auto-registration.'
       )
   })
 );

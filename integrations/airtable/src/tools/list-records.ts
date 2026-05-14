@@ -1,12 +1,13 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { baseIdInput } from './base-id';
 import { z } from 'zod';
 
 export let listRecordsTool = SlateTool.create(spec, {
   name: 'List Records',
   key: 'list_records',
-  description: `List records from a table in the configured Airtable base. Supports filtering with Airtable formulas, sorting by fields, scoping to a specific view, selecting specific fields, and pagination.`,
+  description: `List records from a table in the specified Airtable base. Supports filtering with Airtable formulas, sorting by fields, scoping to a specific view, selecting specific fields, and pagination.`,
   instructions: [
     'Use filterByFormula with Airtable formula syntax, e.g. `{Status} = "Active"` or `AND({Priority} = "High", {Assignee} != "")`.',
     'Use the offset from the response to paginate through results. If offset is present, there are more records to fetch.'
@@ -21,6 +22,7 @@ export let listRecordsTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      baseId: baseIdInput,
       tableIdOrName: z.string().describe('Table ID (e.g. tblXXXXXX) or table name'),
       fields: z
         .array(z.string())
@@ -66,7 +68,7 @@ export let listRecordsTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      baseId: ctx.input.baseId
     });
 
     let result = await client.listRecords(ctx.input.tableIdOrName, {

@@ -1,12 +1,13 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { baseIdInput } from './base-id';
 import { z } from 'zod';
 
 export let createRecordsTool = SlateTool.create(spec, {
   name: 'Create Records',
   key: 'create_records',
-  description: `Create one or more records in a table in the configured Airtable base. Provide field values for each record. Enable typecast to automatically convert string values to the appropriate field types.`,
+  description: `Create one or more records in a table in the specified Airtable base. Provide field values for each record. Enable typecast to automatically convert string values to the appropriate field types.`,
   constraints: ['Maximum of 10 records per request.'],
   tags: {
     destructive: false
@@ -14,6 +15,7 @@ export let createRecordsTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      baseId: baseIdInput,
       tableIdOrName: z.string().describe('Table ID (e.g. tblXXXXXX) or table name'),
       records: z
         .array(
@@ -44,7 +46,7 @@ export let createRecordsTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      baseId: ctx.input.baseId
     });
 
     let result = await client.createRecords(ctx.input.tableIdOrName, ctx.input.records, {

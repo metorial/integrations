@@ -2,12 +2,13 @@ import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { airtableServiceError } from '../lib/errors';
 import { spec } from '../spec';
+import { baseIdInput } from './base-id';
 import { z } from 'zod';
 
 export let manageTableTool = SlateTool.create(spec, {
   name: 'Manage Table',
   key: 'manage_table',
-  description: `Create a new table or update an existing table in the configured Airtable base. When creating, provide the table name and initial fields. When updating, provide the table ID and new name or description.`,
+  description: `Create a new table or update an existing table in the specified Airtable base. When creating, provide the table name and initial fields. When updating, provide the table ID and new name or description.`,
   instructions: [
     'To create a table, set **action** to "create" and provide tableName and fields.',
     'To update, set **action** to "update" and provide tableId with the updated name and/or description.',
@@ -19,6 +20,7 @@ export let manageTableTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      baseId: baseIdInput,
       action: z
         .enum(['create', 'update'])
         .describe('Whether to create a new table or update an existing one'),
@@ -63,7 +65,7 @@ export let manageTableTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      baseId: ctx.input.baseId
     });
 
     if (ctx.input.action === 'create') {

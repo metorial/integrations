@@ -35,8 +35,7 @@ export let listBasesTool = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client({
-      token: ctx.auth.token,
-      baseId: ctx.config.baseId
+      token: ctx.auth.token
     });
 
     let result = await client.listBases({ offset: ctx.input.offset });
