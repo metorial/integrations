@@ -1,5 +1,13 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import {
+  arrayOrUndefined,
+  booleanOrUndefined,
+  numberOrUndefined,
+  objectOrUndefined,
+  stringOrUndefined,
+  timestampOrUndefined
+} from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 import { intercomServiceError } from '../lib/errors';
@@ -75,42 +83,36 @@ export let getContact = SlateTool.create(spec, {
 
     return {
       output: {
-        contactId: result.id,
-        role: result.role,
-        email: result.email,
-        name: result.name,
-        phone: result.phone,
-        externalId: result.external_id,
-        workspaceId: result.workspace_id,
-        emailDomain: result.email_domain,
-        ownerId: result.owner_id,
-        hasHardBounced: result.has_hard_bounced,
-        markedEmailAsSpam: result.marked_email_as_spam,
-        unsubscribedFromEmails: result.unsubscribed_from_emails,
-        createdAt: result.created_at ? String(result.created_at) : undefined,
-        updatedAt: result.updated_at ? String(result.updated_at) : undefined,
-        signedUpAt: result.signed_up_at ? String(result.signed_up_at) : undefined,
-        lastSeenAt: result.last_seen_at ? String(result.last_seen_at) : undefined,
-        lastContactedAt: result.last_contacted_at
-          ? String(result.last_contacted_at)
-          : undefined,
-        lastRepliedAt: result.last_replied_at ? String(result.last_replied_at) : undefined,
-        lastEmailOpenedAt: result.last_email_opened_at
-          ? String(result.last_email_opened_at)
-          : undefined,
-        lastEmailClickedAt: result.last_email_clicked_at
-          ? String(result.last_email_clicked_at)
-          : undefined,
-        browserLanguage: result.browser_language,
-        languageOverride: result.language_override,
-        browser: result.browser,
-        browserVersion: result.browser_version,
-        os: result.os,
-        location: result.location,
-        customAttributes: result.custom_attributes,
-        tags: result.tags?.data,
-        companies: result.companies?.data,
-        socialProfiles: result.social_profiles?.data
+        contactId: String(result.id),
+        role: stringOrUndefined(result.role),
+        email: stringOrUndefined(result.email),
+        name: stringOrUndefined(result.name),
+        phone: stringOrUndefined(result.phone),
+        externalId: stringOrUndefined(result.external_id),
+        workspaceId: stringOrUndefined(result.workspace_id),
+        emailDomain: stringOrUndefined(result.email_domain),
+        ownerId: numberOrUndefined(result.owner_id),
+        hasHardBounced: booleanOrUndefined(result.has_hard_bounced),
+        markedEmailAsSpam: booleanOrUndefined(result.marked_email_as_spam),
+        unsubscribedFromEmails: booleanOrUndefined(result.unsubscribed_from_emails),
+        createdAt: timestampOrUndefined(result.created_at),
+        updatedAt: timestampOrUndefined(result.updated_at),
+        signedUpAt: timestampOrUndefined(result.signed_up_at),
+        lastSeenAt: timestampOrUndefined(result.last_seen_at),
+        lastContactedAt: timestampOrUndefined(result.last_contacted_at),
+        lastRepliedAt: timestampOrUndefined(result.last_replied_at),
+        lastEmailOpenedAt: timestampOrUndefined(result.last_email_opened_at),
+        lastEmailClickedAt: timestampOrUndefined(result.last_email_clicked_at),
+        browserLanguage: stringOrUndefined(result.browser_language),
+        languageOverride: stringOrUndefined(result.language_override),
+        browser: stringOrUndefined(result.browser),
+        browserVersion: stringOrUndefined(result.browser_version),
+        os: stringOrUndefined(result.os),
+        location: objectOrUndefined(result.location),
+        customAttributes: objectOrUndefined(result.custom_attributes),
+        tags: arrayOrUndefined(result.tags?.data),
+        companies: arrayOrUndefined(result.companies?.data),
+        socialProfiles: arrayOrUndefined(result.social_profiles?.data)
       },
       message: `Retrieved contact **${result.name || result.email || result.id}** (${result.role})`
     };

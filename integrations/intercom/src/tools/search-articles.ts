@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { stringOrUndefined, timestampOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -65,15 +66,15 @@ export let searchArticles = SlateTool.create(spec, {
     }
 
     let articles = (result.data || []).map((a: any) => ({
-      articleId: a.id,
-      title: a.title,
-      description: a.description,
-      state: a.state,
-      url: a.url,
+      articleId: String(a.id),
+      title: stringOrUndefined(a.title),
+      description: stringOrUndefined(a.description),
+      state: stringOrUndefined(a.state),
+      url: stringOrUndefined(a.url),
       authorId: a.author_id ? String(a.author_id) : undefined,
       parentId: a.parent_id ? String(a.parent_id) : undefined,
-      createdAt: a.created_at ? String(a.created_at) : undefined,
-      updatedAt: a.updated_at ? String(a.updated_at) : undefined
+      createdAt: timestampOrUndefined(a.created_at),
+      updatedAt: timestampOrUndefined(a.updated_at)
     }));
 
     return {

@@ -1,6 +1,7 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
 import { intercomServiceError } from '../lib/errors';
+import { arrayOrUndefined, stringOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -137,10 +138,10 @@ export let manageSubscriptions = SlateTool.create(spec, {
 
 let mapSubscription = (data: any) => ({
   subscriptionId: String(data.id),
-  state: data.state,
-  consentType: data.consent_type,
-  name: data.default_translation?.name,
-  description: data.default_translation?.description,
-  locale: data.default_translation?.locale,
-  contentTypes: data.content_types
+  state: stringOrUndefined(data.state),
+  consentType: stringOrUndefined(data.consent_type),
+  name: stringOrUndefined(data.default_translation?.name),
+  description: stringOrUndefined(data.default_translation?.description),
+  locale: stringOrUndefined(data.default_translation?.locale),
+  contentTypes: arrayOrUndefined(data.content_types)
 });

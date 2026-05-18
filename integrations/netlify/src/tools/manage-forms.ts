@@ -6,26 +6,36 @@ import { z } from 'zod';
 
 let submissionOutputSchema = z.object({
   submissionId: z.string().describe('Unique submission identifier'),
-  formId: z.string().describe('Form ID this submission belongs to'),
+  formId: z.string().optional().describe('Form ID this submission belongs to'),
+  number: z.number().optional().describe('Submission sequence number'),
   formName: z.string().optional().describe('Form name'),
   siteUrl: z.string().optional().describe('Site URL'),
   body: z.string().optional().describe('Submission body as JSON string'),
+  data: z.string().optional().describe('Submission data as a JSON string'),
   createdAt: z.string().optional().describe('Submission timestamp'),
   name: z.string().optional().describe('Submitter name'),
+  firstName: z.string().optional().describe('Submitter first name'),
+  lastName: z.string().optional().describe('Submitter last name'),
   email: z.string().optional().describe('Submitter email'),
-  company: z.string().optional().describe('Submitter company')
+  company: z.string().optional().describe('Submitter company'),
+  summary: z.string().optional().describe('Submission summary')
 });
 
 let mapSubmission = (sub: any) => ({
   submissionId: sub.id,
-  formId: sub.form_id,
-  formName: sub.form_name,
-  siteUrl: sub.site_url,
-  body: sub.data ? JSON.stringify(sub.data) : undefined,
-  createdAt: sub.created_at,
-  name: sub.name,
-  email: sub.email,
-  company: sub.company
+  formId: sub.form_id ?? undefined,
+  number: sub.number ?? undefined,
+  formName: sub.form_name ?? undefined,
+  siteUrl: sub.site_url ?? undefined,
+  body: sub.body ?? (sub.data ? JSON.stringify(sub.data) : undefined),
+  data: sub.data ? JSON.stringify(sub.data) : undefined,
+  createdAt: sub.created_at ?? undefined,
+  name: sub.name ?? undefined,
+  firstName: sub.first_name ?? undefined,
+  lastName: sub.last_name ?? undefined,
+  email: sub.email ?? undefined,
+  company: sub.company ?? undefined,
+  summary: sub.summary ?? undefined
 });
 
 export let listForms = SlateTool.create(spec, {

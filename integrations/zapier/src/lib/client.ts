@@ -14,6 +14,7 @@ export interface PaginatedResponse<T> {
   links: {
     next: string | null;
     prev: string | null;
+    previous?: string | null;
   };
   meta: {
     count: number;
@@ -46,7 +47,7 @@ export interface ZapierApp {
 export interface ZapStep {
   action: string | Record<string, any>;
   authentication: string | Record<string, any> | null;
-  inputs: Record<string, any>;
+  inputs: Record<string, any> | null;
   title: string | null;
 }
 
@@ -88,6 +89,7 @@ export interface ZapTemplate {
   slug: string;
   status: string;
   descriptionPlain: string;
+  descriptionRaw: string;
   description: string;
   url: string;
   createUrl: string;
@@ -159,13 +161,17 @@ let toCamelCase = (str: string): string => {
   return str.replace(/_([a-z0-9])/g, (_, letter) => letter.toUpperCase());
 };
 
-let transformKeys = (obj: any): any => {
+let preserveNestedKeys = new Set(['data_in', 'data_out', 'errors', 'inputs', 'results']);
+
+let transformKeys = (obj: any, preserveCurrentObject = false): any => {
   if (obj === null || obj === undefined) return obj;
-  if (Array.isArray(obj)) return obj.map(transformKeys);
+  if (Array.isArray(obj)) return obj.map(item => transformKeys(item, preserveCurrentObject));
+  if (preserveCurrentObject) return obj;
   if (typeof obj === 'object') {
     let result: Record<string, any> = {};
     for (let key of Object.keys(obj)) {
-      result[toCamelCase(key)] = transformKeys(obj[key]);
+      let transformedKey = toCamelCase(key);
+      result[transformedKey] = transformKeys(obj[key], preserveNestedKeys.has(key));
     }
     return result;
   }
@@ -188,11 +194,12 @@ export class Client {
 
   private async request<T>(
     operation: string,
-    run: () => Promise<{ data: unknown }>
+    run: () => Promise<{ data: unknown }>,
+    options: { transform?: boolean } = {}
   ): Promise<T> {
     try {
       let response = await run();
-      return transformKeys(response.data) as T;
+      return (options.transform === false ? response.data : transformKeys(response.data)) as T;
     } catch (error) {
       throw zapierApiError(error, operation);
     }
@@ -303,14 +310,17 @@ export class Client {
       inputs: Record<string, any>;
     }
   ): Promise<PaginatedResponse<any>> {
-    return await this.request<PaginatedResponse<any>>('get action input fields', () =>
-      http.post(
-        `/v2/actions/${actionId}/inputs`,
-        { data },
-        {
-          headers: { ...this.headers, 'Content-Type': 'application/json' }
-        }
-      )
+    return await this.request<PaginatedResponse<any>>(
+      'get action input fields',
+      () =>
+        http.post(
+          `/v2/actions/${actionId}/inputs`,
+          { data },
+          {
+            headers: { ...this.headers, 'Content-Type': 'application/json' }
+          }
+        ),
+      { transform: false }
     );
   }
 
@@ -321,14 +331,17 @@ export class Client {
       inputs: Record<string, any>;
     }
   ): Promise<PaginatedResponse<any>> {
-    return await this.request<PaginatedResponse<any>>('get action output fields', () =>
-      http.post(
-        `/v2/actions/${actionId}/outputs`,
-        { data },
-        {
-          headers: { ...this.headers, 'Content-Type': 'application/json' }
-        }
-      )
+    return await this.request<PaginatedResponse<any>>(
+      'get action output fields',
+      () =>
+        http.post(
+          `/v2/actions/${actionId}/outputs`,
+          { data },
+          {
+            headers: { ...this.headers, 'Content-Type': 'application/json' }
+          }
+        ),
+      { transform: false }
     );
   }
 
@@ -338,16 +351,23 @@ export class Client {
     data: {
       authentication: string | null;
       inputs: Record<string, any>;
+      page?: number;
     }
   ): Promise<PaginatedResponse<any>> {
-    return await this.request<PaginatedResponse<any>>('get input field choices', () =>
-      http.post(
-        `/v2/actions/${actionId}/inputs/${fieldId}/choices`,
-        { data },
-        {
-          headers: { ...this.headers, 'Content-Type': 'application/json' }
-        }
-      )
+    let { page, ...bodyData } = data;
+
+    return await this.request<PaginatedResponse<any>>(
+      'get input field choices',
+      () =>
+        http.post(
+          `/v2/actions/${actionId}/inputs/${fieldId}/choices`,
+          { data: bodyData },
+          {
+            headers: { ...this.headers, 'Content-Type': 'application/json' },
+            params: page !== undefined ? { page: String(page) } : undefined
+          }
+        ),
+      { transform: false }
     );
   }
 
@@ -360,14 +380,17 @@ export class Client {
       offset?: number;
     }
   ): Promise<any> {
-    return await this.request<any>('test action step', () =>
-      http.post(
-        `/v2/actions/${actionId}/test`,
-        { data },
-        {
-          headers: { ...this.headers, 'Content-Type': 'application/json' }
-        }
-      )
+    return await this.request<any>(
+      'test action step',
+      () =>
+        http.post(
+          `/v2/actions/${actionId}/test`,
+          { data },
+          {
+            headers: { ...this.headers, 'Content-Type': 'application/json' }
+          }
+        ),
+      { transform: false }
     );
   }
 
@@ -458,7 +481,6 @@ export class Client {
 
     return await this.request<ZapTemplate[]>('get zap templates', () =>
       http.get('/v1/zap-templates', {
-        headers: this.headers,
         params: queryParams
       })
     );
@@ -483,7 +505,6 @@ export class Client {
       objects: ZapCategory[];
     }>('list categories', () =>
       http.get('/v1/categories', {
-        headers: this.headers,
         params: queryParams
       })
     );
@@ -526,14 +547,17 @@ export class Client {
       authentication: string | null;
     };
   }): Promise<any> {
-    return await this.request<any>('create workflow step', () =>
-      http.post(
-        '/v2/workflow-steps',
-        { data },
-        {
-          headers: { ...this.headers, 'Content-Type': 'application/json' }
-        }
-      )
+    return await this.request<any>(
+      'create workflow step',
+      () =>
+        http.post(
+          '/v2/workflow-steps',
+          { data },
+          {
+            headers: { ...this.headers, 'Content-Type': 'application/json' }
+          }
+        ),
+      { transform: false }
     );
   }
 }

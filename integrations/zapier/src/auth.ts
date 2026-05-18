@@ -10,6 +10,7 @@ export let auth = SlateAuth.create()
   .output(
     z.object({
       token: z.string(),
+      clientId: z.string().optional(),
       refreshToken: z.string().optional(),
       expiresAt: z.string().optional()
     })
@@ -104,6 +105,7 @@ export let auth = SlateAuth.create()
         return {
           output: {
             token: data.access_token,
+            clientId: ctx.clientId,
             refreshToken: data.refresh_token,
             expiresAt
           }
@@ -143,6 +145,7 @@ export let auth = SlateAuth.create()
         return {
           output: {
             token: data.access_token,
+            clientId: ctx.output.clientId ?? ctx.clientId,
             refreshToken: data.refresh_token ?? ctx.output.refreshToken,
             expiresAt
           }

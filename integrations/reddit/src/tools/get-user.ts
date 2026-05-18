@@ -26,7 +26,13 @@ Use without a username to get the authenticated user's own profile.`,
         .enum(['hot', 'new', 'top', 'controversial'])
         .optional()
         .describe('Sort order for posts/comments'),
-      limit: z.number().optional().describe('Maximum number of posts/comments to return')
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of posts/comments to return (max 100)')
     })
   )
   .output(

@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { arrayOrUndefined, booleanOrUndefined, stringOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -39,13 +40,13 @@ export let listAdmins = SlateTool.create(spec, {
 
     let admins = (result.admins || []).map((a: any) => ({
       adminId: String(a.id),
-      name: a.name,
-      email: a.email,
-      jobTitle: a.job_title,
-      awayModeEnabled: a.away_mode_enabled,
-      awayModeReassign: a.away_mode_reassign,
-      hasInboxSeat: a.has_inbox_seat,
-      teamIds: a.team_ids
+      name: stringOrUndefined(a.name),
+      email: stringOrUndefined(a.email),
+      jobTitle: stringOrUndefined(a.job_title),
+      awayModeEnabled: booleanOrUndefined(a.away_mode_enabled),
+      awayModeReassign: booleanOrUndefined(a.away_mode_reassign),
+      hasInboxSeat: booleanOrUndefined(a.has_inbox_seat),
+      teamIds: arrayOrUndefined(a.team_ids)
     }));
 
     return {

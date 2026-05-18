@@ -49,7 +49,7 @@ export let manageChatMessages = SlateTool.create(spec, {
         .default('me')
         .describe('User ID or email. Use "me" for the authenticated user'),
       messageId: z.string().optional().describe('Message ID for get, update, or delete'),
-      message: z.string().optional().describe('Updated message text'),
+      message: z.string().max(1024).optional().describe('Updated message text'),
       toChannel: z.string().optional().describe('Channel ID for the conversation'),
       toContact: z
         .string()

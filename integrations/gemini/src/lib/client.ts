@@ -50,6 +50,10 @@ export class Client {
     return name.startsWith('cachedContents/') ? name : `cachedContents/${name}`;
   }
 
+  private embeddingModelSupportsTaskType(modelName: string) {
+    return this.modelResourceName(modelName).split('/').at(-1) === 'gemini-embedding-001';
+  }
+
   // ─── Models ───
 
   async listModels(params?: { pageSize?: number; pageToken?: string }): Promise<any> {
@@ -112,12 +116,13 @@ export class Client {
       outputDimensionality?: number;
     }
   ): Promise<any> {
+    let supportsTaskType = this.embeddingModelSupportsTaskType(modelName);
     let body: Record<string, any> = {
       content: params.content
     };
 
-    if (params.taskType) body.taskType = params.taskType;
-    if (params.title) body.title = params.title;
+    if (supportsTaskType && params.taskType) body.taskType = params.taskType;
+    if (supportsTaskType && params.title) body.title = params.title;
     if (params.outputDimensionality !== undefined)
       body.outputDimensionality = params.outputDimensionality;
 
@@ -137,14 +142,21 @@ export class Client {
       }>;
     }
   ): Promise<any> {
+    let supportsTaskType = this.embeddingModelSupportsTaskType(modelName);
     let body = {
-      requests: params.requests.map(req => ({
-        model: this.modelResourceName(modelName),
-        content: req.content,
-        taskType: req.taskType,
-        title: req.title,
-        outputDimensionality: req.outputDimensionality
-      }))
+      requests: params.requests.map(req => {
+        let request: Record<string, any> = {
+          model: this.modelResourceName(modelName),
+          content: req.content
+        };
+
+        if (supportsTaskType && req.taskType) request.taskType = req.taskType;
+        if (supportsTaskType && req.title) request.title = req.title;
+        if (req.outputDimensionality !== undefined)
+          request.outputDimensionality = req.outputDimensionality;
+
+        return request;
+      })
     };
 
     return await this.request('batch embed contents', () =>

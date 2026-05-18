@@ -50,6 +50,7 @@ export type SlateAuthWithOauth<
     clientId: string;
     clientSecret: string;
     scopes: string[];
+    callbackParams?: Record<string, string>;
     callbackState: Record<string, any>;
   }) => Promise<{
     output: OutputType;

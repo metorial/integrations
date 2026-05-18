@@ -52,7 +52,8 @@ export class RemoteConfigClient {
 
   private get headers() {
     return {
-      Authorization: `Bearer ${this.token}`
+      Authorization: `Bearer ${this.token}`,
+      'x-goog-user-project': this.projectId
     };
   }
 

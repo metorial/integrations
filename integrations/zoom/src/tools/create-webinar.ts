@@ -46,7 +46,10 @@ export let createWebinar = SlateTool.create(spec, {
             .describe(
               '1=register once, 2=register each time, 3=register once choose occurrences'
             ),
-          audio: z.enum(['both', 'telephony', 'voip']).optional().describe('Audio options'),
+          audio: z
+            .enum(['both', 'telephony', 'voip', 'thirdParty'])
+            .optional()
+            .describe('Audio options'),
           autoRecording: z
             .enum(['local', 'cloud', 'none'])
             .optional()

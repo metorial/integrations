@@ -7,6 +7,7 @@ let splitTestOutputSchema = z.object({
   splitTestId: z.string().describe('Unique split test identifier'),
   siteId: z.string().describe('Site this split test belongs to'),
   name: z.string().optional().describe('Split test name'),
+  path: z.string().optional().describe('Path the split test applies to'),
   active: z.boolean().optional().describe('Whether the split test is active'),
   branches: z
     .array(
@@ -18,7 +19,8 @@ let splitTestOutputSchema = z.object({
     .optional()
     .describe('Branch traffic distribution'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  updatedAt: z.string().optional().describe('Last update timestamp')
+  updatedAt: z.string().optional().describe('Last update timestamp'),
+  unpublishedAt: z.string().optional().describe('Timestamp when the split test was stopped')
 });
 
 let mapSplitTest = (test: any) => {
@@ -27,16 +29,31 @@ let mapSplitTest = (test: any) => {
     for (let [branch, percentage] of Object.entries(test.branch_tests)) {
       branches.push({ branch, percentage: percentage as number });
     }
+  } else if (Array.isArray(test.branches)) {
+    for (let branch of test.branches) {
+      if (branch && typeof branch === 'object') {
+        let branchRecord = branch as Record<string, unknown>;
+        let name = String(branchRecord.branch ?? branchRecord.name ?? '');
+        let percentage = Number(
+          branchRecord.percentage ?? branchRecord.split ?? 0
+        );
+        if (name) {
+          branches.push({ branch: name, percentage });
+        }
+      }
+    }
   }
 
   return {
     splitTestId: test.id,
     siteId: test.site_id,
-    name: test.name,
-    active: test.active,
+    name: test.name ?? undefined,
+    path: test.path ?? undefined,
+    active: test.active ?? undefined,
     branches: branches.length > 0 ? branches : undefined,
-    createdAt: test.created_at,
-    updatedAt: test.updated_at
+    createdAt: test.created_at ?? undefined,
+    updatedAt: test.updated_at ?? undefined,
+    unpublishedAt: test.unpublished_at ?? undefined
   };
 };
 
@@ -170,10 +187,11 @@ export let toggleSplitTest = SlateTool.create(spec, {
 
     let test: any;
     if (ctx.input.enabled) {
-      test = await client.enableSplitTest(ctx.input.siteId, ctx.input.splitTestId);
+      await client.enableSplitTest(ctx.input.siteId, ctx.input.splitTestId);
     } else {
-      test = await client.disableSplitTest(ctx.input.siteId, ctx.input.splitTestId);
+      await client.disableSplitTest(ctx.input.siteId, ctx.input.splitTestId);
     }
+    test = await client.getSplitTest(ctx.input.siteId, ctx.input.splitTestId);
 
     return {
       output: mapSplitTest(test),

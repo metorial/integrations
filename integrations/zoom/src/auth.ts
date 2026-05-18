@@ -26,170 +26,326 @@ export let auth = SlateAuth.create()
 
     scopes: [
       // User scopes
-      { title: 'Read Users', description: 'View user information', scope: 'user:read' },
-      { title: 'Write Users', description: 'Create and manage users', scope: 'user:write' },
+      { title: 'Get User', description: 'View a Zoom user profile', scope: 'user:read:user' },
       {
-        title: 'Read Users (Admin)',
-        description: 'View all users as admin',
-        scope: 'user:read:admin'
+        title: 'Get User (Admin)',
+        description: 'View any Zoom user profile as admin',
+        scope: 'user:read:user:admin'
       },
       {
-        title: 'Write Users (Admin)',
-        description: 'Manage all users as admin',
-        scope: 'user:write:admin'
+        title: 'List Users (Admin)',
+        description: 'List users in the Zoom account',
+        scope: 'user:read:list_users:admin'
       },
       {
-        title: 'User Profile',
-        description: 'View user profile information',
-        scope: 'user_profile'
+        title: 'Get User Settings',
+        description: 'View Zoom user settings',
+        scope: 'user:read:settings'
+      },
+      {
+        title: 'Get User Settings (Admin)',
+        description: 'View Zoom user settings as admin',
+        scope: 'user:read:settings:admin'
       },
 
       // Meeting scopes
       {
-        title: 'Read Meetings',
-        description: 'View meeting information',
-        scope: 'meeting:read'
+        title: 'List Meetings',
+        description: 'List meetings for a Zoom user',
+        scope: 'meeting:read:list_meetings'
       },
       {
-        title: 'Write Meetings',
-        description: 'Create and manage meetings',
-        scope: 'meeting:write'
+        title: 'List Meetings (Admin)',
+        description: 'List meetings for account users as admin',
+        scope: 'meeting:read:list_meetings:admin'
       },
       {
-        title: 'Read Meetings (Admin)',
-        description: 'View all meetings as admin',
-        scope: 'meeting:read:admin'
+        title: 'Create Meeting',
+        description: 'Create Zoom meetings',
+        scope: 'meeting:write:meeting'
       },
       {
-        title: 'Write Meetings (Admin)',
-        description: 'Manage all meetings as admin',
-        scope: 'meeting:write:admin'
+        title: 'Create Meeting (Admin)',
+        description: 'Create Zoom meetings for account users as admin',
+        scope: 'meeting:write:meeting:admin'
+      },
+      {
+        title: 'Get Meeting',
+        description: 'Read Zoom meeting details',
+        scope: 'meeting:read:meeting'
+      },
+      {
+        title: 'Get Meeting (Admin)',
+        description: 'Read Zoom meeting details as admin',
+        scope: 'meeting:read:meeting:admin'
+      },
+      {
+        title: 'Update Meeting',
+        description: 'Update Zoom meetings',
+        scope: 'meeting:update:meeting'
+      },
+      {
+        title: 'Update Meeting (Admin)',
+        description: 'Update Zoom meetings as admin',
+        scope: 'meeting:update:meeting:admin'
+      },
+      {
+        title: 'Delete Meeting',
+        description: 'Delete Zoom meetings',
+        scope: 'meeting:delete:meeting'
+      },
+      {
+        title: 'Delete Meeting (Admin)',
+        description: 'Delete Zoom meetings as admin',
+        scope: 'meeting:delete:meeting:admin'
+      },
+      {
+        title: 'Get Meeting Invitation',
+        description: 'Read Zoom meeting invitation text',
+        scope: 'meeting:read:invitation'
+      },
+      {
+        title: 'Get Meeting Invitation (Admin)',
+        description: 'Read Zoom meeting invitation text as admin',
+        scope: 'meeting:read:invitation:admin'
+      },
+      {
+        title: 'List Meeting Registrants',
+        description: 'List registrants for Zoom meetings',
+        scope: 'meeting:read:list_registrants'
+      },
+      {
+        title: 'List Meeting Registrants (Admin)',
+        description: 'List registrants for Zoom meetings as admin',
+        scope: 'meeting:read:list_registrants:admin'
+      },
+      {
+        title: 'Add Meeting Registrant',
+        description: 'Add registrants to Zoom meetings',
+        scope: 'meeting:write:registrant'
+      },
+      {
+        title: 'Add Meeting Registrant (Admin)',
+        description: 'Add registrants to Zoom meetings as admin',
+        scope: 'meeting:write:registrant:admin'
+      },
+      {
+        title: 'List Meeting Polls',
+        description: 'List Zoom meeting polls',
+        scope: 'meeting:read:list_polls'
+      },
+      {
+        title: 'List Meeting Polls (Admin)',
+        description: 'List Zoom meeting polls as admin',
+        scope: 'meeting:read:list_polls:admin'
+      },
+      {
+        title: 'Get Meeting Poll',
+        description: 'Read a Zoom meeting poll',
+        scope: 'meeting:read:poll'
+      },
+      {
+        title: 'Get Meeting Poll (Admin)',
+        description: 'Read a Zoom meeting poll as admin',
+        scope: 'meeting:read:poll:admin'
+      },
+      {
+        title: 'Create Meeting Poll',
+        description: 'Create Zoom meeting polls',
+        scope: 'meeting:write:poll'
+      },
+      {
+        title: 'Create Meeting Poll (Admin)',
+        description: 'Create Zoom meeting polls as admin',
+        scope: 'meeting:write:poll:admin'
+      },
+      {
+        title: 'Update Meeting Poll',
+        description: 'Update Zoom meeting polls',
+        scope: 'meeting:update:poll'
+      },
+      {
+        title: 'Update Meeting Poll (Admin)',
+        description: 'Update Zoom meeting polls as admin',
+        scope: 'meeting:update:poll:admin'
+      },
+      {
+        title: 'Delete Meeting Poll',
+        description: 'Delete Zoom meeting polls',
+        scope: 'meeting:delete:poll'
+      },
+      {
+        title: 'Delete Meeting Poll (Admin)',
+        description: 'Delete Zoom meeting polls as admin',
+        scope: 'meeting:delete:poll:admin'
       },
 
       // Webinar scopes
       {
-        title: 'Read Webinars',
-        description: 'View webinar information',
-        scope: 'webinar:read'
+        title: 'List Webinars',
+        description: 'List Zoom webinars',
+        scope: 'webinar:read:list_webinars'
       },
       {
-        title: 'Write Webinars',
-        description: 'Create and manage webinars',
-        scope: 'webinar:write'
+        title: 'List Webinars (Admin)',
+        description: 'List Zoom webinars as admin',
+        scope: 'webinar:read:list_webinars:admin'
       },
       {
-        title: 'Read Webinars (Admin)',
-        description: 'View all webinars as admin',
-        scope: 'webinar:read:admin'
+        title: 'Create Webinar',
+        description: 'Create Zoom webinars',
+        scope: 'webinar:write:webinar'
       },
       {
-        title: 'Write Webinars (Admin)',
-        description: 'Manage all webinars as admin',
-        scope: 'webinar:write:admin'
+        title: 'Create Webinar (Admin)',
+        description: 'Create Zoom webinars as admin',
+        scope: 'webinar:write:webinar:admin'
+      },
+      {
+        title: 'Get Webinar',
+        description: 'Read Zoom webinar details',
+        scope: 'webinar:read:webinar'
+      },
+      {
+        title: 'Get Webinar (Admin)',
+        description: 'Read Zoom webinar details as admin',
+        scope: 'webinar:read:webinar:admin'
+      },
+      {
+        title: 'Update Webinar',
+        description: 'Update Zoom webinars',
+        scope: 'webinar:update:webinar'
+      },
+      {
+        title: 'Update Webinar (Admin)',
+        description: 'Update Zoom webinars as admin',
+        scope: 'webinar:update:webinar:admin'
+      },
+      {
+        title: 'Delete Webinar',
+        description: 'Delete Zoom webinars',
+        scope: 'webinar:delete:webinar'
+      },
+      {
+        title: 'Delete Webinar (Admin)',
+        description: 'Delete Zoom webinars as admin',
+        scope: 'webinar:delete:webinar:admin'
       },
 
       // Recording scopes
       {
-        title: 'Read Recordings',
-        description: 'View cloud recordings',
-        scope: 'recording:read'
+        title: 'List User Recordings',
+        description: 'List cloud recordings for a Zoom user',
+        scope: 'cloud_recording:read:list_user_recordings'
       },
       {
-        title: 'Write Recordings',
-        description: 'Manage cloud recordings',
-        scope: 'recording:write'
+        title: 'List User Recordings (Admin)',
+        description: 'List cloud recordings for account users as admin',
+        scope: 'cloud_recording:read:list_user_recordings:admin'
       },
       {
-        title: 'Read Recordings (Admin)',
-        description: 'View all recordings as admin',
-        scope: 'recording:read:admin'
+        title: 'Get Meeting Recordings',
+        description: 'List recording files for a Zoom meeting',
+        scope: 'cloud_recording:read:list_recording_files'
       },
       {
-        title: 'Write Recordings (Admin)',
-        description: 'Manage all recordings as admin',
-        scope: 'recording:write:admin'
-      },
-
-      // Chat scopes
-      {
-        title: 'Read Chat Messages',
-        description: 'View chat messages',
-        scope: 'chat_message:read'
+        title: 'Get Meeting Recordings (Admin)',
+        description: 'List recording files for a Zoom meeting as admin',
+        scope: 'cloud_recording:read:list_recording_files:admin'
       },
       {
-        title: 'Write Chat Messages',
-        description: 'Send and manage chat messages',
-        scope: 'chat_message:write'
+        title: 'Delete Meeting Recording',
+        description: 'Delete all recordings for a Zoom meeting',
+        scope: 'cloud_recording:delete:meeting_recording'
       },
       {
-        title: 'Read Chat Messages (Admin)',
-        description: 'View all chat messages as admin',
-        scope: 'chat_message:read:admin'
+        title: 'Delete Meeting Recording (Admin)',
+        description: 'Delete all recordings for a Zoom meeting as admin',
+        scope: 'cloud_recording:delete:meeting_recording:admin'
       },
       {
-        title: 'Write Chat Messages (Admin)',
-        description: 'Manage all chat messages as admin',
-        scope: 'chat_message:write:admin'
+        title: 'Delete Recording File',
+        description: 'Delete a Zoom recording file',
+        scope: 'cloud_recording:delete:recording_file'
       },
       {
-        title: 'Read Chat Channels',
-        description: 'View chat channels',
-        scope: 'chat_channel:read'
-      },
-      {
-        title: 'Write Chat Channels',
-        description: 'Manage chat channels',
-        scope: 'chat_channel:write'
-      },
-      {
-        title: 'Read Chat Channels (Admin)',
-        description: 'View all chat channels as admin',
-        scope: 'chat_channel:read:admin'
-      },
-      {
-        title: 'Write Chat Channels (Admin)',
-        description: 'Manage all chat channels as admin',
-        scope: 'chat_channel:write:admin'
+        title: 'Delete Recording File (Admin)',
+        description: 'Delete a Zoom recording file as admin',
+        scope: 'cloud_recording:delete:recording_file:admin'
       },
 
-      // Phone scopes
-      { title: 'Read Phone', description: 'View Zoom Phone data', scope: 'phone:read' },
-      { title: 'Write Phone', description: 'Manage Zoom Phone data', scope: 'phone:write' },
+      // Team Chat scopes
       {
-        title: 'Read Phone (Admin)',
-        description: 'View all Zoom Phone data as admin',
-        scope: 'phone:read:admin'
+        title: 'List Chat Channels',
+        description: 'List Zoom Team Chat channels for a user',
+        scope: 'team_chat:read:list_user_channels'
       },
       {
-        title: 'Write Phone (Admin)',
-        description: 'Manage all Zoom Phone data as admin',
-        scope: 'phone:write:admin'
+        title: 'List Chat Channels (Admin)',
+        description: 'List Zoom Team Chat channels for account users as admin',
+        scope: 'team_chat:read:list_user_channels:admin'
+      },
+      {
+        title: 'List Chat Messages',
+        description: 'List Zoom Team Chat messages',
+        scope: 'team_chat:read:list_user_messages'
+      },
+      {
+        title: 'List Chat Messages (Admin)',
+        description: 'List Zoom Team Chat messages as admin',
+        scope: 'team_chat:read:list_user_messages:admin'
+      },
+      {
+        title: 'Get Chat Message',
+        description: 'Read a Zoom Team Chat message',
+        scope: 'team_chat:read:user_message'
+      },
+      {
+        title: 'Get Chat Message (Admin)',
+        description: 'Read a Zoom Team Chat message as admin',
+        scope: 'team_chat:read:user_message:admin'
+      },
+      {
+        title: 'Send Chat Message',
+        description: 'Send Zoom Team Chat messages',
+        scope: 'team_chat:write:user_message'
+      },
+      {
+        title: 'Send Chat Message (Admin)',
+        description: 'Send Zoom Team Chat messages as admin',
+        scope: 'team_chat:write:user_message:admin'
+      },
+      {
+        title: 'Update Chat Message',
+        description: 'Update Zoom Team Chat messages',
+        scope: 'team_chat:update:user_message'
+      },
+      {
+        title: 'Update Chat Message (Admin)',
+        description: 'Update Zoom Team Chat messages as admin',
+        scope: 'team_chat:update:user_message:admin'
+      },
+      {
+        title: 'Delete Chat Message',
+        description: 'Delete Zoom Team Chat messages',
+        scope: 'team_chat:delete:user_message'
+      },
+      {
+        title: 'Delete Chat Message (Admin)',
+        description: 'Delete Zoom Team Chat messages as admin',
+        scope: 'team_chat:delete:user_message:admin'
       },
 
       // Report scopes
       {
-        title: 'Read Reports',
-        description: 'View usage reports and analytics',
-        scope: 'report:read:admin'
-      },
-
-      // Dashboard scopes
-      {
-        title: 'Read Dashboard',
-        description: 'View dashboard data',
-        scope: 'dashboard_meetings:read:admin'
-      },
-
-      // Account scopes
-      {
-        title: 'Read Account',
-        description: 'View account information',
-        scope: 'account:read:admin'
+        title: 'Get Meeting Report',
+        description: 'Read Zoom meeting reports',
+        scope: 'report:read:meeting:admin'
       },
       {
-        title: 'Write Account',
-        description: 'Manage account settings',
-        scope: 'account:write:admin'
+        title: 'Get Meeting Participant Report',
+        description: 'Read Zoom meeting participant reports',
+        scope: 'report:read:list_meeting_participants:admin'
       }
     ],
 

@@ -38,7 +38,12 @@ export let newMessage = SlateTrigger.create(spec, {
 
     pollEvents: async ctx => {
       let client = new RedditClient(ctx.auth.token);
-      let state = ctx.state as { lastCreatedUtc?: number; seenIds?: string[] } | null;
+      let state = ctx.state as {
+        initialized?: boolean;
+        lastCreatedUtc?: number;
+        seenIds?: string[];
+      } | null;
+      let isFirstRun = !state?.initialized;
       let lastCreatedUtc = state?.lastCreatedUtc ?? 0;
       let seenIds = state?.seenIds ?? [];
 
@@ -58,15 +63,17 @@ export let newMessage = SlateTrigger.create(spec, {
         let createdUtc = d.created_utc ?? 0;
         if (createdUtc < lastCreatedUtc) continue;
 
-        allInputs.push({
-          messageId: d.name,
-          author: d.author,
-          recipient: d.dest,
-          subject: d.subject,
-          body: d.body,
-          createdUtc: d.created_utc,
-          isNew: d.new
-        });
+        if (!isFirstRun) {
+          allInputs.push({
+            messageId: d.name,
+            author: d.author,
+            recipient: d.dest,
+            subject: d.subject,
+            body: d.body,
+            createdUtc: d.created_utc,
+            isNew: d.new
+          });
+        }
 
         newSeenIds.push(d.name);
 
@@ -78,6 +85,7 @@ export let newMessage = SlateTrigger.create(spec, {
       return {
         inputs: allInputs,
         updatedState: {
+          initialized: true,
           lastCreatedUtc: newestCreatedUtc,
           seenIds: newSeenIds.slice(-200)
         }

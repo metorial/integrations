@@ -7,7 +7,8 @@ export let auth = SlateAuth.create()
   .output(
     z.object({
       token: z.string(),
-      refreshToken: z.string().optional()
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
     })
   )
   .addOauth({
@@ -163,7 +164,8 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
-          refreshToken: data.refresh_token
+          refreshToken: data.refresh_token,
+          expiresAt: expiresAtFromSeconds(data.expires_in)
         }
       };
     },
@@ -204,7 +206,8 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
-          refreshToken: data.refresh_token ?? ctx.output.refreshToken
+          refreshToken: data.refresh_token ?? ctx.output.refreshToken,
+          expiresAt: expiresAtFromSeconds(data.expires_in)
         }
       };
     },
@@ -235,3 +238,10 @@ export let auth = SlateAuth.create()
       };
     }
   });
+
+let expiresAtFromSeconds = (expiresIn: unknown) => {
+  let seconds = typeof expiresIn === 'number' ? expiresIn : Number(expiresIn);
+  if (!Number.isFinite(seconds) || seconds <= 0) return undefined;
+
+  return new Date(Date.now() + seconds * 1000).toISOString();
+};

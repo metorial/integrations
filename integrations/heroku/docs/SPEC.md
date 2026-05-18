@@ -32,6 +32,8 @@ The Heroku Platform API implements OAuth version 2.0 as the preferred authentica
 
 The `read`, `write`, `read-protected`, and `write-protected` scopes do not grant access to account identity details such as email address.
 
+The OAuth setup requests only `global`. Heroku rejects authorization URLs that combine `global` with narrower scopes because `global` is already a superset of those permissions.
+
 ### 2. API Token (Bearer Token)
 
 For personal scripts you may also use HTTP bearer authentication. HTTP bearer authentication must be constructed using an API token, passed as the Authorization header for each request, for example `Authorization: Bearer 01234567-89ab-cdef-0123-456789abcdef`.

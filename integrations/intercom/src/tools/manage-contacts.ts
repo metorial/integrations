@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { stringOrUndefined, timestampOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 import { intercomServiceError } from '../lib/errors';
@@ -171,12 +172,12 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
   .build();
 
 let mapContact = (data: any) => ({
-  contactId: data.id,
-  role: data.role,
-  email: data.email,
-  name: data.name,
-  phone: data.phone,
-  externalId: data.external_id,
-  createdAt: data.created_at ? String(data.created_at) : undefined,
-  updatedAt: data.updated_at ? String(data.updated_at) : undefined
+  contactId: stringOrUndefined(data.id),
+  role: stringOrUndefined(data.role),
+  email: stringOrUndefined(data.email),
+  name: stringOrUndefined(data.name),
+  phone: stringOrUndefined(data.phone),
+  externalId: stringOrUndefined(data.external_id),
+  createdAt: timestampOrUndefined(data.created_at),
+  updatedAt: timestampOrUndefined(data.updated_at)
 });

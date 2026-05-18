@@ -16,7 +16,15 @@ export let purgeCache = SlateTool.create(spec, {
       cacheTags: z
         .array(z.string())
         .optional()
-        .describe('Cache tags to purge. Omit to purge the whole site cache.')
+        .describe('Cache tags to purge. Omit to purge the whole site cache.'),
+      deployAlias: z
+        .string()
+        .optional()
+        .describe('Deploy alias to target when purging cache tags, e.g. deploy-preview-11'),
+      domain: z
+        .string()
+        .optional()
+        .describe('Domain to target when purging cache tags, e.g. early-access.example.com')
     })
   )
   .output(
@@ -33,7 +41,9 @@ export let purgeCache = SlateTool.create(spec, {
     await client.purgeCache({
       siteId: ctx.input.siteId,
       siteSlug: ctx.input.siteSlug,
-      cacheTags: ctx.input.cacheTags
+      cacheTags: ctx.input.cacheTags,
+      deployAlias: ctx.input.deployAlias,
+      domain: ctx.input.domain
     });
 
     return {

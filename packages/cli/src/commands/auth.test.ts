@@ -8,6 +8,30 @@ describe('normalizeCallbackRedirectUriForIntegration', () => {
     ).toBe('http://localhost:45873/callback');
   });
 
+  it('normalizes Intercom loopback redirects to localhost', () => {
+    expect(
+      normalizeCallbackRedirectUriForIntegration('intercom', 'http://127.0.0.1:45873/callback')
+    ).toBe('http://localhost:45873/callback');
+  });
+
+  it('normalizes Typeform loopback redirects to localhost', () => {
+    expect(
+      normalizeCallbackRedirectUriForIntegration('typeform', 'http://127.0.0.1:45873/callback')
+    ).toBe('http://localhost:45873/callback');
+  });
+
+  it('normalizes Xero loopback redirects to localhost', () => {
+    expect(
+      normalizeCallbackRedirectUriForIntegration('xero', 'http://127.0.0.1:45873/callback')
+    ).toBe('http://localhost:45873/callback');
+  });
+
+  it('normalizes Zendesk loopback redirects to localhost', () => {
+    expect(
+      normalizeCallbackRedirectUriForIntegration('zendesk', 'http://127.0.0.1:45873/callback')
+    ).toBe('http://localhost:45873/callback');
+  });
+
   it('leaves unrelated integration redirects unchanged', () => {
     expect(
       normalizeCallbackRedirectUriForIntegration('attio', 'http://127.0.0.1:45873/callback')

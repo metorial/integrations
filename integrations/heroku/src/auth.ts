@@ -33,36 +33,9 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Global',
-        description: 'Global access encompassing all other scopes.',
+        description:
+          'Read and write access to all account, app, and resource APIs used by this integration.',
         scope: 'global'
-      },
-      {
-        title: 'Identity',
-        description: 'Access to GET /account for basic user info only.',
-        scope: 'identity'
-      },
-      {
-        title: 'Read',
-        description:
-          'Read access to all apps and their subresources, except protected subresources like config vars and releases.',
-        scope: 'read'
-      },
-      {
-        title: 'Write',
-        description: 'Write access to apps and unprotected subresources. Superset of read.',
-        scope: 'write'
-      },
-      {
-        title: 'Read Protected',
-        description:
-          'Read including protected subresources like config vars. Superset of read.',
-        scope: 'read-protected'
-      },
-      {
-        title: 'Write Protected',
-        description:
-          'Write including protected subresources. Superset of read-protected and write.',
-        scope: 'write-protected'
       }
     ],
 

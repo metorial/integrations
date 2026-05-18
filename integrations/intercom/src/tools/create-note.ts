@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { stringOrUndefined, timestampOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -38,11 +39,11 @@ export let createNote = SlateTool.create(spec, {
 
     return {
       output: {
-        noteId: result.id,
-        body: result.body,
+        noteId: String(result.id),
+        body: stringOrUndefined(result.body),
         authorId: result.author?.id ? String(result.author.id) : undefined,
-        authorName: result.author?.name,
-        createdAt: result.created_at ? String(result.created_at) : undefined
+        authorName: stringOrUndefined(result.author?.name),
+        createdAt: timestampOrUndefined(result.created_at)
       },
       message: `Added note to contact **${ctx.input.contactId}**`
     };

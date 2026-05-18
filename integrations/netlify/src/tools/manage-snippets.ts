@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { netlifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -19,15 +20,26 @@ let snippetOutputSchema = z.object({
   siteId: z.string().optional().describe('Site this snippet belongs to')
 });
 
-let mapSnippet = (snippet: any) => ({
-  snippetId: String(snippet.id),
-  title: snippet.title || '',
-  general: snippet.general,
-  generalPosition: snippet.general_position,
-  goal: snippet.goal,
-  goalPosition: snippet.goal_position,
-  siteId: snippet.site_id
-});
+let mapSnippet = (snippet: any) => {
+  if (!snippet || snippet.id === undefined || snippet.id === null) {
+    throw netlifyServiceError('Netlify did not return a snippet resource');
+  }
+
+  return {
+    snippetId: String(snippet.id),
+    title: snippet.title || '',
+    general: snippet.general ?? undefined,
+    generalPosition: snippet.general_position ?? undefined,
+    goal: snippet.goal ?? undefined,
+    goalPosition: snippet.goal_position ?? undefined,
+    siteId: snippet.site_id ?? undefined
+  };
+};
+
+let findSnippetByTitle = async (client: Client, siteId: string, title: string) => {
+  let snippets = await client.listSnippets(siteId);
+  return snippets.find((snippet: any) => snippet?.title === title);
+};
 
 export let listSnippets = SlateTool.create(spec, {
   name: 'List Snippets',
@@ -90,7 +102,9 @@ export let createSnippet = SlateTool.create(spec, {
     if (ctx.input.goal) body.goal = ctx.input.goal;
     if (ctx.input.goalPosition) body.goal_position = ctx.input.goalPosition;
 
-    let snippet = await client.createSnippet(ctx.input.siteId, body);
+    let snippet =
+      (await client.createSnippet(ctx.input.siteId, body)) ??
+      (await findSnippetByTitle(client, ctx.input.siteId, ctx.input.title));
 
     return {
       output: mapSnippet(snippet),
@@ -133,7 +147,9 @@ export let updateSnippet = SlateTool.create(spec, {
     if (ctx.input.goal !== undefined) body.goal = ctx.input.goal;
     if (ctx.input.goalPosition !== undefined) body.goal_position = ctx.input.goalPosition;
 
-    let snippet = await client.updateSnippet(ctx.input.siteId, ctx.input.snippetId, body);
+    let snippet =
+      (await client.updateSnippet(ctx.input.siteId, ctx.input.snippetId, body)) ??
+      (await client.getSnippet(ctx.input.siteId, ctx.input.snippetId));
 
     return {
       output: mapSnippet(snippet),

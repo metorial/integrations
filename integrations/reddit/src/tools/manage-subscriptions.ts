@@ -20,8 +20,11 @@ export let manageSubscriptions = SlateTool.create(spec, {
         .describe('Subreddit name for subscribe/unsubscribe (without r/ prefix)'),
       limit: z
         .number()
+        .int()
+        .min(1)
+        .max(100)
         .optional()
-        .describe('Maximum number of subreddits to return when listing')
+        .describe('Maximum number of subreddits to return when listing (max 100)')
     })
   )
   .output(

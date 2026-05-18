@@ -27,18 +27,18 @@ let deployOutputSchema = z.object({
 let mapDeploy = (deploy: any) => ({
   deployId: deploy.id,
   siteId: deploy.site_id,
-  state: deploy.state,
-  name: deploy.name,
-  url: deploy.deploy_url || deploy.url,
-  sslUrl: deploy.deploy_ssl_url || deploy.ssl_url,
-  branch: deploy.branch,
-  commitRef: deploy.commit_ref,
-  commitUrl: deploy.commit_url,
-  title: deploy.title,
-  context: deploy.context,
-  createdAt: deploy.created_at,
-  publishedAt: deploy.published_at,
-  errorMessage: deploy.error_message
+  state: deploy.state ?? undefined,
+  name: deploy.name ?? undefined,
+  url: deploy.deploy_url ?? deploy.url ?? undefined,
+  sslUrl: deploy.deploy_ssl_url ?? deploy.ssl_url ?? undefined,
+  branch: deploy.branch ?? undefined,
+  commitRef: deploy.commit_ref ?? undefined,
+  commitUrl: deploy.commit_url ?? undefined,
+  title: deploy.title ?? undefined,
+  context: deploy.context ?? undefined,
+  createdAt: deploy.created_at ?? undefined,
+  publishedAt: deploy.published_at ?? undefined,
+  errorMessage: deploy.error_message ?? undefined
 });
 
 export let listDeploys = SlateTool.create(spec, {

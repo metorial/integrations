@@ -7,9 +7,10 @@ import { z } from 'zod';
 export let manageTranslation = SlateTool.create(spec, {
   name: 'Manage Translation',
   key: 'manage_translation',
-  description: `Manage form translations. Retrieve translation statuses, get translation payloads for specific languages, update translations, auto-translate a form, or delete translations.`,
+  description: `Manage form translations. Retrieve translation statuses, get the main translation payload, get translation payloads for specific languages, update translations, auto-translate a form, or delete translations.`,
   instructions: [
     'To **list statuses** of all translations, provide just the **formId**.',
+    'To **retrieve the main translation payload**, provide **formId** and set **mainPayload** to true.',
     'To **retrieve** a translation, provide **formId** and **language**.',
     'To **update** a translation, provide **formId**, **language**, and **translationPayload**.',
     'To **auto-translate**, provide **formId**, **language**, and set **autoTranslate** to true.',
@@ -23,6 +24,10 @@ export let manageTranslation = SlateTool.create(spec, {
     z.object({
       formId: z.string().describe('ID of the form to manage translations for'),
       language: z.string().optional().describe('Language code (e.g. "es", "fr", "de")'),
+      mainPayload: z
+        .boolean()
+        .optional()
+        .describe('Set to true to retrieve the main-language translation payload'),
       translationPayload: z
         .any()
         .optional()
@@ -54,6 +59,7 @@ export let manageTranslation = SlateTool.create(spec, {
         .any()
         .optional()
         .describe('Translation payload for the requested language'),
+      updated: z.boolean().optional().describe('Whether the translation was updated'),
       deleted: z.boolean().optional().describe('Whether the translation was deleted'),
       autoTranslated: z.boolean().optional().describe('Whether auto-translation was triggered')
     })
@@ -85,11 +91,12 @@ export let manageTranslation = SlateTool.create(spec, {
       if (!ctx.input.language) {
         throw typeformServiceError('language is required when auto-translating a form.');
       }
-      await client.autoTranslate(ctx.input.formId, ctx.input.language);
+      let result = await client.autoTranslate(ctx.input.formId, ctx.input.language);
       return {
         output: {
           formId: ctx.input.formId,
           language: ctx.input.language,
+          translation: result,
           autoTranslated: true
         },
         message: `Auto-translated form \`${ctx.input.formId}\` to **${ctx.input.language}**.`
@@ -97,11 +104,11 @@ export let manageTranslation = SlateTool.create(spec, {
     }
 
     // Update translation
-    if (ctx.input.translationPayload) {
+    if (ctx.input.translationPayload !== undefined) {
       if (!ctx.input.language) {
         throw typeformServiceError('language is required when updating a translation.');
       }
-      let result = await client.updateTranslation(
+      await client.updateTranslation(
         ctx.input.formId,
         ctx.input.language,
         ctx.input.translationPayload
@@ -110,9 +117,26 @@ export let manageTranslation = SlateTool.create(spec, {
         output: {
           formId: ctx.input.formId,
           language: ctx.input.language,
-          translation: result
+          updated: true
         },
         message: `Updated **${ctx.input.language}** translation for form \`${ctx.input.formId}\`.`
+      };
+    }
+
+    // Retrieve main translation payload
+    if (ctx.input.mainPayload) {
+      if (ctx.input.language) {
+        throw typeformServiceError(
+          'language cannot be used when retrieving the main translation payload.'
+        );
+      }
+      let result = await client.getMainTranslationPayload(ctx.input.formId);
+      return {
+        output: {
+          formId: ctx.input.formId,
+          translation: result
+        },
+        message: `Retrieved main translation payload for form \`${ctx.input.formId}\`.`
       };
     }
 
@@ -131,8 +155,9 @@ export let manageTranslation = SlateTool.create(spec, {
 
     // List translation statuses
     let result = await client.getTranslationStatuses(ctx.input.formId);
-    let statuses = (result.translations || result || []).map((t: any) => ({
-      language: t.language || t.locale,
+    let languages = Array.isArray(result.languages) ? result.languages : [];
+    let statuses = languages.map((t: any) => ({
+      language: t.language || t.locale || t.code,
       status: t.status
     }));
 

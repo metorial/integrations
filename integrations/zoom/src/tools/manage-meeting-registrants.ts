@@ -33,7 +33,19 @@ export let manageMeetingRegistrants = SlateTool.create(spec, {
           industry: z.string().optional().describe('Industry'),
           org: z.string().optional().describe('Organization'),
           jobTitle: z.string().optional().describe('Job title'),
-          comments: z.string().optional().describe('Comments')
+          comments: z.string().optional().describe('Comments'),
+          noOfEmployees: z.string().optional().describe('Number of employees'),
+          purchasingTimeFrame: z.string().optional().describe('Purchasing timeframe'),
+          roleInPurchaseProcess: z.string().optional().describe('Role in purchase process'),
+          customQuestions: z
+            .array(
+              z.object({
+                title: z.string().describe('Custom registration question title'),
+                value: z.string().max(128).describe('Custom registration question answer')
+              })
+            )
+            .optional()
+            .describe('Responses to custom registration questions')
         })
         .optional()
         .describe('Registrant details (required when action is "add")'),
@@ -52,6 +64,7 @@ export let manageMeetingRegistrants = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Unique join URL for the registrant (when adding)'),
+      participantPinCode: z.number().optional().describe('Audio participant PIN code'),
       totalRecords: z
         .number()
         .optional()
@@ -65,7 +78,13 @@ export let manageMeetingRegistrants = SlateTool.create(spec, {
             firstName: z.string().describe('First name'),
             lastName: z.string().optional().describe('Last name'),
             status: z.string().optional().describe('Registration status'),
-            createTime: z.string().optional().describe('Registration time')
+            createTime: z.string().optional().describe('Registration time'),
+            joinUrl: z.string().optional().describe('Unique join URL'),
+            phone: z.string().optional().describe('Phone number'),
+            industry: z.string().optional().describe('Industry'),
+            org: z.string().optional().describe('Organization'),
+            jobTitle: z.string().optional().describe('Job title'),
+            customQuestions: z.any().optional().describe('Custom registration answers')
           })
         )
         .optional()
@@ -93,13 +112,18 @@ export let manageMeetingRegistrants = SlateTool.create(spec, {
         industry: ctx.input.registrant.industry,
         org: ctx.input.registrant.org,
         job_title: ctx.input.registrant.jobTitle,
-        comments: ctx.input.registrant.comments
+        comments: ctx.input.registrant.comments,
+        no_of_employees: ctx.input.registrant.noOfEmployees,
+        purchasing_time_frame: ctx.input.registrant.purchasingTimeFrame,
+        role_in_purchase_process: ctx.input.registrant.roleInPurchaseProcess,
+        custom_questions: ctx.input.registrant.customQuestions
       });
 
       return {
         output: {
           registrantId: result.registrant_id,
-          registrantUrl: result.join_url
+          registrantUrl: result.join_url,
+          participantPinCode: result.participant_pin_code
         },
         message: `Registrant **${ctx.input.registrant.email}** added to meeting **${ctx.input.meetingId}**.`
       };
@@ -118,7 +142,13 @@ export let manageMeetingRegistrants = SlateTool.create(spec, {
       firstName: r.first_name,
       lastName: r.last_name,
       status: r.status,
-      createTime: r.create_time
+      createTime: r.create_time,
+      joinUrl: r.join_url,
+      phone: r.phone,
+      industry: r.industry,
+      org: r.org,
+      jobTitle: r.job_title,
+      customQuestions: r.custom_questions
     }));
 
     return {

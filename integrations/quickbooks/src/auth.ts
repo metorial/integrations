@@ -15,7 +15,8 @@ export let auth = SlateAuth.create()
     z.object({
       token: z.string(),
       refreshToken: z.string().optional(),
-      expiresAt: z.string().optional()
+      expiresAt: z.string().optional(),
+      realmId: z.string().optional()
     })
   )
   .addOauth({
@@ -29,12 +30,6 @@ export let auth = SlateAuth.create()
         description:
           'Access to accounting data including invoices, customers, vendors, accounts, and more',
         scope: 'com.intuit.quickbooks.accounting'
-      },
-      {
-        title: 'Payments',
-        description:
-          'Access to payment processing features for credit cards and bank account transactions',
-        scope: 'com.intuit.quickbooks.payment'
       },
       {
         title: 'OpenID',
@@ -100,7 +95,8 @@ export let auth = SlateAuth.create()
           output: {
             token: data.access_token,
             refreshToken: data.refresh_token,
-            expiresAt
+            expiresAt,
+            realmId: ctx.callbackParams?.realmId
           }
         };
       } catch (error) {
@@ -144,7 +140,8 @@ export let auth = SlateAuth.create()
           output: {
             token: data.access_token,
             refreshToken: data.refresh_token,
-            expiresAt
+            expiresAt,
+            realmId: ctx.output.realmId
           }
         };
       } catch (error) {
@@ -153,7 +150,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: {
-      output: { token: string; refreshToken?: string; expiresAt?: string };
+      output: { token: string; refreshToken?: string; expiresAt?: string; realmId?: string };
       input: {};
       scopes: string[];
     }) => {
@@ -174,7 +171,7 @@ export let auth = SlateAuth.create()
 
         return {
           profile: {
-            id: data.sub,
+            id: ctx.output.realmId ? `${data.sub}:${ctx.output.realmId}` : data.sub,
             email: data.email,
             name: [data.givenName, data.familyName].filter(Boolean).join(' ') || data.email
           }

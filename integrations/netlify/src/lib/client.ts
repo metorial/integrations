@@ -90,9 +90,8 @@ export class Client {
     return response.data;
   }
 
-  async rollbackDeploy(siteId: string, deployId: string) {
-    let response = await this.api.put(`/sites/${siteId}/deploys/${deployId}/rollback`);
-    return response.data;
+  async rollbackDeploy(siteId: string) {
+    await this.api.put(`/sites/${siteId}/rollback`);
   }
 
   async deleteDeploy(deployId: string) {
@@ -273,7 +272,7 @@ export class Client {
     return response.data;
   }
 
-  async createDnsZone(body: { name: string; account_slug: string }) {
+  async createDnsZone(body: { name: string; account_slug?: string; site_id?: string }) {
     let response = await this.api.post('/dns_zones', body);
     return response.data;
   }
@@ -296,7 +295,17 @@ export class Client {
 
   async createDnsRecord(
     zoneId: string,
-    body: { type: string; hostname: string; value: string; ttl?: number; priority?: number }
+    body: {
+      type: string;
+      hostname: string;
+      value: string;
+      ttl?: number;
+      priority?: number;
+      weight?: number;
+      port?: number;
+      flag?: number;
+      tag?: string;
+    }
   ) {
     let response = await this.api.post(`/dns_zones/${zoneId}/dns_records`, body);
     return response.data;
@@ -354,17 +363,17 @@ export class Client {
   // ---- Split Tests ----
 
   async listSplitTests(siteId: string) {
-    let response = await this.api.get(`/sites/${siteId}/split_tests`);
+    let response = await this.api.get(`/sites/${siteId}/traffic_splits`);
     return response.data;
   }
 
   async getSplitTest(siteId: string, splitTestId: string) {
-    let response = await this.api.get(`/sites/${siteId}/split_tests/${splitTestId}`);
+    let response = await this.api.get(`/sites/${siteId}/traffic_splits/${splitTestId}`);
     return response.data;
   }
 
   async createSplitTest(siteId: string, body: { branch_tests: Record<string, number> }) {
-    let response = await this.api.post(`/sites/${siteId}/split_tests`, body);
+    let response = await this.api.post(`/sites/${siteId}/traffic_splits`, body);
     return response.data;
   }
 
@@ -373,18 +382,16 @@ export class Client {
     splitTestId: string,
     body: { branch_tests: Record<string, number> }
   ) {
-    let response = await this.api.put(`/sites/${siteId}/split_tests/${splitTestId}`, body);
+    let response = await this.api.put(`/sites/${siteId}/traffic_splits/${splitTestId}`, body);
     return response.data;
   }
 
   async enableSplitTest(siteId: string, splitTestId: string) {
-    let response = await this.api.post(`/sites/${siteId}/split_tests/${splitTestId}/enable`);
-    return response.data;
+    await this.api.post(`/sites/${siteId}/traffic_splits/${splitTestId}/publish`);
   }
 
   async disableSplitTest(siteId: string, splitTestId: string) {
-    let response = await this.api.post(`/sites/${siteId}/split_tests/${splitTestId}/disable`);
-    return response.data;
+    await this.api.post(`/sites/${siteId}/traffic_splits/${splitTestId}/unpublish`);
   }
 
   // ---- Hooks ----
@@ -495,11 +502,19 @@ export class Client {
 
   // ---- CDN Purge ----
 
-  async purgeCache(params: { siteId?: string; siteSlug?: string; cacheTags?: string[] }) {
+  async purgeCache(params: {
+    siteId?: string;
+    siteSlug?: string;
+    cacheTags?: string[];
+    deployAlias?: string;
+    domain?: string;
+  }) {
     await this.api.post(`/purge`, {
       site_id: params.siteId,
       site_slug: params.siteSlug,
-      cache_tags: params.cacheTags
+      cache_tags: params.cacheTags,
+      deploy_alias: params.deployAlias,
+      domain: params.domain
     });
   }
 

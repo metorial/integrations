@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { numberOrUndefined, stringOrUndefined, timestampOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 import { intercomServiceError } from '../lib/errors';
@@ -136,15 +137,15 @@ The create and update operations use the same endpoint — if a company with the
   .build();
 
 let mapCompany = (data: any) => ({
-  intercomCompanyId: data.id,
-  companyId: data.company_id,
-  name: data.name,
-  plan: data.plan?.name,
-  size: data.size,
-  website: data.website,
-  industry: data.industry,
-  monthlySpend: data.monthly_spend,
-  userCount: data.user_count,
-  createdAt: data.created_at ? String(data.created_at) : undefined,
-  updatedAt: data.updated_at ? String(data.updated_at) : undefined
+  intercomCompanyId: String(data.id),
+  companyId: stringOrUndefined(data.company_id),
+  name: stringOrUndefined(data.name),
+  plan: stringOrUndefined(data.plan?.name),
+  size: numberOrUndefined(data.size),
+  website: stringOrUndefined(data.website),
+  industry: stringOrUndefined(data.industry),
+  monthlySpend: numberOrUndefined(data.monthly_spend),
+  userCount: numberOrUndefined(data.user_count),
+  createdAt: timestampOrUndefined(data.created_at),
+  updatedAt: timestampOrUndefined(data.updated_at)
 });

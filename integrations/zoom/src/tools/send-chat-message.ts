@@ -19,7 +19,7 @@ export let sendChatMessage = SlateTool.create(spec, {
         .string()
         .default('me')
         .describe('Sender user ID or email. Use "me" for the authenticated user'),
-      message: z.string().describe('Message content to send'),
+      message: z.string().max(1024).describe('Message content to send'),
       toChannel: z.string().optional().describe('Channel ID to send the message to'),
       toContact: z.string().optional().describe('Contact email to send a direct message to')
     })

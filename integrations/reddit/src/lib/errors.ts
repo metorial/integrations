@@ -72,8 +72,39 @@ let extractRedditMessage = (error: unknown) => {
   return 'Unknown error';
 };
 
+let extractRedditDataMessage = (data: unknown) => {
+  let messages: string[] = [];
+  collectRedditMessages(data, messages);
+
+  let uniqueMessages = [...new Set(messages)];
+  return uniqueMessages.length > 0 ? uniqueMessages.join(' - ') : 'Unknown error';
+};
+
+let hasRedditJsonErrors = (data: unknown) => {
+  if (!isRecord(data)) return false;
+
+  let errors = data.errors;
+  if (Array.isArray(errors) && errors.length > 0) return true;
+
+  let json = data.json;
+  if (!isRecord(json)) return false;
+
+  let jsonErrors = json.errors;
+  return Array.isArray(jsonErrors) && jsonErrors.length > 0;
+};
+
 export let redditServiceError = (message: string) =>
   new ServiceError(badRequestError({ message }));
+
+export let assertNoRedditJsonErrors = (data: unknown, operation = 'request') => {
+  if (!hasRedditJsonErrors(data)) return;
+
+  let serviceError = redditServiceError(
+    `Reddit API ${operation} failed: ${extractRedditDataMessage(data)}`
+  );
+  serviceError.data.reason = 'reddit_api_error';
+  throw serviceError;
+};
 
 export let redditApiError = (error: unknown, operation = 'request') => {
   if (error instanceof ServiceError) {

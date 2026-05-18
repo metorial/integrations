@@ -16,10 +16,10 @@ let buildHookOutputSchema = z.object({
 let mapBuildHook = (hook: any) => ({
   buildHookId: hook.id,
   siteId: hook.site_id,
-  title: hook.title,
-  branch: hook.branch,
-  url: hook.url,
-  createdAt: hook.created_at
+  title: hook.title ?? undefined,
+  branch: hook.branch ?? undefined,
+  url: hook.url ?? undefined,
+  createdAt: hook.created_at ?? undefined
 });
 
 export let manageBuildHooks = SlateTool.create(spec, {

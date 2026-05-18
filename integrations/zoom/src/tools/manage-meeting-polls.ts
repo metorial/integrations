@@ -21,7 +21,19 @@ let pollQuestionSchema = z.object({
     .describe('Poll question type'),
   answers: z.array(z.string()).optional().describe('Answer choices for choice questions'),
   rightAnswers: z.array(z.string()).optional().describe('Correct answer values for quizzes'),
+  answerMinCharacter: z
+    .number()
+    .optional()
+    .describe('Minimum character count for short or long answer questions'),
+  answerMaxCharacter: z
+    .number()
+    .optional()
+    .describe('Maximum character count for short or long answer questions'),
   answerRequired: z.boolean().optional().describe('Whether participants must answer'),
+  caseSensitive: z
+    .boolean()
+    .optional()
+    .describe('Whether fill-in-the-blank answers are case sensitive'),
   showAsDropdown: z.boolean().optional().describe('Show single-choice answers as a dropdown'),
   prompts: z.any().optional().describe('Prompt definitions for matching or rank-order polls'),
   ratingMinValue: z.number().optional().describe('Minimum rating scale value'),
@@ -31,7 +43,7 @@ let pollQuestionSchema = z.object({
 });
 
 let pollInputSchema = z.object({
-  title: z.string().optional().describe('Poll title'),
+  title: z.string().max(64).optional().describe('Poll title'),
   anonymous: z.boolean().optional().describe('Whether answers are anonymous'),
   pollType: z
     .union([z.literal(1), z.literal(2), z.literal(3)])
@@ -45,7 +57,10 @@ let mapQuestion = (question: z.infer<typeof pollQuestionSchema>) => ({
   type: question.type,
   answers: question.answers,
   right_answers: question.rightAnswers,
+  answer_min_character: question.answerMinCharacter,
+  answer_max_character: question.answerMaxCharacter,
   answer_required: question.answerRequired,
+  case_sensitive: question.caseSensitive,
   show_as_dropdown: question.showAsDropdown,
   prompts: question.prompts,
   rating_min_value: question.ratingMinValue,

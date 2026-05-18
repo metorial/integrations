@@ -6,7 +6,7 @@ import { z } from 'zod';
 let billLineSchema = z.object({
   description: z.string().optional().describe('Description of the line item'),
   amount: z.number().describe('Amount for this line'),
-  accountId: z.string().optional().describe('Expense account ID to categorize this line'),
+  accountId: z.string().describe('Expense account ID to categorize this line'),
   customerId: z.string().optional().describe('Customer to bill this expense to'),
   billable: z.boolean().optional().describe('Whether this line is billable to a customer')
 });
@@ -48,12 +48,11 @@ export let createBill = SlateTool.create(spec, {
         DetailType: 'AccountBasedExpenseLineDetail',
         Amount: item.amount,
         Description: item.description,
-        AccountBasedExpenseLineDetail: {}
+        AccountBasedExpenseLineDetail: {
+          AccountRef: { value: item.accountId }
+        }
       };
 
-      if (item.accountId) {
-        line.AccountBasedExpenseLineDetail.AccountRef = { value: item.accountId };
-      }
       if (item.customerId) {
         line.AccountBasedExpenseLineDetail.CustomerRef = { value: item.customerId };
       }

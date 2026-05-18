@@ -57,13 +57,13 @@ export let listSites = SlateTool.create(spec, {
       siteId: site.id,
       name: site.name || '',
       url: site.url || '',
-      sslUrl: site.ssl_url,
-      adminUrl: site.admin_url,
-      customDomain: site.custom_domain,
-      state: site.state,
-      createdAt: site.created_at,
-      updatedAt: site.updated_at,
-      accountSlug: site.account_slug
+      sslUrl: site.ssl_url ?? undefined,
+      adminUrl: site.admin_url ?? undefined,
+      customDomain: site.custom_domain ?? undefined,
+      state: site.state ?? undefined,
+      createdAt: site.created_at ?? undefined,
+      updatedAt: site.updated_at ?? undefined,
+      accountSlug: site.account_slug ?? undefined
     }));
 
     return {

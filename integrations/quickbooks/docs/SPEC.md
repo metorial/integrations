@@ -12,7 +12,7 @@ QuickBooks Online uses **OAuth 2.0** exclusively for authentication. There is no
 
 - **Client ID** and **Client Secret**: Obtained from the Intuit Developer portal (https://developer.intuit.com) under the app's Keys tab.
 - **Redirect URI**: Must exactly match one of the URIs configured in the app settings.
-- **Company ID (Realm ID)**: A unique identifier for the QuickBooks company being accessed, returned during the authorization flow and required for all API calls.
+- **Company ID (Realm ID)**: A unique identifier for the QuickBooks company being accessed, returned during the authorization flow and required for all API calls. The integration captures this from the OAuth callback when available; it can also be supplied explicitly in config.
 
 **OAuth 2.0 Endpoints:**
 
@@ -22,8 +22,9 @@ QuickBooks Online uses **OAuth 2.0** exclusively for authentication. There is no
 **Scopes:**
 
 - `com.intuit.quickbooks.accounting` — Access to accounting data (invoices, customers, vendors, etc.)
-- `com.intuit.quickbooks.payment` — Access to payment processing features.
-- `openid`, `profile`, `email`, `phone`, `address` — OpenID Connect scopes for user identity information.
+- `openid`, `profile`, `email` — OpenID Connect scopes for user identity information.
+
+The integration records accounting `Payment` entities through the Accounting API. It does not request `com.intuit.quickbooks.payment` unless a future tool calls the separate QuickBooks Payments API for payment processing.
 
 **Token Lifecycle:**
 

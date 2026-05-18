@@ -1,5 +1,12 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import {
+  arrayOrUndefined,
+  numberOrUndefined,
+  objectOrUndefined,
+  stringOrUndefined,
+  timestampOrUndefined
+} from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -41,21 +48,21 @@ export let getCompany = SlateTool.create(spec, {
 
     return {
       output: {
-        intercomCompanyId: result.id,
-        companyId: result.company_id,
-        name: result.name,
-        plan: result.plan?.name,
-        size: result.size,
-        website: result.website,
-        industry: result.industry,
-        monthlySpend: result.monthly_spend,
-        userCount: result.user_count,
-        sessionCount: result.session_count,
-        createdAt: result.created_at ? String(result.created_at) : undefined,
-        updatedAt: result.updated_at ? String(result.updated_at) : undefined,
-        customAttributes: result.custom_attributes,
-        segments: result.segments?.data,
-        tags: result.tags?.data
+        intercomCompanyId: String(result.id),
+        companyId: stringOrUndefined(result.company_id),
+        name: stringOrUndefined(result.name),
+        plan: stringOrUndefined(result.plan?.name),
+        size: numberOrUndefined(result.size),
+        website: stringOrUndefined(result.website),
+        industry: stringOrUndefined(result.industry),
+        monthlySpend: numberOrUndefined(result.monthly_spend),
+        userCount: numberOrUndefined(result.user_count),
+        sessionCount: numberOrUndefined(result.session_count),
+        createdAt: timestampOrUndefined(result.created_at),
+        updatedAt: timestampOrUndefined(result.updated_at),
+        customAttributes: objectOrUndefined(result.custom_attributes),
+        segments: arrayOrUndefined(result.segments?.data),
+        tags: arrayOrUndefined(result.tags?.data)
       },
       message: `Retrieved company **${result.name || result.id}**`
     };

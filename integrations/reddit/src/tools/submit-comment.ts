@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { RedditClient } from '../lib/client';
+import { redditServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -22,7 +23,7 @@ Pass a post fullname (t3_*) to comment on a post, or a comment fullname (t1_*) t
   )
   .output(
     z.object({
-      commentId: z.string().optional().describe('Fullname of the created comment'),
+      commentId: z.string().describe('Fullname of the created comment'),
       parentId: z.string().describe('Fullname of the parent item')
     })
   )
@@ -32,10 +33,13 @@ Pass a post fullname (t3_*) to comment on a post, or a comment fullname (t1_*) t
     let result = await client.submitComment(ctx.input.parentId, ctx.input.text);
 
     let commentData = result?.json?.data?.things?.[0]?.data;
+    if (typeof commentData?.name !== 'string' || !commentData.name) {
+      throw redditServiceError('Reddit did not return a created comment id.');
+    }
 
     return {
       output: {
-        commentId: commentData?.name ?? undefined,
+        commentId: commentData.name,
         parentId: ctx.input.parentId
       },
       message: `Comment posted as a reply to \`${ctx.input.parentId}\`.`
