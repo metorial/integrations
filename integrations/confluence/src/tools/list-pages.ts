@@ -67,7 +67,7 @@ export let listPages = SlateTool.create(spec, {
       title: p.title,
       status: p.status,
       spaceId: p.spaceId,
-      parentId: p.parentId,
+      parentId: p.parentId ?? undefined,
       versionNumber: p.version?.number,
       createdAt: p.createdAt
     }));

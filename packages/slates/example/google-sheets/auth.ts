@@ -1,6 +1,22 @@
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
+type GoogleOauthInput = Record<string, never>;
+
+type GoogleOauthOutput = {
+  token: string;
+  refreshToken?: string;
+  expiresAt?: string;
+};
+
+type GoogleOauthRefreshContext = {
+  output: GoogleOauthOutput;
+  input: GoogleOauthInput;
+  clientId: string;
+  clientSecret: string;
+  scopes: string[];
+};
+
 let axios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
 });
@@ -85,7 +101,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: GoogleOauthRefreshContext) => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
