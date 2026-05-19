@@ -4,6 +4,8 @@ import { messengerServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let isHttpsUrl = (value: string) => /^https:\/\//i.test(value);
+
 export let uploadAttachment = SlateTool.create(spec, {
   name: 'Upload Attachment',
   key: 'upload_attachment',
@@ -25,6 +27,7 @@ export let uploadAttachment = SlateTool.create(spec, {
         .describe('Type of attachment to upload'),
       attachmentUrl: z
         .string()
+        .refine(isHttpsUrl, 'attachmentUrl must be a public HTTPS URL')
         .describe('Public HTTPS URL of the attachment that Meta should fetch'),
       isReusable: z
         .boolean()

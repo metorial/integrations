@@ -1,6 +1,6 @@
 import { SlateAuth, createAxios } from '@slates/provider';
 import { z } from 'zod';
-import { instagramApiError } from './lib/errors';
+import { instagramApiError, instagramServiceError } from './lib/errors';
 
 let graphApi = createAxios({
   baseURL: 'https://graph.facebook.com'
@@ -63,6 +63,8 @@ export let auth = SlateAuth.create()
 
     getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
+        enable_fb_login: '0',
+        force_authentication: '1',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
@@ -71,7 +73,7 @@ export let auth = SlateAuth.create()
       });
 
       return {
-        url: `https://api.instagram.com/oauth/authorize?${params.toString()}`
+        url: `https://www.instagram.com/oauth/authorize?${params.toString()}`
       };
     },
 
@@ -207,6 +209,11 @@ export let auth = SlateAuth.create()
         scope: 'pages_show_list'
       },
       {
+        title: 'Pages Read Engagement',
+        description: 'Read Page metadata required to resolve linked Instagram accounts',
+        scope: 'pages_read_engagement'
+      },
+      {
         title: 'Pages Metadata',
         description: 'Manage page metadata (required for webhooks)',
         scope: 'pages_manage_metadata'
@@ -254,28 +261,31 @@ export let auth = SlateAuth.create()
         let expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
         let pagesResponse = await graphApi.get(`/${authApiVersion}/me/accounts`, {
-          params: { access_token: longLivedToken }
+          params: {
+            fields: 'id,name,instagram_business_account',
+            access_token: longLivedToken
+          }
         });
 
         let userId: string | undefined;
-        let pages = pagesResponse.data.data as Array<{ id: string; access_token: string }>;
+        let pages = pagesResponse.data.data as Array<{
+          id: string;
+          name?: string;
+          instagram_business_account?: { id?: string };
+        }>;
         if (pages && pages.length > 0) {
           for (let page of pages) {
-            try {
-              let igResponse = await graphApi.get(`/${authApiVersion}/${page.id}`, {
-                params: {
-                  fields: 'instagram_business_account',
-                  access_token: longLivedToken
-                }
-              });
-              if (igResponse.data.instagram_business_account) {
-                userId = igResponse.data.instagram_business_account.id;
-                break;
-              }
-            } catch {
-              // Page may not have an IG business account
+            if (page.instagram_business_account?.id) {
+              userId = page.instagram_business_account.id;
+              break;
             }
           }
+        }
+
+        if (!userId) {
+          throw instagramServiceError(
+            'No linked Instagram Business or Creator account was found. Connect an Instagram professional account to a Facebook Page and grant pages_read_engagement, pages_show_list, and instagram_basic.'
+          );
         }
 
         return {

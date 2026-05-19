@@ -4,12 +4,19 @@ import { messengerServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let isHttpsUrl = (value: string) => /^https:\/\//i.test(value);
+
 let buttonSchema = z.object({
   type: z.enum(['web_url', 'postback', 'phone_number']).describe('Button type'),
-  title: z.string().describe('Button label text (max 20 characters)'),
-  url: z.string().optional().describe('URL to open (required for web_url type)'),
+  title: z.string().max(20).describe('Button label text (max 20 characters)'),
+  url: z
+    .string()
+    .refine(isHttpsUrl, 'url must be an HTTPS URL')
+    .optional()
+    .describe('URL to open (required for web_url type)'),
   payload: z
     .string()
+    .max(1000)
     .optional()
     .describe(
       'Data sent to webhook (required for postback type) or phone number (for phone_number type)'
@@ -17,10 +24,18 @@ let buttonSchema = z.object({
 });
 
 let genericElementSchema = z.object({
-  title: z.string().describe('Element title (max 80 characters)'),
-  subtitle: z.string().optional().describe('Element subtitle (max 80 characters)'),
-  imageUrl: z.string().optional().describe('Image URL for the element'),
-  defaultActionUrl: z.string().optional().describe('URL opened when the element is tapped'),
+  title: z.string().max(80).describe('Element title (max 80 characters)'),
+  subtitle: z.string().max(80).optional().describe('Element subtitle (max 80 characters)'),
+  imageUrl: z
+    .string()
+    .refine(isHttpsUrl, 'imageUrl must be an HTTPS URL')
+    .optional()
+    .describe('Image URL for the element'),
+  defaultActionUrl: z
+    .string()
+    .refine(isHttpsUrl, 'defaultActionUrl must be an HTTPS URL')
+    .optional()
+    .describe('URL opened when the element is tapped'),
   buttons: z.array(buttonSchema).max(3).optional().describe('Up to 3 buttons per element')
 });
 
@@ -30,7 +45,11 @@ let receiptItemSchema = z.object({
   quantity: z.number().optional().describe('Item quantity'),
   price: z.number().describe('Item price'),
   currency: z.string().optional().describe('Item currency code (e.g. USD)'),
-  imageUrl: z.string().optional().describe('Item image URL')
+  imageUrl: z
+    .string()
+    .refine(isHttpsUrl, 'imageUrl must be an HTTPS URL')
+    .optional()
+    .describe('Item image URL')
 });
 
 let validateMessagingPolicy = (messagingType: string, tag?: string) => {
@@ -104,6 +123,7 @@ Choose the appropriate templateType and provide the corresponding fields.`,
       // Button template fields
       text: z
         .string()
+        .max(640)
         .optional()
         .describe('Text message body (required for button templateType, max 640 chars)'),
       buttons: z
@@ -119,6 +139,7 @@ Choose the appropriate templateType and provide the corresponding fields.`,
         .describe('Media type (required for media templateType)'),
       mediaUrl: z
         .string()
+        .refine(isHttpsUrl, 'mediaUrl must be an HTTPS URL')
         .optional()
         .describe(
           'Facebook URL of the media (required for media templateType unless attachmentId is used)'

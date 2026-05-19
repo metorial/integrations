@@ -90,6 +90,13 @@ export let publishMediaTool = SlateTool.create(spec, {
 
     let effectiveUserId = ctx.input.userId || ctx.auth.userId || 'me';
     let { mediaType } = ctx.input;
+    let apiBaseUrl = (ctx.auth.apiBaseUrl || '').replace(/\/$/, '');
+
+    if (apiBaseUrl === 'https://graph.instagram.com' && ctx.input.userTags?.length) {
+      throw instagramServiceError(
+        'userTags are not supported by Instagram API with Instagram Login. Reauthorize with Facebook Login for Business for tagging-capable publishing.'
+      );
+    }
 
     let containerId: string;
 
