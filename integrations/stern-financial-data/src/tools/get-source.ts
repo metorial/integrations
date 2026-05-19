@@ -35,97 +35,94 @@ let commonControls = {
 
 let percentageDescription = 'Decimal percentage value; for example, 0.05 means 5%.';
 
-let erpInputSchema = z.object({
-  source: z.literal('erp').describe('Country equity risk premium source.'),
+let inputSchema = z.object({
+  source: z
+    .enum(['erp', 'us_industry_betas', 'global_industry_betas'])
+    .describe(
+      'Source id to retrieve. Allowed values: erp, us_industry_betas, global_industry_betas.'
+    ),
   ...commonControls,
   countries: z
     .array(z.string())
     .optional()
-    .describe('Exact country names to include, case-insensitive.'),
+    .describe('ERP only. Exact country names to include, case-insensitive.'),
   countrySearch: z
     .string()
     .optional()
-    .describe('Case-insensitive substring search over country names.'),
+    .describe('ERP only. Case-insensitive substring search over country names.'),
   moodysRatings: z
     .array(z.string())
     .optional()
-    .describe("Moody's ratings to include, such as Aaa, Baa2, Caa1, or NR."),
+    .describe("ERP only. Moody's ratings to include, such as Aaa, Baa2, Caa1, or NR."),
   minEquityRiskPremium: z
     .number()
     .optional()
-    .describe(`Minimum equity risk premium. ${percentageDescription}`),
+    .describe(`ERP only. Minimum equity risk premium. ${percentageDescription}`),
   maxEquityRiskPremium: z
     .number()
     .optional()
-    .describe(`Maximum equity risk premium. ${percentageDescription}`),
+    .describe(`ERP only. Maximum equity risk premium. ${percentageDescription}`),
   minCountryRiskPremium: z
     .number()
     .optional()
-    .describe(`Minimum country risk premium. ${percentageDescription}`),
+    .describe(`ERP only. Minimum country risk premium. ${percentageDescription}`),
   maxCountryRiskPremium: z
     .number()
     .optional()
-    .describe(`Maximum country risk premium. ${percentageDescription}`),
+    .describe(`ERP only. Maximum country risk premium. ${percentageDescription}`),
   minCorporateTaxRate: z
     .number()
     .optional()
-    .describe(`Minimum corporate tax rate. ${percentageDescription}`),
+    .describe(`ERP only. Minimum corporate tax rate. ${percentageDescription}`),
   maxCorporateTaxRate: z
     .number()
     .optional()
-    .describe(`Maximum corporate tax rate. ${percentageDescription}`),
+    .describe(`ERP only. Maximum corporate tax rate. ${percentageDescription}`),
   hasSovereignCds: z
     .boolean()
     .optional()
-    .describe('Filter by whether the row has a sovereign CDS value.')
-});
-
-let betaFilterControls = {
+    .describe('ERP only. Filter by whether the row has a sovereign CDS value.'),
   industries: z
     .array(z.string())
     .optional()
-    .describe('Exact industry names to include, case-insensitive.'),
+    .describe(
+      'Industry beta sources only. Exact industry names to include, case-insensitive.'
+    ),
   industrySearch: z
     .string()
     .optional()
-    .describe('Case-insensitive substring search over industry names.'),
+    .describe(
+      'Industry beta sources only. Case-insensitive substring search over industry names.'
+    ),
   rowType: z
     .enum(['industry', 'aggregate'])
     .optional()
-    .describe('Filter regular industries or total-market aggregate rows.'),
-  minBeta: z.number().optional().describe('Minimum levered beta.'),
-  maxBeta: z.number().optional().describe('Maximum levered beta.'),
-  minUnleveredBeta: z.number().optional().describe('Minimum unlevered beta.'),
-  maxUnleveredBeta: z.number().optional().describe('Maximum unlevered beta.'),
+    .describe(
+      'Industry beta sources only. Filter regular industry rows or total-market aggregate rows.'
+    ),
+  minBeta: z.number().optional().describe('Industry beta sources only. Minimum levered beta.'),
+  maxBeta: z.number().optional().describe('Industry beta sources only. Maximum levered beta.'),
+  minUnleveredBeta: z
+    .number()
+    .optional()
+    .describe('Industry beta sources only. Minimum unlevered beta.'),
+  maxUnleveredBeta: z
+    .number()
+    .optional()
+    .describe('Industry beta sources only. Maximum unlevered beta.'),
   minNumberOfFirms: z
     .number()
     .int()
     .min(0)
     .optional()
-    .describe('Minimum number of firms in the industry row.'),
+    .describe('Industry beta sources only. Minimum number of firms in the industry row.'),
   maxDebtToEquityRatio: z
     .number()
     .optional()
-    .describe(`Maximum debt-to-equity ratio. ${percentageDescription}`)
-};
-
-let usIndustryBetasInputSchema = z.object({
-  source: z.literal('us_industry_betas').describe('US industry beta source.'),
-  ...commonControls,
-  ...betaFilterControls
+    .describe(
+      `Industry beta sources only. Maximum debt-to-equity ratio. ${percentageDescription}`
+    )
 });
-
-let globalIndustryBetasInputSchema = z.object({
-  source: z.literal('global_industry_betas').describe('Global industry beta source.'),
-  ...commonControls,
-  ...betaFilterControls
-});
-
-let inputSchema = z.discriminatedUnion('source', [
-  erpInputSchema,
-  usIndustryBetasInputSchema,
-  globalIndustryBetasInputSchema
-]);
 
 let outputSchema = z.object({
   metadata: z.object({
@@ -158,8 +155,53 @@ let validateRange = (min: number | undefined, max: number | undefined, label: st
   }
 };
 
-let validateInput = (input: z.infer<typeof inputSchema>) => {
+type GetSourceInput = z.infer<typeof inputSchema>;
+type GetSourceInputKey = keyof GetSourceInput;
+
+let erpOnlyFilterKeys: GetSourceInputKey[] = [
+  'countries',
+  'countrySearch',
+  'moodysRatings',
+  'minEquityRiskPremium',
+  'maxEquityRiskPremium',
+  'minCountryRiskPremium',
+  'maxCountryRiskPremium',
+  'minCorporateTaxRate',
+  'maxCorporateTaxRate',
+  'hasSovereignCds'
+];
+
+let betaOnlyFilterKeys: GetSourceInputKey[] = [
+  'industries',
+  'industrySearch',
+  'rowType',
+  'minBeta',
+  'maxBeta',
+  'minUnleveredBeta',
+  'maxUnleveredBeta',
+  'minNumberOfFirms',
+  'maxDebtToEquityRatio'
+];
+
+let rejectUnsupportedFilters = (
+  input: GetSourceInput,
+  keys: GetSourceInputKey[],
+  filterGroup: string
+) => {
+  let providedKeys = keys.filter(key => input[key] !== undefined);
+
+  if (providedKeys.length) {
+    throw sternFinancialDataServiceError(
+      `${filterGroup} filters are not supported for source "${input.source}": ${providedKeys.join(
+        ', '
+      )}.`
+    );
+  }
+};
+
+let validateInput = (input: GetSourceInput) => {
   if (input.source === 'erp') {
+    rejectUnsupportedFilters(input, betaOnlyFilterKeys, 'Industry beta');
     validateRange(input.minEquityRiskPremium, input.maxEquityRiskPremium, 'equityRiskPremium');
     validateRange(
       input.minCountryRiskPremium,
@@ -170,6 +212,7 @@ let validateInput = (input: z.infer<typeof inputSchema>) => {
     return;
   }
 
+  rejectUnsupportedFilters(input, erpOnlyFilterKeys, 'ERP');
   validateRange(input.minBeta, input.maxBeta, 'beta');
   validateRange(input.minUnleveredBeta, input.maxUnleveredBeta, 'unleveredBeta');
 };
