@@ -18,9 +18,9 @@ let mapHook = (hook: any) => ({
   siteId: hook.site_id,
   hookType: hook.type || '',
   event: hook.event || '',
-  disabled: hook.disabled,
-  createdAt: hook.created_at,
-  updatedAt: hook.updated_at
+  disabled: hook.disabled ?? undefined,
+  createdAt: hook.created_at ?? undefined,
+  updatedAt: hook.updated_at ?? undefined
 });
 
 let hookTypeOutputSchema = z.object({
@@ -34,8 +34,8 @@ let hookTypeOutputSchema = z.object({
 
 let mapHookType = (hookType: any) => ({
   name: hookType.name || '',
-  events: hookType.events,
-  fields: hookType.fields
+  events: hookType.events ?? undefined,
+  fields: hookType.fields ?? undefined
 });
 
 export let listHooks = SlateTool.create(spec, {
@@ -162,11 +162,17 @@ export let updateHook = SlateTool.create(spec, {
   .output(hookOutputSchema)
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
+    let current = await client.getHook(ctx.input.hookId);
 
-    let body: Record<string, any> = {};
-    if (ctx.input.event !== undefined) body.event = ctx.input.event;
-    if (ctx.input.hookData !== undefined) body.data = ctx.input.hookData;
-    if (ctx.input.disabled !== undefined) body.disabled = ctx.input.disabled;
+    let body: Record<string, any> = {
+      site_id: current.site_id,
+      type: current.type,
+      event: ctx.input.event ?? current.event,
+      data: ctx.input.hookData ?? current.data ?? {}
+    };
+    if (ctx.input.disabled !== undefined || current.disabled !== undefined) {
+      body.disabled = ctx.input.disabled ?? current.disabled;
+    }
 
     let hook = await client.updateHook(ctx.input.hookId, body);
 

@@ -1,7 +1,7 @@
 import { createAxios } from '@slates/provider';
-import { redditApiError } from './errors';
+import { assertNoRedditJsonErrors, redditApiError } from './errors';
 
-export let REDDIT_USER_AGENT = 'web:slates-integrations-reddit:0.2.0-rc.3 (by /u/slates)';
+export let REDDIT_USER_AGENT = 'web:slates-integrations-reddit:0.2.0-rc.6 (by /u/slates)';
 
 export class RedditClient {
   private http: ReturnType<typeof createAxios>;
@@ -16,7 +16,13 @@ export class RedditClient {
     });
 
     this.http.interceptors.response.use(
-      response => response,
+      response => {
+        let operation = [response.config.method?.toUpperCase(), response.config.url]
+          .filter(Boolean)
+          .join(' ');
+        assertNoRedditJsonErrors(response.data, operation || 'request');
+        return response;
+      },
       error => Promise.reject(redditApiError(error))
     );
   }

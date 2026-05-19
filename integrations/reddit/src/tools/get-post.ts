@@ -20,9 +20,12 @@ export let getPost = SlateTool.create(spec, {
         .describe('Sort order for comments'),
       commentLimit: z
         .number()
+        .int()
+        .min(1)
+        .max(100)
         .optional()
-        .describe('Maximum number of top-level comments to return'),
-      commentDepth: z.number().optional().describe('Maximum comment thread depth')
+        .describe('Maximum number of top-level comments to return (max 100)'),
+      commentDepth: z.number().int().min(0).optional().describe('Maximum comment thread depth')
     })
   )
   .output(

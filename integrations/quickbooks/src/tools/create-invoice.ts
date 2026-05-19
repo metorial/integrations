@@ -1,16 +1,36 @@
 import { SlateTool } from '@slates/provider';
 import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
+import { quickBooksServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 let lineItemSchema = z.object({
   description: z.string().optional().describe('Description of the line item'),
-  amount: z.number().describe('Total amount for this line item'),
+  amount: z
+    .number()
+    .optional()
+    .describe('Total amount for this line item. If omitted, quantity and unitPrice are used.'),
   quantity: z.number().optional().describe('Quantity of items'),
   unitPrice: z.number().optional().describe('Price per unit'),
   itemId: z.string().optional().describe('QuickBooks Item ID to reference'),
   serviceDate: z.string().optional().describe('Date the service was performed (YYYY-MM-DD)')
 });
+
+type InvoiceLineInput = z.infer<typeof lineItemSchema>;
+
+let resolveLineAmount = (line: InvoiceLineInput) => {
+  if (line.amount !== undefined) {
+    return line.amount;
+  }
+
+  if (line.quantity !== undefined && line.unitPrice !== undefined) {
+    return Number((line.quantity * line.unitPrice).toFixed(2));
+  }
+
+  throw quickBooksServiceError(
+    'Each invoice line item requires amount or both quantity and unitPrice.'
+  );
+};
 
 export let createInvoice = SlateTool.create(spec, {
   name: 'Create Invoice',
@@ -66,7 +86,7 @@ export let createInvoice = SlateTool.create(spec, {
     let lines = ctx.input.lineItems.map(item => {
       let line: any = {
         DetailType: 'SalesItemLineDetail',
-        Amount: item.amount,
+        Amount: resolveLineAmount(item),
         Description: item.description,
         SalesItemLineDetail: {
           Qty: item.quantity,

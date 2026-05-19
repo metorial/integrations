@@ -258,16 +258,15 @@ export class PostgresClient {
               );
               socket.write(buildPasswordMessage(md5Password));
             } else if (authType === AuthenticationTypes.SASL) {
+              cleanup();
               this.handleSaslAuth(socket, msg, buffer, timeoutMs)
-                .then(({ remaining: newRemaining }) => {
-                  buffer = newRemaining;
-                  // SASL auth complete, continue listening for ReadyForQuery
+                .then(() => {
+                  resolve();
                 })
                 .catch(err => {
-                  cleanup();
                   reject(toPostgresServiceError(err, 'PostgreSQL SASL authentication failed'));
                 });
-              return; // SASL handler takes over data events temporarily
+              return;
             } else {
               cleanup();
               reject(
@@ -742,18 +741,31 @@ export class PostgresClient {
 
   private terminate(socket: net.Socket): Promise<void> {
     return new Promise(resolve => {
-      try {
-        socket.write(buildTerminateMessage());
-      } catch {
-        // Ignore write errors during termination
-      }
-      socket.end();
-      socket.once('close', () => resolve());
-      // Don't wait forever
-      setTimeout(() => {
-        socket.destroy();
+      let settled = false;
+      let timeout: ReturnType<typeof setTimeout>;
+      let finish = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        socket.removeListener('close', finish);
+        socket.removeListener('error', finish);
         resolve();
+      };
+
+      timeout = setTimeout(() => {
+        socket.destroy();
+        finish();
       }, 1000);
+
+      socket.once('close', finish);
+      socket.once('error', finish);
+
+      try {
+        socket.end(buildTerminateMessage(), finish);
+      } catch {
+        socket.destroy();
+        finish();
+      }
     });
   }
 }

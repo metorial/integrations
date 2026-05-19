@@ -29,7 +29,8 @@ export let auth = SlateAuth.create()
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
-        redirect_uri: ctx.redirectUri
+        redirect_uri: ctx.redirectUri,
+        state: ctx.state
       });
 
       return {

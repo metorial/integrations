@@ -1,8 +1,13 @@
 import { SlateTool } from '@slates/provider';
 import { RedditClient } from '../lib/client';
-import { requireRedditInput } from '../lib/errors';
+import { redditServiceError, requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
+
+let normalizePostFullname = (id: unknown) => {
+  if (typeof id !== 'string' || !id.trim()) return undefined;
+  return id.startsWith('t3_') ? id : `t3_${id}`;
+};
 
 export let submitPost = SlateTool.create(spec, {
   name: 'Submit Post',
@@ -18,12 +23,12 @@ Optionally set flair, mark as NSFW or spoiler, and control inbox reply notificat
       subredditName: z
         .string()
         .describe('Name of the subreddit to post to (without r/ prefix)'),
-      title: z.string().describe('Title of the post'),
+      title: z.string().max(300).describe('Title of the post'),
       postType: z.enum(['text', 'link']).describe('Type of post to submit'),
       text: z.string().optional().describe('Body text for text posts (markdown supported)'),
-      linkUrl: z.string().optional().describe('URL for link posts'),
+      linkUrl: z.string().url().optional().describe('URL for link posts'),
       flairId: z.string().optional().describe('Flair template ID to apply'),
-      flairText: z.string().optional().describe('Custom flair text'),
+      flairText: z.string().max(64).optional().describe('Custom flair text'),
       isNsfw: z.boolean().optional().describe('Mark the post as NSFW'),
       isSpoiler: z.boolean().optional().describe('Mark the post as a spoiler'),
       sendReplies: z
@@ -34,7 +39,7 @@ Optionally set flair, mark as NSFW or spoiler, and control inbox reply notificat
   )
   .output(
     z.object({
-      postId: z.string().optional().describe('Fullname of the created post'),
+      postId: z.string().describe('Fullname of the created post'),
       postUrl: z.string().optional().describe('URL of the created post')
     })
   )
@@ -71,10 +76,14 @@ Optionally set flair, mark as NSFW or spoiler, and control inbox reply notificat
     }
 
     let postData = result?.json?.data;
+    let postId = normalizePostFullname(postData?.name ?? postData?.id);
+    if (!postId) {
+      throw redditServiceError('Reddit did not return a created post id.');
+    }
 
     return {
       output: {
-        postId: postData?.name ?? postData?.id,
+        postId,
         postUrl: postData?.url
       },
       message: `Submitted ${ctx.input.postType} post "${ctx.input.title}" to r/${ctx.input.subredditName}.${postData?.url ? ` [View post](${postData.url})` : ''}`

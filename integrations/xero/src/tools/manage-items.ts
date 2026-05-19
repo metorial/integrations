@@ -1,6 +1,7 @@
 import { SlateTool } from '@slates/provider';
 import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
+import { xeroServiceError } from '../lib/errors';
 import { z } from 'zod';
 
 let itemOutputSchema = z.object({
@@ -210,6 +211,14 @@ export let updateItem = SlateTool.create(spec, {
         updateData.PurchaseDetails.UnitPrice = ctx.input.purchaseUnitPrice;
       if (ctx.input.purchaseAccountCode)
         updateData.PurchaseDetails.AccountCode = ctx.input.purchaseAccountCode;
+    }
+
+    if (!updateData.Code) {
+      let existing = await client.getItem(ctx.input.itemId);
+      if (!existing.Code) {
+        throw xeroServiceError('Existing Xero item did not include a code to preserve.');
+      }
+      updateData.Code = existing.Code;
     }
 
     let item = await client.updateItem(ctx.input.itemId, updateData);

@@ -19,7 +19,7 @@ Retrieve both user flair and link (post) flair templates, or assign flair to use
       username: z.string().optional().describe('Username for set_user_flair'),
       postId: z.string().optional().describe('Post fullname for set_post_flair (t3_*)'),
       flairTemplateId: z.string().optional().describe('Flair template ID to use'),
-      flairText: z.string().optional().describe('Custom flair text'),
+      flairText: z.string().max(64).optional().describe('Custom flair text'),
       cssClass: z.string().optional().describe('CSS class for the flair')
     })
   )

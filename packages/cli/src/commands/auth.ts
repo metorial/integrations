@@ -22,11 +22,19 @@ import { JsonInput, WithProfile } from '../lib/types';
 type JsonObject = Record<string, any>;
 let NOTION_INTEGRATION_KEY = 'notion';
 let SALESFORCE_INTEGRATION_KEY = 'salesforce';
+let INTERCOM_INTEGRATION_KEY = 'intercom';
+let TYPEFORM_INTEGRATION_KEY = 'typeform';
+let XERO_INTEGRATION_KEY = 'xero';
+let ZENDESK_INTEGRATION_KEY = 'zendesk';
 let HUBSPOT_INTEGRATION_KEY = 'hubspot';
 let HUBSPOT_DEVELOPER_PLATFORM_OAUTH_METHOD_ID = 'developer_platform_oauth';
 let LOOPBACK_REDIRECT_NORMALIZED_INTEGRATIONS = new Set([
+  INTERCOM_INTEGRATION_KEY,
   NOTION_INTEGRATION_KEY,
-  SALESFORCE_INTEGRATION_KEY
+  SALESFORCE_INTEGRATION_KEY,
+  TYPEFORM_INTEGRATION_KEY,
+  XERO_INTEGRATION_KEY,
+  ZENDESK_INTEGRATION_KEY
 ]);
 
 type AuthSetupOptions = WithProfile &
@@ -345,6 +353,7 @@ let runAuthSetup = async (opts: AuthSetupOptions): Promise<SlatesStoredAuth> => 
       clientId,
       clientSecret,
       scopes,
+      callbackParams: callbackResult.callbackParams,
       callbackState: callbackState ?? undefined
     });
 

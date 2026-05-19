@@ -25,7 +25,13 @@ Use this to explore subreddit metadata, discover community rules, or browse curr
         .enum(['hour', 'day', 'week', 'month', 'year', 'all'])
         .optional()
         .describe('Time filter for top/controversial posts'),
-      postLimit: z.number().optional().describe('Maximum number of posts to return (max 100)')
+      postLimit: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of posts to return (max 100)')
     })
   )
   .output(

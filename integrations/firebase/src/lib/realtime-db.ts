@@ -15,7 +15,7 @@ export class RealtimeDbClient {
   }
 
   private get authParams() {
-    return { auth: this.token };
+    return { access_token: this.token };
   }
 
   async getData(

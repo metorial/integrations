@@ -19,13 +19,38 @@ export interface PaginatedResponse<T> {
   [key: string]: any;
 }
 
+let encodeZoomPathId = (value: number | string) => {
+  let raw = String(value);
+  let decoded = raw;
+
+  try {
+    decoded = decodeURIComponent(raw);
+  } catch {}
+
+  let encoded = encodeURIComponent(decoded);
+  if (decoded.startsWith('/') || decoded.includes('//')) {
+    return encodeURIComponent(encoded);
+  }
+
+  return encoded;
+};
+
+let appendDefinedFormField = (
+  formData: FormData,
+  name: string,
+  value: string | number | boolean | undefined
+) => {
+  if (value !== undefined) {
+    formData.append(name, String(value));
+  }
+};
+
 export class ZoomClient {
   private headers: Record<string, string>;
 
   constructor(token: string) {
     this.headers = {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${token}`
     };
   }
 
@@ -189,16 +214,23 @@ export class ZoomClient {
     if (params?.pageSize) query.set('page_size', String(params.pageSize));
     if (params?.nextPageToken) query.set('next_page_token', params.nextPageToken);
 
-    let response = await api.get(`/meetings/${meetingId}/registrants?${query.toString()}`, {
-      headers: this.headers
-    });
+    let response = await api.get(
+      `/meetings/${encodeZoomPathId(meetingId)}/registrants?${query.toString()}`,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async addMeetingRegistrant(meetingId: number | string, registrantData: Record<string, any>) {
-    let response = await api.post(`/meetings/${meetingId}/registrants`, registrantData, {
-      headers: this.headers
-    });
+    let response = await api.post(
+      `/meetings/${encodeZoomPathId(meetingId)}/registrants`,
+      registrantData,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -214,7 +246,7 @@ export class ZoomClient {
     if (params?.nextPageToken) query.set('next_page_token', params.nextPageToken);
 
     let response = await api.get(
-      `/report/meetings/${meetingId}/participants?${query.toString()}`,
+      `/report/meetings/${encodeZoomPathId(meetingId)}/participants?${query.toString()}`,
       { headers: this.headers }
     );
     return response.data;
@@ -365,7 +397,7 @@ export class ZoomClient {
   }
 
   async getMeetingRecordings(meetingId: string) {
-    let response = await api.get(`/meetings/${encodeURIComponent(meetingId)}/recordings`, {
+    let response = await api.get(`/meetings/${encodeZoomPathId(meetingId)}/recordings`, {
       headers: this.headers
     });
     return response.data;
@@ -376,7 +408,7 @@ export class ZoomClient {
     if (params?.action) query.set('action', params.action);
 
     let response = await api.delete(
-      `/meetings/${encodeURIComponent(meetingId)}/recordings?${query.toString()}`,
+      `/meetings/${encodeZoomPathId(meetingId)}/recordings?${query.toString()}`,
       { headers: this.headers }
     );
     return response.data;
@@ -391,7 +423,7 @@ export class ZoomClient {
     if (params?.action) query.set('action', params.action);
 
     let response = await api.delete(
-      `/meetings/${encodeURIComponent(meetingId)}/recordings/${recordingId}?${query.toString()}`,
+      `/meetings/${encodeZoomPathId(meetingId)}/recordings/${encodeURIComponent(recordingId)}?${query.toString()}`,
       { headers: this.headers }
     );
     return response.data;
@@ -495,13 +527,14 @@ export class ZoomClient {
       toContact?: string;
     }
   ) {
+    let formData = new FormData();
+    formData.append('message', messageData.message);
+    appendDefinedFormField(formData, 'to_channel', messageData.toChannel);
+    appendDefinedFormField(formData, 'to_contact', messageData.toContact);
+
     let response = await api.post(
       `/chat/users/${encodeURIComponent(userId)}/messages`,
-      {
-        message: messageData.message,
-        to_channel: messageData.toChannel,
-        to_contact: messageData.toContact
-      },
+      formData,
       { headers: this.headers }
     );
     return response.data;
@@ -516,13 +549,14 @@ export class ZoomClient {
       toContact?: string;
     }
   ) {
+    let formData = new FormData();
+    formData.append('message', messageData.message);
+    appendDefinedFormField(formData, 'to_channel', messageData.toChannel);
+    appendDefinedFormField(formData, 'to_contact', messageData.toContact);
+
     let response = await api.put(
-      `/chat/users/${encodeURIComponent(userId)}/messages/${messageId}`,
-      {
-        message: messageData.message,
-        to_channel: messageData.toChannel,
-        to_contact: messageData.toContact
-      },
+      `/chat/users/${encodeURIComponent(userId)}/messages/${encodeURIComponent(messageId)}`,
+      formData,
       { headers: this.headers }
     );
     return response.data;
@@ -541,7 +575,7 @@ export class ZoomClient {
     if (params.toContact) query.set('to_contact', params.toContact);
 
     let response = await api.delete(
-      `/chat/users/${encodeURIComponent(userId)}/messages/${messageId}?${query.toString()}`,
+      `/chat/users/${encodeURIComponent(userId)}/messages/${encodeURIComponent(messageId)}?${query.toString()}`,
       { headers: this.headers }
     );
     return response.data;
@@ -596,7 +630,7 @@ export class ZoomClient {
   }
 
   async getMeetingReport(meetingId: string) {
-    let response = await api.get(`/report/meetings/${encodeURIComponent(meetingId)}`, {
+    let response = await api.get(`/report/meetings/${encodeZoomPathId(meetingId)}`, {
       headers: this.headers
     });
     return response.data;
@@ -614,7 +648,7 @@ export class ZoomClient {
     if (params?.nextPageToken) query.set('next_page_token', params.nextPageToken);
 
     let response = await api.get(
-      `/report/meetings/${encodeURIComponent(meetingId)}/participants?${query.toString()}`,
+      `/report/meetings/${encodeZoomPathId(meetingId)}/participants?${query.toString()}`,
       { headers: this.headers }
     );
     return response.data;

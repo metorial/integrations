@@ -34,7 +34,11 @@ export let createOAuthCallbackListener = async () => {
   return new Promise<{
     redirectUri: string;
     state: string;
-    wait: () => Promise<{ code: string; state: string }>;
+    wait: () => Promise<{
+      code: string;
+      state: string;
+      callbackParams: Record<string, string>;
+    }>;
   }>((resolve, reject) => {
     let expectedState = randomUUID();
     let settled = false;
@@ -79,7 +83,11 @@ export let createOAuthCallbackListener = async () => {
         res.end('Authentication complete. You can close this window.');
         server.close();
         settled = true;
-        waiter.resolve({ code, state });
+        waiter.resolve({
+          code,
+          state,
+          callbackParams: Object.fromEntries(url.searchParams.entries())
+        });
       } catch (error) {
         server.close();
         settled = true;
@@ -88,9 +96,17 @@ export let createOAuthCallbackListener = async () => {
     });
 
     let waiter = (() => {
-      let resolvePromise!: (value: { code: string; state: string }) => void;
+      let resolvePromise!: (value: {
+        code: string;
+        state: string;
+        callbackParams: Record<string, string>;
+      }) => void;
       let rejectPromise!: (error: unknown) => void;
-      let promise = new Promise<{ code: string; state: string }>((resolveFn, rejectFn) => {
+      let promise = new Promise<{
+        code: string;
+        state: string;
+        callbackParams: Record<string, string>;
+      }>((resolveFn, rejectFn) => {
         resolvePromise = resolveFn;
         rejectPromise = rejectFn;
       });

@@ -72,7 +72,7 @@ Supports filtering by item type and exact matching.`,
     let results = items.map((item: any) => {
       let resultItem = item.item;
       return {
-        resultType: item.result_type,
+        resultType: item.result_type ?? item.type ?? resultItem?.type ?? resultItem?.item_type ?? '',
         resultId: resultItem?.id,
         title: resultItem?.title || resultItem?.name || '',
         resultScore: item.result_score,

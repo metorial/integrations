@@ -58,32 +58,32 @@ export let getSite = SlateTool.create(spec, {
       siteId: site.id,
       name: site.name || '',
       url: site.url || '',
-      sslUrl: site.ssl_url,
-      adminUrl: site.admin_url,
-      customDomain: site.custom_domain,
-      domainAliases: site.domain_aliases,
-      state: site.state,
-      createdAt: site.created_at,
-      updatedAt: site.updated_at,
-      accountSlug: site.account_slug,
-      accountName: site.account_name
+      sslUrl: site.ssl_url ?? undefined,
+      adminUrl: site.admin_url ?? undefined,
+      customDomain: site.custom_domain ?? undefined,
+      domainAliases: site.domain_aliases ?? undefined,
+      state: site.state ?? undefined,
+      createdAt: site.created_at ?? undefined,
+      updatedAt: site.updated_at ?? undefined,
+      accountSlug: site.account_slug ?? undefined,
+      accountName: site.account_name ?? undefined
     };
 
     if (site.build_settings) {
       output.buildSettings = {
-        repoUrl: site.build_settings.repo_url,
-        repoBranch: site.build_settings.repo_branch,
-        cmd: site.build_settings.cmd,
-        dir: site.build_settings.dir,
-        functionsDir: site.build_settings.functions_dir
+        repoUrl: site.build_settings.repo_url ?? undefined,
+        repoBranch: site.build_settings.repo_branch ?? undefined,
+        cmd: site.build_settings.cmd ?? undefined,
+        dir: site.build_settings.dir ?? undefined,
+        functionsDir: site.build_settings.functions_dir ?? undefined
       };
     }
 
     if (site.published_deploy) {
       output.publishedDeploy = {
         deployId: site.published_deploy.id,
-        state: site.published_deploy.state,
-        publishedAt: site.published_deploy.published_at
+        state: site.published_deploy.state ?? undefined,
+        publishedAt: site.published_deploy.published_at ?? undefined
       };
     }
 

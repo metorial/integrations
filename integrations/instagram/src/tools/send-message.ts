@@ -4,6 +4,9 @@ import { instagramServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let countProvidedMessageParts = (values: Array<unknown>) =>
+  values.filter(value => typeof value === 'string' && value.length > 0).length;
+
 export let sendMessageTool = SlateTool.create(spec, {
   name: 'Send Message',
   key: 'send_message',
@@ -124,9 +127,16 @@ export let sendMessageTool = SlateTool.create(spec, {
     if (action === 'send') {
       if (!ctx.input.recipientId)
         throw instagramServiceError('recipientId is required for "send" action');
-      if (!ctx.input.text && !ctx.input.imageUrl && !ctx.input.mediaId) {
+
+      let providedMessageParts = countProvidedMessageParts([
+        ctx.input.text,
+        ctx.input.imageUrl,
+        ctx.input.mediaId
+      ]);
+
+      if (providedMessageParts !== 1) {
         throw instagramServiceError(
-          'One of text, imageUrl, or mediaId is required for "send" action'
+          'Provide exactly one of text, imageUrl, or mediaId for "send" action'
         );
       }
 

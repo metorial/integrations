@@ -47,7 +47,11 @@ export let getInputFieldChoices = SlateTool.create(spec, {
       currentInputs: z
         .record(z.string(), z.any())
         .optional()
-        .describe('Current input field values for resolving dependent choices')
+        .describe('Current input field values for resolving dependent choices'),
+      page: z
+        .number()
+        .optional()
+        .describe('Choice page to return when Zapier paginates SELECT choices')
     })
   )
   .output(
@@ -62,7 +66,8 @@ export let getInputFieldChoices = SlateTool.create(spec, {
 
     let response = await client.getChoices(ctx.input.actionId, ctx.input.fieldId, {
       authentication: ctx.input.authenticationId,
-      inputs: ctx.input.currentInputs || {}
+      inputs: ctx.input.currentInputs || {},
+      page: ctx.input.page
     });
 
     let normalized = normalizeChoicesResponse(response);

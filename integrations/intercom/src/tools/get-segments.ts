@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { numberOrUndefined, stringOrUndefined, timestampOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -89,9 +90,9 @@ export let getSegments = SlateTool.create(spec, {
 
 let mapSegment = (data: any) => ({
   segmentId: String(data.id),
-  name: data.name,
-  personType: data.person_type,
-  count: data.count,
-  createdAt: data.created_at ? String(data.created_at) : undefined,
-  updatedAt: data.updated_at ? String(data.updated_at) : undefined
+  name: stringOrUndefined(data.name),
+  personType: stringOrUndefined(data.person_type),
+  count: data.count === null ? null : numberOrUndefined(data.count),
+  createdAt: timestampOrUndefined(data.created_at),
+  updatedAt: timestampOrUndefined(data.updated_at)
 });

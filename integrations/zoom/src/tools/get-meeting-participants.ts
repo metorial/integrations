@@ -19,7 +19,7 @@ export let getMeetingParticipants = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      meetingId: z.string().describe('The meeting UUID or ID (use UUID for accuracy)'),
+      meetingId: z.string().describe('The raw meeting UUID or ID (use UUID for accuracy)'),
       pageSize: z.number().optional().describe('Number of records per page (max 300)'),
       nextPageToken: z.string().optional().describe('Pagination token for next page')
     })
@@ -40,7 +40,10 @@ export let getMeetingParticipants = SlateTool.create(spec, {
             joinTime: z.string().optional().describe('Time when participant joined'),
             leaveTime: z.string().optional().describe('Time when participant left'),
             durationInSeconds: z.number().optional().describe('Duration in seconds'),
-            attentivenessScore: z.string().optional().describe('Attentiveness score')
+            attentivenessScore: z.string().optional().describe('Attentiveness score'),
+            participantUserId: z.string().optional().describe('Participant UUID'),
+            userId: z.string().optional().describe('Meeting-scoped participant ID'),
+            status: z.string().optional().describe('Participant status')
           })
         )
         .describe('List of participants')
@@ -60,7 +63,10 @@ export let getMeetingParticipants = SlateTool.create(spec, {
       joinTime: p.join_time,
       leaveTime: p.leave_time,
       durationInSeconds: p.duration,
-      attentivenessScore: p.attentiveness_score
+      attentivenessScore: p.attentiveness_score,
+      participantUserId: p.participant_user_id,
+      userId: p.user_id,
+      status: p.status
     }));
 
     return {

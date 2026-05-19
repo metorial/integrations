@@ -45,7 +45,12 @@ export let newComment = SlateTrigger.create(spec, {
 
     pollEvents: async ctx => {
       let client = new RedditClient(ctx.auth.token);
-      let state = ctx.state as { lastCreatedUtc?: number; seenCommentIds?: string[] } | null;
+      let state = ctx.state as {
+        initialized?: boolean;
+        lastCreatedUtc?: number;
+        seenCommentIds?: string[];
+      } | null;
+      let isFirstRun = !state?.initialized;
       let lastCreatedUtc = state?.lastCreatedUtc ?? 0;
       let seenCommentIds = state?.seenCommentIds ?? [];
 
@@ -54,7 +59,7 @@ export let newComment = SlateTrigger.create(spec, {
 
       let allInputs: any[] = [];
       let newestCreatedUtc = lastCreatedUtc;
-      let newSeenIds: string[] = [];
+      let nextSeenIds: string[] = [...seenCommentIds];
 
       for (let sub of subreddits) {
         let subredditName = sub.data?.display_name;
@@ -83,23 +88,27 @@ export let newComment = SlateTrigger.create(spec, {
                 if (!d?.name) continue;
 
                 let createdUtc = d.created_utc ?? 0;
+                if (!nextSeenIds.includes(d.name)) {
+                  nextSeenIds.push(d.name);
+                }
+
                 if (createdUtc <= lastCreatedUtc && seenCommentIds.includes(d.name)) continue;
                 if (createdUtc < lastCreatedUtc) continue;
 
-                allInputs.push({
-                  commentId: d.name,
-                  postId: d.link_id,
-                  parentId: d.parent_id,
-                  author: d.author,
-                  body: d.body,
-                  subredditName: d.subreddit,
-                  score: d.score,
-                  createdUtc: d.created_utc,
-                  permalink: d.permalink,
-                  isSubmitter: d.is_submitter
-                });
-
-                newSeenIds.push(d.name);
+                if (!isFirstRun) {
+                  allInputs.push({
+                    commentId: d.name,
+                    postId: d.link_id,
+                    parentId: d.parent_id,
+                    author: d.author,
+                    body: d.body,
+                    subredditName: d.subreddit,
+                    score: d.score,
+                    createdUtc: d.created_utc,
+                    permalink: d.permalink,
+                    isSubmitter: d.is_submitter
+                  });
+                }
 
                 if (createdUtc > newestCreatedUtc) {
                   newestCreatedUtc = createdUtc;
@@ -117,8 +126,9 @@ export let newComment = SlateTrigger.create(spec, {
       return {
         inputs: allInputs,
         updatedState: {
+          initialized: true,
           lastCreatedUtc: newestCreatedUtc,
-          seenCommentIds: newSeenIds.slice(0, 500)
+          seenCommentIds: nextSeenIds.slice(-500)
         }
       };
     },

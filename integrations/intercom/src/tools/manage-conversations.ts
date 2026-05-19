@@ -1,5 +1,10 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import {
+  booleanOrUndefined,
+  stringOrUndefined,
+  timestampOrUndefined
+} from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 import { intercomServiceError } from '../lib/errors';
@@ -114,7 +119,7 @@ Combines multiple conversation management operations into a single tool.`,
       });
       return {
         output: mapConversation(result),
-        message: `Created conversation **${result.id}**`
+        message: `Created conversation **${result.conversation_id || result.id}**`
       };
     }
 
@@ -227,15 +232,15 @@ Combines multiple conversation management operations into a single tool.`,
   .build();
 
 let mapConversation = (data: any) => ({
-  conversationId: data.id,
-  state: data.state,
-  title: data.title,
-  open: data.open,
-  read: data.read,
-  priority: data.priority,
-  snoozedUntil: data.snoozed_until ? String(data.snoozed_until) : undefined,
+  conversationId: String(data.conversation_id || data.id),
+  state: stringOrUndefined(data.state),
+  title: stringOrUndefined(data.title),
+  open: booleanOrUndefined(data.open),
+  read: booleanOrUndefined(data.read),
+  priority: stringOrUndefined(data.priority),
+  snoozedUntil: timestampOrUndefined(data.snoozed_until),
   assigneeId: data.assignee?.id ? String(data.assignee.id) : undefined,
-  assigneeType: data.assignee?.type,
-  createdAt: data.created_at ? String(data.created_at) : undefined,
-  updatedAt: data.updated_at ? String(data.updated_at) : undefined
+  assigneeType: stringOrUndefined(data.assignee?.type),
+  createdAt: timestampOrUndefined(data.created_at),
+  updatedAt: timestampOrUndefined(data.updated_at)
 });

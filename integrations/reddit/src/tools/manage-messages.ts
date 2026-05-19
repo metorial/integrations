@@ -24,7 +24,11 @@ Supports retrieving inbox, unread, and sent message folders.`,
         .string()
         .optional()
         .describe('Recipient username for sending messages'),
-      subject: z.string().optional().describe('Message subject (required for send)'),
+      subject: z
+        .string()
+        .max(100)
+        .optional()
+        .describe('Message subject (required for send, max 100 characters)'),
       text: z
         .string()
         .optional()
@@ -37,7 +41,13 @@ Supports retrieving inbox, unread, and sent message folders.`,
         .array(z.string())
         .optional()
         .describe('Message fullnames for mark_read/mark_unread actions'),
-      limit: z.number().optional().describe('Maximum number of messages to return')
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of messages to return (max 100)')
     })
   )
   .output(

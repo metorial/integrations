@@ -281,7 +281,11 @@ export class TypeformClient {
 
   async getImage(imageId: string): Promise<any> {
     let response = await this.request('retrieving image', () =>
-      this.axios.get(`/images/${imageId}`)
+      this.axios.get(`/images/${imageId}`, {
+        headers: {
+          Accept: 'application/json'
+        }
+      })
     );
     return response.data;
   }
@@ -365,7 +369,14 @@ export class TypeformClient {
 
   async getTranslationStatuses(formId: string): Promise<any> {
     let response = await this.request('retrieving translation statuses', () =>
-      this.axios.get(`/forms/${formId}/translations/statuses`)
+      this.axios.get(`/forms/${formId}/translations/status`)
+    );
+    return response.data;
+  }
+
+  async getMainTranslationPayload(formId: string): Promise<any> {
+    let response = await this.request('retrieving main translation payload', () =>
+      this.axios.get(`/forms/${formId}/translations/main`)
     );
     return response.data;
   }
@@ -381,11 +392,10 @@ export class TypeformClient {
     formId: string,
     language: string,
     translationData: any
-  ): Promise<any> {
-    let response = await this.request('updating translation', () =>
+  ): Promise<void> {
+    await this.request('updating translation', () =>
       this.axios.put(`/forms/${formId}/translations/${language}`, translationData)
     );
-    return response.data;
   }
 
   async deleteTranslation(formId: string, language: string): Promise<void> {

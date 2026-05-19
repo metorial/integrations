@@ -16,9 +16,7 @@ export let getMeetingRecordings = SlateTool.create(spec, {
     z.object({
       meetingId: z
         .string()
-        .describe(
-          'The meeting ID or UUID (double-encode if UUID starts with / or contains //)'
-        )
+        .describe('The meeting ID or UUID. Raw Zoom UUIDs are accepted.')
     })
   )
   .output(

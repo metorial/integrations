@@ -38,7 +38,13 @@ Supports approving, removing, distinguishing content, and viewing the mod queue,
         .enum(['yes', 'no', 'admin', 'special'])
         .optional()
         .describe('Distinguish type (default: yes)'),
-      limit: z.number().optional().describe('Maximum number of items to return for queue/log')
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of items to return for queue/log (max 100)')
     })
   )
   .output(

@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { stringOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 import { intercomServiceError } from '../lib/errors';
@@ -55,7 +56,7 @@ The message will initiate a new conversation with the target contact.`,
     }
 
     let result = await client.sendMessage({
-      messageType: ctx.input.messageType,
+      messageType: ctx.input.messageType === 'inapp' ? 'in_app' : ctx.input.messageType,
       subject: ctx.input.subject,
       body: ctx.input.body,
       template: ctx.input.template,
@@ -71,10 +72,10 @@ The message will initiate a new conversation with the target contact.`,
 
     return {
       output: {
-        messageId: result.id,
-        messageType: result.message_type,
-        body: result.body,
-        subject: result.subject,
+        messageId: stringOrUndefined(result.id),
+        messageType: stringOrUndefined(result.message_type),
+        body: stringOrUndefined(result.body),
+        subject: stringOrUndefined(result.subject),
         ownerId: result.owner?.id ? String(result.owner.id) : undefined
       },
       message: `Sent ${ctx.input.messageType} message to **${ctx.input.toEmail || ctx.input.toContactId || ctx.input.toUserId}**`

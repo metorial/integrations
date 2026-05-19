@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { stringOrUndefined, timestampOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -96,14 +97,14 @@ Returns paginated results with cursor-based pagination.`,
     );
 
     let contacts = (result.data || []).map((c: any) => ({
-      contactId: c.id,
-      role: c.role,
-      email: c.email,
-      name: c.name,
-      phone: c.phone,
-      externalId: c.external_id,
-      createdAt: c.created_at ? String(c.created_at) : undefined,
-      updatedAt: c.updated_at ? String(c.updated_at) : undefined
+      contactId: String(c.id),
+      role: stringOrUndefined(c.role),
+      email: stringOrUndefined(c.email),
+      name: stringOrUndefined(c.name),
+      phone: stringOrUndefined(c.phone),
+      externalId: stringOrUndefined(c.external_id),
+      createdAt: timestampOrUndefined(c.created_at),
+      updatedAt: timestampOrUndefined(c.updated_at)
     }));
 
     return {

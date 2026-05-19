@@ -75,18 +75,19 @@ export let queryEntities = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
-    let entities = await client.runQuery(
+    let queryResult = await client.runQueryWithMetadata(
       ctx.input.entityType,
       ctx.input.where,
       ctx.input.orderBy,
       ctx.input.maxResults,
       ctx.input.startPosition
     );
+    let entities = queryResult.entities;
 
     return {
       output: {
         entities,
-        totalCount: entities.length,
+        totalCount: queryResult.totalCount ?? entities.length,
         entityType: ctx.input.entityType
       },
       message: `Found **${entities.length}** ${ctx.input.entityType} record(s)${ctx.input.where ? ` matching: ${ctx.input.where}` : ''}.`

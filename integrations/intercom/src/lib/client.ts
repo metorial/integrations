@@ -152,11 +152,23 @@ export class Client {
 
   // ──────── Companies ────────
 
-  async listCompanies(params?: { perPage?: number; page?: number; order?: string }) {
+  async listCompanies(params?: {
+    perPage?: number;
+    page?: number;
+    order?: string;
+    name?: string;
+    companyId?: string;
+    tagId?: string;
+    segmentId?: string;
+  }) {
     let query = new URLSearchParams();
     if (params?.perPage) query.set('per_page', String(params.perPage));
     if (params?.page) query.set('page', String(params.page));
     if (params?.order) query.set('order', params.order);
+    if (params?.name) query.set('name', params.name);
+    if (params?.companyId) query.set('company_id', params.companyId);
+    if (params?.tagId) query.set('tag_id', params.tagId);
+    if (params?.segmentId) query.set('segment_id', params.segmentId);
     let qs = query.toString();
     let response = await this.http.get(`/companies${qs ? `?${qs}` : ''}`);
     return response.data;
@@ -556,7 +568,7 @@ export class Client {
   }
 
   async updateTag(tagId: string, name: string) {
-    let response = await this.http.put(`/tags/${tagId}`, { name });
+    let response = await this.http.post('/tags', { id: tagId, name });
     return response.data;
   }
 
@@ -591,7 +603,7 @@ export class Client {
     if (data.userId) body.user_id = data.userId;
     if (data.email) body.email = data.email;
     if (data.intercomUserId) body.id = data.intercomUserId;
-    if (data.createdAt) body.created_at = data.createdAt;
+    body.created_at = data.createdAt ?? Math.floor(Date.now() / 1000);
     if (data.metadata) body.metadata = data.metadata;
     let response = await this.http.post('/events', body);
     return response.data;

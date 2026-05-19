@@ -1,5 +1,10 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import {
+  booleanOrUndefined,
+  stringOrUndefined,
+  timestampOrUndefined
+} from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -68,15 +73,15 @@ Supports filtering by fields like source.author.id, state, read, priority, assig
     }
 
     let conversations = (result.conversations || result.data || []).map((c: any) => ({
-      conversationId: c.id,
-      state: c.state,
-      title: c.title,
-      open: c.open,
-      read: c.read,
-      priority: c.priority,
+      conversationId: String(c.id),
+      state: stringOrUndefined(c.state),
+      title: stringOrUndefined(c.title),
+      open: booleanOrUndefined(c.open),
+      read: booleanOrUndefined(c.read),
+      priority: stringOrUndefined(c.priority),
       assigneeId: c.assignee?.id ? String(c.assignee.id) : undefined,
-      createdAt: c.created_at ? String(c.created_at) : undefined,
-      updatedAt: c.updated_at ? String(c.updated_at) : undefined
+      createdAt: timestampOrUndefined(c.created_at),
+      updatedAt: timestampOrUndefined(c.updated_at)
     }));
 
     return {

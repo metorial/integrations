@@ -29,7 +29,7 @@ export let updateWebinar = SlateTool.create(spec, {
           hostVideo: z.boolean().optional(),
           panelistsVideo: z.boolean().optional(),
           approvalType: z.number().optional(),
-          audio: z.enum(['both', 'telephony', 'voip']).optional(),
+          audio: z.enum(['both', 'telephony', 'voip', 'thirdParty']).optional(),
           autoRecording: z.enum(['local', 'cloud', 'none']).optional(),
           practiceSession: z.boolean().optional()
         })

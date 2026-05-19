@@ -539,6 +539,7 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
                 clientId: params.clientId,
                 clientSecret: params.clientSecret,
                 scopes: params.scopes,
+                callbackParams: params.callbackParams || {},
                 callbackState: params.callbackState || {}
               })
             )

@@ -36,6 +36,10 @@ Use this to discover which apps are available for building Zaps, filter by categ
           image: z.string().describe('App icon URL'),
           hexColor: z.string().describe('App brand color'),
           actionTypes: z.array(z.string()).describe('Available action types for this app'),
+          connectNewAuthenticationUrl: z
+            .string()
+            .optional()
+            .describe('Zapier URL for starting a browser-based connection flow'),
           categories: z.array(z.object({ slug: z.string() })).describe('App categories'),
           images: z
             .object({
@@ -68,6 +72,7 @@ Use this to discover which apps are available for building Zaps, filter by categ
       image: app.image,
       hexColor: app.hexColor,
       actionTypes: app.actionTypes || [],
+      connectNewAuthenticationUrl: app.links?.connectNewAuthentication,
       categories: app.categories || [],
       images: app.images
     }));

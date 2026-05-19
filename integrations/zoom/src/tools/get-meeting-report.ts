@@ -18,7 +18,7 @@ export let getMeetingReport = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      meetingId: z.string().describe('The meeting UUID or ID')
+      meetingId: z.string().describe('The raw meeting UUID or ID')
     })
   )
   .output(
@@ -46,7 +46,7 @@ export let getMeetingReport = SlateTool.create(spec, {
         uuid: report.uuid,
         topic: report.topic,
         hostId: report.host_id,
-        hostEmail: report.host_email || report.email,
+        hostEmail: report.user_email || report.host_email || report.email,
         startTime: report.start_time,
         endTime: report.end_time,
         duration: report.duration,

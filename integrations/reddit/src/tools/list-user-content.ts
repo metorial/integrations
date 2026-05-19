@@ -31,7 +31,7 @@ export let listUserContent = SlateTool.create(spec, {
   name: 'List User Content',
   key: 'list_user_content',
   description: `List a Reddit user's overview, posts, comments, saved items, hidden items, voted items, or gilded items.
-Use this for account history workflows that need saved/hidden/voted listings rather than only public profile metadata.`,
+Use this for account history workflows that need saved/hidden/voted listings rather than only public profile metadata. Saved, hidden, upvoted, and downvoted listings are only available for the authenticated account.`,
   tags: {
     readOnly: true
   }
@@ -63,7 +63,13 @@ Use this for account history workflows that need saved/hidden/voted listings rat
         .enum(['hour', 'day', 'week', 'month', 'year', 'all'])
         .optional()
         .describe('Time filter for top or controversial listings'),
-      limit: z.number().optional().describe('Maximum number of items to return (max 100)'),
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of items to return (max 100)'),
       after: z.string().optional().describe('Listing cursor for the next page'),
       before: z.string().optional().describe('Listing cursor for the previous page')
     })
@@ -81,17 +87,32 @@ Use this for account history workflows that need saved/hidden/voted listings rat
   .handleInvocation(async ctx => {
     let client = new RedditClient(ctx.auth.token);
     let username = ctx.input.username?.trim() ?? '';
+    let listing = ctx.input.listing ?? 'overview';
+    let authenticatedUser: string | undefined;
+    let privateListings = new Set(['saved', 'hidden', 'upvoted', 'downvoted']);
+
+    if (!username || privateListings.has(listing)) {
+      let me = await client.getMe();
+      authenticatedUser = typeof me.name === 'string' ? me.name : undefined;
+    }
 
     if (!username) {
-      let me = await client.getMe();
-      username = typeof me.name === 'string' ? me.name : '';
+      username = authenticatedUser ?? '';
     }
 
     if (!username) {
       throw redditServiceError('Could not determine the Reddit username to list.');
     }
 
-    let listing = ctx.input.listing ?? 'overview';
+    if (
+      privateListings.has(listing) &&
+      (!authenticatedUser || username.toLowerCase() !== authenticatedUser.toLowerCase())
+    ) {
+      throw redditServiceError(
+        `${listing} listings are only available for the authenticated Reddit account.`
+      );
+    }
+
     let data = await client.getUserListing(username, listing, {
       sort: ctx.input.sort,
       t: ctx.input.timeFilter,

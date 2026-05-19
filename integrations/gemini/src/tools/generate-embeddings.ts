@@ -8,8 +8,8 @@ export let generateEmbeddings = SlateTool.create(spec, {
   key: 'generate_embeddings',
   description: `Generate vector embeddings for text content using Gemini embedding models. Supports single and batch embedding generation with configurable task type and dimensionality. Useful for semantic search, classification, and clustering.`,
   instructions: [
-    'Use "gemini-embedding-001" as the current Gemini embedding model.',
-    'Set taskType to optimize embeddings for your use case: RETRIEVAL_QUERY for search queries, RETRIEVAL_DOCUMENT for documents to be searched, SEMANTIC_SIMILARITY for comparing text similarity.'
+    'Use "gemini-embedding-2" as the current Gemini embedding model.',
+    'For "gemini-embedding-001", set taskType to optimize embeddings for your use case. For "gemini-embedding-2", put task instructions directly in the text instead of using taskType.'
   ],
   tags: {
     readOnly: true,
@@ -18,7 +18,7 @@ export let generateEmbeddings = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      model: z.string().describe('Embedding model ID (e.g. "gemini-embedding-001")'),
+      model: z.string().describe('Embedding model ID (e.g. "gemini-embedding-2")'),
       texts: z
         .array(z.string())
         .min(1)
@@ -35,11 +35,15 @@ export let generateEmbeddings = SlateTool.create(spec, {
           'CODE_RETRIEVAL_QUERY'
         ])
         .optional()
-        .describe('Task type to optimize the embeddings for'),
+        .describe(
+          'Task type to optimize the embeddings for. This is only sent for gemini-embedding-001; gemini-embedding-2 expects task instructions in the text.'
+        ),
       title: z
         .string()
         .optional()
-        .describe('Title for the content (only used with RETRIEVAL_DOCUMENT task type)'),
+        .describe(
+          'Title for the content. This is only sent for gemini-embedding-001 with RETRIEVAL_DOCUMENT task type.'
+        ),
       outputDimensionality: z
         .number()
         .optional()

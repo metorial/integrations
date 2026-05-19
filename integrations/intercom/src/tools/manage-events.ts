@@ -3,6 +3,7 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 import { intercomServiceError } from '../lib/errors';
+import { objectOrUndefined, stringOrUndefined } from '../lib/output';
 
 export let manageEvents = SlateTool.create(spec, {
   name: 'Manage Data Events',
@@ -101,10 +102,10 @@ Use "submit" to track a new event, or "list" to retrieve events for a contact.`,
         summary: ctx.input.summary
       });
       let events = (result.events || []).map((e: any) => ({
-        eventName: e.event_name,
-        intercomUserId: e.intercom_user_id,
+        eventName: String(e.event_name),
+        intercomUserId: stringOrUndefined(e.intercom_user_id),
         createdAt: e.created_at,
-        metadata: e.metadata
+        metadata: objectOrUndefined(e.metadata)
       }));
       return {
         output: { events, totalCount: result.total_count },

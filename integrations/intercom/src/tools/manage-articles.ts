@@ -1,5 +1,6 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { stringOrUndefined, timestampOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 import { intercomServiceError } from '../lib/errors';
@@ -111,13 +112,13 @@ Supports multilingual content through translated content fields.`,
   .build();
 
 let mapArticle = (data: any) => ({
-  articleId: data.id,
-  title: data.title,
+  articleId: stringOrUndefined(data.id),
+  title: stringOrUndefined(data.title),
   authorId: data.author_id ? String(data.author_id) : undefined,
-  state: data.state,
-  url: data.url,
+  state: stringOrUndefined(data.state),
+  url: stringOrUndefined(data.url),
   parentId: data.parent_id ? String(data.parent_id) : undefined,
-  parentType: data.parent_type,
-  createdAt: data.created_at ? String(data.created_at) : undefined,
-  updatedAt: data.updated_at ? String(data.updated_at) : undefined
+  parentType: stringOrUndefined(data.parent_type),
+  createdAt: timestampOrUndefined(data.created_at),
+  updatedAt: timestampOrUndefined(data.updated_at)
 });

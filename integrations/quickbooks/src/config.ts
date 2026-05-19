@@ -10,7 +10,10 @@ export let config = SlateConfig.create(
     companyId: z
       .string()
       .min(1)
-      .describe('QuickBooks Company ID (Realm ID) for the target company'),
+      .optional()
+      .describe(
+        'QuickBooks Company ID (Realm ID) for the target company. Optional when OAuth captured a realmId.'
+      ),
     webhookVerifierToken: z
       .string()
       .optional()

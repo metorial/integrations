@@ -1,5 +1,10 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import {
+  booleanOrUndefined,
+  stringOrUndefined,
+  timestampOrUndefined
+} from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -91,52 +96,52 @@ export let getConversation = SlateTool.create(spec, {
 
     let parts = (result.conversation_parts?.conversation_parts || []).map((p: any) => ({
       partId: String(p.id),
-      partType: p.part_type,
-      body: p.body,
-      authorType: p.author?.type,
+      partType: stringOrUndefined(p.part_type),
+      body: stringOrUndefined(p.body),
+      authorType: stringOrUndefined(p.author?.type),
       authorId: p.author?.id ? String(p.author.id) : undefined,
-      authorName: p.author?.name,
-      createdAt: p.created_at ? String(p.created_at) : undefined
+      authorName: stringOrUndefined(p.author?.name),
+      createdAt: timestampOrUndefined(p.created_at)
     }));
 
     return {
       output: {
-        conversationId: result.id,
-        state: result.state,
-        title: result.title,
-        open: result.open,
-        read: result.read,
-        priority: result.priority,
-        waitingSince: result.waiting_since ? String(result.waiting_since) : undefined,
-        snoozedUntil: result.snoozed_until ? String(result.snoozed_until) : undefined,
-        createdAt: result.created_at ? String(result.created_at) : undefined,
-        updatedAt: result.updated_at ? String(result.updated_at) : undefined,
-        sourceType: result.source?.type,
-        sourceAuthorType: result.source?.author?.type,
+        conversationId: String(result.id),
+        state: stringOrUndefined(result.state),
+        title: stringOrUndefined(result.title),
+        open: booleanOrUndefined(result.open),
+        read: booleanOrUndefined(result.read),
+        priority: stringOrUndefined(result.priority),
+        waitingSince: timestampOrUndefined(result.waiting_since),
+        snoozedUntil: timestampOrUndefined(result.snoozed_until),
+        createdAt: timestampOrUndefined(result.created_at),
+        updatedAt: timestampOrUndefined(result.updated_at),
+        sourceType: stringOrUndefined(result.source?.type),
+        sourceAuthorType: stringOrUndefined(result.source?.author?.type),
         sourceAuthorId: result.source?.author?.id
           ? String(result.source.author.id)
           : undefined,
-        sourceAuthorName: result.source?.author?.name,
-        sourceAuthorEmail: result.source?.author?.email,
-        sourceBody: result.source?.body,
-        sourceSubject: result.source?.subject,
-        sourceUrl: result.source?.url,
+        sourceAuthorName: stringOrUndefined(result.source?.author?.name),
+        sourceAuthorEmail: stringOrUndefined(result.source?.author?.email),
+        sourceBody: stringOrUndefined(result.source?.body),
+        sourceSubject: stringOrUndefined(result.source?.subject),
+        sourceUrl: stringOrUndefined(result.source?.url),
         assigneeId: result.assignee?.id ? String(result.assignee.id) : undefined,
-        assigneeType: result.assignee?.type,
+        assigneeType: stringOrUndefined(result.assignee?.type),
         contacts: (result.contacts?.contacts || []).map((c: any) => ({
-          contactId: c.id,
-          type: c.type
+          contactId: String(c.id),
+          type: stringOrUndefined(c.type)
         })),
         teammates: (result.teammates?.admins || []).map((a: any) => ({
           adminId: String(a.id),
-          type: a.type
+          type: stringOrUndefined(a.type)
         })),
         tags: (result.tags?.tags || []).map((t: any) => ({
-          tagId: t.id,
-          name: t.name
+          tagId: String(t.id),
+          name: stringOrUndefined(t.name)
         })),
         conversationParts: parts,
-        aiAgentParticipated: result.ai_agent_participated
+        aiAgentParticipated: booleanOrUndefined(result.ai_agent_participated)
       },
       message: `Retrieved conversation **${result.id}** (${result.state}, ${parts.length} parts)`
     };

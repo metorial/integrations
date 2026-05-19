@@ -4,6 +4,8 @@ import { messengerServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let isHttpsUrl = (value: string) => /^https:\/\//i.test(value);
+
 let quickReplySchema = z
   .object({
     contentType: z
@@ -11,12 +13,14 @@ let quickReplySchema = z
       .describe('Type of quick reply'),
     title: z
       .string()
+      .max(20)
       .optional()
       .describe(
         'Title shown on the quick reply button (required for text type, max 20 chars)'
       ),
     payload: z
       .string()
+      .max(1000)
       .optional()
       .describe(
         'Custom data sent back when the quick reply is tapped (required for text type, max 1000 chars)'
@@ -70,6 +74,7 @@ Use **messagingType** and **tag** to send messages outside the 24-hour messaging
       recipientId: z.string().describe('Page-Scoped User ID (PSID) of the message recipient'),
       text: z
         .string()
+        .max(2000)
         .optional()
         .describe(
           'Text content of the message (max 2000 characters). Required if attachmentType is not set.'
@@ -80,6 +85,7 @@ Use **messagingType** and **tag** to send messages outside the 24-hour messaging
         .describe('Type of media attachment to send. Required if text is not set.'),
       attachmentUrl: z
         .string()
+        .refine(isHttpsUrl, 'attachmentUrl must be a public HTTPS URL')
         .optional()
         .describe('URL of the media attachment to send. Required when attachmentType is set unless attachmentId is provided.'),
       attachmentId: z
@@ -91,7 +97,7 @@ Use **messagingType** and **tag** to send messages outside the 24-hour messaging
         .optional()
         .describe('Whether the attachment can be reused in future messages'),
       imageUrls: z
-        .array(z.string())
+        .array(z.string().refine(isHttpsUrl, 'Each image URL must be a public HTTPS URL'))
         .min(2)
         .max(30)
         .optional()

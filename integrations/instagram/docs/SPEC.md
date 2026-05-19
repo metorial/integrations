@@ -18,7 +18,7 @@ Instagram uses **OAuth 2.0** for authentication. There are two authentication fl
 
 The Business Login approach uses OAuth 2.0 to authenticate users directly through Instagram. This method generates Instagram User access tokens that represent a specific Instagram Business or Creator account's permissions. The Instagram Platform API allows direct authentication with Instagram accounts without requiring a Facebook Page connection.
 
-- **Authorization URL:** `https://api.instagram.com/oauth/authorize`
+- **Authorization URL:** `https://www.instagram.com/oauth/authorize`
 - **Token Exchange URL:** `https://api.instagram.com/oauth/access_token`
 - **Credentials:** App ID (Client ID) and App Secret from the Meta Developer portal, plus a Redirect URI.
 - **Scopes (permissions):**
@@ -42,6 +42,7 @@ The Instagram API with Facebook Login for Business allows users of your app to a
   - `instagram_manage_insights` — Access analytics and insights
   - `instagram_manage_messages` — Manage direct messages
   - `pages_show_list` — List managed Facebook Pages
+  - `pages_read_engagement` — Read Page metadata needed to resolve the linked Instagram professional account
   - `pages_manage_metadata` — Manage page metadata (required for webhooks)
 
 ### Token Lifecycle

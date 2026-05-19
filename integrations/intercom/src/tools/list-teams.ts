@@ -1,6 +1,7 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
 import { intercomServiceError } from '../lib/errors';
+import { numberOrUndefined, stringOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -69,8 +70,8 @@ export let listTeams = SlateTool.create(spec, {
 
 let mapTeam = (data: any) => ({
   teamId: data.id !== undefined && data.id !== null ? String(data.id) : '',
-  name: data.name,
+  name: stringOrUndefined(data.name),
   adminIds: (data.admin_ids || []).map((id: string | number) => String(id)),
-  assignmentLimit: data.assignment_limit,
-  distributionMethod: data.distribution_method
+  assignmentLimit: numberOrUndefined(data.assignment_limit),
+  distributionMethod: stringOrUndefined(data.distribution_method)
 });

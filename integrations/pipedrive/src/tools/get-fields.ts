@@ -35,9 +35,9 @@ let mapField = (field: any) => ({
   mandatoryFlag: toBoolean(field.mandatory_flag),
   activeFlag: toBoolean(field.active_flag),
   editFlag: toBoolean(field.edit_flag),
-  addTime: field.add_time,
-  updateTime: field.update_time,
-  options: field.options
+  addTime: field.add_time ?? undefined,
+  updateTime: field.update_time ?? undefined,
+  options: field.options ?? undefined
 });
 
 export let getFields = SlateTool.create(spec, {
@@ -93,7 +93,7 @@ export let getFields = SlateTool.create(spec, {
       output: {
         resourceType: ctx.input.resourceType,
         fields,
-        nextCursor: result?.additional_data?.next_cursor
+        nextCursor: result?.additional_data?.next_cursor ?? undefined
       },
       message: `Found **${fields.length}** ${ctx.input.resourceType} field(s).`
     };

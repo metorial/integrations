@@ -28,7 +28,13 @@ Also supports searching for subreddits themselves by name or topic.`,
         .enum(['hour', 'day', 'week', 'month', 'year', 'all'])
         .optional()
         .describe('Time filter for results'),
-      limit: z.number().optional().describe('Maximum number of results to return (max 100)')
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of results to return (max 100)')
     })
   )
   .output(

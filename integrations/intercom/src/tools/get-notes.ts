@@ -1,6 +1,7 @@
 import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
 import { intercomServiceError } from '../lib/errors';
+import { stringOrUndefined, timestampOrUndefined } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -84,8 +85,8 @@ export let getNotes = SlateTool.create(spec, {
 
 let mapNote = (data: any) => ({
   noteId: String(data.id),
-  body: data.body,
+  body: stringOrUndefined(data.body),
   authorId: data.author?.id ? String(data.author.id) : undefined,
-  authorName: data.author?.name,
-  createdAt: data.created_at ? String(data.created_at) : undefined
+  authorName: stringOrUndefined(data.author?.name),
+  createdAt: timestampOrUndefined(data.created_at)
 });

@@ -4,20 +4,35 @@ import { messengerServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
+let isHttpsUrl = (value: string) => /^https:\/\//i.test(value);
+
 let menuActionSchema: z.ZodType<any> = z.object({
   type: z.enum(['postback', 'web_url', 'nested']).describe('Action type'),
-  title: z.string().describe('Menu item label'),
-  payload: z.string().optional().describe('Postback payload (required for postback type)'),
-  url: z.string().optional().describe('URL to open (required for web_url type)'),
+  title: z.string().max(30).describe('Menu item label'),
+  payload: z
+    .string()
+    .max(1000)
+    .optional()
+    .describe('Postback payload (required for postback type)'),
+  url: z
+    .string()
+    .refine(isHttpsUrl, 'url must be an HTTPS URL')
+    .optional()
+    .describe('URL to open (required for web_url type)'),
   callToActions: z
     .array(
       z.object({
         type: z.enum(['postback', 'web_url']).describe('Sub-action type'),
-        title: z.string().describe('Sub-menu item label'),
-        payload: z.string().optional().describe('Postback payload'),
-        url: z.string().optional().describe('URL to open')
+        title: z.string().max(30).describe('Sub-menu item label'),
+        payload: z.string().max(1000).optional().describe('Postback payload'),
+        url: z
+          .string()
+          .refine(isHttpsUrl, 'url must be an HTTPS URL')
+          .optional()
+          .describe('URL to open')
       })
     )
+    .max(5)
     .optional()
     .describe('Sub-menu items (only for nested type, max 5)')
 });
@@ -74,6 +89,7 @@ Provide only the fields you want to update — unspecified fields remain unchang
         .describe('Postback payload triggered when the Get Started button is tapped'),
       accountLinkingUrl: z
         .string()
+        .refine(isHttpsUrl, 'accountLinkingUrl must be an HTTPS URL')
         .optional()
         .describe('HTTPS URL for linking a Messenger user to an external account'),
       greetingTexts: z
@@ -82,6 +98,7 @@ Provide only the fields you want to update — unspecified fields remain unchang
             locale: z.string().describe('Locale code (e.g. "default", "en_US", "fr_FR")'),
             text: z
               .string()
+              .max(160)
               .describe(
                 'Greeting message text. Supports {{user_first_name}}, {{user_last_name}}, {{user_full_name}}.'
               )
@@ -109,14 +126,19 @@ Provide only the fields you want to update — unspecified fields remain unchang
       iceBreakers: z
         .array(
           z.object({
-            question: z.string().describe('Question text shown to the user'),
-            payload: z.string().describe('Postback payload sent when the question is tapped')
+            question: z.string().max(80).describe('Question text shown to the user'),
+            payload: z
+              .string()
+              .max(1000)
+              .describe('Postback payload sent when the question is tapped')
           })
         )
+        .max(4)
         .optional()
         .describe('Ice breaker questions shown to first-time users'),
       whitelistedDomains: z
-        .array(z.string())
+        .array(z.string().refine(isHttpsUrl, 'Whitelisted domains must be HTTPS URLs'))
+        .max(10)
         .optional()
         .describe('List of domains whitelisted for Messenger Extensions and webviews')
     })

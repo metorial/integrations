@@ -115,7 +115,8 @@ export class FirestoreClient {
 
   private get headers() {
     return {
-      Authorization: `Bearer ${this.token}`
+      Authorization: `Bearer ${this.token}`,
+      'x-goog-user-project': this.projectId
     };
   }
 
@@ -196,9 +197,11 @@ export class FirestoreClient {
     fields: Record<string, any>;
     updateTime: string;
   }> {
-    let params: Record<string, string | string[]> = {};
+    let params = new URLSearchParams();
     if (updateMask && updateMask.length > 0) {
-      params['updateMask.fieldPaths'] = updateMask;
+      for (let fieldPath of updateMask) {
+        params.append('updateMask.fieldPaths', fieldPath);
+      }
     }
 
     let response = await withFirebaseApiError('Firestore update document', () =>

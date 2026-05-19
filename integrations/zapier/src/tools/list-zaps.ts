@@ -9,7 +9,7 @@ let stepSchema = z.object({
     .any()
     .nullable()
     .describe('Authentication identifier or expanded authentication object'),
-  inputs: z.record(z.string(), z.any()).describe('Step input field values'),
+  inputs: z.record(z.string(), z.any()).nullable().describe('Step input field values'),
   title: z.string().nullable().describe('Step title')
 });
 

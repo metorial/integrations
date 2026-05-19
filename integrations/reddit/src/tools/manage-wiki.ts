@@ -23,8 +23,18 @@ export let manageWiki = SlateTool.create(spec, {
         .optional()
         .describe('Wiki page name (required for read, edit, and revisions)'),
       content: z.string().optional().describe('New page content (required for edit)'),
-      reason: z.string().optional().describe('Edit reason/summary (optional for edit)'),
-      limit: z.number().optional().describe('Maximum number of revisions to return')
+      reason: z
+        .string()
+        .max(256)
+        .optional()
+        .describe('Edit reason/summary (optional for edit, max 256 characters)'),
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of revisions to return (max 100)')
     })
   )
   .output(

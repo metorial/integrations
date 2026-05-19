@@ -8,6 +8,13 @@ export interface QuickBooksClientConfig {
   environment: 'sandbox' | 'production';
 }
 
+export interface QuickBooksQueryResult {
+  entities: any[];
+  totalCount?: number;
+  startPosition?: number;
+  maxResults?: number;
+}
+
 export class QuickBooksClient {
   private axios: AxiosInstance;
   private companyId: string;
@@ -382,13 +389,31 @@ export class QuickBooksClient {
     limit?: number,
     offset?: number
   ): Promise<any[]> {
+    return (await this.runQueryWithMetadata(entityType, where, orderBy, limit, offset))
+      .entities;
+  }
+
+  async runQueryWithMetadata(
+    entityType: string,
+    where?: string,
+    orderBy?: string,
+    limit?: number,
+    offset?: number
+  ): Promise<QuickBooksQueryResult> {
     let query = `SELECT * FROM ${entityType}`;
     if (where) query += ` WHERE ${where}`;
     if (orderBy) query += ` ORDERBY ${orderBy}`;
     if (limit) query += ` MAXRESULTS ${limit}`;
     if (offset) query += ` STARTPOSITION ${offset}`;
     let response = await this.query(query);
-    return response?.QueryResponse?.[entityType] ?? [];
+    let queryResponse = response?.QueryResponse ?? {};
+
+    return {
+      entities: queryResponse[entityType] ?? [],
+      totalCount: queryResponse.totalCount,
+      startPosition: queryResponse.startPosition,
+      maxResults: queryResponse.maxResults
+    };
   }
 
   async countEntity(entityType: string, where?: string): Promise<number> {
