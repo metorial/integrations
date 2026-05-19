@@ -47,7 +47,7 @@ export let getPage = SlateTool.create(spec, {
         title: page.title,
         status: page.status,
         spaceId: page.spaceId,
-        parentId: page.parentId,
+        parentId: page.parentId ?? undefined,
         authorId: page.authorId,
         createdAt: page.createdAt,
         versionNumber: page.version?.number,

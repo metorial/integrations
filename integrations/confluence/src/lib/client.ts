@@ -28,7 +28,7 @@ export interface ConfluencePage {
   status: string;
   title: string;
   spaceId?: string;
-  parentId?: string;
+  parentId?: string | null;
   authorId?: string;
   createdAt?: string;
   version?: { number: number; message?: string; createdAt?: string };
