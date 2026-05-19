@@ -8,6 +8,7 @@ on:
   #     - 'integrations/**/package.json'
   #     - 'test-integrations/**/package.json'
   #     - 'scripts/get-updated-integrations.ts'
+  #     - 'scripts/prepare-integration-package-for-publish.ts'
   #     - '.github/workflows/publish-integrations.yml'
   workflow_dispatch:
     inputs:
@@ -92,6 +93,9 @@ jobs:
 
       - name: Build integration package
         run: bunx turbo run build --filter="${{ matrix.name }}"
+
+      - name: Prepare integration package for npm
+        run: bun scripts/prepare-integration-package-for-publish.ts "${{ matrix.directory }}"
 
       - name: Publish integration to npm
         working-directory: ${{ matrix.directory }}
