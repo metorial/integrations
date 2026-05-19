@@ -2722,7 +2722,7 @@
     },
     "integrations/confluence": {
       "name": "@slates-integrations/confluence",
-      "version": "0.2.0-rc.8",
+      "version": "0.2.0-rc.9",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@slates/provider": "1.0.0-rc.11",
@@ -11550,7 +11550,7 @@
     },
     "integrations/stern-financial-data": {
       "name": "@slates-integrations/stern-financial-data",
-      "version": "0.1.0-rc.1",
+      "version": "0.1.0-rc.2",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@mixmark-io/domino": "^2.2.0",

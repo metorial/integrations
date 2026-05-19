@@ -6,7 +6,6 @@ import { $ } from 'bun';
 
 type PackageJson = Record<string, unknown> & {
   files?: unknown;
-  main?: unknown;
   name?: unknown;
   version?: unknown;
 };
@@ -98,7 +97,6 @@ async function updatePackageJsonForPublish(
   packageJsonPath: string,
   packageJson: PackageJson
 ): Promise<void> {
-  packageJson.main = DIST_ENTRY;
   packageJson.files = mergeFiles(packageJson.files, REQUIRED_FILES);
 
   await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
