@@ -7150,7 +7150,7 @@
     },
     "integrations/linkedin": {
       "name": "@slates-integrations/linkedin",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
@@ -11513,7 +11513,7 @@
     },
     "integrations/statbank-norway-ssb": {
       "name": "@slates-integrations/statbank-norway-ssb",
-      "version": "0.1.0-rc.3",
+      "version": "0.1.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",

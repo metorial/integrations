@@ -1,10 +1,12 @@
 import { Buffer } from 'node:buffer';
 import { createBase64Attachment, createTextAttachment, SlateTool } from 'slates';
 import { z } from 'zod';
-import { SsbClient } from '../lib/client';
+import { SsbClient, type TableQuery, type TableSelection } from '../lib/client';
 import { summarizeJsonData } from '../lib/metadata';
 import { ssbServiceError } from '../lib/errors';
 import { spec } from '../spec';
+
+const MAX_EXTRACT_CELL_COUNT = 800_000;
 
 let languageSchema = z.enum(['en', 'no']);
 
@@ -22,11 +24,15 @@ let outputFormatParamSchema = z.enum([
 ]);
 
 let selectionSchema = z.object({
-  variableCode: z.string().describe('Table variable code from metadata, for example Tid.'),
+  variableCode: z
+    .string()
+    .describe('Table variable code from get_tables action=get_metadata, for example Tid.'),
   valueCodes: z
     .array(z.string())
     .min(1)
-    .describe('Value codes or SSB expressions such as *, ??, top(3), from(2024), or [range(a,b)].'),
+    .describe(
+      'Value codes from metadata, or SSB expressions such as *, ??, top(3), from(2024), to(2024), or [range(a,b)]. When selection is non-empty, include every non-eliminable table variable.'
+    ),
   codelist: z
     .string()
     .optional()
@@ -34,7 +40,9 @@ let selectionSchema = z.object({
   outputValues: z
     .enum(['aggregated', 'single'])
     .optional()
-    .describe('For grouping codelists, choose aggregated group values or matching single values.')
+    .describe(
+      'For grouping codelists, choose aggregated group values or matching single values.'
+    )
 });
 
 let placementSchema = z.object({
@@ -76,6 +84,205 @@ let normalizeContentType = (
 let isJsonOutput = (format: z.infer<typeof outputFormatSchema>) =>
   format === 'json-stat2' || format === 'json-px';
 
+let isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+let asStringArray = (value: unknown) =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+
+let asNumberArray = (value: unknown) =>
+  Array.isArray(value) ? value.filter((item): item is number => typeof item === 'number') : [];
+
+type MetadataDimension = {
+  id: string;
+  elimination: boolean;
+  valueCount: number;
+  indexByCode: Map<string, number>;
+};
+
+let parseMetadataDimensions = (metadata: unknown): MetadataDimension[] => {
+  if (!isRecord(metadata)) return [];
+
+  let dimensionIds = asStringArray(metadata.id);
+  let sizes = asNumberArray(metadata.size);
+  let dimensions = isRecord(metadata.dimension) ? metadata.dimension : {};
+
+  return dimensionIds.map((dimensionId, index) => {
+    let item = isRecord(dimensions[dimensionId]) ? dimensions[dimensionId] : {};
+    let category = isRecord(item.category) ? item.category : {};
+    let categoryIndexes = isRecord(category.index) ? category.index : {};
+    let extension = isRecord(item.extension) ? item.extension : {};
+    let orderedCodes = Object.entries(categoryIndexes)
+      .filter((entry): entry is [string, number] => typeof entry[1] === 'number')
+      .sort(([, left], [, right]) => left - right)
+      .map(([code]) => code);
+
+    return {
+      id: dimensionId,
+      elimination: extension.elimination === true,
+      valueCount: orderedCodes.length || sizes[index] || 0,
+      indexByCode: new Map(orderedCodes.map((code, codeIndex) => [code, codeIndex]))
+    };
+  });
+};
+
+let parseCountExpression = (
+  expression: string,
+  dimension: MetadataDimension
+): number | null => {
+  let trimmed = expression.trim();
+  let total = dimension.valueCount;
+
+  if (!trimmed || trimmed === '*' || trimmed.includes('?')) return total;
+
+  let topMatch = /^top\((\d+)\)$/i.exec(trimmed);
+  if (topMatch) return Math.min(Number(topMatch[1]), total);
+
+  let bottomMatch = /^bottom\((\d+)\)$/i.exec(trimmed);
+  if (bottomMatch) return Math.min(Number(bottomMatch[1]), total);
+
+  let fromMatch = /^from\((.+)\)$/i.exec(trimmed);
+  if (fromMatch) {
+    let startIndex = dimension.indexByCode.get(fromMatch[1]!.trim());
+    return startIndex === undefined ? total : Math.max(total - startIndex, 0);
+  }
+
+  let toMatch = /^to\((.+)\)$/i.exec(trimmed);
+  if (toMatch) {
+    let endIndex = dimension.indexByCode.get(toMatch[1]!.trim());
+    return endIndex === undefined ? total : Math.min(endIndex + 1, total);
+  }
+
+  let rangeMatch = /^\[range\((.+),(.+)\)\]$/i.exec(trimmed);
+  if (rangeMatch) {
+    let startIndex = dimension.indexByCode.get(rangeMatch[1]!.trim());
+    let endIndex = dimension.indexByCode.get(rangeMatch[2]!.trim());
+    if (startIndex === undefined || endIndex === undefined) return total;
+    return Math.max(endIndex - startIndex + 1, 0);
+  }
+
+  return null;
+};
+
+let estimateSelectedValueCount = (selection: TableSelection, dimension: MetadataDimension) => {
+  let total = dimension.valueCount;
+  let knownCodes = new Set<string>();
+  let expressionCount = 0;
+
+  for (let valueCode of selection.valueCodes) {
+    let expressionValueCount = parseCountExpression(valueCode, dimension);
+    if (expressionValueCount !== null) {
+      expressionCount += expressionValueCount;
+      continue;
+    }
+
+    knownCodes.add(valueCode);
+  }
+
+  return Math.max(
+    1,
+    Math.min(total || selection.valueCodes.length, knownCodes.size + expressionCount)
+  );
+};
+
+let formatVariables = (variables: string[]) =>
+  variables.map(variable => `\`${variable}\``).join(', ');
+
+export let validateQuerySelectionAgainstMetadata = (
+  query: Pick<TableQuery, 'tableId' | 'selection'>,
+  metadata: unknown
+) => {
+  if (!query.selection || query.selection.length === 0) {
+    return { cellCount: undefined as number | undefined };
+  }
+
+  let dimensions = parseMetadataDimensions(metadata);
+  if (dimensions.length === 0) {
+    throw ssbServiceError(
+      `Could not inspect metadata for SSB table ${query.tableId}. Call get_tables with action="get_metadata" first and retry with explicit variableCode/valueCodes selections.`
+    );
+  }
+
+  let dimensionsById = new Map(dimensions.map(dimension => [dimension.id, dimension]));
+  let selectionsByVariable = new Map<string, TableSelection>();
+  let duplicateVariables: string[] = [];
+  let unknownVariables: string[] = [];
+
+  for (let selection of query.selection) {
+    if (selectionsByVariable.has(selection.variableCode)) {
+      duplicateVariables.push(selection.variableCode);
+      continue;
+    }
+    if (!dimensionsById.has(selection.variableCode)) {
+      unknownVariables.push(selection.variableCode);
+      continue;
+    }
+    selectionsByVariable.set(selection.variableCode, selection);
+  }
+
+  if (duplicateVariables.length > 0) {
+    throw ssbServiceError(
+      `Each SSB variable can only appear once in query_table.selection. Duplicate variables: ${formatVariables(duplicateVariables)}.`
+    );
+  }
+
+  if (unknownVariables.length > 0) {
+    throw ssbServiceError(
+      `Unknown SSB variableCode for table ${query.tableId}: ${formatVariables(unknownVariables)}. Call get_tables with action="get_metadata" to discover valid variable codes.`
+    );
+  }
+
+  let missingRequiredVariables = dimensions
+    .filter(dimension => !dimension.elimination && !selectionsByVariable.has(dimension.id))
+    .map(dimension => dimension.id);
+
+  if (missingRequiredVariables.length > 0) {
+    throw ssbServiceError(
+      `Non-empty SSB selections must include every non-eliminable variable for table ${query.tableId}. Missing variables: ${formatVariables(missingRequiredVariables)}. Call get_tables with action="get_metadata" to inspect dimensions, or omit selection entirely / pass selection=[] to use SSB defaults.`
+    );
+  }
+
+  let factors = dimensions.map(dimension => {
+    let selection = selectionsByVariable.get(dimension.id);
+    return {
+      variableCode: dimension.id,
+      valueCount: selection ? estimateSelectedValueCount(selection, dimension) : 1
+    };
+  });
+  let cellCount = factors.reduce((product, factor) => product * factor.valueCount, 1);
+
+  if (cellCount > MAX_EXTRACT_CELL_COUNT) {
+    let widestVariables = [...factors]
+      .sort((left, right) => right.valueCount - left.valueCount)
+      .slice(0, 3)
+      .map(factor => `${factor.variableCode}=${factor.valueCount}`)
+      .join(', ');
+
+    throw ssbServiceError(
+      `SSB limits each table extract to ${MAX_EXTRACT_CELL_COUNT.toLocaleString('en-US')} cells; this selection is estimated at ${cellCount.toLocaleString('en-US')} cells. Batch or narrow the widest variables (${widestVariables}) using valueCodes, top(n), from(value), to(value), or [range(from,to)].`
+    );
+  }
+
+  return { cellCount };
+};
+
+let preflightQuerySelection = async (client: SsbClient, query: TableQuery) => {
+  if (!query.selection || query.selection.length === 0) return;
+
+  let metadata = await client.getMetadata({
+    tableId: query.tableId,
+    language: query.language,
+    codelists: query.selection
+      .filter(selection => selection.codelist)
+      .map(selection => ({
+        variableCode: selection.variableCode,
+        codelistId: selection.codelist!
+      }))
+  });
+
+  validateQuerySelectionAgainstMetadata(query, metadata);
+};
+
 let validateOutputParams = (
   outputFormat: z.infer<typeof outputFormatSchema>,
   outputFormatParams: Array<z.infer<typeof outputFormatParamSchema>>
@@ -83,7 +290,9 @@ let validateOutputParams = (
   let presentationParams = ['UseCodes', 'UseTexts', 'UseCodesAndTexts'];
   let separatorParams = ['SeparatorTab', 'SeparatorSpace', 'SeparatorSemicolon'];
 
-  let selectedPresentation = outputFormatParams.filter(param => presentationParams.includes(param));
+  let selectedPresentation = outputFormatParams.filter(param =>
+    presentationParams.includes(param)
+  );
   if (selectedPresentation.length > 1) {
     throw ssbServiceError('Use only one of UseCodes, UseTexts, or UseCodesAndTexts.');
   }
@@ -94,10 +303,14 @@ let validateOutputParams = (
   }
 
   if (
-    outputFormatParams.some(param => presentationParams.includes(param) || param === 'IncludeTitle') &&
+    outputFormatParams.some(
+      param => presentationParams.includes(param) || param === 'IncludeTitle'
+    ) &&
     !['csv', 'xlsx', 'html'].includes(outputFormat)
   ) {
-    throw ssbServiceError('UseCodes, UseTexts, UseCodesAndTexts, and IncludeTitle only apply to csv, xlsx, or html output.');
+    throw ssbServiceError(
+      'UseCodes, UseTexts, UseCodesAndTexts, and IncludeTitle only apply to csv, xlsx, or html output.'
+    );
   }
 
   if (selectedSeparators.length > 0 && outputFormat !== 'csv') {
@@ -109,10 +322,12 @@ export let queryTable = SlateTool.create(spec, {
   name: 'Query Table',
   key: 'query_table',
   description:
-    'Retrieve Statbank Norway – SSB table data with PxWebApi v2 selections and return JSON or file-format attachments.',
+    'Retrieve Statbank Norway - SSB table data with PxWebApi v2 selections and return JSON or file-format attachments. If selection is omitted or selection=[] is passed, SSB applies the table default selection. If selection is non-empty, include every non-eliminable variable from get_tables action=get_metadata; partial selections are rejected before calling SSB. Each extract is capped at 800,000 cells, so batch wide pulls by region, time, age, or another large dimension.',
   instructions: [
-    'Call get_tables with get_metadata first to discover variableCode and valueCodes.',
-    'Variables marked elimination=true can be omitted; time and ContentsCode are usually not eliminable.',
+    'Call get_tables with action=get_metadata first to discover variableCode, valueCodes, elimination flags, value counts, and codelists.',
+    'Omit selection or pass selection=[] only when you want SSB defaults; otherwise provide a selection entry for every variable where elimination is not true.',
+    'Variables marked elimination=true can be omitted from a non-empty selection; time and ContentsCode are usually not eliminable.',
+    'Keep estimated cells at or below 800,000. For wide pulls, batch by a large dimension rather than retrying one huge request.',
     'Use POST unless you specifically need a shareable GET-style query URL.',
     'Use top(n), from(value), to(value), [range(from,to)], *, and ? expressions to keep selections robust.'
   ],
@@ -133,7 +348,9 @@ export let queryTable = SlateTool.create(spec, {
       selection: z
         .array(selectionSchema)
         .optional()
-        .describe('Table selections. If omitted, SSB applies the table default selection.'),
+        .describe(
+          'Table selections. Omit or pass [] to use SSB defaults. If non-empty, include every non-eliminable variable from get_tables action=get_metadata; partial selections fail. Batch large selections to stay under 800,000 cells.'
+        ),
       outputFormat: outputFormatSchema
         .optional()
         .default('json-stat2')
@@ -154,13 +371,25 @@ export let queryTable = SlateTool.create(spec, {
       language: z.string().describe('Response language.'),
       method: z.string().describe('HTTP method used.'),
       outputFormat: z.string().describe('SSB output format.'),
-      contentType: z.string().optional().describe('MIME type returned as metadata or attachment MIME.'),
+      contentType: z
+        .string()
+        .optional()
+        .describe('MIME type returned as metadata or attachment MIME.'),
       attachmentCount: z.number().describe('Number of Slate attachments returned.'),
       label: z.string().optional().describe('JSON dataset label, when available.'),
       source: z.string().optional().describe('JSON dataset source, when available.'),
-      updated: z.string().optional().describe('JSON dataset updated timestamp, when available.'),
-      dimensions: z.array(z.string()).optional().describe('JSON dataset dimension ids, when available.'),
-      cellCount: z.number().optional().describe('Calculated number of selected cells for JSON output.'),
+      updated: z
+        .string()
+        .optional()
+        .describe('JSON dataset updated timestamp, when available.'),
+      dimensions: z
+        .array(z.string())
+        .optional()
+        .describe('JSON dataset dimension ids, when available.'),
+      cellCount: z
+        .number()
+        .optional()
+        .describe('Calculated number of selected cells for JSON output.'),
       valueCount: z.number().optional().describe('Number of values in JSON output.'),
       data: z.any().optional().describe('Raw JSON data for json-stat2 or json-px output.')
     })
@@ -169,6 +398,16 @@ export let queryTable = SlateTool.create(spec, {
     validateOutputParams(ctx.input.outputFormat, ctx.input.outputFormatParams);
 
     let client = new SsbClient();
+    await preflightQuerySelection(client, {
+      tableId: ctx.input.tableId,
+      language: ctx.input.language,
+      method: ctx.input.method,
+      selection: ctx.input.selection,
+      outputFormat: ctx.input.outputFormat,
+      outputFormatParams: ctx.input.outputFormatParams,
+      placement: ctx.input.placement
+    });
+
     let result = await client.queryTable({
       tableId: ctx.input.tableId,
       language: ctx.input.language,
