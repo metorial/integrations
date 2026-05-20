@@ -96,6 +96,7 @@ let asNumberArray = (value: unknown) =>
 type MetadataDimension = {
   id: string;
   elimination: boolean;
+  codes: string[];
   valueCount: number;
   indexByCode: Map<string, number>;
 };
@@ -120,6 +121,7 @@ let parseMetadataDimensions = (metadata: unknown): MetadataDimension[] => {
     return {
       id: dimensionId,
       elimination: extension.elimination === true,
+      codes: orderedCodes,
       valueCount: orderedCodes.length || sizes[index] || 0,
       indexByCode: new Map(orderedCodes.map((code, codeIndex) => [code, codeIndex]))
     };
@@ -164,6 +166,67 @@ let parseCountExpression = (
   return null;
 };
 
+let parseValueCodeExpression = (
+  expression: string,
+  dimension: MetadataDimension
+): string[] | null => {
+  let trimmed = expression.trim();
+  let total = dimension.codes.length;
+
+  if (!trimmed || trimmed === '*' || trimmed.includes('?')) return null;
+
+  let topMatch = /^top\((\d+)\)$/i.exec(trimmed);
+  if (topMatch) return dimension.codes.slice(0, Number(topMatch[1]));
+
+  let bottomMatch = /^bottom\((\d+)\)$/i.exec(trimmed);
+  if (bottomMatch) return dimension.codes.slice(Math.max(total - Number(bottomMatch[1]), 0));
+
+  let fromMatch = /^from\((.+)\)$/i.exec(trimmed);
+  if (fromMatch) {
+    let startCode = fromMatch[1]!.trim();
+    let startIndex = dimension.indexByCode.get(startCode);
+    if (startIndex === undefined) {
+      throw ssbServiceError(
+        `Cannot expand from(${startCode}) for variable ${dimension.id}; ${startCode} is not a metadata value code.`
+      );
+    }
+    return dimension.codes.slice(startIndex);
+  }
+
+  let toMatch = /^to\((.+)\)$/i.exec(trimmed);
+  if (toMatch) {
+    let endCode = toMatch[1]!.trim();
+    let endIndex = dimension.indexByCode.get(endCode);
+    if (endIndex === undefined) {
+      throw ssbServiceError(
+        `Cannot expand to(${endCode}) for variable ${dimension.id}; ${endCode} is not a metadata value code.`
+      );
+    }
+    return dimension.codes.slice(0, endIndex + 1);
+  }
+
+  let rangeMatch = /^\[range\((.+),(.+)\)\]$/i.exec(trimmed);
+  if (rangeMatch) {
+    let startCode = rangeMatch[1]!.trim();
+    let endCode = rangeMatch[2]!.trim();
+    let startIndex = dimension.indexByCode.get(startCode);
+    let endIndex = dimension.indexByCode.get(endCode);
+    if (startIndex === undefined || endIndex === undefined) {
+      throw ssbServiceError(
+        `Cannot expand [range(${startCode},${endCode})] for variable ${dimension.id}; both endpoints must be metadata value codes.`
+      );
+    }
+    if (startIndex > endIndex) {
+      throw ssbServiceError(
+        `Cannot expand [range(${startCode},${endCode})] for variable ${dimension.id}; the start value must come before the end value in metadata order.`
+      );
+    }
+    return dimension.codes.slice(startIndex, endIndex + 1);
+  }
+
+  return null;
+};
+
 let estimateSelectedValueCount = (selection: TableSelection, dimension: MetadataDimension) => {
   let total = dimension.valueCount;
   let knownCodes = new Set<string>();
@@ -184,6 +247,42 @@ let estimateSelectedValueCount = (selection: TableSelection, dimension: Metadata
     Math.min(total || selection.valueCodes.length, knownCodes.size + expressionCount)
   );
 };
+
+let expandSelectionValueCodes = (
+  selection: TableSelection,
+  dimension: MetadataDimension
+): string[] => {
+  let expandedCodes: string[] = [];
+  let seenCodes = new Set<string>();
+
+  for (let valueCode of selection.valueCodes) {
+    let expandedExpression = parseValueCodeExpression(valueCode, dimension);
+    let values = expandedExpression ?? [valueCode];
+
+    for (let value of values) {
+      if (!seenCodes.has(value)) {
+        seenCodes.add(value);
+        expandedCodes.push(value);
+      }
+    }
+  }
+
+  return expandedCodes;
+};
+
+let expandQuerySelectionExpressions = (
+  selection: TableSelection[] | undefined,
+  dimensionsById: Map<string, MetadataDimension>
+): TableSelection[] | undefined =>
+  selection?.map(item => {
+    let dimension = dimensionsById.get(item.variableCode);
+    if (!dimension) return item;
+
+    return {
+      ...item,
+      valueCodes: expandSelectionValueCodes(item, dimension)
+    };
+  });
 
 let formatVariables = (variables: string[]) =>
   variables.map(variable => `\`${variable}\``).join(', ');
@@ -267,7 +366,7 @@ export let validateQuerySelectionAgainstMetadata = (
 };
 
 let preflightQuerySelection = async (client: SsbClient, query: TableQuery) => {
-  if (!query.selection || query.selection.length === 0) return;
+  if (!query.selection || query.selection.length === 0) return {};
 
   let metadata = await client.getMetadata({
     tableId: query.tableId,
@@ -281,6 +380,12 @@ let preflightQuerySelection = async (client: SsbClient, query: TableQuery) => {
   });
 
   validateQuerySelectionAgainstMetadata(query, metadata);
+  let dimensions = parseMetadataDimensions(metadata);
+  let dimensionsById = new Map(dimensions.map(dimension => [dimension.id, dimension]));
+
+  return {
+    selection: expandQuerySelectionExpressions(query.selection, dimensionsById)
+  };
 };
 
 let validateOutputParams = (
@@ -398,7 +503,7 @@ export let queryTable = SlateTool.create(spec, {
     validateOutputParams(ctx.input.outputFormat, ctx.input.outputFormatParams);
 
     let client = new SsbClient();
-    await preflightQuerySelection(client, {
+    let preflight = await preflightQuerySelection(client, {
       tableId: ctx.input.tableId,
       language: ctx.input.language,
       method: ctx.input.method,
@@ -407,12 +512,13 @@ export let queryTable = SlateTool.create(spec, {
       outputFormatParams: ctx.input.outputFormatParams,
       placement: ctx.input.placement
     });
+    let selection = preflight.selection ?? ctx.input.selection;
 
     let result = await client.queryTable({
       tableId: ctx.input.tableId,
       language: ctx.input.language,
       method: ctx.input.method,
-      selection: ctx.input.selection,
+      selection,
       outputFormat: ctx.input.outputFormat,
       outputFormatParams: ctx.input.outputFormatParams,
       placement: ctx.input.placement
