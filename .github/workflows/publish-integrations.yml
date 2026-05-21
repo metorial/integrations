@@ -91,10 +91,7 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build integration package
-        run: bunx turbo run build --filter="${{ matrix.name }}"
-
-      - name: Prepare integration package for npm
+      - name: Build and prepare integration package for npm
         run: bun scripts/prepare-integration-package-for-publish.ts "${{ matrix.directory }}"
 
       - name: Publish integration to npm
