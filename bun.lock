@@ -8550,9 +8550,9 @@
     },
     "integrations/onenote": {
       "name": "@slates-integrations/onenote",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -11513,7 +11513,7 @@
     },
     "integrations/statbank-norway-ssb": {
       "name": "@slates-integrations/statbank-norway-ssb",
-      "version": "0.1.0-rc.4",
+      "version": "0.1.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
@@ -11550,7 +11550,7 @@
     },
     "integrations/stern-financial-data": {
       "name": "@slates-integrations/stern-financial-data",
-      "version": "0.1.0-rc.2",
+      "version": "0.1.0-rc.3",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@mixmark-io/domino": "^2.2.0",
@@ -19072,8 +19072,6 @@
     "@slates-integrations/onedrive/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/onelogin/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
-
-    "@slates-integrations/onenote/@slates/oauth-microsoft": ["@slates/oauth-microsoft@1.0.0-rc.1", "", {}, "sha512-V9c4YdOGTGk+Xy2yamJoOwwMv+ssWNUvUtQGvkCqBw8GN6NrZRT1bz/5FTKlDuqfH80v3OnfrWcxAVsF96Y/lA=="],
 
     "@slates-integrations/onenote/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 

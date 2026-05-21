@@ -6,7 +6,11 @@ import { z } from 'zod';
 export let searchPages = SlateTool.create(spec, {
   name: 'Search Pages',
   key: 'search_pages',
-  description: `Full-text search across all OneNote pages accessible by the authenticated user. Searches page titles and content, including OCR text from images.`,
+  description: `Search OneNote pages accessible by the authenticated user. Searches page titles and can be scoped to a section for accounts with many sections.`,
+  instructions: [
+    'Provide sectionId when you know the section to search; Microsoft Graph can reject global page searches in accounts with many sections.',
+    'Without sectionId, the search runs across accessible OneNote pages.'
+  ],
   tags: {
     readOnly: true
   }
@@ -14,6 +18,10 @@ export let searchPages = SlateTool.create(spec, {
   .input(
     z.object({
       query: z.string().describe('The search query text'),
+      sectionId: z
+        .string()
+        .optional()
+        .describe('Optional section ID to search pages within a single section'),
       top: z.number().optional().describe('Maximum number of results to return'),
       skip: z.number().optional().describe('Number of results to skip for pagination'),
       filter: z.string().optional().describe('OData filter expression to narrow results')
@@ -37,6 +45,7 @@ export let searchPages = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.searchPages(ctx.input.query, {
+      sectionId: ctx.input.sectionId,
       top: ctx.input.top,
       skip: ctx.input.skip,
       filter: ctx.input.filter

@@ -470,6 +470,7 @@ export class Client {
   async searchPages(
     query: string,
     params?: {
+      sectionId?: string;
       top?: number;
       skip?: number;
       filter?: string;
@@ -481,7 +482,11 @@ export class Client {
       filters.push(`(${params.filter})`);
     }
 
-    let response = await this.http.get('/me/onenote/pages', {
+    let path = params?.sectionId
+      ? `/me/onenote/sections/${params.sectionId}/pages`
+      : '/me/onenote/pages';
+
+    let response = await this.http.get(path, {
       params: {
         $filter: filters.join(' and '),
         ...(params?.top ? { $top: String(params.top) } : {}),
