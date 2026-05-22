@@ -15,8 +15,108 @@ type SlackProfile = {
   imageUrl?: string;
 };
 
+type SlackAuthOutput = {
+  token: string;
+  refreshToken?: string;
+  expiresAt?: string;
+  actorType?: 'bot' | 'user';
+  teamId?: string;
+  teamName?: string;
+  botUserId?: string;
+  userId?: string;
+};
+
+type SlackOAuthRefreshContext = {
+  output: SlackAuthOutput;
+  input: {};
+  clientId: string;
+  clientSecret: string;
+  scopes: string[];
+};
+
+type SlackOAuthResponse = {
+  ok: boolean;
+  access_token?: string;
+  refresh_token?: string;
+  expires_in?: number;
+  scope?: string;
+  team?: { id?: string; name?: string };
+  bot_user_id?: string;
+  authed_user?: {
+    id?: string;
+    access_token?: string;
+    refresh_token?: string;
+    expires_in?: number;
+    scope?: string;
+  };
+  error?: string;
+};
+
+let createSlackApi = () => createAxios({ baseURL: 'https://slack.com/api' });
+
+let expiresAtFromSeconds = (expiresIn?: number) =>
+  typeof expiresIn === 'number' && Number.isFinite(expiresIn)
+    ? new Date(Date.now() + expiresIn * 1000).toISOString()
+    : undefined;
+
+let mergeBotOAuthOutput = (
+  previous: Partial<SlackAuthOutput>,
+  data: SlackOAuthResponse,
+  opts: { requireRotationFields?: boolean } = {}
+): SlackAuthOutput => {
+  if (!data.ok || !data.access_token) {
+    throw slackOAuthError(data.error || 'missing bot access token');
+  }
+
+  let expiresAt = expiresAtFromSeconds(data.expires_in);
+  if (opts.requireRotationFields && !expiresAt) {
+    throw slackOAuthError(data.error || 'missing bot token expiration');
+  }
+
+  return {
+    ...previous,
+    token: data.access_token,
+    refreshToken: data.refresh_token ?? previous.refreshToken,
+    expiresAt,
+    actorType: 'bot',
+    teamId: data.team?.id ?? previous.teamId,
+    teamName: data.team?.name ?? previous.teamName,
+    botUserId: data.bot_user_id ?? previous.botUserId,
+    userId: data.authed_user?.id ?? previous.userId
+  };
+};
+
+let mergeUserOAuthOutput = (
+  previous: Partial<SlackAuthOutput>,
+  data: SlackOAuthResponse,
+  opts: { requireRotationFields?: boolean } = {}
+): SlackAuthOutput => {
+  let user = data.authed_user;
+  let token = user?.access_token;
+  if (!data.ok || !token) {
+    throw slackOAuthError(data.error || 'missing user access token');
+  }
+
+  let expiresAt = expiresAtFromSeconds(user?.expires_in);
+  if (opts.requireRotationFields && !expiresAt) {
+    throw slackOAuthError(data.error || 'missing user token expiration');
+  }
+
+  return {
+    ...previous,
+    token,
+    refreshToken: user?.refresh_token ?? previous.refreshToken,
+    expiresAt,
+    actorType: 'user',
+    teamId: data.team?.id ?? previous.teamId,
+    teamName: data.team?.name ?? previous.teamName,
+    botUserId: previous.botUserId,
+    userId: user?.id ?? previous.userId
+  };
+};
+
 let getSlackProfile = async (token: string): Promise<SlackProfile> => {
-  let client = createAxios({ baseURL: 'https://slack.com/api' });
+  let client = createSlackApi();
 
   let response = await client.get('/auth.test', {
     headers: { Authorization: `Bearer ${token}` }
@@ -77,6 +177,8 @@ export let auth = SlateAuth.create()
   .output(
     z.object({
       token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
       actorType: z.enum(['bot', 'user']).optional(),
       teamId: z.string().optional(),
       teamName: z.string().optional(),
@@ -92,7 +194,7 @@ export let auth = SlateAuth.create()
     getAuthorizationUrl: getAuthorizationUrl('scope'),
 
     handleCallback: async ctx => {
-      let client = createAxios({ baseURL: 'https://slack.com/api' });
+      let client = createSlackApi();
 
       let response = await client.post('/oauth.v2.access', null, {
         params: {
@@ -103,32 +205,35 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let data = response.data as {
-        ok: boolean;
-        access_token?: string;
-        scope?: string;
-        team?: { id?: string; name?: string };
-        bot_user_id?: string;
-        authed_user?: { id?: string };
-        error?: string;
-      };
-
-      if (!data.ok || !data.access_token) {
-        throw slackOAuthError(data.error);
-      }
-
+      let data = response.data as SlackOAuthResponse;
       let scopes = parseSlackGrantedScopes(data.scope);
 
       return {
-        output: {
-          token: data.access_token,
-          actorType: 'bot' as const,
-          teamId: data.team?.id,
-          teamName: data.team?.name,
-          botUserId: data.bot_user_id,
-          userId: data.authed_user?.id
-        },
+        output: mergeBotOAuthOutput({}, data),
         scopes: scopes.length > 0 ? scopes : undefined
+      };
+    },
+
+    handleTokenRefresh: async (ctx: SlackOAuthRefreshContext) => {
+      if (!ctx.output.refreshToken) {
+        return { output: ctx.output };
+      }
+
+      let client = createSlackApi();
+
+      let response = await client.post('/oauth.v2.access', null, {
+        params: {
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        }
+      });
+
+      return {
+        output: mergeBotOAuthOutput(ctx.output, response.data as SlackOAuthResponse, {
+          requireRotationFields: true
+        })
       };
     },
 
@@ -144,7 +249,7 @@ export let auth = SlateAuth.create()
     getAuthorizationUrl: getAuthorizationUrl('user_scope'),
 
     handleCallback: async ctx => {
-      let client = createAxios({ baseURL: 'https://slack.com/api' });
+      let client = createSlackApi();
 
       let response = await client.post('/oauth.v2.access', null, {
         params: {
@@ -155,33 +260,35 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let data = response.data as {
-        ok: boolean;
-        authed_user?: {
-          id?: string;
-          access_token?: string;
-          scope?: string;
-        };
-        team?: { id?: string; name?: string };
-        error?: string;
-      };
-
-      let token = data.authed_user?.access_token;
-      if (!data.ok || !token) {
-        throw slackOAuthError(data.error || 'missing user access token');
-      }
-
+      let data = response.data as SlackOAuthResponse;
       let scopes = parseSlackGrantedScopes(data.authed_user?.scope);
 
       return {
-        output: {
-          token,
-          actorType: 'user' as const,
-          teamId: data.team?.id,
-          teamName: data.team?.name,
-          userId: data.authed_user?.id
-        },
+        output: mergeUserOAuthOutput({}, data),
         scopes: scopes.length > 0 ? scopes : undefined
+      };
+    },
+
+    handleTokenRefresh: async (ctx: SlackOAuthRefreshContext) => {
+      if (!ctx.output.refreshToken) {
+        return { output: ctx.output };
+      }
+
+      let client = createSlackApi();
+
+      let response = await client.post('/oauth.v2.access', null, {
+        params: {
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        }
+      });
+
+      return {
+        output: mergeUserOAuthOutput(ctx.output, response.data as SlackOAuthResponse, {
+          requireRotationFields: true
+        })
       };
     },
 

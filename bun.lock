@@ -11172,12 +11172,12 @@
     },
     "integrations/slack": {
       "name": "@slates-integrations/slack",
-      "version": "0.2.0-rc.12",
+      "version": "0.2.0-rc.13",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
-        "@slates/slack-tools": "1.0.0-rc.4",
+        "@slates/slack-tools": "1.0.0-rc.5",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -19495,11 +19495,7 @@
 
     "@slates-integrations/skyfire/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
-    "@slates-integrations/slack/@slates/slack-tools": ["@slates/slack-tools@1.0.0-rc.4", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "slates": "1.0.0-rc.9", "zod": "^4.2" } }, "sha512-apkBxnHZTv6QYa7Tja4GA4yUtY0ra5a7JbEpRjWwfIem88ioBcTAT3x8DEWWw2kFom8rzCYKRMIHNQU0xwEHaw=="],
-
     "@slates-integrations/slack/@slates/test": ["@slates/test@1.0.0-rc.4", "", { "dependencies": { "@lowerdeck/testing-tools": "latest", "@slates/client": "1.0.0-rc.6", "@slates/profiles": "1.0.0-rc.4" } }, "sha512-gCh8IL15DvKiNiTjejm1KfifwtrPmMQ0xgQ4Hzk2/6PoaUBL7fzbKi1vLRiNd+7F7wvknnz04Y22HqpA++llgw=="],
-
-    "@slates-integrations/slack/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/slite/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
@@ -21822,8 +21818,6 @@
     "@slates-integrations/slack/@slates/test/@slates/client": ["@slates/client@1.0.0-rc.6", "", { "dependencies": { "@slates/proto": "1.0.0-rc.8", "@slates/provider": "1.0.0-rc.10", "@slates/provider-handler": "1.0.0-rc.9" } }, "sha512-y9DONyNvs5sxjebi0QkejwCmVV8msXdMidu+2M6rxCHKdq05L8WnxazpsDN+OxWSmrs9+fgISfZVlPKYl51LWw=="],
 
     "@slates-integrations/slack/@slates/test/@slates/profiles": ["@slates/profiles@1.0.0-rc.4", "", { "dependencies": { "@slates/client": "1.0.0-rc.6", "@slates/proto": "1.0.0-rc.8" } }, "sha512-VrBG1Fo1XmqMwPfaG6ZEikYp5nSDz4RJ7puRAAfhQLLM2Pf3kHtpb/NAiBmdJe9dz2UNLr0+wGzq/fyp61pURA=="],
-
-    "@slates-integrations/slack/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
 
     "@slates-integrations/slite/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
 
