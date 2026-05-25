@@ -155,7 +155,11 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      clientId: string;
+      clientSecret: string;
+    }) => {
       if (!ctx.output.refreshToken) {
         throw gmailServiceError('No refresh token available');
       }

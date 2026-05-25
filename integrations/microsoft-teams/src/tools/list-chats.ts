@@ -41,7 +41,7 @@ export let listChats = SlateTool.create(spec, {
       topic: c.topic || null,
       chatType: c.chatType,
       lastUpdatedDateTime: c.lastUpdatedDateTime,
-      webUrl: c.webUrl
+      webUrl: typeof c.webUrl === 'string' && c.webUrl.length > 0 ? c.webUrl : undefined
     }));
 
     return {

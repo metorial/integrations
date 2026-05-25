@@ -4302,7 +4302,7 @@
       "name": "@slates-integrations/excel-online",
       "version": "0.2.0-rc.5",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -5242,7 +5242,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -5448,7 +5448,7 @@
         "zod": "^4.2",
       },
       "devDependencies": {
-        "@slates/test": "1.0.0-rc.4",
+        "@slates/test": "1.0.0-rc.5",
         "typescript": "^5",
         "vitest": "^3.1.2",
       },
@@ -7770,9 +7770,9 @@
     },
     "integrations/microsoft-teams": {
       "name": "@slates-integrations/microsoft-teams",
-      "version": "0.2.0-rc.6",
+      "version": "0.2.0-rc.7",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -18385,8 +18385,6 @@
 
     "@slates-integrations/exa/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
-    "@slates-integrations/excel-online/@slates/oauth-microsoft": ["@slates/oauth-microsoft@1.0.0-rc.1", "", {}, "sha512-V9c4YdOGTGk+Xy2yamJoOwwMv+ssWNUvUtQGvkCqBw8GN6NrZRT1bz/5FTKlDuqfH80v3OnfrWcxAVsF96Y/lA=="],
-
     "@slates-integrations/excel-online/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/exist/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
@@ -18533,8 +18531,6 @@
 
     "@slates-integrations/globalping/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
-    "@slates-integrations/gmail/@slates/test": ["@slates/test@1.0.0-rc.4", "", { "dependencies": { "@lowerdeck/testing-tools": "latest", "@slates/client": "1.0.0-rc.6", "@slates/profiles": "1.0.0-rc.4" } }, "sha512-gCh8IL15DvKiNiTjejm1KfifwtrPmMQ0xgQ4Hzk2/6PoaUBL7fzbKi1vLRiNd+7F7wvknnz04Y22HqpA++llgw=="],
-
     "@slates-integrations/godial/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/gong/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
@@ -18582,8 +18578,6 @@
     "@slates-integrations/google-cloud-vision/@slates/test": ["@slates/test@1.0.0-rc.4", "", { "dependencies": { "@lowerdeck/testing-tools": "latest", "@slates/client": "1.0.0-rc.6", "@slates/profiles": "1.0.0-rc.4" } }, "sha512-gCh8IL15DvKiNiTjejm1KfifwtrPmMQ0xgQ4Hzk2/6PoaUBL7fzbKi1vLRiNd+7F7wvknnz04Y22HqpA++llgw=="],
 
     "@slates-integrations/google-cloud-vision/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
-
-    "@slates-integrations/google-contacts/@slates/test": ["@slates/test@1.0.0-rc.4", "", { "dependencies": { "@lowerdeck/testing-tools": "latest", "@slates/client": "1.0.0-rc.6", "@slates/profiles": "1.0.0-rc.4" } }, "sha512-gCh8IL15DvKiNiTjejm1KfifwtrPmMQ0xgQ4Hzk2/6PoaUBL7fzbKi1vLRiNd+7F7wvknnz04Y22HqpA++llgw=="],
 
     "@slates-integrations/google-docs/@slates/test": ["@slates/test@1.0.0-rc.4", "", { "dependencies": { "@lowerdeck/testing-tools": "latest", "@slates/client": "1.0.0-rc.6", "@slates/profiles": "1.0.0-rc.4" } }, "sha512-gCh8IL15DvKiNiTjejm1KfifwtrPmMQ0xgQ4Hzk2/6PoaUBL7fzbKi1vLRiNd+7F7wvknnz04Y22HqpA++llgw=="],
 
@@ -18976,8 +18970,6 @@
     "@slates-integrations/microsoft-outlook/@slates/oauth-microsoft": ["@slates/oauth-microsoft@1.0.0-rc.1", "", {}, "sha512-V9c4YdOGTGk+Xy2yamJoOwwMv+ssWNUvUtQGvkCqBw8GN6NrZRT1bz/5FTKlDuqfH80v3OnfrWcxAVsF96Y/lA=="],
 
     "@slates-integrations/microsoft-outlook/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
-
-    "@slates-integrations/microsoft-teams/@slates/oauth-microsoft": ["@slates/oauth-microsoft@1.0.0-rc.1", "", {}, "sha512-V9c4YdOGTGk+Xy2yamJoOwwMv+ssWNUvUtQGvkCqBw8GN6NrZRT1bz/5FTKlDuqfH80v3OnfrWcxAVsF96Y/lA=="],
 
     "@slates-integrations/microsoft-teams/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
@@ -20811,10 +20803,6 @@
 
     "@slates-integrations/globalping/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
 
-    "@slates-integrations/gmail/@slates/test/@slates/client": ["@slates/client@1.0.0-rc.6", "", { "dependencies": { "@slates/proto": "1.0.0-rc.8", "@slates/provider": "1.0.0-rc.10", "@slates/provider-handler": "1.0.0-rc.9" } }, "sha512-y9DONyNvs5sxjebi0QkejwCmVV8msXdMidu+2M6rxCHKdq05L8WnxazpsDN+OxWSmrs9+fgISfZVlPKYl51LWw=="],
-
-    "@slates-integrations/gmail/@slates/test/@slates/profiles": ["@slates/profiles@1.0.0-rc.4", "", { "dependencies": { "@slates/client": "1.0.0-rc.6", "@slates/proto": "1.0.0-rc.8" } }, "sha512-VrBG1Fo1XmqMwPfaG6ZEikYp5nSDz4RJ7puRAAfhQLLM2Pf3kHtpb/NAiBmdJe9dz2UNLr0+wGzq/fyp61pURA=="],
-
     "@slates-integrations/godial/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
 
     "@slates-integrations/gong/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
@@ -20882,10 +20870,6 @@
     "@slates-integrations/google-cloud-vision/@slates/test/@slates/profiles": ["@slates/profiles@1.0.0-rc.4", "", { "dependencies": { "@slates/client": "1.0.0-rc.6", "@slates/proto": "1.0.0-rc.8" } }, "sha512-VrBG1Fo1XmqMwPfaG6ZEikYp5nSDz4RJ7puRAAfhQLLM2Pf3kHtpb/NAiBmdJe9dz2UNLr0+wGzq/fyp61pURA=="],
 
     "@slates-integrations/google-cloud-vision/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
-
-    "@slates-integrations/google-contacts/@slates/test/@slates/client": ["@slates/client@1.0.0-rc.6", "", { "dependencies": { "@slates/proto": "1.0.0-rc.8", "@slates/provider": "1.0.0-rc.10", "@slates/provider-handler": "1.0.0-rc.9" } }, "sha512-y9DONyNvs5sxjebi0QkejwCmVV8msXdMidu+2M6rxCHKdq05L8WnxazpsDN+OxWSmrs9+fgISfZVlPKYl51LWw=="],
-
-    "@slates-integrations/google-contacts/@slates/test/@slates/profiles": ["@slates/profiles@1.0.0-rc.4", "", { "dependencies": { "@slates/client": "1.0.0-rc.6", "@slates/proto": "1.0.0-rc.8" } }, "sha512-VrBG1Fo1XmqMwPfaG6ZEikYp5nSDz4RJ7puRAAfhQLLM2Pf3kHtpb/NAiBmdJe9dz2UNLr0+wGzq/fyp61pURA=="],
 
     "@slates-integrations/google-docs/@slates/test/@slates/client": ["@slates/client@1.0.0-rc.6", "", { "dependencies": { "@slates/proto": "1.0.0-rc.8", "@slates/provider": "1.0.0-rc.10", "@slates/provider-handler": "1.0.0-rc.9" } }, "sha512-y9DONyNvs5sxjebi0QkejwCmVV8msXdMidu+2M6rxCHKdq05L8WnxazpsDN+OxWSmrs9+fgISfZVlPKYl51LWw=="],
 
@@ -22295,14 +22279,6 @@
 
     "@slates-integrations/dynamics-365/@slates/test/@slates/profiles/@slates/proto": ["@slates/proto@1.0.0-rc.8", "", { "dependencies": { "@lowerdeck/emitter": "^1.0.4", "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-3PB2SCFi13mYNkkptX9dbz8xOFgEdtXd6atDtaaIDs8vSxIMWy8C9JoSqtqXDmJOfM8Jk/dCSWxjoTPEYnMfgQ=="],
 
-    "@slates-integrations/gmail/@slates/test/@slates/client/@slates/proto": ["@slates/proto@1.0.0-rc.8", "", { "dependencies": { "@lowerdeck/emitter": "^1.0.4", "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-3PB2SCFi13mYNkkptX9dbz8xOFgEdtXd6atDtaaIDs8vSxIMWy8C9JoSqtqXDmJOfM8Jk/dCSWxjoTPEYnMfgQ=="],
-
-    "@slates-integrations/gmail/@slates/test/@slates/client/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
-
-    "@slates-integrations/gmail/@slates/test/@slates/client/@slates/provider-handler": ["@slates/provider-handler@1.0.0-rc.9", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@slates/proto": "1.0.0-rc.8", "@slates/provider": "1.0.0-rc.10", "zod": "^4.2.1" } }, "sha512-F63WHfzS050WLpZbQ/mRq4dRA7aHhcrahjvCluuH6rqwOASIo5aPf1QCPvktvTA7ufxfnscZe0uKiW3IFtsuzA=="],
-
-    "@slates-integrations/gmail/@slates/test/@slates/profiles/@slates/proto": ["@slates/proto@1.0.0-rc.8", "", { "dependencies": { "@lowerdeck/emitter": "^1.0.4", "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-3PB2SCFi13mYNkkptX9dbz8xOFgEdtXd6atDtaaIDs8vSxIMWy8C9JoSqtqXDmJOfM8Jk/dCSWxjoTPEYnMfgQ=="],
-
     "@slates-integrations/google-address-validation/@slates/test/@slates/client/@slates/proto": ["@slates/proto@1.0.0-rc.8", "", { "dependencies": { "@lowerdeck/emitter": "^1.0.4", "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-3PB2SCFi13mYNkkptX9dbz8xOFgEdtXd6atDtaaIDs8vSxIMWy8C9JoSqtqXDmJOfM8Jk/dCSWxjoTPEYnMfgQ=="],
 
     "@slates-integrations/google-address-validation/@slates/test/@slates/client/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
@@ -22382,14 +22358,6 @@
     "@slates-integrations/google-cloud-vision/@slates/test/@slates/client/@slates/provider-handler": ["@slates/provider-handler@1.0.0-rc.9", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@slates/proto": "1.0.0-rc.8", "@slates/provider": "1.0.0-rc.10", "zod": "^4.2.1" } }, "sha512-F63WHfzS050WLpZbQ/mRq4dRA7aHhcrahjvCluuH6rqwOASIo5aPf1QCPvktvTA7ufxfnscZe0uKiW3IFtsuzA=="],
 
     "@slates-integrations/google-cloud-vision/@slates/test/@slates/profiles/@slates/proto": ["@slates/proto@1.0.0-rc.8", "", { "dependencies": { "@lowerdeck/emitter": "^1.0.4", "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-3PB2SCFi13mYNkkptX9dbz8xOFgEdtXd6atDtaaIDs8vSxIMWy8C9JoSqtqXDmJOfM8Jk/dCSWxjoTPEYnMfgQ=="],
-
-    "@slates-integrations/google-contacts/@slates/test/@slates/client/@slates/proto": ["@slates/proto@1.0.0-rc.8", "", { "dependencies": { "@lowerdeck/emitter": "^1.0.4", "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-3PB2SCFi13mYNkkptX9dbz8xOFgEdtXd6atDtaaIDs8vSxIMWy8C9JoSqtqXDmJOfM8Jk/dCSWxjoTPEYnMfgQ=="],
-
-    "@slates-integrations/google-contacts/@slates/test/@slates/client/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
-
-    "@slates-integrations/google-contacts/@slates/test/@slates/client/@slates/provider-handler": ["@slates/provider-handler@1.0.0-rc.9", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@slates/proto": "1.0.0-rc.8", "@slates/provider": "1.0.0-rc.10", "zod": "^4.2.1" } }, "sha512-F63WHfzS050WLpZbQ/mRq4dRA7aHhcrahjvCluuH6rqwOASIo5aPf1QCPvktvTA7ufxfnscZe0uKiW3IFtsuzA=="],
-
-    "@slates-integrations/google-contacts/@slates/test/@slates/profiles/@slates/proto": ["@slates/proto@1.0.0-rc.8", "", { "dependencies": { "@lowerdeck/emitter": "^1.0.4", "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-3PB2SCFi13mYNkkptX9dbz8xOFgEdtXd6atDtaaIDs8vSxIMWy8C9JoSqtqXDmJOfM8Jk/dCSWxjoTPEYnMfgQ=="],
 
     "@slates-integrations/google-docs/@slates/test/@slates/client/@slates/proto": ["@slates/proto@1.0.0-rc.8", "", { "dependencies": { "@lowerdeck/emitter": "^1.0.4", "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-3PB2SCFi13mYNkkptX9dbz8xOFgEdtXd6atDtaaIDs8vSxIMWy8C9JoSqtqXDmJOfM8Jk/dCSWxjoTPEYnMfgQ=="],
 
