@@ -1,40 +1,24 @@
-import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
+import {
+  GOOGLE_PEOPLE_API_BASE_URL,
+  GooglePeopleClient,
+  getContactRecipe
+} from '@slates/google-people-recipes';
+import { includeTool } from '@slates/tool-recipes';
+import { SlateTool, createAxios } from 'slates';
 import { googleContactsActionScopes } from '../scopes';
-import { contactOutputSchema, formatContact } from '../lib/schemas';
-import { z } from 'zod';
+import { spec } from '../spec';
 
-export let getContact = SlateTool.create(spec, {
-  name: 'Get Contact',
-  key: 'get_contact',
-  description: `Retrieves detailed information about a specific contact by their resource name. Use \`people/me\` to get the authenticated user's profile. Returns all available contact fields.`,
-  tags: {
-    destructive: false,
-    readOnly: true
-  }
-})
-  .scopes(googleContactsActionScopes.getContact)
-  .input(
-    z.object({
-      resourceName: z
-        .string()
-        .describe('Resource name of the contact (e.g., "people/c12345" or "people/me")')
-    })
-  )
-  .output(contactOutputSchema)
-  .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
-    let result = await client.getContact(ctx.input.resourceName);
-    let contact = formatContact(result);
+let peopleAxios = createAxios({
+  baseURL: GOOGLE_PEOPLE_API_BASE_URL
+});
 
-    let displayName =
-      contact.names?.[0]?.displayName ||
-      contact.emailAddresses?.[0]?.value ||
-      ctx.input.resourceName;
-    return {
-      output: contact,
-      message: `Retrieved contact **${displayName}**.`
-    };
-  })
-  .build();
+export let getContact = includeTool({
+  recipe: getContactRecipe,
+  spec,
+  dependencies: {
+    createClient: (ctx: { auth: { token: string } }) =>
+      new GooglePeopleClient({ token: ctx.auth.token, api: peopleAxios })
+  },
+  toolFactory: SlateTool,
+  scopes: googleContactsActionScopes.getContact
+});

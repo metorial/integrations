@@ -153,8 +153,8 @@ export let manageThread = SlateTool.create(spec, {
         output: {
           threads: threads.map(t => ({
             threadId: t.id,
-            snippet: t.snippet,
-            historyId: t.historyId
+            snippet: t.snippet ?? '',
+            historyId: t.historyId ?? ''
           })),
           nextPageToken: result.nextPageToken,
           resultSizeEstimate: result.resultSizeEstimate

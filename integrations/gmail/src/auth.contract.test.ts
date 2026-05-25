@@ -98,7 +98,10 @@ describe('gmail auth contract', () => {
       token: 'access-token',
       refreshToken: 'refresh-token'
     });
-    expect(callbackResult.scopes).toEqual([gmailScopes.gmailModify, gmailScopes.userInfoEmail]);
+    expect(callbackResult.scopes).toEqual([
+      gmailScopes.gmailModify,
+      gmailScopes.userInfoEmail
+    ]);
     expect(Date.parse(String(callbackResult.output.expiresAt))).toBeGreaterThan(Date.now());
 
     oauthPost.mockResolvedValueOnce({
@@ -142,7 +145,7 @@ describe('gmail auth contract', () => {
           clientSecret: 'client-secret',
           scopes: [gmailScopes.gmailReadonly]
         }),
-      { code: 'internal.unexpected', kind: 'internal', status: 500 }
+      { code: 'request.bad', kind: 'request', status: 400 }
     );
   });
 

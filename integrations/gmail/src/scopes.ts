@@ -10,6 +10,8 @@ export let gmailScopes = {
   gmailMetadata: 'https://www.googleapis.com/auth/gmail.metadata',
   gmailSettingsBasic: 'https://www.googleapis.com/auth/gmail.settings.basic',
   gmailSettingsSharing: 'https://www.googleapis.com/auth/gmail.settings.sharing',
+  contactsReadonly: 'https://www.googleapis.com/auth/contacts.readonly',
+  contactsOtherReadonly: 'https://www.googleapis.com/auth/contacts.other.readonly',
   fullMail: 'https://mail.google.com/',
   userInfoEmail: 'https://www.googleapis.com/auth/userinfo.email',
   userInfoProfile: 'https://www.googleapis.com/auth/userinfo.profile'
@@ -54,6 +56,9 @@ export let gmailActionScopes = {
     gmailScopes.gmailSettingsSharing,
     gmailScopes.fullMail
   ),
+  listGoogleContacts: anyOf(gmailScopes.contactsReadonly),
+  searchGoogleContacts: anyOf(gmailScopes.contactsReadonly),
+  getGoogleContact: anyOf(gmailScopes.contactsReadonly),
   mailboxChanges: gmailHistoryOrWebhook,
   inboundWebhook: gmailHistoryOrWebhook
 } as const;

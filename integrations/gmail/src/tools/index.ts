@@ -7,3 +7,6 @@ export * from './manage-labels';
 export * from './manage-thread';
 export * from './manage-settings';
 export * from './get-attachment';
+export * from './list-google-contacts';
+export * from './search-google-contacts';
+export * from './get-google-contact';

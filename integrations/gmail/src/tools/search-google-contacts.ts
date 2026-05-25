@@ -1,24 +1,28 @@
 import {
   GOOGLE_PEOPLE_API_BASE_URL,
   GooglePeopleClient,
-  listContactsRecipe
+  searchContactsRecipe
 } from '@slates/google-people-recipes';
 import { includeTool } from '@slates/tool-recipes';
 import { SlateTool, createAxios } from 'slates';
-import { googleContactsActionScopes } from '../scopes';
+import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 
 let peopleAxios = createAxios({
   baseURL: GOOGLE_PEOPLE_API_BASE_URL
 });
 
-export let listContacts = includeTool({
-  recipe: listContactsRecipe,
+export let searchGoogleContacts = includeTool({
+  recipe: searchContactsRecipe,
   spec,
   dependencies: {
     createClient: (ctx: { auth: { token: string } }) =>
       new GooglePeopleClient({ token: ctx.auth.token, api: peopleAxios })
   },
   toolFactory: SlateTool,
-  scopes: googleContactsActionScopes.listContacts
+  key: 'search_google_contacts',
+  name: 'Search Google Contacts',
+  description:
+    "Searches the authenticated user's Google Contacts from the People API by name, email address, phone number, or other fields.",
+  scopes: gmailActionScopes.searchGoogleContacts
 });

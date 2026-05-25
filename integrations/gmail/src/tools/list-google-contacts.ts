@@ -5,14 +5,14 @@ import {
 } from '@slates/google-people-recipes';
 import { includeTool } from '@slates/tool-recipes';
 import { SlateTool, createAxios } from 'slates';
-import { googleContactsActionScopes } from '../scopes';
+import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 
 let peopleAxios = createAxios({
   baseURL: GOOGLE_PEOPLE_API_BASE_URL
 });
 
-export let listContacts = includeTool({
+export let listGoogleContacts = includeTool({
   recipe: listContactsRecipe,
   spec,
   dependencies: {
@@ -20,5 +20,9 @@ export let listContacts = includeTool({
       new GooglePeopleClient({ token: ctx.auth.token, api: peopleAxios })
   },
   toolFactory: SlateTool,
-  scopes: googleContactsActionScopes.listContacts
+  key: 'list_google_contacts',
+  name: 'List Google Contacts',
+  description:
+    "Lists the authenticated user's Google Contacts from the People API with pagination support. Use the `pageToken` from a previous response to fetch the next page.",
+  scopes: gmailActionScopes.listGoogleContacts
 });

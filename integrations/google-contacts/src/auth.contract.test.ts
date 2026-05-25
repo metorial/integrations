@@ -125,7 +125,7 @@ describe('google-contacts auth contract', () => {
           clientSecret: 'client-secret',
           scopes: [googleContactsScopes.contacts]
         }),
-      { code: 'internal.unexpected', kind: 'internal', status: 500 }
+      { code: 'request.bad', kind: 'request', status: 400 }
     );
   });
 

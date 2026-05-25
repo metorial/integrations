@@ -1,46 +1,13 @@
 import axios from 'axios';
+import {
+  DEFAULT_PERSON_FIELDS,
+  READONLY_PERSON_FIELDS,
+  type ContactInput
+} from '@slates/google-people-recipes';
 
 let api = axios.create({
   baseURL: 'https://people.googleapis.com/v1/'
 });
-
-export let DEFAULT_PERSON_FIELDS =
-  'names,emailAddresses,phoneNumbers,addresses,organizations,birthdays,urls,biographies,events,genders,occupations,nicknames,relations,userDefined,memberships';
-
-export let READONLY_PERSON_FIELDS = 'names,emailAddresses,phoneNumbers';
-
-export interface ContactInput {
-  names?: Array<{
-    givenName?: string;
-    familyName?: string;
-    middleName?: string;
-    prefix?: string;
-    suffix?: string;
-  }>;
-  emailAddresses?: Array<{ value: string; type?: string }>;
-  phoneNumbers?: Array<{ value: string; type?: string }>;
-  addresses?: Array<{
-    streetAddress?: string;
-    city?: string;
-    region?: string;
-    postalCode?: string;
-    country?: string;
-    type?: string;
-  }>;
-  organizations?: Array<{
-    name?: string;
-    title?: string;
-    department?: string;
-  }>;
-  birthdays?: Array<{ date?: { year?: number; month?: number; day?: number } }>;
-  urls?: Array<{ value: string; type?: string }>;
-  biographies?: Array<{ value: string }>;
-  userDefined?: Array<{ key: string; value: string }>;
-  nicknames?: Array<{ value: string }>;
-  relations?: Array<{ person: string; type?: string }>;
-  events?: Array<{ date?: { year?: number; month?: number; day?: number }; type?: string }>;
-  occupations?: Array<{ value: string }>;
-}
 
 export class Client {
   private headers: Record<string, string>;
@@ -52,46 +19,6 @@ export class Client {
   }
 
   // ---- People / Contacts ----
-
-  async getContact(resourceName: string, personFields?: string) {
-    let response = await api.get(resourceName, {
-      params: { personFields: personFields || DEFAULT_PERSON_FIELDS },
-      headers: this.headers
-    });
-    return response.data;
-  }
-
-  async listContacts(params: {
-    pageSize?: number;
-    pageToken?: string;
-    sortOrder?: string;
-    personFields?: string;
-    syncToken?: string;
-  }) {
-    let response = await api.get('people/me/connections', {
-      params: {
-        personFields: params.personFields || DEFAULT_PERSON_FIELDS,
-        pageSize: params.pageSize || 100,
-        pageToken: params.pageToken,
-        sortOrder: params.sortOrder,
-        syncToken: params.syncToken
-      },
-      headers: this.headers
-    });
-    return response.data;
-  }
-
-  async searchContacts(query: string, personFields?: string, pageSize?: number) {
-    let response = await api.get('people:searchContacts', {
-      params: {
-        query,
-        readMask: personFields || DEFAULT_PERSON_FIELDS,
-        pageSize: pageSize || 30
-      },
-      headers: this.headers
-    });
-    return response.data;
-  }
 
   async createContact(contactData: ContactInput) {
     let response = await api.post('people:createContact', contactData, {

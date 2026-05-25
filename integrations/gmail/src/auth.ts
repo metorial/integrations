@@ -1,3 +1,4 @@
+import { ServiceError, badRequestError } from '@lowerdeck/error';
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 import { gmailScopes } from './scopes';
@@ -9,6 +10,8 @@ let googleAxios = createAxios({
 let profileAxios = createAxios({
   baseURL: 'https://www.googleapis.com'
 });
+
+let gmailServiceError = (message: string) => new ServiceError(badRequestError({ message }));
 
 export let auth = SlateAuth.create()
   .output(
@@ -71,6 +74,18 @@ export let auth = SlateAuth.create()
         description:
           'Manage sensitive mail settings including forwarding rules and aliases. Restricted to service accounts with domain-wide delegation.',
         scope: gmailScopes.gmailSettingsSharing
+      },
+      {
+        title: 'Google Contacts (Read-only)',
+        description: 'See and download your Google Contacts for address lookup.',
+        defaultChecked: false,
+        scope: gmailScopes.contactsReadonly
+      },
+      {
+        title: 'Google Other Contacts (Read-only)',
+        description: 'See and download contact info automatically saved in "Other contacts".',
+        defaultChecked: false,
+        scope: gmailScopes.contactsOtherReadonly
       },
       {
         title: 'Full Access',
@@ -142,7 +157,7 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available');
+        throw gmailServiceError('No refresh token available');
       }
 
       let response = await googleAxios.post(

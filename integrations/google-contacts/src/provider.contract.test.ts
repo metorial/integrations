@@ -1,7 +1,7 @@
 import { createLocalSlateTestClient, expectSlateContract } from '@slates/test';
 import { describe, expect, it } from 'vitest';
 import { provider } from './index';
-import { googleContactsActionScopes } from './scopes';
+import { googleContactsActionScopes, googleContactsScopes } from './scopes';
 
 describe('google-contacts provider contract', () => {
   it('exposes the expected provider, tool, trigger, and auth surface', async () => {
@@ -89,9 +89,18 @@ describe('google-contacts provider contract', () => {
     expect(oauth.authenticationMethod.capabilities.handleTokenRefresh?.enabled).toBe(true);
     expect(oauth.authenticationMethod.capabilities.getProfile?.enabled).toBe(true);
 
-    let scopeTitles = new Set((oauth.authenticationMethod.scopes ?? []).map(scope => scope.title));
+    let scopeTitles = new Set(
+      (oauth.authenticationMethod.scopes ?? []).map(scope => scope.title)
+    );
     expect(scopeTitles.has('Contacts (Read-only)')).toBe(true);
     expect(scopeTitles.has('Directory (Read-only)')).toBe(true);
+
+    let otherContactScope = (oauth.authenticationMethod.scopes ?? []).find(
+      scope => scope.id === googleContactsScopes.contactsOtherReadonly
+    );
+    expect(otherContactScope).toMatchObject({
+      title: 'Other Contacts (Read-only)'
+    });
 
     let apiKey = await client.getAuthMethod('api_key');
     expect(apiKey.authenticationMethod.type).toBe('auth.token');

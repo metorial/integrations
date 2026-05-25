@@ -1,9 +1,28 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { Client } from '../lib/client';
+import { ServiceError } from '@lowerdeck/error';
+import { GOOGLE_PEOPLE_API_BASE_URL, GooglePeopleClient } from '@slates/google-people-recipes';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds, createAxios } from 'slates';
 import { spec } from '../spec';
 import { googleContactsActionScopes } from '../scopes';
 import { contactOutputSchema, formatContact } from '../lib/schemas';
 import { z } from 'zod';
+
+let isExpiredSyncTokenError = (error: unknown) => {
+  if (error instanceof ServiceError && error.data.upstreamStatus === 410) {
+    return true;
+  }
+
+  let responseStatus =
+    typeof (error as any)?.response?.status === 'number'
+      ? (error as any).response.status
+      : undefined;
+  let status = typeof (error as any)?.status === 'number' ? (error as any).status : undefined;
+
+  return responseStatus === 410 || status === 410;
+};
+
+let peopleAxios = createAxios({
+  baseURL: GOOGLE_PEOPLE_API_BASE_URL
+});
 
 export let contactChanged = SlateTrigger.create(spec, {
   name: 'Contact Changed',
@@ -32,7 +51,7 @@ export let contactChanged = SlateTrigger.create(spec, {
     },
 
     pollEvents: async ctx => {
-      let client = new Client({ token: ctx.auth.token });
+      let client = new GooglePeopleClient({ token: ctx.auth.token, api: peopleAxios });
       let syncToken = ctx.state?.syncToken as string | undefined;
       let knownContacts = (ctx.state?.knownContacts || {}) as Record<string, boolean>;
 
@@ -46,7 +65,8 @@ export let contactChanged = SlateTrigger.create(spec, {
           let result = await client.listContacts({
             pageSize: 1000,
             pageToken,
-            syncToken: undefined
+            syncToken: undefined,
+            requestSyncToken: true
           });
 
           for (let conn of result.connections || []) {
@@ -121,7 +141,7 @@ export let contactChanged = SlateTrigger.create(spec, {
         };
       } catch (err: any) {
         // If the sync token is expired, do a full sync
-        if (err?.response?.status === 410) {
+        if (isExpiredSyncTokenError(err)) {
           let allContacts: Record<string, boolean> = {};
           let pageToken: string | undefined;
           let newSyncToken: string | undefined;
@@ -129,7 +149,8 @@ export let contactChanged = SlateTrigger.create(spec, {
           do {
             let result = await client.listContacts({
               pageSize: 1000,
-              pageToken
+              pageToken,
+              requestSyncToken: true
             });
 
             for (let conn of result.connections || []) {

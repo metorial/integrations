@@ -1,3 +1,4 @@
+import { ServiceError, badRequestError } from '@lowerdeck/error';
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 import { googleContactsScopes } from './scopes';
@@ -9,6 +10,9 @@ let googleAxios = createAxios({
 let peopleAxios = createAxios({
   baseURL: 'https://people.googleapis.com/v1/'
 });
+
+let googleContactsServiceError = (message: string) =>
+  new ServiceError(badRequestError({ message }));
 
 export let auth = SlateAuth.create()
   .output(
@@ -102,7 +106,7 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available');
+        throw googleContactsServiceError('No refresh token available');
       }
 
       let response = await googleAxios.post(

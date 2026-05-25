@@ -9,7 +9,10 @@ import {
   manageLabels,
   manageThread,
   manageSettings,
-  getAttachment
+  getAttachment,
+  listGoogleContacts,
+  searchGoogleContacts,
+  getGoogleContact
 } from './tools';
 import { mailboxChanges, inboundWebhook } from './triggers';
 
@@ -24,7 +27,10 @@ export let provider = Slate.create({
     manageLabels.build(),
     manageThread.build(),
     manageSettings.build(),
-    getAttachment.build()
+    getAttachment.build(),
+    listGoogleContacts,
+    searchGoogleContacts,
+    getGoogleContact
   ],
   triggers: [inboundWebhook, mailboxChanges.build()]
 });

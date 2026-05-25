@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/gmail.svg" height="20"> Gmail
 
-Send, read, and search email messages with support for recipients, attachments, and HTML content. Create, update, and send drafts. Manage conversation threads and organize messages with labels. Search mailboxes using Gmail query syntax (from, to, subject, date, attachment filters). Configure mail settings including forwarding rules, filters, vacation responders, signatures, aliases, and delegates. Import and insert messages for migration. Sync mailbox changes incrementally via history API. Subscribe to mailbox change notifications via push notifications.
+Send, read, and search email messages with support for recipients, attachments, and HTML content. Create, update, and send drafts. Manage conversation threads and organize messages with labels. Search mailboxes using Gmail query syntax (from, to, subject, date, attachment filters). Configure mail settings including forwarding rules, filters, vacation responders, signatures, aliases, and delegates. Optionally look up Google Contacts through the People API when the profile grants Contacts read-only access. The OAuth surface also exposes the Google Other Contacts read-only scope for consent-screen coverage. Import and insert messages for migration. Sync mailbox changes incrementally via history API. Subscribe to mailbox change notifications via push notifications.
 
 ## Tools
 
@@ -11,6 +11,14 @@ Download an email attachment by its ID. Returns the base64-encoded file data and
 ### Get Message
 
 Retrieve a single email message by its ID. Returns the full message including parsed headers, body (text and HTML), and attachment metadata.
+
+### Get Google Contact
+
+Retrieve detailed Google Contacts information for a People API resource name. Requires the optional Google Contacts read-only OAuth scope.
+
+### List Google Contacts
+
+List the authenticated user's Google Contacts with pagination support. Requires the optional Google Contacts read-only OAuth scope.
 
 ### Manage Draft
 
@@ -35,6 +43,10 @@ Modify a message's labels, move it to trash, restore it from trash, or permanent
 ### Search Messages
 
 Search and list email messages using Gmail query syntax. Returns parsed messages with headers, body, and attachment metadata. Use the same search operators available in the Gmail search bar: \
+
+### Search Google Contacts
+
+Search the authenticated user's Google Contacts by name, email address, phone number, or other contact fields. Requires the optional Google Contacts read-only OAuth scope.
 
 ### Send Email
 

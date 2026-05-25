@@ -13,6 +13,7 @@ Gmail API uses **OAuth 2.0** exclusively for authentication and authorization.
 1. A Google Cloud Platform project with the Gmail API enabled.
 2. OAuth 2.0 credentials (Client ID and Client Secret) created in the Google Cloud Console.
 3. An OAuth consent screen configured with the required scopes.
+4. The People API enabled if optional Google Contacts lookup tools are used.
 
 ### OAuth 2.0 Endpoints
 
@@ -29,18 +30,20 @@ Gmail API uses **OAuth 2.0** exclusively for authentication and authorization.
 
 Gmail API offers granular scopes to limit access:
 
-| Scope                                                    | Description                                                                                                                                    |
-| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `https://www.googleapis.com/auth/gmail.readonly`         | Read all resources and their metadata (restricted)                                                                                             |
-| `https://www.googleapis.com/auth/gmail.send`             | Send messages only, no read or modify (sensitive)                                                                                              |
-| `https://www.googleapis.com/auth/gmail.compose`          | Create, read, update, and delete drafts; send messages and drafts (restricted)                                                                 |
-| `https://www.googleapis.com/auth/gmail.modify`           | All read/write operations except permanent deletion bypassing Trash (restricted)                                                               |
-| `https://www.googleapis.com/auth/gmail.labels`           | Create, read, update, and delete labels only (non-sensitive)                                                                                   |
-| `https://www.googleapis.com/auth/gmail.insert`           | Insert and import messages only (restricted)                                                                                                   |
-| `https://www.googleapis.com/auth/gmail.metadata`         | Read metadata including labels, history records, and email headers, but not the body or attachments (restricted)                               |
-| `https://www.googleapis.com/auth/gmail.settings.basic`   | Manage basic mail settings (restricted)                                                                                                        |
-| `https://www.googleapis.com/auth/gmail.settings.sharing` | Manage sensitive mail settings including forwarding rules and aliases; restricted to service accounts with domain-wide delegation (restricted) |
-| `https://mail.google.com/`                               | Full access including permanent deletion of threads and messages (restricted)                                                                  |
+| Scope                                                     | Description                                                                                                                                    |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `https://www.googleapis.com/auth/gmail.readonly`          | Read all resources and their metadata (restricted)                                                                                             |
+| `https://www.googleapis.com/auth/gmail.send`              | Send messages only, no read or modify (sensitive)                                                                                              |
+| `https://www.googleapis.com/auth/gmail.compose`           | Create, read, update, and delete drafts; send messages and drafts (restricted)                                                                 |
+| `https://www.googleapis.com/auth/gmail.modify`            | All read/write operations except permanent deletion bypassing Trash (restricted)                                                               |
+| `https://www.googleapis.com/auth/gmail.labels`            | Create, read, update, and delete labels only (non-sensitive)                                                                                   |
+| `https://www.googleapis.com/auth/gmail.insert`            | Insert and import messages only (restricted)                                                                                                   |
+| `https://www.googleapis.com/auth/gmail.metadata`          | Read metadata including labels, history records, and email headers, but not the body or attachments (restricted)                               |
+| `https://www.googleapis.com/auth/gmail.settings.basic`    | Manage basic mail settings (restricted)                                                                                                        |
+| `https://www.googleapis.com/auth/gmail.settings.sharing`  | Manage sensitive mail settings including forwarding rules and aliases; restricted to service accounts with domain-wide delegation (restricted) |
+| `https://www.googleapis.com/auth/contacts.readonly`       | Optional read-only access to Google Contacts through the People API                                                                            |
+| `https://www.googleapis.com/auth/contacts.other.readonly` | Optional read-only access to contact info automatically saved in "Other contacts"                                                              |
+| `https://mail.google.com/`                                | Full access including permanent deletion of threads and messages (restricted)                                                                  |
 
 Restricted scopes provide wide access to Google User Data and require a restricted scope verification process, and if you store restricted scope data on servers, you need to go through a security assessment.
 
@@ -53,6 +56,10 @@ Create and send email messages with support for recipients (to, cc, bcc), subjec
 ### Reading and Searching Messages
 
 Read individual email messages including headers, body, and attachments. Search for messages using Gmail's query syntax (the same operators available in the Gmail search bar, e.g., `from:`, `to:`, `subject:`, `has:attachment`, `after:`, `before:`). List messages in a mailbox, optionally filtered by label or query.
+
+### Google Contacts Lookup
+
+When the optional `https://www.googleapis.com/auth/contacts.readonly` scope is granted, Gmail can read Google Contacts through the People API. The OAuth surface also exposes `https://www.googleapis.com/auth/contacts.other.readonly` for deployments that need the matching Google People API Other Contacts consent scope. The contact tools list contacts, search contacts, and retrieve a contact by People API resource name. These tools are read-only and do not create, update, or delete contacts. Existing Gmail profiles must reauthorize with the optional contacts scope before these tools can access contacts.
 
 ### Thread Management
 

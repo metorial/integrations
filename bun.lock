@@ -5232,10 +5232,13 @@
     },
     "integrations/gmail": {
       "name": "@slates-integrations/gmail",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/google-people-recipes": "1.0.0-rc.1",
+        "@slates/tool-recipes": "1.0.0-rc.1",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -5435,10 +5438,13 @@
     },
     "integrations/google-contacts": {
       "name": "@slates-integrations/google-contacts",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/google-people-recipes": "1.0.0-rc.1",
+        "@slates/tool-recipes": "1.0.0-rc.1",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
+        "slates": "1.0.0-rc.10",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -13663,6 +13669,21 @@
         "vitest": "^3.1.2",
       },
     },
+    "packages/google-people-recipes": {
+      "name": "@slates/google-people-recipes",
+      "version": "1.0.0-rc.1",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/tool-recipes": "1.0.0-rc.1",
+        "slates": "1.0.0-rc.10",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/tsconfig": "1.0.0-rc.1",
+        "typescript": "5.8.2",
+        "vitest": "^3.1.2",
+      },
+    },
     "packages/oauth-microsoft": {
       "name": "@slates/oauth-microsoft",
       "version": "1.0.0-rc.2",
@@ -13781,6 +13802,19 @@
         "typescript": "5.8.2",
         "vitest": "^3.1.2",
         "zod": "^4.2",
+      },
+    },
+    "packages/tool-recipes": {
+      "name": "@slates/tool-recipes",
+      "version": "1.0.0-rc.1",
+      "dependencies": {
+        "slates": "1.0.0-rc.10",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/tsconfig": "1.0.0-rc.1",
+        "typescript": "5.8.2",
+        "vitest": "^3.1.2",
       },
     },
     "packages/tsconfig": {
@@ -16647,6 +16681,8 @@
 
     "@slates/client": ["@slates/client@workspace:packages/client"],
 
+    "@slates/google-people-recipes": ["@slates/google-people-recipes@workspace:packages/google-people-recipes"],
+
     "@slates/oauth-microsoft": ["@slates/oauth-microsoft@workspace:packages/oauth-microsoft"],
 
     "@slates/profiles": ["@slates/profiles@workspace:packages/profiles"],
@@ -16660,6 +16696,8 @@
     "@slates/slack-tools": ["@slates/slack-tools@workspace:packages/slack-tools"],
 
     "@slates/test": ["@slates/test@workspace:packages/test"],
+
+    "@slates/tool-recipes": ["@slates/tool-recipes@workspace:packages/tool-recipes"],
 
     "@slates/tsconfig": ["@slates/tsconfig@workspace:packages/tsconfig"],
 
@@ -18497,8 +18535,6 @@
 
     "@slates-integrations/gmail/@slates/test": ["@slates/test@1.0.0-rc.4", "", { "dependencies": { "@lowerdeck/testing-tools": "latest", "@slates/client": "1.0.0-rc.6", "@slates/profiles": "1.0.0-rc.4" } }, "sha512-gCh8IL15DvKiNiTjejm1KfifwtrPmMQ0xgQ4Hzk2/6PoaUBL7fzbKi1vLRiNd+7F7wvknnz04Y22HqpA++llgw=="],
 
-    "@slates-integrations/gmail/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
-
     "@slates-integrations/godial/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/gong/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
@@ -18548,8 +18584,6 @@
     "@slates-integrations/google-cloud-vision/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/google-contacts/@slates/test": ["@slates/test@1.0.0-rc.4", "", { "dependencies": { "@lowerdeck/testing-tools": "latest", "@slates/client": "1.0.0-rc.6", "@slates/profiles": "1.0.0-rc.4" } }, "sha512-gCh8IL15DvKiNiTjejm1KfifwtrPmMQ0xgQ4Hzk2/6PoaUBL7fzbKi1vLRiNd+7F7wvknnz04Y22HqpA++llgw=="],
-
-    "@slates-integrations/google-contacts/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/google-docs/@slates/test": ["@slates/test@1.0.0-rc.4", "", { "dependencies": { "@lowerdeck/testing-tools": "latest", "@slates/client": "1.0.0-rc.6", "@slates/profiles": "1.0.0-rc.4" } }, "sha512-gCh8IL15DvKiNiTjejm1KfifwtrPmMQ0xgQ4Hzk2/6PoaUBL7fzbKi1vLRiNd+7F7wvknnz04Y22HqpA++llgw=="],
 
@@ -20781,8 +20815,6 @@
 
     "@slates-integrations/gmail/@slates/test/@slates/profiles": ["@slates/profiles@1.0.0-rc.4", "", { "dependencies": { "@slates/client": "1.0.0-rc.6", "@slates/proto": "1.0.0-rc.8" } }, "sha512-VrBG1Fo1XmqMwPfaG6ZEikYp5nSDz4RJ7puRAAfhQLLM2Pf3kHtpb/NAiBmdJe9dz2UNLr0+wGzq/fyp61pURA=="],
 
-    "@slates-integrations/gmail/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
-
     "@slates-integrations/godial/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
 
     "@slates-integrations/gong/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
@@ -20854,8 +20886,6 @@
     "@slates-integrations/google-contacts/@slates/test/@slates/client": ["@slates/client@1.0.0-rc.6", "", { "dependencies": { "@slates/proto": "1.0.0-rc.8", "@slates/provider": "1.0.0-rc.10", "@slates/provider-handler": "1.0.0-rc.9" } }, "sha512-y9DONyNvs5sxjebi0QkejwCmVV8msXdMidu+2M6rxCHKdq05L8WnxazpsDN+OxWSmrs9+fgISfZVlPKYl51LWw=="],
 
     "@slates-integrations/google-contacts/@slates/test/@slates/profiles": ["@slates/profiles@1.0.0-rc.4", "", { "dependencies": { "@slates/client": "1.0.0-rc.6", "@slates/proto": "1.0.0-rc.8" } }, "sha512-VrBG1Fo1XmqMwPfaG6ZEikYp5nSDz4RJ7puRAAfhQLLM2Pf3kHtpb/NAiBmdJe9dz2UNLr0+wGzq/fyp61pURA=="],
-
-    "@slates-integrations/google-contacts/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
 
     "@slates-integrations/google-docs/@slates/test/@slates/client": ["@slates/client@1.0.0-rc.6", "", { "dependencies": { "@slates/proto": "1.0.0-rc.8", "@slates/provider": "1.0.0-rc.10", "@slates/provider-handler": "1.0.0-rc.9" } }, "sha512-y9DONyNvs5sxjebi0QkejwCmVV8msXdMidu+2M6rxCHKdq05L8WnxazpsDN+OxWSmrs9+fgISfZVlPKYl51LWw=="],
 
