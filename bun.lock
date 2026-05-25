@@ -1095,7 +1095,7 @@
       "name": "@slates-integrations/azure-devops",
       "version": "0.2.0-rc.7",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -1122,7 +1122,7 @@
       "name": "@slates-integrations/azure-repos",
       "version": "0.2.0-rc.7",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -8532,7 +8532,7 @@
       "name": "@slates-integrations/onedrive",
       "version": "0.2.0-rc.3",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -9516,7 +9516,7 @@
       "name": "@slates-integrations/powerpoint-online",
       "version": "0.2.0-rc.2",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -10890,7 +10890,7 @@
       "version": "0.2.0-rc.6",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -13157,7 +13157,7 @@
       "name": "@slates-integrations/word-online",
       "version": "0.2.0-rc.3",
       "dependencies": {
-        "@slates/oauth-microsoft": "1.0.0-rc.1",
+        "@slates/oauth-microsoft": "1.0.0-rc.2",
         "@types/node": "^20",
         "slates": "1.0.0-rc.9",
         "zod": "^4.2",
@@ -17859,13 +17859,9 @@
 
     "@slates-integrations/azure-blob-storage/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
-    "@slates-integrations/azure-devops/@slates/oauth-microsoft": ["@slates/oauth-microsoft@1.0.0-rc.1", "", {}, "sha512-V9c4YdOGTGk+Xy2yamJoOwwMv+ssWNUvUtQGvkCqBw8GN6NrZRT1bz/5FTKlDuqfH80v3OnfrWcxAVsF96Y/lA=="],
-
     "@slates-integrations/azure-devops/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/azure-functions/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
-
-    "@slates-integrations/azure-repos/@slates/oauth-microsoft": ["@slates/oauth-microsoft@1.0.0-rc.1", "", {}, "sha512-V9c4YdOGTGk+Xy2yamJoOwwMv+ssWNUvUtQGvkCqBw8GN6NrZRT1bz/5FTKlDuqfH80v3OnfrWcxAVsF96Y/lA=="],
 
     "@slates-integrations/azure-repos/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
@@ -19093,8 +19089,6 @@
 
     "@slates-integrations/onedesk/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
-    "@slates-integrations/onedrive/@slates/oauth-microsoft": ["@slates/oauth-microsoft@1.0.0-rc.1", "", {}, "sha512-V9c4YdOGTGk+Xy2yamJoOwwMv+ssWNUvUtQGvkCqBw8GN6NrZRT1bz/5FTKlDuqfH80v3OnfrWcxAVsF96Y/lA=="],
-
     "@slates-integrations/onedrive/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/onelogin/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
@@ -19246,8 +19240,6 @@
     "@slates-integrations/postmark/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/power-bi/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
-
-    "@slates-integrations/powerpoint-online/@slates/oauth-microsoft": ["@slates/oauth-microsoft@1.0.0-rc.1", "", {}, "sha512-V9c4YdOGTGk+Xy2yamJoOwwMv+ssWNUvUtQGvkCqBw8GN6NrZRT1bz/5FTKlDuqfH80v3OnfrWcxAVsF96Y/lA=="],
 
     "@slates-integrations/powerpoint-online/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
@@ -19472,8 +19464,6 @@
     "@slates-integrations/servicenow/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/sevdesk/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
-
-    "@slates-integrations/sharepoint/@slates/oauth-microsoft": ["@slates/oauth-microsoft@1.0.0-rc.1", "", {}, "sha512-V9c4YdOGTGk+Xy2yamJoOwwMv+ssWNUvUtQGvkCqBw8GN6NrZRT1bz/5FTKlDuqfH80v3OnfrWcxAVsF96Y/lA=="],
 
     "@slates-integrations/sharepoint/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
@@ -19824,8 +19814,6 @@
     "@slates-integrations/woocommerce/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/woodpecker-co/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
-
-    "@slates-integrations/word-online/@slates/oauth-microsoft": ["@slates/oauth-microsoft@1.0.0-rc.1", "", {}, "sha512-V9c4YdOGTGk+Xy2yamJoOwwMv+ssWNUvUtQGvkCqBw8GN6NrZRT1bz/5FTKlDuqfH80v3OnfrWcxAVsF96Y/lA=="],
 
     "@slates-integrations/word-online/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
