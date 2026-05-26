@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { ArmClient } from '../lib/client';
+import { azureFunctionsServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -55,10 +56,10 @@ export let manageKeys = SlateTool.create(spec, {
     let { appName, scope, action, functionName, keyName, keyValue } = ctx.input;
 
     if (scope === 'function' && !functionName) {
-      throw new Error('functionName is required when scope is "function"');
+      throw azureFunctionsServiceError('functionName is required when scope is "function"');
     }
     if ((action === 'create' || action === 'delete') && !keyName) {
-      throw new Error('keyName is required for create and delete actions');
+      throw azureFunctionsServiceError('keyName is required for create and delete actions');
     }
 
     ctx.info(
