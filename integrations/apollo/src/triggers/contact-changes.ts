@@ -1,4 +1,4 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -49,7 +49,7 @@ export let contactChanges = SlateTrigger.create(spec, {
     },
 
     pollEvents: async ctx => {
-      let client = new Client({ token: ctx.auth.token });
+      let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
       let knownContactIds = (ctx.state?.knownContactIds as Record<string, string>) || {};

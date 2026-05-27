@@ -102,6 +102,7 @@ export interface ApolloDeal {
   owner_id?: string;
   account_id?: string;
   deal_stage_id?: string;
+  opportunity_stage_id?: string;
   stage_name?: string;
   status?: string;
   source?: string;
@@ -126,7 +127,8 @@ export interface ApolloTask {
   type?: string;
   status?: string;
   priority?: string;
-  due_date?: string;
+  due_at?: string;
+  title?: string;
   note?: string;
   user_id?: string;
   contact_id?: string;
@@ -171,12 +173,21 @@ export interface PeopleSearchFilters {
 }
 
 export interface OrganizationSearchFilters {
+  organizationDomains?: string[];
   organizationNumEmployeesRanges?: string[];
   organizationLocations?: string[];
+  organizationNotLocations?: string[];
   organizationIndustryTagIds?: string[];
   organizationIds?: string[];
   qOrganizationKeywordTags?: string[];
   qOrganizationName?: string;
+  revenueRange?: {
+    min?: number;
+    max?: number;
+  };
+  currentlyUsingAnyTechnologyUids?: string[];
+  organizationJobTitles?: string[];
+  organizationJobLocations?: string[];
   page?: number;
   perPage?: number;
 }

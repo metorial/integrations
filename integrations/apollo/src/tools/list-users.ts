@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -28,7 +28,7 @@ export let listUsers = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     let result = await client.listUsers();
 
@@ -74,7 +74,7 @@ export let listStages = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     let stages: Array<{ stageId: string; name: string; order?: number }> = [];
 
@@ -104,6 +104,72 @@ export let listStages = SlateTool.create(spec, {
     return {
       output: { stages },
       message: `Found **${stages.length}** ${ctx.input.stageType} stage(s): ${stages.map(s => s.name).join(', ')}.`
+    };
+  })
+  .build();
+
+export let listEmailAccounts = SlateTool.create(spec, {
+  name: 'List Email Accounts',
+  key: 'list_email_accounts',
+  description:
+    'Retrieve linked email inboxes for Apollo teammates. Email account IDs are used when adding contacts to sequences.',
+  constraints: ['Requires a master API key'],
+  tags: {
+    readOnly: true
+  }
+})
+  .input(z.object({}))
+  .output(
+    z.object({
+      emailAccounts: z.array(
+        z.object({
+          emailAccountId: z.string().optional(),
+          userId: z.string().optional(),
+          email: z.string().optional(),
+          aliases: z.array(z.string()).optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
+    let result = await client.listEmailAccounts();
+    let emailAccounts = result.emailAccounts.map(account => ({
+      emailAccountId: account.id,
+      userId: account.user_id,
+      email: account.email,
+      aliases: account.aliases
+    }));
+
+    return {
+      output: { emailAccounts },
+      message: `Found **${emailAccounts.length}** email account(s).`
+    };
+  })
+  .build();
+
+export let getUsageStats = SlateTool.create(spec, {
+  name: 'Get Usage Stats',
+  key: 'get_usage_stats',
+  description: "Retrieve Apollo API usage statistics and rate limits for your team's API key.",
+  constraints: ['Requires a master API key'],
+  tags: {
+    readOnly: true
+  }
+})
+  .input(z.object({}))
+  .output(
+    z.object({
+      usageStats: z.record(z.string(), z.any())
+    })
+  )
+  .handleInvocation(async ctx => {
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
+    let usageStats = await client.getUsageStats();
+
+    return {
+      output: { usageStats },
+      message: 'Retrieved Apollo API usage statistics.'
     };
   })
   .build();

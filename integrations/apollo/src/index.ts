@@ -1,15 +1,26 @@
-import { Slate } from 'slates';
+import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
   searchPeople,
   searchOrganizations,
+  getOrganization,
+  enrichOrganization,
+  listOrganizationJobPostings,
   enrichPerson,
   searchContacts,
   createContact,
   updateContact,
+  bulkCreateContacts,
+  bulkUpdateContacts,
+  updateContactStages,
+  updateContactOwners,
   searchAccounts,
+  getAccount,
   createAccount,
   updateAccount,
+  bulkCreateAccounts,
+  bulkUpdateAccounts,
+  updateAccountOwners,
   listDeals,
   getDeal,
   createDeal,
@@ -19,8 +30,17 @@ import {
   updateContactSequenceStatus,
   searchTasks,
   createTask,
+  searchCalls,
+  createCall,
+  updateCall,
+  searchConversations,
+  getConversation,
+  exportConversations,
+  queryAnalyticsReport,
   listUsers,
-  listStages
+  listStages,
+  listEmailAccounts,
+  getUsageStats
 } from './tools';
 import { contactChanges, dealChanges, inboundWebhook } from './triggers';
 
@@ -29,13 +49,24 @@ export let provider = Slate.create({
   tools: [
     searchPeople,
     searchOrganizations,
+    getOrganization,
+    enrichOrganization,
+    listOrganizationJobPostings,
     enrichPerson,
     searchContacts,
     createContact,
     updateContact,
+    bulkCreateContacts,
+    bulkUpdateContacts,
+    updateContactStages,
+    updateContactOwners,
     searchAccounts,
+    getAccount,
     createAccount,
     updateAccount,
+    bulkCreateAccounts,
+    bulkUpdateAccounts,
+    updateAccountOwners,
     listDeals,
     getDeal,
     createDeal,
@@ -45,8 +76,17 @@ export let provider = Slate.create({
     updateContactSequenceStatus,
     searchTasks,
     createTask,
+    searchCalls,
+    createCall,
+    updateCall,
+    searchConversations,
+    getConversation,
+    exportConversations,
+    queryAnalyticsReport,
     listUsers,
-    listStages
+    listStages,
+    listEmailAccounts,
+    getUsageStats
   ],
   triggers: [inboundWebhook, contactChanges, dealChanges]
 });

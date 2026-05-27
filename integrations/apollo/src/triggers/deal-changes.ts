@@ -1,4 +1,4 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -50,7 +50,7 @@ export let dealChanges = SlateTrigger.create(spec, {
     },
 
     pollEvents: async ctx => {
-      let client = new Client({ token: ctx.auth.token });
+      let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
       let knownDealIds = (ctx.state?.knownDealIds as Record<string, string>) || {};
@@ -94,7 +94,7 @@ export let dealChanges = SlateTrigger.create(spec, {
               closedDate: deal.closed_date,
               ownerId: deal.owner_id,
               accountId: deal.account_id,
-              dealStageId: deal.deal_stage_id,
+              dealStageId: deal.opportunity_stage_id || deal.deal_stage_id,
               stageName: deal.stage_name,
               status: deal.status,
               source: deal.source,
@@ -113,7 +113,7 @@ export let dealChanges = SlateTrigger.create(spec, {
             closedDate: deal.closed_date,
             ownerId: deal.owner_id,
             accountId: deal.account_id,
-            dealStageId: deal.deal_stage_id,
+            dealStageId: deal.opportunity_stage_id || deal.deal_stage_id,
             stageName: deal.stage_name,
             status: deal.status,
             source: deal.source,

@@ -738,10 +738,11 @@
     },
     "integrations/apollo": {
       "name": "@slates-integrations/apolloio",
-      "version": "0.2.0-rc.2",
+      "version": "0.2.0-rc.9",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.11",
         "@types/node": "^20",
-        "slates": "1.0.0-rc.9",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -17811,8 +17812,6 @@
 
     "@slates-integrations/apiverve/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
-    "@slates-integrations/apolloio/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
-
     "@slates-integrations/appcircle/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
 
     "@slates-integrations/appcues/slates": ["slates@1.0.0-rc.9", "", { "dependencies": { "@slates/provider": "1.0.0-rc.10" } }, "sha512-fwuT9dcSmW6J/O84niSrj3X992XLtniaZR7XapimUKwmH/nZhHaiuglQoJ9WUi+P3cLv9R3SFqAMkjODTp5wpQ=="],
@@ -20072,8 +20071,6 @@
     "@slates-integrations/apipie-ai/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
 
     "@slates-integrations/apiverve/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
-
-    "@slates-integrations/apolloio/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
 
     "@slates-integrations/appcircle/slates/@slates/provider": ["@slates/provider@1.0.0-rc.10", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-6Kvzj6tsCAlrUEFIUepIM68gGixLXufgYZeMr/IpU0Pw5xcjpIsFAV0Er5bAuXd4G17RrQ2oxO9UyetU7GNmCw=="],
 

@@ -1,5 +1,6 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
+import { apolloServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -114,9 +115,29 @@ Supports both single and bulk enrichment (up to 10 records per request).`,
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     if (ctx.input.records && ctx.input.records.length > 0) {
+      if (ctx.input.records.length > 10) {
+        throw apolloServiceError('Bulk person enrichment supports up to 10 records.');
+      }
+
+      for (let [index, record] of ctx.input.records.entries()) {
+        let hasIdentifier =
+          record.email ||
+          record.name ||
+          record.linkedinUrl ||
+          record.apolloPersonId ||
+          ((record.firstName || record.lastName) &&
+            (record.domain || record.organizationName));
+
+        if (!hasIdentifier) {
+          throw apolloServiceError(
+            `records[${index}] must include email, name, LinkedIn URL, Apollo person ID, or name plus company/domain.`
+          );
+        }
+      }
+
       let result = await client.bulkEnrichPeople({
         details: ctx.input.records.map(r => ({
           email: r.email,
@@ -150,6 +171,20 @@ Supports both single and bulk enrichment (up to 10 records per request).`,
         },
         message: `Bulk enriched **${result.uniqueEnriched}** of ${result.totalRequested} requested records. Consumed **${result.creditsConsumed}** credits.`
       };
+    }
+
+    let hasIdentifier =
+      ctx.input.email ||
+      ctx.input.name ||
+      ctx.input.linkedinUrl ||
+      ctx.input.apolloPersonId ||
+      ((ctx.input.firstName || ctx.input.lastName) &&
+        (ctx.input.domain || ctx.input.organizationName));
+
+    if (!hasIdentifier) {
+      throw apolloServiceError(
+        'Provide at least one identifier: email, name, LinkedIn URL, Apollo person ID, or name plus company/domain.'
+      );
     }
 
     let result = await client.enrichPerson({

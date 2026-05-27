@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -36,7 +36,7 @@ export let searchSequences = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     let result = await client.searchSequences({
       qKeywords: ctx.input.keywords,
@@ -83,7 +83,7 @@ export let addContactsToSequence = SlateTool.create(spec, {
       contactIds: z
         .array(z.string())
         .describe('Array of Apollo contact IDs to add to the sequence'),
-      emailAccountId: z.string().optional().describe('Email account ID to send from'),
+      emailAccountId: z.string().describe('Email account ID to send from'),
       userId: z.string().optional().describe('Apollo user ID on whose behalf to send')
     })
   )
@@ -94,7 +94,7 @@ export let addContactsToSequence = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     await client.addContactsToSequence(
       ctx.input.sequenceId,
@@ -116,7 +116,7 @@ export let addContactsToSequence = SlateTool.create(spec, {
 export let updateContactSequenceStatus = SlateTool.create(spec, {
   name: 'Update Contact Sequence Status',
   key: 'update_contact_sequence_status',
-  description: `Mark contacts as "finished" in a sequence or re-activate them. Use this to manage contact progression through your email outreach sequences.`,
+  description: `Mark contacts as finished in a sequence, remove them from the sequence, or stop their sequence progress.`,
   constraints: ['Requires a master API key'],
   tags: {
     destructive: false
@@ -127,8 +127,10 @@ export let updateContactSequenceStatus = SlateTool.create(spec, {
       sequenceId: z.string().describe('The Apollo sequence ID'),
       contactIds: z.array(z.string()).describe('Array of contact IDs to update'),
       status: z
-        .enum(['finished', 'active'])
-        .describe('"finished" to mark as complete, "active" to re-activate')
+        .enum(['finished', 'mark_as_finished', 'remove', 'stop'])
+        .describe(
+          '"finished" or "mark_as_finished" to mark complete, "remove" to remove contacts, or "stop" to halt progress'
+        )
     })
   )
   .output(
@@ -138,12 +140,13 @@ export let updateContactSequenceStatus = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
+    let mode = ctx.input.status === 'finished' ? 'mark_as_finished' : ctx.input.status;
 
     await client.updateContactStatusInSequence(
       ctx.input.contactIds,
       ctx.input.sequenceId,
-      ctx.input.status
+      mode
     );
 
     return {
