@@ -1,7 +1,16 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+
+let optionalString = (value: unknown) =>
+  typeof value === 'string' && value.length > 0 ? value : undefined;
+
+let optionalNumber = (value: unknown) =>
+  typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+
+let optionalStringArray = (value: unknown) =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : undefined;
 
 export let searchOrganizations = SlateTool.create(spec, {
   name: 'Search Organizations',
@@ -19,6 +28,10 @@ export let searchOrganizations = SlateTool.create(spec, {
   .input(
     z.object({
       companyName: z.string().optional().describe('Search by company/organization name'),
+      companyDomains: z
+        .array(z.string())
+        .optional()
+        .describe('Filter by organization domains, e.g. ["apollo.io"]'),
       keywordTags: z
         .array(z.string())
         .optional()
@@ -27,10 +40,28 @@ export let searchOrganizations = SlateTool.create(spec, {
         .array(z.string())
         .optional()
         .describe('Filter by organization locations, e.g. ["San Francisco, CA"]'),
+      excludedLocations: z
+        .array(z.string())
+        .optional()
+        .describe('Exclude organization headquarters locations'),
       employeeRanges: z
         .array(z.string())
         .optional()
         .describe('Filter by employee count ranges, e.g. ["1,10", "51,200"]'),
+      revenueMin: z.number().optional().describe('Minimum organization revenue'),
+      revenueMax: z.number().optional().describe('Maximum organization revenue'),
+      technologyUids: z
+        .array(z.string())
+        .optional()
+        .describe('Technology UIDs organizations currently use, e.g. ["salesforce"]'),
+      jobTitles: z
+        .array(z.string())
+        .optional()
+        .describe('Active job titles the organization is recruiting for'),
+      jobLocations: z
+        .array(z.string())
+        .optional()
+        .describe('Active job posting locations for the organization'),
       organizationIds: z
         .array(z.string())
         .optional()
@@ -68,36 +99,48 @@ export let searchOrganizations = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     let result = await client.searchOrganizations({
       qOrganizationName: ctx.input.companyName,
+      organizationDomains: ctx.input.companyDomains,
       qOrganizationKeywordTags: ctx.input.keywordTags,
       organizationLocations: ctx.input.locations,
+      organizationNotLocations: ctx.input.excludedLocations,
       organizationNumEmployeesRanges: ctx.input.employeeRanges,
+      revenueRange:
+        ctx.input.revenueMin !== undefined || ctx.input.revenueMax !== undefined
+          ? {
+              min: ctx.input.revenueMin,
+              max: ctx.input.revenueMax
+            }
+          : undefined,
+      currentlyUsingAnyTechnologyUids: ctx.input.technologyUids,
+      organizationJobTitles: ctx.input.jobTitles,
+      organizationJobLocations: ctx.input.jobLocations,
       organizationIds: ctx.input.organizationIds,
       page: ctx.input.page,
       perPage: ctx.input.perPage
     });
 
     let organizations = result.organizations.map(o => ({
-      organizationId: o.id,
-      name: o.name,
-      websiteUrl: o.website_url,
-      domain: o.domain,
-      linkedinUrl: o.linkedin_url,
-      industry: o.industry,
-      estimatedEmployees: o.estimated_num_employees,
-      foundedYear: o.founded_year,
-      annualRevenue: o.annual_revenue,
-      annualRevenuePrinted: o.annual_revenue_printed,
-      city: o.city,
-      state: o.state,
-      country: o.country,
-      shortDescription: o.short_description,
-      logoUrl: o.logo_url,
-      keywords: o.keywords,
-      technologies: o.technology_names
+      organizationId: optionalString(o.id),
+      name: optionalString(o.name),
+      websiteUrl: optionalString(o.website_url),
+      domain: optionalString(o.domain),
+      linkedinUrl: optionalString(o.linkedin_url),
+      industry: optionalString(o.industry),
+      estimatedEmployees: optionalNumber(o.estimated_num_employees),
+      foundedYear: optionalNumber(o.founded_year),
+      annualRevenue: optionalNumber(o.annual_revenue),
+      annualRevenuePrinted: optionalString(o.annual_revenue_printed),
+      city: optionalString(o.city),
+      state: optionalString(o.state),
+      country: optionalString(o.country),
+      shortDescription: optionalString(o.short_description),
+      logoUrl: optionalString(o.logo_url),
+      keywords: optionalStringArray(o.keywords),
+      technologies: optionalStringArray(o.technology_names)
     }));
 
     return {

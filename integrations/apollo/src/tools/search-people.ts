@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -76,7 +76,7 @@ export let searchPeople = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     let result = await client.searchPeople({
       qKeywords: ctx.input.keywords,

@@ -1,7 +1,34 @@
-import { SlateTool } from 'slates';
+import { SlateTool } from '@slates/provider';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
+
+let optionalString = (value: unknown) =>
+  typeof value === 'string' && value.length > 0 ? value : undefined;
+
+let optionalNumber = (value: unknown) => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim().length > 0) {
+    let parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return undefined;
+};
+
+let formatDeal = (d: Record<string, any>) => ({
+  dealId: optionalString(d.id),
+  name: optionalString(d.name),
+  amount: optionalNumber(d.amount),
+  closedDate: optionalString(d.closed_date),
+  ownerId: optionalString(d.owner_id),
+  accountId: optionalString(d.account_id),
+  dealStageId: optionalString(d.opportunity_stage_id) || optionalString(d.deal_stage_id),
+  stageName: optionalString(d.stage_name),
+  status: optionalString(d.status),
+  source: optionalString(d.source),
+  createdAt: optionalString(d.created_at),
+  updatedAt: optionalString(d.updated_at)
+});
 
 export let listDeals = SlateTool.create(spec, {
   name: 'List Deals',
@@ -41,27 +68,14 @@ export let listDeals = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     let result = await client.listDeals({
       page: ctx.input.page,
       perPage: ctx.input.perPage
     });
 
-    let deals = result.deals.map(d => ({
-      dealId: d.id,
-      name: d.name,
-      amount: d.amount,
-      closedDate: d.closed_date,
-      ownerId: d.owner_id,
-      accountId: d.account_id,
-      dealStageId: d.deal_stage_id,
-      stageName: d.stage_name,
-      status: d.status,
-      source: d.source,
-      createdAt: d.created_at,
-      updatedAt: d.updated_at
-    }));
+    let deals = result.deals.map(formatDeal);
 
     return {
       output: {
@@ -105,27 +119,14 @@ export let getDeal = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     let result = await client.viewDeal(ctx.input.dealId);
-    let d = result.deal;
+    let deal = formatDeal(result.deal);
 
     return {
-      output: {
-        dealId: d.id,
-        name: d.name,
-        amount: d.amount,
-        closedDate: d.closed_date,
-        ownerId: d.owner_id,
-        accountId: d.account_id,
-        dealStageId: d.deal_stage_id,
-        stageName: d.stage_name,
-        status: d.status,
-        source: d.source,
-        createdAt: d.created_at,
-        updatedAt: d.updated_at
-      },
-      message: `Retrieved deal **${d.name || d.id}** — Amount: ${d.amount ? `$${d.amount}` : 'N/A'}, Stage: ${d.stage_name || d.deal_stage_id || 'N/A'}.`
+      output: deal,
+      message: `Retrieved deal **${deal.name || deal.dealId}** — Amount: ${deal.amount ? `$${deal.amount}` : 'N/A'}, Stage: ${deal.stageName || deal.dealStageId || 'N/A'}.`
     };
   })
   .build();
@@ -163,7 +164,7 @@ export let createDeal = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     let result = await client.createDeal({
       name: ctx.input.name,
@@ -175,17 +176,17 @@ export let createDeal = SlateTool.create(spec, {
       source: ctx.input.source
     });
 
-    let d = result.deal;
+    let deal = formatDeal(result.deal);
     return {
       output: {
-        dealId: d.id,
-        name: d.name,
-        amount: d.amount,
-        closedDate: d.closed_date,
-        dealStageId: d.deal_stage_id,
-        createdAt: d.created_at
+        dealId: deal.dealId,
+        name: deal.name,
+        amount: deal.amount,
+        closedDate: deal.closedDate,
+        dealStageId: deal.dealStageId,
+        createdAt: deal.createdAt
       },
-      message: `Created deal **${d.name}** (ID: ${d.id})${d.amount ? ` — $${d.amount}` : ''}.`
+      message: `Created deal **${deal.name}** (ID: ${deal.dealId})${deal.amount ? ` — $${deal.amount}` : ''}.`
     };
   })
   .build();
@@ -223,7 +224,7 @@ export let updateDeal = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token });
+    let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
     let result = await client.updateDeal(ctx.input.dealId, {
       name: ctx.input.name,
@@ -236,18 +237,18 @@ export let updateDeal = SlateTool.create(spec, {
       status: ctx.input.status
     });
 
-    let d = result.deal;
+    let deal = formatDeal(result.deal);
     return {
       output: {
-        dealId: d.id,
-        name: d.name,
-        amount: d.amount,
-        closedDate: d.closed_date,
-        dealStageId: d.deal_stage_id,
-        status: d.status,
-        updatedAt: d.updated_at
+        dealId: deal.dealId,
+        name: deal.name,
+        amount: deal.amount,
+        closedDate: deal.closedDate,
+        dealStageId: deal.dealStageId,
+        status: deal.status,
+        updatedAt: deal.updatedAt
       },
-      message: `Updated deal **${d.name || d.id}**.`
+      message: `Updated deal **${deal.name || deal.dealId}**.`
     };
   })
   .build();
