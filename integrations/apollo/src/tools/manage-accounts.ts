@@ -17,6 +17,10 @@ let accountFieldsSchema = z.object({
   country: z.string().optional().describe('Country')
 });
 
+let createAccountFieldsSchema = accountFieldsSchema.extend({
+  name: z.string().describe('Account/company name')
+});
+
 let accountOutputSchema = z.object({
   accountId: z.string().optional(),
   name: z.string().optional(),
@@ -158,7 +162,7 @@ export let createAccount = SlateTool.create(spec, {
     destructive: false
   }
 })
-  .input(accountFieldsSchema.required({ name: true }))
+  .input(createAccountFieldsSchema)
   .output(
     z.object({
       accountId: z.string().optional(),
@@ -211,7 +215,7 @@ export let bulkCreateAccounts = SlateTool.create(spec, {
   .input(
     z.object({
       accounts: z
-        .array(accountFieldsSchema.required({ name: true }))
+        .array(createAccountFieldsSchema)
         .describe('Accounts to create. Maximum 100 accounts.'),
       appendLabelNames: z
         .array(z.string())

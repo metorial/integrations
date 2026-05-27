@@ -94,6 +94,7 @@ jobs:
           full_build=false
           lockfile_changed=false
           filters=()
+          typecheck_dirs=()
           full_build_reasons=()
 
           for file in "${changed_files[@]}"; do
@@ -110,6 +111,7 @@ jobs:
                 package="${package%%/*}"
                 if [[ -n "$package" ]]; then
                   filters+=("--filter=./integrations/$package")
+                  typecheck_dirs+=("integrations/$package")
                 fi
                 ;;
               test-integrations/*/*)
@@ -117,6 +119,7 @@ jobs:
                 package="${package%%/*}"
                 if [[ -n "$package" ]]; then
                   filters+=("--filter=./test-integrations/$package")
+                  typecheck_dirs+=("test-integrations/$package")
                 fi
                 ;;
               packages/*/*)
@@ -124,6 +127,7 @@ jobs:
                 package="${package%%/*}"
                 if [[ -n "$package" ]]; then
                   filters+=("--filter=..../packages/$package")
+                  typecheck_dirs+=("packages/$package")
                 fi
                 ;;
             esac
@@ -160,3 +164,31 @@ jobs:
           printf ' %q' "${command[@]}"
           printf '\n'
           "${command[@]}"
+
+          if [[ "${#typecheck_dirs[@]}" -eq 0 ]]; then
+            echo "No package-scoped TypeScript check targets detected."
+            exit 0
+          fi
+
+          sorted_typecheck_dirs=()
+          while IFS= read -r package_dir; do
+            if [[ -n "$package_dir" ]]; then
+              sorted_typecheck_dirs+=("$package_dir")
+            fi
+          done < <(printf '%s\n' "${typecheck_dirs[@]}" | sort -u)
+
+          echo "TypeScript 5.9.3 check scope: ${#sorted_typecheck_dirs[@]} package directories"
+          printf -- '- %s\n' "${sorted_typecheck_dirs[@]}"
+
+          for package_dir in "${sorted_typecheck_dirs[@]}"; do
+            if [[ ! -f "$package_dir/tsconfig.json" ]]; then
+              echo "Skipping TypeScript check for $package_dir: no tsconfig.json."
+              continue
+            fi
+
+            echo "TypeScript check: $package_dir"
+            (
+              cd "$package_dir"
+              npm exec --yes --package typescript@5.9.3 -- tsc --noEmit
+            )
+          done
