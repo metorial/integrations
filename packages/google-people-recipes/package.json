@@ -1,6 +1,6 @@
 {
   "name": "@slates/google-people-recipes",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -33,8 +33,8 @@
   },
   "dependencies": {
     "@lowerdeck/error": "^1.1.0",
-    "@slates/tool-recipes": "1.0.0-rc.1",
-    "slates": "1.0.0-rc.10",
+    "@slates/tool-recipes": "1.0.0-rc.2",
+    "slates": "1.0.0-rc.11",
     "zod": "^4.2"
   },
   "devDependencies": {
