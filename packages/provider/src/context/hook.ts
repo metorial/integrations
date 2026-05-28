@@ -1,7 +1,16 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import type { SlateContext } from './context';
 
-let asyncLocalStorage = new AsyncLocalStorage<SlateContext<any, any, any>>();
+let slateContextStorageKey = Symbol.for('slates.provider.context.asyncLocalStorage');
+let globalWithSlateContext = globalThis as typeof globalThis & {
+  [key: symbol]: AsyncLocalStorage<SlateContext<any, any, any>> | undefined;
+};
+
+let asyncLocalStorage =
+  globalWithSlateContext[slateContextStorageKey] ??
+  new AsyncLocalStorage<SlateContext<any, any, any>>();
+
+globalWithSlateContext[slateContextStorageKey] = asyncLocalStorage;
 
 export let runWithContext = <
   ConfigType extends {},
