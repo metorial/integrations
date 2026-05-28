@@ -93,6 +93,9 @@ jobs:
       - name: Build integration package
         run: bunx turbo run build --filter="${{ matrix.name }}"
 
+      - name: Prepare integration package for publish
+        run: bun scripts/prepare-package-for-publish.ts --directory "${{ matrix.directory }}"
+
       - name: Publish integration to npm
         working-directory: ${{ matrix.directory }}
         shell: bash
