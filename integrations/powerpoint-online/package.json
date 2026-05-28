@@ -7,14 +7,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@slates/oauth-microsoft": "1.0.0-rc.2",
+    "@slates/oauth-microsoft": "1.0.0-rc.3",
     "@types/node": "^20",
-    "slates": "1.0.0-rc.9",
+    "slates": "1.0.0-rc.11",
     "zod": "^4.2"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.38.4",
     "typescript": "^5"
   },
-  "version": "0.2.0-rc.2"
+  "version": "0.2.0-rc.3"
 }
