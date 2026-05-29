@@ -1,6 +1,8 @@
 import { createAxios } from 'slates';
+import { azureFunctionsApiError } from './errors';
 
 let API_VERSION = '2024-04-01';
+let HOST_FUNCTION_KEY_TYPE = 'functionKeys';
 
 let isFunctionApp = (app: { kind?: string }) =>
   typeof app.kind === 'string' && app.kind.toLowerCase().includes('functionapp');
@@ -37,6 +39,10 @@ export class ArmClient {
         'api-version': API_VERSION
       }
     });
+    this.axios.interceptors.response.use(
+      response => response,
+      error => Promise.reject(azureFunctionsApiError(error))
+    );
   }
 
   private basePath(): string {
@@ -184,7 +190,7 @@ export class ArmClient {
       body.properties.value = keyValue;
     }
     let response = await this.axios.put(
-      `${this.basePath()}/${appName}/host/default/functionkeys/${keyName}`,
+      `${this.basePath()}/${appName}/host/default/${HOST_FUNCTION_KEY_TYPE}/${keyName}`,
       body
     );
     return response.data;
@@ -192,7 +198,7 @@ export class ArmClient {
 
   async deleteHostKey(appName: string, keyName: string): Promise<void> {
     await this.axios.delete(
-      `${this.basePath()}/${appName}/host/default/functionkeys/${keyName}`
+      `${this.basePath()}/${appName}/host/default/${HOST_FUNCTION_KEY_TYPE}/${keyName}`
     );
   }
 
