@@ -92,7 +92,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let http = createAxios();
       let basicAuth = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 

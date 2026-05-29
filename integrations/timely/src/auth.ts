@@ -49,7 +49,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let response = await http.post('/oauth/token', {
         grant_type: 'refresh_token',
         client_id: ctx.clientId,

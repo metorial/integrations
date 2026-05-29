@@ -190,7 +190,7 @@ export let auth = SlateAuth.create()
         input: ctx.input
       };
     },
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let domain =
         ctx.output.organizationDomain ||
         ctx.input.organizationDomain.replace(/^https?:\/\//, '').replace(/\/$/, '');

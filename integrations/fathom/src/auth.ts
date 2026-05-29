@@ -68,7 +68,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let params = new URLSearchParams();
       params.append('grant_type', 'refresh_token');
       params.append('refresh_token', ctx.output.refreshToken || '');

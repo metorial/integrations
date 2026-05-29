@@ -181,7 +181,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let baseUrl = ctx.input.instanceUrl || 'https://app.posthog.com';
       let http = createAxios({ baseURL: baseUrl });
 

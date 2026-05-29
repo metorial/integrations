@@ -89,7 +89,7 @@ export let auth = SlateAuth.create()
         }
       };
     },
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let response = await oauthAxios.post(
         '/oauth2/token',
         `grant_type=client_credentials&client_id=${encodeURIComponent(ctx.clientId)}&client_secret=${encodeURIComponent(ctx.clientSecret)}&scope=${encodeURIComponent(ctx.scopes.join(' '))}`,

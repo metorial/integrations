@@ -70,7 +70,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let http = createAxios({
         baseURL: 'https://api.kit.com'
       });

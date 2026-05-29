@@ -98,7 +98,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       // MongoDB Atlas service accounts use client_credentials - get a new token
       let tokenResponse = await atlasAxios.post(
         'https://cloud.mongodb.com/api/oauth/token',

@@ -84,7 +84,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let baseUrl = ctx.input.siteUrl.replace(/\/+$/, '');
       let http = createAxios({ baseURL: baseUrl });
 

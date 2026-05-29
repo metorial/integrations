@@ -92,7 +92,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       // Hugging Face OAuth tokens don't typically have refresh tokens
       // Return existing output
       return {

@@ -54,7 +54,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let response = await launchpadAxios.post('/authorization/token', {
         type: 'refresh',
         grant_type: 'refresh_token',

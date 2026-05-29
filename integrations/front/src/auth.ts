@@ -124,7 +124,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
       let response = await oauthAxios.post(

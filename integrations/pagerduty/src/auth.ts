@@ -247,7 +247,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let client = createAxios({ baseURL: 'https://app.pagerduty.com' });
 
       let response = await client.post(
