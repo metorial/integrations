@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://app.pendo.io/api/v1',
@@ -7,7 +6,7 @@ let BASE_URLS: Record<string, string> = {
 };
 
 export class PendoClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(params: { token: string; region: string }) {
     let baseURL = BASE_URLS[params.region] || BASE_URLS['us'];

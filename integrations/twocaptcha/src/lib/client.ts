@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface CreateTaskResponse {
   errorId: number;
@@ -44,7 +43,7 @@ export interface ProxyConfig {
 }
 
 export class TwoCaptchaClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private clientKey: string;
 
   constructor(config: { token: string }) {

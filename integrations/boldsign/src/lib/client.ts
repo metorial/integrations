@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export type BoldSignRegion = 'us' | 'eu';
@@ -8,7 +7,7 @@ let getBaseUrl = (region: BoldSignRegion): string => {
 };
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private options: { token: string; region: BoldSignRegion }) {
     this.axios = createAxios({

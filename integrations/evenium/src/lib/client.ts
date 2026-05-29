@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import { AxiosInstance } from 'axios';
 
 export interface EveniumEvent {
   id: string;
@@ -114,7 +113,7 @@ export interface UpdateContactParams {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.http = createAxios({

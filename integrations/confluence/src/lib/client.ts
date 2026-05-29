@@ -1,5 +1,4 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { confluenceApiError, confluenceServiceError } from './errors';
 
 export interface ConfluenceClientConfig {
@@ -204,7 +203,7 @@ let firstAttachmentFromContentArray = (data: any): ConfluenceAttachment => {
 };
 
 export class ConfluenceClient {
-  private ax: AxiosInstance;
+  private ax: ReturnType<typeof createAxios>;
 
   constructor(private clientConfig: ConfluenceClientConfig) {
     let baseURL: string;

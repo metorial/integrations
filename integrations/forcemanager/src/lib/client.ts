@@ -1,4 +1,3 @@
-import { AxiosInstance } from 'axios';
 import crypto from 'crypto';
 import { createAxios } from 'slates';
 
@@ -16,7 +15,7 @@ export interface PaginatedResult<T> {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private authConfig: AuthConfig;
 
   constructor(authConfig: AuthConfig) {

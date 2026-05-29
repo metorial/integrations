@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface KommoClientConfig {
   token: string;
@@ -53,7 +52,7 @@ export interface TaskFilters {
 }
 
 export class KommoClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: KommoClientConfig) {
     this.http = createAxios({

@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class MetabaseClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; instanceUrl: string }) {
     this.http = createAxios({

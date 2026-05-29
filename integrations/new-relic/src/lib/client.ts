@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export type Region = 'us' | 'eu';
 
@@ -34,7 +33,7 @@ export interface ClientConfig {
 }
 
 export class NerdGraphClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private accountId: string;
 
   constructor(private config: ClientConfig) {

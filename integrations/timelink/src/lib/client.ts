@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface TimelinkUser {
   id: number;
@@ -155,7 +154,7 @@ export interface SearchTimeEntriesInput {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.axios = createAxios({

@@ -1,12 +1,11 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface AdvancedTradeClientConfig {
   token: string;
 }
 
 export class AdvancedTradeClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(config: AdvancedTradeClientConfig) {
     this.api = createAxios({

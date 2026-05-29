@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export type Environment = 'production' | 'sandbox';
 
@@ -11,7 +10,7 @@ let createApiClient = (
   apiPath: string,
   token: string,
   environment: Environment
-): AxiosInstance => {
+): ReturnType<typeof createAxios> => {
   let version = getVersion(environment);
   return createAxios({
     baseURL: `https://api.shotstack.io/${apiPath}/${version}`,
@@ -23,7 +22,7 @@ let createApiClient = (
 };
 
 export class EditClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string, environment: Environment) {
     this.http = createApiClient('edit', token, environment);
@@ -91,7 +90,7 @@ export class EditClient {
 }
 
 export class ServeClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string, environment: Environment) {
     this.http = createApiClient('serve', token, environment);
@@ -123,7 +122,7 @@ export class ServeClient {
 }
 
 export class IngestClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string, environment: Environment) {
     this.http = createApiClient('ingest', token, environment);
@@ -155,7 +154,7 @@ export class IngestClient {
 }
 
 export class CreateClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string, environment: Environment) {
     this.http = createApiClient('create', token, environment);

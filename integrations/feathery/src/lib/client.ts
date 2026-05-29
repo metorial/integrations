@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
@@ -9,7 +8,7 @@ let BASE_URLS: Record<string, string> = {
 };
 
 export class FeatheryClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(params: { token: string; region?: string }) {
     let baseURL = BASE_URLS[params.region || 'us'] || BASE_URLS['us'];

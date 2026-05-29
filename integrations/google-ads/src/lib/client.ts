@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let API_VERSION = 'v19';
 let BASE_URL = `https://googleads.googleapis.com/${API_VERSION}`;
@@ -25,7 +24,7 @@ export interface SearchResponse {
 }
 
 export class GoogleAdsClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: GoogleAdsClientConfig) {
     let headers: Record<string, string> = {

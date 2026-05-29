@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ClientConfig {
   token: string;
@@ -99,7 +98,7 @@ export interface Recording {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: ClientConfig) {
     this.axios = createAxios({

@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class GistClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.api = createAxios({

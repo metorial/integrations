@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PaginationParams {
   page?: number;
@@ -179,7 +178,7 @@ let convertKeysToSnake = (obj: unknown): unknown => {
 };
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; region: string }) {
     let baseURL = BASE_URLS[config.region] || BASE_URLS['us'];

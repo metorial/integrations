@@ -1,5 +1,5 @@
 import { createAxios } from 'slates';
-import { type AxiosInstance, type AxiosRequestConfig } from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 import { buildOAuth1Header, type OAuth1Credentials } from './oauth1';
 
 export interface NetSuiteAuth {
@@ -32,7 +32,7 @@ export interface RecordListResponse {
 export class Client {
   private auth: NetSuiteAuth;
   private baseUrl: string;
-  private httpClient: AxiosInstance;
+  private httpClient: ReturnType<typeof createAxios>;
 
   constructor(auth: NetSuiteAuth) {
     this.auth = auth;

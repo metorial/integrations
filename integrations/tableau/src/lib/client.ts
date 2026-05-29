@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import { tableauApiError, tableauServiceError } from './errors';
 
 export interface TableauClientConfig {
@@ -29,7 +28,7 @@ export interface CollectionItemInput {
   contentName?: string;
 }
 
-let applyTableauErrorInterceptor = (http: AxiosInstance) => {
+let applyTableauErrorInterceptor = (http: ReturnType<typeof createAxios>) => {
   http.interceptors.response.use(
     response => response,
     error => Promise.reject(tableauApiError(error))
@@ -83,8 +82,8 @@ let assertCollectionBatchSucceeded = (result: any, action: string) => {
 };
 
 export class TableauClient {
-  private http: AxiosInstance;
-  private resourceHttp: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
+  private resourceHttp: ReturnType<typeof createAxios>;
   private siteId: string;
   private userId?: string;
 

@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class ImportClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; accountId: string; integrationId: string }) {
     this.axios = createAxios({
@@ -101,7 +100,7 @@ export class ImportClient {
 }
 
 export class ReportingClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; accountId: string }) {
     this.axios = createAxios({
@@ -180,7 +179,7 @@ export class ReportingClient {
 }
 
 export class TrackingClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { accountId: string }) {
     this.axios = createAxios({

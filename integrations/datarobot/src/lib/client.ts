@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class DataRobotClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(opts: { token: string; endpointUrl: string }) {
     let baseURL = opts.endpointUrl.replace(/\/+$/, '');

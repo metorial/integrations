@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ControlPlaneClientConfig {
   token: string;
@@ -19,7 +18,7 @@ let getControlPlaneBaseUrl = (region?: string): string => {
 };
 
 export class ControlPlaneClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: ControlPlaneClientConfig) {
     let baseURL = getControlPlaneBaseUrl(config.region);
@@ -307,7 +306,7 @@ export class ControlPlaneClient {
 }
 
 export class DataPlaneClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: DataPlaneClientConfig) {
     let basicAuth = btoa(`${config.sourceWriteKey}:`);

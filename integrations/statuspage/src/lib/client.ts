@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class Client {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
   private pageId: string;
 
   constructor(params: { token: string; pageId: string }) {

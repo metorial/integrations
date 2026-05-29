@@ -1,6 +1,5 @@
 import { createAxios } from 'slates';
 import { createHmacSignature } from './hmac';
-import type { AxiosInstance } from 'axios';
 
 export interface AuthConfig {
   token: string;
@@ -35,7 +34,7 @@ export interface ListResponse {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private authConfig: AuthConfig;
 
   constructor(config: ClientConfig) {

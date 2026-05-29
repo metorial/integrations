@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ClientConfig {
   token: string;
@@ -17,9 +16,9 @@ let getCdaBaseUrl = (region: 'us' | 'eu') =>
 let getCpaBaseUrl = (_region: 'us' | 'eu') => 'https://preview.contentful.com';
 
 export class ContentfulClient {
-  private cma: AxiosInstance;
-  private cda: AxiosInstance;
-  private cpa: AxiosInstance;
+  private cma: ReturnType<typeof createAxios>;
+  private cda: ReturnType<typeof createAxios>;
+  private cpa: ReturnType<typeof createAxios>;
   private spaceId: string;
   private environmentId: string;
 

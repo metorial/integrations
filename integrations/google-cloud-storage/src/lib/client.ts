@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ClientConfig {
   token: string;
@@ -7,8 +6,8 @@ export interface ClientConfig {
 }
 
 export class Client {
-  private api: AxiosInstance;
-  private uploadApi: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
+  private uploadApi: ReturnType<typeof createAxios>;
 
   constructor(private config: ClientConfig) {
     this.api = createAxios({

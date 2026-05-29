@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type {
   PaginationResponse,
   SimlaCustomer,
@@ -15,7 +14,7 @@ import type {
 } from './types';
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private site?: string;
 
   constructor(config: { token: string; subdomain: string; site?: string }) {

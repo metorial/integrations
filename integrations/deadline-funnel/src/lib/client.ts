@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface Campaign {
   campaignId: string;
@@ -32,7 +31,7 @@ export interface FormSubmission {
 }
 
 export class DeadlineFunnelClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({

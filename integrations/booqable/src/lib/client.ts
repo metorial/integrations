@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface BooqableClientConfig {
   token: string;
@@ -16,7 +15,7 @@ export interface FilterParams {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: BooqableClientConfig) {
     this.axios = createAxios({

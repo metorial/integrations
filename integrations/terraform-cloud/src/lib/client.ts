@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private organizationName: string;
 
   constructor(config: { token: string; baseUrl: string; organizationName: string }) {

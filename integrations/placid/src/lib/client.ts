@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PlacidTemplate {
   uuid: string;
@@ -68,7 +67,7 @@ export interface PlacidPaginatedResponse<T> {
 }
 
 export class PlacidClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.api = createAxios({

@@ -1,9 +1,8 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { discordApiError } from './errors';
 
 export class DiscordClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string; tokenType?: string }) {
     let authPrefix = config.tokenType === 'Bearer' ? 'Bearer' : 'Bot';

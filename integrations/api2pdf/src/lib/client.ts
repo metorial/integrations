@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type {
   Api2PdfResponse,
   HtmlToPdfParams,
@@ -25,7 +24,7 @@ import type {
 } from './types';
 
 export class Api2PdfClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; useXlCluster?: boolean }) {
     let baseURL = config.useXlCluster ? 'https://v2-xl.api2pdf.com' : 'https://v2.api2pdf.com';

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let GRAPHQL_URLS: Record<string, string> = {
   sandbox: 'https://payments.sandbox.braintree-api.com/graphql',
@@ -14,7 +13,7 @@ let REST_URLS: Record<string, string> = {
 let BRAINTREE_VERSION = '2024-09-01';
 
 export class BraintreeGraphQLClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(
     private params: {
@@ -50,7 +49,7 @@ export class BraintreeGraphQLClient {
 }
 
 export class BraintreeRestClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private merchantPath: string;
 
   constructor(

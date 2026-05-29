@@ -1,10 +1,9 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URL = 'https://slides.googleapis.com/v1';
 
 export class SlidesClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.http = createAxios({

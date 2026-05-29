@@ -162,7 +162,7 @@ export class ElevenLabsClient {
 
     return {
       audioBase64: base64Audio,
-      contentType: response.headers?.['content-type'] || 'audio/mpeg'
+      contentType: String(response.headers?.['content-type'] ?? 'audio/mpeg')
     };
   }
 
@@ -274,7 +274,7 @@ export class ElevenLabsClient {
 
     return {
       audioBase64: base64Audio,
-      contentType: response.headers?.['content-type'] || 'audio/mpeg'
+      contentType: String(response.headers?.['content-type'] ?? 'audio/mpeg')
     };
   }
 
@@ -308,7 +308,7 @@ export class ElevenLabsClient {
 
     return {
       audioBase64: base64Audio,
-      contentType: response.headers?.['content-type'] || 'audio/mpeg'
+      contentType: String(response.headers?.['content-type'] ?? 'audio/mpeg')
     };
   }
 
@@ -405,7 +405,7 @@ export class ElevenLabsClient {
 
     return {
       audioBase64: base64Audio,
-      contentType: response.headers?.['content-type'] || 'audio/mpeg'
+      contentType: String(response.headers?.['content-type'] ?? 'audio/mpeg')
     };
   }
 

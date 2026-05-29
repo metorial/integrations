@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface JiraClientConfig {
   token: string;
@@ -7,8 +6,8 @@ export interface JiraClientConfig {
 }
 
 export class JiraClient {
-  private jira: AxiosInstance;
-  private serviceDesk: AxiosInstance;
+  private jira: ReturnType<typeof createAxios>;
+  private serviceDesk: ReturnType<typeof createAxios>;
 
   constructor(config: JiraClientConfig) {
     // Detect basic-auth tokens (base64 of "email:token") vs OAuth bearer tokens.

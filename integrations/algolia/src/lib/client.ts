@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export type AlgoliaRegion = 'us' | 'de';
 
@@ -10,10 +9,10 @@ export interface AlgoliaClientConfig {
 }
 
 export class AlgoliaClient {
-  private searchClient: AxiosInstance;
-  private analyticsClient: AxiosInstance;
-  private insightsClient: AxiosInstance;
-  private monitoringClient: AxiosInstance;
+  private searchClient: ReturnType<typeof createAxios>;
+  private analyticsClient: ReturnType<typeof createAxios>;
+  private insightsClient: ReturnType<typeof createAxios>;
+  private monitoringClient: ReturnType<typeof createAxios>;
   private applicationId: string;
 
   constructor(config: AlgoliaClientConfig) {

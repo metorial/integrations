@@ -1,10 +1,9 @@
 import { createAxios } from 'slates';
 import { getPrivateBaseUrl, getPublicBaseUrl } from './urls';
-import type { AxiosInstance } from 'axios';
 
 export class PostHogClient {
-  private privateHttp: AxiosInstance;
-  private publicHttp: AxiosInstance;
+  private privateHttp: ReturnType<typeof createAxios>;
+  private publicHttp: ReturnType<typeof createAxios>;
   private projectId?: string;
 
   constructor(config: {

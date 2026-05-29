@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import { AxiosInstance } from 'axios';
 
 export interface PaginatedResponse<T> {
   current_page: number;
@@ -83,7 +82,7 @@ export interface SendFoxUser {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.axios = createAxios({

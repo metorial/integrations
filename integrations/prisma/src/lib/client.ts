@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface Workspace {
   id: string;
@@ -98,7 +97,7 @@ export interface TransferProjectParams {
 }
 
 export class PrismaClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.http = createAxios({

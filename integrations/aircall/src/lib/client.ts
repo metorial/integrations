@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface AircallAuth {
   token: string;
@@ -24,7 +23,7 @@ export interface PaginatedResponse<T> {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(private auth: AircallAuth) {
     let authHeader =

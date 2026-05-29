@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export interface ShortLink {
@@ -170,8 +169,8 @@ export interface QrCodeParams {
 }
 
 export class Client {
-  private api: AxiosInstance;
-  private statsApi: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
+  private statsApi: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.api = createAxios({
@@ -299,7 +298,7 @@ export class Client {
       }
     );
 
-    let contentType = response.headers?.['content-type'] || 'image/png';
+    let contentType = String(response.headers?.['content-type'] ?? 'image/png');
     if (contentType.includes('svg')) {
       return Buffer.from(response.data).toString('utf-8');
     }

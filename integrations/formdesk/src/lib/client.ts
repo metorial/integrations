@@ -1,4 +1,3 @@
-import { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export interface ClientConfig {
@@ -84,7 +83,7 @@ export interface SignOnParams {
 }
 
 export class FormdeskClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(private clientConfig: ClientConfig) {
     this.http = createAxios({
@@ -210,7 +209,7 @@ export class FormdeskClient {
     );
     return {
       content: Buffer.from(response.data).toString('base64'),
-      contentType: response.headers['content-type'] || 'application/octet-stream',
+      contentType: String(response.headers['content-type'] ?? 'application/octet-stream'),
       credits: response.headers['credits']
     };
   }
@@ -233,7 +232,7 @@ export class FormdeskClient {
     });
     return {
       content: Buffer.from(response.data).toString('base64'),
-      contentType: response.headers['content-type'] || 'application/pdf'
+      contentType: String(response.headers['content-type'] ?? 'application/pdf')
     };
   }
 
@@ -243,7 +242,7 @@ export class FormdeskClient {
     });
     return {
       content: Buffer.from(response.data).toString('base64'),
-      contentType: response.headers['content-type'] || 'application/octet-stream',
+      contentType: String(response.headers['content-type'] ?? 'application/octet-stream'),
       fileName: fileNameOrId
     };
   }

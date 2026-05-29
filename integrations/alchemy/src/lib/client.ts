@@ -1,9 +1,8 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class AlchemyClient {
-  private api: AxiosInstance;
-  private notifyApi: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
+  private notifyApi: ReturnType<typeof createAxios>;
   private network: string;
   private token: string;
 

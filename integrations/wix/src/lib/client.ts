@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface WixClientConfig {
   token: string;
@@ -8,7 +7,7 @@ export interface WixClientConfig {
 }
 
 export class WixClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: WixClientConfig) {
     let headers: Record<string, string> = {

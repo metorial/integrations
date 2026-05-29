@@ -1,9 +1,8 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { shopifyApiError, shopifyServiceError } from './errors';
 
 export class ShopifyClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private shopDomain: string;
   private apiVersion: string;
 

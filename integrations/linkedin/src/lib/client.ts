@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let LINKEDIN_API_VERSION = '202604';
 
@@ -8,8 +7,8 @@ export interface LinkedInClientConfig {
 }
 
 export class LinkedInClient {
-  private api: AxiosInstance;
-  private restApi: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
+  private restApi: ReturnType<typeof createAxios>;
 
   constructor(private config: LinkedInClientConfig) {
     this.api = createAxios({

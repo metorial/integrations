@@ -23,6 +23,12 @@ export interface PaginatedResponse<T> {
   };
 }
 
+let headerValueToString = (value: unknown): string | undefined => {
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) return value.join(', ');
+  return undefined;
+};
+
 export class Client {
   private credentials: OAuth1Credentials;
 
@@ -373,7 +379,7 @@ export class Client {
     headers['Content-Length'] = String(imageBuffer.length);
     headers['Content-MD5'] = md5;
     headers['Content-Type'] =
-      imageResponse.headers['content-type'] || 'application/octet-stream';
+      headerValueToString(imageResponse.headers['content-type']) || 'application/octet-stream';
 
     // Re-generate auth header for the actual upload with proper content type
     headers['Authorization'] = this.getAuthHeader('POST', uploadUrl);

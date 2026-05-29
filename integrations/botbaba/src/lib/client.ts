@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface Bot {
   botId: string;
@@ -18,7 +17,7 @@ export interface SendWhatsAppTemplateParams {
 export type WhatsAppProvider = '360dialog' | 'gupshup';
 
 export class BotbabaClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({

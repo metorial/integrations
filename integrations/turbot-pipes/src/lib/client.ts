@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type {
   PaginationParams,
   PaginatedResponse,
@@ -41,7 +40,7 @@ let toCamel = <T>(obj: unknown): T => transformKeys<T>(obj, snakeToCamel);
 let toSnake = <T>(obj: unknown): T => transformKeys<T>(obj, camelToSnake);
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; baseUrl: string }) {
     this.axios = createAxios({

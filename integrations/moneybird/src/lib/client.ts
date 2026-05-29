@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class MoneybirdClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private administrationId: string;
 
   constructor(config: { token: string; administrationId: string }) {

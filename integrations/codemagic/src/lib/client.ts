@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface StartBuildParams {
   appId: string;
@@ -115,8 +114,8 @@ export interface AddVariablesParams {
 }
 
 export class CodemagicClient {
-  private api: AxiosInstance;
-  private apiV3: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
+  private apiV3: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.api = createAxios({

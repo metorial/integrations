@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let regionBaseUrls: Record<string, string> = {
   us: 'https://console.kaleido.io/api/v1',
@@ -11,7 +10,7 @@ let regionBaseUrls: Record<string, string> = {
 };
 
 export class KaleidoClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; region: string }) {
     let baseURL = regionBaseUrls[config.region] || regionBaseUrls['us'];

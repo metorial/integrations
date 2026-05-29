@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type {
   ConvertApiConversionResponse,
   ConvertApiRawConversionResponse,
@@ -24,7 +23,7 @@ let regionBaseUrls: Record<string, string> = {
 };
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; region?: string }) {
     let baseURL = regionBaseUrls[config.region ?? 'auto'] ?? regionBaseUrls['auto'];

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import { AxiosInstance } from 'axios';
 
 export interface ClientConfig {
   token: string;
@@ -51,7 +50,7 @@ export interface WebhookConfig {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(private config: ClientConfig) {
     let authHeader =

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type {
   OktaUser,
   OktaGroup,
@@ -12,7 +11,7 @@ import type {
 } from './types';
 
 export class OktaClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(params: { domain: string; token: string }) {
     let domain = params.domain.replace(/\/+$/, '');

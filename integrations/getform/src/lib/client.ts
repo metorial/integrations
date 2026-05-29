@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ClientConfig {
   token: string;
@@ -68,7 +67,7 @@ export interface GetSubmissionsResponse {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private token: string;
   private apiVersion: 'v1' | 'v2';
 

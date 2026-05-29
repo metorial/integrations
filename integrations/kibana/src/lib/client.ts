@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface KibanaClientConfig {
   kibanaUrl: string;
@@ -8,7 +7,7 @@ export interface KibanaClientConfig {
 }
 
 export class KibanaClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private spaceId?: string;
 
   constructor(config: KibanaClientConfig) {

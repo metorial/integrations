@@ -1,8 +1,7 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export class NanonetsClient {
-  private axiosV2: AxiosInstance;
+  private axiosV2: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     let authHeader = 'Basic ' + Buffer.from(token + ':').toString('base64');

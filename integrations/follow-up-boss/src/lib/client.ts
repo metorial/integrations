@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export interface ClientConfig {
@@ -21,7 +20,7 @@ export interface ListMetadata {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: ClientConfig) {
     let headers: Record<string, string> = {

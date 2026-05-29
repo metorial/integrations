@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ClientConfig {
   token: string;
@@ -25,7 +24,7 @@ export interface SingleResponse<T> {
 }
 
 export class Client {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
   private storeHash: string;
 
   constructor(config: ClientConfig) {

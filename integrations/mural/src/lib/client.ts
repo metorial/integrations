@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PaginatedResponse<T> {
   value: T[];
@@ -88,7 +87,7 @@ export interface VotingSession {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private params: { token: string; authType?: 'oauth' | 'apikey' }) {
     let authHeader =

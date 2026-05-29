@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface SnowflakeClientConfig {
   accountIdentifier: string;
@@ -69,7 +68,7 @@ export interface GrantOptions {
 }
 
 export class SnowflakeClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private tokenType: string;
 
   constructor(config: SnowflakeClientConfig) {

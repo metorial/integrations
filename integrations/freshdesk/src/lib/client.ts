@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export interface FreshdeskClientConfig {
@@ -7,7 +6,7 @@ export interface FreshdeskClientConfig {
 }
 
 export class FreshdeskClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: FreshdeskClientConfig) {
     let encodedAuth = Buffer.from(`${config.token}:X`).toString('base64');

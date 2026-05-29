@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let REGION_BASE_URLS: Record<string, string> = {
   default: 'https://api.craftmypdf.com/v1',
@@ -131,7 +130,7 @@ export interface UpdateTemplateParams {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; region?: string }) {
     let baseURL = REGION_BASE_URLS[config.region || 'default'] || REGION_BASE_URLS.default;

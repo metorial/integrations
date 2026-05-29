@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ContactData {
   email?: string;
@@ -79,7 +78,7 @@ export interface SendTransactionalParams {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let REGULAR_API_BASE = 'https://cutt.ly/api/api.php';
 let TEAM_API_BASE = 'https://cutt.ly/team/API/index.php';
@@ -96,7 +95,7 @@ export interface PasswordParams {
 
 export class CuttlyClient {
   private apiKey: string;
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(params: { apiKey: string; apiType: 'regular' | 'team' }) {
     this.apiKey = params.apiKey;

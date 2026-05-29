@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ClientConfig {
   subdomain: string;
@@ -7,7 +6,7 @@ export interface ClientConfig {
 }
 
 export class Client {
-  private ax: AxiosInstance;
+  private ax: ReturnType<typeof createAxios>;
 
   constructor(config: ClientConfig) {
     this.ax = createAxios({

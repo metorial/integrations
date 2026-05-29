@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import { AxiosInstance } from 'axios';
 
 export interface SubUser {
   subUserId: number;
@@ -61,7 +60,7 @@ let mapWhitelistedIp = (raw: any): WhitelistedIp => ({
 });
 
 export class PublicApiClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(apiKey: string) {
     this.axios = createAxios({

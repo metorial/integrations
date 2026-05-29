@@ -1,9 +1,8 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import { hubSpotApiError } from './errors';
 
 export class HubSpotClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.http = createAxios({

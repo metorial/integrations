@@ -1,9 +1,8 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { assertBusinessSuccess, assertConsumerSuccess, tiktokApiError } from './errors';
 
 export class TikTokConsumerClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({
@@ -184,7 +183,7 @@ export class TikTokConsumerClient {
 }
 
 export class TikTokBusinessClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({

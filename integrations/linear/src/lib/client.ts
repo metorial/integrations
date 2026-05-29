@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import { ServiceError } from '@lowerdeck/error';
 import { linearApiError } from './errors';
 
@@ -22,7 +21,7 @@ let extractErrorMessage = (error: unknown) => {
 };
 
 export class LinearClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.axios = createAxios({

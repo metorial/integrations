@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PaginationParams {
   limit?: number;
@@ -13,7 +12,7 @@ export interface PaginatedResponse<T> {
 }
 
 export class ConnecteamClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: { baseUrl: string; token: string }) {
     this.http = createAxios({

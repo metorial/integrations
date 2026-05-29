@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance, AxiosResponse } from 'axios';
 import {
   cloudflareApiError,
   cloudflareApiResponseError,
@@ -41,7 +40,7 @@ export interface CloudflareResponse<T> {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(private authConfig: CloudflareAuthConfig) {
     let headers: Record<string, string> = {};
@@ -59,7 +58,7 @@ export class Client {
     });
 
     this.http.interceptors.response.use(
-      (response: AxiosResponse) => {
+      response => {
         if (isCloudflareEnvelopeFailure(response.data)) {
           throw cloudflareApiResponseError(response);
         }

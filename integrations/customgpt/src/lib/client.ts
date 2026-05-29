@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PaginatedResponse<T> {
   currentPage: number;
@@ -68,7 +67,7 @@ export interface Page {
 }
 
 export class CustomGPTClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.axios = createAxios({

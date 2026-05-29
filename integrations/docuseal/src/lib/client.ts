@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ClientConfig {
   token: string;
@@ -198,7 +197,7 @@ let toSnakeCaseKeys = (obj: Record<string, any>): Record<string, any> => {
 };
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: ClientConfig) {
     this.axios = createAxios({

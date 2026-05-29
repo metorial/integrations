@@ -1,8 +1,8 @@
 import { createAxios } from 'slates';
-import { AxiosHeaders, type AxiosInstance } from 'axios';
+import { AxiosHeaders } from 'axios';
 
 export class Client {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(private authConfig: { token: string; apiKey?: string; apiSecret?: string }) {
     this.api = createAxios({

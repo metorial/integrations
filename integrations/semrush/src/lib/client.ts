@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import { parseCsvResponse } from './csv-parser';
 
 export interface SemrushClientConfig {
@@ -9,7 +8,7 @@ export interface SemrushClientConfig {
 }
 
 export class SemrushAnalyticsClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private token: string;
   private database: string;
 

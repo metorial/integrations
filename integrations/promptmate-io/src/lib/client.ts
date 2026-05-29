@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface AppSummary {
   appId: string;
@@ -82,7 +81,7 @@ export interface CountryEntry {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.http = createAxios({

@@ -1,6 +1,5 @@
 import { createAxios } from 'slates';
 import { generateVonageJwt } from './jwt';
-import type { AxiosInstance } from 'axios';
 
 // Vonage has two primary base URLs:
 // - rest.nexmo.com: Legacy APIs (SMS, Numbers, Number Insight, Account)
@@ -15,8 +14,8 @@ export interface VonageAuth {
 
 export class VonageRestClient {
   private auth: VonageAuth;
-  private restApi: AxiosInstance;
-  private mainApi: AxiosInstance;
+  private restApi: ReturnType<typeof createAxios>;
+  private mainApi: ReturnType<typeof createAxios>;
 
   constructor(auth: VonageAuth) {
     this.auth = auth;

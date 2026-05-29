@@ -143,29 +143,37 @@ export class TinifyClient {
     });
 
     let compressionCount = parseInt(
-      response.headers['compression-count'] || response.headers['Compression-Count'] || '0',
+      String(
+        response.headers['compression-count'] ?? response.headers['Compression-Count'] ?? '0'
+      ),
       10
     );
     let locationHeader = response.headers['location'] || response.headers['Location'];
 
     return {
-      outputUrl: locationHeader || undefined,
-      storageUrl: locationHeader || undefined,
+      outputUrl: typeof locationHeader === 'string' ? locationHeader : undefined,
+      storageUrl: typeof locationHeader === 'string' ? locationHeader : undefined,
       width:
         parseInt(
-          response.headers['image-width'] || response.headers['Image-Width'] || '0',
+          String(response.headers['image-width'] ?? response.headers['Image-Width'] ?? '0'),
           10
         ) || undefined,
       height:
         parseInt(
-          response.headers['image-height'] || response.headers['Image-Height'] || '0',
+          String(response.headers['image-height'] ?? response.headers['Image-Height'] ?? '0'),
           10
         ) || undefined,
       contentType:
-        response.headers['content-type'] || response.headers['Content-Type'] || undefined,
+        typeof response.headers['content-type'] === 'string'
+          ? response.headers['content-type']
+          : typeof response.headers['Content-Type'] === 'string'
+            ? response.headers['Content-Type']
+            : undefined,
       contentLength:
         parseInt(
-          response.headers['content-length'] || response.headers['Content-Length'] || '0',
+          String(
+            response.headers['content-length'] ?? response.headers['Content-Length'] ?? '0'
+          ),
           10
         ) || undefined,
       compressionCount

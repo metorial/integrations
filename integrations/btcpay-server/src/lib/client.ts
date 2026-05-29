@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class BTCPayClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private params: { token: string; instanceUrl: string }) {
     let baseUrl = params.instanceUrl.replace(/\/+$/, '');

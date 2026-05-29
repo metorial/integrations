@@ -1,11 +1,10 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URL = 'https://api.apaleo.com';
 let WEBHOOK_BASE_URL = 'https://webhook.apaleo.com';
 
 export class ApaleoClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.api = createAxios({
@@ -699,7 +698,7 @@ export class ApaleoClient {
 // ─── Webhook Client ───
 
 export class ApaleoWebhookClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.api = createAxios({

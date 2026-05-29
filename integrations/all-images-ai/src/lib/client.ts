@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface SearchImagesParams {
   search?: string;
@@ -156,7 +155,7 @@ let mapGeneration = (gen: any): Generation => ({
 });
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.axios = createAxios({

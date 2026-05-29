@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export type SportType =
   | 'football'
@@ -38,7 +37,7 @@ let getBaseUrl = (sport: SportType): string => {
 export class Client {
   private token: string;
   private sport: SportType;
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(opts: { token: string; sport: SportType }) {
     this.token = opts.token;

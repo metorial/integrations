@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export interface OcrRequestParams {
@@ -36,7 +35,7 @@ export interface AccountInfoResponse {
 export class Client {
   private username: string;
   private licenseCode: string;
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(config: { username: string; licenseCode: string }) {
     this.username = config.username;

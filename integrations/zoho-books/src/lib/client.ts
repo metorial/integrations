@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ZohoClientConfig {
   token: string;
@@ -8,7 +7,7 @@ export interface ZohoClientConfig {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private organizationId: string;
 
   constructor(config: ZohoClientConfig) {

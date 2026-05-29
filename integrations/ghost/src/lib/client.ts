@@ -422,7 +422,7 @@ export class GhostAdminClient {
     let imageData = imageResponse.data as ArrayBuffer;
     let uint8 = new Uint8Array(imageData);
 
-    let contentType = imageResponse.headers['content-type'] || 'image/png';
+    let contentType = String(imageResponse.headers['content-type'] ?? 'image/png');
 
     // Build the multipart body
     let preamble = `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\nContent-Type: ${contentType}\r\n\r\n`;

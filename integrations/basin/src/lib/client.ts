@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface BasinForm {
   id: number;
@@ -75,7 +74,7 @@ export interface PaginatedResponse<T> {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(opts: { token: string }) {
     this.axios = createAxios({

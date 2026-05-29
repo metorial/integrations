@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class TavePublicClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private token: string) {
     this.axios = createAxios({
@@ -178,7 +177,7 @@ export class TavePublicClient {
 }
 
 export class TaveLeadClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(
     private secretKey: string,

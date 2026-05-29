@@ -91,7 +91,7 @@ export class EgnyteClient {
     });
     return {
       content: Buffer.from(response.data as ArrayBuffer).toString('base64'),
-      contentType: response.headers?.['content-type'] || 'application/octet-stream'
+      contentType: String(response.headers?.['content-type'] ?? 'application/octet-stream')
     };
   }
 

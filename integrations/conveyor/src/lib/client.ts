@@ -1,10 +1,9 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URL = 'https://api.conveyor.com/api/v2';
 
 export class ConveyorClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.http = createAxios({

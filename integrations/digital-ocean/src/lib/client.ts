@@ -1,12 +1,11 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { digitalOceanApiError } from './errors';
 
 let responseArray = <T = any>(value: T[] | null | undefined): T[] =>
   Array.isArray(value) ? value : [];
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.axios = createAxios({

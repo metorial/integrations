@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createHmac } from 'crypto';
 import { createAxios } from 'slates';
 
@@ -87,7 +86,7 @@ export interface MopinionFeedbackEntry {
 }
 
 export class MopinionClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private publicKey: string;
   private signatureToken: string;
 

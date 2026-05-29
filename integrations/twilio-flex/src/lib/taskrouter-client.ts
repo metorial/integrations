@@ -1,9 +1,8 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import { encodeFormBody } from './client';
 
 export class TaskRouterClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(
     private token: string,

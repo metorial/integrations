@@ -1,5 +1,5 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance, AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
 import { jotformApiError, jotformApiResponseError } from './errors';
 
 export interface JotFormClientConfig {
@@ -52,7 +52,7 @@ let toFormBody = (payload: Record<string, unknown>) => {
 };
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(private config: JotFormClientConfig) {
     this.http = createAxios({
