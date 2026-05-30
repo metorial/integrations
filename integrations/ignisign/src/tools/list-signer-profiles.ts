@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IgnisignClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listSignerProfiles = SlateTool.create(spec, {
   name: 'List Signer Profiles',
@@ -41,7 +41,7 @@ export let listSignerProfiles = SlateTool.create(spec, {
     let profiles = await client.listSignerProfiles();
     let list = Array.isArray(profiles) ? profiles : [];
 
-    let inputsNeeded: any = undefined;
+    let inputsNeeded: any;
     if (ctx.input.signerProfileId) {
       inputsNeeded = await client.getSignerProfileInputsNeeded(ctx.input.signerProfileId);
     }

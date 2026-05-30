@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { RemarketyClient, formatOrderPayload } from '../lib/client';
+import { formatOrderPayload, RemarketyClient } from '../lib/client';
 import { orderSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let upsertOrderTool = SlateTool.create(spec, {
   name: 'Create or Update Order',

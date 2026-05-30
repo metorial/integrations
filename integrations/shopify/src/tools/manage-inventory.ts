@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { ShopifyClient } from '../lib/client';
 import { shopifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let inventoryLevelSchema = z.object({
   inventoryItemId: z.string(),
@@ -91,8 +91,7 @@ export let manageInventory = SlateTool.create(spec, {
     if (ctx.input.action === 'set') {
       if (!ctx.input.inventoryItemId)
         throw shopifyServiceError('inventoryItemId is required for set');
-      if (!ctx.input.locationId)
-        throw shopifyServiceError('locationId is required for set');
+      if (!ctx.input.locationId) throw shopifyServiceError('locationId is required for set');
       if (ctx.input.available === undefined)
         throw shopifyServiceError('available is required for set');
 

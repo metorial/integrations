@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createApplication,
+  createServer,
+  getServerDetails,
+  listApplications,
+  listBackups,
   listOrganizations,
   listServerProviders,
   listServers,
-  getServerDetails,
-  createServer,
+  manageApplication,
+  manageCronJobs,
+  manageDatabase,
+  manageDomains,
+  manageFirewall,
   manageServer,
   manageServices,
-  listApplications,
-  createApplication,
-  manageApplication,
-  manageDomains,
   manageSsl,
-  manageDatabase,
-  manageFirewall,
-  manageCronJobs,
-  listBackups,
   manageSystemUsers
 } from './tools';
-import { serverChanges, applicationChanges, inboundWebhook } from './triggers';
+import { applicationChanges, inboundWebhook, serverChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

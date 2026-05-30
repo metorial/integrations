@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DetrackClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let reattemptJobTool = SlateTool.create(spec, {
   name: 'Reattempt Job',

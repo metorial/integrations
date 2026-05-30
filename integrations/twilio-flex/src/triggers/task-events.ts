@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { TaskRouterClient } from '../lib/taskrouter-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let taskEventsTrigger = SlateTrigger.create(spec, {
   name: 'Task Events',

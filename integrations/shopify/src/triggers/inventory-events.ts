@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let inventoryEvents = SlateTrigger.create(spec, {
   name: 'Inventory Events',
@@ -53,7 +53,7 @@ export let inventoryEvents = SlateTrigger.create(spec, {
       let { webhookId } = ctx.input.registrationDetails as { webhookId: string };
       try {
         await client.deleteWebhook(webhookId);
-      } catch (e) {
+      } catch (_e) {
         // Webhook may already be deleted
       }
     },

@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  runQuery,
-  runMutation,
-  runAction,
-  listDocuments,
+  generateUploadUrl,
   getDocumentDeltas,
+  listDocuments,
   manageEnvironmentVariables,
-  generateUploadUrl
+  runAction,
+  runMutation,
+  runQuery
 } from './tools';
 import { dataChanges, inboundWebhook } from './triggers';
 

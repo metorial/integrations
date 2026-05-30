@@ -9,7 +9,7 @@ export interface ApiVerveResponse<T = any> {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.apiverve.com/v1',
       headers: {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DataRobotClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageProject = SlateTool.create(spec, {
   name: 'Update or Delete Project',

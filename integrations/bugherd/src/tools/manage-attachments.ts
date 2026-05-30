@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugherdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let attachmentSchema = z.object({
   attachmentId: z.number().describe('Attachment ID'),

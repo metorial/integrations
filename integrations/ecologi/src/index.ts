@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { purchaseTreesTool, purchaseCarbonOffsetsTool, getImpactTool } from './tools';
+import { getImpactTool, purchaseCarbonOffsetsTool, purchaseTreesTool } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

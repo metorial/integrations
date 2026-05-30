@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listLibraries,
-  manageLibrary,
-  listLibraryElements,
-  removeBackground,
+  applyLightroomEdits,
+  checkJobStatus,
   editPsd,
   generateImage,
-  generativeFill,
   generativeExpand,
-  searchStock,
-  licenseStock,
-  manageLightroomCatalog,
-  applyLightroomEdits,
-  manageUsers,
+  generativeFill,
   indesignDataMerge,
-  checkJobStatus
+  licenseStock,
+  listLibraries,
+  listLibraryElements,
+  manageLibrary,
+  manageLightroomCatalog,
+  manageUsers,
+  removeBackground,
+  searchStock
 } from './tools';
 import {
   assetEvents,
-  libraryEvents,
   cloudDocumentEvents,
+  libraryEvents,
   photoshopJobEvents
 } from './triggers';
 

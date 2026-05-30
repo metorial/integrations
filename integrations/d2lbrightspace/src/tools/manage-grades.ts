@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let gradeObjectSchema = z.object({
   gradeObjectId: z.string().describe('Grade object ID'),

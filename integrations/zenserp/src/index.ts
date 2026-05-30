@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  webSearch,
-  imageSearch,
-  reverseImageSearch,
-  newsSearch,
-  shoppingSearch,
-  shoppingProductDetails,
-  mapsSearch,
+  accountStatus,
   googleTrends,
-  accountStatus
+  imageSearch,
+  mapsSearch,
+  newsSearch,
+  reverseImageSearch,
+  shoppingProductDetails,
+  shoppingSearch,
+  webSearch
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

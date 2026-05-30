@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClientFromContext } from '../lib/helpers';
 import { z } from 'zod';
+import { createClientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageUserProfile = SlateTool.create(spec, {
   name: 'Manage User Profile',

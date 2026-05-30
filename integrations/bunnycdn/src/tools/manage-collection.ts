@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StreamClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let collectionSchema = z
   .object({

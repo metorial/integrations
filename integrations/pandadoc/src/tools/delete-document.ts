@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PandaDocClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deleteDocument = SlateTool.create(spec, {
   name: 'Delete Document',

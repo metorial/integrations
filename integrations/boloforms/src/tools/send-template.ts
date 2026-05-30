@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BoloFormsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendTemplate = SlateTool.create(spec, {
   name: 'Send Template for Signing',

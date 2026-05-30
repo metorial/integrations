@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getUserInfo,
+  createConversion,
   getActivityLogs,
-  listCampaigns,
   getCampaignNotifications,
-  toggleCampaign,
   getNotificationData,
-  createConversion
+  getUserInfo,
+  listCampaigns,
+  toggleCampaign
 } from './tools';
 import { leadCollected } from './triggers';
 

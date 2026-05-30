@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let managePullRequest = SlateTool.create(spec, {
   name: 'Manage Pull Request',
@@ -61,7 +61,10 @@ When updating: provide the pull request number along with fields to change.`,
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let { owner, repo, pullNumber, ...data } = ctx.input;
     let pr: any;
 

@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageUser,
-  manageThread,
-  addMessages,
-  getContext,
-  searchGraph,
   addFact,
-  exploreGraph,
-  manageOntology,
-  deleteEpisode,
+  addMessages,
   cloneGraph,
-  setUserSummaryInstructions,
-  getUserThreads
+  deleteEpisode,
+  exploreGraph,
+  getContext,
+  getUserThreads,
+  manageOntology,
+  manageThread,
+  manageUser,
+  searchGraph,
+  setUserSummaryInstructions
 } from './tools';
-import { graphEvent, byomEvent } from './triggers';
+import { byomEvent, graphEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,

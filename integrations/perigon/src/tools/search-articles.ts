@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PerigonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let sentimentSchema = z.object({
   positive: z.number().describe('Positive sentiment score (0-1)'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LinkedInClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPosts = SlateTool.create(spec, {
   name: 'Get Posts',

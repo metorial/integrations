@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  carrierLookup,
-  smsGatewayLookup,
-  verifyEmail,
-  verifyPostalAddress,
-  verifyPhone,
-  reversePhoneLookup,
-  reverseEmailLookup,
   appendContactData,
-  nameLookup,
-  genderLookup,
-  zipcodeLookup,
-  profileDataLookup,
-  propertyDataLookup,
-  ipGeolocation,
+  carrierLookup,
+  checkBalance,
   dncCheck,
   fraudDetection,
-  checkBalance
+  genderLookup,
+  ipGeolocation,
+  nameLookup,
+  profileDataLookup,
+  propertyDataLookup,
+  reverseEmailLookup,
+  reversePhoneLookup,
+  smsGatewayLookup,
+  verifyEmail,
+  verifyPhone,
+  verifyPostalAddress,
+  zipcodeLookup
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

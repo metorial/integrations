@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let marketKeySchema = z.object({
   marketKey: z.string().describe('Market key identifier (e.g. "h2h", "player_pass_tds")'),

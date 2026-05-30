@@ -1,2 +1,2 @@
-export * from './employee-lifecycle';
 export * from './company-activity';
+export * from './employee-lifecycle';

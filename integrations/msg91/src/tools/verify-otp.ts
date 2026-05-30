@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Msg91Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let verifyOtp = SlateTool.create(spec, {
   name: 'Verify OTP',

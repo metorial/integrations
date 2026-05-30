@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { buildClientConfig, flattenSingleResource } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateOrder = SlateTool.create(spec, {
   name: 'Update Order',

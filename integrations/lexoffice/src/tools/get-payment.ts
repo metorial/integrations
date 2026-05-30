@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let paymentItemSchema = z.object({
   paymentItemType: z.string().optional().describe('Type of the payment item'),

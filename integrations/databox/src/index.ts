@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listAccounts,
   createDataSource,
-  deleteDataSource,
-  listDatasets,
   createDataset,
+  deleteDataSource,
   deleteDataset,
-  purgeDataset,
-  ingestData,
   getIngestionStatus,
+  ingestData,
+  listAccounts,
+  listDatasets,
   listIngestions,
   listTimezones,
+  purgeDataset,
   validateKey
 } from './tools';
 

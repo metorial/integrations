@@ -1,26 +1,26 @@
 import { createAxios } from '@slates/provider';
+import { herokuApiError } from './errors';
 import type {
-  HerokuApp,
-  HerokuDyno,
-  HerokuFormation,
+  HerokuAccount,
   HerokuAddon,
   HerokuAddonAttachment,
-  HerokuRelease,
+  HerokuApp,
   HerokuBuild,
   HerokuBuildpackInstallation,
-  HerokuDomain,
   HerokuCollaborator,
+  HerokuDomain,
+  HerokuDyno,
+  HerokuFormation,
+  HerokuLogDrain,
+  HerokuLogSession,
   HerokuPipeline,
   HerokuPipelineCoupling,
   HerokuPipelinePromotion,
   HerokuPipelinePromotionTarget,
-  HerokuLogDrain,
-  HerokuLogSession,
+  HerokuRelease,
   HerokuSniEndpoint,
-  HerokuWebhook,
-  HerokuAccount
+  HerokuWebhook
 } from './types';
-import { herokuApiError } from './errors';
 
 let HEROKU_HEADERS = {
   Accept: 'application/vnd.heroku+json; version=3',

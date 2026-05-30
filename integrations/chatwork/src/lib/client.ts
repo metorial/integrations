@@ -33,8 +33,8 @@ export class ChatworkClient {
   }): Promise<ChatworkTask[]> {
     let query: Record<string, string> = {};
     if (params?.assignedByAccountId)
-      query['assigned_by_account_id'] = String(params.assignedByAccountId);
-    if (params?.status) query['status'] = params.status;
+      query.assigned_by_account_id = String(params.assignedByAccountId);
+    if (params?.status) query.status = params.status;
 
     let response = await api.get('/my/tasks', { headers: this.headers, params: query });
     return response.data || [];
@@ -164,7 +164,7 @@ export class ChatworkClient {
 
   async getMessages(roomId: number, force?: boolean): Promise<ChatworkMessage[]> {
     let params: Record<string, string> = {};
-    if (force !== undefined) params['force'] = force ? '1' : '0';
+    if (force !== undefined) params.force = force ? '1' : '0';
 
     let response = await api.get(`/rooms/${roomId}/messages`, {
       headers: this.headers,

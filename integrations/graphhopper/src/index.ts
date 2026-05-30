@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  calculateRoute,
-  optimizeRoutes,
-  calculateMatrix,
-  geocode,
   calculateIsochrone,
+  calculateMatrix,
+  calculateRoute,
+  clusterLocations,
+  geocode,
   matchGpsTrace,
-  clusterLocations
+  optimizeRoutes
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

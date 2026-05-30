@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTemplates,
+  createClientAccount,
   createProspect,
-  updateProspect,
-  deleteProspect,
-  getProspect,
-  listProspects,
   createShortLink,
+  deleteProspect,
   enrichData,
+  getProspect,
   listImpressions,
-  createClientAccount
+  listProspects,
+  listTemplates,
+  updateProspect
 } from './tools';
-import { newImageImpression, inboundWebhook } from './triggers';
+import { inboundWebhook, newImageImpression } from './triggers';
 
 export let provider = Slate.create({
   spec,

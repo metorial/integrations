@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TapfiliateClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let affiliateGroupSchema = z.object({
   groupId: z.string().describe('Unique identifier of the group'),

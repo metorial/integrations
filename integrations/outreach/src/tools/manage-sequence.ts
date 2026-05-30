@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import {
-  flattenResource,
-  cleanAttributes,
   buildRelationship,
+  cleanAttributes,
+  flattenResource,
   mergeRelationships
 } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageSequence = SlateTool.create(spec, {
   name: 'Manage Sequence',

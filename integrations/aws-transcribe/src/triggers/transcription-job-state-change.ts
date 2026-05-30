@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { TranscribeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let transcriptionJobStateChange = SlateTrigger.create(spec, {
   name: 'Transcription Job State Change',
@@ -201,7 +201,7 @@ export let transcriptionJobStateChange = SlateTrigger.create(spec, {
             transcriptFileUri = job.Transcript?.TranscriptFileUri;
             mediaFileUri = job.Media?.MediaFileUri;
           }
-        } catch (e) {
+        } catch (_e) {
           // Non-critical: we still emit the event without URI
         }
       }

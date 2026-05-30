@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CannyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let boardSchema = z.object({
   boardId: z.string().describe('Unique identifier of the board'),

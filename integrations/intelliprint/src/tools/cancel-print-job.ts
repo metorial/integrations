@@ -1,8 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
-import { printJobSchema, mapPrintJob } from '../lib/schemas';
 
 export let cancelPrintJob = SlateTool.create(spec, {
   name: 'Cancel Print Job',

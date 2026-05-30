@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let exemptRegionSchema = z.object({
   country: z.string().describe('Two-letter ISO country code (e.g. US)'),

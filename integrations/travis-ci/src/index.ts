@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listRepositories,
-  getRepository,
-  listBuilds,
   getBuild,
-  triggerBuild,
-  manageBuild,
-  manageJob,
   getJobLog,
-  manageEnvVars,
-  manageCrons,
-  manageCaches,
-  listBranches,
+  getRepository,
   lintTravisYml,
-  listBuildRequests
+  listBranches,
+  listBuildRequests,
+  listBuilds,
+  listRepositories,
+  manageBuild,
+  manageCaches,
+  manageCrons,
+  manageEnvVars,
+  manageJob,
+  triggerBuild
 } from './tools';
 import { buildEvents, inboundWebhook } from './triggers';
 

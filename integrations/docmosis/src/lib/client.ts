@@ -121,7 +121,7 @@ export class Client {
   private accessKey: string;
 
   constructor(config: ClientConfig) {
-    let baseURL = BASE_URLS[config.region] || BASE_URLS['us'];
+    let baseURL = BASE_URLS[config.region] || BASE_URLS.us;
     this.accessKey = config.token;
     this.axios = createAxios({ baseURL });
   }
@@ -246,9 +246,7 @@ export class Client {
     return response.data;
   }
 
-  async listImages(
-    folderName?: string
-  ): Promise<{
+  async listImages(folderName?: string): Promise<{
     succeeded: boolean;
     images?: Array<{ name: string; sizeBytes?: number; uploadedTime?: number }>;
   }> {

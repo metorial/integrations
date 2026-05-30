@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DocuGenerateClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateTemplate = SlateTool.create(spec, {
   name: 'Update Template',

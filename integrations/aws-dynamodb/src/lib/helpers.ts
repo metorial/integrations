@@ -1,4 +1,4 @@
-import { DynamoDBClient, DynamoDBClientConfig } from './client';
+import { DynamoDBClient } from './client';
 
 export let createClient = (
   config: { region: string },

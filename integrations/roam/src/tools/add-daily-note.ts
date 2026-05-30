@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RoamClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addDailyNote = SlateTool.create(spec, {
   name: 'Add Daily Note',

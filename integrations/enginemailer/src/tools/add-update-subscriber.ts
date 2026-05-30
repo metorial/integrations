@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addUpdateSubscriber = SlateTool.create(spec, {
   name: 'Add or Update Subscriber',
@@ -69,7 +69,7 @@ export let addUpdateSubscriber = SlateTool.create(spec, {
       // Subscriber doesn't exist, proceed with insert
     }
 
-    let result;
+    let result: any;
     if (isExisting) {
       result = await client.updateSubscriber({
         email: ctx.input.email,

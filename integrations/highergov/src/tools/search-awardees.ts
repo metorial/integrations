@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchAwardees = SlateTool.create(spec, {
   name: 'Search Awardees',
@@ -75,7 +75,7 @@ export let searchAwardees = SlateTool.create(spec, {
     let client = new Client(ctx.auth.token);
     let input = ctx.input;
 
-    let response;
+    let response: any;
     if (input.lookupType === 'mentor_protege') {
       response = await client.getAwardeeMentorProtege({
         awardeeKeyMentor: input.awardeeKeyMentor,

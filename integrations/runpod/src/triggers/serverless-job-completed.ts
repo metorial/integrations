@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let serverlessJobCompleted = SlateTrigger.create(spec, {
   name: 'Serverless Job Completed',
@@ -42,7 +42,7 @@ export let serverlessJobCompleted = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.id) {
+      if (!data?.id) {
         return { inputs: [] };
       }
 

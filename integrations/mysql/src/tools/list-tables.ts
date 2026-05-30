@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, escapeLiteral } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, escapeLiteral } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listTables = SlateTool.create(spec, {
   name: 'List Tables',

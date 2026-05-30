@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GammaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listThemesTool = SlateTool.create(spec, {
   name: 'List Themes',
@@ -71,8 +71,7 @@ Use theme IDs when generating content to control colors, fonts, and overall visu
     if (result.hasMore) {
       message += ` (more available)`;
     }
-    message +=
-      ':\n' + themes.map(t => `- **${t.name}** (${t.type}) - ID: \`${t.themeId}\``).join('\n');
+    message += `:\n${themes.map(t => `- **${t.name}** (${t.type}) - ID: \`${t.themeId}\``).join('\n')}`;
 
     return {
       output: {

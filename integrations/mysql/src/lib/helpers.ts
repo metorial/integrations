@@ -1,4 +1,4 @@
-import { MySQLClient, type ConnectionConfig } from './client';
+import { type ConnectionConfig, MySQLClient } from './client';
 
 export interface AuthOutput {
   host: string;
@@ -31,12 +31,12 @@ export let createClient = (auth: AuthOutput, config: ConfigOutput): MySQLClient 
 
 // Escape an identifier (table name, column name, etc.) for safe use in MySQL SQL
 export let escapeIdentifier = (name: string): string => {
-  return '`' + name.replace(/`/g, '``') + '`';
+  return `\`${name.replace(/`/g, '``')}\``;
 };
 
 // Escape a literal value for safe use in MySQL SQL
 export let escapeLiteral = (value: string): string => {
-  return "'" + value.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\0/g, '\\0') + "'";
+  return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\0/g, '\\0')}'`;
 };
 
 // Build a qualified table name with optional database prefix

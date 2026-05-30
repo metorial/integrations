@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StoryblokClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageDatasourceEntry = SlateTool.create(spec, {
   name: 'Manage Datasource Entry',
@@ -104,7 +104,7 @@ export let manageDatasourceEntry = SlateTool.create(spec, {
     if (action === 'delete') {
       await client.deleteDatasourceEntry(ctx.input.entryId);
       return {
-        output: { entryId: parseInt(ctx.input.entryId, 10) },
+        output: { entryId: Number.parseInt(ctx.input.entryId, 10) },
         message: `Deleted entry \`${ctx.input.entryId}\`.`
       };
     }

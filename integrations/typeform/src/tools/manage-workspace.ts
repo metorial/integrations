@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TypeformClient } from '../lib/client';
 import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let getWorkspaceFormCount = (workspace: any) => {
   if (typeof workspace.forms?.count === 'number') return workspace.forms.count;

@@ -13,7 +13,7 @@ export interface ScrapeOptions {
   waitFor?: number;
   mobile?: boolean;
   timeout?: number;
-  actions?: Array<Record<string, any>>;
+  actions?: Record<string, any>[];
   location?: {
     country?: string;
     languages?: string[];

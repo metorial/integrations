@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class PaystackClient {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.paystack.co',
       headers: {
@@ -507,7 +507,7 @@ export class PaystackClient {
     slug?: string;
     metadata?: Record<string, any>;
     redirectUrl?: string;
-    customFields?: Array<Record<string, any>>;
+    customFields?: Record<string, any>[];
   }) {
     let { data } = await this.axios.post('/page', {
       name: params.name,

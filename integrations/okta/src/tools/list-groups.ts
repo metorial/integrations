@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OktaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let groupSchema = z.object({
   groupId: z.string().describe('Unique Okta group ID'),

@@ -2,16 +2,16 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createBot,
-  updateBot,
-  listBots,
-  getBot,
   deleteBot,
-  sendBotMessage,
   generateAiReply,
+  getBot,
+  listBots,
   manageBotChannels,
-  manageTypingIndicator
+  manageTypingIndicator,
+  sendBotMessage,
+  updateBot
 } from './tools';
-import { messageEvents, channelEvents } from './triggers';
+import { channelEvents, messageEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

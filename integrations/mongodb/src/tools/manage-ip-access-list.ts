@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AtlasClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let accessListEntrySchema = z.object({
   ipAddress: z.string().optional().describe('IP address in the access list'),

@@ -140,11 +140,11 @@ export class Client {
     select?: string;
   }): Promise<{ notebooks: NotebookResponse[]; nextLink?: string }> {
     let queryParams: Record<string, string> = {};
-    if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderBy) queryParams['$orderby'] = params.orderBy;
-    if (params?.top) queryParams['$top'] = String(params.top);
-    if (params?.skip) queryParams['$skip'] = String(params.skip);
-    if (params?.select) queryParams['$select'] = params.select;
+    if (params?.filter) queryParams.$filter = params.filter;
+    if (params?.orderBy) queryParams.$orderby = params.orderBy;
+    if (params?.top) queryParams.$top = String(params.top);
+    if (params?.skip) queryParams.$skip = String(params.skip);
+    if (params?.select) queryParams.$select = params.select;
 
     let response = await this.http.get('/me/onenote/notebooks', { params: queryParams });
     let data = response.data;
@@ -205,11 +205,11 @@ export class Client {
     }
   ): Promise<{ sections: SectionResponse[]; nextLink?: string }> {
     let queryParams: Record<string, string> = {};
-    if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderBy) queryParams['$orderby'] = params.orderBy;
-    if (params?.top) queryParams['$top'] = String(params.top);
-    if (params?.skip) queryParams['$skip'] = String(params.skip);
-    if (params?.select) queryParams['$select'] = params.select;
+    if (params?.filter) queryParams.$filter = params.filter;
+    if (params?.orderBy) queryParams.$orderby = params.orderBy;
+    if (params?.top) queryParams.$top = String(params.top);
+    if (params?.skip) queryParams.$skip = String(params.skip);
+    if (params?.select) queryParams.$select = params.select;
 
     let response = await this.http.get(`/me/onenote/notebooks/${notebookId}/sections`, {
       params: queryParams
@@ -261,12 +261,12 @@ export class Client {
     }
   ): Promise<CopyOperationResponse> {
     let body: Record<string, string> = {};
-    if (params.destinationNotebookId) body['id'] = params.destinationNotebookId;
-    if (params.destinationSectionGroupId) body['id'] = params.destinationSectionGroupId;
-    if (params.renameAs) body['renameAs'] = params.renameAs;
-    if (params.siteCollectionId) body['siteCollectionId'] = params.siteCollectionId;
-    if (params.siteId) body['siteId'] = params.siteId;
-    if (params.groupId) body['groupId'] = params.groupId;
+    if (params.destinationNotebookId) body.id = params.destinationNotebookId;
+    if (params.destinationSectionGroupId) body.id = params.destinationSectionGroupId;
+    if (params.renameAs) body.renameAs = params.renameAs;
+    if (params.siteCollectionId) body.siteCollectionId = params.siteCollectionId;
+    if (params.siteId) body.siteId = params.siteId;
+    if (params.groupId) body.groupId = params.groupId;
 
     let response = await this.http.post(
       `/me/onenote/sections/${sectionId}/copyToNotebook`,
@@ -294,10 +294,10 @@ export class Client {
     }
   ): Promise<{ sectionGroups: SectionGroupResponse[]; nextLink?: string }> {
     let queryParams: Record<string, string> = {};
-    if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderBy) queryParams['$orderby'] = params.orderBy;
-    if (params?.top) queryParams['$top'] = String(params.top);
-    if (params?.skip) queryParams['$skip'] = String(params.skip);
+    if (params?.filter) queryParams.$filter = params.filter;
+    if (params?.orderBy) queryParams.$orderby = params.orderBy;
+    if (params?.top) queryParams.$top = String(params.top);
+    if (params?.skip) queryParams.$skip = String(params.skip);
 
     let response = await this.http.get(`/me/onenote/notebooks/${notebookId}/sectionGroups`, {
       params: queryParams
@@ -354,12 +354,12 @@ export class Client {
     }
   ): Promise<{ pages: PageResponse[]; nextLink?: string }> {
     let queryParams: Record<string, string> = {};
-    if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderBy) queryParams['$orderby'] = params.orderBy;
-    if (params?.top) queryParams['$top'] = String(params.top);
-    if (params?.skip) queryParams['$skip'] = String(params.skip);
-    if (params?.select) queryParams['$select'] = params.select;
-    if (params?.search) queryParams['$search'] = params.search;
+    if (params?.filter) queryParams.$filter = params.filter;
+    if (params?.orderBy) queryParams.$orderby = params.orderBy;
+    if (params?.top) queryParams.$top = String(params.top);
+    if (params?.skip) queryParams.$skip = String(params.skip);
+    if (params?.select) queryParams.$select = params.select;
+    if (params?.search) queryParams.$search = params.search;
 
     let response = await this.http.get(`/me/onenote/sections/${sectionId}/pages`, {
       params: queryParams
@@ -427,9 +427,9 @@ export class Client {
     let body: Record<string, string> = {
       id: destinationSectionId
     };
-    if (groupId) body['groupId'] = groupId;
-    if (siteCollectionId) body['siteCollectionId'] = siteCollectionId;
-    if (siteId) body['siteId'] = siteId;
+    if (groupId) body.groupId = groupId;
+    if (siteCollectionId) body.siteCollectionId = siteCollectionId;
+    if (siteId) body.siteId = siteId;
 
     let response = await this.http.post(`/me/onenote/pages/${pageId}/copyToSection`, body);
     let op = response.data;

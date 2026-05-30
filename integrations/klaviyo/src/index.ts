@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getProfiles,
   createUpdateProfile,
-  manageSubscriptions,
-  manageLists,
+  getEvents,
+  getFlows,
   getListSegmentProfiles,
+  getMetrics,
+  getProfiles,
   getSegments,
   manageCampaigns,
-  getFlows,
-  updateFlowStatus,
-  trackEvent,
-  getEvents,
-  getMetrics,
-  queryMetricAggregates,
   manageCatalogItems,
-  manageTemplates,
-  manageTags,
   manageCoupons,
-  requestProfileDeletion
+  manageLists,
+  manageSubscriptions,
+  manageTags,
+  manageTemplates,
+  queryMetricAggregates,
+  requestProfileDeletion,
+  trackEvent,
+  updateFlowStatus
 } from './tools';
-import { webhookEvents, newEvents, newProfiles } from './triggers';
+import { newEvents, newProfiles, webhookEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

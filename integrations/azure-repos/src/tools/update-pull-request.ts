@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updatePullRequest = SlateTool.create(spec, {
   name: 'Update Pull Request',
@@ -118,7 +118,11 @@ export let updatePullRequest = SlateTool.create(spec, {
     }
 
     let pr = hasPullRequestUpdate
-      ? await client.updatePullRequest(ctx.input.repositoryId, ctx.input.pullRequestId, updates)
+      ? await client.updatePullRequest(
+          ctx.input.repositoryId,
+          ctx.input.pullRequestId,
+          updates
+        )
       : await client.getPullRequest(ctx.input.repositoryId, ctx.input.pullRequestId);
 
     // Handle reviewer additions

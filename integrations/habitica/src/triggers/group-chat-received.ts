@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { HabiticaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let groupChatReceived = SlateTrigger.create(spec, {
   name: 'Group Chat Received',

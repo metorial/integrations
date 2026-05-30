@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  domainWhoisLookup,
-  historicalWhoisLookup,
-  reverseWhoisSearch,
-  ipAsnWhoisLookup,
   dnsLookup,
-  historicalDnsLookup,
-  reverseDnsLookup,
-  subdomainDiscovery,
   domainAvailability,
   domainDiscovery,
+  domainWhoisLookup,
+  historicalDnsLookup,
+  historicalWhoisLookup,
+  ipAsnWhoisLookup,
+  ipGeolocation,
+  reverseDnsLookup,
+  reverseWhoisSearch,
   sslCertificateLookup,
-  ipGeolocation
+  subdomainDiscovery
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

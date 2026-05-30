@@ -69,10 +69,10 @@ export class Client {
       format: 'json'
     };
 
-    if (params.startDate) queryParams['start_date'] = params.startDate;
-    if (params.endDate) queryParams['end_date'] = params.endDate;
+    if (params.startDate) queryParams.start_date = params.startDate;
+    if (params.endDate) queryParams.end_date = params.endDate;
     if (params.mainDomainOnly !== undefined)
-      queryParams['main_domain_only'] = String(params.mainDomainOnly);
+      queryParams.main_domain_only = String(params.mainDomainOnly);
 
     let response = await http.get(`/v1/website/${params.domain}/global-rank/global-rank`, {
       params: queryParams
@@ -106,10 +106,10 @@ export class Client {
       country: params.country
     };
 
-    if (params.startDate) queryParams['start_date'] = params.startDate;
-    if (params.endDate) queryParams['end_date'] = params.endDate;
+    if (params.startDate) queryParams.start_date = params.startDate;
+    if (params.endDate) queryParams.end_date = params.endDate;
     if (params.mainDomainOnly !== undefined)
-      queryParams['main_domain_only'] = String(params.mainDomainOnly);
+      queryParams.main_domain_only = String(params.mainDomainOnly);
 
     let response = await http.get(`/v1/website/${params.domain}/country-rank/country-rank`, {
       params: queryParams
@@ -156,7 +156,7 @@ export class Client {
       format: 'json'
     };
 
-    if (params.limit !== undefined) queryParams['limit'] = String(params.limit);
+    if (params.limit !== undefined) queryParams.limit = String(params.limit);
 
     let response = await http.get('/v1/TopSites', {
       params: queryParams

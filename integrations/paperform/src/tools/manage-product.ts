@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let productImageSchema = z.object({
   url: z.string().describe('Image URL'),
@@ -161,7 +161,7 @@ export let updateProduct = SlateTool.create(spec, {
       ctx.input.discountable !== undefined ||
       ctx.input.images !== undefined;
 
-    let p;
+    let p: any;
     if (hasMainUpdate) {
       p = await client.updateProduct(ctx.input.formSlugOrId, ctx.input.sku, {
         name: ctx.input.name,

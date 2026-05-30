@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let answerSchema = z.object({
   answerId: z.number().describe('Unique identifier of the answer'),
@@ -56,7 +56,7 @@ export let getAnswers = SlateTool.create(spec, {
       site: ctx.config.site
     });
 
-    let result;
+    let result: any;
     if (ctx.input.answerIds && ctx.input.answerIds.length > 0) {
       result = await client.getAnswersByIds(ctx.input.answerIds);
     } else if (ctx.input.questionId) {

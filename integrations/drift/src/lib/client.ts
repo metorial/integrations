@@ -74,11 +74,7 @@ export class DriftClient {
   }
 
   async listConversations(
-    params: {
-      limit?: number;
-      next?: string;
-      statusId?: number[];
-    } = {}
+    params: { limit?: number; next?: string; statusId?: number[] } = {}
   ): Promise<{ conversations: any[]; pagination?: { more: boolean; next: string } }> {
     let queryParams: Record<string, any> = {};
     if (params.limit) queryParams.limit = params.limit;

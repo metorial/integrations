@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let callLogRecordSchema = z.object({
   callId: z.string().optional().describe('Unique identifier of the call'),
@@ -103,7 +103,7 @@ export let listCallLogs = SlateTool.create(spec, {
       page: ctx.input.page
     };
 
-    let data;
+    let data: any;
 
     if (ctx.input.scope === 'account') {
       data = await client.getAccountCallLog(commonParams);

@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwitterClient } from '../lib/client';
 import { twitterServiceError } from '../lib/errors';
-import { userSchema, mapUser } from '../lib/helpers';
+import { mapUser, userSchema } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUser = SlateTool.create(spec, {
   name: 'Get User',

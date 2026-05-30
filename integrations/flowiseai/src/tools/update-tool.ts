@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FlowiseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateTool = SlateTool.create(spec, {
   name: 'Update Tool',

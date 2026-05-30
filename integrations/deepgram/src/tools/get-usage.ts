@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeepgramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUsageTool = SlateTool.create(spec, {
   name: 'Get Usage',

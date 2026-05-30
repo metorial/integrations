@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { VimeoClient } from '../lib/client';
 import { paginationInputSchema, paginationOutputSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commentSchema = z.object({
   commentId: z.string().describe('Vimeo comment ID'),

@@ -1,2 +1,2 @@
-export * from './proposal-status';
 export * from './inbound-webhook';
+export * from './proposal-status';

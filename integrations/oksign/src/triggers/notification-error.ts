@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let POLL_INTERVAL_SECONDS = 300; // 5 minutes (API rate limit: 1 request per 3 minutes)
 
@@ -56,7 +56,7 @@ export let notificationError = SlateTrigger.create(spec, {
       let errors = await client.getWebhookErrors(lastPollTime, toTime);
 
       return {
-        inputs: errors.map((err: any, index: number) => ({
+        inputs: errors.map((err: any, _index: number) => ({
           eventType: err.event || err.type || 'unknown',
           email: err.email,
           mobile: err.mobile,

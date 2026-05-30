@@ -2,18 +2,18 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createDocument,
-  listDocuments,
-  getDocument,
-  updateDocument,
-  deleteDocument,
-  retrieveDocuments,
   createResponse,
-  manageInstructions,
+  deleteDocument,
+  getDocument,
   getEntities,
+  listDocuments,
   manageConnections,
-  managePartitions
+  manageInstructions,
+  managePartitions,
+  retrieveDocuments,
+  updateDocument
 } from './tools';
-import { documentEvents, connectionEvents } from './triggers';
+import { connectionEvents, documentEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let flowRunTrigger = SlateTrigger.create(spec, {
   name: 'Flow Run Completed',
@@ -82,7 +82,7 @@ export let flowRunTrigger = SlateTrigger.create(spec, {
 
       // For each project with recent runs, get the detailed run logs
       for (let project of projectSummaries) {
-        let projectId = project['project_id'] as string | undefined;
+        let projectId = project.project_id as string | undefined;
         if (!projectId) continue;
 
         let runs = await client.getProjectAnalytics(projectId, {
@@ -92,21 +92,21 @@ export let flowRunTrigger = SlateTrigger.create(spec, {
         });
 
         for (let run of runs) {
-          let runId = run['run_id'] as string;
+          let runId = run.run_id as string;
           if (!runId || seenRunIds.includes(runId)) continue;
 
           allInputs.push({
             runId,
             flowId: projectId,
-            runDate: (run['date'] as string) || new Date().toISOString(),
-            success: (run['flow_success'] as boolean) ?? true,
-            state: run['state'] as string | undefined,
-            error: run['error'] as string | undefined,
-            latencyMs: run['latency'] as number | undefined,
-            totalTokens: run['total_tokens'] as number | undefined,
-            userId: run['user_id'] as string | undefined,
-            inputs: run['inputs'] as Record<string, unknown> | undefined,
-            outputs: run['outputs'] as Record<string, unknown> | undefined
+            runDate: (run.date as string) || new Date().toISOString(),
+            success: (run.flow_success as boolean) ?? true,
+            state: run.state as string | undefined,
+            error: run.error as string | undefined,
+            latencyMs: run.latency as number | undefined,
+            totalTokens: run.total_tokens as number | undefined,
+            userId: run.user_id as string | undefined,
+            inputs: run.inputs as Record<string, unknown> | undefined,
+            outputs: run.outputs as Record<string, unknown> | undefined
           });
         }
       }

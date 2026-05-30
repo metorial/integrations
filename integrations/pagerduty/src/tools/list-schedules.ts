@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PagerDutyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listSchedules = SlateTool.create(spec, {
   name: 'List Schedules',

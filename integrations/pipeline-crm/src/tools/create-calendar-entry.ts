@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createCalendarEntry = SlateTool.create(spec, {
   name: 'Create Calendar Entry',
@@ -80,8 +80,7 @@ export let createCalendarEntry = SlateTool.create(spec, {
         dueDate: entry.due_date ?? null,
         createdAt: entry.created_at ?? null
       },
-      message:
-        `Created calendar entry **${entry.name}**` + (entry.type ? ` (${entry.type})` : '')
+      message: `Created calendar entry **${entry.name}**${entry.type ? ` (${entry.type})` : ''}`
     };
   })
   .build();

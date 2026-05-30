@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listFunctionApps,
-  getFunctionApp,
-  manageFunctionApp,
-  listFunctions,
   getFunction,
+  getFunctionApp,
   invokeFunction,
-  manageKeys,
+  listDeployments,
+  listFunctionApps,
+  listFunctions,
   manageAppSettings,
-  manageSlots,
-  listDeployments
+  manageFunctionApp,
+  manageKeys,
+  manageSlots
 } from './tools';
 import { functionAppChanges, inboundWebhook } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAvailableSlots = SlateTool.create(spec, {
   name: 'Get Available Slots',
@@ -43,10 +43,10 @@ export let getAvailableSlots = SlateTool.create(spec, {
       endTime: ctx.input.endTime
     };
 
-    if (ctx.input.eventTypeId) params['eventTypeId'] = ctx.input.eventTypeId;
-    if (ctx.input.eventTypeSlug) params['eventTypeSlug'] = ctx.input.eventTypeSlug;
-    if (ctx.input.username) params['username'] = ctx.input.username;
-    if (ctx.input.timeZone) params['timeZone'] = ctx.input.timeZone;
+    if (ctx.input.eventTypeId) params.eventTypeId = ctx.input.eventTypeId;
+    if (ctx.input.eventTypeSlug) params.eventTypeSlug = ctx.input.eventTypeSlug;
+    if (ctx.input.username) params.username = ctx.input.username;
+    if (ctx.input.timeZone) params.timeZone = ctx.input.timeZone;
 
     let slots = await client.getAvailableSlots(params);
 

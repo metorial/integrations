@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AffinityClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let strengthSchema = z.object({
   internalId: z.number().describe('ID of the internal team member'),

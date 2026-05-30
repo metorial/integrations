@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { TelemetryClient } from '../lib/telemetry-client';
+import { spec } from '../spec';
 
 let dashboardSchema = z.object({
   dashboardId: z.string().describe('Dashboard ID'),

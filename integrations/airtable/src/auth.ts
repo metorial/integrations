@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 import { airtableApiError, airtableServiceError } from './lib/errors';
 
@@ -166,7 +166,7 @@ export let auth = SlateAuth.create()
         code_verifier: ctx.callbackState.codeVerifier
       });
 
-      let response;
+      let response: any;
       try {
         response = await api.post('/oauth2/v1/token', params.toString(), {
           headers: {
@@ -180,7 +180,9 @@ export let auth = SlateAuth.create()
 
       let data = response.data;
       if (!data?.access_token) {
-        throw airtableServiceError('Airtable OAuth token response did not include an access token.');
+        throw airtableServiceError(
+          'Airtable OAuth token response did not include an access token.'
+        );
       }
 
       return {
@@ -204,7 +206,7 @@ export let auth = SlateAuth.create()
         refresh_token: ctx.output.refreshToken
       });
 
-      let response;
+      let response: any;
       try {
         response = await api.post('/oauth2/v1/token', params.toString(), {
           headers: {

@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { getVideoMetadata, generateEmbedCode, replaceLoomUrls } from './tools';
+import { generateEmbedCode, getVideoMetadata, replaceLoomUrls } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KommoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateTaskTool = SlateTool.create(spec, {
   name: 'Update Task',
@@ -33,13 +33,12 @@ export let updateTaskTool = SlateTool.create(spec, {
 
     let payload: Record<string, any> = {};
 
-    if (ctx.input.text !== undefined) payload['text'] = ctx.input.text;
-    if (ctx.input.completeTill !== undefined)
-      payload['complete_till'] = ctx.input.completeTill;
+    if (ctx.input.text !== undefined) payload.text = ctx.input.text;
+    if (ctx.input.completeTill !== undefined) payload.complete_till = ctx.input.completeTill;
     if (ctx.input.responsibleUserId !== undefined)
-      payload['responsible_user_id'] = ctx.input.responsibleUserId;
-    if (ctx.input.isCompleted !== undefined) payload['is_completed'] = ctx.input.isCompleted;
-    if (ctx.input.resultText !== undefined) payload['result'] = { text: ctx.input.resultText };
+      payload.responsible_user_id = ctx.input.responsibleUserId;
+    if (ctx.input.isCompleted !== undefined) payload.is_completed = ctx.input.isCompleted;
+    if (ctx.input.resultText !== undefined) payload.result = { text: ctx.input.resultText };
 
     let result = await client.updateTask(ctx.input.taskId, payload);
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageLabels = SlateTool.create(spec, {
   name: 'Manage Labels',
@@ -42,7 +42,7 @@ export let manageLabels = SlateTool.create(spec, {
       };
     }
 
-    let label;
+    let label: any;
     if (ctx.input.action === 'create') {
       label = await client.createLabel({ name: ctx.input.name! });
     } else {

@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTests,
   getTest,
-  manageTest,
-  runTest,
   getTestResults,
-  manageProject,
+  listTests,
   listWorkspaces,
-  manageVirtualService,
-  manageMockTransaction,
-  manageMonitoringTest,
-  runMonitoringTest,
   manageBucket,
-  manageSchedule,
+  manageMockTransaction,
   manageMonitoringEnvironment,
-  manageWorkspaceUsers
+  manageMonitoringTest,
+  manageProject,
+  manageSchedule,
+  manageTest,
+  manageVirtualService,
+  manageWorkspaceUsers,
+  runMonitoringTest,
+  runTest
 } from './tools';
-import { testRunCompleted, monitoringTestRun, inboundWebhook } from './triggers';
+import { inboundWebhook, monitoringTestRun, testRunCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,

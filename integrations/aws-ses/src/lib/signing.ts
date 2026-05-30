@@ -36,7 +36,7 @@ let getSigningKey = async (
   region: string,
   service: string
 ): Promise<ArrayBuffer> => {
-  let kDate = await hmacSha256(encoder.encode('AWS4' + secretKey), dateStamp);
+  let kDate = await hmacSha256(encoder.encode(`AWS4${secretKey}`), dateStamp);
   let kRegion = await hmacSha256(kDate, region);
   let kService = await hmacSha256(kRegion, service);
   let kSigning = await hmacSha256(kService, 'aws4_request');

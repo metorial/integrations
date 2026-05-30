@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generatePass = SlateTool.create(spec, {
   name: 'Generate Pass',
@@ -38,7 +38,7 @@ export let generatePass = SlateTool.create(spec, {
     let client = new Client(ctx.auth.token);
     let passValues = ctx.input.values || {};
 
-    let result;
+    let result: any;
     if (ctx.input.templateId) {
       result = await client.createPassFromTemplate(ctx.input.templateId, passValues);
     } else if (ctx.input.templateName) {

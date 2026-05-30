@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { collectionSchema, paginationSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCollections = SlateTool.create(spec, {
   name: 'List Collections',

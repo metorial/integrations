@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listApps,
   getApp,
-  runJob,
-  getJob,
   getAppResults,
-  listTemplates,
-  useTemplate,
-  listReferenceData,
+  getJob,
+  getUserInfo,
+  listApps,
   listProjects,
-  getUserInfo
+  listReferenceData,
+  listTemplates,
+  runJob,
+  useTemplate
 } from './tools';
 import { jobCompleted, rowCompleted } from './triggers';
 

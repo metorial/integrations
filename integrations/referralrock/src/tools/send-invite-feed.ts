@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactSchema = z.object({
   firstName: z.string().describe('Contact first name'),

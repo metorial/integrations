@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { goalSchema, mapGoal } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let goalDerailReminder = SlateTrigger.create(spec, {
   name: 'Goal Derail Reminder',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PerplexityClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let agentCompletion = SlateTool.create(spec, {
   name: 'Agent Completion',
@@ -150,7 +150,7 @@ You can use presets as-is or override any parameter. Models use the \`provider/m
         responseId: response.id,
         model: response.model,
         content: textContent,
-        output: response.output as Array<Record<string, unknown>>,
+        output: response.output as Record<string, unknown>[],
         citations: response.citations,
         searchResults: response.search_results,
         inputTokens: response.usage?.input_tokens,

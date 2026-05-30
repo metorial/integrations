@@ -130,13 +130,13 @@ export class Client {
     let queryParams: Record<string, string | string[]> = {};
 
     if (params?.locationIds && params.locationIds.length > 0) {
-      queryParams['location_ids'] = params.locationIds.map(String);
+      queryParams.location_ids = params.locationIds.map(String);
     }
     if (params?.limit) {
-      queryParams['limit'] = String(params.limit);
+      queryParams.limit = String(params.limit);
     }
     if (params?.cursor) {
-      queryParams['cursor'] = params.cursor;
+      queryParams.cursor = params.cursor;
     }
 
     let response = await this.axios.get('/items', { params: queryParams });
@@ -168,13 +168,13 @@ export class Client {
     let queryParams: Record<string, string> = {};
 
     if (params?.type) {
-      queryParams['type'] = params.type;
+      queryParams.type = params.type;
     }
     if (params?.limit) {
-      queryParams['limit'] = String(params.limit);
+      queryParams.limit = String(params.limit);
     }
     if (params?.cursor) {
-      queryParams['cursor'] = params.cursor;
+      queryParams.cursor = params.cursor;
     }
 
     let response = await this.axios.get('/txs', { params: queryParams });
@@ -187,13 +187,13 @@ export class Client {
     let queryParams: Record<string, string> = {};
 
     if (params?.type) {
-      queryParams['type'] = params.type;
+      queryParams.type = params.type;
     }
     if (params?.limit) {
-      queryParams['limit'] = String(params.limit);
+      queryParams.limit = String(params.limit);
     }
     if (params?.cursor) {
-      queryParams['cursor'] = params.cursor;
+      queryParams.cursor = params.cursor;
     }
 
     let response = await this.axios.get('/location-txs', { params: queryParams });
@@ -210,19 +210,19 @@ export class Client {
     };
 
     if (params.toLocationId !== undefined) {
-      body['to_location_id'] = params.toLocationId;
+      body.to_location_id = params.toLocationId;
     }
     if (params.fromLocationId !== undefined) {
-      body['from_location_id'] = params.fromLocationId;
+      body.from_location_id = params.fromLocationId;
     }
     if (params.partnerId !== undefined) {
-      body['partner_id'] = params.partnerId;
+      body.partner_id = params.partnerId;
     }
     if (params.memo !== undefined) {
-      body['memo'] = params.memo;
+      body.memo = params.memo;
     }
     if (params.transactionTime !== undefined) {
-      body['transaction_time'] = params.transactionTime;
+      body.transaction_time = params.transactionTime;
     }
 
     let response = await this.axios.post('/txs', body);
@@ -241,10 +241,10 @@ export class Client {
     let queryParams: Record<string, string> = {};
 
     if (params?.limit) {
-      queryParams['limit'] = String(params.limit);
+      queryParams.limit = String(params.limit);
     }
     if (params?.cursor) {
-      queryParams['cursor'] = params.cursor;
+      queryParams.cursor = params.cursor;
     }
 
     let response = await this.axios.get('/partners', { params: queryParams });

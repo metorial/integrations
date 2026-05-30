@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let accountNotifications = SlateTrigger.create(spec, {
   name: 'Account Notifications',
@@ -49,7 +49,7 @@ export let accountNotifications = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!body || !body.id) {
+      if (!body?.id) {
         return { inputs: [] };
       }
 

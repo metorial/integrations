@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let accountEventTypes = ['Account_Add', 'Account_Update', 'Account_Delete'] as const;
 

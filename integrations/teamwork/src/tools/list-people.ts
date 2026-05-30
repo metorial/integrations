@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listPeople = SlateTool.create(spec, {
   name: 'List People',
@@ -59,7 +59,7 @@ export let listPeople = SlateTool.create(spec, {
           : undefined,
       companyName: p['company-name'] || p.companyName || undefined,
       avatarUrl: p['avatar-url'] || p.avatarUrl || undefined,
-      isAdmin: p.administrator ?? p['administrator'] ?? undefined
+      isAdmin: p.administrator ?? p.administrator ?? undefined
     }));
 
     return {

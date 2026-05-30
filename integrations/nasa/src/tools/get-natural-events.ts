@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NasaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let naturalEventSchema = z.object({
   eventId: z.string().describe('Unique event identifier'),

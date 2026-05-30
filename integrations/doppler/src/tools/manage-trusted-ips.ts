@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DopplerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTrustedIps = SlateTool.create(spec, {
   name: 'Manage Trusted IPs',

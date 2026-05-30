@@ -1,5 +1,5 @@
-import { ContentfulGraphQLClient, GraphQLClientConfig } from './client';
-import { ContentfulWebhookClient, WebhookClientConfig } from './webhook-client';
+import { ContentfulGraphQLClient } from './client';
+import { ContentfulWebhookClient } from './webhook-client';
 
 export let createGraphQLClient = (
   config: { spaceId: string; environmentId: string; region: 'us' | 'eu' },

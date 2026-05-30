@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { apolloApiError, apolloOAuthError, apolloServiceError } from './lib/errors';
 
@@ -43,7 +43,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.apollo.io/api/v1'
       });
 
-      let response;
+      let response: any;
       try {
         response = await client.get('/users/api_profile', {
           headers: {
@@ -95,7 +95,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://app.apollo.io/api/v1'
       });
 
-      let response;
+      let response: any;
       try {
         response = await client.post('/oauth/token', {
           grant_type: 'authorization_code',
@@ -144,7 +144,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://app.apollo.io/api/v1'
       });
 
-      let response;
+      let response: any;
       try {
         response = await client.post('/oauth/token', {
           grant_type: 'refresh_token',
@@ -182,7 +182,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.apollo.io/api/v1'
       });
 
-      let response;
+      let response: any;
       try {
         response = await client.get('/users/api_profile', {
           headers: {

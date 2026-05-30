@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { gifSchema, paginationSchema, ratingEnum } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchGifs = SlateTool.create(spec, {
   name: 'Search GIFs & Stickers',

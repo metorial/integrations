@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PrintMailClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getOrder = SlateTool.create(spec, {
   name: 'Get Mail Order',

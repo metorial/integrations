@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ChameleonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchProfiles = SlateTool.create(spec, {
   name: 'Search User Profiles',

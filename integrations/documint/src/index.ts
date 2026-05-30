@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { listTemplates, createDocument } from './tools';
+import { createDocument, listTemplates } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

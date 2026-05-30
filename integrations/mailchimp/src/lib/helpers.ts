@@ -63,7 +63,7 @@ export let md5 = (input: string): string => {
   };
 
   let firstChunk = (
-    chunks: number[],
+    _chunks: number[],
     x: number[],
     a: number,
     b: number,

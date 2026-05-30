@@ -11,7 +11,7 @@ let uploadApi = createAxios({
 export class Client {
   private authHeader: string;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     let encoded = Buffer.from(`${config.token}:`).toString('base64');
     this.authHeader = `Basic ${encoded}`;
   }
@@ -36,7 +36,7 @@ export class Client {
     overwriteTags?: boolean;
     overwriteCustomMetadata?: boolean;
     webhookUrl?: string;
-    extensions?: Array<Record<string, any>>;
+    extensions?: Record<string, any>[];
     isPublished?: boolean;
     transformation?: { pre?: string; post?: Array<{ type: string; value: string }> };
     checks?: string;
@@ -125,7 +125,7 @@ export class Client {
       tags?: string[];
       customCoordinates?: string;
       customMetadata?: Record<string, any>;
-      extensions?: Array<Record<string, any>>;
+      extensions?: Record<string, any>[];
       webhookUrl?: string;
       publish?: { isPublished: boolean; includeFileVersions?: boolean };
     }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createApiClient, listPipelines } from '../lib/client';
+import { spec } from '../spec';
 
 export let listPipelinesTool = SlateTool.create(spec, {
   name: 'List Pipelines',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let campaignSettingsSchema = z
   .object({
@@ -160,26 +160,26 @@ let mapSettingsToApi = (settings: any) => {
   let apiSettings: Record<string, unknown> = {};
 
   if (settings.dateFrom || settings.dateTo) {
-    apiSettings['date'] = {
+    apiSettings.date = {
       from: settings.dateFrom,
       to: settings.dateTo
     };
   }
-  if (settings.merchantNames) apiSettings['merchantNames'] = settings.merchantNames;
-  if (settings.productLineItems) apiSettings['productLineItems'] = settings.productLineItems;
+  if (settings.merchantNames) apiSettings.merchantNames = settings.merchantNames;
+  if (settings.productLineItems) apiSettings.productLineItems = settings.productLineItems;
   if (settings.fraudDetection !== undefined)
-    apiSettings['fraudDetection'] = settings.fraudDetection;
-  if (settings.productCodes) apiSettings['productCodes'] = settings.productCodes;
+    apiSettings.fraudDetection = settings.fraudDetection;
+  if (settings.productCodes) apiSettings.productCodes = settings.productCodes;
   if (settings.balanceOwingMin !== undefined || settings.balanceOwingMax !== undefined) {
-    apiSettings['balanceOwing'] = {
+    apiSettings.balanceOwing = {
       min: settings.balanceOwingMin,
       max: settings.balanceOwingMax
     };
   }
-  if (settings.smartValidate) apiSettings['smartValidate'] = settings.smartValidate;
-  if (settings.skip !== undefined) apiSettings['skip'] = settings.skip;
+  if (settings.smartValidate) apiSettings.smartValidate = settings.smartValidate;
+  if (settings.skip !== undefined) apiSettings.skip = settings.skip;
   if (settings.returnFromTheList !== undefined)
-    apiSettings['returnFromTheList'] = settings.returnFromTheList;
+    apiSettings.returnFromTheList = settings.returnFromTheList;
 
   return apiSettings;
 };

@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let eventDataSchema = z.object({
   eventType: z.string().describe('Azure Event Grid event type'),
@@ -38,7 +38,7 @@ export let blobEvents = SlateTrigger.create(spec, {
   )
   .webhook({
     handleRequest: async ctx => {
-      let contentType = ctx.request.headers.get('content-type') ?? '';
+      let _contentType = ctx.request.headers.get('content-type') ?? '';
 
       // Handle Event Grid subscription validation (CloudEvents or EventGrid schema)
       let body = (await ctx.request.json()) as any;
@@ -94,12 +94,12 @@ export let blobEvents = SlateTrigger.create(spec, {
 
           // Extract container name and blob name from subject
           // Subject format: /blobServices/default/containers/{container}/blobs/{blob}
-          let containerName = '';
-          let blobName = '';
+          let _containerName = '';
+          let _blobName = '';
           let containerMatch = subject.match(/\/containers\/([^/]+)/);
           let blobMatch = subject.match(/\/blobs\/(.+)$/);
-          if (containerMatch) containerName = containerMatch[1];
-          if (blobMatch) blobName = blobMatch[1];
+          if (containerMatch) _containerName = containerMatch[1];
+          if (blobMatch) _blobName = blobMatch[1];
 
           return {
             eventType: event.eventType ?? event.type ?? '',

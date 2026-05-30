@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  transcribeAudio,
-  getTranscription,
-  uploadAudio,
   deleteTranscription,
+  getLiveSessionResult,
+  getTranscription,
   initiateLiveSession,
-  getLiveSessionResult
+  transcribeAudio,
+  uploadAudio
 } from './tools';
 import { transcriptionCompleted } from './triggers';
 

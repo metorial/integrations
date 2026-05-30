@@ -2,11 +2,11 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   analyzeSentiment,
+  detectSpam,
   extractKeywords,
   generateBlogPost,
-  generateText,
   generateHeadline,
-  detectSpam,
+  generateText,
   runCustomModel
 } from './tools';
 

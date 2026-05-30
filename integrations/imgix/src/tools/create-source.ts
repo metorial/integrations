@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ImgixClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createSource = SlateTool.create(spec, {
   name: 'Create Source',
@@ -100,45 +100,43 @@ export let createSource = SlateTool.create(spec, {
     };
 
     if (ctx.input.deployment.s3AccessKey)
-      deployment['s3_access_key'] = ctx.input.deployment.s3AccessKey;
+      deployment.s3_access_key = ctx.input.deployment.s3AccessKey;
     if (ctx.input.deployment.s3SecretKey)
-      deployment['s3_secret_key'] = ctx.input.deployment.s3SecretKey;
-    if (ctx.input.deployment.s3Bucket) deployment['s3_bucket'] = ctx.input.deployment.s3Bucket;
-    if (ctx.input.deployment.s3Prefix) deployment['s3_prefix'] = ctx.input.deployment.s3Prefix;
-    if (ctx.input.deployment.gcsBucket)
-      deployment['gcs_bucket'] = ctx.input.deployment.gcsBucket;
+      deployment.s3_secret_key = ctx.input.deployment.s3SecretKey;
+    if (ctx.input.deployment.s3Bucket) deployment.s3_bucket = ctx.input.deployment.s3Bucket;
+    if (ctx.input.deployment.s3Prefix) deployment.s3_prefix = ctx.input.deployment.s3Prefix;
+    if (ctx.input.deployment.gcsBucket) deployment.gcs_bucket = ctx.input.deployment.gcsBucket;
     if (ctx.input.deployment.gcsAccessKey)
-      deployment['gcs_access_key'] = ctx.input.deployment.gcsAccessKey;
+      deployment.gcs_access_key = ctx.input.deployment.gcsAccessKey;
     if (ctx.input.deployment.gcsSecretKey)
-      deployment['gcs_secret_key'] = ctx.input.deployment.gcsSecretKey;
+      deployment.gcs_secret_key = ctx.input.deployment.gcsSecretKey;
     if (ctx.input.deployment.azureAccountName)
-      deployment['azure_account_name'] = ctx.input.deployment.azureAccountName;
+      deployment.azure_account_name = ctx.input.deployment.azureAccountName;
     if (ctx.input.deployment.azureContainerName)
-      deployment['azure_container_name'] = ctx.input.deployment.azureContainerName;
+      deployment.azure_container_name = ctx.input.deployment.azureContainerName;
     if (ctx.input.deployment.azureSasToken)
-      deployment['azure_sas_token'] = ctx.input.deployment.azureSasToken;
+      deployment.azure_sas_token = ctx.input.deployment.azureSasToken;
     if (ctx.input.deployment.webfolderBaseUrl)
-      deployment['webfolder_base_url'] = ctx.input.deployment.webfolderBaseUrl;
+      deployment.webfolder_base_url = ctx.input.deployment.webfolderBaseUrl;
     if (ctx.input.deployment.webfolderUsername)
-      deployment['webfolder_username'] = ctx.input.deployment.webfolderUsername;
+      deployment.webfolder_username = ctx.input.deployment.webfolderUsername;
     if (ctx.input.deployment.webfolderPassword)
-      deployment['webfolder_password'] = ctx.input.deployment.webfolderPassword;
+      deployment.webfolder_password = ctx.input.deployment.webfolderPassword;
     if (ctx.input.deployment.customDomains)
-      deployment['custom_domains'] = ctx.input.deployment.customDomains;
+      deployment.custom_domains = ctx.input.deployment.customDomains;
 
     let attributes: Record<string, any> = {
       name: ctx.input.name,
       deployment
     };
 
-    if (ctx.input.enabled !== undefined) attributes['enabled'] = ctx.input.enabled;
+    if (ctx.input.enabled !== undefined) attributes.enabled = ctx.input.enabled;
     if (ctx.input.secureUrlEnabled !== undefined)
-      attributes['secure_url_enabled'] = ctx.input.secureUrlEnabled;
-    if (ctx.input.cacheTtlBehavior)
-      attributes['cache_ttl_behavior'] = ctx.input.cacheTtlBehavior;
+      attributes.secure_url_enabled = ctx.input.secureUrlEnabled;
+    if (ctx.input.cacheTtlBehavior) attributes.cache_ttl_behavior = ctx.input.cacheTtlBehavior;
     if (ctx.input.cacheTtlValue !== undefined)
-      attributes['cache_ttl_value'] = ctx.input.cacheTtlValue;
-    if (ctx.input.defaultParams) attributes['default_params'] = ctx.input.defaultParams;
+      attributes.cache_ttl_value = ctx.input.cacheTtlValue;
+    if (ctx.input.defaultParams) attributes.default_params = ctx.input.defaultParams;
 
     let result = await client.createSource(attributes);
     let s = result.data;

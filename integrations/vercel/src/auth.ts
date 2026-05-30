@@ -1,5 +1,5 @@
-import { SlateAuth, createAxios } from '@slates/provider';
 import { Buffer } from 'node:buffer';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { vercelApiError, vercelServiceError } from './lib/errors';
 
@@ -16,18 +16,12 @@ let generateCodeVerifier = () => {
 };
 
 let generateCodeChallenge = async (codeVerifier: string) => {
-  let digest = await crypto.subtle.digest(
-    'SHA-256',
-    new TextEncoder().encode(codeVerifier)
-  );
+  let digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(codeVerifier));
 
   return Buffer.from(digest).toString('base64url');
 };
 
-let requestVercelAuth = async <T>(
-  operation: string,
-  run: () => Promise<{ data: T }>
-) => {
+let requestVercelAuth = async <T>(operation: string, run: () => Promise<{ data: T }>) => {
   try {
     let response = await run();
     return response.data;
@@ -109,7 +103,9 @@ export let auth = SlateAuth.create()
         })
       );
       if (!data.access_token) {
-        throw vercelServiceError('Vercel OAuth token response did not include an access token.');
+        throw vercelServiceError(
+          'Vercel OAuth token response did not include an access token.'
+        );
       }
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
@@ -144,7 +140,9 @@ export let auth = SlateAuth.create()
         })
       );
       if (!data.access_token) {
-        throw vercelServiceError('Vercel OAuth refresh response did not include an access token.');
+        throw vercelServiceError(
+          'Vercel OAuth refresh response did not include an access token.'
+        );
       }
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()

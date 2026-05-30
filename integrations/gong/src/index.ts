@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCalls,
-  createCall,
   addCallMedia,
+  assignProspectsToFlow,
+  browseLibrary,
+  createCall,
+  createMeeting,
+  deleteMeeting,
+  erasePrivacyData,
   getCallDetails,
   getCallTranscripts,
-  listUsers,
-  getUser,
-  listUsersByFilter,
-  getUserActivityStats,
+  getCrmData,
+  getCrmMetadata,
   getScorecards,
   getSettingsDefinitions,
+  getUser,
+  getUserActivityStats,
+  listCalls,
   listFlows,
-  assignProspectsToFlow,
-  unassignProspectFromFlow,
-  browseLibrary,
-  createMeeting,
-  updateMeeting,
-  deleteMeeting,
-  manageCallUserAccess,
-  lookupPrivacyData,
-  erasePrivacyData,
+  listUsers,
+  listUsersByFilter,
   listWorkspaces,
+  lookupPrivacyData,
+  manageCallUserAccess,
   pushDigitalInteraction,
-  getCrmData,
-  getCrmMetadata
+  unassignProspectFromFlow,
+  updateMeeting
 } from './tools';
 import { callEvent } from './triggers';
 

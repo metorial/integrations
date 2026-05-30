@@ -29,11 +29,11 @@ export class CensusDataClient {
     };
 
     if (params.inGeo) {
-      queryParams['in'] = params.inGeo;
+      queryParams.in = params.inGeo;
     }
 
     if (this.apiKey) {
-      queryParams['key'] = this.apiKey;
+      queryParams.key = this.apiKey;
     }
 
     if (params.predicates) {
@@ -131,12 +131,12 @@ export class GeocoderClient {
       format: 'json'
     };
 
-    if (params.city) queryParams['city'] = params.city;
-    if (params.state) queryParams['state'] = params.state;
-    if (params.zip) queryParams['zip'] = params.zip;
+    if (params.city) queryParams.city = params.city;
+    if (params.state) queryParams.state = params.state;
+    if (params.zip) queryParams.zip = params.zip;
 
     if (params.returnType === 'geographies') {
-      queryParams['vintage'] = params.vintage || 'Current_Current';
+      queryParams.vintage = params.vintage || 'Current_Current';
     }
 
     let response = await this.http.get(endpoint, { params: queryParams });
@@ -161,7 +161,7 @@ export class GeocoderClient {
     };
 
     if (params.returnType === 'geographies') {
-      queryParams['vintage'] = params.vintage || 'Current_Current';
+      queryParams.vintage = params.vintage || 'Current_Current';
     }
 
     let response = await this.http.get(endpoint, { params: queryParams });
@@ -188,7 +188,7 @@ export class GeocoderClient {
     };
 
     if (params.returnType === 'geographies') {
-      queryParams['vintage'] = params.vintage || 'Current_Current';
+      queryParams.vintage = params.vintage || 'Current_Current';
     }
 
     let response = await this.http.get(endpoint, { params: queryParams });
@@ -236,13 +236,13 @@ export class TigerwebClient {
     };
 
     if (params.geometry) {
-      queryParams['geometry'] = params.geometry;
-      queryParams['geometryType'] = params.geometryType || 'esriGeometryPoint';
-      queryParams['spatialRel'] = params.spatialRel || 'esriSpatialRelIntersects';
+      queryParams.geometry = params.geometry;
+      queryParams.geometryType = params.geometryType || 'esriGeometryPoint';
+      queryParams.spatialRel = params.spatialRel || 'esriSpatialRelIntersects';
     }
 
     if (params.resultRecordCount) {
-      queryParams['resultRecordCount'] = params.resultRecordCount.toString();
+      queryParams.resultRecordCount = params.resultRecordCount.toString();
     }
 
     let response = await this.http.get(

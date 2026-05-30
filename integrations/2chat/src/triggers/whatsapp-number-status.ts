@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { TwoChatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let whatsappNumberStatusTrigger = SlateTrigger.create(spec, {
   name: 'WhatsApp Number Status',
@@ -58,7 +58,7 @@ export let whatsappNumberStatusTrigger = SlateTrigger.create(spec, {
             event: 'whatsapp.number.status',
             onNumber: phoneNumber
           });
-        } catch (e) {
+        } catch (_e) {
           // May not be supported for all number types
         }
       }
@@ -77,7 +77,7 @@ export let whatsappNumberStatusTrigger = SlateTrigger.create(spec, {
           if (reg.webhookUuid) {
             await client.deleteWebhook(reg.webhookUuid);
           }
-        } catch (e) {
+        } catch (_e) {
           // Best-effort cleanup
         }
       }

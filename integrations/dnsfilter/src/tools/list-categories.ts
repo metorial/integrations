@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCategories = SlateTool.create(spec, {
   name: 'List Categories',
@@ -31,7 +31,7 @@ export let listCategories = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
-    let items;
+    let items: any;
     if (ctx.input.type === 'application') {
       items = await client.listApplications();
     } else if (ctx.input.type === 'application_category') {

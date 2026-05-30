@@ -9,7 +9,7 @@ export class NpmRegistryClient {
     };
 
     if (config.token) {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     }
 
     this.http = createAxios({
@@ -26,7 +26,7 @@ export class NpmRegistryClient {
   ): Promise<any> {
     let headers: Record<string, string> = {};
     if (options?.abbreviated) {
-      headers['Accept'] = 'application/vnd.npm.install-v1+json';
+      headers.Accept = 'application/vnd.npm.install-v1+json';
     }
     let res = await this.http.get(`/${encodePackageName(packageName)}`, { headers });
     return res.data;
@@ -48,11 +48,11 @@ export class NpmRegistryClient {
     maintenance?: number;
   }): Promise<any> {
     let query: Record<string, string | number> = { text: params.text };
-    if (params.size !== undefined) query['size'] = params.size;
-    if (params.from !== undefined) query['from'] = params.from;
-    if (params.quality !== undefined) query['quality'] = params.quality;
-    if (params.popularity !== undefined) query['popularity'] = params.popularity;
-    if (params.maintenance !== undefined) query['maintenance'] = params.maintenance;
+    if (params.size !== undefined) query.size = params.size;
+    if (params.from !== undefined) query.from = params.from;
+    if (params.quality !== undefined) query.quality = params.quality;
+    if (params.popularity !== undefined) query.popularity = params.popularity;
+    if (params.maintenance !== undefined) query.maintenance = params.maintenance;
 
     let res = await this.http.get('/-/v1/search', { params: query });
     return res.data;
@@ -107,8 +107,8 @@ export class NpmRegistryClient {
 
   async listTokens(page?: number, perPage?: number): Promise<any> {
     let params: Record<string, number> = {};
-    if (page !== undefined) params['page'] = page;
-    if (perPage !== undefined) params['perPage'] = perPage;
+    if (page !== undefined) params.page = page;
+    if (perPage !== undefined) params.perPage = perPage;
 
     let res = await this.http.get('/-/npm/v1/tokens', { params });
     return res.data;
@@ -135,15 +135,15 @@ export class NpmRegistryClient {
     let body: Record<string, any> = {
       password: params.password
     };
-    if (params.name) body['name'] = params.name;
-    if (params.description) body['token_description'] = params.description;
-    if (params.expires) body['expires'] = params.expires;
-    if (params.cidrWhitelist) body['cidr_whitelist'] = params.cidrWhitelist;
-    if (params.packages) body['packages'] = params.packages;
-    if (params.scopes) body['scopes'] = params.scopes;
-    if (params.orgs) body['orgs'] = params.orgs;
-    if (params.permission) body['permission'] = params.permission;
-    if (params.bypass2fa !== undefined) body['bypass_2fa'] = params.bypass2fa;
+    if (params.name) body.name = params.name;
+    if (params.description) body.token_description = params.description;
+    if (params.expires) body.expires = params.expires;
+    if (params.cidrWhitelist) body.cidr_whitelist = params.cidrWhitelist;
+    if (params.packages) body.packages = params.packages;
+    if (params.scopes) body.scopes = params.scopes;
+    if (params.orgs) body.orgs = params.orgs;
+    if (params.permission) body.permission = params.permission;
+    if (params.bypass2fa !== undefined) body.bypass_2fa = params.bypass2fa;
 
     let res = await this.http.post('/-/npm/v1/tokens', body, { headers });
     return res.data;

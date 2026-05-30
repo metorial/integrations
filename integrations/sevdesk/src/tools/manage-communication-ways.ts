@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addCommunicationWay = SlateTool.create(spec, {
   name: 'Add Communication Way',
@@ -40,7 +40,7 @@ export let addCommunicationWay = SlateTool.create(spec, {
       contact: { id: ctx.input.contactId, objectName: 'Contact' },
       type: ctx.input.type,
       value: ctx.input.value,
-      key: ctx.input.key ? parseInt(ctx.input.key) : 2
+      key: ctx.input.key ? Number.parseInt(ctx.input.key, 10) : 2
     });
 
     return {

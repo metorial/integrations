@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { apiId: string; token: string }) {
+  constructor(config: { apiId: string; token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.victorops.com',
       headers: {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LaunchDarklyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let variationSchema = z.object({
   variationId: z.string().describe('Variation ID'),

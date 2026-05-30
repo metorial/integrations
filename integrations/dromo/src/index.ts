@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listUploads,
-  getUpload,
-  deleteUpload,
-  listSchemas,
-  getSchema,
-  createSchema,
-  updateSchema,
-  deleteSchema,
   createHeadlessImport,
+  createSchema,
+  deleteHeadlessImport,
+  deleteSchema,
+  deleteUpload,
   getHeadlessImport,
+  getSchema,
+  getUpload,
   listHeadlessImports,
-  deleteHeadlessImport
+  listSchemas,
+  listUploads,
+  updateSchema
 } from './tools';
 import { importEvents } from './triggers';
 

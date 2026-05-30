@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { UnisenderClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCampaignStats = SlateTool.create(spec, {
   name: 'Get Campaign Statistics',
@@ -65,7 +65,7 @@ export let getCampaignStats = SlateTool.create(spec, {
         unsubscribed: commonStats.unsubscribed,
         spam: commonStats.spam
       };
-    } catch (e) {
+    } catch (_e) {
       ctx.warn('Could not fetch common stats — campaign may not have started yet');
     }
 
@@ -76,7 +76,7 @@ export let getCampaignStats = SlateTool.create(spec, {
           campaign_id: ctx.input.campaignId,
           group: ctx.input.groupLinks ? 1 : 0
         });
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Could not fetch visited links');
       }
     }

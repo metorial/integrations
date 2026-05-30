@@ -49,9 +49,9 @@ export class Client {
   ): Promise<any[]> {
     let axios = this.getAxios();
     let params: Record<string, string> = { q: query };
-    if (options?.version) params['v'] = options.version;
-    if (options?.patternType) params['t'] = options.patternType;
-    if (options?.maxMatchCount) params['cm'] = String(options.maxMatchCount);
+    if (options?.version) params.v = options.version;
+    if (options?.patternType) params.t = options.patternType;
+    if (options?.maxMatchCount) params.cm = String(options.maxMatchCount);
 
     let response = await axios.get('/.api/search/stream', {
       params,

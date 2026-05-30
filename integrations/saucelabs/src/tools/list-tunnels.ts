@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let tunnelSchema = z.object({
   tunnelId: z.string().describe('Tunnel identifier'),

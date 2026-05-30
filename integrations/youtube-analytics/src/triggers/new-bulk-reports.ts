@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { YouTubeAnalyticsClient } from '../lib/client';
 import { youtubeAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newBulkReports = SlateTrigger.create(spec, {
   name: 'New Bulk Reports',

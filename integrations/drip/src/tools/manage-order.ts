@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let lineItemSchema = z.object({
   productId: z.string().optional().describe('Product ID.'),
@@ -85,20 +85,19 @@ export let manageOrder = SlateTool.create(spec, {
       order_id: ctx.input.orderId
     };
 
-    if (ctx.input.grandTotal !== undefined) order['grand_total'] = ctx.input.grandTotal;
+    if (ctx.input.grandTotal !== undefined) order.grand_total = ctx.input.grandTotal;
     if (ctx.input.totalDiscounts !== undefined)
-      order['total_discounts'] = ctx.input.totalDiscounts;
-    if (ctx.input.totalTaxes !== undefined) order['total_taxes'] = ctx.input.totalTaxes;
-    if (ctx.input.totalFees !== undefined) order['total_fees'] = ctx.input.totalFees;
-    if (ctx.input.totalShipping !== undefined)
-      order['total_shipping'] = ctx.input.totalShipping;
-    if (ctx.input.currencyCode) order['currency_code'] = ctx.input.currencyCode;
-    if (ctx.input.orderUrl) order['order_url'] = ctx.input.orderUrl;
-    if (ctx.input.occurredAt) order['occurred_at'] = ctx.input.occurredAt;
-    if (ctx.input.refundAmount !== undefined) order['refund_amount'] = ctx.input.refundAmount;
+      order.total_discounts = ctx.input.totalDiscounts;
+    if (ctx.input.totalTaxes !== undefined) order.total_taxes = ctx.input.totalTaxes;
+    if (ctx.input.totalFees !== undefined) order.total_fees = ctx.input.totalFees;
+    if (ctx.input.totalShipping !== undefined) order.total_shipping = ctx.input.totalShipping;
+    if (ctx.input.currencyCode) order.currency_code = ctx.input.currencyCode;
+    if (ctx.input.orderUrl) order.order_url = ctx.input.orderUrl;
+    if (ctx.input.occurredAt) order.occurred_at = ctx.input.occurredAt;
+    if (ctx.input.refundAmount !== undefined) order.refund_amount = ctx.input.refundAmount;
 
     if (ctx.input.items) {
-      order['items'] = ctx.input.items.map(item => ({
+      order.items = ctx.input.items.map(item => ({
         product_id: item.productId,
         sku: item.sku,
         name: item.name,
@@ -111,7 +110,7 @@ export let manageOrder = SlateTool.create(spec, {
     }
 
     if (ctx.input.billingAddress) {
-      order['billing_address'] = {
+      order.billing_address = {
         name: ctx.input.billingAddress.name,
         first_name: ctx.input.billingAddress.firstName,
         last_name: ctx.input.billingAddress.lastName,
@@ -127,7 +126,7 @@ export let manageOrder = SlateTool.create(spec, {
     }
 
     if (ctx.input.shippingAddress) {
-      order['shipping_address'] = {
+      order.shipping_address = {
         name: ctx.input.shippingAddress.name,
         first_name: ctx.input.shippingAddress.firstName,
         last_name: ctx.input.shippingAddress.lastName,

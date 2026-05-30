@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listMonitors,
-  createMonitor,
-  updateMonitor,
-  deleteMonitor,
-  listAlertContacts,
   createAlertContact,
-  deleteAlertContact,
-  listStatusPages,
-  createStatusPage,
-  deleteStatusPage,
-  listMaintenanceWindows,
   createMaintenanceWindow,
+  createMonitor,
+  createStatusPage,
+  deleteAlertContact,
   deleteMaintenanceWindow,
-  getAccountDetails
+  deleteMonitor,
+  deleteStatusPage,
+  getAccountDetails,
+  listAlertContacts,
+  listMaintenanceWindows,
+  listMonitors,
+  listStatusPages,
+  updateMonitor
 } from './tools';
-import { monitorStatusChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, monitorStatusChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

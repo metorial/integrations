@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listScenarios,
-  manageScenario,
   createScenario,
+  getScenarioLogs,
+  getUsage,
   listConnections,
-  manageConnection,
   listDataStores,
-  manageDataStore,
-  manageDataStoreRecords,
   listHooks,
-  manageHook,
   listOrganizations,
+  listScenarios,
   listTeams,
   listUsers,
-  getScenarioLogs,
-  getUsage
+  manageConnection,
+  manageDataStore,
+  manageDataStoreRecords,
+  manageHook,
+  manageScenario
 } from './tools';
-import { scenarioExecution, inboundWebhook } from './triggers';
+import { inboundWebhook, scenarioExecution } from './triggers';
 
 export let provider = Slate.create({
   spec,

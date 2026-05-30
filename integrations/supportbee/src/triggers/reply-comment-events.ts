@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let replyCommentOutputSchema = z.object({
   ticketId: z.number().describe('ID of the ticket this reply/comment belongs to'),

@@ -15,12 +15,10 @@ let BRAINTREE_VERSION = '2024-09-01';
 export class BraintreeGraphQLClient {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(
-    private params: {
-      token: string;
-      environment: string;
-    }
-  ) {
+  constructor(params: {
+    token: string;
+    environment: string;
+  }) {
     let baseURL = GRAPHQL_URLS[params.environment] || GRAPHQL_URLS.production;
     this.http = createAxios({
       baseURL,
@@ -52,13 +50,11 @@ export class BraintreeRestClient {
   private http: ReturnType<typeof createAxios>;
   private merchantPath: string;
 
-  constructor(
-    private params: {
-      token: string;
-      merchantId: string;
-      environment: string;
-    }
-  ) {
+  constructor(params: {
+    token: string;
+    merchantId: string;
+    environment: string;
+  }) {
     let baseURL = REST_URLS[params.environment] || REST_URLS.production;
     this.merchantPath = `/merchants/${params.merchantId}`;
     this.http = createAxios({

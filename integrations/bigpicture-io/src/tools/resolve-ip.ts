@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { companySchema, ipGeoSchema, whoisSchema, asnSchema } from '../lib/types';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { asnSchema, companySchema, ipGeoSchema, whoisSchema } from '../lib/types';
+import { spec } from '../spec';
 
 export let resolveIp = SlateTool.create(spec, {
   name: 'Resolve IP to Company',

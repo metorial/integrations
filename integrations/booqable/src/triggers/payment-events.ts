@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { buildClientConfig } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let paymentEvents = SlateTrigger.create(spec, {
   name: 'Payment Events',

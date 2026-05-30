@@ -24,7 +24,7 @@ export interface PaginatedResponse<T> {
 export class HarvestClient {
   private api;
 
-  constructor(private clientConfig: HarvestClientConfig) {
+  constructor(clientConfig: HarvestClientConfig) {
     this.api = createAxios({
       baseURL: 'https://api.harvestapp.com/v2',
       headers: {

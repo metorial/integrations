@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { hookdeckServiceError } from '../lib/errors';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { hookdeckServiceError } from '../lib/errors';
+import { spec } from '../spec';
 
 let notificationConfigSchema = z.object({
   enabled: z.boolean().describe('Whether webhook notifications are enabled'),

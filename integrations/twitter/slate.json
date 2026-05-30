@@ -1,10 +1,7 @@
 {
   "name": "@metorial/twitter",
   "description": "Create, read, delete, and search posts (tweets) on Twitter/X. Manage user profiles, follows, blocks, and mutes. Send, read, and delete direct messages in one-to-one and group conversations. Access home, user, and mentions timelines. Like, retweet, bookmark, and quote posts. Create and manage curated lists of accounts. Search recent posts using advanced query operators for keywords, hashtags, mentions, dates, and more. Upload image and subtitle media for post and direct message attachments. Retrieve engagement metrics including impressions, likes, and replies.",
-  "categories": [
-    "email-and-messaging",
-    "news-and-media"
-  ],
+  "categories": ["email-and-messaging", "news-and-media"],
   "skills": [
     "create and delete posts",
     "search posts and hashtags",

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let recordChanges = SlateTrigger.create(spec, {
   name: 'Record Changes',
@@ -59,7 +59,7 @@ export let recordChanges = SlateTrigger.create(spec, {
       // Query for recently modified transactions
       let transactionQuery = `SELECT id, type, tranid, lastmodifieddate, datecreated, status, entity, memo FROM transaction WHERE lastmodifieddate > TO_DATE('${formattedDate}', 'MM/DD/YYYY HH24:MI:SS') ORDER BY lastmodifieddate ASC`;
 
-      let transactionResults;
+      let transactionResults: any;
       try {
         transactionResults = await client.executeSuiteQL(transactionQuery, { limit: 200 });
       } catch {
@@ -69,7 +69,7 @@ export let recordChanges = SlateTrigger.create(spec, {
       // Query for recently modified customers
       let customerQuery = `SELECT id, companyname, email, datecreated, lastmodifieddate FROM customer WHERE lastmodifieddate > TO_DATE('${formattedDate}', 'MM/DD/YYYY HH24:MI:SS') ORDER BY lastmodifieddate ASC`;
 
-      let customerResults;
+      let customerResults: any;
       try {
         customerResults = await client.executeSuiteQL(customerQuery, { limit: 200 });
       } catch {
@@ -79,7 +79,7 @@ export let recordChanges = SlateTrigger.create(spec, {
       // Query for recently modified vendors
       let vendorQuery = `SELECT id, companyname, email, datecreated, lastmodifieddate FROM vendor WHERE lastmodifieddate > TO_DATE('${formattedDate}', 'MM/DD/YYYY HH24:MI:SS') ORDER BY lastmodifieddate ASC`;
 
-      let vendorResults;
+      let vendorResults: any;
       try {
         vendorResults = await client.executeSuiteQL(vendorQuery, { limit: 200 });
       } catch {

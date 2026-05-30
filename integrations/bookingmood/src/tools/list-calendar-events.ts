@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BookingmoodClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let calendarEventSchema = z.object({
   eventId: z.string().describe('UUID of the calendar event'),

@@ -36,7 +36,7 @@ export class Client {
   async getVoices(languageCode?: string): Promise<AivoovVoice[]> {
     let params: Record<string, string> = {};
     if (languageCode) {
-      params['language_code'] = languageCode;
+      params.language_code = languageCode;
     }
 
     let response = await apiAxios.get('/voices', {

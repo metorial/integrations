@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeepgramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let modelSchema = z.object({
   modelId: z.string().describe('Unique model identifier.'),

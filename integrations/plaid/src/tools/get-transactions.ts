@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlaidClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transactionSchema = z.object({
   transactionId: z.string().describe('Unique transaction identifier'),

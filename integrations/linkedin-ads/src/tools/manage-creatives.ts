@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCreatives = SlateTool.create(spec, {
   name: 'List Creatives',
@@ -101,7 +101,7 @@ export let createCreative = SlateTool.create(spec, {
     };
 
     if (ctx.input.isTest !== undefined) {
-      data['isTest'] = ctx.input.isTest;
+      data.isTest = ctx.input.isTest;
     }
 
     let creativeId = await client.createCreative(data);
@@ -141,8 +141,8 @@ export let updateCreative = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
 
     let patch: Record<string, any> = {};
-    if (ctx.input.intendedStatus) patch['intendedStatus'] = ctx.input.intendedStatus;
-    if (ctx.input.content) patch['content'] = ctx.input.content;
+    if (ctx.input.intendedStatus) patch.intendedStatus = ctx.input.intendedStatus;
+    if (ctx.input.content) patch.content = ctx.input.content;
 
     await client.updateCreative(ctx.input.creativeId, { patch });
 

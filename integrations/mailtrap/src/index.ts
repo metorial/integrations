@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendTransactionalEmail,
-  sendBulkEmail,
+  getEmailLog,
+  getEmailStats,
+  getSandboxMessage,
+  listAccounts,
+  listEmailLogs,
+  listSandboxMessages,
+  listSandboxProjects,
   manageContact,
   manageContactList,
-  listSandboxMessages,
-  getSandboxMessage,
-  listSandboxProjects,
   manageSendingDomain,
   manageSuppressions,
-  getEmailStats,
-  listEmailLogs,
-  getEmailLog,
-  listAccounts
+  sendBulkEmail,
+  sendTransactionalEmail
 } from './tools';
 import { emailEvent } from './triggers';
 

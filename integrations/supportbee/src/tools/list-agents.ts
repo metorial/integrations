@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { userSchema, teamSchema } from '../lib/types';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { teamSchema, userSchema } from '../lib/types';
+import { spec } from '../spec';
 
 export let listAgents = SlateTool.create(spec, {
   name: 'List Agents and Teams',
@@ -45,8 +45,8 @@ export let listAgents = SlateTool.create(spec, {
       companySubdomain: ctx.config.companySubdomain
     });
 
-    let users;
-    let teams;
+    let users: any;
+    let teams: any;
 
     if (ctx.input.includeUsers) {
       users = await client.listUsers({

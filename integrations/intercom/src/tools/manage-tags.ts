@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { intercomServiceError } from '../lib/errors';
+import { spec } from '../spec';
 
 export let manageTags = SlateTool.create(spec, {
   name: 'Manage Tags',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BartClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let scheduleVersionSchema = z.object({
   scheduleId: z.string().describe('Schedule version ID'),

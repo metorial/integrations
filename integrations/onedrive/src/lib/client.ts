@@ -121,11 +121,11 @@ export class Client {
     let path = this.buildItemPath(opts.driveId, opts.itemId, opts.itemPath, '/children');
 
     let params: Record<string, string> = {};
-    if (opts.top) params['$top'] = String(opts.top);
-    if (opts.skipToken) params['$skiptoken'] = opts.skipToken;
-    if (opts.orderBy) params['$orderby'] = opts.orderBy;
-    if (opts.filter) params['$filter'] = opts.filter;
-    if (opts.select?.length) params['$select'] = opts.select.join(',');
+    if (opts.top) params.$top = String(opts.top);
+    if (opts.skipToken) params.$skiptoken = opts.skipToken;
+    if (opts.orderBy) params.$orderby = opts.orderBy;
+    if (opts.filter) params.$filter = opts.filter;
+    if (opts.select?.length) params.$select = opts.select.join(',');
 
     let response = await this.api.get(path, { params });
     return {
@@ -143,7 +143,7 @@ export class Client {
     let path = this.buildItemPath(opts.driveId, opts.itemId, opts.itemPath);
 
     let params: Record<string, string> = {};
-    if (opts.select?.length) params['$select'] = opts.select.join(',');
+    if (opts.select?.length) params.$select = opts.select.join(',');
 
     let response = await this.api.get(path, { params });
     return response.data;
@@ -158,7 +158,7 @@ export class Client {
     let path = this.buildItemPath(opts.driveId, opts.itemId, opts.itemPath, '/content');
 
     let params: Record<string, string> = {};
-    if (opts.format) params['format'] = opts.format;
+    if (opts.format) params.format = opts.format;
 
     let response = await this.api.get(path, {
       params,
@@ -166,7 +166,7 @@ export class Client {
       validateStatus: (status: number) => status >= 200 && status < 400
     });
 
-    let downloadUrl = response.headers['location'] || response.request?.responseURL || '';
+    let downloadUrl = response.headers.location || response.request?.responseURL || '';
     return { downloadUrl };
   }
 
@@ -284,7 +284,7 @@ export class Client {
     }
 
     let response = await this.api.post(path, body);
-    return { monitorUrl: response.headers['location'] || '' };
+    return { monitorUrl: response.headers.location || '' };
   }
 
   async moveItem(opts: {
@@ -333,8 +333,8 @@ export class Client {
     let path = `${drivePart}/root/search(q='${encodeURIComponent(opts.query)}')`;
 
     let params: Record<string, string> = {};
-    if (opts.top) params['$top'] = String(opts.top);
-    if (opts.skipToken) params['$skiptoken'] = opts.skipToken;
+    if (opts.top) params.$top = String(opts.top);
+    if (opts.skipToken) params.$skiptoken = opts.skipToken;
 
     let response = await this.api.get(path, { params });
     return {
@@ -431,7 +431,7 @@ export class Client {
     let path = `${drivePart}/root/delta`;
 
     let params: Record<string, string> = {};
-    if (opts.top) params['$top'] = String(opts.top);
+    if (opts.top) params.$top = String(opts.top);
 
     let response = await this.api.get(path, { params });
     return {
@@ -453,7 +453,7 @@ export class Client {
   }): Promise<SubscriptionResponse> {
     let headers: Record<string, string> = {};
     if (opts.includeSecurityWebhooks) {
-      headers['Prefer'] = 'includesecuritywebhooks';
+      headers.Prefer = 'includesecuritywebhooks';
     }
 
     let response = await this.api.post(

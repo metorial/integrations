@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { GooglePhotosLibraryClient } from '../lib/client';
-import { spec } from '../spec';
-import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
+import { GooglePhotosLibraryClient } from '../lib/client';
+import { googlePhotosActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 let locationSchema = z.object({
   locationName: z.string().describe('Name of the location'),

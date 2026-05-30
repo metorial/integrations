@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  addScore,
   createPlayer,
-  listPlayers,
-  removePlayer,
   createTeam,
+  listCompetitions,
+  listPlayers,
+  listScoreHistory,
+  listScoreSeries,
   listTeams,
   manageTeamMembership,
-  addScore,
-  listScoreSeries,
-  listScoreHistory,
-  listCompetitions
+  removePlayer
 } from './tools';
-import { newPlayer, inboundWebhook } from './triggers';
+import { inboundWebhook, newPlayer } from './triggers';
 
 export let provider = Slate.create({
   spec,

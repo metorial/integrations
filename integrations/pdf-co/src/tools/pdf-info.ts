@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPdfInfo = SlateTool.create(spec, {
   name: 'Get PDF Info',
@@ -70,7 +70,7 @@ Use this to inspect a PDF's properties before performing other operations.`,
         creditsUsed: result.credits,
         remainingCredits: result.remainingCredits
       },
-      message: `PDF has **${info.PageCount}** page(s)${info.Title ? ', title: "' + info.Title + '"' : ''}${info.Author ? ', author: ' + info.Author : ''}. Encrypted: ${info.Encrypted ? 'yes' : 'no'}.`
+      message: `PDF has **${info.PageCount}** page(s)${info.Title ? `, title: "${info.Title}"` : ''}${info.Author ? `, author: ${info.Author}` : ''}. Encrypted: ${info.Encrypted ? 'yes' : 'no'}.`
     };
   })
   .build();

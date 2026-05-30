@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugsnagClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getError = SlateTool.create(spec, {
   name: 'Get Error Details',

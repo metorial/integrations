@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let contactIdentitySchema = z.object({
   contactId: z.string().describe('Unique ID of the contact'),

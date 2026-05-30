@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  uploadTemplate,
-  listTemplates,
-  updateTemplate,
-  deleteTemplate,
-  renderDocument,
   checkStatus,
-  listCategoriesAndTags
+  deleteTemplate,
+  listCategoriesAndTags,
+  listTemplates,
+  renderDocument,
+  updateTemplate,
+  uploadTemplate
 } from './tools';
 import { renderCompleted } from './triggers';
 

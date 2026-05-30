@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MetaAdsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let audienceSchema = z.object({
   audienceId: z.string().describe('Custom audience ID'),

@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { MeetClient } from '../lib/client';
 import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let transcriptEventsTrigger = SlateTrigger.create(spec, {
   name: 'Transcript Events',

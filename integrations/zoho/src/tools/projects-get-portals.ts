@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { ZohoProjectsClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { spec } from '../spec';
 
 export let projectsGetPortals = SlateTool.create(spec, {
   name: 'Projects Get Portals',

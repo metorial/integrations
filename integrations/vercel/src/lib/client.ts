@@ -237,10 +237,7 @@ export class Client {
     return response.data;
   }
 
-  async assignAlias(
-    deploymentId: string,
-    data: { alias: string; redirect?: string | null }
-  ) {
+  async assignAlias(deploymentId: string, data: { alias: string; redirect?: string | null }) {
     let response = await this.axios.post(
       `/v2/deployments/${encodeURIComponent(deploymentId)}/aliases`,
       data,

@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TypeformClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fieldInputSchema = z.object({
   title: z.string().describe('The question text for this field'),

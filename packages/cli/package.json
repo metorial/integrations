@@ -20,8 +20,8 @@
   },
   "scripts": {
     "test": "vitest run --passWithNoTests",
-    "lint": "prettier src/**/*.ts --check",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "biome:check": "biome check --write src"
   },
   "dependencies": {
     "@inquirer/prompts": "^7.4.0",

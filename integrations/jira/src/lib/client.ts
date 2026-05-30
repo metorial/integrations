@@ -11,7 +11,7 @@ export class JiraClient {
   private api: ReturnType<typeof createAxios>;
   private agileApi: ReturnType<typeof createAxios>;
 
-  constructor(private config: JiraClientConfig) {
+  constructor(config: JiraClientConfig) {
     let baseURL = `https://api.atlassian.com/ex/jira/${config.cloudId}/rest/api/3`;
     let agileBaseURL = `https://api.atlassian.com/ex/jira/${config.cloudId}/rest/agile/1.0`;
 

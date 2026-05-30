@@ -7,7 +7,7 @@ let axios = createAxios({
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.headers = {
       Authorization: `Token ${config.token}`
     };
@@ -32,7 +32,7 @@ export class Client {
         height: number;
       }>;
     }>;
-    lineItems: Array<any>;
+    lineItems: any[];
     fileName: string;
   }> {
     let boundary = `----SlatesBoundary${Date.now()}`;
@@ -250,7 +250,7 @@ export class Client {
           height: number;
         }>;
       }>;
-      lineItems: Array<any>;
+      lineItems: any[];
       fileName: string;
     } | null;
   }> {
@@ -260,7 +260,7 @@ export class Client {
 
     let data = response.data;
 
-    let result = null;
+    let result: any = null;
     if (data.result && Object.keys(data.result).length > 0) {
       result = {
         objectId: data.result.object_id || '',

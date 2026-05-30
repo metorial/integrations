@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SendbirdChatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listGroupChannels = SlateTool.create(spec, {
   name: 'List Group Channels',

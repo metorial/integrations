@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getDocument,
-  listDocuments,
-  searchDocuments,
-  uploadDocument,
+  createFolder,
   createUploadSession,
-  downloadDocument,
-  manageDocument,
-  shareDocument,
-  listPermissions,
-  removePermission,
-  documentVersions,
   documentCheckinCheckout,
   documentPreview,
-  createFolder
+  documentVersions,
+  downloadDocument,
+  getDocument,
+  listDocuments,
+  listPermissions,
+  manageDocument,
+  removePermission,
+  searchDocuments,
+  shareDocument,
+  uploadDocument
 } from './tools';
 import { driveItemChanges } from './triggers';
 

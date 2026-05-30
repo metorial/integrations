@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GumroadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let subscriberSchema = z.object({
   subscriberId: z.string().describe('Unique subscriber ID'),

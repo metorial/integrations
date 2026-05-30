@@ -2,10 +2,10 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createOrder,
-  listOrders,
-  getOrderDetails,
   getCompanyDetails,
-  getDevicePrices
+  getDevicePrices,
+  getOrderDetails,
+  listOrders
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

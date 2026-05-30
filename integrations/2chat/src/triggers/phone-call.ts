@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { TwoChatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let phoneCallTrigger = SlateTrigger.create(spec, {
   name: 'Phone Call Event',
@@ -70,7 +70,7 @@ export let phoneCallTrigger = SlateTrigger.create(spec, {
               event,
               onNumber: phoneNumber
             });
-          } catch (e) {
+          } catch (_e) {
             // Some events may not be supported for all number types
           }
         }
@@ -90,7 +90,7 @@ export let phoneCallTrigger = SlateTrigger.create(spec, {
           if (reg.webhookUuid) {
             await client.deleteWebhook(reg.webhookUuid);
           }
-        } catch (e) {
+        } catch (_e) {
           // Best-effort cleanup
         }
       }

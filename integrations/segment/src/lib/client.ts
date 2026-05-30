@@ -360,7 +360,7 @@ export class SegmentClient {
   async updateTrackingPlanRules(
     trackingPlanId: string,
     data: {
-      rules: Array<Record<string, any>>;
+      rules: Record<string, any>[];
     }
   ) {
     let response = await this.http.patch(`/v1/tracking-plans/${trackingPlanId}/rules`, data);
@@ -370,7 +370,7 @@ export class SegmentClient {
   async replaceTrackingPlanRules(
     trackingPlanId: string,
     data: {
-      rules: Array<Record<string, any>>;
+      rules: Record<string, any>[];
     }
   ) {
     let response = await this.http.put(`/v1/tracking-plans/${trackingPlanId}/rules`, data);
@@ -380,7 +380,7 @@ export class SegmentClient {
   async removeTrackingPlanRules(
     trackingPlanId: string,
     data: {
-      rules: Array<Record<string, any>>;
+      rules: Record<string, any>[];
     }
   ) {
     let response = await this.http.delete(`/v1/tracking-plans/${trackingPlanId}/rules`, {

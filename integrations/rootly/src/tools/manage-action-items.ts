@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import {
   Client,
   flattenResource,
@@ -6,7 +7,6 @@ import {
   type JsonApiResource
 } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listActionItems = SlateTool.create(spec, {
   name: 'List Action Items',

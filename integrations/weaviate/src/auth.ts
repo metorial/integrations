@@ -25,7 +25,7 @@ export let auth = SlateAuth.create()
         }
       };
     },
-    getProfile: async (ctx: { output: AuthOutput; input: ApiKeyInput }) => {
+    getProfile: async (_ctx: { output: AuthOutput; input: ApiKeyInput }) => {
       return {
         profile: {
           name: 'API Key User'

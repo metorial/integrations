@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pipelineSchema = z.object({
   pipelineId: z.string().describe('Unique pipeline identifier'),
@@ -63,7 +63,7 @@ export let listPipelines = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let result;
+    let result: any;
     if (ctx.input.ownerType === 'org') {
       result = await client.listOrgPipelines(ownerHandle, ctx.input.workspaceHandle, {
         limit: ctx.input.limit,

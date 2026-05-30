@@ -1,7 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { generateImage, listTemplates, getTemplateElements, getAccount } from './tools';
-import { newTemplateCreated, inboundWebhook } from './triggers';
+import { generateImage, getAccount, getTemplateElements, listTemplates } from './tools';
+import { inboundWebhook, newTemplateCreated } from './triggers';
 
 export let provider = Slate.create({
   spec,

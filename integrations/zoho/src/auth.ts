@@ -1,8 +1,8 @@
-import { SlateAuth, axios } from 'slates';
+import { axios, SlateAuth } from 'slates';
 import { z } from 'zod';
-import { getAccountsUrl, datacenterFromLocation, datacenterFromApiDomain } from './lib/urls';
-import type { Datacenter } from './lib/urls';
 import { zohoApiError, zohoServiceError } from './lib/errors';
+import type { Datacenter } from './lib/urls';
+import { datacenterFromApiDomain, datacenterFromLocation, getAccountsUrl } from './lib/urls';
 
 let scopes = [
   // CRM scopes
@@ -204,7 +204,7 @@ function createZohoOauth(name: string, key: string, dc: Datacenter) {
     handleCallback: async (ctx: any) => {
       let accountsUrl = getAccountsUrl(dc);
 
-      let response;
+      let response: any;
       try {
         response = await axios.post(`${accountsUrl}/oauth/v2/token`, null, {
           params: {
@@ -260,7 +260,7 @@ function createZohoOauth(name: string, key: string, dc: Datacenter) {
         );
       }
 
-      let response;
+      let response: any;
       try {
         response = await axios.post(`${accountsUrl}/oauth/v2/token`, null, {
           params: {
@@ -298,7 +298,7 @@ function createZohoOauth(name: string, key: string, dc: Datacenter) {
       let resolvedDc = (ctx.output.datacenter || dc) as Datacenter;
       let accountsUrl = getAccountsUrl(resolvedDc);
 
-      let response;
+      let response: any;
       try {
         response = await axios.get(`${accountsUrl}/oauth/user/info`, {
           headers: {

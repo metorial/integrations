@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  estimateGasPrice,
-  predictBaseFee,
-  getGasDistribution,
-  listSupportedChains,
-  listGasOracles,
   decodeL2Batch,
-  getBlob
+  estimateGasPrice,
+  getBlob,
+  getGasDistribution,
+  listGasOracles,
+  listSupportedChains,
+  predictBaseFee
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

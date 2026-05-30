@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EosAccountServicesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let entitlementSchema = z.object({
   entitlementId: z.string().describe('Unique entitlement ID'),

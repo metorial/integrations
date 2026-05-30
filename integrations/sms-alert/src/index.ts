@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendSms,
-  scheduleSms,
-  sendOtp,
-  validateOtp,
+  checkBalance,
+  getDeliveryStatus,
+  getSmsReport,
+  listSenderIds,
   manageContacts,
   manageGroups,
+  manageShortUrls,
   manageTemplates,
-  checkBalance,
-  listSenderIds,
-  getSmsReport,
-  getDeliveryStatus,
-  manageShortUrls
+  scheduleSms,
+  sendOtp,
+  sendSms,
+  validateOtp
 } from './tools';
-import { smsReport, inboundWebhook } from './triggers';
+import { inboundWebhook, smsReport } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listSurveys,
-  listQuestions,
   getAnswers,
   getResponses,
-  upsertCustomer,
-  sendSurveyEmail,
   getTeamMember,
-  listTeamMembers
+  listQuestions,
+  listSurveys,
+  listTeamMembers,
+  sendSurveyEmail,
+  upsertCustomer
 } from './tools';
-import { newFeedback, inboundWebhook } from './triggers';
+import { inboundWebhook, newFeedback } from './triggers';
 
 export let provider = Slate.create({
   spec,

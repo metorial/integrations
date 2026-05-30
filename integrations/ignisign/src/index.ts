@@ -2,26 +2,26 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createSignatureRequest,
-  getSignatureRequest,
-  listSignatureRequests,
-  manageSignatureRequest,
   createSigner,
-  getSigner,
-  listSigners,
-  updateSigner,
-  manageDocument,
-  uploadDocumentContent,
+  getApplicationContext,
   getSignatureProof,
+  getSignatureRequest,
+  getSigner,
   listSignatureProfiles,
+  listSignatureRequests,
   listSignerProfiles,
+  listSigners,
+  manageDocument,
+  manageSignatureRequest,
   sealDocument,
-  getApplicationContext
+  updateSigner,
+  uploadDocumentContent
 } from './tools';
 import {
-  signatureRequestEvents,
   signatureEvents,
-  signerEvents,
-  signatureProofEvents
+  signatureProofEvents,
+  signatureRequestEvents,
+  signerEvents
 } from './triggers';
 
 export let provider = Slate.create({

@@ -3,19 +3,19 @@ import { spec } from './spec';
 import {
   createUpdateContact,
   deleteContact,
+  deleteDeal,
   getContact,
   listContacts,
-  manageContactTags,
+  listDeals,
   manageContactLists,
+  manageContactTags,
+  manageDeal,
+  manageLists,
   sendMessage,
   sendTemplate,
-  startAutomation,
-  manageDeal,
-  deleteDeal,
-  listDeals,
-  manageLists
+  startAutomation
 } from './tools';
-import { contactEvents, messageEvents, chatEvents } from './triggers';
+import { chatEvents, contactEvents, messageEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

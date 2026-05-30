@@ -193,8 +193,8 @@ export class Client {
     let http = createAxios({ baseURL: BASE_URL });
 
     let apiParams = buildParams(params as Record<string, unknown>);
-    apiParams['access_key'] = this.accessKey;
-    apiParams['response_type'] = 'json';
+    apiParams.access_key = this.accessKey;
+    apiParams.response_type = 'json';
 
     let response = await http.post('/take', apiParams, {
       headers: { 'Content-Type': 'application/json' }
@@ -223,11 +223,11 @@ export class Client {
     let http = createAxios({ baseURL: BASE_URL });
 
     let apiParams = buildParams(params as Record<string, unknown>);
-    apiParams['access_key'] = this.accessKey;
+    apiParams.access_key = this.accessKey;
 
     // Don't override response_type - let it default to by_format for binary
-    if (!apiParams['response_type']) {
-      delete apiParams['response_type'];
+    if (!apiParams.response_type) {
+      apiParams.response_type = undefined;
     }
 
     let response = await http.post('/take', apiParams, {

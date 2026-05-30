@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshBooksClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let creditNoteLineSchema = z.object({
   name: z.string().describe('Line item description'),

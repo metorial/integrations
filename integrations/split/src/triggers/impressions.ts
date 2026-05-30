@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let impressionSchema = z.object({
   evaluatedKey: z.string().describe('The user/entity key that was evaluated.'),

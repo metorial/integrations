@@ -13,7 +13,7 @@ export class GreenhouseClient {
 
   private getAxios(write: boolean = false) {
     let headers: Record<string, string> = {
-      Authorization: `Basic ${btoa(this.token + ':')}`,
+      Authorization: `Basic ${btoa(`${this.token}:`)}`,
       'Content-Type': 'application/json'
     };
     if (write && this.onBehalfOf) {
@@ -37,12 +37,6 @@ export class GreenhouseClient {
   private async patch<T = any>(path: string, data?: Record<string, any>): Promise<T> {
     let client = this.getAxios(true);
     let response = await client.patch(path, data);
-    return response.data;
-  }
-
-  private async del<T = any>(path: string): Promise<T> {
-    let client = this.getAxios(true);
-    let response = await client.delete(path);
     return response.data;
   }
 

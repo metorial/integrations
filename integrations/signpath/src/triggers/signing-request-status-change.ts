@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SignPathClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let signingRequestStatusChange = SlateTrigger.create(spec, {
   name: 'Signing Request Status Change',

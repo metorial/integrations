@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SegmentClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createRegulation = SlateTool.create(spec, {
   name: 'Create Data Regulation',
@@ -92,7 +92,7 @@ export let createRegulation = SlateTool.create(spec, {
       subjectIds: ctx.input.subjectIds
     };
 
-    let result;
+    let result: any;
     if (ctx.input.sourceId) {
       result = await client.createSourceRegulation(ctx.input.sourceId, data);
     } else {

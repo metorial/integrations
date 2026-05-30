@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CommerceClient } from '../lib/commerce-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let chargeSchema = z.object({
   chargeId: z.string().describe('Charge ID'),

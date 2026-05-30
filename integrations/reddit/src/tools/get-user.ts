@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { RedditClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUser = SlateTool.create(spec, {
   name: 'Get User',

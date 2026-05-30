@@ -2,46 +2,46 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 
 import {
-  listCustomers,
-  getCustomer,
-  createCustomer,
-  updateCustomer,
-  deleteCustomer,
-  listContacts,
   createContact,
-  updateContact,
-  deleteContact,
-  listSaleInvoices,
+  createCustomer,
+  createProduct,
   createSaleInvoice,
-  updateSaleInvoice,
+  createSaleQuote,
+  deleteContact,
+  deleteCustomer,
+  deleteProduct,
   deleteSaleInvoice,
+  deleteSaleQuote,
   finalizeSaleInvoice,
+  getCustomer,
+  getSettings,
+  listContacts,
+  listCustomers,
+  listProducts,
+  listReceipts,
+  listSaleCredits,
+  listSaleInvoices,
+  listSaleQuotes,
+  listSuppliers,
+  manageReceipt,
+  manageSaleCredit,
+  manageSupplier,
   markInvoiceAsPaid,
   sendSaleInvoiceEmail,
-  listSaleQuotes,
-  createSaleQuote,
-  updateSaleQuote,
-  deleteSaleQuote,
   sendSaleQuoteEmail,
-  listSaleCredits,
-  manageSaleCredit,
-  listProducts,
-  createProduct,
+  updateContact,
+  updateCustomer,
   updateProduct,
-  deleteProduct,
-  listSuppliers,
-  manageSupplier,
-  listReceipts,
-  manageReceipt,
-  getSettings
+  updateSaleInvoice,
+  updateSaleQuote
 } from './tools';
 
 import {
-  customerEvents,
   contactEvents,
+  customerEvents,
   invoiceEvents,
-  quoteEvents,
-  productEvents
+  productEvents,
+  quoteEvents
 } from './triggers';
 
 export let provider = Slate.create({

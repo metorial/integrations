@@ -155,7 +155,7 @@ export interface VideoResultResponse {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private clientConfig: ClientConfig) {
+  constructor(clientConfig: ClientConfig) {
     this.http = createAxios({
       baseURL: clientConfig.baseUrl,
       headers: {

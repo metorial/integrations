@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listResources = SlateTool.create(spec, {
   name: 'List Resources',
@@ -60,7 +60,7 @@ export let listResources = SlateTool.create(spec, {
       cursor: ctx.input.cursor
     };
 
-    let resources: Array<Record<string, any>> = [];
+    let resources: Record<string, any>[] = [];
     let pagination: any;
     let label: string = resourceType;
 

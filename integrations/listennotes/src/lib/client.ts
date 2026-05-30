@@ -1,16 +1,16 @@
 import { createAxios } from 'slates';
 import type {
-  SearchResponse,
-  TypeaheadResponse,
-  Genre,
-  PodcastFull,
-  EpisodeFull,
   CuratedListFull,
   CuratedListSimple,
-  PodcastSimple,
+  EpisodeFull,
   EpisodeSimple,
+  Genre,
   PlaylistResponse,
-  PlaylistsResponse
+  PlaylistsResponse,
+  PodcastFull,
+  PodcastSimple,
+  SearchResponse,
+  TypeaheadResponse
 } from './types';
 
 export class Client {

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { mapRun } from '../lib/mappers';
-import { z } from 'zod';
+import { spec } from '../spec';
 
 export let getRunTool = SlateTool.create(spec, {
   name: 'Get Run',

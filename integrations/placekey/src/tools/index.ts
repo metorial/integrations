@@ -1,2 +1,2 @@
-export * from './lookup-placekey';
 export * from './bulk-lookup-placekeys';
+export * from './lookup-placekey';

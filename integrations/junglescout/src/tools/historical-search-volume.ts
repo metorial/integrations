@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let searchVolumeDataPointSchema = z.object({
   period: z.string().describe('Start date of the 7-day period (yyyy-mm-dd)'),

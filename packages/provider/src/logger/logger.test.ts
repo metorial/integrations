@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SlateLogger, type SlateLogEntry } from './logger';
+import { type SlateLogEntry, SlateLogger } from './logger';
 
 let flushLogs = async () => {
   await new Promise(resolve => setTimeout(resolve, 20));

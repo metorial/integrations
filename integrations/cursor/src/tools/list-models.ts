@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CloudAgentsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listModels = SlateTool.create(spec, {
   name: 'List Models',

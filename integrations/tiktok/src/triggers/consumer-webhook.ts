@@ -1,6 +1,6 @@
 import { SlateTrigger } from '@slates/provider';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let consumerWebhook = SlateTrigger.create(spec, {
   name: 'TikTok Developer Events',

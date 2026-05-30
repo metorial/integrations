@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  orderCertificate,
-  listOrders,
-  getOrder,
-  revokeCertificate,
-  reissueCertificate,
-  downloadCertificate,
   cancelOrder,
+  downloadCertificate,
+  getOrder,
   listDomains,
-  manageDomain,
+  listOrders,
   listOrganizations,
+  listProducts,
+  manageDomain,
   manageOrganization,
   manageRequest,
-  listProducts
+  orderCertificate,
+  reissueCertificate,
+  revokeCertificate
 } from './tools';
 import { certcentralEvents } from './triggers';
 

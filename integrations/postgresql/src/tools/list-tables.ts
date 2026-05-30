@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listTables = SlateTool.create(spec, {
   name: 'List Tables',
@@ -61,9 +61,9 @@ Also supports listing views and materialized views.`,
     let client = createClient(ctx.auth, ctx.config);
     let schema = ctx.input.schemaName || ctx.config.defaultSchema;
 
-    let typeFilter = `'BASE TABLE'`;
+    let _typeFilter = `'BASE TABLE'`;
     if (ctx.input.includeViews) {
-      typeFilter = `'BASE TABLE', 'VIEW'`;
+      _typeFilter = `'BASE TABLE', 'VIEW'`;
     }
 
     let schemaFilter = ctx.input.includeSystemTables

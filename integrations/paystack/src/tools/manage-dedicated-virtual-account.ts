@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PaystackClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createDedicatedVirtualAccount = SlateTool.create(spec, {
   name: 'Create Dedicated Virtual Account',

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client, parseMessage } from '../lib/client';
 import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let messageOutputSchema = z.object({
   messageId: z.string().describe('Unique message ID.'),

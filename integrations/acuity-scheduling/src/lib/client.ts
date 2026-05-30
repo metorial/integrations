@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private authConfig: { token: string; authMethod: 'oauth' | 'basic' }) {
+  constructor(authConfig: { token: string; authMethod: 'oauth' | 'basic' }) {
     let authHeader =
       authConfig.authMethod === 'oauth'
         ? `Bearer ${authConfig.token}`

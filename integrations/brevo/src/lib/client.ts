@@ -3,18 +3,18 @@ import { createAxios } from 'slates';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; authType?: string }) {
+  constructor(config: { token: string; authType?: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.brevo.com/v3'
     });
 
     this.axios.interceptors.request.use((reqConfig: any) => {
       if (config.authType === 'oauth') {
-        reqConfig.headers['Authorization'] = `Bearer ${config.token}`;
+        reqConfig.headers.Authorization = `Bearer ${config.token}`;
       } else {
         reqConfig.headers['api-key'] = config.token;
       }
-      reqConfig.headers['Accept'] = 'application/json';
+      reqConfig.headers.Accept = 'application/json';
       return reqConfig;
     });
   }

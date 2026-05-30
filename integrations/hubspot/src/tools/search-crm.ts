@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HubSpotClient } from '../lib/client';
 import { hubSpotActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let filterSchema = z.object({
   propertyName: z.string().describe('Name of the property to filter on'),

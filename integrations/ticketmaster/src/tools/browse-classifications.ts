@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DiscoveryClient } from '../lib/client';
 import { mapClassification, mapPagination } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let classificationDetailSchema = z.object({
   segment: z

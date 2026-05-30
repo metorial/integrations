@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transferOutputSchema = z.object({
   blockTime: z.string().describe('Timestamp of the block'),
@@ -74,7 +74,7 @@ Use this to monitor wallet activity, track specific token movements, or analyze 
 
     ctx.info(`Fetching token transfers on ${blockchain}`);
 
-    let transfers: Array<z.infer<typeof transferOutputSchema>> = [];
+    let transfers: z.infer<typeof transferOutputSchema>[] = [];
 
     if (blockchain === 'solana') {
       let query = buildSolanaTransfersQuery(

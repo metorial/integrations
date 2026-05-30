@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageStory,
-  listStories,
+  getSpaceInfo,
   getStory,
-  manageComponent,
-  listComponents,
-  manageAsset,
+  listActivities,
   listAssets,
+  listComponents,
+  listStories,
+  manageAsset,
+  manageCollaborator,
+  manageComponent,
   manageDatasource,
   manageDatasourceEntry,
-  manageCollaborator,
   manageRelease,
-  getSpaceInfo,
-  listActivities
+  manageStory
 } from './tools';
 import {
-  storyEvents,
   assetEvents,
-  userEvents,
+  datasourceEvents,
   releaseEvents,
-  workflowEvents,
-  datasourceEvents
+  storyEvents,
+  userEvents,
+  workflowEvents
 } from './triggers';
 
 export let provider = Slate.create({

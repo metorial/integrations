@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { Client } from '../lib/client';
+import { spec } from '../spec';
 
 export let getContact = SlateTool.create(spec, {
   name: 'Get Contact',

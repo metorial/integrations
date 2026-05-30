@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WaiverFileClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listEvents = SlateTool.create(spec, {
   name: 'List Events',
@@ -39,7 +39,7 @@ export let listEvents = SlateTool.create(spec, {
       siteId: ctx.auth.siteId
     });
 
-    let events;
+    let events: any;
     if (ctx.input.upcomingOnly) {
       events = await client.getUpcomingEvents({
         startDate: ctx.input.startDate,

@@ -4,7 +4,7 @@ export class NanonetsClient {
   private axiosV2: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
-    let authHeader = 'Basic ' + Buffer.from(token + ':').toString('base64');
+    let authHeader = `Basic ${Buffer.from(`${token}:`).toString('base64')}`;
 
     this.axiosV2 = createAxios({
       baseURL: 'https://app.nanonets.com/api/v2',
@@ -107,7 +107,7 @@ export class NanonetsClient {
   ): Promise<any> {
     let body: Record<string, any> = { urls };
     if (annotations) {
-      body['data'] = annotations;
+      body.data = annotations;
     }
     let response = await this.axiosV2.post(`/OCR/Model/${modelId}/UploadUrls/`, body);
     return response.data;

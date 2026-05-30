@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let inboundEmail = SlateTrigger.create(spec, {
   name: 'Inbound Email',
@@ -68,7 +68,7 @@ export let inboundEmail = SlateTrigger.create(spec, {
         senderIp: data.sender_ip || data.senderIp || undefined,
         envelope: data.envelope || undefined,
         headers: data.headers || undefined,
-        attachmentCount: data.attachments ? parseInt(data.attachments, 10) : undefined,
+        attachmentCount: data.attachments ? Number.parseInt(data.attachments, 10) : undefined,
         spamScore: data.spam_score || undefined,
         spamReport: data.spam_report || undefined,
         charsets: data.charsets || undefined
@@ -92,8 +92,8 @@ export let inboundEmail = SlateTrigger.create(spec, {
 
       let spamScore: number | undefined;
       if (ctx.input.spamScore) {
-        let parsed = parseFloat(ctx.input.spamScore);
-        spamScore = isNaN(parsed) ? undefined : parsed;
+        let parsed = Number.parseFloat(ctx.input.spamScore);
+        spamScore = Number.isNaN(parsed) ? undefined : parsed;
       }
 
       // Generate a unique ID from from+to+subject+time

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ShipdayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orderItemSchema = z.object({
   name: z.string().describe('Name of the item'),
@@ -118,7 +118,7 @@ export let updateDeliveryOrder = SlateTool.create(spec, {
       let value = ctx.input[key];
       if (value !== undefined) {
         if (key === 'orderNumber') {
-          editFields['orderNo'] = value;
+          editFields.orderNo = value;
         } else {
           editFields[key] = value;
         }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, statusLabel } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, statusLabel } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getResource = SlateTool.create(spec, {
   name: 'Get Resource',

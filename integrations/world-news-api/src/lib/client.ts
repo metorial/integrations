@@ -116,7 +116,7 @@ export interface RetrieveNewsResponse {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.worldnewsapi.com',
       headers: {
@@ -128,10 +128,10 @@ export class Client {
   async searchNews(params: SearchNewsParams): Promise<SearchNewsResponse> {
     let queryParams: Record<string, string | number> = {};
 
-    if (params.text) queryParams['text'] = params.text;
+    if (params.text) queryParams.text = params.text;
     if (params.textMatchIndexes) queryParams['text-match-indexes'] = params.textMatchIndexes;
     if (params.sourceCountry) queryParams['source-country'] = params.sourceCountry;
-    if (params.language) queryParams['language'] = params.language;
+    if (params.language) queryParams.language = params.language;
     if (params.minSentiment !== undefined) queryParams['min-sentiment'] = params.minSentiment;
     if (params.maxSentiment !== undefined) queryParams['max-sentiment'] = params.maxSentiment;
     if (params.earliestPublishDate)
@@ -139,14 +139,14 @@ export class Client {
     if (params.latestPublishDate)
       queryParams['latest-publish-date'] = params.latestPublishDate;
     if (params.newsSources) queryParams['news-sources'] = params.newsSources;
-    if (params.authors) queryParams['authors'] = params.authors;
-    if (params.categories) queryParams['categories'] = params.categories;
-    if (params.entities) queryParams['entities'] = params.entities;
+    if (params.authors) queryParams.authors = params.authors;
+    if (params.categories) queryParams.categories = params.categories;
+    if (params.entities) queryParams.entities = params.entities;
     if (params.locationFilter) queryParams['location-filter'] = params.locationFilter;
-    if (params.sort) queryParams['sort'] = params.sort;
+    if (params.sort) queryParams.sort = params.sort;
     if (params.sortDirection) queryParams['sort-direction'] = params.sortDirection;
-    if (params.offset !== undefined) queryParams['offset'] = params.offset;
-    if (params.number !== undefined) queryParams['number'] = params.number;
+    if (params.offset !== undefined) queryParams.offset = params.offset;
+    if (params.number !== undefined) queryParams.number = params.number;
 
     let response = await this.axios.get<SearchNewsResponse>('/search-news', {
       params: queryParams
@@ -166,7 +166,7 @@ export class Client {
       language: params.language
     };
 
-    if (params.date) queryParams['date'] = params.date;
+    if (params.date) queryParams.date = params.date;
     if (params.headlinesOnly !== undefined)
       queryParams['headlines-only'] = params.headlinesOnly;
     if (params.maxNewsPerCluster !== undefined)
@@ -191,7 +191,7 @@ export class Client {
     let queryParams: Record<string, string | boolean> = {
       url: params.url
     };
-    if (params.analyze !== undefined) queryParams['analyze'] = params.analyze;
+    if (params.analyze !== undefined) queryParams.analyze = params.analyze;
 
     let response = await this.axios.get<ExtractNewsResponse>('/extract-news', {
       params: queryParams
@@ -207,7 +207,7 @@ export class Client {
     let queryParams: Record<string, string | boolean> = {
       url: params.url
     };
-    if (params.prefix) queryParams['prefix'] = params.prefix;
+    if (params.prefix) queryParams.prefix = params.prefix;
     if (params.subDomain !== undefined) queryParams['sub-domain'] = params.subDomain;
 
     let response = await this.axios.get<ExtractLinksResponse>('/extract-news-links', {
@@ -238,7 +238,7 @@ export class Client {
     let queryParams: Record<string, string> = {};
     if (params.sourceCountry) queryParams['source-country'] = params.sourceCountry;
     if (params.sourceName) queryParams['source-name'] = params.sourceName;
-    if (params.date) queryParams['date'] = params.date;
+    if (params.date) queryParams.date = params.date;
 
     let response = await this.axios.get<FrontPageResponse>('/retrieve-front-page', {
       params: queryParams

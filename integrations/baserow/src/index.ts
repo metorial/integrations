@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listRows,
-  getRow,
   createRows,
-  updateRows,
   deleteRows,
-  listTables,
-  listFields,
-  listViews,
+  getRow,
   listDatabases,
+  listFields,
+  listRows,
+  listTables,
+  listViews,
   manageField,
+  updateRows,
   uploadFile
 } from './tools';
 import { tableEvents } from './triggers';

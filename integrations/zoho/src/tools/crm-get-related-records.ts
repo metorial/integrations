@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { ZohoCrmClient } from '../lib/client';
-import type { Datacenter } from '../lib/urls';
 import { zohoServiceError } from '../lib/errors';
+import type { Datacenter } from '../lib/urls';
+import { spec } from '../spec';
 
 export let crmGetRelatedRecords = SlateTool.create(spec, {
   name: 'CRM Get Related Records',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AnthropicClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contentBlockSchema: z.ZodType<Record<string, unknown>> = z
   .record(z.string(), z.unknown())
@@ -146,7 +146,7 @@ Provide a conversation history as messages and configure model parameters to con
 
     let messages = ctx.input.messages as Array<{
       role: 'user' | 'assistant';
-      content: string | Array<Record<string, unknown>>;
+      content: string | Record<string, unknown>[];
     }>;
     let result = await client.createMessage({
       model: ctx.input.model,
@@ -167,7 +167,7 @@ Provide a conversation history as messages and configure model parameters to con
     });
 
     let usage = result.usage as Record<string, number> | undefined;
-    let content = result.content as Array<Record<string, unknown>>;
+    let content = result.content as Record<string, unknown>[];
 
     let textContent = content
       .filter(b => b.type === 'text')
@@ -175,7 +175,7 @@ Provide a conversation history as messages and configure model parameters to con
       .join('\n');
 
     let summary =
-      textContent.length > 200 ? textContent.substring(0, 200) + '...' : textContent;
+      textContent.length > 200 ? `${textContent.substring(0, 200)}...` : textContent;
     let stopSequence =
       typeof result.stop_sequence === 'string' ? result.stop_sequence : undefined;
 

@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 let MOCK_OAUTH_BASE_URL = 'https://mock-oauth.metorial.net';

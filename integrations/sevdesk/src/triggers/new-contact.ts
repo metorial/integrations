@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newContact = SlateTrigger.create(spec, {
   name: 'New Contact',
@@ -45,7 +45,7 @@ export let newContact = SlateTrigger.create(spec, {
       // Sort by ID descending (newest first) to find new contacts
       let sorted = (contacts ?? []).sort((a: any, b: any) => Number(b.id) - Number(a.id));
 
-      let newContacts = [];
+      let newContacts: any[] = [];
       for (let contact of sorted) {
         let cId = String(contact.id);
         if (lastSeenId && Number(cId) <= Number(lastSeenId)) break;

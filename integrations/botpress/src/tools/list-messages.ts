@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RuntimeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listMessagesTool = SlateTool.create(spec, {
   name: 'List Messages',

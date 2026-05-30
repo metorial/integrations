@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { KnackClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let recordChanges = SlateTrigger.create(spec, {
   name: 'Record Changes',
@@ -92,7 +92,7 @@ export let recordChanges = SlateTrigger.create(spec, {
         newTimestamps[recordId] = dateModified;
 
         // On first poll, populate state without emitting events
-        if (!state || !state.knownRecordIds) {
+        if (!state?.knownRecordIds) {
           continue;
         }
 

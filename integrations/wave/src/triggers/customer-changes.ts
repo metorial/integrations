@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { WaveClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let customerChanges = SlateTrigger.create(spec, {
   name: 'Customer Changes',

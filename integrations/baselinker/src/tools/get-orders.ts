@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BaseLinkerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orderProductSchema = z.object({
   orderProductId: z.number().describe('Order item ID from BaseLinker'),

@@ -738,8 +738,7 @@ export class Client {
     };
     if (data.description) body.description = data.description;
     if (data.options) body.options = data.options.map(value => ({ value }));
-    if (data.messengerWritable !== undefined)
-      body.messenger_writable = data.messengerWritable;
+    if (data.messengerWritable !== undefined) body.messenger_writable = data.messengerWritable;
     let response = await this.http.post('/data_attributes', body);
     return response.data;
   }
@@ -757,8 +756,7 @@ export class Client {
     if (data.description) body.description = data.description;
     if (data.options) body.options = data.options.map(value => ({ value }));
     if (data.archived !== undefined) body.archived = data.archived;
-    if (data.messengerWritable !== undefined)
-      body.messenger_writable = data.messengerWritable;
+    if (data.messengerWritable !== undefined) body.messenger_writable = data.messengerWritable;
     let response = await this.http.put(`/data_attributes/${attributeId}`, body);
     return response.data;
   }
@@ -799,7 +797,11 @@ export class Client {
     return response.data;
   }
 
-  async addContactSubscription(contactId: string, subscriptionId: string, consentType: string) {
+  async addContactSubscription(
+    contactId: string,
+    subscriptionId: string,
+    consentType: string
+  ) {
     let response = await this.http.post(`/contacts/${contactId}/subscriptions`, {
       id: subscriptionId,
       consent_type: consentType

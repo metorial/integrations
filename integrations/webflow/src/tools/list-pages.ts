@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pageSchema = z.object({
   pageId: z.string().describe('Unique identifier for the page'),

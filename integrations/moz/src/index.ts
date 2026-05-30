@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getUrlMetricsTool,
-  getLinksTool,
+  checkLinkStatusTool,
+  findLinkIntersectTool,
   getAnchorTextTool,
-  getLinkingDomainsTool,
-  getTopPagesTool,
   getGlobalTopTool,
   getKeywordMetricsTool,
   getKeywordSuggestionsTool,
+  getLinkingDomainsTool,
+  getLinksTool,
+  getRankingKeywordsTool,
   getSearchIntentTool,
   getSiteMetricsTool,
-  getRankingKeywordsTool,
-  findLinkIntersectTool,
-  checkLinkStatusTool,
+  getTopPagesTool,
+  getUrlMetricsTool,
   getUsageAndIndexTool
 } from './tools';
-import { indexUpdatedTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, indexUpdatedTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

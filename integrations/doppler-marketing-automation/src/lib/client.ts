@@ -124,8 +124,8 @@ export class Client {
 
   async getLists(page?: number, pageSize?: number): Promise<DopplerListCollection> {
     let params: Record<string, any> = {};
-    if (page !== undefined) params['page'] = page;
-    if (pageSize !== undefined) params['per_page'] = pageSize;
+    if (page !== undefined) params.page = page;
+    if (pageSize !== undefined) params.per_page = pageSize;
     let response = await this.axios.get('/lists', { params });
     return response.data;
   }
@@ -155,10 +155,10 @@ export class Client {
     options?: { page?: number; pageSize?: number; from?: string; to?: string }
   ): Promise<DopplerSubscriberCollection> {
     let params: Record<string, any> = {};
-    if (options?.page !== undefined) params['page'] = options.page;
-    if (options?.pageSize !== undefined) params['per_page'] = options.pageSize;
-    if (options?.from) params['from'] = options.from;
-    if (options?.to) params['to'] = options.to;
+    if (options?.page !== undefined) params.page = options.page;
+    if (options?.pageSize !== undefined) params.per_page = options.pageSize;
+    if (options?.from) params.from = options.from;
+    if (options?.to) params.to = options.to;
     let response = await this.axios.get(`/lists/${listId}/subscribers`, { params });
     return response.data;
   }
@@ -189,8 +189,8 @@ export class Client {
     comment?: string
   ): Promise<void> {
     let body: Record<string, any> = { email };
-    if (reason) body['manualUnsubscriptionReason'] = reason;
-    if (comment) body['unsubscriptionComment'] = comment;
+    if (reason) body.manualUnsubscriptionReason = reason;
+    if (comment) body.unsubscriptionComment = comment;
     await this.axios.put(`/subscribers/${encodeURIComponent(email)}`, body);
   }
 
@@ -204,7 +204,7 @@ export class Client {
       items,
       fields: fields ?? []
     };
-    if (callbackUrl) body['callback'] = callbackUrl;
+    if (callbackUrl) body.callback = callbackUrl;
     let response = await this.axios.post(`/lists/${listId}/subscribers/import`, body, {
       headers: {
         'X-Doppler-Subscriber-Origin': 'RestAPI'
@@ -248,9 +248,9 @@ export class Client {
     status?: string
   ): Promise<DopplerCampaignCollection> {
     let params: Record<string, any> = {};
-    if (page !== undefined) params['page'] = page;
-    if (pageSize !== undefined) params['per_page'] = pageSize;
-    if (status) params['status'] = status;
+    if (page !== undefined) params.page = page;
+    if (pageSize !== undefined) params.per_page = pageSize;
+    if (status) params.status = status;
     let response = await this.axios.get('/campaigns', { params });
     return response.data;
   }
@@ -297,7 +297,7 @@ export class Client {
   ): Promise<void> {
     let body: Record<string, any> = { type };
     if (type === 'scheduled' && scheduledDate) {
-      body['scheduledDate'] = scheduledDate;
+      body.scheduledDate = scheduledDate;
     }
     await this.axios.post(`/campaigns/${campaignId}/shipping`, body);
   }
@@ -324,10 +324,10 @@ export class Client {
     pageSize: number;
   }> {
     let params: Record<string, any> = {};
-    if (options?.from) params['from'] = options.from;
-    if (options?.to) params['to'] = options.to;
-    if (options?.page !== undefined) params['page'] = options.page;
-    if (options?.pageSize !== undefined) params['per_page'] = options.pageSize;
+    if (options?.from) params.from = options.from;
+    if (options?.to) params.to = options.to;
+    if (options?.page !== undefined) params.page = options.page;
+    if (options?.pageSize !== undefined) params.per_page = options.pageSize;
     let response = await this.axios.get('/subscribers/unsubscribed', { params });
     return response.data;
   }

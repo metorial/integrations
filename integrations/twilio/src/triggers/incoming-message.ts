@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { parseFormUrlEncoded } from '../lib/webhook-parser';
+import { spec } from '../spec';
 
 export let incomingMessage = SlateTrigger.create(spec, {
   name: 'Incoming Message',
@@ -46,7 +46,7 @@ export let incomingMessage = SlateTrigger.create(spec, {
       let text = await ctx.request.text();
       let data = parseFormUrlEncoded(text);
 
-      let numMedia = parseInt(data['NumMedia'] || '0', 10);
+      let numMedia = Number.parseInt(data.NumMedia || '0', 10);
       let mediaUrls: string[] = [];
       let mediaContentTypes: string[] = [];
 
@@ -59,15 +59,15 @@ export let incomingMessage = SlateTrigger.create(spec, {
       return {
         inputs: [
           {
-            messageSid: data['MessageSid'] || data['SmsSid'] || '',
-            from: data['From'] || '',
-            to: data['To'] || '',
-            body: data['Body'] || '',
-            numMedia: data['NumMedia'] || '0',
-            fromCity: data['FromCity'],
-            fromState: data['FromState'],
-            fromCountry: data['FromCountry'],
-            accountSid: data['AccountSid'] || '',
+            messageSid: data.MessageSid || data.SmsSid || '',
+            from: data.From || '',
+            to: data.To || '',
+            body: data.Body || '',
+            numMedia: data.NumMedia || '0',
+            fromCity: data.FromCity,
+            fromState: data.FromState,
+            fromCountry: data.FromCountry,
+            accountSid: data.AccountSid || '',
             mediaUrls,
             mediaContentTypes
           }
@@ -84,7 +84,7 @@ export let incomingMessage = SlateTrigger.create(spec, {
           from: ctx.input.from,
           to: ctx.input.to,
           body: ctx.input.body,
-          numMedia: parseInt(ctx.input.numMedia, 10),
+          numMedia: Number.parseInt(ctx.input.numMedia, 10),
           mediaUrls: ctx.input.mediaUrls || [],
           mediaContentTypes: ctx.input.mediaContentTypes || [],
           fromCity: ctx.input.fromCity || null,

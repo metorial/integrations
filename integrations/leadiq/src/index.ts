@@ -1,10 +1,10 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchContact,
-  searchCompany,
   advancedPeopleSearch,
   getAccountCredits,
+  searchCompany,
+  searchContact,
   submitDataFeedback
 } from './tools';
 

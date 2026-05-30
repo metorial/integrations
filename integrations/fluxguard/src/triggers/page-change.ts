@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { FluxguardClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let pageChangeTrigger = SlateTrigger.create(spec, {
   name: 'Page Change Detected',

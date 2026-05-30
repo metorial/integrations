@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BrazeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let exportUsers = SlateTool.create(spec, {
   name: 'Export Users',

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
-import { mapWorkspace, mapPagination } from '../lib/mappers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { mapPagination, mapWorkspace } from '../lib/mappers';
+import { spec } from '../spec';
 
 export let listWorkspacesTool = SlateTool.create(spec, {
   name: 'List Workspaces',

@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  parseDocumentTool,
-  inspectLayersTool,
   extractColorsTool,
   extractTextContentTool,
+  generateDocumentTool,
   generatePageTool,
-  generateDocumentTool
+  inspectLayersTool,
+  parseDocumentTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

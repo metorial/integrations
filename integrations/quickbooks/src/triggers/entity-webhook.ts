@@ -1,9 +1,9 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { SlateTrigger } from '@slates/provider';
-import { spec } from '../spec';
-import { createClientFromContext } from '../lib/helpers';
-import { quickBooksServiceError } from '../lib/errors';
 import { z } from 'zod';
+import { quickBooksServiceError } from '../lib/errors';
+import { createClientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 let WEBHOOK_ENTITY_NAMES: Record<string, string> = {
   account: 'Account',

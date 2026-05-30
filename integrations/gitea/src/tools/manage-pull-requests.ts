@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GiteaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let prOutputSchema = z.object({
   prNumber: z.number().describe('Pull request number'),

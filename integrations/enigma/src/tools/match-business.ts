@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressSchema = z
   .object({
@@ -126,7 +126,7 @@ Use this to find the Enigma ID for a business when you have partial identifying 
       }
     );
 
-    let matches: Array<Record<string, unknown>> = [];
+    let matches: Record<string, unknown>[] = [];
 
     if (Array.isArray(result)) {
       matches = result.map((m: Record<string, unknown>) => ({

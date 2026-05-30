@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transactionSchema = z.object({
   guid: z.string().optional().describe('MX-assigned unique identifier'),
@@ -66,7 +66,7 @@ export let listTransactions = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new MxClient({ token: ctx.auth.token, environment: ctx.config.environment });
 
-    let result;
+    let result: any;
     let paginationParams = {
       page: ctx.input.page,
       recordsPerPage: ctx.input.recordsPerPage,

@@ -1,13 +1,9 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import {
-  booleanOrUndefined,
-  stringOrUndefined,
-  timestampOrUndefined
-} from '../lib/output';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { intercomServiceError } from '../lib/errors';
+import { booleanOrUndefined, stringOrUndefined, timestampOrUndefined } from '../lib/output';
+import { spec } from '../spec';
 
 export let manageConversations = SlateTool.create(spec, {
   name: 'Manage Conversations',
@@ -30,16 +26,7 @@ Combines multiple conversation management operations into a single tool.`,
   .input(
     z.object({
       action: z
-        .enum([
-          'create',
-          'update',
-          'reply',
-          'assign',
-          'close',
-          'open',
-          'snooze',
-          'add_note'
-        ])
+        .enum(['create', 'update', 'reply', 'assign', 'close', 'open', 'snooze', 'add_note'])
         .describe('Operation to perform'),
       conversationId: z
         .string()
@@ -123,8 +110,7 @@ Combines multiple conversation management operations into a single tool.`,
       };
     }
 
-    if (!ctx.input.conversationId)
-      throw intercomServiceError('conversationId is required');
+    if (!ctx.input.conversationId) throw intercomServiceError('conversationId is required');
 
     if (action === 'update') {
       if (ctx.input.read === undefined && !ctx.input.customAttributes) {

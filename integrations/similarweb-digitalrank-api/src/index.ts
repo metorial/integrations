@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { getWebsiteRank, getTopWebsites, getRemainingCredits } from './tools';
+import { getRemainingCredits, getTopWebsites, getWebsiteRank } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

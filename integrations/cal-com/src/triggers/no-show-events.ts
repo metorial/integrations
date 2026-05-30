@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let NO_SHOW_TRIGGERS = [
   'AFTER_HOSTS_CAL_VIDEO_NO_SHOW',

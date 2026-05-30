@@ -1,9 +1,9 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let signatureRequestEventTypes = [
+let _signatureRequestEventTypes = [
   'signature_request_sent',
   'signature_request_viewed',
   'signature_request_signed',
@@ -136,7 +136,7 @@ export let signatureRequestEvents = SlateTrigger.create(spec, {
 
         // Try to find the JSON data in the multipart body
         let jsonMatch = text.match(/name="json"\r?\n\r?\n([\s\S]*?)(?:\r?\n--|\s*$)/);
-        if (jsonMatch && jsonMatch[1]) {
+        if (jsonMatch?.[1]) {
           rawData = JSON.parse(jsonMatch[1].trim());
         } else {
           // Fallback: try parsing entire text as JSON

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { RemarketyClient, formatCartPayload } from '../lib/client';
+import { formatCartPayload, RemarketyClient } from '../lib/client';
 import { cartSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let upsertCartTool = SlateTool.create(spec, {
   name: 'Create or Update Cart',

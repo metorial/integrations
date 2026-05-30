@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  extractArticle,
+  extractData,
+  extractProduct,
   fetchPage,
   renderPage,
-  takeScreenshot,
-  extractProduct,
-  extractArticle,
-  extractData
+  takeScreenshot
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

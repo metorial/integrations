@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCampaigns,
-  getCampaign,
   createCampaign,
-  updateCampaign,
-  deleteCampaign,
-  getCampaignAnalytics,
-  listLeads,
-  getLead,
   createLead,
-  updateLead,
+  deleteCampaign,
   deleteLead,
-  moveLeads,
-  listEmailAccounts,
+  getCampaign,
+  getCampaignAnalytics,
   getEmailAccount,
-  manageEmailAccount,
+  getLead,
+  listCampaigns,
+  listEmailAccounts,
   listEmails,
-  replyToEmail,
-  verifyEmail,
+  listLeads,
+  manageAccountCampaignMappings,
   manageBlockList,
   manageCustomTags,
+  manageEmailAccount,
   manageLeadLabels,
   manageLeadLists,
-  manageAccountCampaignMappings
+  moveLeads,
+  replyToEmail,
+  updateCampaign,
+  updateLead,
+  verifyEmail
 } from './tools';
 import { campaignEvents, leadStatusEvents } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { HubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let webhookInputSchema = z.object({
   eventAction: z.string().describe('Event action (create, update, delete, move)'),

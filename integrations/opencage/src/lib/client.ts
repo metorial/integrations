@@ -1,5 +1,5 @@
 import { createAxios } from 'slates';
-import { GeocodeResponse } from './types';
+import type { GeocodeResponse } from './types';
 
 let geocodeAxios = createAxios({
   baseURL: 'https://api.opencagedata.com'

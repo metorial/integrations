@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { KaleidoClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let getNodeStatus = SlateTool.create(spec, {
   name: 'Get Node Status',
@@ -51,7 +51,7 @@ Use this to monitor node health, diagnose issues, or verify a node is running co
       ctx.input.nodeId
     );
 
-    let status: any = undefined;
+    let status: any;
     try {
       status = await client.getNodeStatus(
         ctx.input.consortiumId,
@@ -62,7 +62,7 @@ Use this to monitor node health, diagnose issues, or verify a node is running co
       // Status endpoint may not be available for all node states
     }
 
-    let logs: any = undefined;
+    let logs: any;
     if (ctx.input.includeLogs) {
       try {
         logs = await client.getNodeLogs(

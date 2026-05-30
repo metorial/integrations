@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
+  cancelRun,
+  deleteRun,
   getProject,
-  runProject,
   getRun,
   getRunData,
-  cancelRun,
-  deleteRun
+  listProjects,
+  runProject
 } from './tools';
 import { runStatusChanged } from './triggers';
 

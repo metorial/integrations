@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PiloterrClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let organicResultSchema = z.object({
+let _organicResultSchema = z.object({
   position: z.number().optional(),
   title: z.string().optional(),
   link: z.string().optional(),

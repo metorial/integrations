@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { StitchConnectClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let postLoadTrigger = SlateTrigger.create(spec, {
   name: 'Post-Load Hook',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CabinPandaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deleteForm = SlateTool.create(spec, {
   name: 'Delete Form',

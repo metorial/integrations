@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RunPodClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getJobStatus = SlateTool.create(spec, {
   name: 'Get Job Status',

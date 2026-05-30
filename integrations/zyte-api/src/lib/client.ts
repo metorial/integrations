@@ -15,8 +15,8 @@ export interface ExtractRequest {
   screenshotOptions?: {
     fullPage?: boolean;
   };
-  actions?: Array<BrowserAction>;
-  networkCapture?: Array<NetworkCaptureRule>;
+  actions?: BrowserAction[];
+  networkCapture?: NetworkCaptureRule[];
   javascript?: boolean;
   includeIframes?: boolean;
   requestHeaders?: { referer?: string };

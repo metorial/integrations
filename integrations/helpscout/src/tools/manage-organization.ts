@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HelpScoutClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageOrganization = SlateTool.create(spec, {
   name: 'Manage Organization',
@@ -87,7 +87,7 @@ export let manageOrganization = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.name) throw new Error('Organization name is required');
-      let result = await client.createOrganization({ name: ctx.input.name });
+      let _result = await client.createOrganization({ name: ctx.input.name });
       return {
         output: { success: true },
         message: `Created organization **"${ctx.input.name}"**.`

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MopinionClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFeedback = SlateTool.create(spec, {
   name: 'Get Feedback',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AttioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let linkedRecordObjectSchema = z.object({
   targetObject: z.string().describe('Object slug (e.g. "people", "companies")'),
@@ -11,7 +11,9 @@ let linkedRecordObjectSchema = z.object({
 let linkedRecordSchema = z.union([
   z
     .string()
-    .describe('Record reference string accepted by Attio, such as a person email or company domain'),
+    .describe(
+      'Record reference string accepted by Attio, such as a person email or company domain'
+    ),
   linkedRecordObjectSchema
 ]);
 

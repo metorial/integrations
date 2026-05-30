@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getParticipantTool = SlateTool.create(spec, {
   name: 'Get Participant',
@@ -47,7 +47,7 @@ export let getParticipantTool = SlateTool.create(spec, {
       throw new Error('Either ticketId or ticketNumber must be provided.');
     }
 
-    let p;
+    let p: any;
     if (ctx.input.ticketId) {
       p = await client.getParticipantByTicketId(ctx.input.eventId, ctx.input.ticketId);
     } else {

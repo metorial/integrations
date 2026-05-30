@@ -1,9 +1,9 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let bookmarkSchema = z.object({
+let _bookmarkSchema = z.object({
   href: z.string().describe('URL of the bookmark'),
   description: z.string().describe('Title of the bookmark'),
   extended: z.string().describe('Extended notes'),

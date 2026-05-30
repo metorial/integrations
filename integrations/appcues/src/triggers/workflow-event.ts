@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let workflowEvent = SlateTrigger.create(spec, {
   name: 'Workflow Event',
@@ -48,7 +48,7 @@ export let workflowEvent = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.name) {
+      if (!data?.name) {
         return { inputs: [] };
       }
 

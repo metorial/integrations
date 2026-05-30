@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let contactEventsTrigger = SlateTrigger.create(spec, {
   name: 'Contact Events',
@@ -54,7 +54,7 @@ export let contactEventsTrigger = SlateTrigger.create(spec, {
       for (let wh of webhooks) {
         try {
           await client.deleteWebhook(wh.webhookId);
-        } catch (e) {
+        } catch (_e) {
           // Webhook may already be deleted
         }
       }

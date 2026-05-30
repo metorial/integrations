@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAvailability = SlateTool.create(spec, {
   name: 'Get Availability',
@@ -38,7 +38,7 @@ export let getAvailability = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let availability;
+    let availability: any;
     if (ctx.input.roomTypeId) {
       availability = await client.getRoomAvailability(
         ctx.input.propertyId,

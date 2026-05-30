@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IdentityCheckClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAmlScreening = SlateTool.create(spec, {
   name: 'Get AML Screening',

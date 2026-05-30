@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let approvalOutputSchema = z.object({
   approvalId: z.number().describe('Coupa approval ID'),
@@ -71,7 +71,7 @@ export let searchApprovals = SlateTool.create(spec, {
         filters[key] = value;
       }
     }
-    if (ctx.input.status) filters['status'] = ctx.input.status;
+    if (ctx.input.status) filters.status = ctx.input.status;
     if (ctx.input.approverId) filters['approver[id]'] = String(ctx.input.approverId);
     if (ctx.input.approvableType) filters['approvable-type'] = ctx.input.approvableType;
     if (ctx.input.updatedAfter) filters['updated-at[gt]'] = ctx.input.updatedAfter;

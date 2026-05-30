@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getRecords,
-  getRecord,
-  createRecord,
-  updateRecord,
-  deleteRecords,
-  upsertRecords,
-  searchRecords,
-  listNotes,
-  createNote,
-  deleteNote,
-  listTags,
-  createTag,
   addTagsToRecords,
-  removeTagsFromRecord,
-  getModules,
+  createNote,
+  createRecord,
+  createTag,
+  deleteNote,
+  deleteRecords,
+  getCustomViews,
   getModuleFields,
   getModuleLayouts,
-  getCustomViews,
+  getModules,
+  getRecord,
+  getRecords,
   getRelatedRecords,
-  getUsers
+  getUsers,
+  listNotes,
+  listTags,
+  removeTagsFromRecord,
+  searchRecords,
+  updateRecord,
+  upsertRecords
 } from './tools';
 import { recordEvents } from './triggers';
 

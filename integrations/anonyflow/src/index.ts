@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { protectData, unprotectData, protectValue } from './tools';
+import { protectData, protectValue, unprotectData } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendBulkEmail = SlateTool.create(spec, {
   name: 'Send Bulk Email',

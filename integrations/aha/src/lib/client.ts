@@ -1,16 +1,16 @@
 import { createAxios } from 'slates';
 import type {
+  AhaComment,
+  AhaEpic,
+  AhaFeature,
+  AhaGoal,
+  AhaIdea,
+  AhaInitiative,
   AhaPagination,
   AhaProduct,
   AhaRelease,
-  AhaFeature,
-  AhaEpic,
-  AhaIdea,
-  AhaGoal,
-  AhaInitiative,
-  AhaComment,
-  AhaUser,
-  AhaTodo
+  AhaTodo,
+  AhaUser
 } from './types';
 
 export class AhaClient {

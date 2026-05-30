@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { AttioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let LIST_ENTRY_EVENT_TYPES = [
   'list-entry.created',

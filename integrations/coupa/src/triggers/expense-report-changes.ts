@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let expenseReportChanges = SlateTrigger.create(spec, {
   name: 'Expense Report Changes',
@@ -91,7 +91,7 @@ export let expenseReportChanges = SlateTrigger.create(spec, {
           status: ctx.input.status,
           expenseReportNumber: er['expense-report-number'] ?? er.expense_report_number ?? null,
           submittedBy: er['submitted-by'] ?? er.submitted_by ?? null,
-          totalAmount: er['total'] ?? er.total ?? null,
+          totalAmount: er.total ?? er.total ?? null,
           currency: er.currency ?? null,
           expenseLines: er['expense-lines'] ?? er.expense_lines ?? null,
           createdAt: er['created-at'] ?? er.created_at ?? null,

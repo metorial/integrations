@@ -4,7 +4,7 @@ import { discordApiError } from './errors';
 export class DiscordClient {
   private api: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; tokenType?: string }) {
+  constructor(config: { token: string; tokenType?: string }) {
     let authPrefix = config.tokenType === 'Bearer' ? 'Bearer' : 'Bot';
 
     this.api = createAxios({
@@ -490,13 +490,8 @@ export class DiscordClient {
     return response.data;
   }
 
-  async getGlobalApplicationCommand(
-    applicationId: string,
-    commandId: string
-  ): Promise<any> {
-    let response = await this.api.get(
-      `/applications/${applicationId}/commands/${commandId}`
-    );
+  async getGlobalApplicationCommand(applicationId: string, commandId: string): Promise<any> {
+    let response = await this.api.get(`/applications/${applicationId}/commands/${commandId}`);
     return response.data;
   }
 

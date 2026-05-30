@@ -114,9 +114,7 @@ describe('google-admin provider contract', () => {
     expect(oauth.authenticationMethod.capabilities.getProfile?.enabled).toBe(true);
 
     let scopeTitles = new Set(
-      (oauth.authenticationMethod.scopes ?? []).map(
-        (scope: { title?: string }) => scope.title
-      )
+      (oauth.authenticationMethod.scopes ?? []).map((scope: { title?: string }) => scope.title)
     );
     expect(scopeTitles.has('Users (Read Only)')).toBe(true);
     expect(scopeTitles.has('Data Transfer')).toBe(true);

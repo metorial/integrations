@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { messengerServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let isHttpsUrl = (value: string) => /^https:\/\//i.test(value);
 
@@ -42,7 +42,9 @@ let validateMessagingPolicy = (messagingType: string, tag?: string) => {
   }
 };
 
-let validateQuickReplies = (quickReplies?: Array<{ contentType: string; title?: string; payload?: string }>) => {
+let validateQuickReplies = (
+  quickReplies?: Array<{ contentType: string; title?: string; payload?: string }>
+) => {
   for (let quickReply of quickReplies || []) {
     if (quickReply.contentType === 'text' && (!quickReply.title || !quickReply.payload)) {
       throw messengerServiceError('title and payload are required for text quick replies');
@@ -87,11 +89,15 @@ Use **messagingType** and **tag** to send messages outside the 24-hour messaging
         .string()
         .refine(isHttpsUrl, 'attachmentUrl must be a public HTTPS URL')
         .optional()
-        .describe('URL of the media attachment to send. Required when attachmentType is set unless attachmentId is provided.'),
+        .describe(
+          'URL of the media attachment to send. Required when attachmentType is set unless attachmentId is provided.'
+        ),
       attachmentId: z
         .string()
         .optional()
-        .describe('Reusable attachment ID returned by Upload Attachment. Alternative to attachmentUrl.'),
+        .describe(
+          'Reusable attachment ID returned by Upload Attachment. Alternative to attachmentUrl.'
+        ),
       isReusable: z
         .boolean()
         .optional()
@@ -101,7 +107,9 @@ Use **messagingType** and **tag** to send messages outside the 24-hour messaging
         .min(2)
         .max(30)
         .optional()
-        .describe('Send 2 to 30 image URLs in one message using the multi-image Send API payload.'),
+        .describe(
+          'Send 2 to 30 image URLs in one message using the multi-image Send API payload.'
+        ),
       quickReplies: z
         .array(quickReplySchema)
         .max(13)

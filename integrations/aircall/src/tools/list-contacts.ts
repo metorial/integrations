@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listContacts = SlateTool.create(spec, {
   name: 'List Contacts',
@@ -63,7 +63,7 @@ export let listContacts = SlateTool.create(spec, {
 
     let hasSearchFilters = ctx.input.phoneNumber || ctx.input.email;
 
-    let result;
+    let result: any;
     if (hasSearchFilters) {
       result = await client.searchContacts({
         phoneNumber: ctx.input.phoneNumber,

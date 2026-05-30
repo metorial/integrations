@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  scheduleMessageTool,
-  listMessagesTool,
-  manageMessageTool,
-  listSocialProfilesTool,
-  uploadMediaTool,
   getUserInfoTool,
+  listMessagesTool,
+  listSocialProfilesTool,
+  manageMessageTool,
   manageOrganizationMembersTool,
   manageTeamsTool,
-  shortenLinkTool
+  scheduleMessageTool,
+  shortenLinkTool,
+  uploadMediaTool
 } from './tools';
 import { hootsuiteEventsTrigger } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, qualifiedTableName } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, qualifiedTableName } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let deleteRows = SlateTool.create(spec, {
   name: 'Delete Rows',

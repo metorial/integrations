@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class SensiboClient {
   private http;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.http = createAxios({
       baseURL: 'https://home.sensibo.com/api/v2',
       params: {

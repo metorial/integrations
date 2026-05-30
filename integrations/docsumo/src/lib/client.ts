@@ -128,7 +128,7 @@ let mapDocument = (doc: any): DocsumoDocument => ({
 export class Client {
   private axios;
 
-  constructor(private options: { token: string }) {
+  constructor(options: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://app.docsumo.com',
       headers: {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let publishVersion = SlateTool.create(spec, {
   name: 'Publish Version',
@@ -65,8 +65,8 @@ export let publishVersion = SlateTool.create(spec, {
     }
 
     let params: Record<string, any> = {};
-    if (ctx.input.description) params['Description'] = ctx.input.description;
-    if (ctx.input.codeSha256) params['CodeSha256'] = ctx.input.codeSha256;
+    if (ctx.input.description) params.Description = ctx.input.description;
+    if (ctx.input.codeSha256) params.CodeSha256 = ctx.input.codeSha256;
 
     let result = await client.publishVersion(ctx.input.functionName, params);
 

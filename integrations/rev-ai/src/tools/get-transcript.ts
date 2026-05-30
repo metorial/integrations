@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RevAIClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTranscript = SlateTool.create(spec, {
   name: 'Get Transcript',
@@ -116,7 +116,7 @@ export let getTranscript = SlateTool.create(spec, {
         ? monologues.map(m => m.elements.map(e => e.value).join('')).join('\n')
         : '');
     let snippet =
-      snippetText.length > 200 ? snippetText.substring(0, 200) + '...' : snippetText;
+      snippetText.length > 200 ? `${snippetText.substring(0, 200)}...` : snippetText;
 
     return {
       output: {

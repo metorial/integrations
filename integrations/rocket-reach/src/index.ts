@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchPeople,
-  lookupPerson,
   checkLookupStatus,
-  searchCompanies,
+  getAccount,
   lookupCompany,
-  getAccount
+  lookupPerson,
+  searchCompanies,
+  searchPeople
 } from './tools';
 import { lookupCompleted } from './triggers';
 

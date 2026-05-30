@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listForms,
-  getForm,
-  listSubmissions,
-  getSubmission,
   createSubmission,
-  deleteSubmission
+  deleteSubmission,
+  getForm,
+  getSubmission,
+  listForms,
+  listSubmissions
 } from './tools';
 import { formSubmission } from './triggers';
 

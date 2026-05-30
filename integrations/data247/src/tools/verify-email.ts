@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let emailResultSchema = z.object({
   email: z.string().optional().describe('The email address that was verified'),
@@ -45,7 +45,7 @@ export let verifyEmail = SlateTool.create(spec, {
     let client = new Client(ctx.auth.token);
     let { emails } = ctx.input;
 
-    let results: Array<Record<string, string>>;
+    let results: Record<string, string>[];
 
     if (emails.length === 1) {
       let result = await client.verifyEmail(emails[0]!);

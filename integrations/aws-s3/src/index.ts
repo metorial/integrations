@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBucketsTool,
-  manageBucketTool,
-  listObjectsTool,
-  getObjectTool,
-  putObjectTool,
-  deleteObjectsTool,
   copyObjectTool,
+  deleteObjectsTool,
   generatePresignedUrlTool,
-  manageObjectTagsTool,
   getBucketInfoTool,
+  getObjectTool,
+  listBucketsTool,
+  listObjectsTool,
   listObjectVersionsTool,
-  manageBucketTagsTool,
+  manageBucketLifecycleTool,
   manageBucketPolicyTool,
-  manageBucketLifecycleTool
+  manageBucketTagsTool,
+  manageBucketTool,
+  manageObjectTagsTool,
+  putObjectTool
 } from './tools';
-import { objectChangesTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, objectChangesTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

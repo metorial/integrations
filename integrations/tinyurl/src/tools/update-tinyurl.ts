@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateTinyUrl = SlateTool.create(spec, {
   name: 'Update TinyURL',
@@ -64,7 +64,7 @@ Changing the destination URL requires the **Change URL** token permission (paid 
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let result;
+    let result: any;
 
     // Change destination URL if requested (uses separate endpoint)
     if (ctx.input.newUrl) {

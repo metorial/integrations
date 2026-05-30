@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.ipinfo.io',
       headers: {
@@ -46,8 +46,8 @@ export class Client {
     options?: { page?: number; limit?: number }
   ): Promise<HostedDomainsResponse> {
     let params: Record<string, string> = {};
-    if (options?.page !== undefined) params['page'] = String(options.page);
-    if (options?.limit !== undefined) params['limit'] = String(options.limit);
+    if (options?.page !== undefined) params.page = String(options.page);
+    if (options?.limit !== undefined) params.limit = String(options.limit);
 
     let response = await this.axios.get(`/domains/${ip}`, { params });
     return response.data;

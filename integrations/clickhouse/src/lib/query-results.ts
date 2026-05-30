@@ -38,10 +38,7 @@ export type ClickHouseQueryResult = {
   format?: string;
 };
 
-export let parseClickHouseResponse = (
-  raw: string,
-  format?: string
-): ClickHouseQueryResult => {
+export let parseClickHouseResponse = (raw: string, format?: string): ClickHouseQueryResult => {
   let trimmed = raw.trim();
   let parsed = trimmed ? parseJson(trimmed) : undefined;
   let result: ClickHouseQueryResult = { raw };
@@ -59,8 +56,7 @@ export let parseClickHouseResponse = (
     if (Array.isArray(parsed.data)) {
       result.rows = parsed.data;
       result.columns = Array.isArray(parsed.meta) ? parsed.meta : undefined;
-      result.rowCount =
-        typeof parsed.rows === 'number' ? parsed.rows : parsed.data.length;
+      result.rowCount = typeof parsed.rows === 'number' ? parsed.rows : parsed.data.length;
       result.statistics = isRecord(parsed.statistics) ? parsed.statistics : undefined;
       return result;
     }

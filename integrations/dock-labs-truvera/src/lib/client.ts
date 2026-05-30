@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class DockClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; environment: string }) {
+  constructor(config: { token: string; environment: string }) {
     let baseURL =
       config.environment === 'testnet' ? 'https://api-testnet.dock.io' : 'https://api.dock.io';
 
@@ -40,7 +40,7 @@ export class DockClient {
   async listDids(params?: {
     offset?: number;
     limit?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -81,7 +81,7 @@ export class DockClient {
   async listProfiles(params?: {
     offset?: number;
     limit?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -120,7 +120,7 @@ export class DockClient {
     template?: string;
     credential: {
       type?: string[];
-      subject: Record<string, unknown> | Array<Record<string, unknown>>;
+      subject: Record<string, unknown> | Record<string, unknown>[];
       issuer: string | Record<string, unknown>;
       issuanceDate?: string;
       expirationDate?: string;
@@ -153,7 +153,7 @@ export class DockClient {
   async listCredentials(params?: {
     offset?: number;
     limit?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -186,7 +186,7 @@ export class DockClient {
 
   async createPresentation(params: {
     holder: string;
-    credentials: Array<Record<string, unknown>>;
+    credentials: Record<string, unknown>[];
     challenge?: string;
     domain?: string;
   }): Promise<Record<string, unknown>> {
@@ -209,7 +209,7 @@ export class DockClient {
   async listSchemas(params?: {
     offset?: number;
     limit?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -237,7 +237,7 @@ export class DockClient {
   async listRegistries(params?: {
     offset?: number;
     limit?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -300,7 +300,7 @@ export class DockClient {
   async listAnchors(params?: {
     offset?: number;
     limit?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -338,7 +338,7 @@ export class DockClient {
   async listProofRequests(params?: {
     offset?: number;
     limit?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -357,7 +357,7 @@ export class DockClient {
   async listTemplates(params?: {
     offset?: number;
     limit?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -409,7 +409,7 @@ export class DockClient {
   async listSubAccounts(params?: {
     offset?: number;
     limit?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);

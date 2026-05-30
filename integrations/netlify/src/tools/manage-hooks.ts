@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let hookOutputSchema = z.object({
   hookId: z.string().describe('Unique hook identifier'),

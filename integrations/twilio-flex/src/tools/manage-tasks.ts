@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TaskRouterClient } from '../lib/taskrouter-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taskSchema = z.object({
   taskSid: z.string().describe('Task SID'),
@@ -71,13 +71,13 @@ export let manageTasksTool = SlateTool.create(spec, {
         PageSize: String(ctx.input.pageSize || 50)
       };
       if (ctx.input.assignmentStatus) {
-        params['AssignmentStatus'] = ctx.input.assignmentStatus;
+        params.AssignmentStatus = ctx.input.assignmentStatus;
       }
       if (ctx.input.taskQueueSid) {
-        params['TaskQueueSid'] = ctx.input.taskQueueSid;
+        params.TaskQueueSid = ctx.input.taskQueueSid;
       }
       if (ctx.input.workflowSid) {
-        params['WorkflowSid'] = ctx.input.workflowSid;
+        params.WorkflowSid = ctx.input.workflowSid;
       }
       let result = await client.listTasks(ctx.input.workspaceSid, params);
       let tasks = (result.tasks || []).map((t: any) => ({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, escapeIdentifier, escapeLiteral } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, escapeLiteral } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageUsers = SlateTool.create(spec, {
   name: 'Manage Users',

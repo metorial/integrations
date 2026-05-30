@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let discussionSummarySchema = z.object({
   discussionNum: z.number().describe('Discussion number'),

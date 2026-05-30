@@ -56,10 +56,10 @@ export class Client {
     if (params.filterType) queryParams['filter[type]'] = params.filterType;
     if (params.filterQuery) queryParams['filter[query]'] = params.filterQuery;
     if (params.filterIds) queryParams['filter[ids]'] = params.filterIds;
-    if (params.version) queryParams['version'] = params.version;
-    if (params.locale) queryParams['locale'] = params.locale;
-    if (params.orderBy) queryParams['order_by'] = params.orderBy;
-    if (params.nested !== undefined) queryParams['nested'] = String(params.nested);
+    if (params.version) queryParams.version = params.version;
+    if (params.locale) queryParams.locale = params.locale;
+    if (params.orderBy) queryParams.order_by = params.orderBy;
+    if (params.nested !== undefined) queryParams.nested = String(params.nested);
     if (params.pageOffset !== undefined)
       queryParams['page[offset]'] = String(params.pageOffset);
     if (params.pageLimit !== undefined) queryParams['page[limit]'] = String(params.pageLimit);
@@ -68,7 +68,7 @@ export class Client {
     return {
       data: response.data,
       totalCount: response.headers?.['x-api-total-count']
-        ? parseInt(response.headers['x-api-total-count'], 10)
+        ? Number.parseInt(response.headers['x-api-total-count'], 10)
         : Array.isArray(response.data)
           ? response.data.length
           : 0
@@ -80,8 +80,8 @@ export class Client {
     params: { version?: 'current' | 'published'; nested?: boolean } = {}
   ): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params.version) queryParams['version'] = params.version;
-    if (params.nested !== undefined) queryParams['nested'] = String(params.nested);
+    if (params.version) queryParams.version = params.version;
+    if (params.nested !== undefined) queryParams.nested = String(params.nested);
 
     let response = await this.axios.get(`/items/${recordId}`, { params: queryParams });
     return response.data;
@@ -222,7 +222,7 @@ export class Client {
     return {
       data: response.data,
       totalCount: response.headers?.['x-api-total-count']
-        ? parseInt(response.headers['x-api-total-count'], 10)
+        ? Number.parseInt(response.headers['x-api-total-count'], 10)
         : Array.isArray(response.data)
           ? response.data.length
           : 0
@@ -392,18 +392,18 @@ export class Client {
     let queryParams: Record<string, string> = {
       q: query
     };
-    if (params.buildTriggerId) queryParams['build_trigger_id'] = params.buildTriggerId;
-    if (params.locale) queryParams['locale'] = params.locale;
+    if (params.buildTriggerId) queryParams.build_trigger_id = params.buildTriggerId;
+    if (params.locale) queryParams.locale = params.locale;
     if (params.pageOffset !== undefined)
       queryParams['page[offset]'] = String(params.pageOffset);
     if (params.pageLimit !== undefined) queryParams['page[limit]'] = String(params.pageLimit);
-    if (params.fuzzy !== undefined) queryParams['fuzzy'] = String(params.fuzzy);
+    if (params.fuzzy !== undefined) queryParams.fuzzy = String(params.fuzzy);
 
     let response = await this.axios.get('/search-results', { params: queryParams });
     return {
       data: response.data,
       totalCount: response.headers?.['x-api-total-count']
-        ? parseInt(response.headers['x-api-total-count'], 10)
+        ? Number.parseInt(response.headers['x-api-total-count'], 10)
         : Array.isArray(response.data)
           ? response.data.length
           : 0

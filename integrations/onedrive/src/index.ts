@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  copyItemTool,
+  createFolderTool,
+  createUploadSessionTool,
+  deleteItemTool,
+  downloadFileTool,
+  getItemTool,
   listDrivesTool,
   listItemsTool,
-  getItemTool,
-  uploadFileTool,
-  createUploadSessionTool,
-  downloadFileTool,
-  createFolderTool,
-  copyItemTool,
+  managePermissionsTool,
   moveRenameItemTool,
-  deleteItemTool,
   searchFilesTool,
   shareItemTool,
-  managePermissionsTool
+  uploadFileTool
 } from './tools';
 import { driveItemChangesTrigger } from './triggers';
 

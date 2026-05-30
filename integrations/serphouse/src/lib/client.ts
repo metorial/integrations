@@ -1,24 +1,24 @@
 import { createAxios } from 'slates';
 import type {
-  LiveSearchParams,
-  ScheduleSearchParams,
-  ScheduleSearchResponse,
+  AccountInfoResponse,
   CheckStatusResponse,
   GetResultParams,
   GoogleJobsParams,
-  GoogleVideosParams,
   GoogleShortVideosParams,
-  TrendsSearchParams,
-  TrendsScheduleParams,
-  LocationSearchParams,
+  GoogleVideosParams,
   LanguageListParams,
-  AccountInfoResponse
+  LiveSearchParams,
+  LocationSearchParams,
+  ScheduleSearchParams,
+  ScheduleSearchResponse,
+  TrendsScheduleParams,
+  TrendsSearchParams
 } from './types';
 
 export class Client {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.serphouse.com',
       headers: {

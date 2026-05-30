@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageAssistant,
-  listAssistants,
   getAssistant,
-  runAssistant,
-  runStructure,
-  listStructures,
-  queryKnowledgeBase,
+  listAssistants,
+  listDataConnectors,
+  listGriptapeTools,
   listKnowledgeBases,
+  listRetrievers,
+  listStructures,
+  manageAssistant,
+  manageBucket,
   manageKnowledgeBaseJob,
-  manageThread,
   manageMessage,
   manageRuleset,
+  manageThread,
+  queryKnowledgeBase,
   queryRetriever,
-  listRetrievers,
-  runToolActivity,
-  listGriptapeTools,
-  listDataConnectors,
-  manageBucket
+  runAssistant,
+  runStructure,
+  runToolActivity
 } from './tools';
-import { assistantRunCompleted, structureRunCompleted, inboundWebhook } from './triggers';
+import { assistantRunCompleted, inboundWebhook, structureRunCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,

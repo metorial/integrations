@@ -1,4 +1,4 @@
-import { SlateTool, createAxios } from 'slates';
+import { createAxios, SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 

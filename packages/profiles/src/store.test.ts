@@ -56,7 +56,9 @@ describe('@slates/profiles store', () => {
     expect(reopened.getAuth(profile.id, 'token_auth')?.output).toEqual({ token: 'abc' });
     expect(reopened.scope?.key).toBe('integrations/demo');
     expect(reopened.cliDir).toBe(path.join(cwd, '.slates-cli'));
-    expect(reopened.storePath).toBe(path.join(cwd, '.slates-cli', 'profiles', 'integrations', 'demo', 'store.json'));
+    expect(reopened.storePath).toBe(
+      path.join(cwd, '.slates-cli', 'profiles', 'integrations', 'demo', 'store.json')
+    );
   });
 
   it('opens an external scoped store with a separate logical root', async () => {
@@ -97,7 +99,9 @@ describe('@slates/profiles store', () => {
     expect(reopened.scope?.key).toBe('integrations/demo');
     expect(reopened.getProfile()?.target.entry).toBe('integrations/demo/src/index.ts');
 
-    await expect(access(path.join(storageRoot, '.slates-cli', '.gitignore'))).resolves.toBeUndefined();
+    await expect(
+      access(path.join(storageRoot, '.slates-cli', '.gitignore'))
+    ).resolves.toBeUndefined();
     await expect(access(path.join(workspaceRoot, '.slates-cli'))).rejects.toMatchObject({
       code: 'ENOENT'
     });
@@ -303,7 +307,9 @@ export let provider = Slate.create({
 
     let reopened = await SlatesCliStore.open({ storePath: store.storePath });
     expect(reopened.getOAuthCredential(credential.id)?.clientId).toBe('client-id');
-    expect(reopened.getOAuthCredential('Primary OAuth App')?.clientSecret).toBe('client-secret');
+    expect(reopened.getOAuthCredential('Primary OAuth App')?.clientSecret).toBe(
+      'client-secret'
+    );
   });
 
   it('refreshes expired OAuth auth automatically in the profile-backed client', async () => {

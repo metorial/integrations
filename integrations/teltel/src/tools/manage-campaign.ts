@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TelTelClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCampaignTool = SlateTool.create(spec, {
   name: 'Manage Campaign',

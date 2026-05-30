@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleMapsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let aqiIndexSchema = z.object({
   code: z.string().optional().describe('Index code (e.g. "uaqi", "usa_epa")'),
@@ -64,8 +64,8 @@ export let getAirQualityTool = SlateTool.create(spec, {
       languageCode: ctx.input.languageCode
     });
 
-    let rawIndexes = (response.indexes as Array<Record<string, unknown>>) || [];
-    let rawPollutants = (response.pollutants as Array<Record<string, unknown>>) || [];
+    let rawIndexes = (response.indexes as Record<string, unknown>[]) || [];
+    let rawPollutants = (response.pollutants as Record<string, unknown>[]) || [];
     let rawHealth = (response.healthRecommendations as Record<string, string>) || {};
 
     let indexes = rawIndexes.map(idx => ({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { createIdentityClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let cognitoProviderSchema = z.object({
   providerName: z

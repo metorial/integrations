@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BackendlessClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let publishMessage = SlateTool.create(spec, {
   name: 'Publish Message',

@@ -9,18 +9,17 @@ let getErrorMessage = (error: unknown): string => {
     return error.message;
   }
 
-  if (
-    typeof (error as { data?: { message?: unknown } })?.data?.message === 'string'
-  ) {
+  if (typeof (error as { data?: { message?: unknown } })?.data?.message === 'string') {
     return String((error as { data: { message: string } }).data.message);
   }
 
   if (
-    typeof (error as { response?: { data?: { error?: { message?: unknown } } } })?.response?.data
-      ?.error?.message === 'string'
+    typeof (error as { response?: { data?: { error?: { message?: unknown } } } })?.response
+      ?.data?.error?.message === 'string'
   ) {
     return String(
-      (error as { response: { data: { error: { message: string } } } }).response.data.error.message
+      (error as { response: { data: { error: { message: string } } } }).response.data.error
+        .message
     );
   }
 
@@ -29,7 +28,10 @@ let getErrorMessage = (error: unknown): string => {
 
 let isOnlineMeetingsFilterRequiredError = (error: unknown) => {
   let message = getErrorMessage(error).toLowerCase();
-  return message.includes('filter expression expected') && message.includes('/onlinemeetings?$filter');
+  return (
+    message.includes('filter expression expected') &&
+    message.includes('/onlinemeetings?$filter')
+  );
 };
 
 export interface GraphListResponse<T> {
@@ -70,7 +72,7 @@ export class GraphClient {
       headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     // Teams creation returns 202 with a Location header containing the async operation URL
-    let locationHeader = response.headers?.['location'] || response.headers?.['Location'];
+    let locationHeader = response.headers?.location || response.headers?.Location;
     let teamId: string | undefined;
     // Try to extract team ID from Content-Location header
     let contentLocation =
@@ -84,8 +86,9 @@ export class GraphClient {
 
   async updateTeam(teamId: string, body: any): Promise<void> {
     let groupBody = Object.fromEntries(
-      Object.entries(body).filter(([key, value]) =>
-        value !== undefined && ['displayName', 'description', 'visibility'].includes(key)
+      Object.entries(body).filter(
+        ([key, value]) =>
+          value !== undefined && ['displayName', 'description', 'visibility'].includes(key)
       )
     );
     if (Object.keys(groupBody).length > 0) {
@@ -164,7 +167,7 @@ export class GraphClient {
 
   async listChannelMessages(teamId: string, channelId: string, top?: number): Promise<any[]> {
     let params: Record<string, string> = {};
-    if (top) params['$top'] = String(top);
+    if (top) params.$top = String(top);
     let response = await graphAxios.get<GraphListResponse<any>>(
       `/teams/${teamId}/channels/${channelId}/messages`,
       { headers: this.headers, params }
@@ -219,7 +222,7 @@ export class GraphClient {
 
   async listChats(top?: number): Promise<any[]> {
     let params: Record<string, string> = {};
-    if (top) params['$top'] = String(top);
+    if (top) params.$top = String(top);
     let response = await graphAxios.get<GraphListResponse<any>>('/me/chats', {
       headers: this.headers,
       params
@@ -243,7 +246,7 @@ export class GraphClient {
 
   async listChatMessages(chatId: string, top?: number): Promise<any[]> {
     let params: Record<string, string> = {};
-    if (top) params['$top'] = String(top);
+    if (top) params.$top = String(top);
     let response = await graphAxios.get<GraphListResponse<any>>(`/chats/${chatId}/messages`, {
       headers: this.headers,
       params

@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string; baseUrl: string }) {
+  constructor(params: { token: string; baseUrl: string }) {
     this.http = createAxios({
       baseURL: `${params.baseUrl}/api/v1`,
       headers: {

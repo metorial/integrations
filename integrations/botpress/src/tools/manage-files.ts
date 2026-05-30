@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FilesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageFilesTool = SlateTool.create(spec, {
   name: 'Manage Files',

@@ -1,7 +1,7 @@
-import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { z } from 'zod';
 import crypto from 'crypto';
+import { SlateTrigger } from 'slates';
+import { z } from 'zod';
+import { spec } from '../spec';
 
 export let agentStatusChange = SlateTrigger.create(spec, {
   name: 'Agent Status Change',
@@ -39,7 +39,7 @@ export let agentStatusChange = SlateTrigger.create(spec, {
   .webhook({
     handleRequest: async ctx => {
       let signature = ctx.request.headers.get('x-webhook-signature');
-      let webhookId = ctx.request.headers.get('x-webhook-id');
+      let _webhookId = ctx.request.headers.get('x-webhook-id');
       let body = await ctx.request.text();
 
       // Verify signature if a secret is configured and signature header is present

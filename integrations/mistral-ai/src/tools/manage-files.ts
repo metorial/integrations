@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MistralClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileSchema = z.object({
   fileId: z.string().describe('Unique file identifier'),
@@ -99,7 +99,7 @@ export let getFileTool = SlateTool.create(spec, {
         mimetype: file.mimetype,
         downloadUrl: urlResult?.url
       },
-      message: `Retrieved file **${file.filename || file.id}** (${file.bytes ? Math.round(file.bytes / 1024) + ' KB' : 'unknown size'}).`
+      message: `Retrieved file **${file.filename || file.id}** (${file.bytes ? `${Math.round(file.bytes / 1024)} KB` : 'unknown size'}).`
     };
   })
   .build();

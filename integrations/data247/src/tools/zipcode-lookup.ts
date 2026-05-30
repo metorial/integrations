@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let zipcodeLookup = SlateTool.create(spec, {
   name: 'Zipcode Lookup',
@@ -84,7 +84,7 @@ export let zipcodeLookup = SlateTool.create(spec, {
       output: result,
       message:
         lookupType === 'append'
-          ? `Appended ZIP+4 code: **${result.zip || ''}${result.zip4 ? '-' + result.zip4 : ''}**.`
+          ? `Appended ZIP+4 code: **${result.zip || ''}${result.zip4 ? `-${result.zip4}` : ''}**.`
           : `Resolved ZIP code **${ctx.input.zip}** to **${result.city || ''}, ${result.state || ''}**.`
     };
   })

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pollutantDetailSchema = z
   .object({
@@ -85,7 +85,7 @@ export let getStationAirQuality = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
     let { station, city, state, country, latitude, longitude } = ctx.input;
 
-    let data;
+    let data: any;
     if (station && city && state && country) {
       ctx.progress(`Fetching data for station "${station}"...`);
       data = await client.getStationData(country, state, city, station);

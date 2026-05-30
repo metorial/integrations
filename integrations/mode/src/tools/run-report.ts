@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ModeClient } from '../lib/client';
-import { normalizeReportRun, normalizeQueryRun, getEmbedded } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ModeClient } from '../lib/client';
+import { getEmbedded, normalizeQueryRun, normalizeReportRun } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let runReport = SlateTool.create(spec, {
   name: 'Run Report',

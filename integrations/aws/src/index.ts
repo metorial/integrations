@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageEc2InstancesTool,
-  manageS3Tool,
-  manageLambdaTool,
-  manageDynamoDbTool,
-  manageIamTool,
   manageCloudWatchTool,
+  manageDynamoDbTool,
+  manageEc2InstancesTool,
+  manageIamTool,
+  manageLambdaTool,
+  manageS3Tool,
   manageSnsTool,
   manageSqsTool,
   manageStsTool

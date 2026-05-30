@@ -469,7 +469,7 @@ export class EgnyteClient {
     name: string;
     workflowType: string;
     file: { groupId: string };
-    steps: Array<Record<string, unknown>>;
+    steps: Record<string, unknown>[];
   }) {
     let response = await this.http.post('/pubapi/v1/workflows', body);
     return response.data;

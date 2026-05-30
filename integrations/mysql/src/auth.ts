@@ -110,7 +110,7 @@ let parseConnectionString = (
 
   return {
     host: url.hostname || 'localhost',
-    port: url.port ? parseInt(url.port, 10) : 3306,
+    port: url.port ? Number.parseInt(url.port, 10) : 3306,
     database: url.pathname.replace(/^\//, '') || '',
     username: decodeURIComponent(url.username || 'root'),
     password: decodeURIComponent(url.password || ''),

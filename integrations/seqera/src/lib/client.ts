@@ -1,19 +1,19 @@
 import { createAxios } from 'slates';
 import type {
-  SeqeraPipeline,
-  SeqeraWorkflow,
-  SeqeraComputeEnv,
-  SeqeraDataset,
-  SeqeraCredentials,
-  SeqeraSecret,
-  SeqeraOrganization,
-  SeqeraWorkspace,
   SeqeraAction,
+  SeqeraComputeEnv,
+  SeqeraCredentials,
+  SeqeraDataset,
   SeqeraLabel,
-  SeqeraTeam,
-  SeqeraWorkflowTask,
+  SeqeraLaunchRequest,
+  SeqeraOrganization,
   SeqeraParticipant,
-  SeqeraLaunchRequest
+  SeqeraPipeline,
+  SeqeraSecret,
+  SeqeraTeam,
+  SeqeraWorkflow,
+  SeqeraWorkflowTask,
+  SeqeraWorkspace
 } from './types';
 
 export class SeqeraClient {
@@ -384,11 +384,11 @@ export class SeqeraClient {
     });
   }
 
-  async listDatasetVersions(datasetId: string): Promise<Array<Record<string, any>>> {
+  async listDatasetVersions(datasetId: string): Promise<Record<string, any>[]> {
     let response = await this.axios.get(`/datasets/${datasetId}/versions`, {
       params: this.wsParams()
     });
-    let data = response.data as { versions?: Array<Record<string, any>> };
+    let data = response.data as { versions?: Record<string, any>[] };
     return data.versions || [];
   }
 
@@ -590,9 +590,9 @@ export class SeqeraClient {
 
   // ─── Tokens ───────────────────────────────────────────────────
 
-  async listTokens(): Promise<Array<Record<string, any>>> {
+  async listTokens(): Promise<Record<string, any>[]> {
     let response = await this.axios.get('/user-api-tokens');
-    let data = response.data as { tokens?: Array<Record<string, any>> };
+    let data = response.data as { tokens?: Record<string, any>[] };
     return data.tokens || [];
   }
 

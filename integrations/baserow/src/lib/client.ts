@@ -52,7 +52,7 @@ export interface WebhookConfig {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let authHeader =
       config.authType === 'jwt' ? `JWT ${config.token}` : `Token ${config.token}`;
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MetabaseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCollection = SlateTool.create(spec, {
   name: 'Manage Collection',

@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listWorkers,
-  getWorker,
-  getTimeOffEntries,
-  requestTimeOff,
-  getTimeBlocks,
+  actionInboxTask,
+  createCustomObject,
+  deleteCustomObject,
   executeWql,
+  getCustomObject,
   getCustomReport,
   getInboxTasks,
-  actionInboxTask,
-  listOrganizations,
   getOrganizationWorkers,
+  getTimeBlocks,
+  getTimeOffEntries,
+  getWorker,
   listCustomObjects,
-  getCustomObject,
-  createCustomObject,
-  updateCustomObject,
-  deleteCustomObject
+  listOrganizations,
+  listWorkers,
+  requestTimeOff,
+  updateCustomObject
 } from './tools';
-import { workerChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, workerChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BraintreeRestClient } from '../lib/client';
 import { parseXml } from '../lib/xml';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let voidTransaction = SlateTool.create(spec, {
   name: 'Void Transaction',

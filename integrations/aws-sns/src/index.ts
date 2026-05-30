@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  confirmSubscription,
   createTopic,
   deleteTopic,
-  listTopics,
   getTopic,
-  updateTopic,
+  listSubscriptions,
+  listTopics,
   publishMessage,
+  sendSms,
   subscribeToTopic,
   unsubscribeFromTopic,
-  listSubscriptions,
   updateSubscription,
-  confirmSubscription,
-  sendSms
+  updateTopic
 } from './tools';
 import { topicNotification } from './triggers';
 

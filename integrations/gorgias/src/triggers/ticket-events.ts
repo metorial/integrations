@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let ticketEvents = SlateTrigger.create(spec, {
   name: 'Ticket Events',

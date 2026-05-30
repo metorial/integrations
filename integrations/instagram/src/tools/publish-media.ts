@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { InstagramClient } from '../lib/client';
 import { instagramServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let publishMediaTool = SlateTool.create(spec, {
   name: 'Publish Media',
@@ -39,7 +39,9 @@ export let publishMediaTool = SlateTool.create(spec, {
       altText: z
         .string()
         .optional()
-        .describe('Accessibility alt text for image posts. Not supported for Reels or Stories.'),
+        .describe(
+          'Accessibility alt text for image posts. Not supported for Reels or Stories.'
+        ),
       locationId: z.string().optional().describe('Facebook Place ID for location tagging'),
       coverUrl: z.string().optional().describe('Custom cover image URL for Reels'),
       shareToFeed: z
@@ -103,7 +105,9 @@ export let publishMediaTool = SlateTool.create(spec, {
     if (mediaType === 'CAROUSEL') {
       let carouselItems = ctx.input.carouselItems;
       if (!carouselItems || carouselItems.length < 2 || carouselItems.length > 10) {
-        throw instagramServiceError('carouselItems must contain 2-10 items for CAROUSEL media');
+        throw instagramServiceError(
+          'carouselItems must contain 2-10 items for CAROUSEL media'
+        );
       }
 
       ctx.progress('Creating carousel item containers...');
@@ -111,7 +115,9 @@ export let publishMediaTool = SlateTool.create(spec, {
       let childIds: string[] = [];
       for (let item of carouselItems) {
         if (!item.imageUrl && !item.videoUrl) {
-          throw instagramServiceError('Each carousel item requires either imageUrl or videoUrl');
+          throw instagramServiceError(
+            'Each carousel item requires either imageUrl or videoUrl'
+          );
         }
         if (item.imageUrl && item.videoUrl) {
           throw instagramServiceError(
@@ -205,7 +211,9 @@ let waitForContainer = async (
     let status = await client.getContainerStatus(containerId);
     if (status.status_code === 'FINISHED') return;
     if (status.status_code === 'ERROR') {
-      throw instagramServiceError(`Media container failed: ${status.status || 'Unknown error'}`);
+      throw instagramServiceError(
+        `Media container failed: ${status.status || 'Unknown error'}`
+      );
     }
     await new Promise(resolve => setTimeout(resolve, 2000));
   }

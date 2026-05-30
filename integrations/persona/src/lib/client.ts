@@ -52,8 +52,8 @@ export class PersonaClient {
     if (body.templateId) attributes['template-id'] = body.templateId;
     if (body.referenceId) attributes['reference-id'] = body.referenceId;
     if (body.accountId) attributes['account-id'] = body.accountId;
-    if (body.note) attributes['note'] = body.note;
-    if (body.fields) attributes['fields'] = body.fields;
+    if (body.note) attributes.note = body.note;
+    if (body.fields) attributes.fields = body.fields;
 
     let res = await this.axios.post('/inquiries', {
       data: {
@@ -160,7 +160,7 @@ export class PersonaClient {
     if (attributes.nameLast) apiAttrs['name-last'] = attributes.nameLast;
     if (attributes.emailAddress) apiAttrs['email-address'] = attributes.emailAddress;
     if (attributes.phoneNumber) apiAttrs['phone-number'] = attributes.phoneNumber;
-    if (attributes.tags) apiAttrs['tags'] = attributes.tags;
+    if (attributes.tags) apiAttrs.tags = attributes.tags;
 
     let res = await this.axios.post('/accounts', {
       data: { attributes: apiAttrs }

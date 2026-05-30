@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleCalendarClient } from '../lib/client';
 import { googleCalendarActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventDateTimeSchema = z
   .object({

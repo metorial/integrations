@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RunPodClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageNetworkVolume = SlateTool.create(spec, {
   name: 'Manage Network Volume',

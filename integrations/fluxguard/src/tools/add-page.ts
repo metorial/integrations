@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FluxguardClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addPage = SlateTool.create(spec, {
   name: 'Add Page',

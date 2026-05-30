@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { Api2PdfClient } from '../lib/client';
+import { spec } from '../spec';
 
 let imageOptionsSchema = z
   .object({
@@ -83,7 +83,7 @@ export let captureScreenshot = SlateTool.create(spec, {
       throw new Error('Provide exactly one of: html, url, or markdown');
     }
 
-    let result;
+    let result: any;
 
     if (ctx.input.html) {
       result = await client.chromeHtmlToImage({

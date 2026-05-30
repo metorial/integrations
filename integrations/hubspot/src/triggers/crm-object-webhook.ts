@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { HubSpotClient } from '../lib/client';
 import { hubSpotActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 function parseSubscription(
   st: string | undefined

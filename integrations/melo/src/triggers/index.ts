@@ -1,2 +1,2 @@
-export * from './property-events';
 export * from './new-property-match';
+export * from './property-events';

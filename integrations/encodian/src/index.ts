@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  convertDocument,
-  pdfMergeSplit,
-  pdfManipulate,
-  pdfExtractData,
-  pdfFillForm,
-  populateWordTemplate,
-  populateExcelTemplate,
-  ocrDocument,
   aiExtractDocumentData,
-  aiTranslate,
-  aiSpeechToText,
   aiRunPrompt,
-  imageProcess,
-  imageMetadata,
+  aiSpeechToText,
+  aiTranslate,
+  archiveManage,
   barcodeCreate,
   barcodeRead,
-  wordOperations,
-  excelOperations,
-  archiveManage,
+  convertDocument,
   emailProcess,
+  excelOperations,
+  imageMetadata,
+  imageProcess,
+  ocrDocument,
+  pdfExtractData,
+  pdfFillForm,
+  pdfManipulate,
+  pdfMergeSplit,
+  populateExcelTemplate,
+  populateWordTemplate,
+  subscriptionStatus,
   utilitySecurity,
   utilityText,
-  subscriptionStatus
+  wordOperations
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

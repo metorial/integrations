@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let templateSignerSchema = z.object({
   role: z.string().describe('Role name as defined in the template'),
@@ -90,44 +90,44 @@ export let createDocumentFromTemplate = SlateTool.create(spec, {
       template_id: ctx.input.templateId
     };
 
-    if (ctx.input.title) body['title'] = ctx.input.title;
-    if (ctx.input.message) body['message'] = ctx.input.message;
-    if (ctx.input.embeddedSigningEnabled) body['embedded_signing_enabled'] = 1;
-    if (ctx.input.redirect) body['redirect'] = ctx.input.redirect;
-    if (ctx.input.redirectDecline) body['redirect_decline'] = ctx.input.redirectDecline;
-    if (ctx.input.expires) body['expires'] = ctx.input.expires;
+    if (ctx.input.title) body.title = ctx.input.title;
+    if (ctx.input.message) body.message = ctx.input.message;
+    if (ctx.input.embeddedSigningEnabled) body.embedded_signing_enabled = 1;
+    if (ctx.input.redirect) body.redirect = ctx.input.redirect;
+    if (ctx.input.redirectDecline) body.redirect_decline = ctx.input.redirectDecline;
+    if (ctx.input.expires) body.expires = ctx.input.expires;
     if (ctx.input.customRequesterName)
-      body['custom_requester_name'] = ctx.input.customRequesterName;
+      body.custom_requester_name = ctx.input.customRequesterName;
     if (ctx.input.customRequesterEmail)
-      body['custom_requester_email'] = ctx.input.customRequesterEmail;
+      body.custom_requester_email = ctx.input.customRequesterEmail;
 
-    body['signers'] = ctx.input.signers.map(s => {
+    body.signers = ctx.input.signers.map(s => {
       let signer: Record<string, any> = {
         role: s.role,
         name: s.name,
         email: s.email
       };
-      if (s.pin) signer['pin'] = s.pin;
-      if (s.message) signer['message'] = s.message;
-      if (s.deliverEmail !== undefined) signer['deliver_email'] = s.deliverEmail ? 1 : 0;
-      if (s.language) signer['language'] = s.language;
+      if (s.pin) signer.pin = s.pin;
+      if (s.message) signer.message = s.message;
+      if (s.deliverEmail !== undefined) signer.deliver_email = s.deliverEmail ? 1 : 0;
+      if (s.language) signer.language = s.language;
       return signer;
     });
 
     if (ctx.input.recipients) {
-      body['recipients'] = ctx.input.recipients.map(r => {
+      body.recipients = ctx.input.recipients.map(r => {
         let recipient: Record<string, any> = {
           role: r.role,
           name: r.name,
           email: r.email
         };
-        if (r.language) recipient['language'] = r.language;
+        if (r.language) recipient.language = r.language;
         return recipient;
       });
     }
 
     if (ctx.input.fields) {
-      body['fields'] = ctx.input.fields.map(f => ({
+      body.fields = ctx.input.fields.map(f => ({
         identifier: f.identifier,
         value: f.value
       }));

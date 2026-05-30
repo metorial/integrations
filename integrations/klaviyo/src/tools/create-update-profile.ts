@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let createUpdateProfile = SlateTool.create(spec, {
   name: 'Create or Update Profile',
@@ -77,7 +77,7 @@ Supports setting email, phone, name, location, and custom properties.`,
     if (ctx.input.location) attributes.location = ctx.input.location;
     if (ctx.input.properties) attributes.properties = ctx.input.properties;
 
-    let result;
+    let result: any;
     let isUpdate = !!ctx.input.profileId;
 
     if (isUpdate) {

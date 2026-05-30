@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCampaignEvents = SlateTool.create(spec, {
   name: 'Manage Campaign Events',
@@ -78,7 +78,7 @@ export let manageCampaignEvents = SlateTool.create(spec, {
       };
     }
 
-    let event;
+    let event: any;
     if (ctx.input.action === 'create') {
       event = await client.createCampaignEvent({
         campaign: ctx.input.campaignUuid!,

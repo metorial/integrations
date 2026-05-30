@@ -87,13 +87,12 @@ export let signRequest = (params: SignedRequestParams): Record<string, string> =
     .map(k => k.toLowerCase())
     .sort();
 
-  let canonicalHeaders =
-    sortedHeaderKeys
-      .map(
-        k =>
-          `${k}:${signedHeaders[Object.keys(signedHeaders).find(h => h.toLowerCase() === k)!]!.trim()}`
-      )
-      .join('\n') + '\n';
+  let canonicalHeaders = `${sortedHeaderKeys
+    .map(
+      k =>
+        `${k}:${signedHeaders[Object.keys(signedHeaders).find(h => h.toLowerCase() === k)!]!.trim()}`
+    )
+    .join('\n')}\n`;
 
   let signedHeadersStr = sortedHeaderKeys.join(';');
 

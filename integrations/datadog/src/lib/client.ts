@@ -1,12 +1,11 @@
 import { createAxios } from 'slates';
 import type {
-  DatadogAuthConfig,
-  Monitor,
-  MonitorOptions,
   Dashboard,
-  Event,
+  DatadogAuthConfig,
   LogSearchParams,
-  MetricsQueryParams
+  MetricsQueryParams,
+  Monitor,
+  MonitorOptions
 } from './types';
 
 export class DatadogClient {
@@ -70,7 +69,7 @@ export class DatadogClient {
     series: Array<{
       metric: string;
       type?: number;
-      points: Array<[number, number]>;
+      points: [number, number][];
       host?: string;
       tags?: string[];
     }>

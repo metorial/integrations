@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listAppointments,
-  getAppointment,
-  createAppointment,
-  updateAppointment,
   cancelAppointment,
-  rescheduleAppointment,
-  getAppointmentPayments,
   checkAvailability,
+  checkCertificate,
+  createAppointment,
   createBlock,
-  listBlocks,
+  createCertificate,
+  createClient,
   deleteBlock,
+  deleteCertificate,
+  deleteClient,
+  getAccount,
+  getAppointment,
+  getAppointmentPayments,
+  listAppointments,
+  listAppointmentTypes,
+  listBlocks,
   listCalendars,
   listClients,
-  createClient,
-  updateClient,
-  deleteClient,
-  listAppointmentTypes,
   listForms,
-  createCertificate,
-  checkCertificate,
-  deleteCertificate,
-  listProducts,
-  listOrders,
   listLabels,
-  getAccount
+  listOrders,
+  listProducts,
+  rescheduleAppointment,
+  updateAppointment,
+  updateClient
 } from './tools';
 import { appointmentEvents, orderEvents } from './triggers';
 

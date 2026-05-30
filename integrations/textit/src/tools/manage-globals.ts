@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageGlobals = SlateTool.create(spec, {
   name: 'Manage Globals',
@@ -34,7 +34,7 @@ export let manageGlobals = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
-    let global;
+    let global: any;
 
     if (ctx.input.action === 'create') {
       global = await client.createGlobal({ name: ctx.input.name, value: ctx.input.value });

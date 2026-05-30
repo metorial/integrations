@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugsnagClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let trendBucketSchema = z.object({
   from: z.string().optional().describe('Start of the time bucket (ISO 8601)'),

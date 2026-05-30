@@ -35,7 +35,7 @@ export interface Subscription {
 export class CloudClient {
   private http;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.http = createAxios({
       baseURL: 'https://cloud.vestaboard.com',
       headers: {
@@ -103,10 +103,7 @@ export class CloudClient {
 export class SubscriptionClient {
   private http;
 
-  constructor(
-    private apiKey: string,
-    private apiSecret: string
-  ) {
+  constructor(apiKey: string, apiSecret: string) {
     this.http = createAxios({
       baseURL: 'https://subscriptions.vestaboard.com',
       headers: {
@@ -155,10 +152,7 @@ export class SubscriptionClient {
 export class LocalClient {
   private http;
 
-  constructor(
-    private token: string,
-    baseUrl: string
-  ) {
+  constructor(token: string, baseUrl: string) {
     let normalizedUrl = baseUrl.replace(/\/$/, '');
     this.http = createAxios({
       baseURL: normalizedUrl,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StoryblokClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let assetOutputSchema = z.object({
   assetId: z.number().optional().describe('Numeric ID of the asset'),
@@ -57,7 +57,7 @@ export let manageAsset = SlateTool.create(spec, {
     if (action === 'delete') {
       await client.deleteAsset(assetId);
       return {
-        output: { assetId: parseInt(assetId, 10) },
+        output: { assetId: Number.parseInt(assetId, 10) },
         message: `Deleted asset \`${assetId}\`.`
       };
     }

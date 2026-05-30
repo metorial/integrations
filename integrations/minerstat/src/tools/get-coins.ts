@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeveloperClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCoinsTool = SlateTool.create(spec, {
   name: 'Get Coins',
@@ -81,7 +81,7 @@ export let getCoinsTool = SlateTool.create(spec, {
       lastUpdated: c.updated
     }));
 
-    let filterDesc = [];
+    let filterDesc: any[] = [];
     if (ctx.input.tickers) filterDesc.push(`tickers: ${ctx.input.tickers}`);
     if (ctx.input.algorithm) filterDesc.push(`algorithms: ${ctx.input.algorithm}`);
     let filterText = filterDesc.length > 0 ? ` (filtered by ${filterDesc.join(', ')})` : '';

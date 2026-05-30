@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlaygroundClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let photoInferenceSchema = z.object({
   photoAvatarId: z.string().describe('Photo avatar ID'),

@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
@@ -111,7 +111,7 @@ let buildSamlAssertion = (params: {
   let issueInstant = now.toISOString();
   let notOnOrAfterStr = notOnOrAfter.toISOString();
 
-  let assertionId = '_' + generateRandomId();
+  let assertionId = `_${generateRandomId()}`;
   let tokenUrl = `${params.apiServerUrl}/oauth/token`;
 
   let certBody = params.x509Certificate

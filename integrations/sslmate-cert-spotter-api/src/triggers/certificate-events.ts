@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let endpointSchema = z.object({
   dnsName: z.string().describe('DNS name of the affected endpoint'),
@@ -92,7 +92,7 @@ export let certificateEvents = SlateTrigger.create(spec, {
 
       // Determine event type based on payload shape
       if ('issuance' in data || 'endpoints' in data) {
-        let endpoints = (data.endpoints as Array<Record<string, unknown>>) || [];
+        let endpoints = (data.endpoints as Record<string, unknown>[]) || [];
         let issuance = data.issuance as Record<string, unknown> | undefined;
         return {
           inputs: [

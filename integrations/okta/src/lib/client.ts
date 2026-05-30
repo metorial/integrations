@@ -1,12 +1,12 @@
 import { createAxios } from 'slates';
 import type {
-  OktaUser,
-  OktaGroup,
   OktaApplication,
-  OktaLogEvent,
   OktaEventHook,
-  OktaPolicy,
   OktaFactor,
+  OktaGroup,
+  OktaLogEvent,
+  OktaPolicy,
+  OktaUser,
   PaginatedResponse
 } from './types';
 

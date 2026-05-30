@@ -219,7 +219,7 @@ export class DopplerClient {
   ): Promise<any> {
     let headers: Record<string, string> = {};
     if (format === 'env') {
-      headers['Accept'] = 'text/plain';
+      headers.Accept = 'text/plain';
     }
 
     let response = await this.axios.get('/v3/configs/config/secrets/download', {
@@ -346,7 +346,7 @@ export class DopplerClient {
       };
     }
   ): Promise<any> {
-    let response = await this.axios.patch('/v3/webhooks/webhook/' + slug, {
+    let response = await this.axios.patch(`/v3/webhooks/webhook/${slug}`, {
       project,
       ...params
     });
@@ -354,14 +354,14 @@ export class DopplerClient {
   }
 
   async enableWebhook(project: string, slug: string): Promise<any> {
-    let response = await this.axios.post('/v3/webhooks/webhook/' + slug + '/enable', {
+    let response = await this.axios.post(`/v3/webhooks/webhook/${slug}/enable`, {
       project
     });
     return response.data.webhook;
   }
 
   async disableWebhook(project: string, slug: string): Promise<any> {
-    let response = await this.axios.post('/v3/webhooks/webhook/' + slug + '/disable', {
+    let response = await this.axios.post(`/v3/webhooks/webhook/${slug}/disable`, {
       project
     });
     return response.data.webhook;

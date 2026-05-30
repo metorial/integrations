@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createCompany = SlateTool.create(spec, {
   name: 'Create Company',
@@ -54,14 +54,14 @@ export let createCompany = SlateTool.create(spec, {
       name: ctx.input.name
     };
 
-    if (ctx.input.domains) companyData['domains'] = ctx.input.domains;
-    if (ctx.input.description) companyData['description'] = ctx.input.description;
-    if (ctx.input.note) companyData['note'] = ctx.input.note;
-    if (ctx.input.healthScore) companyData['health_score'] = ctx.input.healthScore;
-    if (ctx.input.accountTier) companyData['account_tier'] = ctx.input.accountTier;
-    if (ctx.input.renewalDate) companyData['renewal_date'] = ctx.input.renewalDate;
-    if (ctx.input.industry) companyData['industry'] = ctx.input.industry;
-    if (ctx.input.customFields) companyData['custom_fields'] = ctx.input.customFields;
+    if (ctx.input.domains) companyData.domains = ctx.input.domains;
+    if (ctx.input.description) companyData.description = ctx.input.description;
+    if (ctx.input.note) companyData.note = ctx.input.note;
+    if (ctx.input.healthScore) companyData.health_score = ctx.input.healthScore;
+    if (ctx.input.accountTier) companyData.account_tier = ctx.input.accountTier;
+    if (ctx.input.renewalDate) companyData.renewal_date = ctx.input.renewalDate;
+    if (ctx.input.industry) companyData.industry = ctx.input.industry;
+    if (ctx.input.customFields) companyData.custom_fields = ctx.input.customFields;
 
     let company = await client.createCompany(companyData);
 

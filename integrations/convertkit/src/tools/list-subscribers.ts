@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listSubscribers = SlateTool.create(spec, {
   name: 'List Subscribers',
@@ -70,7 +70,7 @@ export let listSubscribers = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
     let input = ctx.input;
 
-    let result;
+    let result: any;
 
     if (input.tagId) {
       result = await client.listSubscribersForTag(input.tagId, {
@@ -105,7 +105,7 @@ export let listSubscribers = SlateTool.create(spec, {
       });
     }
 
-    let subscribers = result.subscribers.map(s => ({
+    let subscribers = result.subscribers.map((s: any) => ({
       subscriberId: s.id,
       firstName: s.first_name,
       emailAddress: s.email_address,

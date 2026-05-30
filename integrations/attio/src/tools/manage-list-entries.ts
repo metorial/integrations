@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AttioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getListsTool = SlateTool.create(spec, {
   name: 'Get Lists',
@@ -109,7 +109,7 @@ export let addListEntryTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new AttioClient({ token: ctx.auth.token });
 
-    let entry;
+    let entry: any;
     if (ctx.input.upsert) {
       entry = await client.assertListEntry(
         ctx.input.listSlug,

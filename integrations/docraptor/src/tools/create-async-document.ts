@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { baseDocumentInputSchema } from '../lib/schemas';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { baseDocumentInputSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let createAsyncDocument = SlateTool.create(spec, {
   name: 'Create Async Document',

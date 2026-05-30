@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DotSimpleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contentSchema = z.object({
   body: z.string().describe('The text content of the post'),

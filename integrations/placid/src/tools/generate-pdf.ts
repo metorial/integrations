@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlacidClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transferSchema = z
   .object({
@@ -85,11 +85,11 @@ export let generatePdf = SlateTool.create(spec, {
     let client = new PlacidClient({ token: ctx.auth.token });
 
     let modifications: Record<string, unknown> = {};
-    if (ctx.input.filename) modifications['filename'] = ctx.input.filename;
-    if (ctx.input.imageQuality) modifications['image_quality'] = ctx.input.imageQuality;
-    if (ctx.input.dpi !== undefined) modifications['dpi'] = ctx.input.dpi;
-    if (ctx.input.colorMode) modifications['color_mode'] = ctx.input.colorMode;
-    if (ctx.input.colorProfile) modifications['color_profile'] = ctx.input.colorProfile;
+    if (ctx.input.filename) modifications.filename = ctx.input.filename;
+    if (ctx.input.imageQuality) modifications.image_quality = ctx.input.imageQuality;
+    if (ctx.input.dpi !== undefined) modifications.dpi = ctx.input.dpi;
+    if (ctx.input.colorMode) modifications.color_mode = ctx.input.colorMode;
+    if (ctx.input.colorProfile) modifications.color_profile = ctx.input.colorProfile;
 
     let result = await client.createPdf({
       pages: ctx.input.pages.map(page => ({

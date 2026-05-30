@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let invoiceStatus = SlateTrigger.create(spec, {
   name: 'Invoice Status Update',
@@ -71,14 +71,14 @@ export let invoiceStatus = SlateTrigger.create(spec, {
         data = Object.fromEntries(params.entries());
       }
 
-      if (!data || !data.txn_id) {
+      if (!data?.txn_id) {
         return { inputs: [] };
       }
 
       let confirmations: number | undefined;
       if (data.confirmations !== undefined && data.confirmations !== null) {
         confirmations = Number(data.confirmations);
-        if (isNaN(confirmations)) {
+        if (Number.isNaN(confirmations)) {
           confirmations = undefined;
         }
       }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createKubeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageJob = SlateTool.create(spec, {
   name: 'Manage Job',

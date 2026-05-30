@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  publishMessage,
+  getChannelStatus,
   getMessageHistory,
   getPresence,
   getPresenceHistory,
-  getChannelStatus,
   getStatistics,
-  requestToken,
-  revokeTokens,
   manageApps,
   manageKeys,
-  manageRules,
+  manageNamespaces,
   manageQueues,
-  manageNamespaces
+  manageRules,
+  publishMessage,
+  requestToken,
+  revokeTokens
 } from './tools';
 import { channelEvents } from './triggers';
 

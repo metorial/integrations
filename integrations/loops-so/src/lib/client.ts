@@ -80,7 +80,7 @@ export interface SendTransactionalParams {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://app.loops.so/api/v1',
       headers: {

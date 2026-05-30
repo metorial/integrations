@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let muralOutputSchema = z.object({
   muralId: z.string(),
@@ -40,7 +40,7 @@ export let listMuralsTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let result;
+    let result: any;
     if (ctx.input.roomId) {
       result = await client.listMuralsInRoom(ctx.input.roomId, {
         limit: ctx.input.limit,
@@ -55,7 +55,7 @@ export let listMuralsTool = SlateTool.create(spec, {
       throw new Error('Either workspaceId or roomId must be provided');
     }
 
-    let murals = result.value.map(m => ({
+    let murals = result.value.map((m: any) => ({
       muralId: m.id,
       title: m.title,
       description: m.description,

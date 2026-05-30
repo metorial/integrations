@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCarriers = SlateTool.create(spec, {
   name: 'List Carriers',
@@ -88,7 +88,7 @@ export let listCarriers = SlateTool.create(spec, {
       supportsLabelMessages: c.supports_label_messages
     }));
 
-    let services;
+    let services: any;
     if (ctx.input.includeServicesForCarrierId) {
       let servicesResult = await client.listCarrierServices(
         ctx.input.includeServicesForCarrierId
@@ -103,7 +103,7 @@ export let listCarriers = SlateTool.create(spec, {
       }));
     }
 
-    let packageTypes;
+    let packageTypes: any;
     if (ctx.input.includePackagesForCarrierId) {
       let packagesResult = await client.listCarrierPackageTypes(
         ctx.input.includePackagesForCarrierId

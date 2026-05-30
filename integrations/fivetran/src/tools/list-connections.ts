@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FivetranClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let connectionSummarySchema = z.object({
   connectionId: z.string().describe('Unique identifier of the connection'),

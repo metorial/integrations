@@ -73,7 +73,7 @@ export class PayPalClient {
       reference_id?: string;
       amount: { currency_code: string; value: string; breakdown?: Record<string, any> };
       description?: string;
-      items?: Array<Record<string, any>>;
+      items?: Record<string, any>[];
       shipping?: Record<string, any>;
       payee?: Record<string, any>;
     }>;
@@ -114,7 +114,7 @@ export class PayPalClient {
       carrier?: string;
       carrierNameOther?: string;
       notifyPayer?: boolean;
-      items?: Array<Record<string, any>>;
+      items?: Record<string, any>[];
     }
   ): Promise<Record<string, any>> {
     let body: Record<string, any> = {
@@ -392,7 +392,7 @@ export class PayPalClient {
       payment_term?: Record<string, any>;
     };
     invoicer?: Record<string, any>;
-    primaryRecipients?: Array<Record<string, any>>;
+    primaryRecipients?: Record<string, any>[];
     items?: Array<{
       name: string;
       quantity: string;

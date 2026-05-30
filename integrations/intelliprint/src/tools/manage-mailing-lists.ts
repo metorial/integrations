@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { recipientSchema, mailingListSchema, mapMailingList } from '../lib/schemas';
+import { Client } from '../lib/client';
+import { mailingListSchema, mapMailingList, recipientSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let createMailingList = SlateTool.create(spec, {
   name: 'Create Mailing List',

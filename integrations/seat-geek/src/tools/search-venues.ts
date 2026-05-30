@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let venueSchema = z.object({
   venueId: z.number().describe('Unique venue ID'),
@@ -79,17 +79,17 @@ export let searchVenues = SlateTool.create(spec, {
 
     let params: Record<string, string> = {};
 
-    if (ctx.input.query) params['q'] = ctx.input.query;
-    if (ctx.input.city) params['city'] = ctx.input.city;
-    if (ctx.input.state) params['state'] = ctx.input.state;
-    if (ctx.input.country) params['country'] = ctx.input.country;
-    if (ctx.input.postalCode) params['postal_code'] = ctx.input.postalCode;
-    if (ctx.input.latitude) params['lat'] = String(ctx.input.latitude);
-    if (ctx.input.longitude) params['lon'] = String(ctx.input.longitude);
-    if (ctx.input.geoIp) params['geoip'] = ctx.input.geoIp;
-    if (ctx.input.range) params['range'] = ctx.input.range;
-    if (ctx.input.page) params['page'] = String(ctx.input.page);
-    if (ctx.input.perPage) params['per_page'] = String(ctx.input.perPage);
+    if (ctx.input.query) params.q = ctx.input.query;
+    if (ctx.input.city) params.city = ctx.input.city;
+    if (ctx.input.state) params.state = ctx.input.state;
+    if (ctx.input.country) params.country = ctx.input.country;
+    if (ctx.input.postalCode) params.postal_code = ctx.input.postalCode;
+    if (ctx.input.latitude) params.lat = String(ctx.input.latitude);
+    if (ctx.input.longitude) params.lon = String(ctx.input.longitude);
+    if (ctx.input.geoIp) params.geoip = ctx.input.geoIp;
+    if (ctx.input.range) params.range = ctx.input.range;
+    if (ctx.input.page) params.page = String(ctx.input.page);
+    if (ctx.input.perPage) params.per_page = String(ctx.input.perPage);
 
     let response = await client.searchVenues(params);
 

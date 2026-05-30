@@ -32,7 +32,7 @@ let headerValueToString = (value: unknown): string | undefined => {
 export class Client {
   private credentials: OAuth1Credentials;
 
-  constructor(private config: SmugMugClientConfig) {
+  constructor(config: SmugMugClientConfig) {
     this.credentials = {
       consumerKey: config.consumerKey,
       consumerSecret: config.consumerSecret,
@@ -382,7 +382,7 @@ export class Client {
       headerValueToString(imageResponse.headers['content-type']) || 'application/octet-stream';
 
     // Re-generate auth header for the actual upload with proper content type
-    headers['Authorization'] = this.getAuthHeader('POST', uploadUrl);
+    headers.Authorization = this.getAuthHeader('POST', uploadUrl);
 
     let response = await httpClient.post(uploadUrl, imageBuffer, { headers });
     return response.data;

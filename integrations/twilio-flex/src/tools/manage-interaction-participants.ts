@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FlexClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageInteractionParticipantsTool = SlateTool.create(spec, {
   name: 'Manage Interaction Participants',
@@ -71,10 +71,10 @@ export let manageInteractionParticipantsTool = SlateTool.create(spec, {
         Type: ctx.input.participantType || 'agent'
       };
       if (ctx.input.mediaProperties) {
-        params['MediaProperties'] = JSON.stringify(ctx.input.mediaProperties);
+        params.MediaProperties = JSON.stringify(ctx.input.mediaProperties);
       }
       if (ctx.input.routingAttributes) {
-        params['RoutingProperties'] = JSON.stringify(ctx.input.routingAttributes);
+        params.RoutingProperties = JSON.stringify(ctx.input.routingAttributes);
       }
 
       let result = await client.createInteractionChannelParticipant(

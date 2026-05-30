@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let executeQuery = SlateTool.create(spec, {
   name: 'Execute GraphQL Query',

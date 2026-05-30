@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let wikiEvents = SlateTrigger.create(spec, {
   name: 'Wiki Events',
@@ -45,8 +45,7 @@ export let wikiEvents = SlateTrigger.create(spec, {
           {
             action: String(data.action || ''),
             pageTitle: String(data.page || data.page_name || ''),
-            pageUrl:
-              String(data.repository?.html_url || '') + '/wiki/' + String(data.page || ''),
+            pageUrl: `${String(data.repository?.html_url || '')}/wiki/${String(data.page || '')}`,
             senderLogin: String(data.sender?.login || ''),
             repositoryFullName: String(data.repository?.full_name || ''),
             repositoryOwner: String(data.repository?.owner?.login || ''),

@@ -2,21 +2,21 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createInvoice,
-  listInvoices,
   deleteInvoice,
-  manageCustomer,
-  listCustomers,
-  manageProduct,
-  listProducts,
   getProduct,
-  managePayment,
-  listPayments,
-  manageExpense,
-  listExpenses,
+  getProfile,
   listCurrencies,
-  getProfile
+  listCustomers,
+  listExpenses,
+  listInvoices,
+  listPayments,
+  listProducts,
+  manageCustomer,
+  manageExpense,
+  managePayment,
+  manageProduct
 } from './tools';
-import { newInvoice, newPayment, newCustomer, newExpense, inboundWebhook } from './triggers';
+import { inboundWebhook, newCustomer, newExpense, newInvoice, newPayment } from './triggers';
 
 export let provider = Slate.create({
   spec,

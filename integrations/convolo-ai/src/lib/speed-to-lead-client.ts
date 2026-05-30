@@ -59,19 +59,19 @@ export class SpeedToLeadClient {
     };
 
     if (params.leadName) {
-      body['lc_param_name'] = params.leadName;
+      body.lc_param_name = params.leadName;
     }
     if (params.leadEmail) {
-      body['lc_param_email'] = params.leadEmail;
+      body.lc_param_email = params.leadEmail;
     }
     if (params.message) {
-      body['lc_param_message'] = params.message;
+      body.lc_param_message = params.message;
     }
     if (params.secondaryPhone) {
-      body['lc_number_2'] = params.secondaryPhone;
+      body.lc_number_2 = params.secondaryPhone;
     }
     if (params.country) {
-      body['country'] = params.country;
+      body.country = params.country;
     }
 
     if (params.agents) {
@@ -101,25 +101,25 @@ export class SpeedToLeadClient {
       'api-key': this.apiKey
     };
 
-    if (filters.dateFrom) params['date_from'] = filters.dateFrom;
-    if (filters.dateTo) params['date_to'] = filters.dateTo;
-    if (filters.widgetIds) params['widget_ids'] = filters.widgetIds;
-    if (filters.maxCalls !== undefined) params['max_calls'] = filters.maxCalls;
-    if (filters.page !== undefined) params['page'] = filters.page;
-    if (filters.searchString) params['search_string'] = filters.searchString;
-    if (filters.status) params['status'] = filters.status;
-    if (filters.filterUrl) params['filter_url'] = filters.filterUrl;
-    if (filters.filterReferer) params['filter_referer'] = filters.filterReferer;
-    if (filters.filterLeadNumber) params['filter_lead_number'] = filters.filterLeadNumber;
-    if (filters.filterAgent) params['filter_agent'] = filters.filterAgent;
+    if (filters.dateFrom) params.date_from = filters.dateFrom;
+    if (filters.dateTo) params.date_to = filters.dateTo;
+    if (filters.widgetIds) params.widget_ids = filters.widgetIds;
+    if (filters.maxCalls !== undefined) params.max_calls = filters.maxCalls;
+    if (filters.page !== undefined) params.page = filters.page;
+    if (filters.searchString) params.search_string = filters.searchString;
+    if (filters.status) params.status = filters.status;
+    if (filters.filterUrl) params.filter_url = filters.filterUrl;
+    if (filters.filterReferer) params.filter_referer = filters.filterReferer;
+    if (filters.filterLeadNumber) params.filter_lead_number = filters.filterLeadNumber;
+    if (filters.filterAgent) params.filter_agent = filters.filterAgent;
     if (filters.filterAnswerTimeFrom !== undefined)
-      params['filter_answer_time_from'] = filters.filterAnswerTimeFrom;
+      params.filter_answer_time_from = filters.filterAnswerTimeFrom;
     if (filters.filterAnswerTimeTo !== undefined)
-      params['filter_answer_time_to'] = filters.filterAnswerTimeTo;
+      params.filter_answer_time_to = filters.filterAnswerTimeTo;
     if (filters.filterTalkTimeFrom !== undefined)
-      params['filter_talk_time_from'] = filters.filterTalkTimeFrom;
+      params.filter_talk_time_from = filters.filterTalkTimeFrom;
     if (filters.filterTalkTimeTo !== undefined)
-      params['filter_talk_time_to'] = filters.filterTalkTimeTo;
+      params.filter_talk_time_to = filters.filterTalkTimeTo;
 
     let response = await this.reportAxios.get('/calls/payload-data-list', { params });
 

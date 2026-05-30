@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let itemDetailSchema = z.object({
   quantity: z.number().min(1).describe('Number of gift cards to create from this item'),
@@ -188,12 +188,12 @@ export let createOrder = SlateTool.create(spec, {
       let mapped: any = { ...item };
       if (item.itemId) {
         mapped.id = item.itemId;
-        delete mapped.itemId;
+        mapped.itemId = undefined;
       }
       return mapped;
     });
 
-    let recipientDetails: any = undefined;
+    let recipientDetails: any;
     if (ctx.input.recipient) {
       recipientDetails = { ...ctx.input.recipient };
       if (recipientDetails.shippingOption?.shippingOptionId) {
@@ -201,7 +201,7 @@ export let createOrder = SlateTool.create(spec, {
           ...recipientDetails.shippingOption,
           id: recipientDetails.shippingOption.shippingOptionId
         };
-        delete recipientDetails.shippingOption.shippingOptionId;
+        recipientDetails.shippingOption.shippingOptionId = undefined;
       }
     }
 

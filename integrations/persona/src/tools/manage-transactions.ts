@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PersonaClient } from '../lib/client';
 import { normalizeResource } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createTransaction = SlateTool.create(spec, {
   name: 'Create Transaction',
@@ -39,7 +39,7 @@ export let createTransaction = SlateTool.create(spec, {
     if (ctx.input.transactionTemplateId)
       attrs['transaction-template-id'] = ctx.input.transactionTemplateId;
     if (ctx.input.accountId) attrs['account-id'] = ctx.input.accountId;
-    if (ctx.input.fields) attrs['fields'] = ctx.input.fields;
+    if (ctx.input.fields) attrs.fields = ctx.input.fields;
 
     let result = await client.createTransaction(attrs);
     let normalized = normalizeResource(result.data);

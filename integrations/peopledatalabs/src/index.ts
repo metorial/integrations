@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  enrichPerson,
-  searchPerson,
-  identifyPerson,
-  retrievePerson,
-  enrichCompany,
-  searchCompany,
-  enrichIp,
-  enrichJobTitle,
-  enrichSkill,
+  autocomplete,
   cleanCompany,
   cleanLocation,
   cleanSchool,
-  autocomplete
+  enrichCompany,
+  enrichIp,
+  enrichJobTitle,
+  enrichPerson,
+  enrichSkill,
+  identifyPerson,
+  retrievePerson,
+  searchCompany,
+  searchPerson
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

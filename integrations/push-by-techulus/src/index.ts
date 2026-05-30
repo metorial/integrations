@@ -1,10 +1,10 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendNotification,
-  sendGroupNotification,
   inviteTeamMember,
-  removeTeamMember
+  removeTeamMember,
+  sendGroupNotification,
+  sendNotification
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

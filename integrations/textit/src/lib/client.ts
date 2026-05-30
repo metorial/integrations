@@ -210,7 +210,7 @@ export interface ResthookEvent {
 export class Client {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://textit.com/api/v2',
       headers: {

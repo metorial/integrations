@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listInboxes = SlateTool.create(spec, {
   name: 'List Inboxes',
@@ -87,7 +87,7 @@ export let getInbox = SlateTool.create(spec, {
 
     let inbox = await client.getInbox(ctx.input.inboxId);
 
-    let channels;
+    let channels: any;
     if (ctx.input.includeChannels) {
       let channelResult = await client.listInboxChannels(ctx.input.inboxId);
       channels = channelResult._results.map(ch => ({

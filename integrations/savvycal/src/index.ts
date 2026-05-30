@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listEventsTool,
-  getEventTool,
-  createEventTool,
   cancelEventTool,
-  listLinksTool,
-  manageLinkTool,
+  createEventTool,
+  getEventTool,
   getUserTool,
+  listEventsTool,
+  listLinksTool,
+  listTimeZonesTool,
   listWorkflowsTool,
-  listTimeZonesTool
+  manageLinkTool
 } from './tools';
 import {
-  eventLifecycleTrigger,
-  eventCheckoutTrigger,
   eventAttendeeTrigger,
+  eventCheckoutTrigger,
+  eventLifecycleTrigger,
   pollResponseTrigger,
   workflowActionTrigger
 } from './triggers';

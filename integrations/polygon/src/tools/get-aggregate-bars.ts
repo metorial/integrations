@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PolygonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let aggregateBarSchema = z.object({
   open: z.number().optional().describe('Open price'),

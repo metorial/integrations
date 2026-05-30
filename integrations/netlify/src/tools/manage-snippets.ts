@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { netlifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let snippetOutputSchema = z.object({
   snippetId: z.string().describe('Unique snippet identifier'),

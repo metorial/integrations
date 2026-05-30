@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let recipientSchema = z.object({
   recipientId: z.number().describe('Unique identifier of the recipient'),
@@ -46,7 +46,7 @@ export let getEnvelopeTool = SlateTool.create(spec, {
 
     let envelope = await client.getEnvelope(ctx.input.envelopeId);
 
-    let recipients = (envelope.recipients ?? []) as Array<Record<string, unknown>>;
+    let recipients = (envelope.recipients ?? []) as Record<string, unknown>[];
 
     return {
       output: {

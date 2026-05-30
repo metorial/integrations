@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  parseDocument,
-  listDocsets,
-  getDocset,
   createDocset,
-  updateDocset,
   deleteDocset,
-  listDocuments,
-  getDocument,
   deleteDocument,
-  updateDocumentProperties,
-  searchDocuments,
-  extractProperties,
   deleteProperties,
-  suggestProperties,
+  extractProperties,
+  generateQueryPlan,
+  getDocset,
+  getDocument,
+  listDocsets,
+  listDocuments,
+  parseDocument,
   runQuery,
-  generateQueryPlan
+  searchDocuments,
+  suggestProperties,
+  updateDocset,
+  updateDocumentProperties
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

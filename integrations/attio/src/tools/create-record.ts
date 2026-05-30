@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AttioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createRecordTool = SlateTool.create(spec, {
   name: 'Create or Update Record',
@@ -43,7 +43,7 @@ export let createRecordTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new AttioClient({ token: ctx.auth.token });
 
-    let record;
+    let record: any;
     if (ctx.input.matchingAttribute) {
       record = await client.assertRecord(
         ctx.input.objectSlug,

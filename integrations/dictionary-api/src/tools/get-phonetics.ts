@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DictionaryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let phoneticEntrySchema = z.object({
   text: z.string().optional().describe('IPA phonetic transcription'),

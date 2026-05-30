@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FilesComClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileEntrySchema = z.object({
   path: z.string().describe('Full path of the file or folder'),

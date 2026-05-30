@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  validatePhone,
-  scrubPhone,
   checkPhoneActive,
-  identifyPhoneType,
-  dncLookup,
-  scoreFraudRisk,
   checkReassignedNumber,
+  dncLookup,
+  identifyPhoneType,
+  scoreFraudRisk,
+  scrubPhone,
+  validatePhone,
   verifyEmail
 } from './tools';
 

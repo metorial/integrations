@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let customAttributePropertySchema = z.object({
   type: z
@@ -109,7 +109,7 @@ Supports custom attributes for extracting additional data beyond the default sch
       device: ctx.input.device
     });
 
-    let headline = (response.article as Record<string, unknown> | undefined)?.['headline'] as
+    let headline = (response.article as Record<string, unknown> | undefined)?.headline as
       | string
       | undefined;
 

@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  getAuditLogs,
+  getNodeStatus,
   listConsortia,
-  manageConsortium,
-  manageEnvironment,
-  manageNode,
-  manageMembership,
-  manageService,
   manageAppCredential,
   manageCompiledContract,
-  getNodeStatus,
-  getAuditLogs,
-  manageInvitation
+  manageConsortium,
+  manageEnvironment,
+  manageInvitation,
+  manageMembership,
+  manageNode,
+  manageService
 } from './tools';
 import { auditLogChanges, inboundWebhook } from './triggers';
 

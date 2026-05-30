@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlisioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let withdraw = SlateTool.create(spec, {
   name: 'Withdraw',

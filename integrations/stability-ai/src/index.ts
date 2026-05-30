@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateImage,
-  editImage,
-  upscaleImage,
   controlImage,
-  replaceBackground,
-  generateAudio,
+  editImage,
   generate3D,
-  getAccount
+  generateAudio,
+  generateImage,
+  getAccount,
+  replaceBackground,
+  upscaleImage
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

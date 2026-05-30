@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StudioClient } from '../lib/studio-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let flowSchema = z.object({
   flowSid: z.string().describe('Flow SID'),
@@ -123,7 +123,7 @@ export let manageStudioFlowsTool = SlateTool.create(spec, {
         From: ctx.input.from
       };
       if (ctx.input.parameters) {
-        params['Parameters'] = JSON.stringify(ctx.input.parameters);
+        params.Parameters = JSON.stringify(ctx.input.parameters);
       }
       let result = await client.triggerFlowExecution(ctx.input.flowSid, params);
       return {

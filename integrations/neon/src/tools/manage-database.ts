@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NeonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let databaseSchema = z.object({
   databaseId: z.number().describe('Numeric identifier of the database'),

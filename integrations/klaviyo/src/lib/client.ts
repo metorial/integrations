@@ -59,9 +59,9 @@ export class KlaviyoClient {
     pageCursor?: string;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[profile]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
 
@@ -78,7 +78,7 @@ export class KlaviyoClient {
   ): Promise<JsonApiResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[profile]'] = params.fields.join(',');
-    if (params?.include?.length) query['include'] = params.include.join(',');
+    if (params?.include?.length) query.include = params.include.join(',');
 
     let response = await this.axios.get(`/profiles/${profileId}/`, { params: query });
     return response.data;
@@ -211,7 +211,7 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[list]'] = params.fields.join(',');
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
@@ -275,7 +275,7 @@ export class KlaviyoClient {
   ): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[profile]'] = params.fields.join(',');
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -292,7 +292,7 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[segment]'] = params.fields.join(',');
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
@@ -348,7 +348,7 @@ export class KlaviyoClient {
   ): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[profile]'] = params.fields.join(',');
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -366,9 +366,9 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[campaign]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -433,9 +433,9 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[flow]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -452,7 +452,7 @@ export class KlaviyoClient {
   ): Promise<JsonApiResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[flow]'] = params.fields.join(',');
-    if (params?.include?.length) query['include'] = params.include.join(',');
+    if (params?.include?.length) query.include = params.include.join(',');
 
     let response = await this.axios.get(`/flows/${flowId}/`, { params: query });
     return response.data;
@@ -483,7 +483,7 @@ export class KlaviyoClient {
   ): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[flow-action]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
 
     let response = await this.axios.get(`/flows/${flowId}/flow-actions/`, { params: query });
@@ -501,12 +501,12 @@ export class KlaviyoClient {
     include?: string[];
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[event]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
-    if (params?.include?.length) query['include'] = params.include.join(',');
+    if (params?.include?.length) query.include = params.include.join(',');
 
     let response = await this.axios.get('/events/', { params: query });
     return response.data;
@@ -542,7 +542,7 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[metric]'] = params.fields.join(',');
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
@@ -580,9 +580,9 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[catalog-item]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -650,9 +650,9 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[catalog-category]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -670,9 +670,9 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[template]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -752,9 +752,9 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[tag]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -800,9 +800,9 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[tag-group]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -831,7 +831,7 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -1015,9 +1015,9 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[form]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
@@ -1040,9 +1040,9 @@ export class KlaviyoClient {
     pageSize?: number;
   }): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
-    if (params?.filter) query['filter'] = params.filter;
+    if (params?.filter) query.filter = params.filter;
     if (params?.fields?.length) query['fields[image]'] = params.fields.join(',');
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 

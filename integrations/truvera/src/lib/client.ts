@@ -8,7 +8,7 @@ let BASE_URLS: Record<string, string> = {
 export class Client {
   private axios;
 
-  constructor(private params: { token: string; environment: string }) {
+  constructor(params: { token: string; environment: string }) {
     let baseURL = BASE_URLS[params.environment] || BASE_URLS.production;
     this.axios = createAxios({
       baseURL,

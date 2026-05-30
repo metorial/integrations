@@ -7,8 +7,7 @@ export interface ClientConfig {
   projectId?: string;
 }
 
-let sanitizeMultipartHeader = (value: string) =>
-  value.replace(/[\r\n"]/g, '_');
+let sanitizeMultipartHeader = (value: string) => value.replace(/[\r\n"]/g, '_');
 
 let appendMultipartField = (
   parts: Buffer[],
@@ -50,9 +49,7 @@ let decodeFileContent = (params: {
   let fieldName = params.fieldName ?? 'content';
 
   if (hasContent === hasBase64) {
-    throw openAIServiceError(
-      `Provide exactly one of ${fieldName} or ${fieldName}Base64.`
-    );
+    throw openAIServiceError(`Provide exactly one of ${fieldName} or ${fieldName}Base64.`);
   }
 
   if (hasBase64) {
@@ -117,7 +114,7 @@ let responseDataToBase64 = (data: unknown) => {
 export class Client {
   private axios: any;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let headers: Record<string, string> = {
       Authorization: `Bearer ${config.token}`
     };
@@ -209,7 +206,7 @@ export class Client {
 
   async createResponse(params: {
     model: string;
-    input: string | Array<any>;
+    input: string | any[];
     instructions?: string;
     background?: boolean;
     previousResponseId?: string;
@@ -217,7 +214,7 @@ export class Client {
     temperature?: number;
     maxOutputTokens?: number;
     topP?: number;
-    tools?: Array<any>;
+    tools?: any[];
     toolChoice?: string | any;
     text?: any;
     reasoning?: { effort?: string };

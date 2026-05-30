@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let projectSchema = z.object({
   projectId: z.number().describe('Unique identifier'),
@@ -51,7 +51,7 @@ export let listProjects = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new CapsuleClient({ token: ctx.auth.token });
 
-    let result;
+    let result: any;
     if (ctx.input.partyId) {
       result = await client.listProjectsByParty(ctx.input.partyId, {
         page: ctx.input.page,

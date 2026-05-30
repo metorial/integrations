@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let storageFileSchema = z.object({
   fileId: z.string().describe('File identifier'),

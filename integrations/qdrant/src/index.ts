@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCollections,
-  getCollection,
+  countPoints,
   createCollection,
   deleteCollection,
-  manageAliases,
-  upsertPoints,
-  getPoints,
   deletePoints,
-  scrollPoints,
-  countPoints,
-  searchPoints,
-  recommendPoints,
   discoverPoints,
+  getCollection,
+  getPoints,
+  listCollections,
+  manageAliases,
+  manageClusters,
   managePayload,
   managePayloadIndex,
   manageSnapshots,
-  manageClusters
+  recommendPoints,
+  scrollPoints,
+  searchPoints,
+  upsertPoints
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

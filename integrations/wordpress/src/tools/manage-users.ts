@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, extractUserSummary } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, extractUserSummary } from '../lib/helpers';
+import { spec } from '../spec';
 
 let userOutputSchema = z.object({
   userId: z.string().describe('Unique identifier of the user'),
@@ -76,7 +76,7 @@ export let getCurrentUserTool = SlateTool.create(spec, {
     let client = createClient(ctx.config, ctx.auth);
     let user = await client.getCurrentUser();
 
-    let result;
+    let result: any;
     if (ctx.config.apiType === 'wpcom') {
       result = {
         userId: String(user.ID),

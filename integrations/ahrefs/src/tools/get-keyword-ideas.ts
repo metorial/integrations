@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getKeywordIdeas = SlateTool.create(spec, {
   name: 'Get Keyword Ideas',
@@ -53,7 +53,7 @@ Also supports fetching search volume history and volume by country for deeper an
     let client = new Client({ token: ctx.auth.token });
     let ideaType = ctx.input.ideaType || 'matching';
 
-    let result;
+    let result: any;
     switch (ideaType) {
       case 'related':
         result = await client.getRelatedTerms({

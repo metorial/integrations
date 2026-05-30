@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MistralClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let jobSchema = z.object({
   jobId: z.string().describe('Fine-tuning job ID'),

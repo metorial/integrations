@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()

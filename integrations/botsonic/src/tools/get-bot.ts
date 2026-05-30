@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BusinessClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getBot = SlateTool.create(spec, {
   name: 'Get Bot',
@@ -46,7 +46,7 @@ export let getBot = SlateTool.create(spec, {
 
     let bot = await client.getBot(ctx.input.botId, ctx.input.workspaceId);
 
-    let apiKey: any = undefined;
+    let apiKey: any;
     if (ctx.input.includeApiKey) {
       apiKey = await client.getBotApiKey(ctx.input.botId);
     }

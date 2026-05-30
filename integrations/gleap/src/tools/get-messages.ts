@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getMessages = SlateTool.create(spec, {
   name: 'Get Messages',

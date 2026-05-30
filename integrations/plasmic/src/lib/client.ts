@@ -56,15 +56,15 @@ export class ProjectClient {
         : this.projectId;
 
     let queryParams: Record<string, string> = {};
-    if (params.hydrate) queryParams['hydrate'] = '1';
-    if (params.embedHydrate) queryParams['embedHydrate'] = '1';
-    if (params.prepass) queryParams['prepass'] = '1';
-    if (params.maxAge !== undefined) queryParams['maxAge'] = String(params.maxAge);
+    if (params.hydrate) queryParams.hydrate = '1';
+    if (params.embedHydrate) queryParams.embedHydrate = '1';
+    if (params.prepass) queryParams.prepass = '1';
+    if (params.maxAge !== undefined) queryParams.maxAge = String(params.maxAge);
     if (params.componentProps) {
-      queryParams['componentProps'] = JSON.stringify(params.componentProps);
+      queryParams.componentProps = JSON.stringify(params.componentProps);
     }
     if (params.globalVariants) {
-      queryParams['globalVariants'] = JSON.stringify(params.globalVariants);
+      queryParams.globalVariants = JSON.stringify(params.globalVariants);
     }
 
     let response = await codegenAxios.get(

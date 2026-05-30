@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getConnection = SlateTool.create(spec, {
   name: 'Get Connection',
@@ -43,7 +43,7 @@ export let getConnection = SlateTool.create(spec, {
 
     let connection = await client.getConnection(ctx.input.connectionId);
 
-    let pingResult: any = undefined;
+    let pingResult: any;
     if (ctx.input.testConnection) {
       try {
         pingResult = await client.pingConnection(ctx.input.connectionId);

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getLimits = SlateTool.create(spec, {
   name: 'Get Rate Limits',
@@ -46,7 +46,7 @@ Useful for checking how many tests you can still run before hitting the hourly l
       | Record<string, unknown>
       | undefined;
 
-    let creditsRemaining: number | null | undefined = undefined;
+    let creditsRemaining: number | null | undefined;
     if (
       data.credits &&
       typeof data.credits === 'object' &&

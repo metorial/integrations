@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { googleAdminActionScopes } from '../scopes';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { googleAdminActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 export let activityEvents = SlateTrigger.create(spec, {
   name: 'Activity Events',

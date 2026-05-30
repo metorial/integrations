@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ModeClient } from '../lib/client';
-import { normalizeQuery, getEmbedded } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ModeClient } from '../lib/client';
+import { getEmbedded, normalizeQuery } from '../lib/helpers';
+import { spec } from '../spec';
 
 let queryOutputSchema = z.object({
   queryToken: z.string().describe('Unique token of the query'),

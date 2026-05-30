@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let retrieveExtraction = SlateTool.create(spec, {
   name: 'Retrieve Extraction',
@@ -55,7 +55,7 @@ Returns the full extracted text along with confidence and document metadata.`,
 
     let textPreview =
       result.resultText.length > 200
-        ? result.resultText.substring(0, 200) + '...'
+        ? `${result.resultText.substring(0, 200)}...`
         : result.resultText;
 
     return {

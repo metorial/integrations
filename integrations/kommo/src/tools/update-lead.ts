@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
-import { KommoClient } from '../lib/client';
-import { spec } from '../spec';
-import {
-  customFieldValueSchema,
-  tagSchema,
-  buildCustomFieldsPayload,
-  buildTagsPayload
-} from '../lib/schemas';
 import { z } from 'zod';
+import { KommoClient } from '../lib/client';
+import {
+  buildCustomFieldsPayload,
+  buildTagsPayload,
+  customFieldValueSchema,
+  tagSchema
+} from '../lib/schemas';
+import { spec } from '../spec';
 
 export let updateLeadTool = SlateTool.create(spec, {
   name: 'Update Lead',
@@ -46,23 +46,22 @@ export let updateLeadTool = SlateTool.create(spec, {
 
     let payload: Record<string, any> = {};
 
-    if (ctx.input.name !== undefined) payload['name'] = ctx.input.name;
-    if (ctx.input.price !== undefined) payload['price'] = ctx.input.price;
-    if (ctx.input.statusId !== undefined) payload['status_id'] = ctx.input.statusId;
-    if (ctx.input.pipelineId !== undefined) payload['pipeline_id'] = ctx.input.pipelineId;
+    if (ctx.input.name !== undefined) payload.name = ctx.input.name;
+    if (ctx.input.price !== undefined) payload.price = ctx.input.price;
+    if (ctx.input.statusId !== undefined) payload.status_id = ctx.input.statusId;
+    if (ctx.input.pipelineId !== undefined) payload.pipeline_id = ctx.input.pipelineId;
     if (ctx.input.responsibleUserId !== undefined)
-      payload['responsible_user_id'] = ctx.input.responsibleUserId;
-    if (ctx.input.lossReasonId !== undefined)
-      payload['loss_reason_id'] = ctx.input.lossReasonId;
+      payload.responsible_user_id = ctx.input.responsibleUserId;
+    if (ctx.input.lossReasonId !== undefined) payload.loss_reason_id = ctx.input.lossReasonId;
 
     if (ctx.input.customFieldsValues?.length) {
-      payload['custom_fields_values'] = buildCustomFieldsPayload(ctx.input.customFieldsValues);
+      payload.custom_fields_values = buildCustomFieldsPayload(ctx.input.customFieldsValues);
     }
     if (ctx.input.tagsToAdd?.length) {
-      payload['tags_to_add'] = buildTagsPayload(ctx.input.tagsToAdd);
+      payload.tags_to_add = buildTagsPayload(ctx.input.tagsToAdd);
     }
     if (ctx.input.tagsToDelete?.length) {
-      payload['tags_to_delete'] = buildTagsPayload(ctx.input.tagsToDelete);
+      payload.tags_to_delete = buildTagsPayload(ctx.input.tagsToDelete);
     }
 
     let result = await client.updateLead(ctx.input.leadId, payload);

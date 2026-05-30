@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OwlClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userOutputSchema = z.object({
   userId: z.string().optional().describe('Owl Protocol user ID'),

@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendMessage,
-  readMessage,
-  setTransition,
-  getTransition,
   composeVbml,
   formatText,
-  listSubscriptions
+  getTransition,
+  listSubscriptions,
+  readMessage,
+  sendMessage,
+  setTransition
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

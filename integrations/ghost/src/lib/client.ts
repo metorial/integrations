@@ -274,13 +274,7 @@ export class GhostAdminClient {
 
   // ─── Offers ──────────────────────────────────────────────────────
 
-  async browseOffers(
-    params: {
-      filter?: string;
-      limit?: number;
-      page?: number;
-    } = {}
-  ) {
+  async browseOffers(params: { filter?: string; limit?: number; page?: number } = {}) {
     let client = await this.http();
     let response = await client.get('/offers/', { params });
     return response.data;
@@ -555,12 +549,7 @@ export class GhostContentClient {
   }
 
   async browseTiers(
-    params: {
-      include?: string;
-      filter?: string;
-      limit?: number;
-      page?: number;
-    } = {}
+    params: { include?: string; filter?: string; limit?: number; page?: number } = {}
   ) {
     let client = this.http();
     let response = await client.get('/tiers/', { params });

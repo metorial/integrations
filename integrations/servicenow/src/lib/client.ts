@@ -47,7 +47,7 @@ export class Client {
   private axios: ReturnType<typeof createAxios>;
   private baseUrl: string;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     this.baseUrl = `https://${config.instanceName}.service-now.com`;
 
     let authHeader =
@@ -103,7 +103,7 @@ export class Client {
     let totalCount: number | undefined;
     let totalHeader = response.headers?.['x-total-count'];
     if (totalHeader) {
-      totalCount = parseInt(totalHeader, 10);
+      totalCount = Number.parseInt(totalHeader, 10);
     }
 
     return {

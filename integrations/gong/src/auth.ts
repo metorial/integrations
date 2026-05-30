@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 import { gongApiError } from './lib/errors';
 
@@ -177,7 +177,7 @@ export let auth = SlateAuth.create()
     handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response;
+      let response: any;
 
       try {
         let tokenAxios = createAxios({
@@ -219,7 +219,7 @@ export let auth = SlateAuth.create()
     handleTokenRefresh: async (ctx: any) => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response;
+      let response: any;
 
       try {
         let tokenAxios = createAxios({

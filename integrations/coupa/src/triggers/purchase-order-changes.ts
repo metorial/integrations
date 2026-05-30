@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let purchaseOrderChanges = SlateTrigger.create(spec, {
   name: 'Purchase Order Changes',
@@ -89,7 +89,7 @@ export let purchaseOrderChanges = SlateTrigger.create(spec, {
           poNumber: ctx.input.poNumber,
           status: ctx.input.status,
           supplier: po.supplier ?? null,
-          totalAmount: po['total'] ?? po.total ?? null,
+          totalAmount: po.total ?? po.total ?? null,
           currency: po.currency ?? null,
           orderLines: po['order-lines'] ?? po.order_lines ?? null,
           createdAt: po['created-at'] ?? po.created_at ?? null,

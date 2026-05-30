@@ -24,7 +24,8 @@ describe('google-address-validation provider contract', () => {
 
     let expectedScopes = {
       validate_address: googleAddressValidationActionScopes.validateAddress,
-      provide_validation_feedback: googleAddressValidationActionScopes.provideValidationFeedback
+      provide_validation_feedback:
+        googleAddressValidationActionScopes.provideValidationFeedback
     };
 
     for (let [actionId, scopes] of Object.entries(expectedScopes)) {

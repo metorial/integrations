@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EventsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendEvent = SlateTool.create(spec, {
   name: 'Send Event',

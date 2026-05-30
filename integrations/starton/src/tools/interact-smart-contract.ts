@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StartonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let interactSmartContract = SlateTool.create(spec, {
   name: 'Interact with Smart Contract',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listPeople = SlateTool.create(spec, {
   name: 'List People',
@@ -50,7 +50,7 @@ export let listPeople = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let result;
+    let result: any;
     if (ctx.input.organizationId) {
       result = await client.listPeopleByOrganization(ctx.input.organizationId, {
         page: ctx.input.page,

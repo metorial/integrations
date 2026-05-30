@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ImgixClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let reportSchema = z.object({
   reportId: z.string().describe('Unique identifier of the report'),

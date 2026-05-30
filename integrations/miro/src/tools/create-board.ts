@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MiroClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createBoard = SlateTool.create(spec, {
   name: 'Create Board',
@@ -58,7 +58,7 @@ export let createBoard = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new MiroClient({ token: ctx.auth.token });
 
-    let policy: any = undefined;
+    let policy: any;
     if (ctx.input.sharingPolicy || ctx.input.permissionsPolicy) {
       policy = {};
       if (ctx.input.sharingPolicy) policy.sharingPolicy = ctx.input.sharingPolicy;

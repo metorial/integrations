@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
+import { createClient } from '../lib/helpers';
 import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
-import { z } from 'zod';
 
 export let manageBiddingStrategies = SlateTool.create(spec, {
   name: 'Manage Bidding Strategies',

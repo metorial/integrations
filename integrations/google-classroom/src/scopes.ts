@@ -6,18 +6,22 @@ export let googleClassroomScopes = {
   classroomRosters: 'https://www.googleapis.com/auth/classroom.rosters',
   classroomRostersReadonly: 'https://www.googleapis.com/auth/classroom.rosters.readonly',
   classroomCourseworkMe: 'https://www.googleapis.com/auth/classroom.coursework.me',
-  classroomCourseworkMeReadonly: 'https://www.googleapis.com/auth/classroom.coursework.me.readonly',
+  classroomCourseworkMeReadonly:
+    'https://www.googleapis.com/auth/classroom.coursework.me.readonly',
   classroomCourseworkStudents: 'https://www.googleapis.com/auth/classroom.coursework.students',
   classroomCourseworkStudentsReadonly:
     'https://www.googleapis.com/auth/classroom.coursework.students.readonly',
-  classroomCourseworkmaterials: 'https://www.googleapis.com/auth/classroom.courseworkmaterials',
+  classroomCourseworkmaterials:
+    'https://www.googleapis.com/auth/classroom.courseworkmaterials',
   classroomCourseworkmaterialsReadonly:
     'https://www.googleapis.com/auth/classroom.courseworkmaterials.readonly',
   classroomAnnouncements: 'https://www.googleapis.com/auth/classroom.announcements',
-  classroomAnnouncementsReadonly: 'https://www.googleapis.com/auth/classroom.announcements.readonly',
+  classroomAnnouncementsReadonly:
+    'https://www.googleapis.com/auth/classroom.announcements.readonly',
   classroomTopics: 'https://www.googleapis.com/auth/classroom.topics',
   classroomTopicsReadonly: 'https://www.googleapis.com/auth/classroom.topics.readonly',
-  classroomGuardianlinksStudents: 'https://www.googleapis.com/auth/classroom.guardianlinks.students',
+  classroomGuardianlinksStudents:
+    'https://www.googleapis.com/auth/classroom.guardianlinks.students',
   classroomGuardianlinksStudentsReadonly:
     'https://www.googleapis.com/auth/classroom.guardianlinks.students.readonly',
   classroomGuardianlinksMeReadonly:

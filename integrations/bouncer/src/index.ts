@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  verifyEmail,
   batchVerifyEmails,
-  createBatchVerification,
-  getBatchStatus,
-  getBatchResults,
-  verifyDomain,
+  checkCredits,
   checkToxicity,
-  getToxicityStatus,
+  createBatchVerification,
+  getBatchResults,
+  getBatchStatus,
   getToxicityResults,
-  checkCredits
+  getToxicityStatus,
+  verifyDomain,
+  verifyEmail
 } from './tools';
 import { batchCompleted, inboundWebhook } from './triggers';
 

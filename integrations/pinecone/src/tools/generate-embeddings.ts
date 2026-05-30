@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PineconeControlPlaneClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generateEmbeddingsTool = SlateTool.create(spec, {
   name: 'Generate Embeddings',

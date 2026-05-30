@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphHopperClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let polygonSchema = z.object({
   bucket: z
@@ -97,7 +97,7 @@ Useful for reachability analysis, service area visualization, and site selection
       reverseFlow: ctx.input.reverseFlow
     });
 
-    let polygons = ((result.polygons || []) as Array<Record<string, unknown>>).map(p => ({
+    let polygons = ((result.polygons || []) as Record<string, unknown>[]).map(p => ({
       bucket: (p.properties as Record<string, number>)?.bucket ?? 0,
       geometry: (p as Record<string, unknown>).geometry
     }));

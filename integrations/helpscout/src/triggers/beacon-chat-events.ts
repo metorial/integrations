@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { HelpScoutClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let BEACON_EVENTS = ['beacon.chat.created', 'beacon.chat.customer.replied'] as const;
 

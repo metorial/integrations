@@ -2,21 +2,21 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getApod,
-  searchAsteroids,
-  getMarsRoverPhotos,
-  getMarsRoverManifest,
+  getCloseApproaches,
+  getEarthImagery,
   getEpicImages,
+  getFireballs,
+  getMarsRoverManifest,
+  getMarsRoverPhotos,
+  getNasaMediaAssets,
   getNaturalEvents,
   getSpaceWeather,
-  getEarthImagery,
-  searchNasaMedia,
-  getNasaMediaAssets,
-  searchTle,
   getTechPortProject,
+  lookupSmallBody,
   queryExoplanets,
-  getCloseApproaches,
-  getFireballs,
-  lookupSmallBody
+  searchAsteroids,
+  searchNasaMedia,
+  searchTle
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

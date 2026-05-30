@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HarvestClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let startStopTimer = SlateTool.create(spec, {
   name: 'Start or Stop Timer',
@@ -34,7 +34,7 @@ export let startStopTimer = SlateTool.create(spec, {
       accountId: ctx.config.accountId
     });
 
-    let entry;
+    let entry: any;
     if (ctx.input.action === 'restart') {
       entry = await client.restartTimeEntry(ctx.input.timeEntryId);
     } else {

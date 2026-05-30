@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchPhotos,
-  getPhoto,
   curatedPhotos,
-  searchVideos,
+  getCollectionMedia,
+  getPhoto,
   getVideo,
-  popularVideos,
   listCollections,
-  getCollectionMedia
+  popularVideos,
+  searchPhotos,
+  searchVideos
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

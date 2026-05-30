@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageProduct = SlateTool.create(spec, {
   name: 'Manage Product',
@@ -44,12 +44,12 @@ export let manageProduct = SlateTool.create(spec, {
       name: ctx.input.name
     };
 
-    if (ctx.input.price !== undefined) product['price'] = ctx.input.price;
-    if (ctx.input.brand) product['brand'] = ctx.input.brand;
-    if (ctx.input.categories) product['categories'] = ctx.input.categories;
-    if (ctx.input.inventory !== undefined) product['inventory'] = ctx.input.inventory;
-    if (ctx.input.imageUrl) product['image_url'] = ctx.input.imageUrl;
-    if (ctx.input.productUrl) product['product_url'] = ctx.input.productUrl;
+    if (ctx.input.price !== undefined) product.price = ctx.input.price;
+    if (ctx.input.brand) product.brand = ctx.input.brand;
+    if (ctx.input.categories) product.categories = ctx.input.categories;
+    if (ctx.input.inventory !== undefined) product.inventory = ctx.input.inventory;
+    if (ctx.input.imageUrl) product.image_url = ctx.input.imageUrl;
+    if (ctx.input.productUrl) product.product_url = ctx.input.productUrl;
 
     await client.createOrUpdateProduct(product);
 

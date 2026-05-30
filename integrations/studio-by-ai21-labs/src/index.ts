@@ -2,20 +2,20 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   chatCompletion,
-  maestroRun,
+  contextualAnswer,
   conversationalRag,
-  listFiles,
-  getFile,
-  updateFile,
   deleteFile,
+  getFile,
+  grammarCheck,
+  listFiles,
+  maestroRun,
+  paraphrase,
+  segmentText,
   summarize,
   summarizeBySegment,
-  paraphrase,
+  textCompletion,
   textImprovements,
-  grammarCheck,
-  segmentText,
-  contextualAnswer,
-  textCompletion
+  updateFile
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

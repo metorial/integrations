@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
-import { KommoClient } from '../lib/client';
-import { spec } from '../spec';
-import {
-  customFieldValueSchema,
-  tagSchema,
-  buildCustomFieldsPayload,
-  buildTagsPayload
-} from '../lib/schemas';
 import { z } from 'zod';
+import { KommoClient } from '../lib/client';
+import {
+  buildCustomFieldsPayload,
+  buildTagsPayload,
+  customFieldValueSchema,
+  tagSchema
+} from '../lib/schemas';
+import { spec } from '../spec';
 
 export let createCompanyTool = SlateTool.create(spec, {
   name: 'Create Company',
@@ -41,15 +41,14 @@ export let createCompanyTool = SlateTool.create(spec, {
       name: ctx.input.name
     };
 
-    if (ctx.input.responsibleUserId)
-      payload['responsible_user_id'] = ctx.input.responsibleUserId;
+    if (ctx.input.responsibleUserId) payload.responsible_user_id = ctx.input.responsibleUserId;
 
     if (ctx.input.customFieldsValues?.length) {
-      payload['custom_fields_values'] = buildCustomFieldsPayload(ctx.input.customFieldsValues);
+      payload.custom_fields_values = buildCustomFieldsPayload(ctx.input.customFieldsValues);
     }
 
     if (ctx.input.tags?.length) {
-      payload['_embedded'] = { tags: buildTagsPayload(ctx.input.tags) };
+      payload._embedded = { tags: buildTagsPayload(ctx.input.tags) };
     }
 
     let result = await client.createCompany(payload);

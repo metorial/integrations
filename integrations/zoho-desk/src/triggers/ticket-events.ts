@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ticketEventTypes = [
   'Ticket_Add',
@@ -76,7 +76,7 @@ export let ticketEvents = SlateTrigger.create(spec, {
 
           let result = await client.createWebhook(webhookData);
           webhookIds.push(result.id);
-        } catch (err) {
+        } catch (_err) {
           // Some events may not be supported on all editions; continue with others
         }
       }

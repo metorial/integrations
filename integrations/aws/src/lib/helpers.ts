@@ -1,4 +1,4 @@
-import { AwsClient, AwsClientConfig } from './client';
+import { AwsClient } from './client';
 
 export interface AwsContext {
   auth: {

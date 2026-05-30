@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OwlClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deployCollection = SlateTool.create(spec, {
   name: 'Deploy Collection',

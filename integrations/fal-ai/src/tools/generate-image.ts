@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FalClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let loraSchema = z.object({
   path: z.string().describe('URL or path to the LoRA weights'),

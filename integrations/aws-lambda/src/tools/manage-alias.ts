@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { createClient } from '../lib/helpers';
-import { lambdaServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { lambdaServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let routingConfigSchema = z
   .object({
@@ -116,9 +116,9 @@ export let manageAlias = SlateTool.create(spec, {
         Name: aliasName,
         FunctionVersion: ctx.input.functionVersion
       };
-      if (ctx.input.description) params['Description'] = ctx.input.description;
+      if (ctx.input.description) params.Description = ctx.input.description;
       if (ctx.input.routingConfig?.additionalVersionWeights) {
-        params['RoutingConfig'] = {
+        params.RoutingConfig = {
           AdditionalVersionWeights: ctx.input.routingConfig.additionalVersionWeights
         };
       }
@@ -137,10 +137,10 @@ export let manageAlias = SlateTool.create(spec, {
 
     // update
     let params: Record<string, any> = {};
-    if (ctx.input.functionVersion) params['FunctionVersion'] = ctx.input.functionVersion;
-    if (ctx.input.description !== undefined) params['Description'] = ctx.input.description;
+    if (ctx.input.functionVersion) params.FunctionVersion = ctx.input.functionVersion;
+    if (ctx.input.description !== undefined) params.Description = ctx.input.description;
     if (ctx.input.routingConfig?.additionalVersionWeights) {
-      params['RoutingConfig'] = {
+      params.RoutingConfig = {
         AdditionalVersionWeights: ctx.input.routingConfig.additionalVersionWeights
       };
     }

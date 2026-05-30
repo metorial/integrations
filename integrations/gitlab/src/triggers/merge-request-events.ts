@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { GitLabClient } from '../lib/client';
 import { gitLabServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let mergeRequestEvents = SlateTrigger.create(spec, {
   name: 'Merge Request Events',

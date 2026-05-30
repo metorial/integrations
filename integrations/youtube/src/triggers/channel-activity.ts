@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let channelActivity = SlateTrigger.create(spec, {
   name: 'Channel Activity',

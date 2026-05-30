@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { flattenResource, buildFilterParams } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { buildFilterParams, flattenResource } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listTasks = SlateTool.create(spec, {
   name: 'List Tasks',
@@ -61,7 +61,7 @@ Tasks include action items, calls, emails, and in-person tasks assigned to users
     if (ctx.input.pageSize) params['page[size]'] = ctx.input.pageSize.toString();
     if (ctx.input.pageOffset !== undefined)
       params['page[offset]'] = ctx.input.pageOffset.toString();
-    if (ctx.input.sortBy) params['sort'] = ctx.input.sortBy;
+    if (ctx.input.sortBy) params.sort = ctx.input.sortBy;
 
     let result = await client.listTasks(params);
 

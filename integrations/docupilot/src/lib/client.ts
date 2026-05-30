@@ -1,22 +1,22 @@
 import { createAxios } from 'slates';
 import type {
-  DocupilotTemplate,
-  DocupilotFolder,
-  DocupilotPaginatedList,
-  DocupilotTemplateSchema,
-  DocupilotGenerateResponse,
-  DocupilotTemplateDelivery,
-  DocupilotMergeHistory,
   DocupilotContentBlock,
+  DocupilotDocumentMergeLink,
   DocupilotEnvelope,
   DocupilotEnvelopeDetail,
-  DocupilotDocumentMergeLink
+  DocupilotFolder,
+  DocupilotGenerateResponse,
+  DocupilotMergeHistory,
+  DocupilotPaginatedList,
+  DocupilotTemplate,
+  DocupilotTemplateDelivery,
+  DocupilotTemplateSchema
 } from './types';
 
 export class Client {
   private axios;
 
-  constructor(private credentials: { token: string; workspaceId: string }) {
+  constructor(credentials: { token: string; workspaceId: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.docupilot.app',
       headers: {

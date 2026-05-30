@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
-let runSchema = z.object({
+let _runSchema = z.object({
   projectToken: z.string().describe('Token of the project this run belongs to'),
   runToken: z.string().describe('Unique token identifying this run'),
   status: z

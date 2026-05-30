@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCampaigns,
-  manageCampaign,
+  attachmentInsights,
   campaignInsights,
-  listLinks,
-  manageLink,
+  getProfile,
   linkInsights,
   listAttachments,
+  listCampaigns,
+  listLinks,
   manageAttachment,
-  attachmentInsights,
+  manageCampaign,
+  manageLink,
   managePlaybook,
   manageUserList,
-  uploadOfflineConversions,
-  getProfile,
-  updateProfile
+  updateProfile,
+  uploadOfflineConversions
 } from './tools';
-import { campaignStatusChange, newLink, newAttachment, inboundWebhook } from './triggers';
+import { campaignStatusChange, inboundWebhook, newAttachment, newLink } from './triggers';
 
 export let provider = Slate.create({
   spec,

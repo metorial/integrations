@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let designSummarySchema = z.object({
   designId: z.string().describe('The design ID'),
@@ -112,12 +112,12 @@ export let designNotification = SlateTrigger.create(spec, {
       let notificationType = ctx.input.notificationType;
 
       let triggeringUser = extractUser(
-        content['triggering_user'] as Record<string, unknown> | undefined
+        content.triggering_user as Record<string, unknown> | undefined
       );
       let receivingUser = extractReceivingUser(
-        content['receiving_team_user'] as Record<string, unknown> | undefined
+        content.receiving_team_user as Record<string, unknown> | undefined
       );
-      let design = extractDesign(content['design'] as Record<string, unknown> | undefined);
+      let design = extractDesign(content.design as Record<string, unknown> | undefined);
 
       let commentEventType: string | undefined;
       let commentThreadId: string | undefined;
@@ -134,49 +134,47 @@ export let designNotification = SlateTrigger.create(spec, {
       let folderId: string | undefined;
 
       if (notificationType === 'comment') {
-        let commentEvent = content['comment_event'] as Record<string, unknown> | undefined;
+        let commentEvent = content.comment_event as Record<string, unknown> | undefined;
         if (commentEvent) {
-          commentEventType = commentEvent['type'] as string | undefined;
-          commentUrl = commentEvent['comment_url'] as string | undefined;
+          commentEventType = commentEvent.type as string | undefined;
+          commentUrl = commentEvent.comment_url as string | undefined;
 
-          let thread = commentEvent['thread'] as Record<string, unknown> | undefined;
+          let thread = commentEvent.thread as Record<string, unknown> | undefined;
           if (thread) {
-            commentThreadId = thread['id'] as string | undefined;
-            let threadContent = thread['content'] as Record<string, unknown> | undefined;
-            commentContent = threadContent?.['plaintext'] as string | undefined;
+            commentThreadId = thread.id as string | undefined;
+            let threadContent = thread.content as Record<string, unknown> | undefined;
+            commentContent = threadContent?.plaintext as string | undefined;
           }
 
-          let reply = commentEvent['reply'] as Record<string, unknown> | undefined;
+          let reply = commentEvent.reply as Record<string, unknown> | undefined;
           if (reply) {
-            let replyContent = reply['content'] as Record<string, unknown> | undefined;
-            commentContent = replyContent?.['plaintext'] as string | undefined;
-            commentThreadId = reply['thread_id'] as string | undefined;
+            let replyContent = reply.content as Record<string, unknown> | undefined;
+            commentContent = replyContent?.plaintext as string | undefined;
+            commentThreadId = reply.thread_id as string | undefined;
           }
         }
       } else if (notificationType === 'suggestion') {
-        let suggestionEvent = content['suggestion_event'] as
-          | Record<string, unknown>
-          | undefined;
+        let suggestionEvent = content.suggestion_event as Record<string, unknown> | undefined;
         if (suggestionEvent) {
-          suggestionEventType = suggestionEvent['type'] as string | undefined;
+          suggestionEventType = suggestionEvent.type as string | undefined;
         }
       } else if (notificationType === 'share_design') {
-        shareUrl = content['share_url'] as string | undefined;
-        let share = content['share'] as Record<string, unknown> | undefined;
-        shareMessage = share?.['message'] as string | undefined;
+        shareUrl = content.share_url as string | undefined;
+        let share = content.share as Record<string, unknown> | undefined;
+        shareMessage = share?.message as string | undefined;
       } else if (notificationType === 'design_approval_requested') {
-        let approval = content['approval'] as Record<string, unknown> | undefined;
-        approvalMessage = approval?.['message'] as string | undefined;
+        let approval = content.approval as Record<string, unknown> | undefined;
+        approvalMessage = approval?.message as string | undefined;
       } else if (notificationType === 'design_approval_response') {
-        let approval = content['approval'] as Record<string, unknown> | undefined;
-        approvalApproved = approval?.['approved'] as boolean | undefined;
-        approvalReadyToPublish = approval?.['ready_to_publish'] as boolean | undefined;
+        let approval = content.approval as Record<string, unknown> | undefined;
+        approvalApproved = approval?.approved as boolean | undefined;
+        approvalReadyToPublish = approval?.ready_to_publish as boolean | undefined;
       } else if (notificationType === 'design_access_requested') {
-        accessRequestUrl = content['access_request_url'] as string | undefined;
+        accessRequestUrl = content.access_request_url as string | undefined;
       } else if (notificationType === 'folder_access_requested') {
-        let folder = content['folder'] as Record<string, unknown> | undefined;
-        folderName = folder?.['name'] as string | undefined;
-        folderId = folder?.['id'] as string | undefined;
+        let folder = content.folder as Record<string, unknown> | undefined;
+        folderName = folder?.name as string | undefined;
+        folderId = folder?.id as string | undefined;
       }
 
       let eventType = notificationType;
@@ -232,8 +230,8 @@ let extractUser = (
 ): { userId: string; displayName?: string } | undefined => {
   if (!raw) return undefined;
   return {
-    userId: raw['id'] as string,
-    displayName: raw['display_name'] as string | undefined
+    userId: raw.id as string,
+    displayName: raw.display_name as string | undefined
   };
 };
 
@@ -242,9 +240,9 @@ let extractReceivingUser = (
 ): { userId: string; teamId?: string; displayName?: string } | undefined => {
   if (!raw) return undefined;
   return {
-    userId: raw['user_id'] as string,
-    teamId: raw['team_id'] as string | undefined,
-    displayName: raw['display_name'] as string | undefined
+    userId: raw.user_id as string,
+    teamId: raw.team_id as string | undefined,
+    displayName: raw.display_name as string | undefined
   };
 };
 
@@ -261,14 +259,14 @@ let extractDesign = (
     }
   | undefined => {
   if (!raw) return undefined;
-  let urls = raw['urls'] as Record<string, string> | undefined;
-  let thumbnail = raw['thumbnail'] as Record<string, unknown> | undefined;
+  let urls = raw.urls as Record<string, string> | undefined;
+  let thumbnail = raw.thumbnail as Record<string, unknown> | undefined;
   return {
-    designId: raw['id'] as string,
-    title: raw['title'] as string | undefined,
-    editUrl: urls?.['edit_url'],
-    viewUrl: urls?.['view_url'],
-    thumbnailUrl: thumbnail?.['url'] as string | undefined,
-    pageCount: raw['page_count'] as number | undefined
+    designId: raw.id as string,
+    title: raw.title as string | undefined,
+    editUrl: urls?.edit_url,
+    viewUrl: urls?.view_url,
+    thumbnailUrl: thumbnail?.url as string | undefined,
+    pageCount: raw.page_count as number | undefined
   };
 };

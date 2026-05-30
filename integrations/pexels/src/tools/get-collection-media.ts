@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { photoSchema, videoSchema, paginationSchema } from '../lib/schemas';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { paginationSchema, photoSchema, videoSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 let collectionMediaItemSchema = z.discriminatedUnion('type', [
   z.object({

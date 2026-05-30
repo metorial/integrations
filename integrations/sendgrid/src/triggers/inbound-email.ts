@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let inboundEmail = SlateTrigger.create(spec, {
   name: 'Inbound Email',
@@ -81,7 +81,7 @@ export let inboundEmail = SlateTrigger.create(spec, {
             senderIp: data.sender_ip,
             envelope: data.envelope,
             headers: data.headers,
-            attachments: data.attachments ? parseInt(data.attachments, 10) : 0,
+            attachments: data.attachments ? Number.parseInt(data.attachments, 10) : 0,
             spamScore: data.spam_score,
             spamReport: data.spam_report,
             charsets: data.charsets

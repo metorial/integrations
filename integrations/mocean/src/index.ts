@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendSms,
-  getMessageStatus,
-  makeVoiceCall,
-  hangupCall,
-  sendVerification,
   checkVerification,
-  resendVerification,
-  numberLookup,
-  sendWhatsApp,
+  getAccountInfo,
+  getMessageStatus,
+  hangupCall,
+  makeVoiceCall,
   manageWhatsAppTemplates,
-  getAccountInfo
+  numberLookup,
+  resendVerification,
+  sendSms,
+  sendVerification,
+  sendWhatsApp
 } from './tools';
-import { smsEvents, whatsappEvents, voiceEvents } from './triggers';
+import { smsEvents, voiceEvents, whatsappEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

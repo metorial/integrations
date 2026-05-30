@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ContentApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let documentSchema = z.object({
   documentId: z.string().describe('Unique document ID'),

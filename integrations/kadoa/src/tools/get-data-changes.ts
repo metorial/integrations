@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KadoaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDataChanges = SlateTool.create(spec, {
   name: 'Get Data Changes',

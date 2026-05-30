@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let deviceStatusSchema = z.object({
   descriptor: z.string().optional().describe('Device descriptor/identifier'),

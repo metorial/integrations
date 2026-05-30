@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ModeClient } from '../lib/client';
 import { normalizeReport } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getReport = SlateTool.create(spec, {
   name: 'Get Report',

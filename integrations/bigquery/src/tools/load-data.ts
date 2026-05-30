@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BigQueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let loadData = SlateTool.create(spec, {
   name: 'Load Data from Cloud Storage',

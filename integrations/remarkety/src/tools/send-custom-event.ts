@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { RemarketyClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let sendCustomEventTool = SlateTool.create(spec, {
   name: 'Send Custom Event',

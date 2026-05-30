@@ -2,11 +2,11 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createCoupon,
-  listCoupons,
   getCoupon,
-  verifyLicense,
+  listCoupons,
   manageLicense,
-  updateLicenseUsage
+  updateLicenseUsage,
+  verifyLicense
 } from './tools';
 import { paymentTrigger, subscriptionTrigger } from './triggers';
 

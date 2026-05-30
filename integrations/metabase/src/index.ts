@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageQuestion,
-  listQuestions,
   executeQuery,
-  manageDashboard,
   listDashboards,
-  manageDashboardCards,
-  manageCollection,
-  manageDatabase,
-  searchMetabase,
-  manageUser,
-  managePermissions,
+  listQuestions,
   manageAlert,
-  managePublicLink
+  manageCollection,
+  manageDashboard,
+  manageDashboardCards,
+  manageDatabase,
+  managePermissions,
+  managePublicLink,
+  manageQuestion,
+  manageUser,
+  searchMetabase
 } from './tools';
 import { alertWebhook } from './triggers';
 

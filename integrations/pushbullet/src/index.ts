@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendPush,
-  listPushes,
-  managePush,
-  listDevices,
-  manageDevice,
-  sendSms,
-  listChats,
-  manageChat,
-  listSubscriptions,
-  manageSubscription,
   getChannelInfo,
+  listChats,
+  listDevices,
+  listPushes,
+  listSubscriptions,
+  manageChat,
+  manageDevice,
+  managePush,
+  manageSubscription,
+  requestFileUpload,
   sendClipboard,
-  requestFileUpload
+  sendPush,
+  sendSms
 } from './tools';
-import { newPush, deviceChanged, inboundWebhook } from './triggers';
+import { deviceChanged, inboundWebhook, newPush } from './triggers';
 
 export let provider = Slate.create({
   spec,

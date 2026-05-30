@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let webhookEvents = [
   'domain.created',
@@ -72,7 +72,7 @@ export let domainEventsTrigger = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let data = (await ctx.request.json()) as any;
 
-      if (!data.type || !data.type.startsWith('domain.')) {
+      if (!data.type?.startsWith('domain.')) {
         return { inputs: [] };
       }
 

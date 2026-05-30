@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ToneDenClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let playbookOutputSchema = z.object({
   playbookCampaignId: z.number().describe('Unique playbook campaign ID'),

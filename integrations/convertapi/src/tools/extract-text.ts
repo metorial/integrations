@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileSourceSchema = z
   .object({
@@ -61,7 +61,7 @@ Returns the extracted text as a plain text file. Useful for indexing, search, or
     let parameters: Record<string, string> = {};
 
     if (ctx.input.ocrEnabled !== undefined) {
-      parameters['Ocr'] = ctx.input.ocrEnabled ? 'true' : 'false';
+      parameters.Ocr = ctx.input.ocrEnabled ? 'true' : 'false';
     }
 
     let result = await client.convert({

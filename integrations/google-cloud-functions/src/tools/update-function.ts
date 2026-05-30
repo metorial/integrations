@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { googleCloudFunctionsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateFunction = SlateTool.create(spec, {
   name: 'Update Function',
@@ -102,11 +102,11 @@ export let updateFunction = SlateTool.create(spec, {
     let body: Record<string, any> = { name };
 
     if (ctx.input.description !== undefined) {
-      body['description'] = ctx.input.description;
+      body.description = ctx.input.description;
       updateMaskFields.push('description');
     }
     if (ctx.input.labels !== undefined) {
-      body['labels'] = ctx.input.labels;
+      body.labels = ctx.input.labels;
       updateMaskFields.push('labels');
     }
 
@@ -114,23 +114,23 @@ export let updateFunction = SlateTool.create(spec, {
     let hasBuildConfig = false;
 
     if (ctx.input.runtime) {
-      buildConfig['runtime'] = ctx.input.runtime;
+      buildConfig.runtime = ctx.input.runtime;
       updateMaskFields.push('buildConfig.runtime');
       hasBuildConfig = true;
     }
     if (ctx.input.entryPoint) {
-      buildConfig['entryPoint'] = ctx.input.entryPoint;
+      buildConfig.entryPoint = ctx.input.entryPoint;
       updateMaskFields.push('buildConfig.entryPoint');
       hasBuildConfig = true;
     }
     if (ctx.input.sourceUploadUrl) {
-      buildConfig['source'] = {
+      buildConfig.source = {
         storageSource: { sourceUploadUrl: ctx.input.sourceUploadUrl }
       };
       updateMaskFields.push('buildConfig.source');
       hasBuildConfig = true;
     } else if (ctx.input.sourceStorageBucket && ctx.input.sourceStorageObject) {
-      buildConfig['source'] = {
+      buildConfig.source = {
         storageSource: {
           bucket: ctx.input.sourceStorageBucket,
           object: ctx.input.sourceStorageObject
@@ -140,76 +140,76 @@ export let updateFunction = SlateTool.create(spec, {
       hasBuildConfig = true;
     }
     if (ctx.input.buildEnvironmentVariables) {
-      buildConfig['environmentVariables'] = ctx.input.buildEnvironmentVariables;
+      buildConfig.environmentVariables = ctx.input.buildEnvironmentVariables;
       updateMaskFields.push('buildConfig.environmentVariables');
       hasBuildConfig = true;
     }
 
     if (hasBuildConfig) {
-      body['buildConfig'] = buildConfig;
+      body.buildConfig = buildConfig;
     }
 
     let serviceConfig: Record<string, any> = {};
     let hasServiceConfig = false;
 
     if (ctx.input.timeoutSeconds !== undefined) {
-      serviceConfig['timeoutSeconds'] = ctx.input.timeoutSeconds;
+      serviceConfig.timeoutSeconds = ctx.input.timeoutSeconds;
       updateMaskFields.push('serviceConfig.timeoutSeconds');
       hasServiceConfig = true;
     }
     if (ctx.input.availableMemory) {
-      serviceConfig['availableMemory'] = ctx.input.availableMemory;
+      serviceConfig.availableMemory = ctx.input.availableMemory;
       updateMaskFields.push('serviceConfig.availableMemory');
       hasServiceConfig = true;
     }
     if (ctx.input.availableCpu) {
-      serviceConfig['availableCpu'] = ctx.input.availableCpu;
+      serviceConfig.availableCpu = ctx.input.availableCpu;
       updateMaskFields.push('serviceConfig.availableCpu');
       hasServiceConfig = true;
     }
     if (ctx.input.maxInstanceCount !== undefined) {
-      serviceConfig['maxInstanceCount'] = ctx.input.maxInstanceCount;
+      serviceConfig.maxInstanceCount = ctx.input.maxInstanceCount;
       updateMaskFields.push('serviceConfig.maxInstanceCount');
       hasServiceConfig = true;
     }
     if (ctx.input.minInstanceCount !== undefined) {
-      serviceConfig['minInstanceCount'] = ctx.input.minInstanceCount;
+      serviceConfig.minInstanceCount = ctx.input.minInstanceCount;
       updateMaskFields.push('serviceConfig.minInstanceCount');
       hasServiceConfig = true;
     }
     if (ctx.input.environmentVariables) {
-      serviceConfig['environmentVariables'] = ctx.input.environmentVariables;
+      serviceConfig.environmentVariables = ctx.input.environmentVariables;
       updateMaskFields.push('serviceConfig.environmentVariables');
       hasServiceConfig = true;
     }
     if (ctx.input.serviceAccountEmail) {
-      serviceConfig['serviceAccountEmail'] = ctx.input.serviceAccountEmail;
+      serviceConfig.serviceAccountEmail = ctx.input.serviceAccountEmail;
       updateMaskFields.push('serviceConfig.serviceAccountEmail');
       hasServiceConfig = true;
     }
     if (ctx.input.ingressSettings) {
-      serviceConfig['ingressSettings'] = ctx.input.ingressSettings;
+      serviceConfig.ingressSettings = ctx.input.ingressSettings;
       updateMaskFields.push('serviceConfig.ingressSettings');
       hasServiceConfig = true;
     }
     if (ctx.input.vpcConnector) {
-      serviceConfig['vpcConnector'] = ctx.input.vpcConnector;
+      serviceConfig.vpcConnector = ctx.input.vpcConnector;
       updateMaskFields.push('serviceConfig.vpcConnector');
       hasServiceConfig = true;
     }
     if (ctx.input.vpcConnectorEgressSettings) {
-      serviceConfig['vpcConnectorEgressSettings'] = ctx.input.vpcConnectorEgressSettings;
+      serviceConfig.vpcConnectorEgressSettings = ctx.input.vpcConnectorEgressSettings;
       updateMaskFields.push('serviceConfig.vpcConnectorEgressSettings');
       hasServiceConfig = true;
     }
     if (ctx.input.allTrafficOnLatestRevision !== undefined) {
-      serviceConfig['allTrafficOnLatestRevision'] = ctx.input.allTrafficOnLatestRevision;
+      serviceConfig.allTrafficOnLatestRevision = ctx.input.allTrafficOnLatestRevision;
       updateMaskFields.push('serviceConfig.allTrafficOnLatestRevision');
       hasServiceConfig = true;
     }
 
     if (hasServiceConfig) {
-      body['serviceConfig'] = serviceConfig;
+      body.serviceConfig = serviceConfig;
     }
 
     if (updateMaskFields.length === 0) {

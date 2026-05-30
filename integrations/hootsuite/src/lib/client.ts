@@ -84,13 +84,13 @@ export class HootsuiteClient {
     };
 
     if (params.socialProfileIds?.length) {
-      queryParams['socialProfileIds'] = params.socialProfileIds.join(',');
+      queryParams.socialProfileIds = params.socialProfileIds.join(',');
     }
-    if (params.state) queryParams['state'] = params.state;
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.cursor) queryParams['cursor'] = params.cursor;
+    if (params.state) queryParams.state = params.state;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.cursor) queryParams.cursor = params.cursor;
     if (params.includeUnscheduledReviewMessages !== undefined) {
-      queryParams['includeUnscheduledReviewMessages'] = String(
+      queryParams.includeUnscheduledReviewMessages = String(
         params.includeUnscheduledReviewMessages
       );
     }
@@ -159,7 +159,7 @@ export class HootsuiteClient {
     cursor?: string
   ): Promise<{ members: any[]; cursor?: string }> {
     let params: Record<string, string> = {};
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
 
     let response = await this.api.get(`/v1/organizations/${organizationId}/members`, {
       params
@@ -243,7 +243,7 @@ export class HootsuiteClient {
     cursor?: string
   ): Promise<{ teams: any[]; cursor?: string }> {
     let params: Record<string, string> = {};
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
 
     let response = await this.api.get(`/v1/organizations/${organizationId}/teams`, { params });
     return {
@@ -269,7 +269,7 @@ export class HootsuiteClient {
     cursor?: string
   ): Promise<{ members: any[]; cursor?: string }> {
     let params: Record<string, string> = {};
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
 
     let response = await this.api.get(`/v1/teams/${teamId}/members`, { params });
     return {
@@ -290,7 +290,7 @@ export class HootsuiteClient {
 
   async getTeamSocialProfiles(teamId: string, cursor?: string): Promise<any[]> {
     let params: Record<string, string> = {};
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
 
     let response = await this.api.get(`/v1/teams/${teamId}/socialProfiles`, { params });
     return response.data.data || [];

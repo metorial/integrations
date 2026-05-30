@@ -186,7 +186,7 @@ export class Client {
   private baseUrl: string;
   private headers: Record<string, string>;
 
-  constructor(private clientConfig: ClientConfig) {
+  constructor(clientConfig: ClientConfig) {
     this.baseUrl = `https://${clientConfig.subdomain}.freshservice.com/api/v2`;
     if (clientConfig.authType === 'api_key') {
       let encoded = Buffer.from(`${clientConfig.token}:X`).toString('base64');

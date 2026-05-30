@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AblyControlClient } from '../lib/control-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageQueues = SlateTool.create(spec, {
   name: 'Manage Queues',

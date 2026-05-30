@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  verifyEmailTool,
+  confirmPoeTool,
   createJobTool,
-  getJobStatusTool,
-  getJobResultsTool,
-  searchJobsTool,
-  manageJobTool,
   getAccountInfoTool,
-  confirmPoeTool
+  getJobResultsTool,
+  getJobStatusTool,
+  manageJobTool,
+  searchJobsTool,
+  verifyEmailTool
 } from './tools';
 import { jobStatusChangedTrigger } from './triggers';
 

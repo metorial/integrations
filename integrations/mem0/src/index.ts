@@ -2,13 +2,13 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   addMemory,
-  searchMemories,
-  getMemory,
-  listMemories,
-  updateMemory,
+  deleteEntity,
   deleteMemory,
+  getMemory,
   listEntities,
-  deleteEntity
+  listMemories,
+  searchMemories,
+  updateMemory
 } from './tools';
 import { memoryEvents } from './triggers';
 

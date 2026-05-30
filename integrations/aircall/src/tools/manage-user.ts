@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageUser = SlateTool.create(spec, {
   name: 'Manage User',
@@ -63,7 +63,7 @@ export let manageUser = SlateTool.create(spec, {
           name: user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
           email: user.email
         },
-        message: `Created user **${user.name || ctx.input.firstName + ' ' + ctx.input.lastName}** (${user.email}).`
+        message: `Created user **${user.name || `${ctx.input.firstName} ${ctx.input.lastName}`}** (${user.email}).`
       };
     }
 

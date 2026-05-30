@@ -1,7 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { queryContent, previewContent, introspectSchema, listContentTypes } from './tools';
-import { entryEvents, assetEvents, contentTypeEvents } from './triggers';
+import { introspectSchema, listContentTypes, previewContent, queryContent } from './tools';
+import { assetEvents, contentTypeEvents, entryEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

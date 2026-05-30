@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { FreshBooksClient } from '../lib/client';
-import { parseWebhookRequest, handleWebhookVerification } from '../lib/webhook-helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { FreshBooksClient } from '../lib/client';
+import { handleWebhookVerification, parseWebhookRequest } from '../lib/webhook-helpers';
+import { spec } from '../spec';
 
 export let expenseEvents = SlateTrigger.create(spec, {
   name: 'Expense Events',

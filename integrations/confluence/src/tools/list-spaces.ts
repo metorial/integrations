@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listSpaces = SlateTool.create(spec, {
   name: 'List Spaces',

@@ -137,12 +137,7 @@ export class MotionClient {
     return response.data;
   }
 
-  async listProjects(
-    params: {
-      workspaceId?: string;
-      cursor?: string;
-    } = {}
-  ) {
+  async listProjects(params: { workspaceId?: string; cursor?: string } = {}) {
     let response = await this.axios.get('/projects', { params });
     return response.data;
   }
@@ -272,25 +267,14 @@ export class MotionClient {
 
   // ─── Workspaces ─────────────────────────────────────────
 
-  async listWorkspaces(
-    params: {
-      cursor?: string;
-      ids?: string[];
-    } = {}
-  ) {
+  async listWorkspaces(params: { cursor?: string; ids?: string[] } = {}) {
     let response = await this.axios.get('/workspaces', { params });
     return response.data;
   }
 
   // ─── Users ──────────────────────────────────────────────
 
-  async listUsers(
-    params: {
-      workspaceId?: string;
-      teamId?: string;
-      cursor?: string;
-    } = {}
-  ) {
+  async listUsers(params: { workspaceId?: string; teamId?: string; cursor?: string } = {}) {
     let response = await this.axios.get('/users', { params });
     return response.data;
   }

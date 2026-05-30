@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RoamClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createBlock = SlateTool.create(spec, {
   name: 'Create Block',

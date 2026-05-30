@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TinifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let s3ConfigSchema = z.object({
   service: z.literal('s3').describe('Cloud storage service'),
@@ -93,7 +93,7 @@ export let saveToCloud = SlateTool.create(spec, {
       storageHeaders['Cache-Control'] = ctx.input.cacheControl;
     }
 
-    let storeOptions;
+    let storeOptions: any;
     if (ctx.input.storage.service === 's3') {
       storeOptions = {
         service: 's3' as const,

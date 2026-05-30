@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HyperbrowserClient } from '../lib/client';
 import { profileSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createProfile = SlateTool.create(spec, {
   name: 'Create Profile',
@@ -73,7 +73,7 @@ export let listProfiles = SlateTool.create(spec, {
       limit: ctx.input.limit
     });
 
-    let profiles = (result.profiles as Array<Record<string, unknown>>) ?? [];
+    let profiles = (result.profiles as Record<string, unknown>[]) ?? [];
 
     return {
       output: {

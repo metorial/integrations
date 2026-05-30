@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listVms,
-  getVm,
   createVm,
-  manageVm,
   deleteVm,
-  manageSnapshots,
+  getVm,
+  listPlatformConfig,
+  listVms,
   manageBlockStorage,
+  manageFirewalls,
+  manageFloatingIps,
+  manageLoadBalancers,
+  manageNetworks,
   manageObjectStorage,
   manageS3Keys,
-  manageNetworks,
-  manageFloatingIps,
-  manageFirewalls,
-  manageLoadBalancers,
+  manageSnapshots,
   manageSshKeys,
-  listPlatformConfig
+  manageVm
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

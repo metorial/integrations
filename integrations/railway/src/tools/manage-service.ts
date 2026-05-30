@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getServiceTool = SlateTool.create(spec, {
   name: 'Get Service',
@@ -53,7 +53,7 @@ export let getServiceTool = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
     let service = await client.getService(ctx.input.serviceId);
 
-    let instance = null;
+    let instance: any = null;
     if (ctx.input.environmentId) {
       let inst = await client.getServiceInstance(ctx.input.serviceId, ctx.input.environmentId);
       instance = {

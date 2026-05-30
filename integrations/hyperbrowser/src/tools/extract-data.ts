@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HyperbrowserClient } from '../lib/client';
 import { sessionOptionsSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let extractData = SlateTool.create(spec, {
   name: 'Extract Structured Data',

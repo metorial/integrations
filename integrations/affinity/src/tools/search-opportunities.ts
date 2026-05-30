@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AffinityClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let opportunitySchema = z.object({
   opportunityId: z.number().describe('Unique identifier of the opportunity'),

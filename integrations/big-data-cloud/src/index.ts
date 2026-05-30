@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  geolocateIpTool,
   assessIpRiskTool,
+  geolocateIpTool,
+  lookupAsnTool,
+  lookupNetworkTool,
   reverseGeocodeTool,
   validatePhoneNumberTool,
-  verifyEmailTool,
-  lookupAsnTool,
-  lookupNetworkTool
+  verifyEmailTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

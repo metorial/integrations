@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { buildClientConfig, flattenResourceList } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCustomers = SlateTool.create(spec, {
   name: 'List Customers',
@@ -38,10 +38,10 @@ export let listCustomers = SlateTool.create(spec, {
     let client = new Client(buildClientConfig(ctx));
 
     let filters: Record<string, string> = {};
-    if (ctx.input.filterName) filters['name'] = ctx.input.filterName;
-    if (ctx.input.filterEmail) filters['email'] = ctx.input.filterEmail;
+    if (ctx.input.filterName) filters.name = ctx.input.filterName;
+    if (ctx.input.filterEmail) filters.email = ctx.input.filterEmail;
     if (ctx.input.filterArchived !== undefined)
-      filters['archived'] = String(ctx.input.filterArchived);
+      filters.archived = String(ctx.input.filterArchived);
 
     let response = await client.listCustomers({
       pagination: {

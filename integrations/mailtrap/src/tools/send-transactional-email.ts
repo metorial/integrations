@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { MailtrapClient } from '../lib/client';
+import { spec } from '../spec';
 
 let emailAddressSchema = z.object({
   email: z.string().describe('Email address'),

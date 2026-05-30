@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  verifyAddress,
-  batchVerifyAddresses,
   autocompleteAddress,
-  completeAddressSuggestion,
-  verifyInternationalAddress,
-  batchVerifyInternationalAddresses,
   autocompleteInternationalAddress,
-  completeInternationalAddressSuggestion
+  batchVerifyAddresses,
+  batchVerifyInternationalAddresses,
+  completeAddressSuggestion,
+  completeInternationalAddressSuggestion,
+  verifyAddress,
+  verifyInternationalAddress
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

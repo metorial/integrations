@@ -1,30 +1,30 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageProject,
-  listProjects,
+  getActivity,
   getProject,
-  manageTask,
-  listTasks,
   getTask,
-  manageTaskList,
-  manageTimeEntry,
-  listTimeEntries,
-  manageMilestone,
   listPeople,
-  manageMessage,
+  listProjects,
+  listTasks,
+  listTimeEntries,
   manageComment,
+  manageMessage,
+  manageMilestone,
   manageNotebook,
+  manageProject,
   manageProjectPeople,
-  getActivity
+  manageTask,
+  manageTaskList,
+  manageTimeEntry
 } from './tools';
 import {
-  taskEvents,
-  projectEvents,
-  milestoneEvents,
-  timeEntryEvents,
   commentEvents,
-  messageEvents
+  messageEvents,
+  milestoneEvents,
+  projectEvents,
+  taskEvents,
+  timeEntryEvents
 } from './triggers';
 
 export let provider = Slate.create({

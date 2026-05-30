@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getStack = SlateTool.create(spec, {
   name: 'Get Stack',
@@ -67,7 +67,7 @@ export let getStack = SlateTool.create(spec, {
         if (stackResource?.outputs) {
           outputs = stackResource.outputs;
         }
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Failed to fetch stack outputs');
       }
     }

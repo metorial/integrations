@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendMessage,
-  listMessages,
-  getMessage,
-  manageMessage,
+  createContact,
   createDraft,
-  listMailFolders,
-  listEvents,
-  getEvent,
   createEvent,
-  manageEvent,
+  createTask,
   findMeetingTimes,
+  getContact,
+  getEvent,
+  getMessage,
   listCalendars,
   listContacts,
-  getContact,
-  createContact,
-  manageContact,
+  listEvents,
+  listMailFolders,
+  listMessages,
   listTaskLists,
   listTasks,
-  createTask,
-  manageTask
+  manageContact,
+  manageEvent,
+  manageMessage,
+  manageTask,
+  sendMessage
 } from './tools';
-import { messageChanges, eventChanges, contactChanges } from './triggers';
+import { contactChanges, eventChanges, messageChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

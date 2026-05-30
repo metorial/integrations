@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCustomers = SlateTool.create(spec, {
   name: 'List Customers',
@@ -51,7 +51,7 @@ export let listCustomers = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token, domain: ctx.config.domain });
 
     let filters: Record<string, string> = {};
-    if (ctx.input.groupId) filters['group_id'] = ctx.input.groupId;
+    if (ctx.input.groupId) filters.group_id = ctx.input.groupId;
 
     let res = await client.listCustomers({
       pagination: { pageNumber: ctx.input.pageNumber, pageSize: ctx.input.pageSize },

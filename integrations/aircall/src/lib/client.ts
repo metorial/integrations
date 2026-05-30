@@ -25,7 +25,7 @@ export interface PaginatedResponse<T> {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private auth: AircallAuth) {
+  constructor(auth: AircallAuth) {
     let authHeader =
       auth.authType === 'bearer' ? `Bearer ${auth.token}` : `Basic ${auth.token}`;
 

@@ -99,7 +99,7 @@ export interface AnalyzeTextResponse {
     propertyPositions: number[];
   }>;
   customAnnotationOutput?: string;
-  matchingRules?: Array<Record<string, unknown>>;
+  matchingRules?: Record<string, unknown>[];
 }
 
 export interface AccountInfo {
@@ -222,7 +222,7 @@ export class Client {
 
     if (!result.ok && result.error) {
       throw new Error(
-        `TextRazor analysis failed: ${result.error}${result.message ? ' - ' + result.message : ''}`
+        `TextRazor analysis failed: ${result.error}${result.message ? ` - ${result.message}` : ''}`
       );
     }
 

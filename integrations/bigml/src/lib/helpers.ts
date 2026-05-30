@@ -1,4 +1,4 @@
-import { Client, BigMLRegion } from './client';
+import { type BigMLRegion, Client } from './client';
 
 export type ContextLike = {
   auth: {

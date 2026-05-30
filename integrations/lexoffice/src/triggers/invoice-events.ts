@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let INVOICE_EVENT_TYPES = [
   'invoice.created',
@@ -55,7 +55,7 @@ export let invoiceEvents = SlateTrigger.create(spec, {
       for (let sub of subs) {
         try {
           await client.deleteEventSubscription(sub.subscriptionId);
-        } catch (e) {
+        } catch (_e) {
           /* ignore cleanup errors */
         }
       }
@@ -90,7 +90,7 @@ export let invoiceEvents = SlateTrigger.create(spec, {
           voucherNumber = invoice.voucherNumber;
           voucherStatus = invoice.voucherStatus;
           totalAmount = invoice.totalGrossAmount ?? invoice.totalPrice?.totalGrossAmount;
-        } catch (e) {
+        } catch (_e) {
           /* resource may not be accessible */
         }
       }

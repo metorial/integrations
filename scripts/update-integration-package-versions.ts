@@ -141,7 +141,9 @@ async function main() {
     (sum, manifest) => sum + manifest.updates.length,
     0
   );
-  const totalVersionBumps = allUpdates.filter(manifest => manifest.versionBump !== null).length;
+  const totalVersionBumps = allUpdates.filter(
+    manifest => manifest.versionBump !== null
+  ).length;
   console.error(
     `${options.dryRun ? 'Planned' : 'Applied'} ${totalDependencyUpdates} dependency update${
       totalDependencyUpdates === 1 ? '' : 's'
@@ -287,11 +289,7 @@ async function loadManifest(target: {
 }
 
 async function writeManifest(manifest: LoadedManifest): Promise<void> {
-  await writeFile(
-    manifest.path,
-    `${JSON.stringify(manifest.packageJson, null, 2)}\n`,
-    'utf8'
-  );
+  await writeFile(manifest.path, `${JSON.stringify(manifest.packageJson, null, 2)}\n`, 'utf8');
 }
 
 function toManifestUpdate(manifest: LoadedManifest): ManifestUpdate {
@@ -364,12 +362,12 @@ function reportPhase(phaseLabel: string, updates: ManifestUpdate[], dryRun: bool
       `${dryRun ? 'Would update' : 'Updated'} ${manifest.packageName} (${manifest.kind}):`
     );
     if (manifest.versionBump) {
-      console.error(
-        `  version: ${manifest.versionBump.from} -> ${manifest.versionBump.to}`
-      );
+      console.error(`  version: ${manifest.versionBump.from} -> ${manifest.versionBump.to}`);
     }
     for (const update of manifest.updates) {
-      console.error(`  ${update.section} ${update.dependencyName}: ${update.from} -> ${update.to}`);
+      console.error(
+        `  ${update.section} ${update.dependencyName}: ${update.from} -> ${update.to}`
+      );
     }
   }
 }
@@ -463,7 +461,9 @@ async function getWorkspacePackages(): Promise<WorkspacePackage[]> {
   return packages.sort((left, right) => left.name.localeCompare(right.name));
 }
 
-async function getManifestTargets(): Promise<Array<{ directory: string; kind: 'package' | 'integration' }>> {
+async function getManifestTargets(): Promise<
+  Array<{ directory: string; kind: 'package' | 'integration' }>
+> {
   const [packageEntries, ...integrationEntryLists] = await Promise.all([
     readdir(PACKAGES_DIRECTORY, { withFileTypes: true }),
     ...INTEGRATION_DIRECTORIES.map(dir => readdir(dir, { withFileTypes: true }))

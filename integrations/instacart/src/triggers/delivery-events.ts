@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let deliveryEventInputSchema = z.object({
   eventType: z.string().describe('The delivery/tracking event type'),
@@ -42,7 +42,7 @@ export let deliveryEvents = SlateTrigger.create(spec, {
       let eta = data.eta as string | undefined;
       let timestamp = (data.timestamp || data.created_at) as string | undefined;
 
-      let events = data.events as Array<Record<string, unknown>> | undefined;
+      let events = data.events as Record<string, unknown>[] | undefined;
       if (events && Array.isArray(events)) {
         return {
           inputs: events.map(evt => ({

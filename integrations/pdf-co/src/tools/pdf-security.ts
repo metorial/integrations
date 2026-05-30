@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let pdfSecurity = SlateTool.create(spec, {
   name: 'PDF Security',
@@ -68,7 +68,7 @@ Use "add" action to protect a PDF, or "remove" action to unlock a protected PDF.
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let result;
+    let result: any;
 
     if (ctx.input.action === 'add') {
       result = await client.addPassword({

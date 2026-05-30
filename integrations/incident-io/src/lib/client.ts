@@ -28,9 +28,9 @@ export class Client {
     createdAtLte?: string;
   }): Promise<{ incidents: any[]; pagination_meta: any }> {
     let query: Record<string, any> = {};
-    if (params?.pageSize) query['page_size'] = params.pageSize;
-    if (params?.after) query['after'] = params.after;
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
+    if (params?.pageSize) query.page_size = params.pageSize;
+    if (params?.after) query.after = params.after;
+    if (params?.sortBy) query.sort_by = params.sortBy;
     if (params?.status) query['status[one_of]'] = params.status.join(',');
     if (params?.severity) query['severity[one_of]'] = params.severity.join(',');
     if (params?.statusCategory)
@@ -147,9 +147,9 @@ export class Client {
     after?: string;
   }): Promise<{ incident_updates: any[]; pagination_meta: any }> {
     let query: Record<string, any> = {};
-    if (params?.incidentId) query['incident_id'] = params.incidentId;
-    if (params?.pageSize) query['page_size'] = params.pageSize;
-    if (params?.after) query['after'] = params.after;
+    if (params?.incidentId) query.incident_id = params.incidentId;
+    if (params?.pageSize) query.page_size = params.pageSize;
+    if (params?.after) query.after = params.after;
 
     let response = await this.axios.get('/v2/incident_updates', { params: query });
     return response.data;
@@ -162,8 +162,8 @@ export class Client {
     after?: string;
   }): Promise<{ alerts: any[]; pagination_meta: any }> {
     let query: Record<string, any> = {};
-    if (params?.pageSize) query['page_size'] = params.pageSize;
-    if (params?.after) query['after'] = params.after;
+    if (params?.pageSize) query.page_size = params.pageSize;
+    if (params?.after) query.after = params.after;
 
     let response = await this.axios.get('/v2/alerts', { params: query });
     return response.data;
@@ -243,8 +243,8 @@ export class Client {
     after?: string;
   }): Promise<{ escalations: any[]; pagination_meta: any }> {
     let query: Record<string, any> = {};
-    if (params?.pageSize) query['page_size'] = params.pageSize;
-    if (params?.after) query['after'] = params.after;
+    if (params?.pageSize) query.page_size = params.pageSize;
+    if (params?.after) query.after = params.after;
 
     let response = await this.axios.get('/v2/escalations', { params: query });
     return response.data;
@@ -272,8 +272,8 @@ export class Client {
     after?: string;
   }): Promise<{ schedules: any[]; pagination_meta: any }> {
     let query: Record<string, any> = {};
-    if (params?.pageSize) query['page_size'] = params.pageSize;
-    if (params?.after) query['after'] = params.after;
+    if (params?.pageSize) query.page_size = params.pageSize;
+    if (params?.after) query.after = params.after;
 
     let response = await this.axios.get('/v2/schedules', { params: query });
     return response.data;
@@ -342,8 +342,8 @@ export class Client {
     let query: Record<string, any> = {
       catalog_type_id: catalogTypeId
     };
-    if (params?.pageSize) query['page_size'] = params.pageSize;
-    if (params?.after) query['after'] = params.after;
+    if (params?.pageSize) query.page_size = params.pageSize;
+    if (params?.after) query.after = params.after;
 
     let response = await this.axios.get('/v2/catalog_entries', { params: query });
     return response.data;
@@ -437,8 +437,8 @@ export class Client {
     incidentMode?: string;
   }): Promise<{ follow_ups: any[] }> {
     let query: Record<string, any> = {};
-    if (params?.incidentId) query['incident_id'] = params.incidentId;
-    if (params?.incidentMode) query['incident_mode'] = params.incidentMode;
+    if (params?.incidentId) query.incident_id = params.incidentId;
+    if (params?.incidentMode) query.incident_mode = params.incidentMode;
 
     let response = await this.axios.get('/v2/follow_ups', { params: query });
     return response.data;
@@ -547,9 +547,9 @@ export class Client {
     after?: string;
   }): Promise<{ status_page_incidents: any[]; pagination_meta: any }> {
     let query: Record<string, any> = {};
-    if (params?.statusPageId) query['status_page_id'] = params.statusPageId;
-    if (params?.pageSize) query['page_size'] = params.pageSize;
-    if (params?.after) query['after'] = params.after;
+    if (params?.statusPageId) query.status_page_id = params.statusPageId;
+    if (params?.pageSize) query.page_size = params.pageSize;
+    if (params?.after) query.after = params.after;
 
     let response = await this.axios.get('/v2/status_pages/incidents', { params: query });
     return response.data;
@@ -574,8 +574,8 @@ export class Client {
     after?: string;
   }): Promise<{ users: any[]; pagination_meta: any }> {
     let query: Record<string, any> = {};
-    if (params?.pageSize) query['page_size'] = params.pageSize;
-    if (params?.after) query['after'] = params.after;
+    if (params?.pageSize) query.page_size = params.pageSize;
+    if (params?.after) query.after = params.after;
 
     let response = await this.axios.get('/v2/users', { params: query });
     return response.data;

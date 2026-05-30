@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createCandidateTool,
-  getCandidateTool,
-  updateCandidateTool,
   createApplicationTool,
-  updateApplicationTool,
+  createCandidateTool,
+  createJobTool,
+  getCandidateTool,
   listApplicationsTool,
   listJobsTool,
-  createJobTool,
-  updateJob,
-  manageOfferTool,
-  manageInterviewScheduleTool,
   listOrganizationTool,
-  setCustomField
+  manageInterviewScheduleTool,
+  manageOfferTool,
+  setCustomField,
+  updateApplicationTool,
+  updateCandidateTool,
+  updateJob
 } from './tools';
 import {
-  candidateEventsTrigger,
   applicationEventsTrigger,
+  candidateEventsTrigger,
+  interviewEventsTrigger,
   jobEventsTrigger,
   offerEventsTrigger,
-  interviewEventsTrigger,
   openingEventsTrigger
 } from './triggers';
 

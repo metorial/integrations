@@ -48,8 +48,8 @@ export class SpeechToTextClient {
     let queryParams: Record<string, string> = {
       language: params.language
     };
-    if (params.format) queryParams['format'] = params.format;
-    if (params.profanity) queryParams['profanity'] = params.profanity;
+    if (params.format) queryParams.format = params.format;
+    if (params.profanity) queryParams.profanity = params.profanity;
 
     let reqHeaders: Record<string, string> = {
       ...this.headers,
@@ -112,13 +112,13 @@ export class SpeechToTextClient {
     };
 
     if (params.wordLevelTimestampsEnabled !== undefined) {
-      properties['wordLevelTimestampsEnabled'] = params.wordLevelTimestampsEnabled;
+      properties.wordLevelTimestampsEnabled = params.wordLevelTimestampsEnabled;
     }
     if (params.diarizationEnabled !== undefined) {
-      properties['diarizationEnabled'] = params.diarizationEnabled;
+      properties.diarizationEnabled = params.diarizationEnabled;
     }
     if (params.diarization) {
-      properties['diarization'] = {
+      properties.diarization = {
         speakers: {
           minCount: params.diarization.minCount ?? 2,
           maxCount: params.diarization.maxCount ?? 10
@@ -126,13 +126,13 @@ export class SpeechToTextClient {
       };
     }
     if (params.punctuationMode) {
-      properties['punctuationMode'] = params.punctuationMode;
+      properties.punctuationMode = params.punctuationMode;
     }
     if (params.profanityFilterMode) {
-      properties['profanityFilterMode'] = params.profanityFilterMode;
+      properties.profanityFilterMode = params.profanityFilterMode;
     }
     if (params.languageIdentification) {
-      properties['languageIdentification'] = params.languageIdentification;
+      properties.languageIdentification = params.languageIdentification;
     }
 
     let body: Record<string, any> = {
@@ -141,10 +141,10 @@ export class SpeechToTextClient {
       properties
     };
 
-    if (params.contentUrls) body['contentUrls'] = params.contentUrls;
-    if (params.contentContainerUrl) body['contentContainerUrl'] = params.contentContainerUrl;
+    if (params.contentUrls) body.contentUrls = params.contentUrls;
+    if (params.contentContainerUrl) body.contentContainerUrl = params.contentContainerUrl;
     if (params.model) {
-      body['model'] = { self: params.model };
+      body.model = { self: params.model };
     }
 
     let response = await axios.post('/speechtotext/transcriptions:submit', body, {

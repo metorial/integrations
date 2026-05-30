@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listMembers,
-  getMember,
   createMember,
-  updateMember,
   deleteMember,
+  getMember,
+  listMembers,
   manageMemberPlan,
+  updateMember,
   verifyToken
 } from './tools';
 import { memberEvents, planConnectionEvents } from './triggers';

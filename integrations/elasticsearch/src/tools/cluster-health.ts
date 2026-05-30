@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let clusterHealthTool = SlateTool.create(spec, {
   name: 'Cluster Health',
@@ -52,7 +52,7 @@ export let clusterHealthTool = SlateTool.create(spec, {
     });
 
     let health = await client.clusterHealth();
-    let nodeStats: any = undefined;
+    let nodeStats: any;
 
     if (ctx.input.includeNodeStats) {
       nodeStats = await client.nodeStats(ctx.input.nodeId);

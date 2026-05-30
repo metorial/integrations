@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { listWebsites } from '../lib/admin';
 import { z } from 'zod';
+import { listWebsites } from '../lib/admin';
+import { spec } from '../spec';
 
 export let listWebsitesTool = SlateTool.create(spec, {
   name: 'List Websites',
@@ -33,7 +33,7 @@ export let listWebsitesTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let data = await listWebsites({ token: ctx.auth.token, userId: ctx.auth.userId });
 
-    let websites: Array<Record<string, unknown>> = [];
+    let websites: Record<string, unknown>[] = [];
     let rawList = Array.isArray(data) ? data : (data?.websites ?? data?.data ?? []);
 
     for (let site of rawList) {

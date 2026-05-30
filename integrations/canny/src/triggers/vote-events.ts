@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let voteEventsTrigger = SlateTrigger.create(spec, {
   name: 'Vote Events',
@@ -33,7 +33,7 @@ export let voteEventsTrigger = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
       let eventType = data.type as string;
 
-      if (!eventType || !eventType.startsWith('vote.')) {
+      if (!eventType?.startsWith('vote.')) {
         return { inputs: [] };
       }
 

@@ -1,25 +1,25 @@
 import { createAxios } from 'slates';
 import type {
-  TaxCalculationParams,
-  TaxCalculationResult,
+  Category,
+  CreateCustomerParams,
+  CreateOrderParams,
+  CreateRefundParams,
+  Customer,
+  ListOrdersParams,
+  ListRefundsParams,
+  NexusRegion,
+  Order,
   RateParams,
   RateResult,
-  Category,
-  ListOrdersParams,
-  CreateOrderParams,
-  UpdateOrderParams,
-  Order,
-  ListRefundsParams,
-  CreateRefundParams,
-  UpdateRefundParams,
   Refund,
-  CreateCustomerParams,
+  SummaryRate,
+  TaxCalculationParams,
+  TaxCalculationResult,
   UpdateCustomerParams,
-  Customer,
-  NexusRegion,
+  UpdateOrderParams,
+  UpdateRefundParams,
   ValidateAddressParams,
-  ValidatedAddress,
-  SummaryRate
+  ValidatedAddress
 } from './types';
 
 let BASE_URLS: Record<string, string> = {
@@ -41,7 +41,7 @@ export class Client {
     }
 
     this.axios = createAxios({
-      baseURL: BASE_URLS[config.environment] || BASE_URLS['production'],
+      baseURL: BASE_URLS[config.environment] || BASE_URLS.production,
       headers
     });
   }

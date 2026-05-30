@@ -1,17 +1,22 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let envVarValueSchema = z.object({
   value: z.string().describe('The environment variable value'),
   context: z
-    .enum(['all', 'dev', 'dev-server', 'branch', 'branch-deploy', 'deploy-preview', 'production'])
+    .enum([
+      'all',
+      'dev',
+      'dev-server',
+      'branch',
+      'branch-deploy',
+      'deploy-preview',
+      'production'
+    ])
     .describe('Deploy context for this value'),
-  contextParameter: z
-    .string()
-    .optional()
-    .describe('Branch name when context is "branch"')
+  contextParameter: z.string().optional().describe('Branch name when context is "branch"')
 });
 
 let envVarOutputSchema = z.object({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TinifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let convertImage = SlateTool.create(spec, {
   name: 'Convert Image',

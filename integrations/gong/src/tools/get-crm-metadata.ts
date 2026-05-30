@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GongClient } from '../lib/client';
 import { gongServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCrmMetadata = SlateTool.create(spec, {
   name: 'Get CRM Metadata',

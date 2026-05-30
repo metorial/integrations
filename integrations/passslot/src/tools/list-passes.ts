@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listPasses = SlateTool.create(spec, {
   name: 'List Passes',
@@ -34,7 +34,7 @@ export let listPasses = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
-    let passes;
+    let passes: any;
     if (ctx.input.passTypeIdentifier) {
       passes = await client.listPassesByType(ctx.input.passTypeIdentifier);
     } else {

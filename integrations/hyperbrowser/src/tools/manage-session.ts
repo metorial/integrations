@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { HyperbrowserClient } from '../lib/client';
-import { sessionOptionsSchema, sessionDetailSchema } from '../lib/schemas';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { HyperbrowserClient } from '../lib/client';
+import { sessionDetailSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let createSession = SlateTool.create(spec, {
   name: 'Create Browser Session',
@@ -222,7 +222,7 @@ export let listSessions = SlateTool.create(spec, {
       perPage: ctx.input.perPage
     });
 
-    let sessions = (result.sessions as Array<Record<string, unknown>>) ?? [];
+    let sessions = (result.sessions as Record<string, unknown>[]) ?? [];
 
     return {
       output: {

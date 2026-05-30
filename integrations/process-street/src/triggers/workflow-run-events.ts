@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taskDataSchema = z.object({
   taskId: z.string().describe('ID of the task'),
@@ -115,12 +115,12 @@ export let workflowRunEvents = SlateTrigger.create(spec, {
 
       let normalizedType = typeMap[eventType] || eventType.toLowerCase();
 
-      let task: any = undefined;
-      let workflowRun: any = undefined;
-      let approvalStatus: string | undefined = undefined;
-      let approvalComment: string | undefined = undefined;
-      let reviewerEmail: string | undefined = undefined;
-      let reviewerUsername: string | undefined = undefined;
+      let task: any;
+      let workflowRun: any;
+      let approvalStatus: string | undefined;
+      let approvalComment: string | undefined;
+      let reviewerEmail: string | undefined;
+      let reviewerUsername: string | undefined;
 
       // Task events have task data in payload
       if (payload?.id && payload?.name !== undefined && payload?.status !== undefined) {

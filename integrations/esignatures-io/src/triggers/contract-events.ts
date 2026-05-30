@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let signerSchema = z.object({
   signerId: z.string().optional().describe('Unique ID of the signer'),

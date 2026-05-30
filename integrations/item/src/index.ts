@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listObjects,
-  getObject,
-  createObject,
-  updateObject,
-  deleteObject,
   batchUpsertObjects,
+  createObject,
+  deleteObject,
+  executeView,
+  getObject,
   getSchema,
+  listObjects,
   listUsers,
   listViews,
-  executeView,
-  triggerSkillWebhook
+  triggerSkillWebhook,
+  updateObject
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

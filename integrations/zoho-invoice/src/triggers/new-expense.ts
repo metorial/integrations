@@ -1,4 +1,4 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
@@ -59,7 +59,7 @@ export let newExpense = SlateTrigger.create(spec, {
       });
 
       let expenses = result.expenses ?? [];
-      let inputs: Array<any> = [];
+      let inputs: any[] = [];
       let newestCreatedTime = lastCreatedTime;
 
       for (let exp of expenses) {

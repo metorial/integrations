@@ -1,11 +1,11 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphHopperClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let normalizePoints = (
-  points?: Array<[number?, number?, ...unknown[]]>
-): Array<[number, number]> | undefined => {
+  points?: [number?, number?, ...unknown[]][]
+): [number, number][] | undefined => {
   if (!points) return undefined;
   return points
     .map(point => [point[0], point[1]] as const)

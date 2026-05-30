@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let appointmentEvents = SlateTrigger.create(spec, {
   name: 'Appointment Events',
@@ -102,9 +102,11 @@ export let appointmentEvents = SlateTrigger.create(spec, {
         inputs: [
           {
             action,
-            appointmentId: parseInt(id, 10),
-            calendarId: calendarId ? parseInt(calendarId, 10) : undefined,
-            appointmentTypeId: appointmentTypeId ? parseInt(appointmentTypeId, 10) : undefined
+            appointmentId: Number.parseInt(id, 10),
+            calendarId: calendarId ? Number.parseInt(calendarId, 10) : undefined,
+            appointmentTypeId: appointmentTypeId
+              ? Number.parseInt(appointmentTypeId, 10)
+              : undefined
           }
         ]
       };

@@ -69,7 +69,7 @@ export interface SourcesResponse {
 export class Client {
   private http;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {

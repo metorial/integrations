@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RecruiteeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listDepartmentsLocations = SlateTool.create(spec, {
   name: 'List Departments & Locations',

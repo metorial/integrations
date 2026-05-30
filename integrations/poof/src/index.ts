@@ -3,15 +3,15 @@ import { spec } from './spec';
 import {
   createCheckout,
   createCryptoInvoice,
-  createPaymentLink,
   createDepositAddress,
-  manageWallet,
-  sendPayout,
   createFiatPayment,
-  getTransactions,
+  createPaymentLink,
   getCryptoRates,
   getProduct,
-  getSmartContracts
+  getSmartContracts,
+  getTransactions,
+  manageWallet,
+  sendPayout
 } from './tools';
 import { paymentNotification } from './triggers';
 

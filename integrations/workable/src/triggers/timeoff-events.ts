@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { WorkableClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let timeoffEventsTrigger = SlateTrigger.create(spec, {
   name: 'Time Off Events',

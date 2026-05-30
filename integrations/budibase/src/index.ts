@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchApplications,
+  executeQuery,
   manageApplication,
-  publishApplication,
-  searchTables,
-  manageTable,
-  searchRows,
   manageRow,
-  searchUsers,
+  manageTable,
   manageUser,
+  publishApplication,
+  searchApplications,
   searchQueries,
-  executeQuery
+  searchRows,
+  searchTables,
+  searchUsers
 } from './tools';
-import { rowChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, rowChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

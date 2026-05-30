@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { KaleidoClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageEnvironment = SlateTool.create(spec, {
   name: 'Manage Environment',
@@ -93,7 +93,7 @@ Configure the blockchain protocol (Geth, Quorum, Besu, Corda, Fabric) and consen
 
       return {
         output: { environments: mapped },
-        message: `Found **${mapped.length}** environment(s).${mapped.length > 0 ? ' ' + mapped.map(e => `**${e.name}** (${e.state || 'unknown'})`).join(', ') : ''}`
+        message: `Found **${mapped.length}** environment(s).${mapped.length > 0 ? ` ${mapped.map(e => `**${e.name}** (${e.state || 'unknown'})`).join(', ')}` : ''}`
       };
     }
 

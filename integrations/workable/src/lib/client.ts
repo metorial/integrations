@@ -80,7 +80,7 @@ export class WorkableClient {
     let allParams: any = { ...params };
     if (params?.job_shortcode) {
       let shortcode = params.job_shortcode;
-      delete allParams.job_shortcode;
+      allParams.job_shortcode = undefined;
       let response = await this.axios.get(`/jobs/${shortcode}/candidates`, {
         params: allParams
       });

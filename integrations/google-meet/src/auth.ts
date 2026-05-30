@@ -1,7 +1,7 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
-import { googleMeetScopes } from './scopes';
 import { googleMeetOAuthError, googleMeetServiceError } from './lib/errors';
+import { googleMeetScopes } from './scopes';
 
 let googleAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -119,7 +119,9 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        throw googleMeetServiceError('No refresh token available for Google Meet OAuth refresh.');
+        throw googleMeetServiceError(
+          'No refresh token available for Google Meet OAuth refresh.'
+        );
       }
 
       try {

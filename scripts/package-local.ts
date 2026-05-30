@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
 
-import { $ } from 'bun';
-import { access, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { access, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { $ } from 'bun';
 import {
-  preparePackageJsonForPublish,
-  type PackageJson
+  type PackageJson,
+  preparePackageJsonForPublish
 } from './lib/prepare-package-for-publish';
 
 type ResolvedIntegration = {
@@ -54,7 +54,10 @@ async function main() {
     await $`bunx turbo run build --filter=${integration.packageName}`.cwd(ROOT_DIRECTORY);
 
     const packageJson = JSON.parse(originalPackageJson) as PackageJson;
-    const publishPackageJson = await preparePackageJsonForPublish(packageDirectory, packageJson);
+    const publishPackageJson = await preparePackageJsonForPublish(
+      packageDirectory,
+      packageJson
+    );
 
     await writeFile(
       packageJsonPath,
@@ -62,8 +65,10 @@ async function main() {
       'utf8'
     );
 
-    const packResult =
-      await $`npm pack --ignore-scripts`.cwd(packageDirectory).quiet().nothrow();
+    const packResult = await $`npm pack --ignore-scripts`
+      .cwd(packageDirectory)
+      .quiet()
+      .nothrow();
     if (packResult.exitCode !== 0) {
       throw new Error(
         `npm pack failed: ${new TextDecoder().decode(packResult.stderr).trim() || 'unknown error'}`
@@ -162,7 +167,9 @@ async function listIntegrations(): Promise<ResolvedIntegration[]> {
       const slateJsonPath = path.join(packageDirectory, 'slate.json');
       let slateName: string | undefined;
       if (await pathExists(slateJsonPath)) {
-        const slateJson = JSON.parse(await readFile(slateJsonPath, 'utf8')) as { name?: string };
+        const slateJson = JSON.parse(await readFile(slateJsonPath, 'utf8')) as {
+          name?: string;
+        };
         slateName = slateJson.name;
       }
 

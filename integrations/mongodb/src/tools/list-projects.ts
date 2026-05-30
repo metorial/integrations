@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AtlasClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let projectSchema = z.object({
   projectId: z.string().describe('Unique identifier of the project'),
@@ -40,7 +40,7 @@ export let listProjectsTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new AtlasClient(ctx.auth);
 
-    let result;
+    let result: any;
     if (ctx.input.organizationId) {
       result = await client.listOrganizationProjects(ctx.input.organizationId, {
         itemsPerPage: ctx.input.itemsPerPage,

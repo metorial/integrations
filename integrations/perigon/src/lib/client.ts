@@ -5,7 +5,7 @@ let BASE_URL = 'https://api.perigon.io/v1';
 export class PerigonClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

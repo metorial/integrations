@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MapboxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let uploadSchema = z.object({
   uploadId: z.string().optional().describe('Upload ID'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClearoutClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageBulkVerification = SlateTool.create(spec, {
   name: 'Manage Bulk Verification',

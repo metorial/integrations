@@ -18,11 +18,11 @@ export interface SlateProtocolErrorResponse {
   kind: SlateProtocolErrorKind;
   retryable?: boolean;
   status?: number;
-  issues?: Array<Record<string, unknown>>;
+  issues?: Record<string, unknown>[];
   provider?: Record<string, unknown>;
   upstream?: Record<string, unknown>;
   baggage?: Record<string, unknown>;
-  requestTraces?: Array<Record<string, unknown>>;
+  requestTraces?: Record<string, unknown>[];
   [key: string]: unknown;
 }
 
@@ -62,7 +62,8 @@ let normalizeResponse = (
     let code =
       typeof error.code === 'string'
         ? error.code
-        : defaults.code ?? (source === 'transport' ? 'transport.invoke_failed' : 'internal.unexpected');
+        : (defaults.code ??
+          (source === 'transport' ? 'transport.invoke_failed' : 'internal.unexpected'));
 
     return {
       ...defaults,
@@ -70,13 +71,15 @@ let normalizeResponse = (
       code,
       message: error.message,
       kind:
-        (typeof error.kind === 'string' ? (error.kind as SlateProtocolErrorKind) : defaults.kind) ??
-        inferKindFromCode(code)
+        (typeof error.kind === 'string'
+          ? (error.kind as SlateProtocolErrorKind)
+          : defaults.kind) ?? inferKindFromCode(code)
     };
   }
 
   let code =
-    defaults.code ?? (source === 'transport' ? 'transport.invoke_failed' : 'internal.unexpected');
+    defaults.code ??
+    (source === 'transport' ? 'transport.invoke_failed' : 'internal.unexpected');
 
   return {
     ...defaults,
@@ -84,13 +87,11 @@ let normalizeResponse = (
     message:
       error instanceof Error
         ? error.message
-        : defaults.message ?? 'The slate returned an unexpected error.',
+        : (defaults.message ?? 'The slate returned an unexpected error.'),
     kind: defaults.kind ?? inferKindFromCode(code),
     baggage: {
       ...(defaults.baggage ?? {}),
-      ...(error instanceof Error
-        ? { originalName: error.name }
-        : { originalValue: error })
+      ...(error instanceof Error ? { originalName: error.name } : { originalValue: error })
     }
   };
 };

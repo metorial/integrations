@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeepgramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let keySchema = z.object({
   keyId: z.string().describe('Unique API key identifier.'),

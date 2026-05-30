@@ -1,4 +1,4 @@
-export * from './trigger-command';
-export * from './list-computers';
-export * from './list-commands';
 export * from './command-run-history';
+export * from './list-commands';
+export * from './list-computers';
+export * from './trigger-command';

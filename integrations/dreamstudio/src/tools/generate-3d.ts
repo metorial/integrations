@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generate3D = SlateTool.create(spec, {
   name: 'Generate 3D Asset',
@@ -48,7 +48,7 @@ export let generate3D = SlateTool.create(spec, {
     let result = await client.generateStableFast3D({
       image: input.image,
       textureResolution: input.textureResolution
-        ? parseInt(input.textureResolution)
+        ? Number.parseInt(input.textureResolution, 10)
         : undefined,
       foregroundRatio: input.foregroundRatio,
       remesh: input.remesh

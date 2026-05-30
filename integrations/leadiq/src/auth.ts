@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
@@ -32,7 +32,7 @@ export let auth = SlateAuth.create()
         headers: {
           'Content-Type': 'application/json',
 
-          Authorization: `Basic ${Buffer.from(ctx.output.token + ':').toString('base64')}`
+          Authorization: `Basic ${Buffer.from(`${ctx.output.token}:`).toString('base64')}`
         }
       });
 

@@ -69,7 +69,7 @@ export class FormsiteClient {
   private axios: ReturnType<typeof createAxios>;
   private userDir: string;
 
-  constructor(private config: { token: string; server: string; userDir: string }) {
+  constructor(config: { token: string; server: string; userDir: string }) {
     this.userDir = config.userDir;
     this.axios = createAxios({
       baseURL: `https://${config.server}.formsite.com/api/v2/${config.userDir}`,
@@ -159,9 +159,9 @@ export class FormsiteClient {
       return fallback;
     };
     let pagination: PaginationInfo = {
-      limit: parseInt(getHeaderValue('pagination-limit', '100'), 10),
-      pageCurrent: parseInt(getHeaderValue('pagination-page-current', '1'), 10),
-      pageLast: parseInt(getHeaderValue('pagination-page-last', '1'), 10)
+      limit: Number.parseInt(getHeaderValue('pagination-limit', '100'), 10),
+      pageCurrent: Number.parseInt(getHeaderValue('pagination-page-current', '1'), 10),
+      pageLast: Number.parseInt(getHeaderValue('pagination-page-last', '1'), 10)
     };
 
     let results = response.data.results || [];

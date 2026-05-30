@@ -1,40 +1,40 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listPostsTool,
-  getPostTool,
-  createPostTool,
-  updatePostTool,
-  deletePostTool,
-  listPagesTool,
-  createPageTool,
-  updatePageTool,
-  deletePageTool,
-  listCommentsTool,
-  createCommentTool,
-  moderateCommentTool,
-  deleteCommentTool,
-  listMediaTool,
-  getMediaTool,
-  updateMediaTool,
-  deleteMediaTool,
-  listCategoriesTool,
   createCategoryTool,
-  deleteCategoryTool,
-  listTagsTool,
+  createCommentTool,
+  createPageTool,
+  createPostTool,
   createTagTool,
+  deleteCategoryTool,
+  deleteCommentTool,
+  deleteMediaTool,
+  deletePageTool,
+  deletePostTool,
   deleteTagTool,
-  listUsersTool,
   getCurrentUserTool,
+  getMediaTool,
+  getPostTool,
   getSiteInfoTool,
   getSiteStatsTool,
-  searchContentTool
+  listCategoriesTool,
+  listCommentsTool,
+  listMediaTool,
+  listPagesTool,
+  listPostsTool,
+  listTagsTool,
+  listUsersTool,
+  moderateCommentTool,
+  searchContentTool,
+  updateMediaTool,
+  updatePageTool,
+  updatePostTool
 } from './tools';
 import {
-  postChangesTrigger,
+  inboundWebhook,
   newCommentTrigger,
   pageChangesTrigger,
-  inboundWebhook
+  postChangesTrigger
 } from './triggers';
 
 export let provider = Slate.create({

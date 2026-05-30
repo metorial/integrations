@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RecruiteeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getOffer = SlateTool.create(spec, {
   name: 'Get Job Offer',

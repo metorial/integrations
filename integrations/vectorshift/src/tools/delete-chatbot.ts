@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createApiClient, deleteChatbot } from '../lib/client';
+import { spec } from '../spec';
 
 export let deleteChatbotTool = SlateTool.create(spec, {
   name: 'Delete Chatbot',

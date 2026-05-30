@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTemplates,
-  getTemplate,
-  createTemplate,
-  updateTemplate,
-  deleteTemplate,
-  copyTemplate,
-  publishTemplate,
-  createPass,
-  getPass,
-  listPasses,
-  updatePass,
-  deletePass,
   bulkUpdatePasses,
+  copyTemplate,
+  createPass,
+  createTemplate,
+  deletePass,
+  deleteTemplate,
+  getPass,
+  getPassStatistics,
+  getTemplate,
+  listPasses,
+  listTemplates,
+  manageAppScan,
+  manageBundle,
+  publishTemplate,
   sendPass,
   sendPushNotification,
-  manageBundle,
-  getPassStatistics,
-  manageAppScan
+  updatePass,
+  updateTemplate
 } from './tools';
-import { passEvents, templateEvents, scanEvents, messageEvents } from './triggers';
+import { messageEvents, passEvents, scanEvents, templateEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

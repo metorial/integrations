@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let wildfireRiskSchema = z.any().describe('Wildfire risk forecast data');
+let _wildfireRiskSchema = z.any().describe('Wildfire risk forecast data');
 
 export let getWildfireRisk = SlateTool.create(spec, {
   name: 'Get Wildfire Risk Forecast',

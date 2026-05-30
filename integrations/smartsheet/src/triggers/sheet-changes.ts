@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SmartsheetClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventInputSchema = z.object({
   eventType: z.string().describe('Event type (e.g., row.created, cell.updated, column.added)'),
@@ -54,7 +54,7 @@ export let sheetChanges = SlateTrigger.create(spec, {
       // The handleRequest will handle the challenge
       try {
         await client.updateWebhook(webhookId, { enabled: true });
-      } catch (e) {
+      } catch (_e) {
         // Webhook might need verification first; it will be enabled after the challenge
         // is handled by handleRequest
       }
@@ -77,7 +77,7 @@ export let sheetChanges = SlateTrigger.create(spec, {
     },
 
     handleRequest: async ctx => {
-      let contentType = ctx.request.headers.get('content-type') || '';
+      let _contentType = ctx.request.headers.get('content-type') || '';
 
       // Handle Smartsheet verification challenge
       // When enabling a webhook, Smartsheet sends a challenge that must be echoed back

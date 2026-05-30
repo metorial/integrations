@@ -25,7 +25,7 @@ export interface TeamManagementResponse {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://push.techulus.com/api',
       headers: {

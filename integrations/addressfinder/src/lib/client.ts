@@ -19,9 +19,9 @@ export class Client {
 
     let headers: Record<string, string> = {};
     if (this.authMethod === 'oauth2') {
-      headers['Authorization'] = `Bearer ${this.token}`;
+      headers.Authorization = `Bearer ${this.token}`;
     } else if (this.secret) {
-      headers['Authorization'] = this.secret;
+      headers.Authorization = this.secret;
     }
 
     this.axios = createAxios({
@@ -35,7 +35,7 @@ export class Client {
   ): Record<string, string | number> {
     let params: Record<string, string | number> = { format: 'json' };
     if (this.authMethod === 'api_key') {
-      params['key'] = this.token;
+      params.key = this.token;
     }
     for (let [k, v] of Object.entries(extra)) {
       if (v !== undefined && v !== null && v !== '') {

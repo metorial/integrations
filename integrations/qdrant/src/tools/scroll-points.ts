@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { QdrantClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let scrollPoints = SlateTool.create(spec, {
   name: 'Scroll Points',

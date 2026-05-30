@@ -201,21 +201,20 @@ export class Client {
 
   async listCases(params: ListCasesParams = {}): Promise<PaginatedResponse<CaseData>> {
     let queryParams: Record<string, any> = {};
-    if (params.caseType) queryParams['type'] = params.caseType;
-    if (params.ownerId) queryParams['owner_id'] = params.ownerId;
-    if (params.dateModifiedStart)
-      queryParams['date_modified_start'] = params.dateModifiedStart;
-    if (params.dateModifiedEnd) queryParams['date_modified_end'] = params.dateModifiedEnd;
-    if (params.closed !== undefined) queryParams['closed'] = params.closed;
+    if (params.caseType) queryParams.type = params.caseType;
+    if (params.ownerId) queryParams.owner_id = params.ownerId;
+    if (params.dateModifiedStart) queryParams.date_modified_start = params.dateModifiedStart;
+    if (params.dateModifiedEnd) queryParams.date_modified_end = params.dateModifiedEnd;
+    if (params.closed !== undefined) queryParams.closed = params.closed;
     if (params.serverDateModifiedStart)
-      queryParams['server_date_modified_start'] = params.serverDateModifiedStart;
+      queryParams.server_date_modified_start = params.serverDateModifiedStart;
     if (params.serverDateModifiedEnd)
-      queryParams['server_date_modified_end'] = params.serverDateModifiedEnd;
-    if (params.externalId) queryParams['external_id'] = params.externalId;
-    if (params.caseName) queryParams['case_name'] = params.caseName;
+      queryParams.server_date_modified_end = params.serverDateModifiedEnd;
+    if (params.externalId) queryParams.external_id = params.externalId;
+    if (params.caseName) queryParams.case_name = params.caseName;
     if (params.indexCaseId) queryParams['index.case_id'] = params.indexCaseId;
-    queryParams['limit'] = params.limit ?? 20;
-    if (params.offset) queryParams['offset'] = params.offset;
+    queryParams.limit = params.limit ?? 20;
+    if (params.offset) queryParams.offset = params.offset;
 
     let response = await this.axios.get('/v0.5/case/', { params: queryParams });
     return response.data;
@@ -245,13 +244,13 @@ export class Client {
 
   async listForms(params: ListFormsParams = {}): Promise<PaginatedResponse<FormData>> {
     let queryParams: Record<string, any> = {};
-    if (params.xmlns) queryParams['xmlns'] = params.xmlns;
-    if (params.receivedOnStart) queryParams['received_on_start'] = params.receivedOnStart;
-    if (params.receivedOnEnd) queryParams['received_on_end'] = params.receivedOnEnd;
-    if (params.appId) queryParams['app_id'] = params.appId;
-    if (params.includeArchived) queryParams['include_archived'] = params.includeArchived;
-    queryParams['limit'] = params.limit ?? 20;
-    if (params.offset) queryParams['offset'] = params.offset;
+    if (params.xmlns) queryParams.xmlns = params.xmlns;
+    if (params.receivedOnStart) queryParams.received_on_start = params.receivedOnStart;
+    if (params.receivedOnEnd) queryParams.received_on_end = params.receivedOnEnd;
+    if (params.appId) queryParams.app_id = params.appId;
+    if (params.includeArchived) queryParams.include_archived = params.includeArchived;
+    queryParams.limit = params.limit ?? 20;
+    if (params.offset) queryParams.offset = params.offset;
 
     let response = await this.axios.get('/v0.5/form/', { params: queryParams });
     return response.data;
@@ -268,8 +267,8 @@ export class Client {
     params: ListUsersParams = {}
   ): Promise<PaginatedResponse<MobileWorker>> {
     let queryParams: Record<string, any> = {};
-    queryParams['limit'] = params.limit ?? 20;
-    if (params.offset) queryParams['offset'] = params.offset;
+    queryParams.limit = params.limit ?? 20;
+    if (params.offset) queryParams.offset = params.offset;
 
     let response = await this.axios.get('/v0.5/user/', { params: queryParams });
     return response.data;
@@ -314,8 +313,8 @@ export class Client {
 
   async listWebUsers(params: ListUsersParams = {}): Promise<PaginatedResponse<WebUser>> {
     let queryParams: Record<string, any> = {};
-    queryParams['limit'] = params.limit ?? 20;
-    if (params.offset) queryParams['offset'] = params.offset;
+    queryParams.limit = params.limit ?? 20;
+    if (params.offset) queryParams.offset = params.offset;
 
     let response = await this.axios.get('/v0.5/web-user/', { params: queryParams });
     return response.data;
@@ -325,8 +324,8 @@ export class Client {
 
   async listGroups(params: ListUsersParams = {}): Promise<PaginatedResponse<UserGroup>> {
     let queryParams: Record<string, any> = {};
-    queryParams['limit'] = params.limit ?? 20;
-    if (params.offset) queryParams['offset'] = params.offset;
+    queryParams.limit = params.limit ?? 20;
+    if (params.offset) queryParams.offset = params.offset;
 
     let response = await this.axios.get('/v0.5/group/', { params: queryParams });
     return response.data;
@@ -368,8 +367,8 @@ export class Client {
     params: ListApplicationsParams = {}
   ): Promise<PaginatedResponse<Application>> {
     let queryParams: Record<string, any> = {};
-    queryParams['limit'] = params.limit ?? 20;
-    if (params.offset) queryParams['offset'] = params.offset;
+    queryParams.limit = params.limit ?? 20;
+    if (params.offset) queryParams.offset = params.offset;
 
     let response = await this.axios.get('/v0.5/application/', { params: queryParams });
     return response.data;
@@ -386,8 +385,8 @@ export class Client {
     params: ListUsersParams = {}
   ): Promise<PaginatedResponse<LookupTable>> {
     let queryParams: Record<string, any> = {};
-    queryParams['limit'] = params.limit ?? 20;
-    if (params.offset) queryParams['offset'] = params.offset;
+    queryParams.limit = params.limit ?? 20;
+    if (params.offset) queryParams.offset = params.offset;
 
     let response = await this.axios.get('/v0.5/fixture/', { params: queryParams });
     return response.data;
@@ -406,14 +405,11 @@ export class Client {
   }
 
   async listSmsMessages(
-    params: {
-      limit?: number;
-      offset?: number;
-    } = {}
+    params: { limit?: number; offset?: number } = {}
   ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
-    queryParams['limit'] = params.limit ?? 20;
-    if (params.offset) queryParams['offset'] = params.offset;
+    queryParams.limit = params.limit ?? 20;
+    if (params.offset) queryParams.offset = params.offset;
 
     let response = await this.axios.get('/v0.5/sms/', { params: queryParams });
     return response.data;

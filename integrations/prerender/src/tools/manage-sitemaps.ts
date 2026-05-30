@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PrerenderClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageSitemaps = SlateTool.create(spec, {
   name: 'Manage Sitemaps',

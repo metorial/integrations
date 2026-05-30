@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { DsmClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let getDesignTokenStyles = SlateTool.create(spec, {
   name: 'Get Design Token Styles',

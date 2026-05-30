@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ohlcvSchema = z.object({
   date: z.string().describe('Date or datetime of the data point'),
@@ -93,12 +93,10 @@ export let getStockPrice = SlateTool.create(spec, {
       } else {
         data = await client.timeSeriesWeekly({ symbol });
       }
+    } else if (adjusted) {
+      data = await client.timeSeriesMonthlyAdjusted({ symbol });
     } else {
-      if (adjusted) {
-        data = await client.timeSeriesMonthlyAdjusted({ symbol });
-      } else {
-        data = await client.timeSeriesMonthly({ symbol });
-      }
+      data = await client.timeSeriesMonthly({ symbol });
     }
 
     let metaData = data['Meta Data'] || {};

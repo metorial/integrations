@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { TwitterClient } from '../lib/client';
-import { postSchema, mapPost } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { TwitterClient } from '../lib/client';
+import { mapPost, postSchema } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getTimeline = SlateTool.create(spec, {
   name: 'Get Timeline',
@@ -63,7 +63,7 @@ export let getTimeline = SlateTool.create(spec, {
       paginationToken
     } = ctx.input;
 
-    let result;
+    let result: any;
     if (timelineType === 'user') {
       result = await client.getUserTimeline(userId, {
         maxResults,

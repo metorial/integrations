@@ -3,16 +3,16 @@ import { spec } from './spec';
 import {
   listAccounts,
   manageContainer,
-  manageWorkspace,
-  manageTag,
-  manageTrigger,
-  manageVariable,
-  manageVersion,
   manageEnvironment,
   manageFolder,
-  manageUserPermission
+  manageTag,
+  manageTrigger,
+  manageUserPermission,
+  manageVariable,
+  manageVersion,
+  manageWorkspace
 } from './tools';
-import { versionPublished, workspaceChanged, inboundWebhook } from './triggers';
+import { inboundWebhook, versionPublished, workspaceChanged } from './triggers';
 
 export let provider = Slate.create({
   spec,

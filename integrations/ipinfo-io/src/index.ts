@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  lookupIp,
-  lookupIpLite,
-  lookupAsn,
+  batchLookup,
   getAbuseContact,
-  getIpRanges,
   getHostedDomains,
-  batchLookup
+  getIpRanges,
+  lookupAsn,
+  lookupIp,
+  lookupIpLite
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { extractRowsForSource, findHeaderMap, parseTypedValue } from './extractor';
-import { BETA_FIELDS, BetaRow, ERP_FIELDS, ErpRow } from './sources';
+import { type BetaRow, ERP_FIELDS, type ErpRow } from './sources';
 
 describe('Stern financial data extractor', () => {
   it('parses typed values and header aliases', () => {

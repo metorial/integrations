@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listContacts,
-  manageContact,
-  listGroups,
-  manageGroup,
-  createVoiceBroadcast,
-  listVoiceBroadcasts,
+  cancelTextBroadcast,
   cancelVoiceBroadcast,
   createTextBroadcast,
-  listTextBroadcasts,
-  cancelTextBroadcast,
-  manageRecording,
-  listRecordings,
-  manageCallerId,
+  createVoiceBroadcast,
+  getAccount,
+  listAccessAccounts,
   listCallerIds,
+  listContacts,
+  listDoNotContacts,
+  listGroups,
   listIncomingTexts,
   listKeywords,
+  listRecordings,
+  listTextBroadcasts,
   listVanityNumbers,
-  listDoNotContacts,
+  listVoiceBroadcasts,
   manageAccessAccount,
-  listAccessAccounts,
-  getAccount
+  manageCallerId,
+  manageContact,
+  manageGroup,
+  manageRecording
 } from './tools';
-import { newIncomingText, newContact, inboundWebhook } from './triggers';
+import { inboundWebhook, newContact, newIncomingText } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleMapsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let elevationPointSchema = z.object({
   latitude: z.number().describe('Latitude'),
@@ -68,7 +68,7 @@ export let getElevationTool = SlateTool.create(spec, {
       throw new Error(`Elevation request failed: ${response.status}`);
     }
 
-    let rawResults = (response.results as Array<Record<string, unknown>>) || [];
+    let rawResults = (response.results as Record<string, unknown>[]) || [];
 
     let elevations = rawResults.map(r => {
       let location = r.location as { lat: number; lng: number };

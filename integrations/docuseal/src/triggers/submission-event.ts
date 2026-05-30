@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let submitterSchema = z.object({
   submitterId: z.number().describe('Submitter ID'),
@@ -89,7 +89,7 @@ export let submissionEvent = SlateTrigger.create(spec, {
 
       let eventType = body.event_type as string;
 
-      if (!eventType || !eventType.startsWith('submission.')) {
+      if (!eventType?.startsWith('submission.')) {
         return { inputs: [] };
       }
 

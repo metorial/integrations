@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let activityEvents = SlateTrigger.create(spec, {
   name: 'Activity Events',
@@ -69,7 +69,7 @@ export let activityEvents = SlateTrigger.create(spec, {
 
     handleRequest: async ctx => {
       let body = (await ctx.request.json()) as any;
-      let target = ctx.request.headers.get('X-Moco-Target') || 'Activity';
+      let _target = ctx.request.headers.get('X-Moco-Target') || 'Activity';
       let event = ctx.request.headers.get('X-Moco-Event') || 'update';
       let timestamp = ctx.request.headers.get('X-Moco-Timestamp') || new Date().toISOString();
       let userId = ctx.request.headers.get('X-Moco-User-Id');

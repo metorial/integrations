@@ -30,7 +30,7 @@ export interface CollectionsParams extends PaginationParams {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.opensea.io/api/v2',
       headers: {

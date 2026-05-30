@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FirefliesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let sentenceSchema = z.object({
   index: z.number().nullable().describe('Sentence index in the transcript'),

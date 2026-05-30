@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { DetrackClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let jobUpdatesPollingTrigger = SlateTrigger.create(spec, {
   name: 'Job Updates (Polling)',
@@ -45,7 +45,7 @@ export let jobUpdatesPollingTrigger = SlateTrigger.create(spec, {
 
       let previousJobStates: Record<string, string> =
         ((ctx.state as Record<string, unknown>)?.jobStates as Record<string, string>) ?? {};
-      let lastDate: string =
+      let _lastDate: string =
         ((ctx.state as Record<string, unknown>)?.lastDate as string) ?? today;
 
       // Fetch jobs for today

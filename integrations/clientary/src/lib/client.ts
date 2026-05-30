@@ -8,7 +8,7 @@ export interface ClientConfig {
 export class Client {
   private axios;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     this.axios = createAxios({
       baseURL: `https://${config.subdomain}.clientary.com/api/v2`,
       headers: {

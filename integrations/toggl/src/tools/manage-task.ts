@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TogglClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taskOutputSchema = z.object({
   taskId: z.number().describe('Task ID'),
@@ -80,7 +80,7 @@ To **create**: provide a projectId and name. To **update**: provide a projectId,
     let mapped = {
       taskId: result.id,
       name: result.name,
-      projectId: result.project_id ?? parseInt(ctx.input.projectId),
+      projectId: result.project_id ?? Number.parseInt(ctx.input.projectId, 10),
       workspaceId: result.workspace_id ?? result.wid,
       active: result.active ?? true,
       estimatedSeconds: result.estimated_seconds ?? null,

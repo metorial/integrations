@@ -2,19 +2,19 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createLead,
-  getLead,
-  listLeads,
-  updateLead,
   deleteLead,
   duplicateLead,
-  manageLeadComments,
+  getLead,
   getLeadHistory,
-  sendLeadEmail,
-  manageClientFolders,
+  listLeads,
+  listPipelinesSteps,
   listUsers,
-  manageTeams,
+  manageClientFolders,
+  manageLeadComments,
   manageProspecting,
-  listPipelinesSteps
+  manageTeams,
+  sendLeadEmail,
+  updateLead
 } from './tools';
 import { leadEvents, prospectEvents, taskEvents } from './triggers';
 

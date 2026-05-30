@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let alertEventSchema = z.object({
   eventId: z.string().describe('Unique Papertrail event ID'),

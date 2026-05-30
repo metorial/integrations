@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let coinSchema = z.object({
   coinId: z.string().describe('Unique identifier of the coin'),
@@ -140,11 +140,11 @@ export let searchEvents = SlateTool.create(spec, {
 
     if (eventCount > 0) {
       let summaries = events.slice(0, 5).map(e => {
-        let title = e.title['en'] ?? Object.values(e.title)[0] ?? 'Untitled';
+        let title = e.title.en ?? Object.values(e.title)[0] ?? 'Untitled';
         let coins = e.coins.map(c => c.symbol).join(', ');
         return `- **${title}** (${coins}) — ${e.eventDate}`;
       });
-      message += '\n\n' + summaries.join('\n');
+      message += `\n\n${summaries.join('\n')}`;
       if (eventCount > 5) {
         message += `\n- ...and ${eventCount - 5} more`;
       }

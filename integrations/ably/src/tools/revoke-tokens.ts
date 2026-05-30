@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AblyRestClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let revokeTokens = SlateTool.create(spec, {
   name: 'Revoke Tokens',

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CincopaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let assetEvents = SlateTrigger.create(spec, {
   name: 'Asset Events',
@@ -37,7 +37,7 @@ export let assetEvents = SlateTrigger.create(spec, {
   .webhook({
     autoRegisterWebhook: async ctx => {
       let client = new CincopaClient({ token: ctx.auth.token });
-      let result = await client.setWebhook({
+      let _result = await client.setWebhook({
         hookUrl: ctx.input.webhookBaseUrl,
         events: 'asset.*'
       });

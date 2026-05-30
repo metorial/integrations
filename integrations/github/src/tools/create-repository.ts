@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createRepository = SlateTool.create(spec, {
   name: 'Create Repository',
@@ -50,7 +50,10 @@ Supports initializing with a README, gitignore template, and license.`,
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let repo = await client.createRepository(ctx.input);
 
     return {

@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 import { gitLabApiError, gitLabServiceError } from './lib/errors';
 
@@ -128,7 +128,7 @@ function createGitlabOauth(opts: {
 
       let oauthAxios = createAxios({ baseURL: baseUrl });
 
-      let response;
+      let response: any;
       try {
         response = await oauthAxios.post(
           '/oauth/token',
@@ -182,7 +182,7 @@ function createGitlabOauth(opts: {
         params.set('redirect_uri', ctx.output.redirectUri);
       }
 
-      let response;
+      let response: any;
       try {
         response = await oauthAxios.post('/oauth/token', params.toString(), {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -210,7 +210,7 @@ function createGitlabOauth(opts: {
     getProfile: async (ctx: { output: AuthOutput; input: any; scopes: string[] }) => {
       let baseUrl = normalizeBaseUrl(ctx.output.instanceUrl);
       let apiAxios = createAxios({ baseURL: `${baseUrl}/api/v4` });
-      let response;
+      let response: any;
       try {
         response = await apiAxios.get('/user', {
           headers: { Authorization: `Bearer ${ctx.output.token}` }
@@ -270,7 +270,7 @@ function createGitlabPat(opts: {
     getProfile: async (ctx: { output: AuthOutput; input: any }) => {
       let baseUrl = normalizeBaseUrl(ctx.output.instanceUrl);
       let apiAxios = createAxios({ baseURL: `${baseUrl}/api/v4` });
-      let response;
+      let response: any;
       try {
         response = await apiAxios.get('/user', {
           headers: { 'PRIVATE-TOKEN': ctx.output.token }

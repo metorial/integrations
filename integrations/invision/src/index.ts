@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getDesignTokens,
+  deprovisionScimUser,
   getDesignTokenStyles,
-  listScimUsers,
+  getDesignTokens,
   getScimUser,
+  listScimUsers,
   provisionScimUser,
-  updateScimUser,
-  deprovisionScimUser
+  updateScimUser
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

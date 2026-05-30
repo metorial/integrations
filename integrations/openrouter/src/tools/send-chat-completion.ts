@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let messageSchema = z.object({
   role: z
@@ -227,10 +227,10 @@ export let sendChatCompletion = SlateTool.create(spec, {
       model: string;
       messages: Array<{
         role: string;
-        content: string | Array<Record<string, unknown>>;
+        content: string | Record<string, unknown>[];
         name?: string;
         toolCallId?: string;
-        toolCalls?: Array<Record<string, unknown>>;
+        toolCalls?: Record<string, unknown>[];
       }>;
       temperature?: number;
       maxTokens?: number;
@@ -241,14 +241,14 @@ export let sendChatCompletion = SlateTool.create(spec, {
       repetitionPenalty?: number;
       stop?: string | string[];
       seed?: number;
-      tools?: Array<Record<string, unknown>>;
+      tools?: Record<string, unknown>[];
       toolChoice?: string | Record<string, unknown>;
       responseFormat?: Record<string, unknown>;
       models?: string[];
       route?: string;
       provider?: Record<string, unknown>;
       transforms?: string[];
-      plugins?: Array<Record<string, unknown>>;
+      plugins?: Record<string, unknown>[];
     } = {
       model: ctx.input.model,
       messages: ctx.input.messages.map(m => ({
@@ -287,10 +287,10 @@ export let sendChatCompletion = SlateTool.create(spec, {
 
     let result = await client.createChatCompletion(request);
 
-    let choices = ((result.choices as Array<Record<string, unknown>>) || []).map(
+    let choices = ((result.choices as Record<string, unknown>[]) || []).map(
       (choice: Record<string, unknown>) => {
         let message = (choice.message as Record<string, unknown>) || {};
-        let toolCalls = ((message.tool_calls as Array<Record<string, unknown>>) || []).map(
+        let toolCalls = ((message.tool_calls as Record<string, unknown>[]) || []).map(
           (tc: Record<string, unknown>) => {
             let fn = (tc.function as Record<string, unknown>) || {};
             return {

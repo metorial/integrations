@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let accountSchema = z.object({
   guid: z.string().optional().describe('MX-assigned unique identifier for the account'),
@@ -63,7 +63,7 @@ export let listAccounts = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new MxClient({ token: ctx.auth.token, environment: ctx.config.environment });
 
-    let result;
+    let result: any;
     if (ctx.input.memberGuid) {
       result = await client.listAccountsByMember(ctx.input.userGuid, ctx.input.memberGuid, {
         page: ctx.input.page,

@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { facebookApiError } from './lib/errors';
 
@@ -145,7 +145,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let { access_token, expires_in } = response.data;
+      let { access_token } = response.data;
 
       // Exchange for a long-lived token
       let longLivedResponse = await graphAxios.get('/oauth/access_token', {

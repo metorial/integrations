@@ -9,7 +9,7 @@ export class MxClient {
   private axios;
 
   constructor(opts: { token: string; environment: string }) {
-    let baseURL = BASE_URLS[opts.environment] || BASE_URLS['development']!;
+    let baseURL = BASE_URLS[opts.environment] || BASE_URLS.development!;
     this.axios = createAxios({
       baseURL,
       headers: {

@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { lookUpWord, getSynonymsAntonyms, getPhonetics } from './tools';
+import { getPhonetics, getSynonymsAntonyms, lookUpWord } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

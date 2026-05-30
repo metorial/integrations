@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TrackClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let suppressPerson = SlateTool.create(spec, {
   name: 'Suppress or Unsuppress Person',

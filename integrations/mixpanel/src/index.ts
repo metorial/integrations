@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  importEvents,
-  trackEvents,
-  manageUserProfile,
-  manageGroupProfile,
-  querySegmentation,
-  queryFunnel,
-  listFunnels,
-  queryRetention,
-  queryProfiles,
   exportEvents,
-  manageAnnotations,
-  manageIdentities,
   getActivityFeed,
   getTopEvents,
+  importEvents,
   listCohorts,
-  queryInsights
+  listFunnels,
+  manageAnnotations,
+  manageGroupProfile,
+  manageIdentities,
+  manageUserProfile,
+  queryFunnel,
+  queryInsights,
+  queryProfiles,
+  queryRetention,
+  querySegmentation,
+  trackEvents
 } from './tools';
 import { cohortSync } from './triggers';
 

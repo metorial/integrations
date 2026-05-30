@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let smsEvents = SlateTrigger.create(spec, {
   name: 'SMS Events',
@@ -53,7 +53,7 @@ export let smsEvents = SlateTrigger.create(spec, {
 
       // Delivery Report is sent as PUT, Inbound SMS as POST
       if (method === 'PUT' || body['mocean-dlr-status'] !== undefined) {
-        let dlrStatusMap: Record<string, string> = {
+        let _dlrStatusMap: Record<string, string> = {
           '1': 'delivered',
           '2': 'failed',
           '3': 'expired'

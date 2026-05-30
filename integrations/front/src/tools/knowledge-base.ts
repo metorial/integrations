@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listKnowledgeBases = SlateTool.create(spec, {
   name: 'List Knowledge Bases',
@@ -96,7 +96,7 @@ export let getKnowledgeBaseContent = SlateTool.create(spec, {
       locale: c.locale
     }));
 
-    let articles;
+    let articles: any;
     if (ctx.input.includeArticles) {
       let artResult = await client.listKnowledgeBaseArticles(ctx.input.knowledgeBaseId);
       articles = artResult._results.map(a => ({

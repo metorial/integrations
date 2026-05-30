@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { V0Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let deploymentSchema = z.object({
   deploymentId: z.string().describe('Unique deployment identifier'),

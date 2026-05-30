@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SuggestionsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let lookupCompanyByEmail = SlateTool.create(spec, {
   name: 'Lookup Company by Email',

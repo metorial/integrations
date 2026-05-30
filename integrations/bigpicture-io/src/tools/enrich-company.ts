@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { companySchema } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let enrichCompany = SlateTool.create(spec, {
   name: 'Enrich Company',

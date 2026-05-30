@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchCreditNotes = SlateTool.create(spec, {
   name: 'Search Credit Notes',

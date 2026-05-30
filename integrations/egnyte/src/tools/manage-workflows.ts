@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EgnyteClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createWorkflowTool = SlateTool.create(spec, {
   name: 'Create Workflow',

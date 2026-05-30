@@ -2,16 +2,16 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   analyzeImage,
-  detectLabels,
-  detectObjects,
   detectFaces,
+  detectImageProperties,
+  detectLabels,
   detectLandmarks,
   detectLogos,
-  detectText,
+  detectObjects,
   detectSafeSearch,
-  detectImageProperties,
-  getCropHints,
-  detectWeb
+  detectText,
+  detectWeb,
+  getCropHints
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

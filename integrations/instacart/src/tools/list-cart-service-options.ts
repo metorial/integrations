@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConnectClient } from '../lib/connect-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let cartItemSchema = z.object({
   lineNum: z.string().describe('Line number identifier for the item'),

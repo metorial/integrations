@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { whoisLookup, hostedDomains, domainUtilities } from './tools';
+import { domainUtilities, hostedDomains, whoisLookup } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

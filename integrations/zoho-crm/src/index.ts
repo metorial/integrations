@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getRecords,
-  getRecord,
   createRecord,
-  updateRecord,
   deleteRecords,
-  searchRecords,
   executeCoql,
-  getUsers,
   getModuleMetadata,
+  getOrganization,
+  getRecord,
+  getRecords,
+  getRelatedRecords,
+  getUsers,
   manageNotes,
   manageTags,
-  getRelatedRecords,
+  searchRecords,
   sendEmail,
-  getOrganization
+  updateRecord
 } from './tools';
 import { recordChanges } from './triggers';
 

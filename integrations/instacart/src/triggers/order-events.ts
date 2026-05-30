@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let orderEventInputSchema = z.object({
   eventType: z.string().describe('The order event type'),
@@ -43,7 +43,7 @@ export let orderEvents = SlateTrigger.create(spec, {
       let timestamp = (data.timestamp || data.created_at) as string | undefined;
 
       // Handle array of events if the provider batches them
-      let events = data.events as Array<Record<string, unknown>> | undefined;
+      let events = data.events as Record<string, unknown>[] | undefined;
       if (events && Array.isArray(events)) {
         return {
           inputs: events.map(evt => ({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClearbitClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let prospectSchema = z.object({
   prospectId: z.string().describe('Clearbit prospect identifier'),

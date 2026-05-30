@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let supporterSchema = z.object({
   supporterId: z.number().describe('Unique ID of the supporter record'),
@@ -46,10 +46,10 @@ export let listSupporters = SlateTool.create(spec, {
     });
 
     let params: Record<string, unknown> = {};
-    if (ctx.input.suggestionId) params['suggestion'] = ctx.input.suggestionId;
-    if (ctx.input.page) params['page'] = ctx.input.page;
-    if (ctx.input.perPage) params['perPage'] = ctx.input.perPage;
-    if (ctx.input.sort) params['sort'] = ctx.input.sort;
+    if (ctx.input.suggestionId) params.suggestion = ctx.input.suggestionId;
+    if (ctx.input.page) params.page = ctx.input.page;
+    if (ctx.input.perPage) params.perPage = ctx.input.perPage;
+    if (ctx.input.sort) params.sort = ctx.input.sort;
 
     let result = await client.listSupporters(params);
 

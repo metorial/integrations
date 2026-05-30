@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MozClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getKeywordMetricsTool = SlateTool.create(spec, {
   name: 'Get Keyword Metrics',

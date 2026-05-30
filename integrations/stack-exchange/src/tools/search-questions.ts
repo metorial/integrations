@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let questionSchema = z.object({
   questionId: z.number().describe('Unique identifier of the question'),
@@ -90,7 +90,7 @@ export let searchQuestions = SlateTool.create(spec, {
       ctx.input.toDate
     );
 
-    let result;
+    let result: any;
     if (useAdvanced) {
       result = await client.searchAdvanced({
         query: ctx.input.query,

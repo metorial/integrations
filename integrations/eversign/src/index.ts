@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendDocument,
-  getDocument,
-  listDocuments,
   cancelDocument,
-  createDocumentFromTemplate,
-  listTemplates,
-  downloadDocument,
-  manageSigner,
-  listBusinesses,
   createBulkJob,
-  getBulkJob
+  createDocumentFromTemplate,
+  downloadDocument,
+  getBulkJob,
+  getDocument,
+  listBusinesses,
+  listDocuments,
+  listTemplates,
+  manageSigner,
+  sendDocument
 } from './tools';
 import { documentEvent } from './triggers';
 

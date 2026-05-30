@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { JiraClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let commentEventsTrigger = SlateTrigger.create(spec, {
   name: 'Comment Events',
@@ -127,7 +127,7 @@ export let commentEventsTrigger = SlateTrigger.create(spec, {
   .build();
 
 let extractTextFromAdf = (adf: any): string => {
-  if (!adf || !adf.content) return '';
+  if (!adf?.content) return '';
   let texts: string[] = [];
   let walk = (nodes: any[]) => {
     for (let node of nodes) {

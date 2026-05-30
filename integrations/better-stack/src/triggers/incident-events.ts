@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { UptimeClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let incidentEvents = SlateTrigger.create(spec, {
   name: 'Incident Events',
@@ -96,7 +96,7 @@ export let incidentEvents = SlateTrigger.create(spec, {
         }
 
         // Check for acknowledged
-        if (attrs.acknowledged_at && (!known || !known.acknowledgedAt)) {
+        if (attrs.acknowledged_at && !known?.acknowledgedAt) {
           inputs.push({
             eventType: 'acknowledged' as const,
             eventId: `${incidentId}_acknowledged_${attrs.acknowledged_at}`,
@@ -105,7 +105,7 @@ export let incidentEvents = SlateTrigger.create(spec, {
         }
 
         // Check for resolved
-        if (attrs.resolved_at && (!known || !known.resolvedAt)) {
+        if (attrs.resolved_at && !known?.resolvedAt) {
           inputs.push({
             eventType: 'resolved' as const,
             eventId: `${incidentId}_resolved_${attrs.resolved_at}`,

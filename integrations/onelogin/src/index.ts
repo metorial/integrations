@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listUsers,
-  getUser,
   createUser,
-  updateUser,
   deleteUser,
-  listRoles,
-  manageRole,
-  listApps,
-  getApp,
-  manageApp,
-  listGroups,
-  listEvents,
-  getEventTypes,
-  manageUserRoles,
-  getMfaFactors,
   enrollMfaFactor,
+  getApp,
+  getEventTypes,
+  getMfaFactors,
+  getUser,
+  listApps,
+  listEvents,
+  listGroups,
+  listRoles,
+  listUsers,
+  manageApp,
+  manageRole,
+  manageUserRoles,
+  updateUser,
   verifyMfaFactor
 } from './tools';
 import { accountEvents, eventWebhook } from './triggers';

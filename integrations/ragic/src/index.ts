@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listRecords,
-  getRecord,
-  createRecord,
-  updateRecord,
-  deleteRecord,
   addComment,
-  lockRecord,
+  createRecord,
+  deleteRecord,
   executeActionButton,
-  listActionButtons,
   exportRecord,
-  getFileUrl
+  getFileUrl,
+  getRecord,
+  listActionButtons,
+  listRecords,
+  lockRecord,
+  updateRecord
 } from './tools';
 import { recordChanges } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let lookupRates = SlateTool.create(spec, {
   name: 'Look Up Tax Rates',
@@ -72,7 +72,7 @@ export let lookupRates = SlateTool.create(spec, {
 
     return {
       output,
-      message: `Tax rate for **${result.zip}** (${result.city}, ${result.state}): combined rate **${(parseFloat(result.combined_rate) * 100).toFixed(2)}%**. Freight taxable: ${result.freight_taxable ? 'Yes' : 'No'}.`
+      message: `Tax rate for **${result.zip}** (${result.city}, ${result.state}): combined rate **${(Number.parseFloat(result.combined_rate) * 100).toFixed(2)}%**. Freight taxable: ${result.freight_taxable ? 'Yes' : 'No'}.`
     };
   })
   .build();

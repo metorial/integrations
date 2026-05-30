@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.calendarhero.com',
       headers: {

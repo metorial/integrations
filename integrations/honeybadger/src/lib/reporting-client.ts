@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class HoneybadgerReportingClient {
   private http;
 
-  constructor(private config: { projectToken: string }) {
+  constructor(config: { projectToken: string }) {
     this.http = createAxios({
       baseURL: 'https://api.honeybadger.io/v1',
       headers: {
@@ -41,7 +41,7 @@ export class HoneybadgerReportingClient {
     return response.data;
   }
 
-  async sendEvents(events: Array<Record<string, unknown>>) {
+  async sendEvents(events: Record<string, unknown>[]) {
     let ndjson = events.map(e => JSON.stringify(e)).join('\n');
     let response = await this.http.post('/events', ndjson, {
       headers: {

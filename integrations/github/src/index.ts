@@ -1,40 +1,40 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getRepository,
-  listRepositories,
-  createRepository,
-  updateRepository,
-  starRepository,
-  manageIssue,
-  listIssues,
-  getIssue,
   commentOnIssue,
-  managePullRequest,
+  createCommitStatus,
+  createRelease,
+  createRepository,
+  getIssue,
+  getRepository,
+  getUser,
+  listBranches,
+  listCommits,
+  listIssues,
   listPullRequests,
+  listRepositories,
+  manageCollaborators,
+  manageFileContent,
+  manageGist,
+  manageIssue,
+  manageLabels,
+  managePullRequest,
+  manageWorkflow,
   mergePullRequest,
   reviewPullRequest,
   search,
-  manageFileContent,
-  manageWorkflow,
-  createRelease,
-  listCommits,
-  listBranches,
-  manageLabels,
-  manageGist,
-  manageCollaborators,
-  getUser,
-  createCommitStatus
+  starRepository,
+  updateRepository
 } from './tools';
 import {
-  pushTrigger,
-  pullRequestTrigger,
-  pullRequestReviewTrigger,
-  issuesTrigger,
   issueCommentTrigger,
-  workflowRunTrigger,
+  issuesTrigger,
+  pullRequestReviewTrigger,
+  pullRequestTrigger,
+  pushTrigger,
   releaseTrigger,
-  starTrigger
+  starTrigger,
+  workflowRunTrigger
 } from './triggers';
 
 export let provider = Slate.create({

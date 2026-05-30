@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getTimeSeries,
-  getQuote,
-  getPrice,
-  searchSymbols,
-  getExchangeRate,
   convertCurrency,
-  getCompanyProfile,
-  getFinancialStatements,
-  getDividendsAndSplits,
-  getTechnicalIndicator,
   getAnalystData,
+  getCompanyProfile,
+  getDividendsAndSplits,
   getEarnings,
   getEtfDetails,
+  getExchangeRate,
+  getFinancialStatements,
   getMutualFundDetails,
-  listExchanges
+  getPrice,
+  getQuote,
+  getTechnicalIndicator,
+  getTimeSeries,
+  listExchanges,
+  searchSymbols
 } from './tools';
-import { priceChange, inboundWebhook } from './triggers';
+import { inboundWebhook, priceChange } from './triggers';
 
 export let provider = Slate.create({
   spec,

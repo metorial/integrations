@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { IgnisignClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let signatureEvents = SlateTrigger.create(spec, {
   name: 'Signature Events',

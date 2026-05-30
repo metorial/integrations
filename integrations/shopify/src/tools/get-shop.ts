@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getShop = SlateTool.create(spec, {
   name: 'Get Shop',

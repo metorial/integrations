@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { Client, ListParams } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client, type ListParams } from '../lib/client';
+import { spec } from '../spec';
 
 let memberSchema = z.object({
   memberId: z.string().describe('Team member record ID'),

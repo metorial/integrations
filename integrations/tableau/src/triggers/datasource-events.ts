@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let eventNameMap: Record<string, string> = {
   'webhook-source-event-datasourcecreated': 'datasource.created',
@@ -74,7 +74,7 @@ export let datasourceEvents = SlateTrigger.create(spec, {
       for (let webhookId of Object.values(webhookIds) as string[]) {
         try {
           await client.deleteWebhook(webhookId);
-        } catch (e) {
+        } catch (_e) {
           // Webhook may already be deleted
         }
       }
@@ -84,7 +84,7 @@ export let datasourceEvents = SlateTrigger.create(spec, {
       let body = (await ctx.request.json()) as any;
 
       let eventType = body.resource_type
-        ? `${body.resource_type}${body.event_type ? '_' + body.event_type : ''}`
+        ? `${body.resource_type}${body.event_type ? `_${body.event_type}` : ''}`
         : body.eventType || body['webhook-source-event-name'] || 'unknown';
 
       return {

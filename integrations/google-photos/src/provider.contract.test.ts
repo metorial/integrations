@@ -74,7 +74,9 @@ describe('google-photos provider contract', () => {
     expect(oauth.authenticationMethod.capabilities.handleTokenRefresh?.enabled).toBe(true);
     expect(oauth.authenticationMethod.capabilities.getProfile?.enabled).toBe(true);
 
-    let scopeTitles = new Set((oauth.authenticationMethod.scopes ?? []).map(scope => scope.title));
+    let scopeTitles = new Set(
+      (oauth.authenticationMethod.scopes ?? []).map(scope => scope.title)
+    );
     expect(scopeTitles.has('Library Read')).toBe(true);
     expect(scopeTitles.has('User Email')).toBe(true);
   });

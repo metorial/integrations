@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { AshbyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let webhookTypes = ['offerCreate', 'offerUpdate', 'offerDelete'] as const;
 

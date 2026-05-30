@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let orderEvents = SlateTrigger.create(spec, {
   name: 'Order Events',
@@ -67,7 +67,7 @@ export let orderEvents = SlateTrigger.create(spec, {
         inputs: [
           {
             action,
-            orderId: parseInt(id, 10)
+            orderId: Number.parseInt(id, 10)
           }
         ]
       };

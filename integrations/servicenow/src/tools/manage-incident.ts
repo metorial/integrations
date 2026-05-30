@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageIncident = SlateTool.create(spec, {
   name: 'Manage Incident',
@@ -91,7 +91,7 @@ export let manageIncident = SlateTool.create(spec, {
     if (ctx.input.closeNotes) fields.close_notes = ctx.input.closeNotes;
     if (ctx.input.caller) fields.caller_id = ctx.input.caller;
 
-    let record;
+    let record: any;
     let action: string;
 
     if (ctx.input.incidentId) {

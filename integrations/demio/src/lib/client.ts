@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class DemioClient {
   private http;
 
-  constructor(private credentials: { token: string; apiSecret: string }) {
+  constructor(credentials: { token: string; apiSecret: string }) {
     this.http = createAxios({
       baseURL: 'https://my.demio.com/api/v1',
       headers: {

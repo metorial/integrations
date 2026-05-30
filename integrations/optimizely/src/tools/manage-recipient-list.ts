@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CampaignClient } from '../lib/campaign-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageRecipientList = SlateTool.create(spec, {
   name: 'Manage Recipient List',

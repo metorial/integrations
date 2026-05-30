@@ -1,24 +1,24 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  listForms,
-  getForm,
   createForm,
-  updateForm,
-  patchForm,
   deleteForm,
-  getResponses,
-  downloadResponseFile,
   deleteResponses,
-  listWorkspaces,
-  manageWorkspace,
+  downloadResponseFile,
+  getForm,
+  getFormInsights,
+  getResponses,
+  listForms,
   listThemes,
-  manageTheme,
-  manageImage,
-  manageWebhook,
+  listWorkspaces,
   manageFormMessages,
+  manageImage,
+  manageTheme,
   manageTranslation,
-  getFormInsights
+  manageWebhook,
+  manageWorkspace,
+  patchForm,
+  updateForm
 } from './tools';
 import { formResponse } from './triggers';
 

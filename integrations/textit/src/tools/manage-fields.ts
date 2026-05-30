@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageFields = SlateTool.create(spec, {
   name: 'Manage Contact Fields',
@@ -35,7 +35,7 @@ export let manageFields = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
-    let field;
+    let field: any;
 
     if (ctx.input.action === 'create') {
       field = await client.createField({ name: ctx.input.name, type: ctx.input.type });

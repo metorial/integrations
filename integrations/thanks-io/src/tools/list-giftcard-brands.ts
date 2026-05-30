@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ThanksIoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listGiftcardBrands = SlateTool.create(spec, {
   name: 'List Gift Card Brands',
@@ -34,9 +34,10 @@ Use the brand code and amount when sending gift cards via the **Send Gift Card**
       ? await client.listGiftcardBrandsFlat()
       : await client.listGiftcardBrands();
 
-    let brands = (Array.isArray(result) ? result : result.data || []) as Array<
-      Record<string, unknown>
-    >;
+    let brands = (Array.isArray(result) ? result : result.data || []) as Record<
+      string,
+      unknown
+    >[];
 
     return {
       output: { brands },

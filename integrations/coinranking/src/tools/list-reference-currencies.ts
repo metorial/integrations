@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoinrankingClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let referenceCurrencySchema = z.object({
   currencyUuid: z.string().describe('UUID of the reference currency'),

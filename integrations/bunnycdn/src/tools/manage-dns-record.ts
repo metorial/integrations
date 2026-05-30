@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoreClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let DNS_RECORD_TYPES: Record<string, number> = {
   A: 0,
@@ -74,7 +74,8 @@ export let manageDnsRecord = SlateTool.create(spec, {
     switch (ctx.input.action) {
       case 'add': {
         let typeCode = ctx.input.recordType
-          ? (DNS_RECORD_TYPES[ctx.input.recordType] ?? parseInt(ctx.input.recordType))
+          ? (DNS_RECORD_TYPES[ctx.input.recordType] ??
+            Number.parseInt(ctx.input.recordType, 10))
           : 0;
         let data: Record<string, any> = {
           Type: typeCode,

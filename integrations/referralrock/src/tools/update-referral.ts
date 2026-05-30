@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateReferral = SlateTool.create(spec, {
   name: 'Update Referral',
@@ -100,7 +100,7 @@ export let updateReferral = SlateTool.create(spec, {
 
     let result = await client.updateReferrals([{ query, referral: referralUpdate }]);
 
-    let results = result as unknown as Array<Record<string, unknown>>;
+    let results = result as unknown as Record<string, unknown>[];
     let first = Array.isArray(results) ? results[0] : result;
     let resultInfo = (first?.resultInfo || {}) as Record<string, unknown>;
     let referral = (first?.referral || {}) as Record<string, unknown>;

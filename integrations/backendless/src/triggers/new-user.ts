@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BackendlessClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newUser = SlateTrigger.create(spec, {
   name: 'New User Registered',
@@ -66,7 +66,7 @@ export let newUser = SlateTrigger.create(spec, {
           }
         }
       } catch (err) {
-        ctx.error('Failed to poll for new users: ' + String(err));
+        ctx.error(`Failed to poll for new users: ${String(err)}`);
       }
 
       return {

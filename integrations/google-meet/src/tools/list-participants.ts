@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MeetClient } from '../lib/client';
 import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let participantSchema = z.object({
   participantName: z.string().describe('Resource name of the participant'),
@@ -43,10 +43,7 @@ let mapParticipant = (p: any) => {
 let participantSessionSchema = z.object({
   sessionName: z.string().describe('Resource name of the session'),
   startTime: z.string().optional().describe('When the session started'),
-  endTime: z
-    .string()
-    .optional()
-    .describe('When the session ended (empty if still active)')
+  endTime: z.string().optional().describe('When the session ended (empty if still active)')
 });
 
 let mapParticipantSession = (s: any) => ({

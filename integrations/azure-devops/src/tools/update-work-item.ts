@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AzureDevOpsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateWorkItemTool = SlateTool.create(spec, {
   name: 'Update Work Item',

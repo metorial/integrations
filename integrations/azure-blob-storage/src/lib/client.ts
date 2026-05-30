@@ -1,11 +1,5 @@
 import { createAxios } from 'slates';
-import {
-  getTagContent,
-  getAllElements,
-  getAllTagContents,
-  extractMetadata,
-  escapeXml
-} from './xml';
+import { extractMetadata, getAllElements, getTagContent } from './xml';
 
 let API_VERSION = '2024-11-04';
 
@@ -90,7 +84,7 @@ export class Client {
     };
 
     if (!this.isSasToken) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+      headers.Authorization = `Bearer ${this.token}`;
     }
 
     return headers;
@@ -119,8 +113,8 @@ export class Client {
   ): Promise<{ containers: ContainerInfo[]; nextMarker?: string }> {
     let http = this.createAxiosInstance();
     let params: Record<string, string> = { comp: 'list' };
-    if (prefix) params['prefix'] = prefix;
-    if (maxResults) params['maxresults'] = String(maxResults);
+    if (prefix) params.prefix = prefix;
+    if (maxResults) params.maxresults = String(maxResults);
 
     let url = this.appendSas('/');
     let response = await http.get(url, {
@@ -195,14 +189,14 @@ export class Client {
       }
     }
 
-    properties['lastModified'] = responseHeaders['last-modified'] ?? '';
-    properties['eTag'] = responseHeaders['etag'] ?? '';
-    properties['leaseStatus'] = responseHeaders['x-ms-lease-status'] ?? '';
-    properties['leaseState'] = responseHeaders['x-ms-lease-state'] ?? '';
-    properties['publicAccess'] = responseHeaders['x-ms-blob-public-access'] ?? 'private';
-    properties['hasImmutabilityPolicy'] =
+    properties.lastModified = responseHeaders['last-modified'] ?? '';
+    properties.eTag = responseHeaders.etag ?? '';
+    properties.leaseStatus = responseHeaders['x-ms-lease-status'] ?? '';
+    properties.leaseState = responseHeaders['x-ms-lease-state'] ?? '';
+    properties.publicAccess = responseHeaders['x-ms-blob-public-access'] ?? 'private';
+    properties.hasImmutabilityPolicy =
       responseHeaders['x-ms-has-immutability-policy'] ?? 'false';
-    properties['hasLegalHold'] = responseHeaders['x-ms-has-legal-hold'] ?? 'false';
+    properties.hasLegalHold = responseHeaders['x-ms-has-legal-hold'] ?? 'false';
 
     return { metadata, properties };
   }
@@ -240,11 +234,11 @@ export class Client {
       comp: 'list'
     };
 
-    if (options?.prefix) params['prefix'] = options.prefix;
-    if (options?.maxResults) params['maxresults'] = String(options.maxResults);
-    if (options?.marker) params['marker'] = options.marker;
-    if (options?.delimiter) params['delimiter'] = options.delimiter;
-    if (options?.include?.length) params['include'] = options.include.join(',');
+    if (options?.prefix) params.prefix = options.prefix;
+    if (options?.maxResults) params.maxresults = String(options.maxResults);
+    if (options?.marker) params.marker = options.marker;
+    if (options?.delimiter) params.delimiter = options.delimiter;
+    if (options?.include?.length) params.include = options.include.join(',');
 
     let url = this.appendSas(`/${containerName}`);
     let response = await http.get(url, { headers: this.getHeaders(), params });
@@ -258,7 +252,7 @@ export class Client {
         creationTime: getTagContent(el, 'Creation-Time') ?? '',
         lastModified: getTagContent(el, 'Last-Modified') ?? '',
         eTag: getTagContent(el, 'Etag') ?? '',
-        contentLength: parseInt(getTagContent(el, 'Content-Length') ?? '0', 10),
+        contentLength: Number.parseInt(getTagContent(el, 'Content-Length') ?? '0', 10),
         contentType: getTagContent(el, 'Content-Type') ?? '',
         contentEncoding: getTagContent(el, 'Content-Encoding') ?? '',
         blobType: getTagContent(el, 'BlobType') ?? '',
@@ -325,7 +319,7 @@ export class Client {
 
     let responseHeaders = response.headers as Record<string, string>;
     return {
-      eTag: responseHeaders['etag'] ?? '',
+      eTag: responseHeaders.etag ?? '',
       lastModified: responseHeaders['last-modified'] ?? ''
     };
   }
@@ -363,7 +357,7 @@ export class Client {
     return {
       content: response.data as string,
       contentType: responseHeaders['content-type'] ?? '',
-      contentLength: parseInt(responseHeaders['content-length'] ?? '0', 10),
+      contentLength: Number.parseInt(responseHeaders['content-length'] ?? '0', 10),
       metadata
     };
   }
@@ -403,8 +397,8 @@ export class Client {
       blobName,
       containerName,
       lastModified: h['last-modified'] ?? '',
-      eTag: h['etag'] ?? '',
-      contentLength: parseInt(h['content-length'] ?? '0', 10),
+      eTag: h.etag ?? '',
+      contentLength: Number.parseInt(h['content-length'] ?? '0', 10),
       contentType: h['content-type'] ?? '',
       contentEncoding: h['content-encoding'] ?? '',
       contentLanguage: h['content-language'] ?? '',
@@ -656,7 +650,7 @@ export class Client {
 
     let responseHeaders = response.headers as Record<string, string>;
     return {
-      leaseTime: parseInt(responseHeaders['x-ms-lease-time'] ?? '0', 10)
+      leaseTime: Number.parseInt(responseHeaders['x-ms-lease-time'] ?? '0', 10)
     };
   }
 
@@ -678,7 +672,7 @@ export class Client {
     let responseHeaders = response.headers as Record<string, string>;
     return {
       appendOffset: responseHeaders['x-ms-blob-append-offset'] ?? '0',
-      committedBlockCount: parseInt(
+      committedBlockCount: Number.parseInt(
         responseHeaders['x-ms-blob-committed-block-count'] ?? '0',
         10
       )

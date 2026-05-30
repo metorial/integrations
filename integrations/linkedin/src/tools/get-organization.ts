@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LinkedInClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getOrganization = SlateTool.create(spec, {
   name: 'Get Organization',
@@ -36,7 +36,7 @@ export let getOrganization = SlateTool.create(spec, {
       throw new Error('Either organizationId or vanityName must be provided');
     }
 
-    let org;
+    let org: any;
     if (ctx.input.organizationId) {
       org = await client.getOrganization(ctx.input.organizationId);
     } else {

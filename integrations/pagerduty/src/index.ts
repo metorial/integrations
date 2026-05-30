@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listIncidents,
-  getIncident,
   createIncident,
-  updateIncident,
-  listServices,
-  manageService,
-  listUsers,
-  listOnCalls,
-  listEscalationPolicies,
-  listSchedules,
-  listTeams,
-  sendEvent,
-  manageMaintenanceWindow,
   getAnalytics,
-  listPriorities
+  getIncident,
+  listEscalationPolicies,
+  listIncidents,
+  listOnCalls,
+  listPriorities,
+  listSchedules,
+  listServices,
+  listTeams,
+  listUsers,
+  manageMaintenanceWindow,
+  manageService,
+  sendEvent,
+  updateIncident
 } from './tools';
 import { incidentEvents, serviceEvents } from './triggers';
 

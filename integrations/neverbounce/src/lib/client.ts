@@ -38,7 +38,7 @@ export interface SingleCheckResult {
 
 export interface CreateJobParams {
   inputLocation: 'remote_url' | 'supplied';
-  input: string | Array<Record<string, string>> | string[][];
+  input: string | Record<string, string>[] | string[][];
   filename?: string;
   autoParse?: boolean;
   autoStart?: boolean;

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageRag = SlateTool.create(spec, {
   name: 'Manage RAG Documents',

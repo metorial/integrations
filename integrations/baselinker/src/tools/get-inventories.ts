@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BaseLinkerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getInventories = SlateTool.create(spec, {
   name: 'Get Inventories',
@@ -34,8 +34,8 @@ export let getInventories = SlateTool.create(spec, {
     let client = new BaseLinkerClient({ token: ctx.auth.token });
 
     let inventoriesResult = await client.getInventories();
-    let categories: any = undefined;
-    let manufacturers: any = undefined;
+    let categories: any;
+    let manufacturers: any;
 
     if (ctx.input.includeCategoriesForInventoryId) {
       let catResult = await client.getInventoryCategories(

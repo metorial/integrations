@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taskEventTypes = ['NEW_TASK', 'TASK_UPDATED', 'TASK_DELETED'] as const;
 

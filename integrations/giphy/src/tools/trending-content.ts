@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { gifSchema, paginationSchema, ratingEnum } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let trendingContent = SlateTool.create(spec, {
   name: 'Trending Content',

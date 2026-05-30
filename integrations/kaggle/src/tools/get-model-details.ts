@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KaggleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let modelInstanceSchema = z
   .object({
@@ -65,7 +65,7 @@ export let getModelDetails = SlateTool.create(spec, {
     let client = new KaggleClient(ctx.auth);
     let model = await client.getModel(ctx.input.ownerSlug, ctx.input.modelSlug);
 
-    let variationDetail;
+    let variationDetail: any;
     if (ctx.input.framework && ctx.input.variationSlug) {
       variationDetail = await client
         .getModelInstance(

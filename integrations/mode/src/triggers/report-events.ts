@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ModeClient } from '../lib/client';
 import { normalizeReport } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let reportEvents = SlateTrigger.create(spec, {
   name: 'Report Events',

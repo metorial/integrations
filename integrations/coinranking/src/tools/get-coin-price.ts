@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoinrankingClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCoinPrice = SlateTool.create(spec, {
   name: 'Get Coin Price',

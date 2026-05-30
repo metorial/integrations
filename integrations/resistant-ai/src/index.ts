@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  requestIdentityVerification,
+  getAmlScreening,
+  getKybReport,
   getVerification,
   listVerifications,
   manageVerification,
-  runAmlScreening,
-  getAmlScreening,
-  requestProofOfAddress,
   requestBackgroundCheck,
   requestCreditCheck,
+  requestIdentityVerification,
   requestKybReport,
-  getKybReport
+  requestProofOfAddress,
+  runAmlScreening
 } from './tools';
 import { verificationCompleted } from './triggers';
 

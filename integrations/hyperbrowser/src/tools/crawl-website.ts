@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { HyperbrowserClient } from '../lib/client';
-import { sessionOptionsSchema, scrapeOptionsSchema } from '../lib/schemas';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { HyperbrowserClient } from '../lib/client';
+import { scrapeOptionsSchema, sessionOptionsSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let crawlWebsite = SlateTool.create(spec, {
   name: 'Crawl Website',
@@ -94,7 +94,7 @@ Starts the crawl job, waits for completion, and returns all crawled page content
       () => client.getCrawlJobResult(jobId)
     );
 
-    let pages = result.data as Array<Record<string, unknown>> | undefined;
+    let pages = result.data as Record<string, unknown>[] | undefined;
 
     return {
       output: {

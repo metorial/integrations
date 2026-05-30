@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BeeminderClient } from '../lib/client';
 import { goalSchema, mapGoal } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let goalUpdated = SlateTrigger.create(spec, {
   name: 'Goal Updated',

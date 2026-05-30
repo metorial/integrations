@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orderEventTypes = ['order.created', 'order.updated', 'order.deleted'] as const;
 
@@ -60,7 +60,7 @@ export let orderEvents = SlateTrigger.create(spec, {
       for (let webhookId of details.webhookIds) {
         try {
           await client.deleteWebhook(webhookId);
-        } catch (err) {
+        } catch (_err) {
           // Webhook may already be deleted or deactivated
         }
       }

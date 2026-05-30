@@ -9,7 +9,7 @@ export class MailgunClient {
   private axios;
 
   constructor(config: { token: string; region: string }) {
-    let baseURL = BASE_URLS[config.region] || BASE_URLS['us'];
+    let baseURL = BASE_URLS[config.region] || BASE_URLS.us;
     this.axios = createAxios({
       baseURL,
       auth: {
@@ -226,17 +226,17 @@ export class MailgunClient {
     }
   ) {
     let queryParams: Record<string, string | number> = {};
-    if (params?.begin) queryParams['begin'] = params.begin;
-    if (params?.end) queryParams['end'] = params.end;
-    if (params?.ascending) queryParams['ascending'] = params.ascending;
-    if (params?.limit) queryParams['limit'] = params.limit;
-    if (params?.event) queryParams['event'] = params.event;
-    if (params?.recipient) queryParams['recipient'] = params.recipient;
-    if (params?.from) queryParams['from'] = params.from;
-    if (params?.to) queryParams['to'] = params.to;
-    if (params?.subject) queryParams['subject'] = params.subject;
+    if (params?.begin) queryParams.begin = params.begin;
+    if (params?.end) queryParams.end = params.end;
+    if (params?.ascending) queryParams.ascending = params.ascending;
+    if (params?.limit) queryParams.limit = params.limit;
+    if (params?.event) queryParams.event = params.event;
+    if (params?.recipient) queryParams.recipient = params.recipient;
+    if (params?.from) queryParams.from = params.from;
+    if (params?.to) queryParams.to = params.to;
+    if (params?.subject) queryParams.subject = params.subject;
     if (params?.messageId) queryParams['message-id'] = params.messageId;
-    if (params?.severity) queryParams['severity'] = params.severity;
+    if (params?.severity) queryParams.severity = params.severity;
 
     let response = await this.axios.get(`/v3/${domain}/events`, { params: queryParams });
     return response.data as { items: EventItem[]; paging: { next: string; previous: string } };
@@ -482,7 +482,7 @@ export class MailgunClient {
 
   async getTemplate(domain: string, templateName: string, active?: boolean) {
     let params: Record<string, string> = {};
-    if (active) params['active'] = 'yes';
+    if (active) params.active = 'yes';
     let response = await this.axios.get(`/v3/${domain}/templates/${templateName}`, { params });
     return response.data as { template: TemplateItem };
   }

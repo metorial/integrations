@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let shipmentSchema = z.object({
   shipmentDate: z.string().nullable().optional().describe('Date the shipment was dispatched'),

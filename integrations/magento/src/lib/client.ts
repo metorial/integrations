@@ -1,19 +1,18 @@
 import { createAxios } from 'slates';
 import type {
-  MagentoProduct,
-  MagentoOrder,
-  MagentoCustomer,
-  MagentoCategory,
-  MagentoCmsPage,
-  MagentoCmsBlock,
-  MagentoInventorySourceItem,
-  MagentoSearchResult,
   MagentoCart,
   MagentoCartItem,
-  MagentoShippingMethod,
+  MagentoCategory,
+  MagentoCmsBlock,
+  MagentoCmsPage,
+  MagentoCustomer,
+  MagentoInventorySourceItem,
   MagentoInvoice,
+  MagentoOrder,
+  MagentoProduct,
+  MagentoSearchResult,
   MagentoShipment,
-  MagentoCreditMemo,
+  MagentoShippingMethod,
   MagentoStoreConfig
 } from './types';
 
@@ -67,7 +66,7 @@ export class MagentoClient {
     }
 
     if (!options?.filters && !options?.pageSize && !options?.currentPage) {
-      params['searchCriteria'] = '';
+      params.searchCriteria = '';
     }
 
     return params;

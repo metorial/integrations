@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  scrapeWeb,
-  webSearch,
   analyzeSentiment,
-  translateText,
-  summarizeText,
-  extractFromImage,
-  transcribeAudio,
-  generateImage,
-  textToSql,
-  validateContent,
+  convertHtml,
+  deleteFile,
   detectNsfw,
   detectObjects,
-  convertHtml,
-  predictTimeSeries,
+  extractFromImage,
   generateEmbedding,
+  generateImage,
   geoSearch,
   getFile,
-  deleteFile
+  predictTimeSeries,
+  scrapeWeb,
+  summarizeText,
+  textToSql,
+  transcribeAudio,
+  translateText,
+  validateContent,
+  webSearch
 } from './tools';
 import { taskCompleted } from './triggers';
 

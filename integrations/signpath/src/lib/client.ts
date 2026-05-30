@@ -61,7 +61,7 @@ export class SignPathClient {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
 
-    let locationHeader = response.headers['location'] as string;
+    let locationHeader = response.headers.location as string;
     let signingRequestId = locationHeader?.split('/').pop() || '';
 
     return {
@@ -98,7 +98,7 @@ export class SignPathClient {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
 
-    let locationHeader = response.headers['location'] as string;
+    let locationHeader = response.headers.location as string;
     let signingRequestId = locationHeader?.split('/').pop() || '';
 
     return {
@@ -161,8 +161,8 @@ export class SignPathClient {
     signingPolicySlug?: string;
   }): Promise<SigningPolicyInfo[]> {
     let queryParams: Record<string, string> = {};
-    if (params?.projectSlug) queryParams['projectSlug'] = params.projectSlug;
-    if (params?.signingPolicySlug) queryParams['signingPolicySlug'] = params.signingPolicySlug;
+    if (params?.projectSlug) queryParams.projectSlug = params.projectSlug;
+    if (params?.signingPolicySlug) queryParams.signingPolicySlug = params.signingPolicySlug;
 
     let response = await this.axios.get('/Cryptoki/MySigningPolicies', {
       params: queryParams

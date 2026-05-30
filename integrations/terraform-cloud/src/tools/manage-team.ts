@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
-import { mapTeam, mapPagination } from '../lib/mappers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { mapPagination, mapTeam } from '../lib/mappers';
+import { spec } from '../spec';
 
 let teamSchema = z.object({
   teamId: z.string(),

@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import {
-  ClickHouseDataClient,
   assertReadOnlySql,
   assertRows,
+  ClickHouseDataClient,
   qualifiedTableName,
   validateIdentifier
 } from '../lib/data-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let connectionSchema = z.object({
   endpoint: z
@@ -60,7 +60,9 @@ export let executeQuery = SlateTool.create(spec, {
       format: z
         .string()
         .optional()
-        .describe('ClickHouse output format. Defaults to JSON for parseable rows and columns.'),
+        .describe(
+          'ClickHouse output format. Defaults to JSON for parseable rows and columns.'
+        ),
       maxRows: z
         .number()
         .int()

@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getProfileTool,
+  createAttributeTool,
   getAttributesTool,
   getAttributeValuesTool,
-  updateAttributeValuesTool,
-  incrementAttributeValuesTool,
-  manageAttributeOwnershipTool,
-  createAttributeTool,
+  getAveragesTool,
   getCorrelationsTool,
   getInsightsTool,
-  getAveragesTool
+  getProfileTool,
+  incrementAttributeValuesTool,
+  manageAttributeOwnershipTool,
+  updateAttributeValuesTool
 } from './tools';
-import { newInsightsTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, newInsightsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AppDragClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFailedEmails = SlateTool.create(spec, {
   name: 'Get Failed Newsletter Emails',

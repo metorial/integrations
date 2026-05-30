@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
-import { TwitterClient } from '../lib/client';
-import { postSchema, mapPost } from '../lib/helpers';
-import { spec } from '../spec';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from '@slates/provider';
 import { z } from 'zod';
+import { TwitterClient } from '../lib/client';
+import { mapPost, postSchema } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let newMention = SlateTrigger.create(spec, {
   name: 'New Mention',

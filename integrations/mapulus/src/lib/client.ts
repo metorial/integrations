@@ -102,7 +102,7 @@ export interface NearbySearchInput {
 export class MapulusClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

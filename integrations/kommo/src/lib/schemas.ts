@@ -160,7 +160,7 @@ export let buildCustomFieldsPayload = (
       )
       .map(v => {
         let val: Record<string, any> = { value: v.value };
-        if (v.enumId !== undefined) val['enum_id'] = v.enumId;
+        if (v.enumId !== undefined) val.enum_id = v.enumId;
         return val;
       })
   }));

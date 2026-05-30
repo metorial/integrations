@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { requireExactlyOne } from '../lib/preconditions';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createSectionGroup = SlateTool.create(spec, {
   name: 'Create Section Group',
@@ -42,7 +42,7 @@ export let createSectionGroup = SlateTool.create(spec, {
       parentSectionGroupId: ctx.input.parentSectionGroupId
     });
 
-    let sectionGroup;
+    let sectionGroup: any;
     if (ctx.input.parentSectionGroupId) {
       sectionGroup = await client.createNestedSectionGroup(
         ctx.input.parentSectionGroupId,

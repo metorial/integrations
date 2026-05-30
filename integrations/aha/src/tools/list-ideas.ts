@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AhaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listIdeas = SlateTool.create(spec, {
   name: 'List Ideas',
@@ -44,7 +44,7 @@ export let listIdeas = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new AhaClient(ctx.config.subdomain, ctx.auth.token);
 
-    let result;
+    let result: any;
     if (ctx.input.searchTerm && ctx.input.productId) {
       result = await client.searchIdeas(ctx.input.productId, ctx.input.searchTerm, {
         page: ctx.input.page,
@@ -59,7 +59,7 @@ export let listIdeas = SlateTool.create(spec, {
       });
     }
 
-    let ideas = result.ideas.map(i => ({
+    let ideas = result.ideas.map((i: any) => ({
       ideaId: i.id,
       referenceNum: i.reference_num,
       name: i.name,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDocument = SlateTool.create(spec, {
   name: 'Get Document',
@@ -54,7 +54,7 @@ export let getDocument = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
     let doc = await client.getDocument(ctx.input.documentId);
 
-    let logs = doc.generation_logs as Array<Record<string, unknown>> | null;
+    let logs = doc.generation_logs as Record<string, unknown>[] | null;
 
     let output = {
       documentId: String(doc.id),

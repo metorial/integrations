@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NeutrinoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let geocodeReverseTool = SlateTool.create(spec, {
   name: 'Reverse Geocode',
@@ -89,7 +89,7 @@ export let geocodeReverseTool = SlateTool.create(spec, {
         }
       },
       message: result.found
-        ? `Location found: **${result.address}** (${result.city ? result.city + ', ' : ''}${result.country}).`
+        ? `Location found: **${result.address}** (${result.city ? `${result.city}, ` : ''}${result.country}).`
         : `No location found for the given coordinates.`
     };
   })

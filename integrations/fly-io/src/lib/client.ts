@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class FlyClient {
   private axios;
 
-  constructor(private options: { token: string; tokenScheme: string; baseUrl: string }) {
+  constructor(options: { token: string; tokenScheme: string; baseUrl: string }) {
     this.axios = createAxios({
       baseURL: options.baseUrl,
       headers: {
@@ -61,8 +61,8 @@ export class FlyClient {
     params?: { includeDeleted?: boolean; region?: string; metadata?: Record<string, string> }
   ): Promise<FlyMachine[]> {
     let queryParams: Record<string, string> = {};
-    if (params?.includeDeleted) queryParams['include_deleted'] = 'true';
-    if (params?.region) queryParams['region'] = params.region;
+    if (params?.includeDeleted) queryParams.include_deleted = 'true';
+    if (params?.region) queryParams.region = params.region;
     if (params?.metadata) {
       for (let [key, value] of Object.entries(params.metadata)) {
         queryParams[`metadata.${key}`] = value;
@@ -146,8 +146,8 @@ export class FlyClient {
     params?: { signal?: string; timeout?: number }
   ): Promise<void> {
     let queryParams: Record<string, string> = {};
-    if (params?.signal) queryParams['signal'] = params.signal;
-    if (params?.timeout) queryParams['timeout'] = String(params.timeout);
+    if (params?.signal) queryParams.signal = params.signal;
+    if (params?.timeout) queryParams.timeout = String(params.timeout);
     await this.axios.post(`/v1/apps/${appName}/machines/${machineId}/restart`, undefined, {
       params: queryParams
     });
@@ -169,8 +169,8 @@ export class FlyClient {
     params: { state: string; timeout?: number; instanceId?: string }
   ): Promise<void> {
     let queryParams: Record<string, string> = { state: params.state };
-    if (params.timeout) queryParams['timeout'] = String(params.timeout);
-    if (params.instanceId) queryParams['instance_id'] = params.instanceId;
+    if (params.timeout) queryParams.timeout = String(params.timeout);
+    if (params.instanceId) queryParams.instance_id = params.instanceId;
     await this.axios.get(`/v1/apps/${appName}/machines/${machineId}/wait`, {
       params: queryParams
     });
@@ -232,7 +232,7 @@ export class FlyClient {
     machineId: string
   ): Promise<{ nonce: string; expiresAt: number; version: string } | null> {
     let response = await this.axios.get(`/v1/apps/${appName}/machines/${machineId}/lease`);
-    if (!response.data || !response.data.nonce) return null;
+    if (!response.data?.nonce) return null;
     return {
       nonce: response.data.nonce,
       expiresAt: response.data.expires_at,
@@ -426,7 +426,7 @@ export interface FlyMachine {
   imageRef: Record<string, any>;
   createdAt: string;
   updatedAt: string;
-  events: Array<Record<string, any>>;
+  events: Record<string, any>[];
 }
 
 export interface CreateMachineParams {

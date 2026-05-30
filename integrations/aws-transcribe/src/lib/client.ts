@@ -1,5 +1,5 @@
 import { createAxios } from 'slates';
-import { signRequest, AwsCredentials } from './aws-signer';
+import { type AwsCredentials, signRequest } from './aws-signer';
 
 export interface TranscribeClientConfig {
   credentials: AwsCredentials;

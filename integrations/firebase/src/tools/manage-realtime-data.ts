@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { RealtimeDbClient } from '../lib/client';
 import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageRealtimeData = SlateTool.create(spec, {
   name: 'Manage Realtime Database',

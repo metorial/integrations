@@ -2,8 +2,8 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createProduct,
-  getProduct,
   deleteProduct,
+  getProduct,
   listProducts,
   listWorkspaces
 } from './tools';

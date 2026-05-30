@@ -8,7 +8,7 @@ export interface FreshdeskClientConfig {
 export class FreshdeskClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: FreshdeskClientConfig) {
+  constructor(config: FreshdeskClientConfig) {
     let encodedAuth = Buffer.from(`${config.token}:X`).toString('base64');
     this.axios = createAxios({
       baseURL: `https://${config.subdomain}.freshdesk.com/api/v2`,
@@ -31,20 +31,20 @@ export class FreshdeskClient {
     updatedSince?: string;
   }): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.orderBy) queryParams['order_by'] = params.orderBy;
-    if (params?.orderType) queryParams['order_type'] = params.orderType;
-    if (params?.page) queryParams['page'] = params.page;
-    if (params?.perPage) queryParams['per_page'] = params.perPage;
-    if (params?.include) queryParams['include'] = params.include;
-    if (params?.updatedSince) queryParams['updated_since'] = params.updatedSince;
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.orderBy) queryParams.order_by = params.orderBy;
+    if (params?.orderType) queryParams.order_type = params.orderType;
+    if (params?.page) queryParams.page = params.page;
+    if (params?.perPage) queryParams.per_page = params.perPage;
+    if (params?.include) queryParams.include = params.include;
+    if (params?.updatedSince) queryParams.updated_since = params.updatedSince;
     let response = await this.axios.get('/tickets', { params: queryParams });
     return response.data;
   }
 
   async getTicket(ticketId: number, include?: string): Promise<any> {
     let params: Record<string, any> = {};
-    if (include) params['include'] = include;
+    if (include) params.include = include;
     let response = await this.axios.get(`/tickets/${ticketId}`, { params });
     return response.data;
   }
@@ -68,7 +68,7 @@ export class FreshdeskClient {
     page?: number
   ): Promise<{ results: any[]; total: number }> {
     let params: Record<string, any> = { query: `"${query}"` };
-    if (page) params['page'] = page;
+    if (page) params.page = page;
     let response = await this.axios.get('/search/tickets', { params });
     return response.data;
   }
@@ -77,7 +77,7 @@ export class FreshdeskClient {
 
   async listConversations(ticketId: number, page?: number): Promise<any[]> {
     let params: Record<string, any> = {};
-    if (page) params['page'] = page;
+    if (page) params.page = page;
     let response = await this.axios.get(`/tickets/${ticketId}/conversations`, { params });
     return response.data;
   }
@@ -104,13 +104,13 @@ export class FreshdeskClient {
     page?: number;
   }): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.email) queryParams['email'] = params.email;
-    if (params?.phone) queryParams['phone'] = params.phone;
-    if (params?.mobile) queryParams['mobile'] = params.mobile;
-    if (params?.companyId) queryParams['company_id'] = params.companyId;
-    if (params?.state) queryParams['state'] = params.state;
-    if (params?.updatedSince) queryParams['updated_since'] = params.updatedSince;
-    if (params?.page) queryParams['page'] = params.page;
+    if (params?.email) queryParams.email = params.email;
+    if (params?.phone) queryParams.phone = params.phone;
+    if (params?.mobile) queryParams.mobile = params.mobile;
+    if (params?.companyId) queryParams.company_id = params.companyId;
+    if (params?.state) queryParams.state = params.state;
+    if (params?.updatedSince) queryParams.updated_since = params.updatedSince;
+    if (params?.page) queryParams.page = params.page;
     let response = await this.axios.get('/contacts', { params: queryParams });
     return response.data;
   }
@@ -139,7 +139,7 @@ export class FreshdeskClient {
     page?: number
   ): Promise<{ results: any[]; total: number }> {
     let params: Record<string, any> = { query: `"${query}"` };
-    if (page) params['page'] = page;
+    if (page) params.page = page;
     let response = await this.axios.get('/search/contacts', { params });
     return response.data;
   }
@@ -148,7 +148,7 @@ export class FreshdeskClient {
 
   async listCompanies(page?: number): Promise<any[]> {
     let params: Record<string, any> = {};
-    if (page) params['page'] = page;
+    if (page) params.page = page;
     let response = await this.axios.get('/companies', { params });
     return response.data;
   }
@@ -177,7 +177,7 @@ export class FreshdeskClient {
     page?: number
   ): Promise<{ results: any[]; total: number }> {
     let params: Record<string, any> = { query: `"${query}"` };
-    if (page) params['page'] = page;
+    if (page) params.page = page;
     let response = await this.axios.get('/search/companies', { params });
     return response.data;
   }
@@ -190,9 +190,9 @@ export class FreshdeskClient {
     page?: number;
   }): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.email) queryParams['email'] = params.email;
-    if (params?.state) queryParams['state'] = params.state;
-    if (params?.page) queryParams['page'] = params.page;
+    if (params?.email) queryParams.email = params.email;
+    if (params?.state) queryParams.state = params.state;
+    if (params?.page) queryParams.page = params.page;
     let response = await this.axios.get('/agents', { params: queryParams });
     return response.data;
   }
@@ -211,7 +211,7 @@ export class FreshdeskClient {
 
   async listGroups(page?: number): Promise<any[]> {
     let params: Record<string, any> = {};
-    if (page) params['page'] = page;
+    if (page) params.page = page;
     let response = await this.axios.get('/groups', { params });
     return response.data;
   }
@@ -292,9 +292,9 @@ export class FreshdeskClient {
     page?: number;
   }): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.createdSince) queryParams['created_since'] = params.createdSince;
-    if (params?.createdUntil) queryParams['created_until'] = params.createdUntil;
-    if (params?.page) queryParams['page'] = params.page;
+    if (params?.createdSince) queryParams.created_since = params.createdSince;
+    if (params?.createdUntil) queryParams.created_until = params.createdUntil;
+    if (params?.page) queryParams.page = params.page;
     let response = await this.axios.get('/surveys/satisfaction_ratings', {
       params: queryParams
     });

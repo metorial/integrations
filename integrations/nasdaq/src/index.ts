@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  queryTable,
-  getTimeSeries,
-  searchDatasets,
-  getTableMetadata,
-  getDatasetInfo,
-  listDatabases,
   exportTable,
-  getLastSale,
   getBars,
+  getDatasetInfo,
+  getLastSale,
+  getOptionsChain,
   getSnapshot,
-  getOptionsChain
+  getTableMetadata,
+  getTimeSeries,
+  listDatabases,
+  queryTable,
+  searchDatasets
 } from './tools';
-import { datasetUpdated, tableDataChanged, inboundWebhook } from './triggers';
+import { datasetUpdated, inboundWebhook, tableDataChanged } from './triggers';
 
 export let provider = Slate.create({
   spec,

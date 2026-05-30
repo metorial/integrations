@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CensusDataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let datasetSchema = z.object({
   title: z.string().describe('Dataset title'),
@@ -70,7 +70,7 @@ Use this tool to find the correct dataset path and vintage year before querying 
       }))
     }));
 
-    let filterDesc = [];
+    let filterDesc: any[] = [];
     if (ctx.input.vintage) filterDesc.push(`vintage ${ctx.input.vintage}`);
     if (ctx.input.keyword) filterDesc.push(`keyword "${ctx.input.keyword}"`);
 

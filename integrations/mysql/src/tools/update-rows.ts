@@ -1,12 +1,12 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
+import { z } from 'zod';
 import {
   createClient,
   escapeIdentifier,
-  qualifiedTableName,
-  formatValue
+  formatValue,
+  qualifiedTableName
 } from '../lib/helpers';
-import { z } from 'zod';
+import { spec } from '../spec';
 
 export let updateRows = SlateTool.create(spec, {
   name: 'Update Rows',

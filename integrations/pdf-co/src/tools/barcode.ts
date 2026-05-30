@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generateBarcode = SlateTool.create(spec, {
   name: 'Generate Barcode',
@@ -147,7 +147,7 @@ Returns all detected barcodes with their values, types, confidence scores, and p
         creditsUsed: result.credits,
         remainingCredits: result.remainingCredits
       },
-      message: `Found **${barcodes.length}** barcode(s) across ${result.pageCount} page(s).${barcodes.length > 0 && barcodes[0] ? ' First barcode: `' + barcodes[0].value + '` (' + barcodes[0].typeName + ')' : ''}`
+      message: `Found **${barcodes.length}** barcode(s) across ${result.pageCount} page(s).${barcodes.length > 0 && barcodes[0] ? ` First barcode: \`${barcodes[0].value}\` (${barcodes[0].typeName})` : ''}`
     };
   })
   .build();

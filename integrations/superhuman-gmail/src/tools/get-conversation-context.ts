@@ -1,14 +1,14 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client, parseMessage } from '../lib/client';
 import {
+  buildReplyHeaders,
   defaultReplySubject,
   defaultReplyTo,
-  buildReplyHeaders,
   pickReplyTarget,
   sortMessagesChronological
 } from '../lib/reply-context';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getConversationContext = SlateTool.create(spec, {
   name: 'Get Conversation Context',

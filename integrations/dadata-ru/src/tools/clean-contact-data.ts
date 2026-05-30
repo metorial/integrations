@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CleanerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let cleanedNameSchema = z.object({
   source: z.string().describe('Original input'),

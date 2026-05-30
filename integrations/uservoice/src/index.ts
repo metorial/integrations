@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listSuggestions,
-  getSuggestion,
+  addNote,
   createSuggestion,
-  updateSuggestion,
   deleteSuggestion,
-  updateSuggestionStatus,
-  listForums,
-  manageForum,
-  listUsers,
-  listSupporters,
-  manageSupporter,
-  listStatuses,
-  listLabels,
+  getSuggestion,
+  importExternalUsers,
   listCategories,
   listComments,
   listFeatures,
+  listForums,
+  listLabels,
   listNpsRatings,
-  addNote,
-  importExternalUsers
+  listStatuses,
+  listSuggestions,
+  listSupporters,
+  listUsers,
+  manageForum,
+  manageSupporter,
+  updateSuggestion,
+  updateSuggestionStatus
 } from './tools';
-import { suggestionWebhook, newSuggestionsPolling, statusUpdatesPolling } from './triggers';
+import { newSuggestionsPolling, statusUpdatesPolling, suggestionWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

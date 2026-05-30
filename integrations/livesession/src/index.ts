@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listSessions,
-  listAlerts,
+  computeFunnel,
   createAlert,
-  updateAlert,
-  deleteAlert,
-  listWebhooks,
-  createWebhook,
-  updateWebhook,
-  deleteWebhook,
-  listWebsites,
-  createWebsite,
   createFunnel,
+  createWebhook,
+  createWebsite,
+  deleteAlert,
   deleteFunnel,
-  updateFunnel,
+  deleteWebhook,
+  listAlerts,
+  listSessions,
+  listWebhooks,
+  listWebsites,
   setFunnelFavourite,
-  computeFunnel
+  updateAlert,
+  updateFunnel,
+  updateWebhook
 } from './tools';
 import { sessionEvent } from './triggers';
 

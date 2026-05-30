@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let oooEvents = SlateTrigger.create(spec, {
   name: 'Out-of-Office Events',
@@ -60,7 +60,7 @@ export let oooEvents = SlateTrigger.create(spec, {
 
       let triggerEvent = data.triggerEvent || 'OOO_CREATED';
       let oooId =
-        data.payload?.id?.toString() || data.payload?.uid || triggerEvent + '-' + Date.now();
+        data.payload?.id?.toString() || data.payload?.uid || `${triggerEvent}-${Date.now()}`;
 
       return {
         inputs: [

@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
-  getProject,
   createProject,
-  updateProject,
-  deleteProject,
-  listTasks,
   createTask,
-  updateTask,
+  deleteProject,
   deleteTask,
+  getProject,
+  getProjectReport,
+  getSummaryReport,
   getTimeEntries,
   getTimeEntry,
-  manageUserAssignments,
-  manageTaskAssignments,
-  listUsers,
   getUser,
-  updateUser,
-  getProjectReport,
-  getSummaryReport
+  listProjects,
+  listTasks,
+  listUsers,
+  manageTaskAssignments,
+  manageUserAssignments,
+  updateProject,
+  updateTask,
+  updateUser
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let historyItemSchema = z.object({
   historyItemId: z.string().describe('Unique history item identifier'),
@@ -61,19 +61,19 @@ export let listHistory = SlateTool.create(spec, {
     });
 
     let data = result as Record<string, unknown>;
-    let rawHistory = (data['history'] || []) as Array<Record<string, unknown>>;
+    let rawHistory = (data.history || []) as Record<string, unknown>[];
 
     let history = rawHistory.map(h => ({
-      historyItemId: h['history_item_id'] as string,
-      voiceId: h['voice_id'] as string | undefined,
-      voiceName: h['voice_name'] as string | undefined,
-      modelId: h['model_id'] as string | undefined,
-      text: h['text'] as string | undefined,
-      dateUnix: h['date_unix'] as number | undefined,
-      characterCountChangeFrom: h['character_count_change_from'] as number | undefined,
-      characterCountChangeTo: h['character_count_change_to'] as number | undefined,
-      state: h['state'] as string | undefined,
-      contentType: h['content_type'] as string | undefined
+      historyItemId: h.history_item_id as string,
+      voiceId: h.voice_id as string | undefined,
+      voiceName: h.voice_name as string | undefined,
+      modelId: h.model_id as string | undefined,
+      text: h.text as string | undefined,
+      dateUnix: h.date_unix as number | undefined,
+      characterCountChangeFrom: h.character_count_change_from as number | undefined,
+      characterCountChangeTo: h.character_count_change_to as number | undefined,
+      state: h.state as string | undefined,
+      contentType: h.content_type as string | undefined
     }));
 
     let lastId = history.length > 0 ? history[history.length - 1]?.historyItemId : undefined;
@@ -81,7 +81,7 @@ export let listHistory = SlateTool.create(spec, {
     return {
       output: {
         history,
-        hasMore: data['has_more'] as boolean | undefined,
+        hasMore: data.has_more as boolean | undefined,
         lastHistoryItemId: lastId
       },
       message: `Retrieved ${history.length} history item(s).`

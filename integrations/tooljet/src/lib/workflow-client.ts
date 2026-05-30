@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class WorkflowClient {
   private axios;
 
-  constructor(private options: { baseUrl: string }) {
+  constructor(options: { baseUrl: string }) {
     this.axios = createAxios({
       baseURL: `${options.baseUrl.replace(/\/+$/, '')}/api/v2/webhooks/workflows`,
       headers: {

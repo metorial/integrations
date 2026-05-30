@@ -66,7 +66,11 @@ export let getWeather = SlateTool.create(spec, {
 
     let isDayRaw = current.is_day;
     let isDay =
-      typeof isDayRaw === 'number' ? isDayRaw === 1 : typeof isDayRaw === 'boolean' ? isDayRaw : null;
+      typeof isDayRaw === 'number'
+        ? isDayRaw === 1
+        : typeof isDayRaw === 'boolean'
+          ? isDayRaw
+          : null;
 
     return {
       output: {
@@ -75,7 +79,8 @@ export let getWeather = SlateTool.create(spec, {
         timezone: data?.timezone ?? null,
         current: {
           time: current.time ?? null,
-          temperature: typeof current.temperature_2m === 'number' ? current.temperature_2m : null,
+          temperature:
+            typeof current.temperature_2m === 'number' ? current.temperature_2m : null,
           apparentTemperature:
             typeof current.apparent_temperature === 'number'
               ? current.apparent_temperature
@@ -84,7 +89,8 @@ export let getWeather = SlateTool.create(spec, {
             typeof current.relative_humidity_2m === 'number'
               ? current.relative_humidity_2m
               : null,
-          windSpeed: typeof current.wind_speed_10m === 'number' ? current.wind_speed_10m : null,
+          windSpeed:
+            typeof current.wind_speed_10m === 'number' ? current.wind_speed_10m : null,
           windDirection:
             typeof current.wind_direction_10m === 'number' ? current.wind_direction_10m : null,
           weatherCode: typeof current.weather_code === 'number' ? current.weather_code : null,

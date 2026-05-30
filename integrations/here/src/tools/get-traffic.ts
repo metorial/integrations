@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HereClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTraffic = SlateTool.create(spec, {
   name: 'Get Traffic',
@@ -106,8 +106,8 @@ Combine both for a complete traffic picture of an area.`,
     let includeFlow = ctx.input.includeFlow !== false;
     let includeIncidents = ctx.input.includeIncidents !== false;
 
-    let flowResult: any = undefined;
-    let incidentsResult: any = undefined;
+    let flowResult: any;
+    let incidentsResult: any;
 
     if (includeFlow) {
       let flowResponse = await client.getTrafficFlow({

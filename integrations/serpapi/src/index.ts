@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  webSearchTool,
-  imageSearchTool,
-  newsSearchTool,
-  videoSearchTool,
-  shoppingSearchTool,
-  mapsSearchTool,
-  flightsSearchTool,
-  scholarSearchTool,
-  trendsSearchTool,
-  jobsSearchTool,
+  accountInfoTool,
   autocompleteTool,
+  flightsSearchTool,
+  imageSearchTool,
+  jobsSearchTool,
   locationsLookupTool,
-  accountInfoTool
+  mapsSearchTool,
+  newsSearchTool,
+  scholarSearchTool,
+  shoppingSearchTool,
+  trendsSearchTool,
+  videoSearchTool,
+  webSearchTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

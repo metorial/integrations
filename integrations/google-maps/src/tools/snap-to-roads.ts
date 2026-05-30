@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleMapsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let snappedPointSchema = z.object({
   latitude: z.number().describe('Snapped latitude'),
@@ -55,7 +55,7 @@ export let snapToRoadsTool = SlateTool.create(spec, {
       interpolate: ctx.input.interpolate
     });
 
-    let rawPoints = (response.snappedPoints as Array<Record<string, unknown>>) || [];
+    let rawPoints = (response.snappedPoints as Record<string, unknown>[]) || [];
 
     let snappedPoints = rawPoints.map(p => {
       let location = p.location as { latitude: number; longitude: number };

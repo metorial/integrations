@@ -33,7 +33,7 @@ export class VonageRestClient {
   }
 
   private getBasicAuthHeader(): string {
-    return 'Basic ' + btoa(`${this.auth.apiKey}:${this.auth.apiSecret}`);
+    return `Basic ${btoa(`${this.auth.apiKey}:${this.auth.apiSecret}`)}`;
   }
 
   // ========== Messages API (JWT auth, api.nexmo.com) ==========
@@ -167,7 +167,7 @@ export class VonageRestClient {
   async createCall(body: {
     to: Array<{ type: string; number?: string; uri?: string }>;
     from: { type: string; number: string };
-    ncco?: Array<Record<string, unknown>>;
+    ncco?: Record<string, unknown>[];
     answerUrl?: string[];
     answerMethod?: string;
     eventUrl?: string[];
@@ -228,7 +228,7 @@ export class VonageRestClient {
     count: number;
     pageSize: number;
     recordIndex: number;
-    calls: Array<Record<string, unknown>>;
+    calls: Record<string, unknown>[];
   }> {
     let token = await this.getJwtToken();
 
@@ -647,7 +647,7 @@ export class VonageRestClient {
     totalPages: number;
     page: number;
     pageSize: number;
-    applications: Array<Record<string, unknown>>;
+    applications: Record<string, unknown>[];
   }> {
     let token = await this.getJwtToken();
     let queryParams: Record<string, unknown> = {};
@@ -747,7 +747,7 @@ export class VonageRestClient {
 
   async listSubaccounts(): Promise<{
     primaryAccount: Record<string, unknown>;
-    subaccounts: Array<Record<string, unknown>>;
+    subaccounts: Record<string, unknown>[];
   }> {
     let res = await this.mainApi.get(`/accounts/${this.auth.apiKey}/subaccounts`, {
       headers: { Authorization: this.getBasicAuthHeader() }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getFacebookRecommendations = SlateTool.create(spec, {
   name: 'Get Facebook Recommendations',
@@ -65,7 +65,8 @@ export let getFacebookRecommendations = SlateTool.create(spec, {
       content: r.content
     }));
 
-    let count = typeof data.count === 'string' ? parseInt(data.count, 10) : (data.count ?? 0);
+    let count =
+      typeof data.count === 'string' ? Number.parseInt(data.count, 10) : (data.count ?? 0);
 
     return {
       output: {

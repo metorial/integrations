@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { DailyBotClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let kudosPostedTrigger = SlateTrigger.create(spec, {
   name: 'Kudos Posted',

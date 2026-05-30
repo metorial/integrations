@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newVideo = SlateTrigger.create(spec, {
   name: 'New Video',
@@ -41,9 +41,9 @@ export let newVideo = SlateTrigger.create(spec, {
         orderBy: 'UPLOADEDSTAMP'
       });
 
-      let items: Array<Record<string, unknown>> = result.Items ?? result.items ?? [];
+      let items: Record<string, unknown>[] = result.Items ?? result.items ?? [];
       let lastSeenId = ctx.state?.lastSeenId as string | undefined;
-      let newItems: Array<Record<string, unknown>> = [];
+      let newItems: Record<string, unknown>[] = [];
 
       for (let item of items) {
         let itemId = String(item.Id ?? item.id ?? '');

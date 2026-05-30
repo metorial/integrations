@@ -1,4 +1,4 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
 
 type ErrorResponse = {
   status?: number;
@@ -56,7 +56,8 @@ let extractMessage = (error: unknown) => {
   return 'Unknown error';
 };
 
-export let ssbServiceError = (message: string) => new ServiceError(badRequestError({ message }));
+export let ssbServiceError = (message: string) =>
+  new ServiceError(badRequestError({ message }));
 
 export let ssbApiError = (error: unknown, operation = 'request') => {
   if (error instanceof ServiceError) {

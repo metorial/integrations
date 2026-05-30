@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let featureEventTypes = ['feature.created', 'feature.updated', 'feature.deleted'] as const;
 
@@ -88,7 +88,7 @@ export let featureEventsTrigger = SlateTrigger.create(spec, {
     },
 
     handleEvent: async ctx => {
-      let featureData: Record<string, any> | undefined = undefined;
+      let featureData: Record<string, any> | undefined;
 
       // If feature wasn't deleted, try to fetch current data
       if (!ctx.input.eventType.includes('deleted') && ctx.input.featureId) {

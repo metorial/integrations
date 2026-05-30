@@ -1,30 +1,30 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createContact,
-  getContact,
-  listContacts,
-  updateContact,
-  deleteContact,
-  unsubscribeContact,
   batchImportContacts,
-  createList,
-  listLists,
-  getList,
-  deleteList,
-  manageListContacts,
   createCampaign,
-  getCampaign,
-  listCampaigns,
-  updateCampaign,
+  createContact,
+  createList,
   deleteCampaign,
-  sendCampaign,
-  listAutomations,
+  deleteContact,
+  deleteList,
+  getAccount,
   getAutomation,
+  getCampaign,
+  getContact,
+  getList,
+  listAutomations,
+  listCampaigns,
+  listContacts,
   listForms,
-  getAccount
+  listLists,
+  manageListContacts,
+  sendCampaign,
+  unsubscribeContact,
+  updateCampaign,
+  updateContact
 } from './tools';
-import { newContact, newCampaign, inboundWebhook } from './triggers';
+import { inboundWebhook, newCampaign, newContact } from './triggers';
 
 export let provider = Slate.create({
   spec,

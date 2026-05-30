@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createPerson = SlateTool.create(spec, {
   name: 'Create Person',
@@ -79,7 +79,7 @@ export let createPerson = SlateTool.create(spec, {
         companyName: person.company?.name ?? null,
         createdAt: person.created_at ?? null
       },
-      message: `Created person **${fullName}**` + (person.email ? ` (${person.email})` : '')
+      message: `Created person **${fullName}**${person.email ? ` (${person.email})` : ''}`
     };
   })
   .build();

@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listLists,
-  listContacts,
   addContact,
   addMember,
   listAccounts,
-  removeAccount,
-  listTeams
+  listContacts,
+  listLists,
+  listTeams,
+  removeAccount
 } from './tools';
 import { callCompleted, contactUpdated } from './triggers';
 

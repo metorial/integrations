@@ -133,7 +133,7 @@ export class ThriftWriter {
 
   writeI64(value: number | string) {
     // Handle i64 as two 32-bit parts for precision
-    let num = typeof value === 'string' ? parseInt(value, 10) : value;
+    let num = typeof value === 'string' ? Number.parseInt(value, 10) : value;
     // For timestamps and other large numbers
     let high = Math.floor(num / 0x100000000);
     let low = num >>> 0;
@@ -300,10 +300,11 @@ export class ThriftReader {
       case TType.DOUBLE:
         this.pos += 8;
         break;
-      case TType.STRING:
+      case TType.STRING: {
         let strLen = this.readI32();
         this.pos += strLen;
         break;
+      }
       case TType.STRUCT:
         while (true) {
           let field = this.readFieldBegin();
@@ -331,5 +332,5 @@ export class ThriftReader {
   }
 }
 
-export { TType, TMessageType };
 export type { TTypeValue };
+export { TMessageType, TType };

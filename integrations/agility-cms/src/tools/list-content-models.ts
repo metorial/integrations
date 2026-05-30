@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MgmtClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listContentModels = SlateTool.create(spec, {
   name: 'List Content Models',

@@ -1,24 +1,24 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  sendMessage,
-  listMessages,
-  makeCall,
-  listCalls,
-  modifyCall,
-  lookupPhoneNumber,
-  sendVerification,
   checkVerification,
-  searchPhoneNumbers,
-  managePhoneNumber,
-  manageConversation,
   conversationParticipants,
-  sendConversationMessage,
-  manageMessagingService,
+  listCalls,
+  listMessages,
   listRecordings,
-  listVerifyServices
+  listVerifyServices,
+  lookupPhoneNumber,
+  makeCall,
+  manageConversation,
+  manageMessagingService,
+  managePhoneNumber,
+  modifyCall,
+  searchPhoneNumbers,
+  sendConversationMessage,
+  sendMessage,
+  sendVerification
 } from './tools';
-import { incomingMessage, messageStatus, incomingCall, callStatus } from './triggers';
+import { callStatus, incomingCall, incomingMessage, messageStatus } from './triggers';
 
 export let provider = Slate.create({
   spec,

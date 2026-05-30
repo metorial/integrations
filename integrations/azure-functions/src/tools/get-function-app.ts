@@ -1,11 +1,11 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ArmClient } from '../lib/client';
 import {
   getFunctionAppRuntimeStack,
   getFunctionAppVersion
 } from '../lib/function-app-metadata';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFunctionApp = SlateTool.create(spec, {
   name: 'Get Function App',
@@ -55,7 +55,7 @@ export let getFunctionApp = SlateTool.create(spec, {
       resourceGroupName: ctx.config.resourceGroupName
     });
 
-    ctx.info('Getting function app: ' + ctx.input.appName);
+    ctx.info(`Getting function app: ${ctx.input.appName}`);
 
     let app = await client.getFunctionApp(ctx.input.appName);
     let config = await client.getConfiguration(ctx.input.appName);

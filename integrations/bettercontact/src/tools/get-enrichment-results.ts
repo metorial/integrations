@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let enrichedContactSchema = z.object({
   enriched: z.boolean().describe('Whether enrichment found data for this contact'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ApaleoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressSchema = z.object({
   addressLine1: z.string().optional(),

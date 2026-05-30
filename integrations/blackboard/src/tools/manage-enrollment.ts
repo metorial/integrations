@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let membershipOutputSchema = z.object({
   userId: z.string().describe('User ID'),
@@ -136,7 +136,7 @@ export let listEnrollments = SlateTool.create(spec, {
       throw new Error('Either courseId or userId must be provided.');
     }
 
-    let result;
+    let result: any;
     if (ctx.input.courseId) {
       result = await client.listCourseMemberships(ctx.input.courseId, {
         offset: ctx.input.offset,

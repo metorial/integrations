@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EosAccountServicesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ownershipItemSchema = z.object({
   namespace: z.string().describe('Sandbox/namespace ID'),

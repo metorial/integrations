@@ -1,13 +1,13 @@
 import { createAxios } from 'slates';
 import type {
-  ClearbitPerson,
-  ClearbitCompany,
+  ClearbitAutocompleteItem,
   ClearbitCombined,
-  ClearbitReveal,
-  ClearbitProspectorResponse,
+  ClearbitCompany,
   ClearbitDiscoveryResponse,
   ClearbitNameToDomain,
-  ClearbitAutocompleteItem,
+  ClearbitPerson,
+  ClearbitProspectorResponse,
+  ClearbitReveal,
   ClearbitRisk
 } from './types';
 

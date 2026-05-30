@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { XForceClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let categoryEntrySchema = z.object({
   name: z.string().describe('Category name (e.g., Spam, Malware, Bots)'),

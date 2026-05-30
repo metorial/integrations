@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { lookupPlacekey, bulkLookupPlacekeys } from './tools';
+import { bulkLookupPlacekeys, lookupPlacekey } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

@@ -9,7 +9,7 @@ export interface ClientConfig {
 export class Client {
   private http;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let baseURL =
       config.environment === 'sandbox'
         ? 'https://api-sandbox.demo.deel.com/rest/v2'

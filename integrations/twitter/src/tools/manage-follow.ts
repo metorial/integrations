@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwitterClient } from '../lib/client';
 import { twitterServiceError } from '../lib/errors';
-import { userSchema, mapUser } from '../lib/helpers';
+import { mapUser, userSchema } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageFollow = SlateTool.create(spec, {
   name: 'Manage Follow',
@@ -48,7 +48,8 @@ export let manageFollow = SlateTool.create(spec, {
     let { action, userId, targetUserId, maxResults, paginationToken } = ctx.input;
 
     if (action === 'follow') {
-      if (!targetUserId) throw twitterServiceError('targetUserId is required to follow a user.');
+      if (!targetUserId)
+        throw twitterServiceError('targetUserId is required to follow a user.');
       await client.followUser(userId, targetUserId);
       return {
         output: { success: true },

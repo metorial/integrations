@@ -1,4 +1,5 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import {
   hookdeckServiceError,
@@ -6,7 +7,6 @@ import {
   requireHookdeckRecord
 } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let issueTriggerSchema = z.object({
   issueTriggerId: z.string().describe('Issue trigger ID'),

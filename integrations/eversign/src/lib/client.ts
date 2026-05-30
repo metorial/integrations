@@ -25,7 +25,7 @@ export class Client {
     };
 
     if (this.isOauth) {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     }
 
     this.axios = createAxios({
@@ -42,7 +42,7 @@ export class Client {
       ...extra
     };
     if (!this.isOauth) {
-      params['access_key'] = this.token;
+      params.access_key = this.token;
     }
     return params;
   }
@@ -52,7 +52,7 @@ export class Client {
   async listBusinesses(): Promise<any[]> {
     let params: Record<string, string> = {};
     if (!this.isOauth) {
-      params['access_key'] = this.token;
+      params.access_key = this.token;
     }
     let response = await this.axios.get('/business', { params });
     return response.data;
@@ -62,7 +62,7 @@ export class Client {
 
   async createDocument(body: Record<string, any>): Promise<any> {
     if (this.sandbox) {
-      body['sandbox'] = 1;
+      body.sandbox = 1;
     }
     let response = await this.axios.post('/document', body, {
       params: this.getParams()
@@ -79,8 +79,8 @@ export class Client {
 
   async listDocuments(type: string, page?: number, limit?: number): Promise<any[]> {
     let extra: Record<string, string | number> = { type };
-    if (page !== undefined) extra['page'] = page;
-    if (limit !== undefined) extra['limit'] = limit;
+    if (page !== undefined) extra.page = page;
+    if (limit !== undefined) extra.limit = limit;
     let response = await this.axios.get('/document', {
       params: this.getParams(extra)
     });
@@ -111,9 +111,9 @@ export class Client {
   // ==================== Templates ====================
 
   async createTemplate(body: Record<string, any>): Promise<any> {
-    body['is_template'] = 1;
+    body.is_template = 1;
     if (this.sandbox) {
-      body['sandbox'] = 1;
+      body.sandbox = 1;
     }
     let response = await this.axios.post('/document', body, {
       params: this.getParams()
@@ -127,8 +127,8 @@ export class Client {
     limit?: number
   ): Promise<any[]> {
     let extra: Record<string, string | number> = { type };
-    if (page !== undefined) extra['page'] = page;
-    if (limit !== undefined) extra['limit'] = limit;
+    if (page !== undefined) extra.page = page;
+    if (limit !== undefined) extra.limit = limit;
     let response = await this.axios.get('/document', {
       params: this.getParams(extra)
     });
@@ -137,7 +137,7 @@ export class Client {
 
   async createDocumentFromTemplate(body: Record<string, any>): Promise<any> {
     if (this.sandbox) {
-      body['sandbox'] = 1;
+      body.sandbox = 1;
     }
     let response = await this.axios.post('/document', body, {
       params: this.getParams()
@@ -175,7 +175,7 @@ export class Client {
       new_signer_email: newSignerEmail
     };
     if (reason) {
-      body['reason'] = reason;
+      body.reason = reason;
     }
     let response = await this.axios.post('/reassign', body, {
       params: this.getParams()
@@ -186,7 +186,7 @@ export class Client {
   // ==================== File Management ====================
 
   async uploadFile(fileContent: string, fileName: string): Promise<any> {
-    let boundary = '----SlatesBoundary' + Date.now().toString(36);
+    let boundary = `----SlatesBoundary${Date.now().toString(36)}`;
     let body = `--${boundary}\r\nContent-Disposition: form-data; name="upload"; filename="${fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n${fileContent}\r\n--${boundary}--`;
 
     let response = await this.axios.post('/file', body, {
@@ -211,7 +211,7 @@ export class Client {
       url_only: 1
     };
     if (type === 'final' && auditTrail) {
-      extra['audit_trail'] = 1;
+      extra.audit_trail = 1;
     }
     let response = await this.axios.get(endpoint, {
       params: this.getParams(extra)
@@ -251,8 +251,8 @@ export class Client {
 
   async getBulkJobDocuments(bulkJobId: string, limit?: number, offset?: number): Promise<any> {
     let extra: Record<string, string | number> = {};
-    if (limit !== undefined) extra['limit'] = limit;
-    if (offset !== undefined) extra['offset'] = offset;
+    if (limit !== undefined) extra.limit = limit;
+    if (offset !== undefined) extra.offset = offset;
     let response = await this.axios.get(`/bulk_job/${bulkJobId}/documents`, {
       params: this.getParams(extra)
     });
@@ -261,8 +261,8 @@ export class Client {
 
   async listBulkJobs(limit?: number, offset?: number): Promise<any> {
     let extra: Record<string, string | number> = {};
-    if (limit !== undefined) extra['limit'] = limit;
-    if (offset !== undefined) extra['offset'] = offset;
+    if (limit !== undefined) extra.limit = limit;
+    if (offset !== undefined) extra.offset = offset;
     let response = await this.axios.get('/bulk_job', {
       params: this.getParams(extra)
     });

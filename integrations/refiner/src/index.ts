@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listContacts,
-  getContact,
   deleteContact,
+  getAccount,
+  getContact,
+  getReporting,
   identifyUser,
-  trackEvent,
+  listContacts,
   listResponses,
+  listSegments,
+  listSurveys,
+  manageSegment,
+  manageSurvey,
   storeResponse,
   tagResponse,
-  listSurveys,
-  manageSurvey,
-  listSegments,
-  manageSegment,
-  getReporting,
-  getAccount
+  trackEvent
 } from './tools';
-import { surveyInteraction, segmentEntry, tagAdded } from './triggers';
+import { segmentEntry, surveyInteraction, tagAdded } from './triggers';
 
 export let provider = Slate.create({
   spec,

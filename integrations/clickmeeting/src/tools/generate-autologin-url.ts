@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generateAutologinUrl = SlateTool.create(spec, {
   name: 'Generate Auto-Login URL',

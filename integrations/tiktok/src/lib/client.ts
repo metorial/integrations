@@ -4,7 +4,7 @@ import { assertBusinessSuccess, assertConsumerSuccess, tiktokApiError } from './
 export class TikTokConsumerClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://open.tiktokapis.com/v2',
       headers: {
@@ -185,7 +185,7 @@ export class TikTokConsumerClient {
 export class TikTokBusinessClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://business-api.tiktok.com/open_api/v1.3',
       headers: {
@@ -454,9 +454,9 @@ export class TikTokBusinessClient {
     page?: number;
     pageSize?: number;
     filters?: Array<{ fieldName: string; filterType: string; filterValue: string }>;
-  }): Promise<{ rows: Array<Record<string, unknown>>; pageInfo: TikTokPageInfo }> {
+  }): Promise<{ rows: Record<string, unknown>[]; pageInfo: TikTokPageInfo }> {
     let data = await this.requestData<{
-      list?: Array<Record<string, unknown>>;
+      list?: Record<string, unknown>[];
       page_info?: Record<string, any>;
     }>('get report', () =>
       this.axios.get('/report/integrated/get/', {
@@ -590,10 +590,8 @@ export interface TikTokPageInfo {
 
 let mapAdvertiser = (raw: Record<string, unknown>): TikTokAdvertiser => ({
   advertiserId: raw.advertiser_id !== undefined ? String(raw.advertiser_id) : '',
-  advertiserName:
-    typeof raw.advertiser_name === 'string' ? raw.advertiser_name : undefined,
-  advertiserRole:
-    raw.advertiser_role !== undefined ? String(raw.advertiser_role) : undefined,
+  advertiserName: typeof raw.advertiser_name === 'string' ? raw.advertiser_name : undefined,
+  advertiserRole: raw.advertiser_role !== undefined ? String(raw.advertiser_role) : undefined,
   isValid:
     typeof raw.is_valid === 'boolean'
       ? raw.is_valid

@@ -286,7 +286,7 @@ export class TomTomClient {
     openLr?: boolean;
   }) {
     let response = await this.axios.get(
-      '/traffic/services/4/flowSegmentData/absolute/' + params.zoom + '/json',
+      `/traffic/services/4/flowSegmentData/absolute/${params.zoom}/json`,
       {
         params: {
           key: this.apiKey,

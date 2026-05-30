@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let itemTypeMap: Record<string, string> = {
   Project: 'project',
@@ -105,7 +104,7 @@ export let rentmanEvent = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!body || !body.eventType || !body.itemType) {
+      if (!body?.eventType || !body.itemType) {
         return { inputs: [] };
       }
 
@@ -118,17 +117,15 @@ export let rentmanEvent = SlateTrigger.create(spec, {
       if (body.eventType === 'delete') {
         // For deletes, items is an array of integer IDs
         itemIds = Array.isArray(body.items) ? body.items : [];
-      } else {
+      } else if (Array.isArray(body.items)) {
         // For create/update, items is an array of objects
-        if (Array.isArray(body.items)) {
-          for (let item of body.items) {
-            if (item.id) itemIds.push(item.id);
-            if (item.ref) itemRefs.push(item.ref);
-            if (item.parent && !parentType) {
-              parentType = item.parent.itemType;
-              parentId = item.parent.id;
-              parentRef = item.parent.ref;
-            }
+        for (let item of body.items) {
+          if (item.id) itemIds.push(item.id);
+          if (item.ref) itemRefs.push(item.ref);
+          if (item.parent && !parentType) {
+            parentType = item.parent.itemType;
+            parentId = item.parent.id;
+            parentRef = item.parent.ref;
           }
         }
       }

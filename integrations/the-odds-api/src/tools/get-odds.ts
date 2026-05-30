@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let outcomeSchema = z.object({
   name: z.string().describe('Outcome name (team name, "Over", "Under", "Draw", etc.)'),

@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getHistoricalPrices,
-  getIntradayPrices,
-  getLivePrices,
-  getFundamentals,
-  searchInstruments,
-  getFinancialNews,
-  getSentiment,
-  screenStocks,
-  getTechnicalIndicators,
-  getFinancialCalendar,
-  getInsiderTransactions,
-  getOptionsChain,
-  getMacroIndicators,
+  getBulkEod,
   getDividendsSplits,
   getExchangeInfo,
-  getBulkEod
+  getFinancialCalendar,
+  getFinancialNews,
+  getFundamentals,
+  getHistoricalPrices,
+  getInsiderTransactions,
+  getIntradayPrices,
+  getLivePrices,
+  getMacroIndicators,
+  getOptionsChain,
+  getSentiment,
+  getTechnicalIndicators,
+  screenStocks,
+  searchInstruments
 } from './tools';
 import {
-  newFinancialNews,
   earningsEvent,
+  inboundWebhook,
   insiderTransactionAlert,
-  inboundWebhook
+  newFinancialNews
 } from './triggers';
 
 export let provider = Slate.create({

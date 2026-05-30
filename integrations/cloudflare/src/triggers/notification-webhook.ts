@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { cloudflareServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let notificationWebhookTrigger = SlateTrigger.create(spec, {
   name: 'Notification Webhook',

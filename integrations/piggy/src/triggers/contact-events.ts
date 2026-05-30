@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let CONTACT_EVENT_TYPES = [
   'contact_created',
@@ -57,7 +57,7 @@ export let contactEvents = SlateTrigger.create(spec, {
           });
           let sub = result.data || result;
           registrations.push({ eventType, subscriptionUuid: sub.uuid });
-        } catch (err) {
+        } catch (_err) {
           // Skip if event type is not supported
         }
       }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addCandidateNoteTool = SlateTool.create(spec, {
   name: 'Add Candidate Note',
@@ -33,8 +33,8 @@ export let addCandidateNoteTool = SlateTool.create(spec, {
       onBehalfOf: ctx.config.onBehalfOf
     });
 
-    let raw = await client.addCandidateNote(parseInt(ctx.input.candidateId), {
-      userId: parseInt(ctx.input.userId),
+    let raw = await client.addCandidateNote(Number.parseInt(ctx.input.candidateId, 10), {
+      userId: Number.parseInt(ctx.input.userId, 10),
       body: ctx.input.body,
       visibility: ctx.input.visibility
     });

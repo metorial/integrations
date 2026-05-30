@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { collectTextContent, type SketchPage } from '../lib/client';
+import { spec } from '../spec';
 
 export let extractTextContentTool = SlateTool.create(spec, {
   name: 'Extract Text Content',

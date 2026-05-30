@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let webhookEvents = [
   'project.created',
@@ -80,7 +80,7 @@ export let projectEventsTrigger = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let data = (await ctx.request.json()) as any;
 
-      if (!data.type || !data.type.startsWith('project.')) {
+      if (!data.type?.startsWith('project.')) {
         return { inputs: [] };
       }
 

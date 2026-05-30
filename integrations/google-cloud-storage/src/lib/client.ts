@@ -289,7 +289,7 @@ export class Client {
       'X-Goog-SignedHeaders': signedHeaders
     }).toString();
 
-    let canonicalRequest = [
+    let _canonicalRequest = [
       method,
       `/${encodeURIComponent(params.bucketName)}/${encodeURIComponent(params.objectName)}`,
       canonicalQueryString,

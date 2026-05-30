@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageProject,
-  manageExperiment,
   manageAudience,
-  manageFeatureFlag,
-  manageCmpTask,
-  manageCmpCampaign,
   manageCmpAsset,
+  manageCmpCampaign,
+  manageCmpTask,
   manageCmsContent,
-  manageMailing,
-  manageRecipientList,
   manageCustomer,
+  manageExperiment,
+  manageFeatureFlag,
+  manageMailing,
+  manageProject,
+  manageRecipientList,
   sendOdpEvent
 } from './tools';
 import {
-  cmpWebhook,
   campaignEmailWebhook,
+  cmpWebhook,
   experimentationWebhook,
   graphWebhook
 } from './triggers';

@@ -662,11 +662,7 @@ export class BaseLinkerClient {
   // ── Order Returns ──
 
   async getOrderReturns(
-    params: {
-      orderId?: number;
-      dateFrom?: number;
-      idFrom?: number;
-    } = {}
+    params: { orderId?: number; dateFrom?: number; idFrom?: number } = {}
   ): Promise<any> {
     return this.request('getOrderReturns', {
       order_id: params.orderId,
@@ -719,11 +715,7 @@ export class BaseLinkerClient {
   // ── Journal (Events) ──
 
   async getJournalList(
-    params: {
-      lastLogId?: number;
-      logsTypes?: number[];
-      orderId?: number;
-    } = {}
+    params: { lastLogId?: number; logsTypes?: number[]; orderId?: number } = {}
   ): Promise<any> {
     return this.request('getJournalList', {
       last_log_id: params.lastLogId,

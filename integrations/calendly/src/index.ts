@@ -1,20 +1,20 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  listEvents,
+  cancelEvent,
+  checkAvailability,
+  createEventInvitee,
+  createSchedulingLink,
   getEvent,
   getEventInvitee,
-  cancelEvent,
-  listEventTypes,
   getEventType,
-  checkAvailability,
-  createSchedulingLink,
-  createEventInvitee,
-  listInvitees,
-  markNoShow,
   getUser,
+  listEvents,
+  listEventTypes,
+  listInvitees,
   listOrganizationMembers,
-  listRoutingForms
+  listRoutingForms,
+  markNoShow
 } from './tools';
 import { inviteeEvents, routingFormSubmission } from './triggers';
 

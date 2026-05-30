@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 type TemplateMediaSource = {
   link?: string;
@@ -70,9 +70,7 @@ let templateParameterSchema = z.object({
     })
     .optional()
     .describe('Image source (for type "image")'),
-  video: templateMediaSourceSchema
-    .optional()
-    .describe('Video source (for type "video")'),
+  video: templateMediaSourceSchema.optional().describe('Video source (for type "video")'),
   document: templateDocumentSourceSchema
     .optional()
     .describe('Document source (for type "document")'),

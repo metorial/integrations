@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StitchConnectClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSource = SlateTool.create(spec, {
   name: 'Get Source',
@@ -48,12 +48,12 @@ export let getSource = SlateTool.create(spec, {
     });
 
     let source = await client.getSource(ctx.input.sourceId);
-    let lastConnectionCheck: any = undefined;
+    let lastConnectionCheck: any;
 
     if (ctx.input.includeConnectionCheck) {
       try {
         lastConnectionCheck = await client.getLastConnectionCheck(ctx.input.sourceId);
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Could not fetch last connection check');
       }
     }

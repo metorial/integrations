@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClearoutClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressSchema = z.object({
   fullAddress: z.string().optional().describe('Full address'),
@@ -96,11 +96,11 @@ export let reverseLookup = SlateTool.create(spec, {
     let data = (result.data ?? result) as Record<string, unknown>;
     let lead = (data.lead ?? data) as Record<string, unknown>;
     let rawAddresses = lead.addresses as
-      | Array<Record<string, unknown>>
+      | Record<string, unknown>[]
       | Record<string, unknown>
       | undefined;
 
-    let addresses: Array<Record<string, unknown>> = [];
+    let addresses: Record<string, unknown>[] = [];
     if (Array.isArray(rawAddresses)) {
       addresses = rawAddresses;
     } else if (rawAddresses && typeof rawAddresses === 'object') {

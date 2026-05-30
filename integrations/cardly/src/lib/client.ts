@@ -93,7 +93,7 @@ export interface Order {
   id: string;
   status: string;
   purchaseOrderNumber?: string;
-  lines: Array<Record<string, unknown>>;
+  lines: Record<string, unknown>[];
   cost?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
@@ -218,7 +218,7 @@ export interface PlaceOrderParams {
 export class CardlyClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.card.ly/v2',
       headers: {

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let jobCompleted = SlateTrigger.create(spec, {
   name: 'Job Completed',
@@ -51,7 +51,7 @@ export let jobCompleted = SlateTrigger.create(spec, {
       let params: Record<string, string> = {};
 
       if (lastPollTime) {
-        params['createdAt_gte'] = lastPollTime;
+        params.createdAt_gte = lastPollTime;
       }
 
       let jobs = await client.listJobs(params);

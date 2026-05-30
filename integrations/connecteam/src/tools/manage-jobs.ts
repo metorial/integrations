@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConnecteamClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let jobSchema = z.object({
+let _jobSchema = z.object({
   jobId: z.string().describe('Unique job identifier'),
   title: z.string().describe('Job name'),
   code: z.string().optional().describe('Job code'),

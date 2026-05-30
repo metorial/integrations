@@ -2,11 +2,11 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createAlias,
-  getAlias,
-  updateAlias,
   deleteAlias,
+  getAlias,
+  getClicks,
   listAliases,
-  getClicks
+  updateAlias
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

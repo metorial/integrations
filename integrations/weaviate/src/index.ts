@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCollections,
-  getCollection,
-  createCollection,
-  updateCollection,
-  deleteCollection,
-  createObject,
-  getObject,
-  updateObject,
-  deleteObject,
-  listObjects,
+  aggregateCollection,
   batchCreateObjects,
   batchDeleteObjects,
-  searchObjects,
+  clusterStatus,
+  createCollection,
+  createObject,
+  deleteCollection,
+  deleteObject,
   generativeSearch,
-  aggregateCollection,
-  manageTenants,
+  getCollection,
+  getObject,
+  listCollections,
+  listObjects,
   manageBackup,
   manageReferences,
-  clusterStatus
+  manageTenants,
+  searchObjects,
+  updateCollection,
+  updateObject
 } from './tools/index';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

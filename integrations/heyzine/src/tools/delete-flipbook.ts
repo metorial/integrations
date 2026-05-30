@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HeyzineClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deleteFlipbook = SlateTool.create(spec, {
   name: 'Delete Flipbook',

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { sentryServiceError } from '../lib/errors';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getEventTool = SlateTool.create(spec, {
   name: 'Get Event',

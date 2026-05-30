@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let wordSchema = z.object({
   text: z.string().optional().describe('The transcribed word'),
@@ -98,19 +98,19 @@ export let speechToText = SlateTool.create(spec, {
     let data = result as Record<string, unknown>;
 
     let textPreview =
-      typeof data['text'] === 'string'
-        ? data['text'].length > 100
-          ? data['text'].slice(0, 100) + '...'
-          : data['text']
+      typeof data.text === 'string'
+        ? data.text.length > 100
+          ? `${data.text.slice(0, 100)}...`
+          : data.text
         : 'No text returned';
 
     return {
       output: {
-        text: data['text'] as string | undefined,
-        languageCode: data['language_code'] as string | undefined,
-        languageProbability: data['language_probability'] as number | undefined,
-        words: data['words'] as Array<Record<string, unknown>> | undefined,
-        transcriptionId: data['transcription_id'] as string | undefined
+        text: data.text as string | undefined,
+        languageCode: data.language_code as string | undefined,
+        languageProbability: data.language_probability as number | undefined,
+        words: data.words as Record<string, unknown>[] | undefined,
+        transcriptionId: data.transcription_id as string | undefined
       },
       message: `Transcribed audio (${ctx.input.modelId}): "${textPreview}"`
     };

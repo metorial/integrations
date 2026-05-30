@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TelnyxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchPhoneNumbers = SlateTool.create(spec, {
   name: 'Search Available Phone Numbers',

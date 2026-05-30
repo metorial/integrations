@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 import { tableauApiError, tableauServiceError } from './lib/errors';
 
@@ -124,9 +124,7 @@ let personalAccessTokenAuth = {
     );
   },
 
-  handleTokenRefresh: async (
-    ctx: TableauRefreshContext<TableauPersonalAccessTokenInput>
-  ) => {
+  handleTokenRefresh: async (ctx: TableauRefreshContext<TableauPersonalAccessTokenInput>) => {
     let { serverUrl, siteContentUrl, apiVersion, tokenName, tokenSecret } = ctx.input;
 
     return await signIn(

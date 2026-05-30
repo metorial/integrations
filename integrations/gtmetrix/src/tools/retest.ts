@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { testOutputSchema, reportOutputSchema } from '../lib/schemas';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { reportOutputSchema, testOutputSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let retest = SlateTool.create(spec, {
   name: 'Retest',
@@ -48,7 +48,7 @@ export let retest = SlateTool.create(spec, {
       throw new Error('Either pageId or reportId must be provided');
     }
 
-    let test;
+    let test: any;
     if (ctx.input.pageId) {
       ctx.info(`Retesting page ${ctx.input.pageId}`);
       test = await client.retestPage(ctx.input.pageId);

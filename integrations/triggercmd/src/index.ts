@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { triggerCommand, listComputers, listCommands, commandRunHistory } from './tools';
+import { commandRunHistory, listCommands, listComputers, triggerCommand } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

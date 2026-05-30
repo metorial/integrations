@@ -1,6 +1,6 @@
 import { createAxios } from 'slates';
 import { signRequest } from './sigv4';
-import { parseXml, parseAwsError } from './xml-parser';
+import { parseAwsError, parseXml } from './xml-parser';
 
 export interface SnsClientConfig {
   accessKeyId: string;
@@ -74,7 +74,7 @@ export class SnsClient {
 
     let sigHeaders = signRequest({
       method: 'POST',
-      url: this.baseUrl + '/',
+      url: `${this.baseUrl}/`,
       headers,
       body,
       region: this.region,
@@ -191,7 +191,7 @@ export class SnsClient {
       Action: 'ListTopics'
     };
     if (nextToken) {
-      params['NextToken'] = nextToken;
+      params.NextToken = nextToken;
     }
 
     let result = await this.request(params);
@@ -245,15 +245,15 @@ export class SnsClient {
       Message: publishParams.message
     };
 
-    if (publishParams.topicArn) params['TopicArn'] = publishParams.topicArn;
-    if (publishParams.targetArn) params['TargetArn'] = publishParams.targetArn;
-    if (publishParams.phoneNumber) params['PhoneNumber'] = publishParams.phoneNumber;
-    if (publishParams.subject) params['Subject'] = publishParams.subject;
+    if (publishParams.topicArn) params.TopicArn = publishParams.topicArn;
+    if (publishParams.targetArn) params.TargetArn = publishParams.targetArn;
+    if (publishParams.phoneNumber) params.PhoneNumber = publishParams.phoneNumber;
+    if (publishParams.subject) params.Subject = publishParams.subject;
     if (publishParams.messageStructure)
-      params['MessageStructure'] = publishParams.messageStructure;
-    if (publishParams.messageGroupId) params['MessageGroupId'] = publishParams.messageGroupId;
+      params.MessageStructure = publishParams.messageStructure;
+    if (publishParams.messageGroupId) params.MessageGroupId = publishParams.messageGroupId;
     if (publishParams.messageDeduplicationId)
-      params['MessageDeduplicationId'] = publishParams.messageDeduplicationId;
+      params.MessageDeduplicationId = publishParams.messageDeduplicationId;
 
     if (publishParams.messageAttributes) {
       let attrIndex = 1;
@@ -290,7 +290,7 @@ export class SnsClient {
     };
 
     if (subscribeParams.endpoint) {
-      params['Endpoint'] = subscribeParams.endpoint;
+      params.Endpoint = subscribeParams.endpoint;
     }
 
     if (subscribeParams.attributes) {
@@ -325,7 +325,7 @@ export class SnsClient {
       Token: token
     };
     if (authenticateOnUnsubscribe !== undefined) {
-      params['AuthenticateOnUnsubscribe'] = String(authenticateOnUnsubscribe);
+      params.AuthenticateOnUnsubscribe = String(authenticateOnUnsubscribe);
     }
 
     let result = await this.request(params);
@@ -352,7 +352,7 @@ export class SnsClient {
       TopicArn: topicArn
     };
     if (nextToken) {
-      params['NextToken'] = nextToken;
+      params.NextToken = nextToken;
     }
 
     let result = await this.request(params);
@@ -407,7 +407,7 @@ export class SnsClient {
       Action: 'ListSubscriptions'
     };
     if (nextToken) {
-      params['NextToken'] = nextToken;
+      params.NextToken = nextToken;
     }
 
     let result = await this.request(params);

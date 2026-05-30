@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newContact = SlateTrigger.create(spec, {
   name: 'New Contact',
@@ -55,7 +55,7 @@ export let newContact = SlateTrigger.create(spec, {
       });
 
       let contacts = result.contacts ?? [];
-      let inputs: Array<any> = [];
+      let inputs: any[] = [];
       let newestCreatedTime = lastCreatedTime;
 
       for (let contact of contacts) {

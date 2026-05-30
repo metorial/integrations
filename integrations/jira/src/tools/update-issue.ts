@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { JiraClient } from '../lib/client';
-import { normalizeAdf } from '../lib/adf';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { normalizeAdf } from '../lib/adf';
+import { JiraClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let updateIssueTool = SlateTool.create(spec, {
   name: 'Update Issue',

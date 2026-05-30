@@ -1,28 +1,28 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  sendMessage,
-  manageMessages,
-  manageGuild,
-  manageChannels,
-  manageMembers,
-  manageInvites,
-  manageThreads,
-  manageRoles,
-  manageReactions,
-  manageWebhooks,
   getAuditLogTool,
-  manageScheduledEventsTool,
-  manageAutoModerationTool,
   manageApplicationCommands,
-  manageEmojis
+  manageAutoModerationTool,
+  manageChannels,
+  manageEmojis,
+  manageGuild,
+  manageInvites,
+  manageMembers,
+  manageMessages,
+  manageReactions,
+  manageRoles,
+  manageScheduledEventsTool,
+  manageThreads,
+  manageWebhooks,
+  sendMessage
 } from './tools';
 import {
-  newMessage,
-  memberUpdate,
-  guildUpdate,
   channelUpdate,
-  inboundWebhook
+  guildUpdate,
+  inboundWebhook,
+  memberUpdate,
+  newMessage
 } from './triggers';
 
 export let provider = Slate.create({

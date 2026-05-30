@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getTokenBalances,
-  getTransfers,
-  getNFTs,
-  getTokenPrices,
-  simulateTransaction,
+  callContract,
   getBlockInfo,
-  getTransaction,
-  getWalletBalance,
-  getNFTOwners,
   getLogs,
+  getNFTOwners,
+  getNFTs,
+  getTokenBalances,
+  getTokenPrices,
+  getTransaction,
+  getTransfers,
+  getWalletBalance,
   sendRawTransaction,
-  callContract
+  simulateTransaction
 } from './tools';
-import { addressActivity, nftActivity, customWebhook } from './triggers';
+import { addressActivity, customWebhook, nftActivity } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Auth0Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string; domain: string }) {
+  constructor(params: { token: string; domain: string }) {
     this.http = createAxios({
       baseURL: `https://${params.domain}/api/v2`,
       headers: {

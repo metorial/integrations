@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ChameleonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let domainSchema = z.object({
   domainId: z.string().describe('Chameleon domain/URL ID'),

@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCampaigns,
-  getCampaign,
-  createCampaign,
   addProspect,
   addProspectsBulk,
+  checkHealth,
+  createCampaign,
+  getCampaign,
   getProspect,
-  checkHealth
+  listCampaigns
 } from './tools';
 import { videoEvents } from './triggers';
 

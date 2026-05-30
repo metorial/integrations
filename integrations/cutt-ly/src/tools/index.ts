@@ -1,4 +1,4 @@
-export * from './shorten-url';
+export * from './delete-link';
 export * from './edit-link';
 export * from './get-link-analytics';
-export * from './delete-link';
+export * from './shorten-url';

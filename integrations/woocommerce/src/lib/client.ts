@@ -3,13 +3,11 @@ import { createAxios } from 'slates';
 export class WooCommerceClient {
   private ax;
 
-  constructor(
-    private params: {
-      storeUrl: string;
-      consumerKey: string;
-      consumerSecret: string;
-    }
-  ) {
+  constructor(params: {
+    storeUrl: string;
+    consumerKey: string;
+    consumerSecret: string;
+  }) {
     let baseUrl = params.storeUrl.replace(/\/+$/, '');
     let credentials = btoa(`${params.consumerKey}:${params.consumerSecret}`);
 

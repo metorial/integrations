@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let messageReceivedTrigger = SlateTrigger.create(spec, {
   name: 'Message Received',

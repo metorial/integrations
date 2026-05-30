@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import * as translate from '../lib/translate';
+import { spec } from '../spec';
 
 export let translateText = SlateTool.create(spec, {
   name: 'Translate Text',

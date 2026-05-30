@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConversationsClient } from '../lib/conversations-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let conversationSchema = z.object({
   conversationSid: z.string().describe('Conversation SID'),

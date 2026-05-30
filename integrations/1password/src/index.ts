@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listVaults,
-  listItems,
-  searchItems,
-  getItem,
   createItem,
-  updateItem,
   deleteItem,
   generatePassword,
   getFileContent,
-  getServerHealth
+  getItem,
+  getServerHealth,
+  listItems,
+  listVaults,
+  searchItems,
+  updateItem
 } from './tools';
 import {
   auditEventsTrigger,
+  inboundWebhook,
   itemUsageEventsTrigger,
-  signInAttemptEventsTrigger,
-  inboundWebhook
+  signInAttemptEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

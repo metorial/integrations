@@ -117,7 +117,7 @@ export class EmeliaClient {
     return res.data;
   }
 
-  async updateCampaignSteps(campaignId: string, steps: Array<Record<string, unknown>>) {
+  async updateCampaignSteps(campaignId: string, steps: Record<string, unknown>[]) {
     let res = await this.axios.put(`/campaign/${campaignId}/steps`, { steps });
     return res.data;
   }
@@ -228,10 +228,7 @@ export class EmeliaClient {
     return res.data;
   }
 
-  async updateLinkedInCampaignSteps(
-    campaignId: string,
-    steps: Array<Record<string, unknown>>
-  ) {
+  async updateLinkedInCampaignSteps(campaignId: string, steps: Record<string, unknown>[]) {
     let res = await this.axios.put(`/linkedin/campaign/${campaignId}/steps`, { steps });
     return res.data;
   }
@@ -310,7 +307,7 @@ export class EmeliaClient {
 
   async addContactsToAdvancedList(data: {
     listId: string;
-    contacts: Array<Record<string, unknown>>;
+    contacts: Record<string, unknown>[];
   }) {
     let res = await this.axios.post('/advanced/campaign/contacts/list', data);
     return res.data;

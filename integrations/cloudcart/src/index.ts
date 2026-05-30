@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProducts,
-  getProduct,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  listOrders,
-  getOrder,
-  updateOrder,
-  listCustomers,
-  getCustomer,
   createCustomer,
-  updateCustomer,
+  createProduct,
   deleteCustomer,
+  deleteProduct,
+  getCustomer,
+  getOrder,
+  getProduct,
   listCategories,
+  listCustomers,
+  listOrders,
+  listProducts,
   manageCategory,
-  updateInventory
+  updateCustomer,
+  updateInventory,
+  updateOrder,
+  updateProduct
 } from './tools';
-import { orderEvents, productEvents, customerEvents } from './triggers';
+import { customerEvents, orderEvents, productEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

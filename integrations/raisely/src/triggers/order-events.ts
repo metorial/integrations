@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { RaiselyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let orderEvents = SlateTrigger.create(spec, {
   name: 'Order Events',

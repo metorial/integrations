@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwilioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let recordingSchema = z.object({
   recordingSid: z.string().describe('Unique SID of the recording (starts with RE)'),

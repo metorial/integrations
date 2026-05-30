@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createKubeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageConfigStorage = SlateTool.create(spec, {
   name: 'Manage ConfigMap or Secret',
@@ -92,14 +92,12 @@ For secrets, values should be provided as plain text — they will be base64-enc
         if (ctx.input.entries) {
           patch.data = ctx.input.entries;
         }
-      } else {
-        if (ctx.input.entries) {
-          let encodedData: Record<string, string> = {};
-          for (let [key, value] of Object.entries(ctx.input.entries)) {
-            encodedData[key] = btoa(value as string);
-          }
-          patch.data = encodedData;
+      } else if (ctx.input.entries) {
+        let encodedData: Record<string, string> = {};
+        for (let [key, value] of Object.entries(ctx.input.entries)) {
+          encodedData[key] = btoa(value as string);
         }
+        patch.data = encodedData;
       }
 
       if (ctx.input.labels) {

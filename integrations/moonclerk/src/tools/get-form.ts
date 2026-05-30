@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { formSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFormTool = SlateTool.create(spec, {
   name: 'Get Payment Form',

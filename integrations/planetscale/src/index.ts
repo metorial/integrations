@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listDatabases,
-  getDatabase,
-  createDatabase,
-  updateDatabase,
-  deleteDatabase,
-  listBranches,
   createBranch,
-  manageBranch,
-  listDeployRequests,
+  createDatabase,
   createDeployRequest,
+  deleteDatabase,
+  getDatabase,
+  getOrganization,
+  listAuditLogs,
+  listBranches,
+  listDatabases,
+  listDeployRequests,
+  listMembers,
+  manageBackup,
+  manageBranch,
   manageDeployRequest,
   managePassword,
-  manageBackup,
   manageWebhook,
-  getOrganization,
-  listMembers,
-  listAuditLogs
+  updateDatabase
 } from './tools';
 import { branchEvents, deployRequestEvents, storageEvents } from './triggers';
 

@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProfiles,
-  getProfile,
+  clearLogs,
   createProfile,
   deleteProfile,
-  updateSecurity,
-  updatePrivacy,
-  updateParentalControl,
-  manageAllowlistDenylist,
-  manageRewrites,
-  updateSettings,
   getAnalytics,
   getLogs,
-  clearLogs,
-  getSetup
+  getProfile,
+  getSetup,
+  listProfiles,
+  manageAllowlistDenylist,
+  manageRewrites,
+  updateParentalControl,
+  updatePrivacy,
+  updateSecurity,
+  updateSettings
 } from './tools';
 import { dnsQueryLog, inboundWebhook } from './triggers';
 

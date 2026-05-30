@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let requestWidgetUrl = SlateTool.create(spec, {
   name: 'Request Widget URL',

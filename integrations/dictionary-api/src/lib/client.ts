@@ -1,5 +1,5 @@
 import { createAxios } from 'slates';
-import { DictionaryEntry } from './types';
+import type { DictionaryEntry } from './types';
 
 let http = createAxios({
   baseURL: 'https://api.dictionaryapi.dev/api/v2'

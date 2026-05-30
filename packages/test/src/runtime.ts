@@ -1,13 +1,13 @@
+import type { SlatesProtocolClientOptions } from '@slates/client';
 import {
   createLocalSlateTransport,
   createSlatesClient,
   SlateProtocolError
 } from '@slates/client';
-import type { SlatesProtocolClientOptions } from '@slates/client';
 import {
   createSlatesClientFromProfile,
   openSlatesCliStore,
-  SlatesProfileRecord
+  type SlatesProfileRecord
 } from '@slates/profiles';
 import { readFile } from 'fs/promises';
 
@@ -71,10 +71,7 @@ export let getVitestExpect = () => {
 };
 
 export let loadSlatesRuntimeContext = async (
-  opts: {
-    cwd?: string;
-    profile?: string | null;
-  } = {}
+  opts: { cwd?: string; profile?: string | null } = {}
 ): Promise<SlatesRuntimeContext> => {
   let runtimeContextPath = process.env.SLATES_TEST_CONTEXT_PATH;
   if (runtimeContextPath) {
@@ -115,7 +112,7 @@ export let loadSlatesRuntimeContext = async (
       })
     : await openSlatesCliStore({ cwd: opts.cwd });
   let profileId = opts.profile ?? process.env.SLATES_PROFILE_ID ?? null;
-  let authMethodId = null;
+  let authMethodId: any = null;
   let profile = selectProfileAuth(store.getProfile(profileId), authMethodId);
 
   return {

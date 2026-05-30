@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  enrichPerson,
-  enrichCompany,
-  enrichCombined,
-  revealCompany,
-  findProspects,
-  discoverCompanies,
-  nameToDomain,
-  getLogo,
+  autocompleteCompany,
   checkRisk,
-  autocompleteCompany
+  discoverCompanies,
+  enrichCombined,
+  enrichCompany,
+  enrichPerson,
+  findProspects,
+  getLogo,
+  nameToDomain,
+  revealCompany
 } from './tools';
-import { enrichmentWebhook, audienceWebhook } from './triggers';
+import { audienceWebhook, enrichmentWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listFeatureFlags,
-  getFeatureFlag,
   createFeatureFlag,
-  updateFeatureFlag,
-  toggleFeatureFlag,
   deleteFeatureFlag,
-  listProjects,
-  manageProject,
+  getFeatureFlag,
+  inviteMembers,
   listEnvironments,
-  manageEnvironment,
+  listExperiments,
+  listFeatureFlags,
+  listMembers,
+  listMetrics,
+  listProjects,
   listSegments,
+  manageEnvironment,
+  manageProject,
   manageSegment,
   queryAuditLog,
-  listMembers,
-  inviteMembers,
   searchContexts,
-  listMetrics,
-  listExperiments
+  toggleFeatureFlag,
+  updateFeatureFlag
 } from './tools';
-import { resourceChangeTrigger, flagChangeTrigger } from './triggers';
+import { flagChangeTrigger, resourceChangeTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

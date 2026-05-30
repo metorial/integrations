@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transactionalEmailEventTypes = [
   'sent',
@@ -102,13 +102,13 @@ export let transactionalEmailEvents = SlateTrigger.create(spec, {
           email: evt.email,
           subject: evt.subject,
           tag: evt.tag,
-          templateId: evt['template_id'] ?? evt.templateId,
+          templateId: evt.template_id ?? evt.templateId,
           date: evt.date,
           ts: evt.ts,
           tsEvent: evt.ts_event ?? evt.tsEvent,
           reason: evt.reason,
           link: evt.link,
-          senderEmail: evt['sender_email'] ?? evt.senderEmail,
+          senderEmail: evt.sender_email ?? evt.senderEmail,
           tags: evt.tags,
           raw: evt
         }))

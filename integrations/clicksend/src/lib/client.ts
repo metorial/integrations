@@ -7,7 +7,7 @@ let api = createAxios({
 export class ClickSendClient {
   private authHeader: string;
 
-  constructor(private params: { username: string; token: string }) {
+  constructor(params: { username: string; token: string }) {
     this.authHeader = `Basic ${Buffer.from(`${params.username}:${params.token}`).toString('base64')}`;
   }
 

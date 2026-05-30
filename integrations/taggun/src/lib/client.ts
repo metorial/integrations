@@ -103,7 +103,7 @@ export class Client {
       ...this.extractionOptionsToBody(options)
     };
     if (input.customHeaderKey) {
-      body['headers'] = { 'x-custom-key': input.customHeaderKey };
+      body.headers = { 'x-custom-key': input.customHeaderKey };
     }
 
     let response = await axios.post('/api/receipt/v1/simple/url', body, {
@@ -142,7 +142,7 @@ export class Client {
       ...this.extractionOptionsToBody(options)
     };
     if (input.customHeaderKey) {
-      body['headers'] = { 'x-custom-key': input.customHeaderKey };
+      body.headers = { 'x-custom-key': input.customHeaderKey };
     }
 
     let response = await axios.post('/api/receipt/v1/verbose/url', body, {
@@ -162,10 +162,10 @@ export class Client {
       url,
       campaignId: options.campaignId
     };
-    if (options.referenceId) body['referenceId'] = options.referenceId;
-    if (options.incognito !== undefined) body['incognito'] = options.incognito;
-    if (options.ipAddress) body['ipAddress'] = options.ipAddress;
-    if (options.near) body['near'] = options.near;
+    if (options.referenceId) body.referenceId = options.referenceId;
+    if (options.incognito !== undefined) body.incognito = options.incognito;
+    if (options.ipAddress) body.ipAddress = options.ipAddress;
+    if (options.near) body.near = options.near;
 
     let response = await axios.post(
       '/api/validation/v1/campaign/receipt-validation/url',
@@ -188,10 +188,10 @@ export class Client {
       contentType: input.contentType,
       campaignId: options.campaignId
     };
-    if (options.referenceId) body['referenceId'] = options.referenceId;
-    if (options.incognito !== undefined) body['incognito'] = options.incognito;
-    if (options.ipAddress) body['ipAddress'] = options.ipAddress;
-    if (options.near) body['near'] = options.near;
+    if (options.referenceId) body.referenceId = options.referenceId;
+    if (options.incognito !== undefined) body.incognito = options.incognito;
+    if (options.ipAddress) body.ipAddress = options.ipAddress;
+    if (options.near) body.near = options.near;
 
     let response = await axios.post(
       '/api/validation/v1/campaign/receipt-validation/file',
@@ -300,17 +300,17 @@ export class Client {
 
   private extractionOptionsToBody(options: ExtractionOptions): Record<string, unknown> {
     let body: Record<string, unknown> = {};
-    if (options.refresh !== undefined) body['refresh'] = options.refresh;
-    if (options.incognito !== undefined) body['incognito'] = options.incognito;
-    if (options.extractTime !== undefined) body['extractTime'] = options.extractTime;
+    if (options.refresh !== undefined) body.refresh = options.refresh;
+    if (options.incognito !== undefined) body.incognito = options.incognito;
+    if (options.extractTime !== undefined) body.extractTime = options.extractTime;
     if (options.extractLineItems !== undefined)
-      body['extractLineItems'] = options.extractLineItems;
-    if (options.ipAddress) body['ipAddress'] = options.ipAddress;
-    if (options.near) body['near'] = options.near;
-    if (options.language) body['language'] = options.language;
-    if (options.ignoreMerchantName) body['ignoreMerchantName'] = options.ignoreMerchantName;
-    if (options.subAccountId) body['subAccountId'] = options.subAccountId;
-    if (options.referenceId) body['referenceId'] = options.referenceId;
+      body.extractLineItems = options.extractLineItems;
+    if (options.ipAddress) body.ipAddress = options.ipAddress;
+    if (options.near) body.near = options.near;
+    if (options.language) body.language = options.language;
+    if (options.ignoreMerchantName) body.ignoreMerchantName = options.ignoreMerchantName;
+    if (options.subAccountId) body.subAccountId = options.subAccountId;
+    if (options.referenceId) body.referenceId = options.referenceId;
     return body;
   }
 }

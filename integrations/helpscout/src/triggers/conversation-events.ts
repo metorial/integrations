@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { HelpScoutClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let CONVERSATION_EVENTS = [
   'convo.assigned',

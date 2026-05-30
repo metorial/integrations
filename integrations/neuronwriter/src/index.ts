@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
   createQuery,
-  listQueries,
-  getRecommendations,
+  evaluateContent,
   getContent,
+  getRecommendations,
   importContent,
-  evaluateContent
+  listProjects,
+  listQueries
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

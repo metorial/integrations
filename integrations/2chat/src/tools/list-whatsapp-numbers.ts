@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TwoChatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let whatsappNumberSchema = z.object({
   phoneNumber: z.string().optional().describe('The phone number'),

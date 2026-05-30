@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let redeemGiftCard = SlateTool.create(spec, {
   name: 'Redeem Gift Card',
@@ -50,7 +50,7 @@ export let redeemGiftCard = SlateTool.create(spec, {
       testMode: ctx.config.testMode
     });
 
-    let result;
+    let result: any;
     if (ctx.input.redeemInFull) {
       result = await client.redeemGiftCardInFull(ctx.input.code, {
         reason: ctx.input.reason,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SharePointClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let listOutputSchema = z.object({
   listId: z.string().describe('Unique list ID'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NasaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let lookupSmallBody = SlateTool.create(spec, {
   name: 'Lookup Small Body',

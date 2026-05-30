@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TablesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let queryTable = SlateTool.create(spec, {
   name: 'Query Table',

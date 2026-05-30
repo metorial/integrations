@@ -1,9 +1,9 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { WaveClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let moneySchema = z
+let _moneySchema = z
   .object({
     value: z.string().optional(),
     currency: z

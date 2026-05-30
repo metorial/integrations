@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeveloperClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getHardwareTool = SlateTool.create(spec, {
   name: 'Get Hardware',
@@ -78,7 +78,7 @@ export let getHardwareTool = SlateTool.create(spec, {
       specs: h.specs
     }));
 
-    let filterDesc = [];
+    let filterDesc: any[] = [];
     if (ctx.input.hardwareType) filterDesc.push(`type: ${ctx.input.hardwareType}`);
     if (ctx.input.brand) filterDesc.push(`brand: ${ctx.input.brand}`);
     let filterText = filterDesc.length > 0 ? ` (filtered by ${filterDesc.join(', ')})` : '';

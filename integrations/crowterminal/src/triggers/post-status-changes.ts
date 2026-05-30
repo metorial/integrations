@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CrowTerminalClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let postStatusChanges = SlateTrigger.create(spec, {
   name: 'Post Status Changes',
@@ -102,7 +102,7 @@ export let postStatusChanges = SlateTrigger.create(spec, {
     },
 
     handleEvent: async ctx => {
-      let statusTransition = ctx.input.previousStatus
+      let _statusTransition = ctx.input.previousStatus
         ? `${ctx.input.previousStatus} → ${ctx.input.currentStatus}`
         : ctx.input.currentStatus;
 

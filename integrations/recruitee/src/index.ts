@@ -2,20 +2,20 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createCandidate,
-  getCandidate,
-  updateCandidate,
+  createOffer,
   deleteCandidate,
-  searchCandidates,
+  getCandidate,
+  getOffer,
+  listDepartmentsLocations,
+  listDisqualifyReasons,
+  listOffers,
   manageCandidateNotes,
   manageCandidateTags,
-  setCandidateCustomFields,
-  createOffer,
-  getOffer,
-  updateOffer,
-  listOffers,
   managePipeline,
-  listDepartmentsLocations,
-  listDisqualifyReasons
+  searchCandidates,
+  setCandidateCustomFields,
+  updateCandidate,
+  updateOffer
 } from './tools';
 import { candidateEvents, jobEvents } from './triggers';
 

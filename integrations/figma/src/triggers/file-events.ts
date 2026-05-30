@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { FigmaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let fileEvents = SlateTrigger.create(spec, {
   name: 'File Events',

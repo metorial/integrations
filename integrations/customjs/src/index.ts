@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  checkSsl,
+  convertDocument,
   executeJavascript,
   executePython,
-  generatePdf,
-  manipulatePdf,
   generateImage,
-  scrapeWebsite,
+  generatePdf,
   managePages,
-  convertDocument,
+  manipulatePdf,
   processData,
-  checkSsl
+  scrapeWebsite
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listEvents,
-  getEvent,
-  createEvent,
-  listParticipants,
   addParticipant,
+  createEvent,
+  getEvent,
   listContacts,
+  listEvents,
+  listParticipants,
   manageContact,
   updateParticipantStatus
 } from './tools';
-import { newEvent, eventParticipant, inboundWebhook } from './triggers';
+import { eventParticipant, inboundWebhook, newEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,

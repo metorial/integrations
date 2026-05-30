@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let bulkOperationsTool = SlateTool.create(spec, {
   name: 'Bulk Operations',
@@ -82,7 +82,7 @@ export let bulkOperationsTool = SlateTool.create(spec, {
       }
     }
 
-    let ndjson = ndjsonLines.join('\n') + '\n';
+    let ndjson = `${ndjsonLines.join('\n')}\n`;
     let result = await client.bulkOperations(ndjson);
 
     let errorItems: Array<{ indexName?: string; documentId?: string; error: string }> = [];

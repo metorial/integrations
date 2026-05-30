@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 import { featureRequestOutputSchema } from './create-feature-request';
 
 export let listFeatureRequestsTool = SlateTool.create(spec, {

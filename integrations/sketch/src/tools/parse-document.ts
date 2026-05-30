@@ -1,14 +1,14 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import {
-  flattenLayers,
-  findLayersByClass,
   collectAllSymbols,
-  type SketchPage,
+  findLayersByClass,
+  flattenLayers,
   type SketchDocumentJson,
-  type SketchMetaJson
+  type SketchMetaJson,
+  type SketchPage
 } from '../lib/client';
+import { spec } from '../spec';
 
 export let parseDocumentTool = SlateTool.create(spec, {
   name: 'Parse Document',

@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { ZoomClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateWebinar = SlateTool.create(spec, {
   name: 'Update Webinar',

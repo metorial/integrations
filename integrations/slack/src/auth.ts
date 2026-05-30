@@ -1,11 +1,11 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
+import { slackOAuthError } from './lib/errors';
 import {
   parseSlackGrantedScopes,
   slackBotOAuthScopes,
   slackUserOAuthScopes
 } from './lib/scopes';
-import { slackOAuthError } from './lib/errors';
 
 type SlackProfile = {
   id?: string;

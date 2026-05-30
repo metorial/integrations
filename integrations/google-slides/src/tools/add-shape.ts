@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SlidesClient } from '../lib/client';
 import { googleSlidesActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addShape = SlateTool.create(spec, {
   name: 'Add Shape',

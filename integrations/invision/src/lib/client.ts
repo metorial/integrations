@@ -21,7 +21,7 @@ export class DsmClient {
     let url = `${this.dsmBaseUrl}/style-data.${format}`;
     let params: Record<string, string> = {};
     if (format === 'json') {
-      params['exportFormat'] = exportFormat;
+      params.exportFormat = exportFormat;
     }
 
     let axios = createAxios();
@@ -104,9 +104,9 @@ export class ScimClient {
   async listUsers(filter?: string, startIndex?: number, count?: number): Promise<any> {
     let axios = this.getAxios();
     let params: Record<string, string | number> = {};
-    if (filter) params['filter'] = filter;
-    if (startIndex !== undefined) params['startIndex'] = startIndex;
-    if (count !== undefined) params['count'] = count;
+    if (filter) params.filter = filter;
+    if (startIndex !== undefined) params.startIndex = startIndex;
+    if (count !== undefined) params.count = count;
 
     let response = await axios.get('/Users', { params });
     return response.data;
@@ -160,16 +160,16 @@ export class ScimClient {
       schemas: ['urn:ietf:params:scim:schemas:core:2.0:User']
     };
 
-    if (updates.userName !== undefined) body['userName'] = updates.userName;
+    if (updates.userName !== undefined) body.userName = updates.userName;
     if (updates.givenName !== undefined || updates.familyName !== undefined) {
-      body['name'] = {};
-      if (updates.givenName !== undefined) body['name']['givenName'] = updates.givenName;
-      if (updates.familyName !== undefined) body['name']['familyName'] = updates.familyName;
+      body.name = {};
+      if (updates.givenName !== undefined) body.name.givenName = updates.givenName;
+      if (updates.familyName !== undefined) body.name.familyName = updates.familyName;
     }
     if (updates.email !== undefined) {
-      body['emails'] = [{ value: updates.email, type: 'work', primary: true }];
+      body.emails = [{ value: updates.email, type: 'work', primary: true }];
     }
-    if (updates.active !== undefined) body['active'] = updates.active;
+    if (updates.active !== undefined) body.active = updates.active;
 
     let response = await axios.put(`/Users/${userId}`, body);
     return response.data;

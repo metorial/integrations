@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ExcelClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let invokeFunction = SlateTool.create(spec, {
   name: 'Invoke Excel Function',

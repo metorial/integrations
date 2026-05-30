@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let communicationEventTypes = [
   'callsCreated',
@@ -63,7 +63,7 @@ export let communicationEvents = SlateTrigger.create(spec, {
       for (let wh of webhooks) {
         try {
           await client.deleteWebhook(wh.webhookId);
-        } catch (e) {
+        } catch (_e) {
           // Ignore errors during cleanup
         }
       }

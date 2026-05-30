@@ -1,8 +1,8 @@
 import { createLocalSlateTransport, createSlatesClient } from '@slates/client';
 import path from 'path';
 import { pathToFileURL } from 'url';
-import { resolveSlatesCliRoot, SlatesCliStore } from './store';
-import { SlatesProfileRecord, SlatesStoredAuth } from './types';
+import { resolveSlatesCliRoot, type SlatesCliStore } from './store';
+import type { SlatesProfileRecord, SlatesStoredAuth } from './types';
 
 let resolveEntryPath = (entry: string, opts: { cwd?: string; rootDir?: string } = {}) => {
   if (path.isAbsolute(entry)) return entry;
@@ -82,7 +82,8 @@ let shouldRefreshAuth = (auth: SlatesStoredAuth) => {
 
   if (auth.authType === 'auth.oauth') {
     if (!auth.clientId || !auth.clientSecret) return false;
-    if (typeof auth.output?.refreshToken !== 'string' || !auth.output.refreshToken) return false;
+    if (typeof auth.output?.refreshToken !== 'string' || !auth.output.refreshToken)
+      return false;
   }
 
   return true;

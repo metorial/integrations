@@ -1,37 +1,37 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createWorkOrder,
-  updateWorkOrder,
-  getWorkOrder,
-  listWorkOrders,
-  createWorkRequest,
   createAsset,
-  updateAsset,
-  getAsset,
-  listAssets,
-  deleteAsset,
-  setAssetStatus,
-  listLocations,
   createLocation,
-  listParts,
-  createPart,
-  listMeters,
   createMeterReading,
-  listPurchaseOrders,
+  createPart,
   createPurchaseOrder,
-  listVendors,
   createVendor,
-  listUsers,
-  listTeams,
+  createWorkOrder,
+  createWorkRequest,
+  deleteAsset,
+  getAsset,
+  getWorkOrder,
+  listAssets,
   listCategories,
-  sendMessage
+  listLocations,
+  listMeters,
+  listParts,
+  listPurchaseOrders,
+  listTeams,
+  listUsers,
+  listVendors,
+  listWorkOrders,
+  sendMessage,
+  setAssetStatus,
+  updateAsset,
+  updateWorkOrder
 } from './tools';
 import {
+  inboundWebhook,
   newWorkOrder,
-  workOrderStatusChanged,
   newWorkRequest,
-  inboundWebhook
+  workOrderStatusChanged
 } from './triggers';
 
 export let provider = Slate.create({

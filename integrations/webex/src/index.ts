@@ -1,39 +1,39 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendMessage,
-  getMessage,
-  listMessages,
-  editMessage,
-  deleteMessage,
-  createSpace,
-  updateSpace,
-  deleteSpace,
-  getSpace,
-  listSpaces,
   addMember,
-  updateMember,
-  removeMember,
-  listMemberships,
   createMeeting,
-  updateMeeting,
-  deleteMeeting,
-  getMeeting,
-  listMeetings,
-  listPeople,
-  getPersonDetails,
-  listRecordings,
-  getRecording,
-  listTeams,
+  createSpace,
   createTeam,
-  deleteTeam
+  deleteMeeting,
+  deleteMessage,
+  deleteSpace,
+  deleteTeam,
+  editMessage,
+  getMeeting,
+  getMessage,
+  getPersonDetails,
+  getRecording,
+  getSpace,
+  listMeetings,
+  listMemberships,
+  listMessages,
+  listPeople,
+  listRecordings,
+  listSpaces,
+  listTeams,
+  removeMember,
+  sendMessage,
+  updateMeeting,
+  updateMember,
+  updateSpace
 } from './tools';
 import {
-  messageEvents,
-  roomEvents,
-  membershipEvents,
+  attachmentActionEvents,
   meetingEvents,
-  attachmentActionEvents
+  membershipEvents,
+  messageEvents,
+  roomEvents
 } from './triggers';
 
 export let provider = Slate.create({

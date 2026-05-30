@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjectsTool,
-  getProjectTool,
-  createProjectTool,
-  uploadImageTool,
-  getImageTool,
-  searchImagesTool,
-  manageImageTagsTool,
-  deleteImagesTool,
-  getVersionTool,
-  createVersionTool,
-  trainModelTool,
-  runInferenceTool,
-  listAnnotationJobsTool,
   createAnnotationJobTool,
+  createProjectTool,
+  createVersionTool,
+  deleteImagesTool,
   exportDatasetTool,
-  uploadAnnotationTool
+  getImageTool,
+  getProjectTool,
+  getVersionTool,
+  listAnnotationJobsTool,
+  listProjectsTool,
+  manageImageTagsTool,
+  runInferenceTool,
+  searchImagesTool,
+  trainModelTool,
+  uploadAnnotationTool,
+  uploadImageTool
 } from './tools';
 import { batchWebhookTrigger } from './triggers';
 

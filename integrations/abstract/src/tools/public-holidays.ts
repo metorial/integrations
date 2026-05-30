@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AbstractClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let holidaySchema = z.object({
   name: z.string().optional().describe('Name of the holiday'),

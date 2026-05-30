@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let projectPublish = SlateTrigger.create(spec, {
   name: 'Project Published',
@@ -50,7 +50,7 @@ export let projectPublish = SlateTrigger.create(spec, {
         ? (body.importedProjectsChanged as string[])
         : [];
 
-      let eventId = `project_publish_${Date.now()}`;
+      let _eventId = `project_publish_${Date.now()}`;
 
       return {
         inputs: [

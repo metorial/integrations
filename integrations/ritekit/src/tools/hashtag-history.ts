@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RiteKitClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let historyEntrySchema = z.object({
   date: z.string().describe('Date of the data point'),

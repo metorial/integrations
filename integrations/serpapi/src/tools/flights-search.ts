@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SerpApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let flightResultSchema = z.object({
   airline: z.string().optional().describe('Airline name'),

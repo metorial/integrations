@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateImage,
-  searchImages,
   buyImage,
+  deleteGenerations,
+  generateImage,
+  getCredits,
   getDownloadHistory,
   getGeneration,
   listGenerations,
-  updateGeneration,
   retryGeneration,
-  deleteGenerations,
-  getCredits
+  searchImages,
+  updateGeneration
 } from './tools';
 import { generationStatus } from './triggers';
 

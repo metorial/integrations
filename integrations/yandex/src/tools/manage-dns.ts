@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import * as dns from '../lib/dns';
+import { spec } from '../spec';
 
 export let listDnsZones = SlateTool.create(spec, {
   name: 'List DNS Zones',

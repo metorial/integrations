@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DiscoveryClient } from '../lib/client';
 import { mapEvent } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getEventDetailsTool = SlateTool.create(spec, {
   name: 'Get Event Details',
@@ -136,7 +136,7 @@ export let getEventDetailsTool = SlateTool.create(spec, {
 
     return {
       output: event,
-      message: `**${event.name}** - ${event.startLocalDate} ${event.startLocalTime ? 'at ' + event.startLocalTime : ''} | Status: ${event.statusCode} | Venue: ${event.venue?.name || 'N/A'}`
+      message: `**${event.name}** - ${event.startLocalDate} ${event.startLocalTime ? `at ${event.startLocalTime}` : ''} | Status: ${event.statusCode} | Venue: ${event.venue?.name || 'N/A'}`
     };
   })
   .build();

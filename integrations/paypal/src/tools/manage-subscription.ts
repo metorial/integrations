@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { PayPalClient } from '../lib/client';
 import { paypalServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageSubscription = SlateTool.create(spec, {
   name: 'Manage Subscription',

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { creditNoteInputSchema, creditNoteOutputSchema } from '../lib/schemas';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { creditNoteInputSchema, creditNoteOutputSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 let mapCreditNoteOutput = (data: any) => ({
   creditNoteInternalId: data.id || '',

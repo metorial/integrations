@@ -1,4 +1,4 @@
-import { CodacyClient, CodacyClientConfig } from './client';
+import { CodacyClient } from './client';
 
 export let createClient = (ctx: {
   auth: { token: string };

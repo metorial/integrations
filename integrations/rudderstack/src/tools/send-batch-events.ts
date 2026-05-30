@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DataPlaneClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendBatchEvents = SlateTool.create(spec, {
   name: 'Send Batch Events',

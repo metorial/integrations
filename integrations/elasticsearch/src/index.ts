@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  indexDocumentTool,
-  getDocumentTool,
-  updateDocumentTool,
-  deleteDocumentTool,
   bulkOperationsTool,
-  searchDocumentsTool,
+  clusterHealthTool,
+  deleteDocumentTool,
   esqlQueryTool,
-  manageIndexTool,
+  getDocumentTool,
+  graphExploreTool,
+  indexDocumentTool,
   listIndicesTool,
   manageAliasTool,
-  clusterHealthTool,
+  manageIndexTool,
   managePipelineTool,
-  runInferenceTool,
-  manageSnapshotTool,
   manageSecurityTool,
+  manageSnapshotTool,
   manageWatchTool,
   reindexTool,
-  graphExploreTool
+  runInferenceTool,
+  searchDocumentsTool,
+  updateDocumentTool
 } from './tools';
-import { watcherAlertTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, watcherAlertTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

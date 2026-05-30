@@ -25,7 +25,7 @@ export let auth = SlateAuth.create()
         }
       };
     },
-    getProfile: async (ctx: { output: { token: string }; input: { apiKey: string } }) => {
+    getProfile: async (_ctx: { output: { token: string }; input: { apiKey: string } }) => {
       return {
         profile: {
           name: 'Doppler Account'

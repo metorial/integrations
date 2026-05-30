@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SharePointClient } from '../lib/client';
 import { spec } from '../spec';
 import { oneOfRequiredError } from './errors';
-import { z } from 'zod';
 
 let siteSchema = z.object({
   siteId: z.string().describe('Unique site ID'),
@@ -50,10 +50,10 @@ export let listSites = SlateTool.create(spec, {
     } else if (ctx.input.searchQuery) {
       result = await client.searchSites(ctx.input.searchQuery);
     } else {
-      throw oneOfRequiredError(
-        'One of searchQuery or parentSiteId must be provided.',
-        ['searchQuery', 'parentSiteId']
-      );
+      throw oneOfRequiredError('One of searchQuery or parentSiteId must be provided.', [
+        'searchQuery',
+        'parentSiteId'
+      ]);
     }
 
     let sites = (result.value || []).map((site: any) => ({

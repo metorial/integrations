@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IgnisignClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sealDocument = SlateTool.create(spec, {
   name: 'Seal Document (E-Seal)',

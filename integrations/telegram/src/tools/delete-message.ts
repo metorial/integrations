@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TelegramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deleteMessageTool = SlateTool.create(spec, {
   name: 'Delete Message',

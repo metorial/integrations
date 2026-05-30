@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NasaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let mediaItemSchema = z.object({
   nasaId: z.string().describe('NASA unique identifier for this media item'),

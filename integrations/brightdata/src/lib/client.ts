@@ -29,11 +29,11 @@ export class BrightDataClient {
     };
 
     if (params.country) {
-      body['country'] = params.country;
+      body.country = params.country;
     }
 
     if (params.dataFormat) {
-      body['data_format'] = params.dataFormat;
+      body.data_format = params.dataFormat;
     }
 
     let response = await this.axios.post('/request', body);
@@ -59,7 +59,7 @@ export class BrightDataClient {
     };
 
     if (params.country) {
-      body['country'] = params.country;
+      body.country = params.country;
     }
 
     let response = await this.axios.post('/request', body);
@@ -74,7 +74,7 @@ export class BrightDataClient {
 
   async triggerCollection(params: {
     datasetId: string;
-    inputs: Array<Record<string, string>>;
+    inputs: Record<string, string>[];
     format?: string;
     notify?: string;
     endpoint?: string;
@@ -89,18 +89,18 @@ export class BrightDataClient {
       dataset_id: params.datasetId
     };
 
-    if (params.format) queryParams['format'] = params.format;
-    if (params.notify) queryParams['notify'] = params.notify;
-    if (params.endpoint) queryParams['endpoint'] = params.endpoint;
-    if (params.authHeader) queryParams['auth_header'] = params.authHeader;
+    if (params.format) queryParams.format = params.format;
+    if (params.notify) queryParams.notify = params.notify;
+    if (params.endpoint) queryParams.endpoint = params.endpoint;
+    if (params.authHeader) queryParams.auth_header = params.authHeader;
     if (params.limitPerInput !== undefined)
-      queryParams['limit_per_input'] = String(params.limitPerInput);
+      queryParams.limit_per_input = String(params.limitPerInput);
     if (params.includeErrors !== undefined)
-      queryParams['include_errors'] = String(params.includeErrors);
+      queryParams.include_errors = String(params.includeErrors);
     if (params.uncompressedWebhook !== undefined)
-      queryParams['uncompressed_webhook'] = String(params.uncompressedWebhook);
-    if (params.type) queryParams['type'] = params.type;
-    if (params.discoverBy) queryParams['discover_by'] = params.discoverBy;
+      queryParams.uncompressed_webhook = String(params.uncompressedWebhook);
+    if (params.type) queryParams.type = params.type;
+    if (params.discoverBy) queryParams.discover_by = params.discoverBy;
 
     let queryString = Object.entries(queryParams)
       .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
@@ -114,11 +114,11 @@ export class BrightDataClient {
 
   async scrapeSync(params: {
     datasetId: string;
-    inputs: Array<Record<string, string>>;
+    inputs: Record<string, string>[];
     format?: string;
     includeErrors?: boolean;
   }): Promise<{
-    records: Array<Record<string, unknown>>;
+    records: Record<string, unknown>[];
     snapshotId?: string;
     inProgress: boolean;
   }> {
@@ -126,9 +126,9 @@ export class BrightDataClient {
       dataset_id: params.datasetId
     };
 
-    if (params.format) queryParams['format'] = params.format;
+    if (params.format) queryParams.format = params.format;
     if (params.includeErrors !== undefined)
-      queryParams['include_errors'] = String(params.includeErrors);
+      queryParams.include_errors = String(params.includeErrors);
 
     let queryString = Object.entries(queryParams)
       .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
@@ -165,10 +165,10 @@ export class BrightDataClient {
     snapshotId: string;
     format?: string;
     compress?: boolean;
-  }): Promise<{ records: Array<Record<string, unknown>> }> {
+  }): Promise<{ records: Record<string, unknown>[] }> {
     let queryParams: Record<string, string> = {};
-    if (params.format) queryParams['format'] = params.format;
-    if (params.compress !== undefined) queryParams['compress'] = String(params.compress);
+    if (params.format) queryParams.format = params.format;
+    if (params.compress !== undefined) queryParams.compress = String(params.compress);
 
     let queryString = Object.entries(queryParams)
       .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
@@ -235,7 +235,7 @@ export class BrightDataClient {
     return response.data as Record<string, unknown>;
   }
 
-  async getZonePasswords(zoneName: string): Promise<Array<string>> {
+  async getZonePasswords(zoneName: string): Promise<string[]> {
     let response = await this.axios.get(
       `/zone/passwords?zone=${encodeURIComponent(zoneName)}`
     );
@@ -254,7 +254,7 @@ export class BrightDataClient {
     };
 
     if (params.type) {
-      (body['zone'] as Record<string, unknown>)['type'] = params.type;
+      (body.zone as Record<string, unknown>).type = params.type;
     }
 
     let response = await this.axios.post('/zone', body);
@@ -275,7 +275,7 @@ export class BrightDataClient {
 
   // ── Scraping Job History ──────────────────────────────────────────
 
-  async getSnapshotHistory(datasetId: string): Promise<Array<Record<string, unknown>>> {
+  async getSnapshotHistory(datasetId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/datasets/v3/snapshots?dataset_id=${encodeURIComponent(datasetId)}`
     );

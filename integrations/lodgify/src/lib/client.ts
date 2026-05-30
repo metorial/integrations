@@ -5,7 +5,7 @@ export class Client {
   private axiosV2;
   private axiosWebhooks;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axiosV1 = createAxios({
       baseURL: 'https://api.lodgify.com/v1',
       headers: {

@@ -504,7 +504,7 @@ export class Client {
     let url = new URL(callbackUrl);
     let scheme = url.protocol.replace(':', '');
     let host = url.hostname;
-    let port = url.port ? parseInt(url.port) : scheme === 'https' ? 443 : 80;
+    let port = url.port ? Number.parseInt(url.port, 10) : scheme === 'https' ? 443 : 80;
     let path = url.pathname.replace(/^\//, '');
 
     let eventTypesStr = eventTypes.join(', ');

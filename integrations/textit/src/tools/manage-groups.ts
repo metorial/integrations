@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageGroups = SlateTool.create(spec, {
   name: 'Manage Groups',
@@ -45,7 +45,7 @@ export let manageGroups = SlateTool.create(spec, {
       };
     }
 
-    let group;
+    let group: any;
     if (ctx.input.action === 'create') {
       group = await client.createGroup({ name: ctx.input.name! });
     } else {

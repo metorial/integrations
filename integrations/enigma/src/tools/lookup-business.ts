@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let lookupBusiness = SlateTool.create(spec, {
   name: 'Lookup Business',
@@ -107,7 +107,7 @@ Specify which attributes to retrieve, or leave empty for default attributes. Sup
         dataSources: result.data_sources,
         rawAttributes: result
       },
-      message: `Retrieved ${attributeCount > 0 ? attributeCount + ' attribute(s)' : 'default attributes'} for business **${businessName}** (ID: \`${ctx.input.enigmaId}\`).`
+      message: `Retrieved ${attributeCount > 0 ? `${attributeCount} attribute(s)` : 'default attributes'} for business **${businessName}** (ID: \`${ctx.input.enigmaId}\`).`
     };
   })
   .build();

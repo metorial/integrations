@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createRecord,
   createUser,
+  deleteRecord,
   deleteUser,
   generateMagicLink,
-  syncUsers,
-  validateToken,
+  getRecords,
   listDatabases,
-  manageDatabase,
   listTables,
+  manageDatabase,
   manageTable,
   manageTableField,
-  getRecords,
-  createRecord,
+  searchRecords,
+  syncUsers,
   updateRecord,
-  deleteRecord,
-  searchRecords
+  validateToken
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

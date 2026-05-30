@@ -11,7 +11,7 @@ let uploadApi = createAxios({
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.headers = {
       Authorization: `Bearer ${config.token}`
     };

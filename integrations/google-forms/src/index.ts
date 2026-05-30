@@ -3,12 +3,12 @@ import { spec } from './spec';
 import {
   createForm,
   getForm,
-  updateForm,
   getResponse,
   listResponses,
-  manageWatches
+  manageWatches,
+  updateForm
 } from './tools';
-import { newResponse, formUpdated, inboundWebhook } from './triggers';
+import { formUpdated, inboundWebhook, newResponse } from './triggers';
 
 export let provider = Slate.create({
   spec,

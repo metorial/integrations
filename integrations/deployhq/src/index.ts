@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
-  getProject,
-  createProject,
-  deleteProject,
-  listServers,
-  createServer,
-  deleteServer,
-  listServerGroups,
-  createDeployment,
-  getDeployment,
-  listDeployments,
-  listScheduledDeployments,
-  listConfigFiles,
   createConfigFile,
-  updateConfigFile,
-  deleteConfigFile,
-  listSshCommands,
+  createDeployment,
+  createProject,
+  createServer,
   createSshCommand,
-  deleteSshCommand
+  deleteConfigFile,
+  deleteProject,
+  deleteServer,
+  deleteSshCommand,
+  getDeployment,
+  getProject,
+  listConfigFiles,
+  listDeployments,
+  listProjects,
+  listScheduledDeployments,
+  listServerGroups,
+  listServers,
+  listSshCommands,
+  updateConfigFile
 } from './tools';
 import { deploymentEvents, inboundWebhook } from './triggers';
 

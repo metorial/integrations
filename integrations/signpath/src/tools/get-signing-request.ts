@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SignPathClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSigningRequest = SlateTool.create(spec, {
   name: 'Get Signing Request',

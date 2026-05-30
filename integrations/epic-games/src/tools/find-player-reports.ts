@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EosGameServicesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let reportSchema = z.object({
   productId: z.string().optional().describe('Product ID'),

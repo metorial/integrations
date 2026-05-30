@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AddressVerificationClient } from '../lib/address-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let autocompleteAddress = SlateTool.create(spec, {
   name: 'Autocomplete Address',

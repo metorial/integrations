@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TwelveDataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPrice = SlateTool.create(spec, {
   name: 'Get Real-Time Price',
@@ -52,7 +52,7 @@ Supports multiple symbols in a single request by providing a comma-separated lis
     } else {
       for (let sym of symbols) {
         let data = result[sym];
-        if (data && data.price) {
+        if (data?.price) {
           prices.push({ symbol: sym, price: data.price });
         }
       }

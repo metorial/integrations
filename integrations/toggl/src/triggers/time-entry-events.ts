@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { TogglWebhookClient } from '../lib/webhooks';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let timeEntryEventsTrigger = SlateTrigger.create(spec, {
   name: 'Time Entry Events',

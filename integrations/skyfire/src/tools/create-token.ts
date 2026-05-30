@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SkyfireClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createToken = SlateTool.create(spec, {
   name: 'Create Token',

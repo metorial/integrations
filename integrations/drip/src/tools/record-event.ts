@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let recordEvent = SlateTool.create(spec, {
   name: 'Record Event',
@@ -52,11 +52,11 @@ export let recordEvent = SlateTool.create(spec, {
     let event: Record<string, any> = {
       action: ctx.input.action
     };
-    if (ctx.input.email) event['email'] = ctx.input.email;
-    if (ctx.input.subscriberId) event['id'] = ctx.input.subscriberId;
-    if (ctx.input.properties) event['properties'] = ctx.input.properties;
-    if (ctx.input.occurredAt) event['occurred_at'] = ctx.input.occurredAt;
-    if (ctx.input.prospect !== undefined) event['prospect'] = ctx.input.prospect;
+    if (ctx.input.email) event.email = ctx.input.email;
+    if (ctx.input.subscriberId) event.id = ctx.input.subscriberId;
+    if (ctx.input.properties) event.properties = ctx.input.properties;
+    if (ctx.input.occurredAt) event.occurred_at = ctx.input.occurredAt;
+    if (ctx.input.prospect !== undefined) event.prospect = ctx.input.prospect;
 
     await client.recordEvent(event);
 

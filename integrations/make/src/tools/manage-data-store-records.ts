@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MakeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageDataStoreRecords = SlateTool.create(spec, {
   name: 'Manage Data Store Records',

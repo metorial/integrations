@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { V0Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let chatEventTrigger = SlateTrigger.create(spec, {
   name: 'Chat Event',

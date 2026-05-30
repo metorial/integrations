@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { labelSchema } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageLabels = SlateTool.create(spec, {
   name: 'Manage Ticket Labels',
@@ -47,7 +47,7 @@ export let manageLabels = SlateTool.create(spec, {
 
     let added: string[] = [];
     let removed: string[] = [];
-    let availableLabels;
+    let availableLabels: any;
 
     if (ctx.input.listAvailable) {
       availableLabels = await client.listLabels();

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendClipboard = SlateTool.create(spec, {
   name: 'Send Clipboard',
@@ -33,7 +33,7 @@ export let sendClipboard = SlateTool.create(spec, {
     await client.sendClipboard(ctx.input.text, ctx.input.sourceDeviceIden);
 
     let preview =
-      ctx.input.text.length > 50 ? ctx.input.text.substring(0, 50) + '...' : ctx.input.text;
+      ctx.input.text.length > 50 ? `${ctx.input.text.substring(0, 50)}...` : ctx.input.text;
 
     return {
       output: {

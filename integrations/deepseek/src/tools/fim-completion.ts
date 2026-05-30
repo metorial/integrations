@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeepSeekClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let fimCompletion = SlateTool.create(spec, {
   name: 'FIM Completion',
@@ -120,7 +120,7 @@ Commonly used for code completion, inserting missing code segments, and content 
 
     let preview =
       output.generatedText.length > 200
-        ? output.generatedText.substring(0, 200) + '...'
+        ? `${output.generatedText.substring(0, 200)}...`
         : output.generatedText;
 
     return {

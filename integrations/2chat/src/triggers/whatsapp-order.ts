@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { TwoChatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let whatsappOrderTrigger = SlateTrigger.create(spec, {
   name: 'WhatsApp Order Received',
@@ -53,7 +53,7 @@ export let whatsappOrderTrigger = SlateTrigger.create(spec, {
             event: 'whatsapp.order.received',
             onNumber: phoneNumber
           });
-        } catch (e) {
+        } catch (_e) {
           // May not be supported for all number types
         }
       }
@@ -72,7 +72,7 @@ export let whatsappOrderTrigger = SlateTrigger.create(spec, {
           if (reg.webhookUuid) {
             await client.deleteWebhook(reg.webhookUuid);
           }
-        } catch (e) {
+        } catch (_e) {
           // Best-effort cleanup
         }
       }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlacidClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let collectionOutputSchema = z.object({
   collectionId: z.number().describe('Unique collection ID'),

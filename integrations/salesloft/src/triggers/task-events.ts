@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let EVENT_TYPES = ['task_created', 'task_updated', 'task_completed', 'task_deleted'] as const;
 
@@ -64,7 +64,7 @@ export let taskEvents = SlateTrigger.create(spec, {
       for (let reg of details.registrations) {
         try {
           await client.deleteWebhookSubscription(reg.subscriptionId);
-        } catch (e) {
+        } catch (_e) {
           // Subscription may already be deleted
         }
       }

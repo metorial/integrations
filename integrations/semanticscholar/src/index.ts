@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchPapers,
-  getPaper,
-  getCitations,
-  searchAuthors,
+  autocompletePapers,
   getAuthor,
   getAuthorPapers,
+  getCitations,
+  getDatasets,
+  getPaper,
   recommendPapers,
-  autocompletePapers,
-  getDatasets
+  searchAuthors,
+  searchPapers
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

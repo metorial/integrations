@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SuperchatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let noteEvents = SlateTrigger.create(spec, {
   name: 'Note Events',

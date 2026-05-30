@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createToken,
   chargeToken,
-  introspectToken,
-  getWalletBalance,
-  searchServices,
+  createToken,
   getTokenCharges,
+  getWalletBalance,
+  introspectToken,
+  manageAgent,
   manageSellerService,
-  manageAgent
+  searchServices
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

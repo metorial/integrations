@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { projectOutputSchema, taskOutputSchema, mapProject, mapTask } from '../lib/schemas';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { mapProject, mapTask, projectOutputSchema, taskOutputSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 let columnSchema = z.object({
   columnId: z.string().describe('Column identifier'),

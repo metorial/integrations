@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  checkIp,
-  getIpReports,
-  checkSubnet,
-  reportIp,
   bulkReport,
+  checkIp,
+  checkSubnet,
+  clearIpReports,
   getBlacklist,
-  clearIpReports
+  getIpReports,
+  reportIp
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

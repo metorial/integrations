@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BidsketchClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let templateSummarySchema = z.object({
   templateId: z.number().describe('Unique template ID'),

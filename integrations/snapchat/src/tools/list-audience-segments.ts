@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { SnapchatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let segmentSchema = z.object({
   segmentId: z.string().describe('Unique ID of the audience segment'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let verifyCredential = SlateTool.create(spec, {
   name: 'Verify Credential or Presentation',
@@ -43,7 +43,7 @@ Returns a verification status with a boolean result.`,
     return {
       output: {
         verified,
-        results: result.results as Array<Record<string, unknown>> | undefined
+        results: result.results as Record<string, unknown>[] | undefined
       },
       message: verified
         ? '✅ Document verification **passed**'

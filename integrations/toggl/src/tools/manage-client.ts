@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TogglClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let clientOutputSchema = z.object({
   clientId: z.number().describe('Client ID'),

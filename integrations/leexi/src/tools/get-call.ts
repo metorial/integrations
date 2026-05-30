@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let speakerSchema = z.object({
   index: z.number().optional().describe('Speaker index'),
@@ -196,7 +196,7 @@ export let getCall = SlateTool.create(spec, {
 
     return {
       output,
-      message: `Retrieved call **${c.title || c.uuid}** (${c.duration ? Math.round(c.duration / 60) + ' min' : 'unknown duration'}).`
+      message: `Retrieved call **${c.title || c.uuid}** (${c.duration ? `${Math.round(c.duration / 60)} min` : 'unknown duration'}).`
     };
   })
   .build();

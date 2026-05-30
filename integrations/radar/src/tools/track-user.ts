@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RadarClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let trackUserTool = SlateTool.create(spec, {
   name: 'Track User Location',

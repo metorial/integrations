@@ -11,7 +11,7 @@ export interface PaginatedResponse<T> {
 export class Client {
   private http;
 
-  constructor(private config: { token: string; subscriptionKey: string }) {
+  constructor(config: { token: string; subscriptionKey: string }) {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {

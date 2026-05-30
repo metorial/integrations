@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let chatEvents = SlateTrigger.create(spec, {
   name: 'Chat Events',
@@ -66,14 +66,14 @@ export let chatEvents = SlateTrigger.create(spec, {
       let messageId = payload.message_id ?? body.message_id;
       let messageText = payload.message ?? body.message;
 
-      let members: Array<{ userId: string; nickname: string }> | undefined;
+      let _members: Array<{ userId: string; nickname: string }> | undefined;
       if (body.users) {
-        members = (body.users as any[]).map((u: any) => ({
+        _members = (body.users as any[]).map((u: any) => ({
           userId: u.user_id ?? '',
           nickname: u.nickname ?? ''
         }));
       } else if (body.invitees) {
-        members = (body.invitees as any[]).map((u: any) => ({
+        _members = (body.invitees as any[]).map((u: any) => ({
           userId: u.user_id ?? '',
           nickname: u.nickname ?? ''
         }));

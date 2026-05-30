@@ -2,28 +2,28 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   calculateTax,
-  lookupRates,
-  listCategories,
-  listOrders,
-  getOrder,
-  createOrder,
-  updateOrder,
-  deleteOrder,
-  listRefunds,
-  getRefund,
-  createRefund,
-  updateRefund,
-  deleteRefund,
-  listCustomers,
-  getCustomer,
   createCustomer,
-  updateCustomer,
+  createOrder,
+  createRefund,
   deleteCustomer,
+  deleteOrder,
+  deleteRefund,
+  getCustomer,
+  getOrder,
+  getRefund,
+  listCategories,
+  listCustomers,
   listNexusRegions,
-  validateAddress,
-  listSummarizedRates
+  listOrders,
+  listRefunds,
+  listSummarizedRates,
+  lookupRates,
+  updateCustomer,
+  updateOrder,
+  updateRefund,
+  validateAddress
 } from './tools';
-import { newOrderTrigger, newRefundTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, newOrderTrigger, newRefundTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

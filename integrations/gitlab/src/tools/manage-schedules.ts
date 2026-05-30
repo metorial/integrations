@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, resolveProjectId, gitLabServiceError } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, gitLabServiceError, resolveProjectId } from '../lib/helpers';
+import { spec } from '../spec';
 
 let scheduleSchema = z.object({
   scheduleId: z.number(),

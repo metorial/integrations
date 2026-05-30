@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let timeEntrySchema = z.object({
   timeEntryId: z.number().describe('Unique ID of the time entry'),

@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  addAttachment,
+  addComment,
+  getActivity,
+  getBoardMembers,
   getBoards,
-  manageBoard,
-  getLists,
-  manageList,
-  getCards,
   getCard,
+  getCards,
+  getLists,
+  manageBoard,
   manageCard,
+  manageCardMembers,
   manageChecklist,
   manageLabels,
-  addComment,
-  manageCardMembers,
-  search,
-  getBoardMembers,
-  addAttachment,
-  getActivity
+  manageList,
+  search
 } from './tools';
 import { boardActivity } from './triggers';
 

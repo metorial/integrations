@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createCommitStatus = SlateTool.create(spec, {
   name: 'Create Commit Status',
@@ -55,7 +55,10 @@ Also supports reading the combined status of all checks for a given ref.`,
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let { owner, repo, action, ref } = ctx.input;
 
     if (action === 'get') {

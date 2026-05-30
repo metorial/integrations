@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let editVoiceSettings = SlateTool.create(spec, {
   name: 'Edit Voice Settings',

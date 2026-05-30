@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createEndpoint = SlateTool.create(spec, {
   name: 'Create Endpoint',
@@ -162,7 +162,7 @@ export let listEndpoints = SlateTool.create(spec, {
         hasMore: !result.done,
         iterator: result.iterator ?? undefined
       },
-      message: `Found **${endpoints.length}** endpoint(s) for application \`${ctx.input.applicationId}\`.${endpoints.length > 0 ? '\n' + endpoints.map(e => `- **${e.url}**${e.disabled ? ' (disabled)' : ''}`).join('\n') : ''}`
+      message: `Found **${endpoints.length}** endpoint(s) for application \`${ctx.input.applicationId}\`.${endpoints.length > 0 ? `\n${endpoints.map(e => `- **${e.url}**${e.disabled ? ' (disabled)' : ''}`).join('\n')}` : ''}`
     };
   })
   .build();

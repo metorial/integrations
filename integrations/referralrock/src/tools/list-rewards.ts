@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let rewardSchema = z.object({
   rewardId: z.string().describe('Unique reward ID'),
@@ -61,7 +61,7 @@ export let listRewards = SlateTool.create(spec, {
       count: ctx.input.count
     });
 
-    let rewards = ((result.rewards as Array<Record<string, unknown>>) || []).map(r => ({
+    let rewards = ((result.rewards as Record<string, unknown>[]) || []).map(r => ({
       rewardId: r.id as string,
       programId: r.programId as string | undefined,
       programName: r.programName as string | undefined,

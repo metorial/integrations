@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GongClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let callParticipantSchema = z.object({
   userId: z.string().optional().describe('Gong user ID for an internal participant'),
@@ -19,7 +19,10 @@ let callParticipantSchema = z.object({
     .max(1)
     .optional()
     .describe('Stereo media channel for this participant: 0 for left, 1 for right'),
-  context: z.array(z.any()).optional().describe('External system references for this participant')
+  context: z
+    .array(z.any())
+    .optional()
+    .describe('External system references for this participant')
 });
 
 export let createCall = SlateTool.create(spec, {
@@ -41,7 +44,10 @@ export let createCall = SlateTool.create(spec, {
         .describe('Unique call ID in the external PBX or recording system'),
       title: z.string().optional().describe('Call title'),
       purpose: z.string().optional().describe('Call purpose'),
-      scheduledStart: z.string().optional().describe('Scheduled start time in ISO 8601 format'),
+      scheduledStart: z
+        .string()
+        .optional()
+        .describe('Scheduled start time in ISO 8601 format'),
       scheduledEnd: z.string().optional().describe('Scheduled end time in ISO 8601 format'),
       actualStart: z.string().describe('Actual call start time in ISO 8601 format'),
       duration: z.number().optional().describe('Actual call duration in seconds'),

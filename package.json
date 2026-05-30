@@ -1,21 +1,17 @@
 {
   "name": "@metorial/integrations-root",
   "scripts": {
-    "lint": "biome lint .",
-    "lint:fix": "biome lint --write .",
-    "format": "prettier --write .",
-    "integrations:format": "prettier --write \"integrations/**/*\" \"test-integrations/**/*\" --ignore-unknown",
+    "biome:check": "biome check --write .",
     "integrations:cli": "bun packages/cli/src/cli.ts",
     "integrations:validate-pr": "bun scripts/validate-pr-integrations.ts",
     "package-local": "bun scripts/package-local.ts",
     "packages:sync-versions": "bun scripts/update-integration-package-versions.ts",
     "packages:build": "turbo run build --filter=./packages/*",
-    "integrations:build:inner": "turbo run build --concurrency=1 --ui=stream --filter=./integrations/google-* --filter=./test-integrations/*",
-    "integrations:build": "bun run packages:build && bun run integrations:build:inner"
+    "integrations:build:inner": "turbo run build --concurrency=1 --ui=stream --filter=./integrations/* --filter=./test-integrations/*",
+    "build:integrations": "bun run packages:build && bun run integrations:build:inner"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
-    "prettier": "^3.7.4",
+    "@biomejs/biome": "2.4.15",
     "tsup": "^8.5.1",
     "turbo": "^2.5.5",
     "typescript": "5.8.2"

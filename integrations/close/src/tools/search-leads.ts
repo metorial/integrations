@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchLeads = SlateTool.create(spec, {
   name: 'Search Leads',
@@ -63,7 +63,7 @@ export let searchLeads = SlateTool.create(spec, {
 
     let leads = result.data ?? [];
     let totalResults = result.total_results ?? 0;
-    let limit = ctx.input.limit ?? 100;
+    let _limit = ctx.input.limit ?? 100;
     let skip = ctx.input.skip ?? 0;
     let hasMore = skip + leads.length < totalResults;
 

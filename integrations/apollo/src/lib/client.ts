@@ -140,7 +140,7 @@ let callParams = (call: {
 export class Client {
   private axios;
 
-  constructor(private config: ApolloClientConfig) {
+  constructor(config: ApolloClientConfig) {
     this.axios = createAxios({
       baseURL: 'https://api.apollo.io/api/v1',
       headers: {
@@ -270,7 +270,7 @@ export class Client {
   async listOrganizationJobPostings(
     organizationId: string,
     params?: { page?: number; perPage?: number }
-  ): Promise<{ jobPostings: Array<Record<string, any>>; pagination: any }> {
+  ): Promise<{ jobPostings: Record<string, any>[]; pagination: any }> {
     return await this.request('list organization job postings', async () => {
       let response = await this.axios.get(`/organizations/${organizationId}/job_postings`, {
         params: {
@@ -894,7 +894,7 @@ export class Client {
     qKeywords?: string;
     page?: number;
     perPage?: number;
-  }): Promise<{ calls: Array<Record<string, any>>; pagination: any }> {
+  }): Promise<{ calls: Record<string, any>[]; pagination: any }> {
     return await this.request('search calls', async () => {
       let response = await this.axios.get('/phone_calls/search', {
         params: compact({
@@ -968,7 +968,7 @@ export class Client {
     sortByField?: string;
     enforceContactBoundary?: boolean;
   }): Promise<{
-    conversations: Array<Record<string, any>>;
+    conversations: Record<string, any>[];
     pagination: any;
     raw: Record<string, any>;
   }> {
@@ -1048,7 +1048,7 @@ export class Client {
     });
   }
 
-  async listEmailAccounts(): Promise<{ emailAccounts: Array<Record<string, any>> }> {
+  async listEmailAccounts(): Promise<{ emailAccounts: Record<string, any>[] }> {
     return await this.request('list email accounts', async () => {
       let response = await this.axios.get('/email_accounts');
 

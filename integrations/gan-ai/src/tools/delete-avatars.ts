@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlaygroundClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deleteAvatars = SlateTool.create(spec, {
   name: 'Delete Avatars',
@@ -67,7 +67,7 @@ export let deleteAvatars = SlateTool.create(spec, {
     return {
       output: output as any,
       message:
-        messages.length > 0 ? messages.join('. ') + '.' : 'No items specified for deletion.'
+        messages.length > 0 ? `${messages.join('. ')}.` : 'No items specified for deletion.'
     };
   })
   .build();

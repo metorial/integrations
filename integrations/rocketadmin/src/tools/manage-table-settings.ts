@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RocketadminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTableSettings = SlateTool.create(spec, {
   name: 'Manage Table Settings',

@@ -14,7 +14,7 @@ export class PlaidClient {
     this.clientId = opts.clientId;
     this.secret = opts.secret;
     this.axios = createAxios({
-      baseURL: BASE_URLS[opts.environment] || BASE_URLS['sandbox'],
+      baseURL: BASE_URLS[opts.environment] || BASE_URLS.sandbox,
       headers: {
         'Content-Type': 'application/json'
       }
@@ -74,9 +74,9 @@ export class PlaidClient {
     opts?: { count?: number; offset?: number; accountIds?: string[] }
   ) {
     let options: Record<string, unknown> = {};
-    if (opts?.count) options['count'] = opts.count;
-    if (opts?.offset !== undefined) options['offset'] = opts.offset;
-    if (opts?.accountIds?.length) options['account_ids'] = opts.accountIds;
+    if (opts?.count) options.count = opts.count;
+    if (opts?.offset !== undefined) options.offset = opts.offset;
+    if (opts?.accountIds?.length) options.account_ids = opts.accountIds;
 
     let { data } = await this.axios.post(
       '/transactions/get',
@@ -136,9 +136,9 @@ export class PlaidClient {
     opts?: { count?: number; offset?: number; accountIds?: string[] }
   ) {
     let options: Record<string, unknown> = {};
-    if (opts?.count) options['count'] = opts.count;
-    if (opts?.offset !== undefined) options['offset'] = opts.offset;
-    if (opts?.accountIds?.length) options['account_ids'] = opts.accountIds;
+    if (opts?.count) options.count = opts.count;
+    if (opts?.offset !== undefined) options.offset = opts.offset;
+    if (opts?.accountIds?.length) options.account_ids = opts.accountIds;
 
     let { data } = await this.axios.post(
       '/investments/transactions/get',
@@ -285,8 +285,8 @@ export class PlaidClient {
     opts?: { webhook?: string; clientReportId?: string }
   ) {
     let reportOpts: Record<string, unknown> = {};
-    if (opts?.webhook) reportOpts['webhook'] = opts.webhook;
-    if (opts?.clientReportId) reportOpts['client_report_id'] = opts.clientReportId;
+    if (opts?.webhook) reportOpts.webhook = opts.webhook;
+    if (opts?.clientReportId) reportOpts.client_report_id = opts.clientReportId;
 
     let { data } = await this.axios.post(
       '/asset_report/create',

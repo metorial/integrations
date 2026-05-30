@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { PayPalClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let SUBSCRIPTION_EVENT_TYPES = [
   'BILLING.SUBSCRIPTION.CREATED',

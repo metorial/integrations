@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createVideo = SlateTool.create(spec, {
   name: 'Create Video',
@@ -50,7 +50,7 @@ export let createVideo = SlateTool.create(spec, {
       let uploadToken = await client.getVideoUploadToken(videoId, ctx.input.mimeType);
       uploadUrl =
         typeof uploadToken === 'string' ? uploadToken : (uploadToken?.url ?? uploadToken?.Url);
-    } catch (e) {
+    } catch (_e) {
       ctx.warn('Could not retrieve upload token. You may need to request it separately.');
     }
 

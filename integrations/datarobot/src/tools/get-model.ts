@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DataRobotClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getModel = SlateTool.create(spec, {
   name: 'Get Model Details',
@@ -91,7 +91,7 @@ export let getModel = SlateTool.create(spec, {
         metrics: model.metrics,
         featureImpact
       },
-      message: `Model **${model.modelType}** (${model.id || model.modelId}) with ${model.samplePct ? model.samplePct + '% sample' : 'full dataset'}.`
+      message: `Model **${model.modelType}** (${model.id || model.modelId}) with ${model.samplePct ? `${model.samplePct}% sample` : 'full dataset'}.`
     };
   })
   .build();

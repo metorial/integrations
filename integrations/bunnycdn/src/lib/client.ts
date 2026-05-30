@@ -15,7 +15,7 @@ let STORAGE_REGION_HOSTS: Record<string, string> = {
 export class CoreClient {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.bunny.net',
       headers: {
@@ -217,8 +217,8 @@ export class CoreClient {
 export class StorageClient {
   private axios;
 
-  constructor(private config: { storageToken: string; region: string }) {
-    let host = STORAGE_REGION_HOSTS[config.region] || STORAGE_REGION_HOSTS['default'];
+  constructor(config: { storageToken: string; region: string }) {
+    let host = STORAGE_REGION_HOSTS[config.region] || STORAGE_REGION_HOSTS.default;
     this.axios = createAxios({
       baseURL: `https://${host}`,
       headers: {
@@ -265,7 +265,7 @@ export class StorageClient {
 export class StreamClient {
   private axios;
 
-  constructor(private config: { streamToken: string }) {
+  constructor(config: { streamToken: string }) {
     this.axios = createAxios({
       baseURL: 'https://video.bunnycdn.com',
       headers: {

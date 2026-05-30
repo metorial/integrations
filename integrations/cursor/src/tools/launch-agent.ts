@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CloudAgentsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let imageSchema = z.object({
   data: z.string().describe('Base64-encoded image data'),

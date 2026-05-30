@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let eventWebhookTrigger = SlateTrigger.create(spec, {
   name: 'Incoming Events',
@@ -60,7 +60,7 @@ export let eventWebhookTrigger = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.type) {
+      if (!data?.type) {
         return { inputs: [] };
       }
 

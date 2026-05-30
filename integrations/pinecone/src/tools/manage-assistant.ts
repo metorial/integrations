@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PineconeControlPlaneClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageAssistantTool = SlateTool.create(spec, {
   name: 'Manage Assistant',
@@ -67,7 +67,7 @@ export let manageAssistantTool = SlateTool.create(spec, {
       }));
       return {
         output: { assistants },
-        message: `Found **${assistants.length}** assistant${assistants.length === 1 ? '' : 's'}${assistants.length > 0 ? ': ' + assistants.map(a => `\`${a.assistantName}\``).join(', ') : ''}.`
+        message: `Found **${assistants.length}** assistant${assistants.length === 1 ? '' : 's'}${assistants.length > 0 ? `: ${assistants.map(a => `\`${a.assistantName}\``).join(', ')}` : ''}.`
       };
     }
 

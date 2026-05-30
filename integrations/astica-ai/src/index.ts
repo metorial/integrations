@@ -3,10 +3,10 @@ import { spec } from './spec';
 import {
   analyzeImageTool,
   generateImageTool,
-  textToSpeechTool,
-  speechToTextTool,
   generateTextTool,
-  listVoicesTool
+  listVoicesTool,
+  speechToTextTool,
+  textToSpeechTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

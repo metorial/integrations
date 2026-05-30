@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createPurchase,
   getAccount,
+  listEmailTemplates,
+  listSegments,
   listSubscribers,
-  manageSubscriber,
-  manageTags,
-  manageForms,
-  manageSequences,
   manageBroadcasts,
   manageCustomFields,
-  createPurchase,
-  listSegments,
-  listEmailTemplates
+  manageForms,
+  manageSequences,
+  manageSubscriber,
+  manageTags
 } from './tools';
 import {
-  subscriberEvent,
-  tagEvent,
   formSubscriptionEvent,
-  sequenceEvent,
-  purchaseEvent,
   linkClickEvent,
-  productPurchaseEvent
+  productPurchaseEvent,
+  purchaseEvent,
+  sequenceEvent,
+  subscriberEvent,
+  tagEvent
 } from './triggers';
 
 export let provider = Slate.create({

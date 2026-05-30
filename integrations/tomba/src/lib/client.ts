@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class TombaClient {
   private http;
 
-  constructor(private credentials: { apiKey: string; apiSecret: string }) {
+  constructor(credentials: { apiKey: string; apiSecret: string }) {
     this.http = createAxios({
       baseURL: 'https://api.tomba.io/v1',
       headers: {
@@ -51,7 +51,7 @@ export class TombaClient {
   // ─── Email Verifier ──────────────────────────────────────
 
   async emailVerifier(email: string) {
-    let response = await this.http.get('/email-verifier/' + encodeURIComponent(email));
+    let response = await this.http.get(`/email-verifier/${encodeURIComponent(email)}`);
     return response.data;
   }
 

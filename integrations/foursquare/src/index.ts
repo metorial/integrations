@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchPlaces,
-  getPlaceDetails,
   autocompletePlaces,
-  matchPlace,
+  findNearbyPlaces,
+  getFeedbackStatus,
+  getPlaceDetails,
   getPlacePhotos,
   getPlaceTips,
-  findNearbyPlaces,
-  submitPlaceFeedback,
-  getFeedbackStatus
+  matchPlace,
+  searchPlaces,
+  submitPlaceFeedback
 } from './tools';
 import { userCheckin, venueEvent } from './triggers';
 

@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { netlifyApiError } from './lib/errors';
 
@@ -31,7 +31,7 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response;
+      let response: any;
       try {
         response = await netlifyApi.post('/oauth/token', null, {
           params: {
@@ -54,7 +54,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
-      let response;
+      let response: any;
       try {
         response = await netlifyApi.get('/api/v1/user', {
           headers: {
@@ -94,7 +94,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
-      let response;
+      let response: any;
       try {
         response = await netlifyApi.get('/api/v1/user', {
           headers: {

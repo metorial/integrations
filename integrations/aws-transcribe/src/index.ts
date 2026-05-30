@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  startTranscriptionJob,
-  getTranscriptionJob,
-  listTranscriptionJobs,
   deleteTranscriptionJob,
-  startCallAnalyticsJob,
   getCallAnalyticsJob,
-  startMedicalTranscriptionJob,
+  getTranscriptionJob,
+  listLanguageModels,
+  listTranscriptionJobs,
   manageVocabulary,
   manageVocabularyFilter,
-  listLanguageModels
+  startCallAnalyticsJob,
+  startMedicalTranscriptionJob,
+  startTranscriptionJob
 } from './tools';
-import { transcriptionJobStateChange, inboundWebhook } from './triggers';
+import { inboundWebhook, transcriptionJobStateChange } from './triggers';
 
 export let provider = Slate.create({
   spec,

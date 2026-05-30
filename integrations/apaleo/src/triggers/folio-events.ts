@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ApaleoWebhookClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let folioEvents = SlateTrigger.create(spec, {
   name: 'Folio Events',

@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listMailboxes,
-  getMailbox,
   createMailbox,
-  updateMailbox,
+  createWebhook,
   deleteMailbox,
-  listDocuments,
+  deleteWebhooks,
+  getCollectedEmails,
   getDocument,
-  submitDocument,
+  getMailbox,
+  getParsedData,
+  getTemplate,
+  listDocuments,
+  listMailboxes,
+  listTemplates,
+  listWebhooks,
+  manageTemplates,
   reparseDocument,
   skipDocuments,
-  getParsedData,
-  getCollectedEmails,
-  listTemplates,
-  getTemplate,
-  manageTemplates,
-  listWebhooks,
-  createWebhook,
-  deleteWebhooks
+  submitDocument,
+  updateMailbox
 } from './tools';
 import { documentEvent } from './triggers';
 

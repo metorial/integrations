@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoinbaseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendCrypto = SlateTool.create(spec, {
   name: 'Send Crypto',

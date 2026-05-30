@@ -1,9 +1,9 @@
 import { SlateTrigger } from 'slates';
-import { DriveClient } from '../lib/drive-client';
+import { z } from 'zod';
 import { SheetsClient } from '../lib/client';
+import { DriveClient } from '../lib/drive-client';
 import { googleSheetsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let spreadsheetChanged = SlateTrigger.create(spec, {
   name: 'Spreadsheet Changed',

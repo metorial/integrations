@@ -62,7 +62,9 @@ describe('youtube-analytics provider contract', () => {
     expect(oauth.authenticationMethod.capabilities.handleTokenRefresh?.enabled).toBe(true);
     expect(oauth.authenticationMethod.capabilities.getProfile?.enabled).toBe(true);
 
-    let scopeTitles = new Set((oauth.authenticationMethod.scopes ?? []).map(scope => scope.title));
+    let scopeTitles = new Set(
+      (oauth.authenticationMethod.scopes ?? []).map(scope => scope.title)
+    );
     expect(scopeTitles.has('Analytics Read-Only')).toBe(true);
     expect(scopeTitles.has('YouTube Manage')).toBe(true);
   });

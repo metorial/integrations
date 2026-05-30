@@ -12,9 +12,9 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { clientFromContext } from '../lib/helpers';
 import { awsServiceError } from '../lib/errors';
+import { clientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 // ---------------------------------------------------------------------------
 // DynamoDB attribute value marshalling helpers

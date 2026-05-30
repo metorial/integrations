@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPlays = SlateTool.create(spec, {
   name: 'Get Plays & Drives',
@@ -51,7 +51,7 @@ export let getPlays = SlateTool.create(spec, {
       seasonType: ctx.input.seasonType
     });
 
-    let drives: any = undefined;
+    let drives: any;
     if (ctx.input.includeDrives) {
       drives = await client.getDrives({
         year: ctx.input.year,

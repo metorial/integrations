@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GristClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orgSchema = z.object({
   orgId: z.number().describe('Organization ID'),

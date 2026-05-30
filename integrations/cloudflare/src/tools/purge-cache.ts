@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { cloudflareServiceError } from '../lib/errors';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { cloudflareServiceError } from '../lib/errors';
+import { spec } from '../spec';
 
 export let purgeCacheTool = SlateTool.create(spec, {
   name: 'Purge Cache',

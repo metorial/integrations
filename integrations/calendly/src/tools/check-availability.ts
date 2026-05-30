@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { calendlyServiceError } from '../lib/errors';
+import { spec } from '../spec';
 
 export let checkAvailability = SlateTool.create(spec, {
   name: 'Check Availability',
@@ -78,7 +78,8 @@ export let checkAvailability = SlateTool.create(spec, {
     let output: Record<string, any> = {};
     let messages: string[] = [];
     let hasTimeRange = Boolean(ctx.input.startTime && ctx.input.endTime);
-    let hasPartialTimeRange = Boolean(ctx.input.startTime || ctx.input.endTime) && !hasTimeRange;
+    let hasPartialTimeRange =
+      Boolean(ctx.input.startTime || ctx.input.endTime) && !hasTimeRange;
 
     if (hasPartialTimeRange) {
       throw calendlyServiceError('Provide both startTime and endTime, or omit both.');

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let mediaAttachment = z.object({
   mediaId: z.string().describe('ID of an uploaded media file'),
@@ -205,14 +205,14 @@ Posts can be scheduled for a future date or published immediately by omitting th
           options = { ...po.facebook };
           if (po.facebook.locationId) {
             options.location = { id: po.facebook.locationId };
-            delete options.locationId;
+            options.locationId = undefined;
           }
         }
         if (po.instagram) {
           options = { ...po.instagram };
           if (po.instagram.locationId) {
             options.location = { id: po.instagram.locationId };
-            delete options.locationId;
+            options.locationId = undefined;
           }
         }
         if (po.linkedin) options = { ...po.linkedin };

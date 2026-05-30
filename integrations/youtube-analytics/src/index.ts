@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  queryAnalytics,
-  manageGroups,
-  manageGroupItems,
-  manageReportingJobs,
+  downloadBulkReport,
   listBulkReports,
   listReportTypes,
-  downloadBulkReport
+  manageGroupItems,
+  manageGroups,
+  manageReportingJobs,
+  queryAnalytics
 } from './tools';
-import { newBulkReports, inboundWebhook } from './triggers';
+import { inboundWebhook, newBulkReports } from './triggers';
 
 export let provider = Slate.create({
   spec,

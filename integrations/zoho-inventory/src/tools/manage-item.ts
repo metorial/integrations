@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
-let lineItemSchema = z
+let _lineItemSchema = z
   .object({
     name: z.string().describe('Item name'),
     sku: z.string().optional().describe('Stock Keeping Unit'),

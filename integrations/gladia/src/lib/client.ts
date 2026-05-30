@@ -1,17 +1,17 @@
 import { createAxios } from 'slates';
 import type {
-  UploadResponse,
-  TranscriptionInitResponse,
-  TranscriptionResponse,
-  TranscriptionRequestParams,
   LiveSessionInitResponse,
-  LiveSessionRequestParams
+  LiveSessionRequestParams,
+  TranscriptionInitResponse,
+  TranscriptionRequestParams,
+  TranscriptionResponse,
+  UploadResponse
 } from './types';
 
 export class Client {
   private axios;
 
-  constructor(private params: { token: string }) {
+  constructor(params: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.gladia.io',
       headers: {

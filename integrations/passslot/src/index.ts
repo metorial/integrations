@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTemplates,
-  getTemplate,
   createTemplate,
-  updateTemplate,
-  deleteTemplate,
-  generatePass,
-  listPasses,
-  getPass,
-  updatePass,
   deletePass,
+  deleteTemplate,
   emailPass,
+  generatePass,
+  getPass,
+  getTemplate,
+  listPasses,
   listPassTypes,
+  listScanners,
+  listTemplates,
   manageScanner,
-  listScanners
+  updatePass,
+  updateTemplate
 } from './tools';
 import { passEvents, registrationEvents, scanEvents } from './triggers';
 

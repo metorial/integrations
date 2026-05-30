@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let timetableSchema = z.object({
   perHour: z.number().min(1).max(60).describe('Number of times to trigger per hour'),

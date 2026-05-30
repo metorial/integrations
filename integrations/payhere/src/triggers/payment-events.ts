@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { PayhereClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let paymentEvents = SlateTrigger.create(spec, {
   name: 'Payment Events',
@@ -88,7 +88,7 @@ export let paymentEvents = SlateTrigger.create(spec, {
     },
 
     handleEvent: async ctx => {
-      let customer = ctx.input.customerEmail
+      let _customer = ctx.input.customerEmail
         ? { name: ctx.input.customerName, email: ctx.input.customerEmail }
         : null;
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFlow = SlateTool.create(spec, {
   name: 'Get Flow',
@@ -46,7 +46,7 @@ export let getFlow = SlateTool.create(spec, {
 
     let flow = await client.getFlow(ctx.input.flowId);
 
-    let dependencies: any = undefined;
+    let dependencies: any;
     if (ctx.input.includeDependencies) {
       try {
         dependencies = await client.getFlowDependencies(ctx.input.flowId);

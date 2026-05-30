@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FaradayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let streamSchema = z.object({
   streamId: z.string().describe('Unique identifier of the stream'),

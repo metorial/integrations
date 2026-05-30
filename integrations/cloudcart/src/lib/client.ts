@@ -37,7 +37,7 @@ export interface JsonApiSingleResponse {
 export class Client {
   private axios;
 
-  constructor(private params: { token: string; domain: string }) {
+  constructor(params: { token: string; domain: string }) {
     this.axios = createAxios({
       baseURL: `https://${params.domain}.cloudcart.net/api/v2`,
       headers: {
@@ -63,7 +63,7 @@ export class Client {
 
   async getProduct(productId: string, include?: string): Promise<JsonApiSingleResponse> {
     let params: Record<string, string> = {};
-    if (include) params['include'] = include;
+    if (include) params.include = include;
     let res = await this.axios.get(`/products/${productId}`, { params });
     return res.data;
   }
@@ -150,7 +150,7 @@ export class Client {
 
   async getOrder(orderId: string, include?: string): Promise<JsonApiSingleResponse> {
     let params: Record<string, string> = {};
-    if (include) params['include'] = include;
+    if (include) params.include = include;
     let res = await this.axios.get(`/orders/${orderId}`, { params });
     return res.data;
   }
@@ -189,7 +189,7 @@ export class Client {
 
   async getCustomer(customerId: string, include?: string): Promise<JsonApiSingleResponse> {
     let params: Record<string, string> = {};
-    if (include) params['include'] = include;
+    if (include) params.include = include;
     let res = await this.axios.get(`/customers/${customerId}`, { params });
     return res.data;
   }
@@ -244,7 +244,7 @@ export class Client {
 
   async getCategory(categoryId: string, include?: string): Promise<JsonApiSingleResponse> {
     let params: Record<string, string> = {};
-    if (include) params['include'] = include;
+    if (include) params.include = include;
     let res = await this.axios.get(`/categories/${categoryId}`, { params });
     return res.data;
   }
@@ -328,7 +328,7 @@ export class Client {
       params['page[size]'] = opts.pagination.pageSize;
     }
     if (opts?.sort) {
-      params['sort'] = opts.sort;
+      params.sort = opts.sort;
     }
     if (opts?.filters) {
       for (let [key, value] of Object.entries(opts.filters)) {
@@ -336,7 +336,7 @@ export class Client {
       }
     }
     if (opts?.include) {
-      params['include'] = opts.include;
+      params.include = opts.include;
     }
 
     return params;

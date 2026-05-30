@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SlackClient } from '../lib/client';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateMessage = SlateTool.create(spec, {
   name: 'Update Message',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PineconeDataPlaneClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let fetchVectorsTool = SlateTool.create(spec, {
   name: 'Fetch Vectors',

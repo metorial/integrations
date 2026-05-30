@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { UnisenderClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let launchCampaign = SlateTool.create(spec, {
   name: 'Launch Campaign',

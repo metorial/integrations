@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let hasExactlyOneMediaSource = (value: { link?: string; mediaId?: string }) => {
   let hasLink = typeof value.link === 'string' && value.link.length > 0;
@@ -139,12 +139,8 @@ For text messages within the 24-hour customer service window, use this tool. For
         })
         .optional()
         .describe('Required when type is "text"'),
-      image: captionedMediaSourceSchema
-        .optional()
-        .describe('Required when type is "image"'),
-      video: captionedMediaSourceSchema
-        .optional()
-        .describe('Required when type is "video"'),
+      image: captionedMediaSourceSchema.optional().describe('Required when type is "image"'),
+      video: captionedMediaSourceSchema.optional().describe('Required when type is "video"'),
       audio: z
         .object({
           ...mediaSourceFields,

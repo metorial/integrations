@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StoryblokClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCollaborator = SlateTool.create(spec, {
   name: 'Manage Collaborator',
@@ -90,7 +90,7 @@ export let manageCollaborator = SlateTool.create(spec, {
       throw new Error('collaboratorId is required to remove a collaborator');
     await client.removeCollaborator(ctx.input.collaboratorId);
     return {
-      output: { collaboratorId: parseInt(ctx.input.collaboratorId, 10) },
+      output: { collaboratorId: Number.parseInt(ctx.input.collaboratorId, 10) },
       message: `Removed collaborator \`${ctx.input.collaboratorId}\`.`
     };
   })

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ArmClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFunction = SlateTool.create(spec, {
   name: 'Get Function',
@@ -56,7 +56,7 @@ export let getFunction = SlateTool.create(spec, {
           ctx.input.functionName
         );
         keys = keysResponse || {};
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Could not retrieve function keys');
       }
     }

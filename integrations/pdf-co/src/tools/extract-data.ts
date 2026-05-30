@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let parseInvoice = SlateTool.create(spec, {
   name: 'Parse Invoice',
@@ -182,7 +182,7 @@ Provide custom classification rules in CSV format, or use a URL to an external C
         creditsUsed: result.credits,
         remainingCredits: result.remainingCredits
       },
-      message: `Classified document into **${classes.length}** class(es)${classes.length > 0 ? ': ' + classes.map((c: any) => c.className).join(', ') : ''}.`
+      message: `Classified document into **${classes.length}** class(es)${classes.length > 0 ? `: ${classes.map((c: any) => c.className).join(', ')}` : ''}.`
     };
   })
   .build();

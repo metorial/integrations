@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { ZoomClient } from '../lib/client';
 import { zoomServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pollQuestionSchema = z.object({
   name: z.string().describe('Poll question text'),
@@ -88,8 +88,7 @@ let mapPoll = (poll: any) => ({
 export let manageMeetingPolls = SlateTool.create(spec, {
   name: 'Manage Meeting Polls',
   key: 'manage_meeting_polls',
-  description:
-    'List, create, retrieve, update, or delete polls for a Zoom meeting.',
+  description: 'List, create, retrieve, update, or delete polls for a Zoom meeting.',
   tags: {
     destructive: true,
     readOnly: false

@@ -179,17 +179,6 @@ export class Client {
     };
   }
 
-  private accountHeaders() {
-    if (!this.accountToken) {
-      throw new Error('Account API token is required for this operation');
-    }
-    return {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'X-Postmark-Account-Token': this.accountToken
-    };
-  }
-
   // ── Email Sending ──
 
   async sendEmail(params: SendEmailParams): Promise<SendEmailResponse> {

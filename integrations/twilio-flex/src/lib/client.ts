@@ -13,7 +13,7 @@ export let encodeFormBody = (params: Record<string, string | undefined>): string
 export class FlexClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://flex-api.twilio.com/v1',
       headers: {

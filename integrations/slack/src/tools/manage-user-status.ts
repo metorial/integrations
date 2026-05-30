@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SlackClient } from '../lib/client';
 import { missingRequiredAlternativeError } from '../lib/errors';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userStatusSchema = z.object({
   statusText: z.string().optional().describe('Custom Slack status text'),

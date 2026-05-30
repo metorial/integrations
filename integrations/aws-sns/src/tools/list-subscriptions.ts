@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SnsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let subscriptionSchema = z.object({
   subscriptionArn: z.string().describe('ARN of the subscription'),

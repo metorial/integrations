@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchContractAwards = SlateTool.create(spec, {
   name: 'Search Contract Awards',
@@ -76,7 +76,7 @@ export let searchContractAwards = SlateTool.create(spec, {
     let client = new Client(ctx.auth.token);
     let input = ctx.input;
 
-    let response;
+    let response: any;
     if (input.awardType === 'idv') {
       response = await client.getIdvAwards({
         awardId: input.awardId,

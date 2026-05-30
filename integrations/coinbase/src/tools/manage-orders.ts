@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AdvancedTradeClient } from '../lib/advanced-trade-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orderOutputSchema = z.object({
   orderId: z.string().describe('Order ID'),

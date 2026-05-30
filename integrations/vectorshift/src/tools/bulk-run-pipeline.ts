@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { createApiClient, bulkRunPipeline } from '../lib/client';
+import { bulkRunPipeline, createApiClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let bulkRunPipelineTool = SlateTool.create(spec, {
   name: 'Bulk Run Pipeline',

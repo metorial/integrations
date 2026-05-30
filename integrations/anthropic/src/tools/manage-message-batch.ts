@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AnthropicClient } from '../lib/client';
 import { anthropicServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let batchRequestSchema = z.object({
   customId: z.string().describe('Unique identifier for matching results to this request'),

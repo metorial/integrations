@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MozClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let intersectTargetSchema = z.object({
   query: z.string().describe('URL or domain'),

@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getUserProfile,
-  getAsset,
-  updateAsset,
-  deleteAsset,
-  uploadAsset,
-  listDesigns,
-  getDesign,
+  autofillBrandTemplate,
+  createComment,
   createDesign,
-  exportDesign,
-  getExportJob,
-  importDesign,
-  getImportJob,
-  getFolder,
   createFolder,
-  updateFolder,
+  deleteAsset,
   deleteFolder,
+  exportDesign,
+  getAsset,
+  getBrandTemplate,
+  getCommentThread,
+  getDesign,
+  getExportJob,
+  getFolder,
+  getImportJob,
+  getUserProfile,
+  importDesign,
+  listBrandTemplates,
+  listDesigns,
   listFolderItems,
   moveFolderItem,
-  createComment,
-  getCommentThread,
-  listBrandTemplates,
-  getBrandTemplate,
-  autofillBrandTemplate
+  updateAsset,
+  updateFolder,
+  uploadAsset
 } from './tools';
 import { designNotification } from './triggers';
 

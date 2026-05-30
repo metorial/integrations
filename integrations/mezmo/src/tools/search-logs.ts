@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MezmoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchLogs = SlateTool.create(spec, {
   name: 'Search Logs',

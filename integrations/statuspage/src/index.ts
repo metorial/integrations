@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createIncident,
+  getIncident,
   getPage,
-  updatePage,
   listComponents,
+  listIncidents,
+  listIncidentTemplates,
+  listSubscribers,
   manageComponent,
   manageComponentGroup,
-  listIncidents,
-  getIncident,
-  createIncident,
-  updateIncident,
-  listIncidentTemplates,
+  managePostmortem,
   manageSubscriber,
-  listSubscribers,
   submitMetricData,
-  managePostmortem
+  updateIncident,
+  updatePage
 } from './tools';
-import { incidentUpdates, componentStatusChanges, inboundWebhook } from './triggers';
+import { componentStatusChanges, inboundWebhook, incidentUpdates } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WaveClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createTransaction = SlateTool.create(spec, {
   name: 'Create Transaction',

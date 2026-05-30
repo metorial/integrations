@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PilvioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let locationSchema = z.object({
   slug: z.string().describe('Location slug (e.g., "tll01")'),

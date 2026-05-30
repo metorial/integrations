@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let lookupCodes = SlateTool.create(spec, {
   name: 'Lookup Codes',
@@ -48,7 +48,7 @@ export let lookupCodes = SlateTool.create(spec, {
     let client = new Client(ctx.auth.token);
     let input = ctx.input;
 
-    let response;
+    let response: any;
     if (input.codeType === 'naics') {
       response = await client.getNaicsCodes({
         naicsCode: input.code,

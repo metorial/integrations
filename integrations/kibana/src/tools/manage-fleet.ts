@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let agentPolicyOutputSchema = z.object({
   policyId: z.string().describe('Unique ID of the agent policy'),

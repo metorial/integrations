@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commodityEnum = z.enum([
   'WTI',
@@ -53,19 +53,19 @@ export let getCommodityPrice = SlateTool.create(spec, {
     let { commodity, interval } = ctx.input;
 
     let data = await client.commodity({ commodityFunction: commodity, interval });
-    let rawData: any[] = data['data'] || [];
+    let rawData: any[] = data.data || [];
 
     let prices = rawData
-      .filter((d: any) => d['value'] !== '.')
+      .filter((d: any) => d.value !== '.')
       .map((d: any) => ({
-        date: d['date'] || '',
-        value: d['value'] || ''
+        date: d.date || '',
+        value: d.value || ''
       }));
 
     return {
       output: {
-        commodity: data['name'] || commodity,
-        unit: data['unit'] || '',
+        commodity: data.name || commodity,
+        unit: data.unit || '',
         prices
       },
       message: `Retrieved ${prices.length} ${interval} price data points for **${commodity}**.`

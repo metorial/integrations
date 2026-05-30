@@ -103,7 +103,7 @@ export class Client {
       sortOrder: 'desc'
     };
     if (updatedSince) {
-      params['updatedSince'] = updatedSince;
+      params.updatedSince = updatedSince;
     }
     let response = await http.get('/documents', { params });
     return response.data;

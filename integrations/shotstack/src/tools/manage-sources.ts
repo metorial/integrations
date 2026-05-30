@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IngestClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let renditionSchema = z.object({
   format: z.string().optional().describe('Output format (e.g. mp4, webm, jpg, png)'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageRecording = SlateTool.create(spec, {
   name: 'Manage Recording',
@@ -116,7 +116,7 @@ Supports three creation methods:
     if (!name) throw new Error('name is required for create action');
     if (!method) throw new Error('method is required for create action');
 
-    let result;
+    let result: any;
     if (method === 'tts') {
       if (!text) throw new Error('text is required for tts method');
       if (!gender) throw new Error('gender is required for tts method');

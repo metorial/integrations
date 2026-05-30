@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MistralClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let messageSchema = z.object({
   role: z.enum(['system', 'user', 'assistant', 'tool']).describe('Role of the message sender'),
@@ -155,7 +155,7 @@ export let chatCompletionTool = SlateTool.create(spec, {
     }));
 
     let content = choices[0]?.message?.content || '';
-    let preview = content.length > 200 ? content.substring(0, 200) + '...' : content;
+    let preview = content.length > 200 ? `${content.substring(0, 200)}...` : content;
 
     return {
       output: {

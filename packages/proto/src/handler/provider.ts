@@ -80,7 +80,9 @@ export class SlatesProviderProtoHandlerManager {
         return {
           jsonrpc: '2.0' as const,
           id: (input as any).id,
-          error: toSlateErrorResponse(badRequestError({ message: 'Invalid or missing method' }))
+          error: toSlateErrorResponse(
+            badRequestError({ message: 'Invalid or missing method' })
+          )
         };
       }
 
@@ -259,7 +261,11 @@ let getServiceErrorData = (error: unknown) => {
     return error.data;
   }
 
-  if (isStructuredValue(error) && 'toResponse' in error && typeof error.toResponse === 'function') {
+  if (
+    isStructuredValue(error) &&
+    'toResponse' in error &&
+    typeof error.toResponse === 'function'
+  ) {
     let response = error.toResponse();
     if (isServiceErrorData(response)) return response;
   }

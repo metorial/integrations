@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { NotionClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let commentEvents = SlateTrigger.create(spec, {
   name: 'Comment Events',

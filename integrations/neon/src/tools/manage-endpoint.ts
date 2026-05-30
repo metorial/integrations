@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NeonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let endpointSchema = z.object({
   endpointId: z.string().describe('Unique identifier of the compute endpoint'),

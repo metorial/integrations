@@ -260,7 +260,7 @@ export class HubClient {
     filePath: string;
     revision?: string;
   }): Promise<string> {
-    let prefix = this.repoTypePrefix(params.repoType);
+    let _prefix = this.repoTypePrefix(params.repoType);
     let revision = params.revision || 'main';
     let url = `/${params.repoId}/raw/${revision}/${params.filePath}`;
     if (params.repoType === 'dataset') {
@@ -288,7 +288,7 @@ export class HubClient {
     let revision = params.revision || 'main';
 
     // Use the commit API for uploading files
-    let operations = [
+    let _operations = [
       {
         key: 'file',
         value: {

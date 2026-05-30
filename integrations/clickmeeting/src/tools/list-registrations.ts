@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listRegistrations = SlateTool.create(spec, {
   name: 'List Registrations',
@@ -33,7 +33,7 @@ export let listRegistrations = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let result;
+    let result: any;
 
     if (ctx.input.sessionId) {
       result = await client.getSessionRegistrations(ctx.input.roomId, ctx.input.sessionId);

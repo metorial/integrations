@@ -29,17 +29,17 @@ export class Client {
     let params: Record<string, string | string[]> = {};
 
     if (names.length === 1) {
-      params['name'] = names[0]!;
+      params.name = names[0]!;
     } else {
       params['name[]'] = names;
     }
 
     if (countryId) {
-      params['country_id'] = countryId;
+      params.country_id = countryId;
     }
 
     if (this.config.token !== undefined) {
-      params['apikey'] = this.config.token as string;
+      params.apikey = this.config.token as string;
     }
 
     let response = await this.axios.get('/', { params });

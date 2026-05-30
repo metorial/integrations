@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pendingPayoutSchema = z.object({
   payoutId: z.string().optional().describe('Payout type ID'),
@@ -69,7 +69,7 @@ export let getPayouts = SlateTool.create(spec, {
 
     if (ctx.input.view === 'types') {
       let result = await client.listPayouts(ctx.input.payoutId);
-      let payouts = (result.payouts as Array<Record<string, unknown>>) || [];
+      let payouts = (result.payouts as Record<string, unknown>[]) || [];
       return {
         output: {
           payoutTypes: payouts,
@@ -85,21 +85,19 @@ export let getPayouts = SlateTool.create(spec, {
         recipientId: ctx.input.recipientId,
         includeIneligible: ctx.input.includeIneligible
       });
-      let pending = ((result.payoutsPending as Array<Record<string, unknown>>) || []).map(
-        p => ({
-          payoutId: p.payoutId as string | undefined,
-          description: p.Description as string | undefined,
-          rewardCount: p.rewardCount as number | undefined,
-          amount: p.amount as number | undefined,
-          programId: p.programId as string | undefined,
-          programName: p.programName as string | undefined,
-          memberId: p.memberId as string | undefined,
-          memberName: p.memberName as string | undefined,
-          recipientId: p.recipientId as string | undefined,
-          recipientName: p.RecipientName as string | undefined,
-          recipientType: p.RecipientType as string | undefined
-        })
-      );
+      let pending = ((result.payoutsPending as Record<string, unknown>[]) || []).map(p => ({
+        payoutId: p.payoutId as string | undefined,
+        description: p.Description as string | undefined,
+        rewardCount: p.rewardCount as number | undefined,
+        amount: p.amount as number | undefined,
+        programId: p.programId as string | undefined,
+        programName: p.programName as string | undefined,
+        memberId: p.memberId as string | undefined,
+        memberName: p.memberName as string | undefined,
+        recipientId: p.recipientId as string | undefined,
+        recipientName: p.RecipientName as string | undefined,
+        recipientType: p.RecipientType as string | undefined
+      }));
       return {
         output: {
           pendingPayouts: pending,
@@ -114,7 +112,7 @@ export let getPayouts = SlateTool.create(spec, {
       recipientId: ctx.input.recipientId,
       transactionId: ctx.input.transactionId
     });
-    let transactions = (result.payoutTransactions as Array<Record<string, unknown>>) || [];
+    let transactions = (result.payoutTransactions as Record<string, unknown>[]) || [];
     return {
       output: {
         transactions,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MagneticClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userSchema = z.object({
   userId: z.string().describe('ID of the user'),

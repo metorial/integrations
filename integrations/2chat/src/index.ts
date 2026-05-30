@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendWhatsAppMessage,
-  sendGroupMessage,
-  listWhatsAppNumbers,
   checkWhatsAppNumber,
-  manageWhatsAppGroup,
-  listWhatsAppGroups,
+  deleteWhatsAppMessage,
   getWhatsAppMessages,
+  listWhatsAppGroups,
+  listWhatsAppNumbers,
   manageContacts,
-  deleteWhatsAppMessage
+  manageWhatsAppGroup,
+  sendGroupMessage,
+  sendWhatsAppMessage
 } from './tools';
 import {
-  whatsappMessageTrigger,
-  whatsappMessageReceiptTrigger,
-  whatsappGroupEventTrigger,
-  whatsappConversationTrigger,
+  phoneCallTrigger,
   whatsappCallTrigger,
+  whatsappConversationTrigger,
+  whatsappGroupEventTrigger,
+  whatsappMessageReceiptTrigger,
+  whatsappMessageTrigger,
   whatsappNumberStatusTrigger,
-  whatsappOrderTrigger,
-  phoneCallTrigger
+  whatsappOrderTrigger
 } from './triggers';
 
 export let provider = Slate.create({

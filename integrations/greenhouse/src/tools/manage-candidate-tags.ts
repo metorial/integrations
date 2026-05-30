@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCandidateTagsTool = SlateTool.create(spec, {
   name: 'Manage Candidate Tags',
@@ -30,7 +30,7 @@ export let manageCandidateTagsTool = SlateTool.create(spec, {
       token: ctx.auth.token,
       onBehalfOf: ctx.config.onBehalfOf
     });
-    let candidateId = parseInt(ctx.input.candidateId);
+    let candidateId = Number.parseInt(ctx.input.candidateId, 10);
 
     if (ctx.input.action === 'add') {
       await client.addCandidateTag(candidateId, ctx.input.tagName);

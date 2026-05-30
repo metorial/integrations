@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EmeliaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCampaignStatistics = SlateTool.create(spec, {
   name: 'Get Campaign Statistics',
@@ -38,7 +38,7 @@ export let getCampaignStatistics = SlateTool.create(spec, {
     let { campaignId, campaignType, includeActivities } = ctx.input;
 
     let statistics: Record<string, unknown>;
-    let activities: Array<Record<string, unknown>> | undefined;
+    let activities: Record<string, unknown>[] | undefined;
 
     if (campaignType === 'email') {
       statistics = await client.getEmailCampaignStatistics(campaignId);

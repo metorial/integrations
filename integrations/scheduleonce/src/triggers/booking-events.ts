@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let customFieldSchema = z.object({
   name: z.string().describe('Field name'),
@@ -110,7 +110,7 @@ export let bookingEvents = SlateTrigger.create(spec, {
       let event = (await ctx.request.json()) as any;
 
       let booking = event.data;
-      if (!booking || !booking.id) {
+      if (!booking?.id) {
         return { inputs: [] };
       }
 

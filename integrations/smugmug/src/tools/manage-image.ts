@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getImageTool = SlateTool.create(spec, {
   name: 'Get Image',
@@ -54,7 +54,7 @@ export let getImageTool = SlateTool.create(spec, {
 
     let image = await client.getImage(ctx.input.imageKey);
 
-    let metadata: any = undefined;
+    let metadata: any;
     if (ctx.input.includeMetadata) {
       try {
         metadata = await client.getImageMetadata(ctx.input.imageKey);
@@ -63,7 +63,7 @@ export let getImageTool = SlateTool.create(spec, {
       }
     }
 
-    let sizes: any = undefined;
+    let sizes: any;
     if (ctx.input.includeSizes) {
       try {
         sizes = await client.getImageSizes(ctx.input.imageKey);

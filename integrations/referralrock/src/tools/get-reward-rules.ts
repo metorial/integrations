@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let rewardRuleSchema = z.object({
   ruleId: z.string().optional().describe('Rule ID'),
@@ -45,7 +45,7 @@ export let getRewardRules = SlateTool.create(spec, {
 
     let result = await client.getRewardRules(ctx.input.programId);
 
-    let rules = ((result as unknown as Array<Record<string, unknown>>) || []).map(r => {
+    let rules = ((result as unknown as Record<string, unknown>[]) || []).map(r => {
       let reward = (r.reward || {}) as Record<string, unknown>;
       let trigger = (r.trigger || {}) as Record<string, unknown>;
       return {

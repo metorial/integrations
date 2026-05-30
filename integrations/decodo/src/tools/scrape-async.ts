@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { ScrapingClient } from '../lib/scraping-client';
 import { z } from 'zod';
+import { ScrapingClient } from '../lib/scraping-client';
+import { spec } from '../spec';
 
 export let createScrapeTask = SlateTool.create(spec, {
   name: 'Create Async Scrape Task',

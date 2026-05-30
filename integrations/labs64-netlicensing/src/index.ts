@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageProduct,
-  listProducts,
-  getProduct,
-  manageProductModule,
-  listProductModules,
-  manageLicenseTemplate,
-  listLicenseTemplates,
-  manageLicensee,
-  listLicensees,
-  validateLicensee,
-  transferLicenses,
-  manageLicense,
-  listLicenses,
-  manageBundle,
-  obtainBundle,
   createToken,
+  getProduct,
+  getTransaction,
+  listLicensees,
+  listLicenses,
+  listLicenseTemplates,
+  listProductModules,
+  listProducts,
   listTokens,
   listTransactions,
-  getTransaction
+  manageBundle,
+  manageLicense,
+  manageLicensee,
+  manageLicenseTemplate,
+  manageProduct,
+  manageProductModule,
+  obtainBundle,
+  transferLicenses,
+  validateLicensee
 } from './tools';
 import { licensingEvents } from './triggers';
 

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { downtimeSchema } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDowntimes = SlateTool.create(spec, {
   name: 'Get Downtimes',

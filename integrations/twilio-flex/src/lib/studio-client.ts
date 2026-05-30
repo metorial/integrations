@@ -4,7 +4,7 @@ import { encodeFormBody } from './client';
 export class StudioClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://studio.twilio.com/v2',
       headers: {

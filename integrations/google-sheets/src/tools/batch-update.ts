@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SheetsClient } from '../lib/client';
 import { googleSheetsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let batchUpdate = SlateTool.create(spec, {
   name: 'Batch Update',

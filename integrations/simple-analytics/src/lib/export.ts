@@ -22,12 +22,12 @@ export let exportDataPoints = async (config: ClientConfig, params: ExportParams)
     fields: params.fields.join(',')
   };
 
-  if (params.format) queryParams['format'] = params.format;
-  else queryParams['format'] = 'json';
+  if (params.format) queryParams.format = params.format;
+  else queryParams.format = 'json';
 
-  if (params.type) queryParams['type'] = params.type;
-  if (params.timezone) queryParams['timezone'] = params.timezone;
-  if (params.robots !== undefined) queryParams['robots'] = String(params.robots);
+  if (params.type) queryParams.type = params.type;
+  if (params.timezone) queryParams.timezone = params.timezone;
+  if (params.robots !== undefined) queryParams.robots = String(params.robots);
 
   let response = await client.get('/api/export/datapoints', { params: queryParams });
   return response.data;

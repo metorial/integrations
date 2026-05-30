@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SuperchatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactHandleSchema = z.object({
   type: z.enum(['phone', 'mail']).describe('Type of handle'),

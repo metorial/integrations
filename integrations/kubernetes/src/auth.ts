@@ -105,7 +105,7 @@ let parseKubeconfig = (
   let currentContext = '';
   for (let line of lines) {
     let match = line.match(/^current-context:\s*(.+)/);
-    if (match && match[1]) {
+    if (match?.[1]) {
       currentContext = match[1].trim().replace(/^["']|["']$/g, '');
       break;
     }

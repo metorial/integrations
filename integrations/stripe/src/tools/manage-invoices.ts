@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { StripeClient } from '../lib/client';
 import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageInvoices = SlateTool.create(spec, {
   name: 'Manage Invoices',
@@ -135,7 +135,8 @@ export let manageInvoices = SlateTool.create(spec, {
     });
 
     if (action === 'create') {
-      if (!ctx.input.customerId) throw stripeServiceError('customerId is required for create action');
+      if (!ctx.input.customerId)
+        throw stripeServiceError('customerId is required for create action');
       let params: Record<string, any> = { customer: ctx.input.customerId };
       if (ctx.input.subscriptionId) params.subscription = ctx.input.subscriptionId;
       if (ctx.input.description) params.description = ctx.input.description;
@@ -152,7 +153,8 @@ export let manageInvoices = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.invoiceId) throw stripeServiceError('invoiceId is required for get action');
+      if (!ctx.input.invoiceId)
+        throw stripeServiceError('invoiceId is required for get action');
       let inv = await client.getInvoice(ctx.input.invoiceId);
       return {
         output: mapInvoice(inv),
@@ -161,7 +163,8 @@ export let manageInvoices = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.invoiceId) throw stripeServiceError('invoiceId is required for update action');
+      if (!ctx.input.invoiceId)
+        throw stripeServiceError('invoiceId is required for update action');
       let params: Record<string, any> = {};
       if (ctx.input.description) params.description = ctx.input.description;
       if (ctx.input.collectionMethod) params.collection_method = ctx.input.collectionMethod;
@@ -177,7 +180,8 @@ export let manageInvoices = SlateTool.create(spec, {
     }
 
     if (action === 'finalize') {
-      if (!ctx.input.invoiceId) throw stripeServiceError('invoiceId is required for finalize action');
+      if (!ctx.input.invoiceId)
+        throw stripeServiceError('invoiceId is required for finalize action');
       let inv = await client.finalizeInvoice(ctx.input.invoiceId);
       return {
         output: mapInvoice(inv),
@@ -186,7 +190,8 @@ export let manageInvoices = SlateTool.create(spec, {
     }
 
     if (action === 'send') {
-      if (!ctx.input.invoiceId) throw stripeServiceError('invoiceId is required for send action');
+      if (!ctx.input.invoiceId)
+        throw stripeServiceError('invoiceId is required for send action');
       let inv = await client.sendInvoice(ctx.input.invoiceId);
       return {
         output: mapInvoice(inv),
@@ -195,7 +200,8 @@ export let manageInvoices = SlateTool.create(spec, {
     }
 
     if (action === 'pay') {
-      if (!ctx.input.invoiceId) throw stripeServiceError('invoiceId is required for pay action');
+      if (!ctx.input.invoiceId)
+        throw stripeServiceError('invoiceId is required for pay action');
       let params: Record<string, any> = {};
       if (ctx.input.paymentMethodId) params.payment_method = ctx.input.paymentMethodId;
       let inv = await client.payInvoice(ctx.input.invoiceId, params);
@@ -206,7 +212,8 @@ export let manageInvoices = SlateTool.create(spec, {
     }
 
     if (action === 'void') {
-      if (!ctx.input.invoiceId) throw stripeServiceError('invoiceId is required for void action');
+      if (!ctx.input.invoiceId)
+        throw stripeServiceError('invoiceId is required for void action');
       let inv = await client.voidInvoice(ctx.input.invoiceId);
       return {
         output: mapInvoice(inv),

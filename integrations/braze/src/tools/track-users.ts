@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BrazeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userAliasSchema = z.object({
   aliasName: z.string().describe('Alias name'),
@@ -186,7 +186,7 @@ export let trackUsers = SlateTool.create(spec, {
 
     let result = await client.trackUsers(body);
 
-    let counts = [];
+    let counts: any[] = [];
     if (ctx.input.attributes?.length)
       counts.push(`${result.attributes_processed ?? ctx.input.attributes.length} attributes`);
     if (ctx.input.events?.length)

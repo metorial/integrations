@@ -1,20 +1,20 @@
 import { createAxios } from 'slates';
 import type {
-  PaginatedResponse,
-  Source,
-  Destination,
   Connection,
+  Destination,
   Job,
-  Workspace,
+  PaginatedResponse,
   Permission,
+  Source,
   StreamProperties,
-  Tag
+  Tag,
+  Workspace
 } from './types';
 
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string; baseUrl: string }) {
+  constructor(params: { token: string; baseUrl: string }) {
     this.http = createAxios({
       baseURL: params.baseUrl,
       headers: {

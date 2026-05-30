@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { PublicApiClient } from '../lib/public-api-client';
 import { z } from 'zod';
+import { PublicApiClient } from '../lib/public-api-client';
+import { spec } from '../spec';
 
 let whitelistedIpSchema = z.object({
   whitelistId: z.number().describe('Whitelist entry ID'),

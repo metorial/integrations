@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let performerSchema = z.object({
   performerId: z.number().describe('Unique performer ID'),
@@ -108,16 +108,16 @@ export let searchPerformers = SlateTool.create(spec, {
 
     let params: Record<string, string> = {};
 
-    if (ctx.input.query) params['q'] = ctx.input.query;
-    if (ctx.input.performerIds?.length) params['id'] = ctx.input.performerIds.join(',');
-    if (ctx.input.slug) params['slug'] = ctx.input.slug;
+    if (ctx.input.query) params.q = ctx.input.query;
+    if (ctx.input.performerIds?.length) params.id = ctx.input.performerIds.join(',');
+    if (ctx.input.slug) params.slug = ctx.input.slug;
     if (ctx.input.taxonomyName) params['taxonomies.name'] = ctx.input.taxonomyName;
     if (ctx.input.taxonomyId) params['taxonomies.id'] = String(ctx.input.taxonomyId);
     if (ctx.input.genreSlug) params['genres.slug'] = ctx.input.genreSlug;
     if (ctx.input.primaryGenreSlug)
       params['genres[primary].slug'] = ctx.input.primaryGenreSlug;
-    if (ctx.input.page) params['page'] = String(ctx.input.page);
-    if (ctx.input.perPage) params['per_page'] = String(ctx.input.perPage);
+    if (ctx.input.page) params.page = String(ctx.input.page);
+    if (ctx.input.perPage) params.per_page = String(ctx.input.perPage);
 
     let response = await client.searchPerformers(params);
 

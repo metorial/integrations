@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { InventoryStatusClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventAvailabilitySchema = z.object({
   eventId: z.string(),

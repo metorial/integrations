@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphHopperClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let customerSchema = z.object({
   customerId: z.string().describe('Unique customer/location identifier'),
@@ -99,7 +99,7 @@ Supports capacity constraints (min/max quantity per cluster) and predefined clus
       clusters: ctx.input.clusterCenters
     });
 
-    let clusters = ((result.clusters || []) as Array<Record<string, unknown>>).map(c => ({
+    let clusters = ((result.clusters || []) as Record<string, unknown>[]).map(c => ({
       quantity: c.quantity as number,
       customerIds: c.ids as string[]
     }));

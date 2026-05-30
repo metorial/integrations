@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let dedicatedVirtualAccountEvents = SlateTrigger.create(spec, {
   name: 'Dedicated Virtual Account Events',

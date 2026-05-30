@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createNote,
+  createOrUpdateAccount,
   createOrUpdateContact,
-  getContact,
-  searchContacts,
+  createOrUpdateDeal,
+  createOrUpdateTask,
   deleteContact,
+  deleteDeal,
+  getContact,
+  getDeal,
+  listAutomations,
+  listCampaigns,
+  listCustomFields,
+  listPipelinesAndStages,
+  manageContactAutomation,
   manageContactTags,
   manageListSubscription,
-  manageContactAutomation,
-  createOrUpdateDeal,
-  getDeal,
-  searchDeals,
-  deleteDeal,
-  manageTags,
   manageLists,
-  listCampaigns,
-  listAutomations,
-  createOrUpdateAccount,
+  manageTags,
   searchAccounts,
-  createNote,
-  createOrUpdateTask,
-  listPipelinesAndStages,
-  listCustomFields
+  searchContacts,
+  searchDeals
 } from './tools';
-import { contactEvents, dealEvents, campaignEvents, smsEvents } from './triggers';
+import { campaignEvents, contactEvents, dealEvents, smsEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwilioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let lookupPhoneNumber = SlateTool.create(spec, {
   name: 'Lookup Phone Number',

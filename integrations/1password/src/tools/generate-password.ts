@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConnectClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generatePassword = SlateTool.create(spec, {
   name: 'Generate Password',
@@ -85,7 +85,7 @@ export let generatePassword = SlateTool.create(spec, {
 
     try {
       await client.deleteItem(ctx.input.vaultId, tempItem.id);
-    } catch (e) {
+    } catch (_e) {
       ctx.warn(
         'Failed to clean up temporary password item. You may want to delete it manually.'
       );

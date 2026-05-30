@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ThanksIoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listHandwritingStyles = SlateTool.create(spec, {
   name: 'List Handwriting Styles',
@@ -22,9 +22,10 @@ Each style has an ID that can be referenced when sending mail. AI styles support
   .handleInvocation(async ctx => {
     let client = new ThanksIoClient({ token: ctx.auth.token });
     let result = await client.listHandwritingStyles();
-    let styles = (Array.isArray(result) ? result : result.data || []) as Array<
-      Record<string, unknown>
-    >;
+    let styles = (Array.isArray(result) ? result : result.data || []) as Record<
+      string,
+      unknown
+    >[];
 
     return {
       output: { styles },

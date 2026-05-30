@@ -91,7 +91,7 @@ export let hootsuiteEventsTrigger = SlateTrigger.create(spec, {
     },
 
     handleEvent: async ctx => {
-      let { eventType, resourceType } = ctx.input;
+      let { resourceType } = ctx.input;
 
       let typePrefix = resourceType || 'event';
       let stateSuffix = ctx.input.state ? ctx.input.state.toLowerCase() : 'updated';

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MeetClient } from '../lib/client';
 import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let autoGenerationType = z
   .enum(['ON', 'OFF'])

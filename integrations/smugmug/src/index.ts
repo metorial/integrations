@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getUserTool,
+  browseFolderTool,
   createAlbumTool,
-  updateAlbumTool,
-  deleteAlbumTool,
-  getAlbumTool,
-  getImageTool,
-  updateImageTool,
-  deleteImageTool,
-  uploadImageTool,
-  moveImagesTool,
-  getNodeTool,
   createNodeTool,
-  updateNodeTool,
+  deleteAlbumTool,
+  deleteImageTool,
   deleteNodeTool,
-  searchTool,
-  listAlbumImagesTool,
+  getAlbumTool,
   getCommentsTool,
-  getWatermarksTool,
+  getImageTool,
+  getNodeTool,
   getShareUrisTool,
-  browseFolderTool
+  getUserTool,
+  getWatermarksTool,
+  listAlbumImagesTool,
+  moveImagesTool,
+  searchTool,
+  updateAlbumTool,
+  updateImageTool,
+  updateNodeTool,
+  uploadImageTool
 } from './tools';
-import { newImagesTrigger, albumUpdatedTrigger, inboundWebhook } from './triggers';
+import { albumUpdatedTrigger, inboundWebhook, newImagesTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let previewSchema = z.object({
   previewId: z.string().describe('Unique ID for selecting this suggestion'),
@@ -51,7 +51,7 @@ export let autocompleteAddress = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let previews;
+    let previews: any;
     if (ctx.input.containerId) {
       previews = await client.getAutocompleteDrilldown(ctx.input.containerId, {
         properCase: ctx.input.properCase
@@ -62,7 +62,7 @@ export let autocompleteAddress = SlateTool.create(spec, {
       });
     }
 
-    let suggestions = previews.map(p => ({
+    let suggestions = previews.map((p: any) => ({
       previewId: p.id,
       type: p.type,
       text: p.text,

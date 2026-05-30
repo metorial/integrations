@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateTicket = SlateTool.create(spec, {
   name: 'Update Ticket',
@@ -53,18 +53,17 @@ export let updateTicket = SlateTool.create(spec, {
 
     let updateData: Record<string, any> = {};
 
-    if (ctx.input.subject !== undefined) updateData['subject'] = ctx.input.subject;
-    if (ctx.input.description !== undefined) updateData['description'] = ctx.input.description;
-    if (ctx.input.status !== undefined) updateData['status'] = ctx.input.status;
-    if (ctx.input.priority !== undefined) updateData['priority'] = ctx.input.priority;
-    if (ctx.input.source !== undefined) updateData['source'] = ctx.input.source;
-    if (ctx.input.type !== undefined) updateData['type'] = ctx.input.type;
-    if (ctx.input.groupId !== undefined) updateData['group_id'] = ctx.input.groupId;
-    if (ctx.input.responderId !== undefined)
-      updateData['responder_id'] = ctx.input.responderId;
-    if (ctx.input.tags !== undefined) updateData['tags'] = ctx.input.tags;
+    if (ctx.input.subject !== undefined) updateData.subject = ctx.input.subject;
+    if (ctx.input.description !== undefined) updateData.description = ctx.input.description;
+    if (ctx.input.status !== undefined) updateData.status = ctx.input.status;
+    if (ctx.input.priority !== undefined) updateData.priority = ctx.input.priority;
+    if (ctx.input.source !== undefined) updateData.source = ctx.input.source;
+    if (ctx.input.type !== undefined) updateData.type = ctx.input.type;
+    if (ctx.input.groupId !== undefined) updateData.group_id = ctx.input.groupId;
+    if (ctx.input.responderId !== undefined) updateData.responder_id = ctx.input.responderId;
+    if (ctx.input.tags !== undefined) updateData.tags = ctx.input.tags;
     if (ctx.input.customFields !== undefined)
-      updateData['custom_fields'] = ctx.input.customFields;
+      updateData.custom_fields = ctx.input.customFields;
 
     let ticket = await client.updateTicket(ctx.input.ticketId, updateData);
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RedisCloudClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let logEntrySchema = z.object({
   logId: z.number().describe('Unique log entry identifier'),

@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  unlockWebPage,
+  cancelScrapingJob,
+  downloadSnapshot,
+  getAccountInfo,
+  getScrapingJobStatus,
+  getSnapshotHistory,
+  getZoneDetails,
+  listZones,
+  manageZone,
+  scrapeSynchronous,
   searchSerp,
   triggerScrapingJob,
-  scrapeSynchronous,
-  getScrapingJobStatus,
-  downloadSnapshot,
-  cancelScrapingJob,
-  getSnapshotHistory,
-  getAccountInfo,
-  listZones,
-  getZoneDetails,
-  manageZone
+  unlockWebPage
 } from './tools';
-import { scrapingJobCompleted, inboundWebhook } from './triggers';
+import { inboundWebhook, scrapingJobCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listRecordsTool,
-  getRecordTool,
   createRecordsTool,
-  updateRecordsTool,
   deleteRecordsTool,
-  upsertRecordsTool,
   getBaseSchemaTool,
-  manageTableTool,
-  manageFieldTool,
-  manageCommentTool,
+  getRecordTool,
   listBasesTool,
-  uploadAttachmentTool
+  listRecordsTool,
+  manageCommentTool,
+  manageFieldTool,
+  manageTableTool,
+  updateRecordsTool,
+  uploadAttachmentTool,
+  upsertRecordsTool
 } from './tools';
 import { baseChangesTrigger } from './triggers';
 

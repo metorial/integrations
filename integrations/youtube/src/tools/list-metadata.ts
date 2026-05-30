@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listMetadata = SlateTool.create(spec, {
   name: 'List YouTube Metadata',

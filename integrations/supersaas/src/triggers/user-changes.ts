@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let userChangesTrigger = SlateTrigger.create(spec, {
   name: 'User Changes',
@@ -43,7 +43,7 @@ export let userChangesTrigger = SlateTrigger.create(spec, {
       // For user events, parent_id must be the Account ID
       // We use "M" (Changed user) which captures new, change, and delete events
       // We need the account ID - retrieve it from the schedules endpoint or use accountName
-      let schedules = await client.listSchedules();
+      let _schedules = await client.listSchedules();
 
       // The account ID is typically needed; try using the account name as parent_id
       // Per SuperSaaS docs, for user events parent_id should be the Account ID from Account Info page

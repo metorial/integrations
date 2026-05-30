@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchGifs,
-  trendingContent,
-  translateToGif,
-  randomGif,
-  getGifs,
   animatedEmoji,
+  getGifs,
+  randomGif,
+  searchChannels,
+  searchGifs,
   searchSuggestions,
-  uploadGif,
-  searchChannels
+  translateToGif,
+  trendingContent,
+  uploadGif
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

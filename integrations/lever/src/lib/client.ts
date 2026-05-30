@@ -8,7 +8,7 @@ export interface ClientConfig {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let baseURL =
       config.environment === 'sandbox'
         ? 'https://api.sandbox.lever.co/v1'

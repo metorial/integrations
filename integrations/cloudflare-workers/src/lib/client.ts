@@ -19,7 +19,7 @@ export class CloudflareClient {
       headers['X-Auth-Email'] = config.email;
       headers['X-Auth-Key'] = config.token;
     } else {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     }
 
     this.http = createAxios({
@@ -56,7 +56,7 @@ export class CloudflareClient {
   async deleteScript(scriptName: string, force?: boolean) {
     let params: Record<string, string> = {};
     if (force) {
-      params['force'] = 'true';
+      params.force = 'true';
     }
     let response = await this.http.delete(`${this.basePath}/scripts/${scriptName}`, {
       params
@@ -73,9 +73,9 @@ export class CloudflareClient {
     options?: { page?: number; perPage?: number; deployable?: boolean }
   ) {
     let params: Record<string, string | number | boolean> = {};
-    if (options?.page) params['page'] = options.page;
-    if (options?.perPage) params['per_page'] = options.perPage;
-    if (options?.deployable !== undefined) params['deployable'] = options.deployable;
+    if (options?.page) params.page = options.page;
+    if (options?.perPage) params.per_page = options.perPage;
+    if (options?.deployable !== undefined) params.deployable = options.deployable;
     let response = await this.http.get(`${this.basePath}/scripts/${scriptName}/versions`, {
       params
     });
@@ -111,7 +111,7 @@ export class CloudflareClient {
     force?: boolean
   ) {
     let params: Record<string, string> = {};
-    if (force) params['force'] = 'true';
+    if (force) params.force = 'true';
     let response = await this.http.post(
       `${this.basePath}/scripts/${scriptName}/deployments`,
       {
@@ -343,8 +343,8 @@ export class CloudflareClient {
   }) {
     let body: Record<string, any> = {};
     if (settings.defaultUsageModel !== undefined)
-      body['default_usage_model'] = settings.defaultUsageModel;
-    if (settings.greenCompute !== undefined) body['green_compute'] = settings.greenCompute;
+      body.default_usage_model = settings.defaultUsageModel;
+    if (settings.greenCompute !== undefined) body.green_compute = settings.greenCompute;
     let response = await this.http.put(`${this.basePath}/account-settings`, body);
     return response.data.result;
   }

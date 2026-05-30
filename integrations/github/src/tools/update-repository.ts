@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateRepository = SlateTool.create(spec, {
   name: 'Update Repository',
@@ -36,7 +36,10 @@ Modify name, description, visibility, feature toggles (issues, wiki, projects), 
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let { owner, repo, ...updateData } = ctx.input;
     let updated = await client.updateRepository(owner, repo, updateData);
 

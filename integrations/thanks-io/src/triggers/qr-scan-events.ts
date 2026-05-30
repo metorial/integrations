@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ThanksIoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let qrScanEvents = SlateTrigger.create(spec, {
   name: 'QR Code Scan Events',
@@ -79,7 +79,7 @@ export let qrScanEvents = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let body: any = await ctx.request.json();
 
-      if (!body || !body.event_type || !body.data) {
+      if (!body?.event_type || !body.data) {
         return { inputs: [] };
       }
 

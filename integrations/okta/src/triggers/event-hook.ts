@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { OktaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventTargetSchema = z.object({
   targetId: z.string(),
@@ -130,7 +130,7 @@ export let eventHookTrigger = SlateTrigger.create(spec, {
 
       // Handle Okta verification challenge (one-time GET request)
       if (request.method === 'GET') {
-        let url = new URL(request.url);
+        let _url = new URL(request.url);
         let challenge = request.headers.get('x-okta-verification-challenge');
         if (challenge) {
           // Return the challenge as a JSON response — Okta expects this

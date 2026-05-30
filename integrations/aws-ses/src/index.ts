@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendEmail,
-  sendBulkEmail,
-  manageEmailTemplate,
-  manageContactList,
-  manageContact,
-  manageEmailIdentity,
-  manageSuppression,
   getAccount,
+  getMessageInsights,
   manageConfigurationSet,
+  manageContact,
+  manageContactList,
   manageDedicatedIpPool,
+  manageEmailIdentity,
+  manageEmailTemplate,
   manageEventDestination,
-  getMessageInsights
+  manageSuppression,
+  sendBulkEmail,
+  sendEmail
 } from './tools';
-import { suppressionChanges, identityChanges, inboundWebhook } from './triggers';
+import { identityChanges, inboundWebhook, suppressionChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

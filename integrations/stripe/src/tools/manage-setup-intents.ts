@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { StripeClient } from '../lib/client';
 import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let mapSetupIntent = (setupIntent: any) => ({
   setupIntentId: setupIntent.id,
@@ -38,7 +38,10 @@ export let manageSetupIntents = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('SetupIntent ID (required for get, confirm, cancel)'),
-      customerId: z.string().optional().describe('Customer ID to associate with the SetupIntent'),
+      customerId: z
+        .string()
+        .optional()
+        .describe('Customer ID to associate with the SetupIntent'),
       paymentMethodId: z
         .string()
         .optional()
@@ -82,11 +85,7 @@ export let manageSetupIntents = SlateTool.create(spec, {
         .describe('Associated PaymentMethod ID'),
       clientSecret: z.string().optional().nullable().describe('Client secret'),
       usage: z.string().optional().describe('SetupIntent usage'),
-      cancellationReason: z
-        .string()
-        .optional()
-        .nullable()
-        .describe('Cancellation reason'),
+      cancellationReason: z.string().optional().nullable().describe('Cancellation reason'),
       created: z.number().optional().describe('Creation timestamp'),
       setupIntents: z
         .array(
@@ -118,7 +117,8 @@ export let manageSetupIntents = SlateTool.create(spec, {
       if (ctx.input.paymentMethodId) params.payment_method = ctx.input.paymentMethodId;
       if (ctx.input.description) params.description = ctx.input.description;
       if (ctx.input.usage) params.usage = ctx.input.usage;
-      if (ctx.input.paymentMethodTypes) params.payment_method_types = ctx.input.paymentMethodTypes;
+      if (ctx.input.paymentMethodTypes)
+        params.payment_method_types = ctx.input.paymentMethodTypes;
       if (ctx.input.automaticPaymentMethods !== undefined) {
         params.automatic_payment_methods = { enabled: ctx.input.automaticPaymentMethods };
       }

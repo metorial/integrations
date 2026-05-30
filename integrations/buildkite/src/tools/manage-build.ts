@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageBuild = SlateTool.create(spec, {
   name: 'Manage Build',
@@ -32,7 +32,7 @@ export let manageBuild = SlateTool.create(spec, {
       organizationSlug: ctx.config.organizationSlug
     });
 
-    let b;
+    let b: any;
     if (ctx.input.action === 'cancel') {
       b = await client.cancelBuild(ctx.input.pipelineSlug, ctx.input.buildNumber);
     } else {

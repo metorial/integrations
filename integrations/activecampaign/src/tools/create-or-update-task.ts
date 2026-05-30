@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createOrUpdateTask = SlateTool.create(spec, {
   name: 'Create or Update Task',
@@ -62,7 +62,7 @@ export let createOrUpdateTask = SlateTool.create(spec, {
       status: ctx.input.status
     };
 
-    let result;
+    let result: any;
     if (ctx.input.taskId) {
       result = await client.updateTask(ctx.input.taskId, taskInput);
     } else {

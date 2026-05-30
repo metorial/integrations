@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { AlchemyClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let getWalletBalance = SlateTool.create(spec, {
   name: 'Get Wallet Balance',
@@ -59,7 +59,7 @@ Use this to quickly check how much native currency an address holds.`,
         transactionCount: txCount,
         gasPrice
       },
-      message: `Wallet \`${ctx.input.walletAddress}\` has **${balanceEth}** native tokens (${parseInt(txCount, 16)} transactions).`
+      message: `Wallet \`${ctx.input.walletAddress}\` has **${balanceEth}** native tokens (${Number.parseInt(txCount, 16)} transactions).`
     };
   })
   .build();

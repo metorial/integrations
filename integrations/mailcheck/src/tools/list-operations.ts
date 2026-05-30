@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let operationSummarySchema = z.object({
   operationName: z.string().describe('Unique name of the batch operation'),

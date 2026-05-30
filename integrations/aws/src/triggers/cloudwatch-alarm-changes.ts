@@ -1,8 +1,8 @@
 import { DescribeAlarmsCommand } from '@aws-sdk/client-cloudwatch';
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { clientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 let alarmInputSchema = z.object({
   alarmName: z.string().describe('Name of the alarm'),

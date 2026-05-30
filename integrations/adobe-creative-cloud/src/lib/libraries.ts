@@ -1,4 +1,4 @@
-import { AdobeAuthConfig, createAdobeAxios } from './client';
+import { type AdobeAuthConfig, createAdobeAxios } from './client';
 
 let LIBRARIES_BASE_URL = 'https://cc-libraries.adobe.io';
 

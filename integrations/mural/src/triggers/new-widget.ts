@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newWidgetTrigger = SlateTrigger.create(spec, {
   name: 'New Widget',
@@ -38,7 +38,7 @@ export let newWidgetTrigger = SlateTrigger.create(spec, {
 
     pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let muralId = ctx.state && ctx.state.muralId ? ctx.state.muralId : undefined;
+      let muralId = ctx.state?.muralId ? ctx.state.muralId : undefined;
 
       if (!muralId) {
         let workspaceId = ctx.config.workspaceId;
@@ -59,9 +59,8 @@ export let newWidgetTrigger = SlateTrigger.create(spec, {
       }
 
       let result = await client.listWidgets(muralId, { limit: 100 });
-      let knownWidgetIds: string[] =
-        ctx.state && ctx.state.knownWidgetIds ? ctx.state.knownWidgetIds : [];
-      let isFirstRun = !(ctx.state && ctx.state.knownWidgetIds);
+      let knownWidgetIds: string[] = ctx.state?.knownWidgetIds ? ctx.state.knownWidgetIds : [];
+      let isFirstRun = !ctx.state?.knownWidgetIds;
 
       let newWidgets = isFirstRun
         ? []

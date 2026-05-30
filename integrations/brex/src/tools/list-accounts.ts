@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let accountSchema = z.object({
   accountId: z.string().describe('Unique identifier of the account'),
@@ -79,7 +79,7 @@ export let listAccounts = SlateTool.create(spec, {
             isPrimary: false
           }))
         );
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Could not fetch card accounts');
       }
     }
@@ -106,7 +106,7 @@ export let listAccounts = SlateTool.create(spec, {
             isPrimary: primaryAccount ? a.id === primaryAccount.id : false
           }))
         );
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Could not fetch cash accounts');
       }
     }

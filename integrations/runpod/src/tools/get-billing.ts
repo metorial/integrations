@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RunPodClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let billingRecordSchema = z.object({
   amount: z.number().nullable().describe('Cost in USD'),

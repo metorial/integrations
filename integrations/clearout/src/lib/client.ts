@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class ClearoutClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; baseUrl: string }) {
+  constructor(config: { token: string; baseUrl: string }) {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
@@ -32,7 +32,7 @@ export class ClearoutClient {
     fileName: string;
     ignoreDuplicateFile?: boolean;
   }): Promise<Record<string, unknown>> {
-    let boundary = '----SlatesBoundary' + Date.now();
+    let boundary = `----SlatesBoundary${Date.now()}`;
     let bodyParts: string[] = [];
 
     bodyParts.push(
@@ -107,7 +107,7 @@ export class ClearoutClient {
     fileName: string;
     ignoreDuplicateFile?: boolean;
   }): Promise<Record<string, unknown>> {
-    let boundary = '----SlatesBoundary' + Date.now();
+    let boundary = `----SlatesBoundary${Date.now()}`;
     let bodyParts: string[] = [];
 
     bodyParts.push(

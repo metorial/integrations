@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WebexClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let teamOutputSchema = z.object({
   teamId: z.string().describe('Unique ID of the team'),

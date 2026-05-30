@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConnecteamClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTimeClock = SlateTool.create(spec, {
   name: 'Manage Time Clock',

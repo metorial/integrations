@@ -61,7 +61,7 @@ export class StudioClient {
   async createVideos(params: {
     workspaceId: string;
     projectId: string;
-    videos: Array<Record<string, string>>;
+    videos: Record<string, string>[];
   }): Promise<
     Array<{
       video_url: string;

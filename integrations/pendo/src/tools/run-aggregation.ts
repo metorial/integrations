@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PendoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let runAggregation = SlateTool.create(spec, {
   name: 'Run Aggregation',

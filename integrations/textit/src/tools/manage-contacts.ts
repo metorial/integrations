@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageContacts = SlateTool.create(spec, {
   name: 'Manage Contacts',
@@ -94,7 +94,7 @@ export let manageContacts = SlateTool.create(spec, {
       fields: ctx.input.fields
     };
 
-    let contact;
+    let contact: any;
     if (ctx.input.action === 'create') {
       contact = await client.createContact(data);
     } else {
@@ -111,7 +111,7 @@ export let manageContacts = SlateTool.create(spec, {
         status: contact.status,
         language: contact.language,
         urns: contact.urns,
-        groups: contact.groups.map(g => ({ groupUuid: g.uuid, name: g.name })),
+        groups: contact.groups.map((g: any) => ({ groupUuid: g.uuid, name: g.name })),
         fields: contact.fields,
         createdOn: contact.created_on,
         modifiedOn: contact.modified_on

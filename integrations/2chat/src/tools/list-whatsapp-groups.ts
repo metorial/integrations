@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TwoChatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let groupSchema = z.object({
   groupUuid: z.string().optional().describe('UUID of the group'),

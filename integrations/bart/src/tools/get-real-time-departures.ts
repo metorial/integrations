@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BartClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let estimateSchema = z.object({
   minutes: z.string().describe('Minutes until departure, or "Leaving" if departing now'),

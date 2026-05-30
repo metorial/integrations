@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listVideos,
+  createGroup,
+  createUser,
   createVideo,
+  deleteGroup,
+  deleteUser,
+  getGroup,
   getVideoDownload,
   getVideoTranscript,
-  listUsers,
-  createUser,
   inviteUsers,
-  updateUser,
-  deleteUser,
   listGroups,
-  getGroup,
-  createGroup,
-  updateGroup,
-  deleteGroup,
+  listPortfolios,
+  listUsers,
+  listVideos,
   manageGroupMembers,
-  manageVideoComments,
-  manageTagSessionNotes,
   managePortfolio,
-  listPortfolios
+  manageTagSessionNotes,
+  manageVideoComments,
+  updateGroup,
+  updateUser
 } from './tools';
-import { newVideo, inboundWebhook } from './triggers';
+import { inboundWebhook, newVideo } from './triggers';
 
 export let provider = Slate.create({
   spec,

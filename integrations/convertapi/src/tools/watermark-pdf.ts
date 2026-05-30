@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileSourceSchema = z
   .object({
@@ -74,19 +74,19 @@ Customize the watermark text, font size, color, opacity, and rotation angle.`,
     let parameters: Record<string, string> = {};
 
     if (ctx.input.watermarkText) {
-      parameters['WatermarkText'] = ctx.input.watermarkText;
+      parameters.WatermarkText = ctx.input.watermarkText;
     }
     if (ctx.input.watermarkFontSize) {
-      parameters['WatermarkFontSize'] = ctx.input.watermarkFontSize;
+      parameters.WatermarkFontSize = ctx.input.watermarkFontSize;
     }
     if (ctx.input.watermarkFontColor) {
-      parameters['WatermarkFontColor'] = ctx.input.watermarkFontColor;
+      parameters.WatermarkFontColor = ctx.input.watermarkFontColor;
     }
     if (ctx.input.watermarkOpacity) {
-      parameters['WatermarkTransparency'] = ctx.input.watermarkOpacity;
+      parameters.WatermarkTransparency = ctx.input.watermarkOpacity;
     }
     if (ctx.input.watermarkRotation) {
-      parameters['WatermarkRotation'] = ctx.input.watermarkRotation;
+      parameters.WatermarkRotation = ctx.input.watermarkRotation;
     }
 
     let result = await client.convert({

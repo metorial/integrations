@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class GristClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; serverUrl: string }) {
+  constructor(config: { token: string; serverUrl: string }) {
     this.axios = createAxios({
       baseURL: `${config.serverUrl}/api`,
       headers: {
@@ -15,7 +15,7 @@ export class GristClient {
 
   // ---- Organizations ----
 
-  async listOrgs(): Promise<Array<Record<string, any>>> {
+  async listOrgs(): Promise<Record<string, any>[]> {
     let response = await this.axios.get('/orgs');
     return response.data;
   }
@@ -45,7 +45,7 @@ export class GristClient {
 
   // ---- Workspaces ----
 
-  async listWorkspaces(orgId: number | string): Promise<Array<Record<string, any>>> {
+  async listWorkspaces(orgId: number | string): Promise<Record<string, any>[]> {
     let response = await this.axios.get(`/orgs/${orgId}/workspaces`);
     return response.data;
   }
@@ -155,7 +155,7 @@ export class GristClient {
     docId: string,
     tables: Array<{
       id?: string;
-      columns: Array<Record<string, any>>;
+      columns: Record<string, any>[];
     }>
   ): Promise<Record<string, any>> {
     let response = await this.axios.post(`/docs/${docId}/tables`, { tables });
@@ -395,7 +395,7 @@ export class GristClient {
 
   async applyUserActions(
     docId: string,
-    actions: Array<any[]>,
+    actions: any[][],
     noparse?: boolean
   ): Promise<Record<string, any>> {
     let response = await this.axios.post(`/docs/${docId}/apply`, actions, {

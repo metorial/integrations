@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getNetworkState,
-  getValidatorInfo,
-  getValidatorRewards,
-  getValidatorPerformance,
-  getValidatorDuties,
-  manageDashboardValidators,
-  getSlotDetails,
   getBlockDetails,
   getExecutionAddress,
+  getNetworkState,
+  getSlotDetails,
   getStakingEntities,
-  getSyncCommittee
+  getSyncCommittee,
+  getValidatorDuties,
+  getValidatorInfo,
+  getValidatorPerformance,
+  getValidatorRewards,
+  manageDashboardValidators
 } from './tools';
 import { validatorEvents } from './triggers';
 

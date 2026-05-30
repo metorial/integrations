@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoinrankingClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let coinResultSchema = z.object({
   coinUuid: z.string().describe('Unique identifier of the coin'),

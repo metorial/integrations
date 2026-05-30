@@ -20,7 +20,7 @@ export interface ListResponse<T> {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let headers: Record<string, string> = {
       Authorization: `Bearer ${config.token}`
     };

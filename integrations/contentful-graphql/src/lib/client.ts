@@ -40,7 +40,7 @@ export class ContentfulGraphQLClient {
   async query(query: string, variables?: Record<string, any>): Promise<any> {
     let body: Record<string, any> = { query };
     if (variables && Object.keys(variables).length > 0) {
-      body['variables'] = variables;
+      body.variables = variables;
     }
 
     let response = await this.http.post(this.graphqlPath(), body);

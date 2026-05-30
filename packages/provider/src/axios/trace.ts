@@ -205,16 +205,10 @@ let CORE_SECRET_KEY_ATOMS = [
 let URL_FORM_SECRET_KEY_ATOMS = [...CORE_SECRET_KEY_ATOMS, 'code'];
 
 let buildKeyBoundaryPattern = (atoms: string[], flags: string) =>
-  new RegExp(
-    `(?:^|[^A-Za-z0-9])(?:${atoms.join('|')})(?=[^A-Za-z0-9]|$)`,
-    flags
-  );
+  new RegExp(`(?:^|[^A-Za-z0-9])(?:${atoms.join('|')})(?=[^A-Za-z0-9]|$)`, flags);
 
 let SECRET_KEY_PATTERN = buildKeyBoundaryPattern(CORE_SECRET_KEY_ATOMS, 'i');
-let URL_FORM_SECRET_KEY_PATTERN = buildKeyBoundaryPattern(
-  URL_FORM_SECRET_KEY_ATOMS,
-  'i'
-);
+let URL_FORM_SECRET_KEY_PATTERN = buildKeyBoundaryPattern(URL_FORM_SECRET_KEY_ATOMS, 'i');
 
 // Explicit non-secret keys that would otherwise trip the patterns above because
 // they embed a secret-sounding token (e.g. `token_type` contains `token`).
@@ -307,7 +301,8 @@ let HTTP_AUTH_SCHEME_PATTERN =
 
 // Generic `key=value` scan; the key is filtered via isUrlFormSecretKeyName at replace time
 // so we can apply a deny-list for compound keys like `token_type` or `grant_type`.
-let GENERIC_KEY_VALUE_PATTERN = /(?<![A-Za-z0-9])([A-Za-z0-9][A-Za-z0-9_\-.]*)(\s*=\s*)([^&#\s;]+)/g;
+let GENERIC_KEY_VALUE_PATTERN =
+  /(?<![A-Za-z0-9])([A-Za-z0-9][A-Za-z0-9_\-.]*)(\s*=\s*)([^&#\s;]+)/g;
 
 // Generic `"key": "value"` scan; the key is filtered via isSecretKeyName at replace time.
 let GENERIC_JSON_KEY_VALUE_PATTERN =
@@ -438,9 +433,7 @@ let redactStructuredValue = (value: unknown, depth = 0): unknown => {
         .slice(0, STRUCTURED_ENTRY_LIMIT)
         .map(([key, entry]) => [
           key,
-          isSecretKeyName(key)
-            ? REDACTED_VALUE
-            : redactStructuredValue(entry, depth + 1)
+          isSecretKeyName(key) ? REDACTED_VALUE : redactStructuredValue(entry, depth + 1)
         ])
     );
   }
@@ -451,7 +444,7 @@ let redactStructuredValue = (value: unknown, depth = 0): unknown => {
 let maybeParseJson = (text: string, contentType?: string) => {
   let trimmed = text.trim();
   if (!trimmed) return null;
-  if (!contentType?.includes('json') && !/^[\[{]/.test(trimmed)) {
+  if (!contentType?.includes('json') && !/^[[{]/.test(trimmed)) {
     return null;
   }
 
@@ -541,7 +534,7 @@ let decodeRedactedMarker = (value: string) =>
     : value.split(REDACTED_ENCODED).join(REDACTED_VALUE);
 
 let redactHashFragment = (hash: string) => {
-  if (!hash || !hash.includes('=')) return hash;
+  if (!hash?.includes('=')) return hash;
   let withoutHash = hash.startsWith('#') ? hash.slice(1) : hash;
   let redacted = withoutHash.replace(
     /(?<![A-Za-z0-9])([A-Za-z0-9][A-Za-z0-9_\-.]*)=([^&]*)/g,
@@ -657,7 +650,7 @@ let clearTraceDraft = (
   if (!config) return;
 
   if (config.__slatesHttpTraceDraft === draft) {
-    delete config.__slatesHttpTraceDraft;
+    config.__slatesHttpTraceDraft = undefined;
   }
 
   if (isObjectLike(config)) {

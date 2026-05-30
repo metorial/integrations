@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let layerSchema = z.object({
   type: z.string().describe('Layer type (e.g. "canvas", "text", "image")'),

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { AffinityClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listEvents = SlateTrigger.create(spec, {
   name: 'List Events',
@@ -54,7 +54,7 @@ export let listEvents = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
 
       let type = data.type as string;
-      if (!type || !type.startsWith('list.')) {
+      if (!type?.startsWith('list.')) {
         return { inputs: [] };
       }
 

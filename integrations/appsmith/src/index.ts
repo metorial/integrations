@@ -2,18 +2,18 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   checkHealth,
-  getInstanceInfo,
-  triggerWorkflow,
-  listWorkspaces,
-  manageWorkspace,
-  listApplications,
-  manageApplication,
   exportApplication,
+  getCurrentUser,
+  getInstanceInfo,
   importApplication,
-  listPages,
+  listApplications,
   listDatasources,
+  listPages,
+  listWorkspaces,
+  manageApplication,
+  manageWorkspace,
   queryAuditLogs,
-  getCurrentUser
+  triggerWorkflow
 } from './tools';
 import { workflowEvent } from './triggers';
 

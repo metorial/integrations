@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { ShopifyClient } from '../lib/client';
 import { shopifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let metafieldResourcePaths: Record<string, string> = {
   collection: 'collections',
@@ -59,10 +59,16 @@ export let manageMetafields = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Owner resource ID. Required for all resource types except shop.'),
-      metafieldId: z.string().optional().describe('Metafield ID (required for get/update/delete)'),
+      metafieldId: z
+        .string()
+        .optional()
+        .describe('Metafield ID (required for get/update/delete)'),
       namespace: z.string().optional().describe('Metafield namespace'),
       key: z.string().optional().describe('Metafield key'),
-      value: z.string().optional().describe('Metafield value. Shopify stores values as strings.'),
+      value: z
+        .string()
+        .optional()
+        .describe('Metafield value. Shopify stores values as strings.'),
       type: z
         .string()
         .optional()

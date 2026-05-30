@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ClassroomClient } from '../lib/client';
-import { spec } from '../spec';
-import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
+import { ClassroomClient } from '../lib/client';
+import { googleClassroomActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 let guardianSchema = z.object({
   guardianId: z.string().optional().describe('ID of the guardian relationship'),

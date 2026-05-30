@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  textToSpeechTool,
-  speechToTextTool,
-  listVoicesTool,
-  getVoiceTool,
-  editVoiceTool,
+  createDubbingTool,
   deleteVoiceTool,
   designVoiceTool,
+  editVoiceTool,
   generateSoundEffectTool,
-  createDubbingTool,
   getDubbingTool,
-  isolateAudioTool,
-  listModelsTool,
-  listHistoryTool,
   getUserTool,
-  listPronunciationDictionariesTool
+  getVoiceTool,
+  isolateAudioTool,
+  listHistoryTool,
+  listModelsTool,
+  listPronunciationDictionariesTool,
+  listVoicesTool,
+  speechToTextTool,
+  textToSpeechTool
 } from './tools';
 import {
   conversationEventsTrigger,
-  voiceEventsTrigger,
-  transcriptionCompletedTrigger
+  transcriptionCompletedTrigger,
+  voiceEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

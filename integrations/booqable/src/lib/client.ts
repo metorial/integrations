@@ -17,7 +17,7 @@ export interface FilterParams {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: BooqableClientConfig) {
+  constructor(config: BooqableClientConfig) {
     this.axios = createAxios({
       baseURL: `https://${config.companySlug}.booqable.com/api/4`,
       headers: {
@@ -52,7 +52,7 @@ export class Client {
     }
 
     if (options?.include?.length) {
-      params['include'] = options.include.join(',');
+      params.include = options.include.join(',');
     }
 
     if (options?.fields) {
@@ -62,7 +62,7 @@ export class Client {
     }
 
     if (options?.sort) {
-      params['sort'] = options.sort;
+      params.sort = options.sort;
     }
 
     return params;

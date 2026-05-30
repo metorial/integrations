@@ -8,7 +8,7 @@ export interface CloseClientConfig {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: CloseClientConfig) {
+  constructor(config: CloseClientConfig) {
     let authHeader: string;
     if (config.authType === 'api_key') {
       authHeader = `Basic ${btoa(`${config.token}:`)}`;
@@ -34,10 +34,10 @@ export class Client {
     query?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['_limit'] = String(params.limit);
-    if (params?.skip) queryParams['_skip'] = String(params.skip);
-    if (params?.fields?.length) queryParams['_fields'] = params.fields.join(',');
-    if (params?.query) queryParams['query'] = params.query;
+    if (params?.limit) queryParams._limit = String(params.limit);
+    if (params?.skip) queryParams._skip = String(params.skip);
+    if (params?.fields?.length) queryParams._fields = params.fields.join(',');
+    if (params?.query) queryParams.query = params.query;
 
     let response = await this.axios.get('/lead/', { params: queryParams });
     return response.data;
@@ -45,7 +45,7 @@ export class Client {
 
   async getLead(leadId: string, fields?: string[]): Promise<any> {
     let params: Record<string, string> = {};
-    if (fields?.length) params['_fields'] = fields.join(',');
+    if (fields?.length) params._fields = fields.join(',');
 
     let response = await this.axios.get(`/lead/${leadId}/`, { params });
     return response.data;
@@ -81,9 +81,9 @@ export class Client {
     leadId?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['_limit'] = String(params.limit);
-    if (params?.skip) queryParams['_skip'] = String(params.skip);
-    if (params?.leadId) queryParams['lead_id'] = params.leadId;
+    if (params?.limit) queryParams._limit = String(params.limit);
+    if (params?.skip) queryParams._skip = String(params.skip);
+    if (params?.leadId) queryParams.lead_id = params.leadId;
 
     let response = await this.axios.get('/contact/', { params: queryParams });
     return response.data;
@@ -121,14 +121,14 @@ export class Client {
     orderBy?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['_limit'] = String(params.limit);
-    if (params?.skip) queryParams['_skip'] = String(params.skip);
-    if (params?.leadId) queryParams['lead_id'] = params.leadId;
-    if (params?.userId) queryParams['user_id'] = params.userId;
-    if (params?.statusId) queryParams['status_id'] = params.statusId;
-    if (params?.statusType) queryParams['status_type'] = params.statusType;
-    if (params?.query) queryParams['query'] = params.query;
-    if (params?.orderBy) queryParams['_order_by'] = params.orderBy;
+    if (params?.limit) queryParams._limit = String(params.limit);
+    if (params?.skip) queryParams._skip = String(params.skip);
+    if (params?.leadId) queryParams.lead_id = params.leadId;
+    if (params?.userId) queryParams.user_id = params.userId;
+    if (params?.statusId) queryParams.status_id = params.statusId;
+    if (params?.statusType) queryParams.status_type = params.statusType;
+    if (params?.query) queryParams.query = params.query;
+    if (params?.orderBy) queryParams._order_by = params.orderBy;
 
     let response = await this.axios.get('/opportunity/', { params: queryParams });
     return response.data;
@@ -164,13 +164,12 @@ export class Client {
     type?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['_limit'] = String(params.limit);
-    if (params?.skip) queryParams['_skip'] = String(params.skip);
-    if (params?.leadId) queryParams['lead_id'] = params.leadId;
-    if (params?.assignedTo) queryParams['_assigned_to'] = params.assignedTo;
-    if (params?.isComplete !== undefined)
-      queryParams['is_complete'] = String(params.isComplete);
-    if (params?.type) queryParams['_type'] = params.type;
+    if (params?.limit) queryParams._limit = String(params.limit);
+    if (params?.skip) queryParams._skip = String(params.skip);
+    if (params?.leadId) queryParams.lead_id = params.leadId;
+    if (params?.assignedTo) queryParams._assigned_to = params.assignedTo;
+    if (params?.isComplete !== undefined) queryParams.is_complete = String(params.isComplete);
+    if (params?.type) queryParams._type = params.type;
 
     let response = await this.axios.get('/task/', { params: queryParams });
     return response.data;
@@ -209,15 +208,15 @@ export class Client {
     dateCreatedLt?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['_limit'] = String(params.limit);
-    if (params?.skip) queryParams['_skip'] = String(params.skip);
-    if (params?.leadId) queryParams['lead_id'] = params.leadId;
-    if (params?.userId) queryParams['user_id'] = params.userId;
-    if (params?.contactId) queryParams['contact_id'] = params.contactId;
-    if (params?.type) queryParams['_type'] = params.type;
-    if (params?.typeIn?.length) queryParams['_type__in'] = params.typeIn.join(',');
-    if (params?.dateCreatedGt) queryParams['date_created__gt'] = params.dateCreatedGt;
-    if (params?.dateCreatedLt) queryParams['date_created__lt'] = params.dateCreatedLt;
+    if (params?.limit) queryParams._limit = String(params.limit);
+    if (params?.skip) queryParams._skip = String(params.skip);
+    if (params?.leadId) queryParams.lead_id = params.leadId;
+    if (params?.userId) queryParams.user_id = params.userId;
+    if (params?.contactId) queryParams.contact_id = params.contactId;
+    if (params?.type) queryParams._type = params.type;
+    if (params?.typeIn?.length) queryParams._type__in = params.typeIn.join(',');
+    if (params?.dateCreatedGt) queryParams.date_created__gt = params.dateCreatedGt;
+    if (params?.dateCreatedLt) queryParams.date_created__lt = params.dateCreatedLt;
 
     let response = await this.axios.get('/activity/', { params: queryParams });
     return response.data;
@@ -263,10 +262,10 @@ export class Client {
     userId?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['_limit'] = String(params.limit);
-    if (params?.skip) queryParams['_skip'] = String(params.skip);
-    if (params?.leadId) queryParams['lead_id'] = params.leadId;
-    if (params?.userId) queryParams['user_id'] = params.userId;
+    if (params?.limit) queryParams._limit = String(params.limit);
+    if (params?.skip) queryParams._skip = String(params.skip);
+    if (params?.leadId) queryParams.lead_id = params.leadId;
+    if (params?.userId) queryParams.user_id = params.userId;
 
     let response = await this.axios.get('/activity/emailthread/', { params: queryParams });
     return response.data;
@@ -288,9 +287,9 @@ export class Client {
 
   async listSms(params?: { limit?: number; skip?: number; leadId?: string }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['_limit'] = String(params.limit);
-    if (params?.skip) queryParams['_skip'] = String(params.skip);
-    if (params?.leadId) queryParams['lead_id'] = params.leadId;
+    if (params?.limit) queryParams._limit = String(params.limit);
+    if (params?.skip) queryParams._skip = String(params.skip);
+    if (params?.leadId) queryParams.lead_id = params.leadId;
 
     let response = await this.axios.get('/activity/sms/', { params: queryParams });
     return response.data;
@@ -300,7 +299,7 @@ export class Client {
 
   async listSmartViews(params?: { type?: string }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.type) queryParams['type'] = params.type;
+    if (params?.type) queryParams.type = params.type;
 
     let response = await this.axios.get('/saved_search/', { params: queryParams });
     return response.data;
@@ -356,10 +355,9 @@ export class Client {
     isArchived?: boolean;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['_limit'] = String(params.limit);
-    if (params?.skip) queryParams['_skip'] = String(params.skip);
-    if (params?.isArchived !== undefined)
-      queryParams['is_archived'] = String(params.isArchived);
+    if (params?.limit) queryParams._limit = String(params.limit);
+    if (params?.skip) queryParams._skip = String(params.skip);
+    if (params?.isArchived !== undefined) queryParams.is_archived = String(params.isArchived);
 
     let response = await this.axios.get('/email_template/', { params: queryParams });
     return response.data;
@@ -410,8 +408,8 @@ export class Client {
 
   async listUsers(params?: { limit?: number; skip?: number }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['_limit'] = String(params.limit);
-    if (params?.skip) queryParams['_skip'] = String(params.skip);
+    if (params?.limit) queryParams._limit = String(params.limit);
+    if (params?.skip) queryParams._skip = String(params.skip);
 
     let response = await this.axios.get('/user/', { params: queryParams });
     return response.data;
@@ -459,12 +457,12 @@ export class Client {
     dateUpdatedLt?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['_limit'] = String(params.limit);
-    if (params?.skip) queryParams['_skip'] = String(params.skip);
-    if (params?.objectType) queryParams['object_type'] = params.objectType;
-    if (params?.action) queryParams['action'] = params.action;
-    if (params?.dateUpdatedGt) queryParams['date_updated__gt'] = params.dateUpdatedGt;
-    if (params?.dateUpdatedLt) queryParams['date_updated__lt'] = params.dateUpdatedLt;
+    if (params?.limit) queryParams._limit = String(params.limit);
+    if (params?.skip) queryParams._skip = String(params.skip);
+    if (params?.objectType) queryParams.object_type = params.objectType;
+    if (params?.action) queryParams.action = params.action;
+    if (params?.dateUpdatedGt) queryParams.date_updated__gt = params.dateUpdatedGt;
+    if (params?.dateUpdatedLt) queryParams.date_updated__lt = params.dateUpdatedLt;
 
     let response = await this.axios.get('/event/', { params: queryParams });
     return response.data;

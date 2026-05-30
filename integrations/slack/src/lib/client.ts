@@ -1,17 +1,17 @@
 import { createAxios } from 'slates';
 import { slackApiError, slackServiceError } from './errors';
 import type {
-  SlackResponse,
-  SlackMessage,
+  SlackBookmark,
   SlackConversation,
-  SlackUser,
   SlackFile,
-  SlackScheduledMessage,
+  SlackMessage,
   SlackPin,
-  SlackUserGroup,
   SlackReminder,
+  SlackResponse,
+  SlackScheduledMessage,
   SlackTeamInfo,
-  SlackBookmark
+  SlackUser,
+  SlackUserGroup
 } from './types';
 
 export class SlackClient {

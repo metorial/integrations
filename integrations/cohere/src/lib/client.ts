@@ -24,7 +24,7 @@ export class CohereClient {
     model: string;
     messages: Array<{
       role: string;
-      content: string | Array<Record<string, any>>;
+      content: string | Record<string, any>[];
     }>;
     temperature?: number;
     maxTokens?: number;
@@ -34,8 +34,8 @@ export class CohereClient {
     seed?: number;
     safetyMode?: string;
     responseFormat?: Record<string, any>;
-    tools?: Array<Record<string, any>>;
-    documents?: Array<Record<string, any>>;
+    tools?: Record<string, any>[];
+    documents?: Record<string, any>[];
     thinking?: Record<string, any>;
   }) {
     let body: Record<string, any> = {

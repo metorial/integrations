@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ActiveTrailClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listTemplates = SlateTool.create(spec, {
   name: 'List Templates',

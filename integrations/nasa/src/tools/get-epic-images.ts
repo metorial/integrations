@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NasaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let epicImageSchema = z.object({
   identifier: z.string().describe('Unique image identifier'),

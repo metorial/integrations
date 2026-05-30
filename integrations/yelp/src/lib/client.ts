@@ -1,4 +1,4 @@
-import { createAxios, axios } from 'slates';
+import { createAxios } from 'slates';
 
 let placesAxios = createAxios({
   baseURL: 'https://api.yelp.com/v3'

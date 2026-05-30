@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 let outputSchema = z.object({
@@ -59,7 +59,7 @@ export let auth = SlateAuth.create()
         tokenType: 'telemetry' as const
       }
     }),
-    getProfile: async (ctx: { output: AuthOutput; input: { token: string } }) => {
+    getProfile: async (_ctx: { output: AuthOutput; input: { token: string } }) => {
       return {
         profile: {
           name: 'Better Stack Telemetry',
@@ -81,7 +81,7 @@ export let auth = SlateAuth.create()
         tokenType: 'global' as const
       }
     }),
-    getProfile: async (ctx: { output: AuthOutput; input: { token: string } }) => {
+    getProfile: async (_ctx: { output: AuthOutput; input: { token: string } }) => {
       return {
         profile: {
           name: 'Better Stack (Global)',

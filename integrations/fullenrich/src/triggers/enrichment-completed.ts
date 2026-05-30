@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let emailSchema = z.object({
   email: z.string().describe('Email address'),
@@ -134,7 +134,7 @@ export let enrichmentCompleted = SlateTrigger.create(spec, {
     },
 
     handleEvent: async ctx => {
-      let contacts: Array<z.infer<typeof contactResultSchema>> = [];
+      let contacts: z.infer<typeof contactResultSchema>[] = [];
 
       if (ctx.input.eventType === 'contact_finished' && ctx.input.contact) {
         contacts = [ctx.input.contact];

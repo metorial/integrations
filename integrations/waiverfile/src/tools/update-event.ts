@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WaiverFileClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateEvent = SlateTool.create(spec, {
   name: 'Update Event',

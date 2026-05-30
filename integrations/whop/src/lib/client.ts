@@ -5,7 +5,7 @@ let BASE_URL = 'https://api.whop.com/api/v1';
 export class WhopClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

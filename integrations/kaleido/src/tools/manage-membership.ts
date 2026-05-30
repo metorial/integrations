@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { KaleidoClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageMembership = SlateTool.create(spec, {
   name: 'Manage Membership',
@@ -61,7 +61,7 @@ Each membership can own nodes, services, and application credentials within envi
 
       return {
         output: { memberships: mapped },
-        message: `Found **${mapped.length}** membership(s).${mapped.length > 0 ? ' ' + mapped.map(m => `**${m.orgName}**`).join(', ') : ''}`
+        message: `Found **${mapped.length}** membership(s).${mapped.length > 0 ? ` ${mapped.map(m => `**${m.orgName}**`).join(', ')}` : ''}`
       };
     }
 

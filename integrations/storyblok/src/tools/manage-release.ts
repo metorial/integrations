@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StoryblokClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageRelease = SlateTool.create(spec, {
   name: 'Manage Release',
@@ -99,7 +99,7 @@ export let manageRelease = SlateTool.create(spec, {
     if (action === 'merge') {
       await client.mergeRelease(releaseId);
       return {
-        output: { releaseId: parseInt(releaseId, 10), released: true },
+        output: { releaseId: Number.parseInt(releaseId, 10), released: true },
         message: `Merged release \`${releaseId}\`.`
       };
     }
@@ -107,7 +107,7 @@ export let manageRelease = SlateTool.create(spec, {
     // action === 'delete'
     await client.deleteRelease(releaseId);
     return {
-      output: { releaseId: parseInt(releaseId, 10) },
+      output: { releaseId: Number.parseInt(releaseId, 10) },
       message: `Deleted release \`${releaseId}\`.`
     };
   })

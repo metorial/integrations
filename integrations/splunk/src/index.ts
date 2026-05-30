@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  runSearch,
-  getSearchResults,
-  listSavedSearches,
+  createIndex,
+  createKVStoreCollection,
   createSavedSearch,
-  updateSavedSearch,
+  deleteKVStoreCollection,
+  deleteKVStoreRecords,
   deleteSavedSearch,
   dispatchSavedSearch,
+  getCurrentUser,
+  getIndex,
+  getSearchResults,
+  getServerInfo,
+  listFiredAlerts,
+  listIndexes,
+  listKVStoreCollections,
+  listSavedSearches,
+  listUsers,
+  queryKVStoreRecords,
+  runSearch,
   sendHecEvent,
   sendHecRawEvent,
-  listIndexes,
-  createIndex,
-  getIndex,
-  listKVStoreCollections,
-  createKVStoreCollection,
-  deleteKVStoreCollection,
-  queryKVStoreRecords,
-  upsertKVStoreRecord,
-  deleteKVStoreRecords,
-  listUsers,
-  getCurrentUser,
-  getServerInfo,
-  listFiredAlerts
+  updateSavedSearch,
+  upsertKVStoreRecord
 } from './tools';
 import { alertFired } from './triggers';
 

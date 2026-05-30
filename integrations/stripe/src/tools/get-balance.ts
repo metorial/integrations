@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { StripeClient } from '../lib/client';
 import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let balanceAmountSchema = z.object({
   amount: z.number().describe('Amount in smallest currency unit'),

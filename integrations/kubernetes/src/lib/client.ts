@@ -134,7 +134,7 @@ export class KubeClient {
       Accept: 'application/json'
     };
     if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+      headers.Authorization = `Bearer ${this.token}`;
     }
 
     this.axios = createAxios({
@@ -187,10 +187,10 @@ export class KubeClient {
     let path = this.buildResourcePath(rt, ns);
 
     let params: Record<string, string> = {};
-    if (options?.labelSelector) params['labelSelector'] = options.labelSelector;
-    if (options?.fieldSelector) params['fieldSelector'] = options.fieldSelector;
-    if (options?.limit) params['limit'] = String(options.limit);
-    if (options?.continueToken) params['continue'] = options.continueToken;
+    if (options?.labelSelector) params.labelSelector = options.labelSelector;
+    if (options?.fieldSelector) params.fieldSelector = options.fieldSelector;
+    if (options?.limit) params.limit = String(options.limit);
+    if (options?.continueToken) params.continue = options.continueToken;
 
     let response = await this.axios.get(path, { params });
     return response.data;
@@ -325,7 +325,7 @@ export class KubeClient {
     }
 
     let ns = info.namespaced ? this.resolveNamespace(namespace) : undefined;
-    let path = this.buildResourcePath(rt, ns, resourceName) + '/scale';
+    let path = `${this.buildResourcePath(rt, ns, resourceName)}/scale`;
 
     let response = await this.axios.get(path);
     return response.data;
@@ -344,7 +344,7 @@ export class KubeClient {
     }
 
     let ns = info.namespaced ? this.resolveNamespace(namespace) : undefined;
-    let path = this.buildResourcePath(rt, ns, resourceName) + '/scale';
+    let path = `${this.buildResourcePath(rt, ns, resourceName)}/scale`;
 
     let response = await this.axios.patch(
       path,
@@ -372,10 +372,10 @@ export class KubeClient {
     let path = `/api/v1/namespaces/${ns}/pods/${podName}/log`;
 
     let params: Record<string, string> = {};
-    if (options?.container) params['container'] = options.container;
-    if (options?.tailLines) params['tailLines'] = String(options.tailLines);
-    if (options?.sinceSeconds) params['sinceSeconds'] = String(options.sinceSeconds);
-    if (options?.previous) params['previous'] = 'true';
+    if (options?.container) params.container = options.container;
+    if (options?.tailLines) params.tailLines = String(options.tailLines);
+    if (options?.sinceSeconds) params.sinceSeconds = String(options.sinceSeconds);
+    if (options?.previous) params.previous = 'true';
 
     let response = await this.axios.get(path, {
       params,
@@ -420,8 +420,8 @@ export class KubeClient {
     let path = `/api/v1/namespaces/${ns}/events`;
 
     let params: Record<string, string> = {};
-    if (options?.fieldSelector) params['fieldSelector'] = options.fieldSelector;
-    if (options?.limit) params['limit'] = String(options.limit);
+    if (options?.fieldSelector) params.fieldSelector = options.fieldSelector;
+    if (options?.limit) params.limit = String(options.limit);
 
     let response = await this.axios.get(path, { params });
     return response.data;
@@ -435,9 +435,9 @@ export class KubeClient {
     let path = `/api/v1/events`;
 
     let params: Record<string, string> = {};
-    if (options?.fieldSelector) params['fieldSelector'] = options.fieldSelector;
-    if (options?.limit) params['limit'] = String(options.limit);
-    if (options?.labelSelector) params['labelSelector'] = options.labelSelector;
+    if (options?.fieldSelector) params.fieldSelector = options.fieldSelector;
+    if (options?.limit) params.limit = String(options.limit);
+    if (options?.labelSelector) params.labelSelector = options.labelSelector;
 
     let response = await this.axios.get(path, { params });
     return response.data;
@@ -516,7 +516,7 @@ export class KubeClient {
     }
 
     let ns = info.namespaced ? this.resolveNamespace(namespace) : undefined;
-    let path = this.buildResourcePath(rt, ns, resourceName) + '/status';
+    let path = `${this.buildResourcePath(rt, ns, resourceName)}/status`;
 
     let response = await this.axios.get(path);
     return response.data;
@@ -560,7 +560,7 @@ export let kindToResourceType = (kind: string): string => {
     MutatingWebhookConfiguration: 'mutatingwebhookconfigurations',
     ValidatingWebhookConfiguration: 'validatingwebhookconfigurations'
   };
-  return map[kind] || kind.toLowerCase() + 's';
+  return map[kind] || `${kind.toLowerCase()}s`;
 };
 
 export let createKubeClient = (

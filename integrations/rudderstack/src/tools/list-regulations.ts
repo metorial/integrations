@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ControlPlaneClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listRegulations = SlateTool.create(spec, {
   name: 'List Regulations',

@@ -11,7 +11,7 @@ export class FeatheryClient {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(params: { token: string; region?: string }) {
-    let baseURL = BASE_URLS[params.region || 'us'] || BASE_URLS['us'];
+    let baseURL = BASE_URLS[params.region || 'us'] || BASE_URLS.us;
     this.axios = createAxios({
       baseURL,
       headers: {

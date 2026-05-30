@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ProcFuClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createPodioItem = SlateTool.create(spec, {
   name: 'Create Podio Item',

@@ -15,7 +15,7 @@ export interface PaginationParams {
 export interface TemplateDocument {
   name: string;
   file: string;
-  fields?: Array<Record<string, any>>;
+  fields?: Record<string, any>[];
 }
 
 export interface CreateTemplatePdfParams {
@@ -94,7 +94,7 @@ export interface SubmissionSubmitter {
   requirePhone2fa?: boolean;
   requireEmail2fa?: boolean;
   message?: { subject?: string; body?: string };
-  fields?: Array<Record<string, any>>;
+  fields?: Record<string, any>[];
 }
 
 export interface CreateSubmissionParams {
@@ -113,11 +113,11 @@ export interface CreateSubmissionParams {
 
 export interface CreateSubmissionFromPdfParams {
   name?: string;
-  documents: Array<{ name: string; file: string; fields?: Array<Record<string, any>> }>;
+  documents: Array<{ name: string; file: string; fields?: Record<string, any>[] }>;
   submitters: SubmissionSubmitter[];
   sendEmail?: boolean;
   order?: string;
-  fields?: Array<Record<string, any>>;
+  fields?: Record<string, any>[];
   message?: { subject?: string; body?: string };
   flatten?: boolean;
   mergeDocuments?: boolean;
@@ -130,7 +130,7 @@ export interface CreateSubmissionFromHtmlParams {
   name?: string;
   sendEmail?: boolean;
   order?: string;
-  fields?: Array<Record<string, any>>;
+  fields?: Record<string, any>[];
   mergeDocuments?: boolean;
 }
 
@@ -168,7 +168,7 @@ export interface UpdateSubmitterParams {
   requirePhone2fa?: boolean;
   requireEmail2fa?: boolean;
   message?: { subject?: string; body?: string };
-  fields?: Array<Record<string, any>>;
+  fields?: Record<string, any>[];
 }
 
 // Helper to convert camelCase to snake_case

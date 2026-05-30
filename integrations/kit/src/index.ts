@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getAccount,
-  listSubscribers,
-  getSubscriber,
+  addSubscriberToForm,
   createSubscriber,
-  updateSubscriber,
-  unsubscribe,
+  getAccount,
+  getBroadcastStats,
+  getSubscriber,
+  listEmailTemplates,
+  listForms,
+  listSegments,
+  listSubscribers,
+  manageBroadcasts,
+  manageCustomFields,
+  managePurchases,
+  manageSequences,
   manageTags,
   tagSubscriber,
-  manageCustomFields,
-  listForms,
-  addSubscriberToForm,
-  manageBroadcasts,
-  getBroadcastStats,
-  manageSequences,
-  listSegments,
-  managePurchases,
-  listEmailTemplates
+  unsubscribe,
+  updateSubscriber
 } from './tools';
-import { subscriberEvent, tagEvent, purchaseEvent, formSubscribeEvent } from './triggers';
+import { formSubscribeEvent, purchaseEvent, subscriberEvent, tagEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,

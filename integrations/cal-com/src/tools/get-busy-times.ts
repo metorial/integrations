@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getBusyTimes = SlateTool.create(spec, {
   name: 'Get Busy Times',
@@ -33,7 +33,7 @@ export let getBusyTimes = SlateTool.create(spec, {
       dateFrom: ctx.input.dateFrom,
       dateTo: ctx.input.dateTo
     };
-    if (ctx.input.loggedInUsersTz) params['loggedInUsersTz'] = ctx.input.loggedInUsersTz;
+    if (ctx.input.loggedInUsersTz) params.loggedInUsersTz = ctx.input.loggedInUsersTz;
 
     let busyTimes = await client.getBusyTimes(params);
 

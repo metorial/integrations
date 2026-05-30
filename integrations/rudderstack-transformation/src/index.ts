@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createTransformation,
-  getTransformation,
-  listTransformations,
-  updateTransformation,
-  deleteTransformation,
-  listTransformationVersions,
   createLibrary,
-  getLibrary,
-  listLibraries,
-  updateLibrary,
+  createTransformation,
   deleteLibrary,
+  deleteTransformation,
+  getLibrary,
+  getTransformation,
+  listLibraries,
   listLibraryVersions,
-  publish
+  listTransformations,
+  listTransformationVersions,
+  publish,
+  updateLibrary,
+  updateTransformation
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

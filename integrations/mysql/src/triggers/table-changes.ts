@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
-import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let tableChanges = SlateTrigger.create(spec, {
   name: 'Table Row Changes',
@@ -60,7 +60,7 @@ export let tableChanges = SlateTrigger.create(spec, {
         if (trackingColumnType === 'timestamp' || trackingColumnType === 'datetime') {
           comparison = `${escapedCol} > '${lastValue.replace(/'/g, "\\'")}'`;
         } else {
-          comparison = `${escapedCol} > ${parseInt(lastValue, 10)}`;
+          comparison = `${escapedCol} > ${Number.parseInt(lastValue, 10)}`;
         }
         sql = `SELECT * FROM ${fullTableName} WHERE ${comparison} ORDER BY ${escapedCol} ASC LIMIT ${batchSize}`;
       } else {
@@ -108,8 +108,7 @@ export let tableChanges = SlateTrigger.create(spec, {
 
     handleEvent: async ctx => {
       let row = ctx.input.row;
-      let rowId =
-        row['id'] || row['_id'] || row['uid'] || row['uuid'] || ctx.input.trackingColumnValue;
+      let rowId = row.id || row._id || row.uid || row.uuid || ctx.input.trackingColumnValue;
 
       return {
         type: `row.${ctx.input.changeType}`,

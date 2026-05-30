@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PiloterrClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let domainWhois = SlateTool.create(spec, {
   name: 'Domain WHOIS Lookup',
@@ -96,8 +96,8 @@ export let checkDomainReputation = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new PiloterrClient(ctx.auth.token);
-    let maliciousResult: any = undefined;
-    let dnsblResult: any = undefined;
+    let maliciousResult: any;
+    let dnsblResult: any;
 
     if (ctx.input.checkType === 'malicious' || ctx.input.checkType === 'both') {
       maliciousResult = await client.domainMalicious({ query: ctx.input.domainOrIp });

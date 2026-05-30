@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TypefullyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listSocialSets = SlateTool.create(spec, {
   name: 'List Social Sets',

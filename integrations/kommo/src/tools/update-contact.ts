@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
-import { KommoClient } from '../lib/client';
-import { spec } from '../spec';
-import {
-  customFieldValueSchema,
-  tagSchema,
-  buildCustomFieldsPayload,
-  buildTagsPayload
-} from '../lib/schemas';
 import { z } from 'zod';
+import { KommoClient } from '../lib/client';
+import {
+  buildCustomFieldsPayload,
+  buildTagsPayload,
+  customFieldValueSchema,
+  tagSchema
+} from '../lib/schemas';
+import { spec } from '../spec';
 
 export let updateContactTool = SlateTool.create(spec, {
   name: 'Update Contact',
@@ -44,20 +44,20 @@ export let updateContactTool = SlateTool.create(spec, {
 
     let payload: Record<string, any> = {};
 
-    if (ctx.input.name !== undefined) payload['name'] = ctx.input.name;
-    if (ctx.input.firstName !== undefined) payload['first_name'] = ctx.input.firstName;
-    if (ctx.input.lastName !== undefined) payload['last_name'] = ctx.input.lastName;
+    if (ctx.input.name !== undefined) payload.name = ctx.input.name;
+    if (ctx.input.firstName !== undefined) payload.first_name = ctx.input.firstName;
+    if (ctx.input.lastName !== undefined) payload.last_name = ctx.input.lastName;
     if (ctx.input.responsibleUserId !== undefined)
-      payload['responsible_user_id'] = ctx.input.responsibleUserId;
+      payload.responsible_user_id = ctx.input.responsibleUserId;
 
     if (ctx.input.customFieldsValues?.length) {
-      payload['custom_fields_values'] = buildCustomFieldsPayload(ctx.input.customFieldsValues);
+      payload.custom_fields_values = buildCustomFieldsPayload(ctx.input.customFieldsValues);
     }
     if (ctx.input.tagsToAdd?.length) {
-      payload['tags_to_add'] = buildTagsPayload(ctx.input.tagsToAdd);
+      payload.tags_to_add = buildTagsPayload(ctx.input.tagsToAdd);
     }
     if (ctx.input.tagsToDelete?.length) {
-      payload['tags_to_delete'] = buildTagsPayload(ctx.input.tagsToDelete);
+      payload.tags_to_delete = buildTagsPayload(ctx.input.tagsToDelete);
     }
 
     let result = await client.updateContact(ctx.input.contactId, payload);

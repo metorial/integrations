@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let templateEvents = SlateTrigger.create(spec, {
   name: 'Template Events',
@@ -85,7 +85,7 @@ export let templateEvents = SlateTrigger.create(spec, {
         let text = await ctx.request.text();
 
         let jsonMatch = text.match(/name="json"\r?\n\r?\n([\s\S]*?)(?:\r?\n--|\s*$)/);
-        if (jsonMatch && jsonMatch[1]) {
+        if (jsonMatch?.[1]) {
           rawData = JSON.parse(jsonMatch[1].trim());
         } else {
           try {

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickHouseClient } from '../lib/client';
 import { clickhouseServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ensureBodyHasFields = (body: Record<string, any>, label: string) => {
   if (Object.keys(body).length === 0) {
@@ -475,7 +475,9 @@ export let updateAlert = SlateTool.create(spec, {
       alertId: z.string().describe('ID of the alert'),
       alertSettings: z
         .record(z.string(), z.any())
-        .describe('Alert update body, such as name, threshold, interval, source, channel, tileId, or dashboardId')
+        .describe(
+          'Alert update body, such as name, threshold, interval, source, channel, tileId, or dashboardId'
+        )
     })
   )
   .output(

@@ -1,10 +1,7 @@
 {
   "name": "@discord/discord",
   "description": "Send, edit, and delete messages in channels. Manage servers (guilds), channels, roles, members, invites, webhooks, threads, scheduled events, auto moderation rules, audit logs, application commands, and custom guild emojis. Add or remove users, assign roles, kick or ban members, and receive supported message, guild, channel, member, and inbound webhook triggers.",
-  "categories": [
-    "email-and-messaging",
-    "news-and-media"
-  ],
+  "categories": ["email-and-messaging", "news-and-media"],
   "skills": [
     "send and manage messages",
     "manage servers and channels",

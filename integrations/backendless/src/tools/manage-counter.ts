@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BackendlessClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCounter = SlateTool.create(spec, {
   name: 'Manage Counter',
@@ -58,11 +58,12 @@ export let manageCounter = SlateTool.create(spec, {
         value = await client.decrementCounter(ctx.input.counterName);
         operationPerformed = 'Decremented by 1';
         break;
-      case 'incrementBy':
+      case 'incrementBy': {
         let amount = ctx.input.incrementValue ?? 1;
         value = await client.incrementCounterBy(ctx.input.counterName, amount);
         operationPerformed = `Incremented by ${amount}`;
         break;
+      }
       case 'reset':
         await client.resetCounter(ctx.input.counterName);
         value = 0;

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { AttioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let COMMENT_EVENT_TYPES = [
   'comment.created',

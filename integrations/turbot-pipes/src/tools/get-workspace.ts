@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getWorkspace = SlateTool.create(spec, {
   name: 'Get Workspace',
@@ -54,7 +54,7 @@ export let getWorkspace = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let workspace;
+    let workspace: any;
     if (ctx.input.ownerType === 'org') {
       workspace = await client.getOrgWorkspace(ownerHandle, ctx.input.workspaceHandle);
     } else {

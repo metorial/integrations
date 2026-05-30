@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WhopClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let productOutputSchema = z.object({
   productId: z.string().describe('Unique product identifier'),

@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageLeadTool,
-  getLeadTool,
-  listLeadsTool,
   deleteLead,
-  manageContact,
-  listContacts,
-  manageOpportunity,
-  listOpportunities,
-  manageTask,
+  getLeadTool,
   listActivities,
-  manageNote,
-  sendEmail,
-  manageEmailTemplate,
-  searchLeads,
-  listSmartViews,
+  listContacts,
+  listLeadsTool,
+  listOpportunities,
   listPipelinesAndStatuses,
-  listUsers
+  listSmartViews,
+  listUsers,
+  manageContact,
+  manageEmailTemplate,
+  manageLeadTool,
+  manageNote,
+  manageOpportunity,
+  manageTask,
+  searchLeads,
+  sendEmail
 } from './tools';
 import {
-  leadEventsTrigger,
-  contactEventsTrigger,
-  opportunityEventsTrigger,
   activityEventsTrigger,
+  contactEventsTrigger,
+  leadEventsTrigger,
+  opportunityEventsTrigger,
   taskEventsTrigger
 } from './triggers';
 

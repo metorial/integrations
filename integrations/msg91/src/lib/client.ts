@@ -477,7 +477,7 @@ export class Msg91Client {
     return res.data;
   }
 
-  async trackEvent(params: { events: Array<Record<string, any>> }) {
+  async trackEvent(params: { events: Record<string, any>[] }) {
     let res = await controlApi.post('/segmento/events', params.events, {
       headers: this.headers()
     });

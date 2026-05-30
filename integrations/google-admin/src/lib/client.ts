@@ -347,12 +347,7 @@ export class Client {
 
   // ==================== ORG UNITS ====================
 
-  async listOrgUnits(
-    params: {
-      orgUnitPath?: string;
-      type?: string;
-    } = {}
-  ) {
+  async listOrgUnits(params: { orgUnitPath?: string; type?: string } = {}) {
     let response = await directoryApi.get(`/customer/${this.customerId}/orgunits`, {
       headers: this.headers,
       params: {
@@ -450,12 +445,7 @@ export class Client {
   }
 
   async listRoleAssignments(
-    params: {
-      userKey?: string;
-      roleId?: string;
-      maxResults?: number;
-      pageToken?: string;
-    } = {}
+    params: { userKey?: string; roleId?: string; maxResults?: number; pageToken?: string } = {}
   ) {
     let response = await directoryApi.get(`/customer/${this.customerId}/roleassignments`, {
       headers: this.headers,
@@ -668,12 +658,7 @@ export class Client {
   // ==================== CALENDAR RESOURCES ====================
 
   async listCalendarResources(
-    params: {
-      maxResults?: number;
-      pageToken?: string;
-      query?: string;
-      orderBy?: string;
-    } = {}
+    params: { maxResults?: number; pageToken?: string; query?: string; orderBy?: string } = {}
   ) {
     let response = await directoryApi.get(`/customer/${this.customerId}/resources/calendars`, {
       headers: this.headers,
@@ -825,12 +810,7 @@ export class Client {
   // ==================== ALERT CENTER ====================
 
   async listAlerts(
-    params: {
-      filter?: string;
-      orderBy?: string;
-      pageSize?: number;
-      pageToken?: string;
-    } = {}
+    params: { filter?: string; orderBy?: string; pageSize?: number; pageToken?: string } = {}
   ) {
     let response = await alertCenterApi.get('/alerts', {
       headers: this.headers,

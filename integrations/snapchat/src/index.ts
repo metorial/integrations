@@ -1,29 +1,29 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  listOrganizations,
-  listAdAccounts,
-  listCampaigns,
-  manageCampaign,
-  deleteCampaign,
-  listAdSquads,
-  manageAdSquad,
-  listAds,
-  manageAd,
-  listCreatives,
-  manageCreative,
-  createMedia,
-  listAudienceSegments,
-  manageAudienceSegment,
   addUsersToSegment,
-  getCampaignStats,
-  sendConversionEvent,
-  managePixel,
-  getFundingSources,
+  createMedia,
+  deleteCampaign,
   getAudienceSize,
-  getBidEstimate
+  getBidEstimate,
+  getCampaignStats,
+  getFundingSources,
+  listAdAccounts,
+  listAdSquads,
+  listAds,
+  listAudienceSegments,
+  listCampaigns,
+  listCreatives,
+  listOrganizations,
+  manageAd,
+  manageAdSquad,
+  manageAudienceSegment,
+  manageCampaign,
+  manageCreative,
+  managePixel,
+  sendConversionEvent
 } from './tools';
-import { campaignStatusChange, adStatusChange, inboundWebhook } from './triggers';
+import { adStatusChange, campaignStatusChange, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

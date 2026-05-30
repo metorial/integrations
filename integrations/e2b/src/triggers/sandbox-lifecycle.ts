@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { E2BClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let signatureSecret = () => {
   let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

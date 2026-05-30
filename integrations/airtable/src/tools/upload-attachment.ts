@@ -1,10 +1,10 @@
 import { Buffer } from 'node:buffer';
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { airtableServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { baseIdInput } from './base-id';
-import { z } from 'zod';
 
 let MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
 
@@ -16,7 +16,11 @@ let normalizeBase64 = (value: string) => {
 
 let decodeBase64File = (value: string) => {
   let normalized = normalizeBase64(value);
-  if (!normalized || normalized.length % 4 === 1 || !/^[A-Za-z0-9+/]*={0,2}$/.test(normalized)) {
+  if (
+    !normalized ||
+    normalized.length % 4 === 1 ||
+    !/^[A-Za-z0-9+/]*={0,2}$/.test(normalized)
+  ) {
     throw airtableServiceError('fileBase64 must be a valid base64-encoded file.');
   }
 

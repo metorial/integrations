@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CuttlyClient, getEditStatusMessage } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deleteLink = SlateTool.create(spec, {
   name: 'Delete Link',

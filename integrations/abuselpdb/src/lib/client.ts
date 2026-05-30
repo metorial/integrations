@@ -79,7 +79,7 @@ export class Client {
   }
 
   async bulkReport(params: { csvContent: string }) {
-    let boundary = '----SlatesBoundary' + Date.now().toString(36);
+    let boundary = `----SlatesBoundary${Date.now().toString(36)}`;
     let body = [
       `--${boundary}`,
       'Content-Disposition: form-data; name="csv"; filename="report.csv"',
@@ -112,10 +112,10 @@ export class Client {
     };
 
     if (params.onlyCountries) {
-      queryParams['onlyCountries'] = params.onlyCountries;
+      queryParams.onlyCountries = params.onlyCountries;
     }
     if (params.exceptCountries) {
-      queryParams['exceptCountries'] = params.exceptCountries;
+      queryParams.exceptCountries = params.exceptCountries;
     }
 
     let response = await this.axios.get('/blacklist', {

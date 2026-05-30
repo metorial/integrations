@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  validateEmail,
-  validatePhone,
-  geolocateIp,
+  captureScreenshot,
   enrichCompany,
   exchangeRates,
-  publicHolidays,
-  timezone,
-  scrapeWebsite,
-  captureScreenshot,
-  validateVat,
-  validateIban,
+  generateAvatar,
+  geolocateIp,
   processImage,
-  generateAvatar
+  publicHolidays,
+  scrapeWebsite,
+  timezone,
+  validateEmail,
+  validateIban,
+  validatePhone,
+  validateVat
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

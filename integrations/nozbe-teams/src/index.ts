@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
-  createProject,
-  updateProject,
-  deleteProject,
-  listTasks,
-  getTask,
-  createTask,
-  updateTask,
-  deleteTask,
-  listComments,
-  createComment,
-  updateComment,
-  deleteComment,
-  listTags,
-  manageTag,
   assignTag,
+  createComment,
+  createProject,
+  createTask,
+  deleteComment,
+  deleteProject,
+  deleteTask,
+  getTask,
+  listComments,
+  listProjects,
+  listTags,
+  listTasks,
   listTeamMembers,
-  manageProjectSection
+  manageProjectSection,
+  manageTag,
+  updateComment,
+  updateProject,
+  updateTask
 } from './tools';
 import {
-  newTaskTrigger,
-  updatedTaskTrigger,
-  newProjectTrigger,
+  inboundWebhook,
   newCommentTrigger,
-  inboundWebhook
+  newProjectTrigger,
+  newTaskTrigger,
+  updatedTaskTrigger
 } from './triggers';
 
 export let provider = Slate.create({

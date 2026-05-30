@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MoosendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let criteriaSchema = z.object({
   field: z
@@ -206,7 +206,11 @@ export let manageSegment = SlateTool.create(spec, {
         if (ctx.input.criteria.comparer) body.Comparer = ctx.input.criteria.comparer;
         if (ctx.input.criteria.dateFrom) body.DateFrom = ctx.input.criteria.dateFrom;
         if (ctx.input.criteria.dateTo) body.DateTo = ctx.input.criteria.dateTo;
-        let result = await client.addSegmentCriteria(mailingListId, ctx.input.segmentId, body);
+        let _result = await client.addSegmentCriteria(
+          mailingListId,
+          ctx.input.segmentId,
+          body
+        );
         return {
           output: {
             action,

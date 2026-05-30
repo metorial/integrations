@@ -43,7 +43,7 @@ export class AbyssaleClient {
       preview_url: string;
       dynamic_image_url: string;
       design: Record<string, any>;
-      elements: Array<Record<string, any>>;
+      elements: Record<string, any>[];
       variables: Record<string, any>;
     };
   }

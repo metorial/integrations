@@ -22,7 +22,7 @@ export interface ListMetadata {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let headers: Record<string, string> = {
       'X-System': config.xSystem,
       'X-System-Key': config.xSystemKey,
@@ -30,10 +30,10 @@ export class Client {
     };
 
     if (config.authMethod === 'oauth') {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     } else {
       let basicAuth = Buffer.from(`${config.token}:`).toString('base64');
-      headers['Authorization'] = `Basic ${basicAuth}`;
+      headers.Authorization = `Basic ${basicAuth}`;
     }
 
     this.axios = createAxios({
@@ -79,8 +79,8 @@ export class Client {
 
   async checkDuplicate(params: { emails?: string[]; phones?: string[] }) {
     let queryParams: Record<string, string> = {};
-    if (params.emails) queryParams['emails'] = params.emails.join(',');
-    if (params.phones) queryParams['phones'] = params.phones.join(',');
+    if (params.emails) queryParams.emails = params.emails.join(',');
+    if (params.phones) queryParams.phones = params.phones.join(',');
     let response = await this.axios.get('/people/checkDuplicate', { params: queryParams });
     return response.data;
   }

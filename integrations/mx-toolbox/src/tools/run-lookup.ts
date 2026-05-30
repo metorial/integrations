@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { Client } from '../lib/client';
+import { spec } from '../spec';
 
 let lookupResultEntrySchema = z.object({
   id: z.number().describe('Entry identifier'),

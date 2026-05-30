@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SnowflakeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let queryCompleted = SlateTrigger.create(spec, {
   name: 'Query Completed',
@@ -94,9 +94,9 @@ export let queryCompleted = SlateTrigger.create(spec, {
         roleName: row[9] || undefined,
         executionStartedAt: row[10] || undefined,
         executionEndedAt: row[11] || undefined,
-        totalElapsedMs: row[12] ? parseInt(row[12], 10) : undefined,
-        rowsProduced: row[13] ? parseInt(row[13], 10) : undefined,
-        bytesScanned: row[14] ? parseInt(row[14], 10) : undefined
+        totalElapsedMs: row[12] ? Number.parseInt(row[12], 10) : undefined,
+        rowsProduced: row[13] ? Number.parseInt(row[13], 10) : undefined,
+        bytesScanned: row[14] ? Number.parseInt(row[14], 10) : undefined
       }));
 
       return {

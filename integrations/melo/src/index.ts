@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchProperties,
-  getProperty,
-  findSimilarProperties,
   createSavedSearch,
-  updateSavedSearch,
   deleteSavedSearch,
-  listSavedSearches,
+  findSimilarProperties,
+  getPointsOfInterest,
   getPricePerMeterEvolution,
+  getProperty,
+  listSavedSearches,
   locationAutocomplete,
-  getPointsOfInterest
+  searchProperties,
+  updateSavedSearch
 } from './tools';
-import { propertyEvents, newPropertyMatch } from './triggers';
+import { newPropertyMatch, propertyEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

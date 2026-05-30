@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  batchGetItems,
+  batchWriteItems,
   createTable,
-  describeTable,
-  listTables,
-  deleteTable,
-  updateTable,
-  putItem,
-  getItem,
-  updateItem,
   deleteItem,
+  deleteTable,
+  describeTable,
+  executePartiql,
+  getItem,
+  listTables,
+  manageBackups,
+  manageTtl,
+  putItem,
   queryItems,
   scanItems,
-  executePartiql,
-  batchWriteItems,
-  batchGetItems,
   transactWrite,
-  manageTtl,
-  manageBackups
+  updateItem,
+  updateTable
 } from './tools';
-import { streamChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, streamChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

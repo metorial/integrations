@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageOpportunityVehicle = SlateTool.create(spec, {
   name: 'Manage Opportunity Vehicle',
@@ -64,7 +64,7 @@ export let manageOpportunityVehicle = SlateTool.create(spec, {
         let result = await client.createOpportunityVehicle(ctx.input.opportunityId, data);
         return {
           output: { vehicle: result },
-          message: `Added vehicle${ctx.input.make ? ` **${ctx.input.year ? ctx.input.year + ' ' : ''}${ctx.input.make}${ctx.input.model ? ' ' + ctx.input.model : ''}**` : ''} to opportunity **${ctx.input.opportunityId}**.`
+          message: `Added vehicle${ctx.input.make ? ` **${ctx.input.year ? `${ctx.input.year} ` : ''}${ctx.input.make}${ctx.input.model ? ` ${ctx.input.model}` : ''}**` : ''} to opportunity **${ctx.input.opportunityId}**.`
         };
       }
       case 'update': {

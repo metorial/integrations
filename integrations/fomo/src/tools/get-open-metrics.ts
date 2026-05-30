@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FomoOpenClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getOpenMetrics = SlateTool.create(spec, {
   name: 'Get Fomo Open Metrics',

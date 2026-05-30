@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { googleCloudFunctionsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generateUploadUrl = SlateTool.create(spec, {
   name: 'Generate Upload URL',

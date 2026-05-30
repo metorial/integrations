@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { MailgunClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let WEBHOOK_EVENT_TYPES = [
   'accepted',
@@ -86,7 +86,7 @@ export let emailEvents = SlateTrigger.create(spec, {
               id: eventType,
               url: ctx.input.webhookBaseUrl
             });
-          } catch (e: unknown) {
+          } catch (_e: unknown) {
             // Webhook may already exist; attempt update instead
             try {
               await client.updateWebhook(domain.name, eventType, ctx.input.webhookBaseUrl);
@@ -131,23 +131,23 @@ export let emailEvents = SlateTrigger.create(spec, {
 
       // Mailgun webhook payload structure has event-data at the top level or nested
       let eventData = (body['event-data'] || body) as Record<string, unknown>;
-      let event = (eventData['event'] as string) || '';
-      let timestamp = (eventData['timestamp'] as number) || 0;
+      let event = (eventData.event as string) || '';
+      let timestamp = (eventData.timestamp as number) || 0;
       let id =
-        (eventData['id'] as string) ||
+        (eventData.id as string) ||
         `${event}-${timestamp}-${Math.random().toString(36).slice(2)}`;
 
-      let message = (eventData['message'] || {}) as Record<string, unknown>;
-      let headers = (message['headers'] || {}) as Record<string, string>;
+      let message = (eventData.message || {}) as Record<string, unknown>;
+      let headers = (message.headers || {}) as Record<string, string>;
       let deliveryStatus = (eventData['delivery-status'] || {}) as Record<string, unknown>;
-      let geolocation = (eventData['geolocation'] || {}) as Record<string, string>;
-      let tags = (eventData['tags'] || []) as string[];
-      let envelope = (eventData['envelope'] || {}) as Record<string, string>;
+      let geolocation = (eventData.geolocation || {}) as Record<string, string>;
+      let tags = (eventData.tags || []) as string[];
+      let envelope = (eventData.envelope || {}) as Record<string, string>;
 
       // Map Mailgun's event names to our types
       let eventType = event;
       if (event === 'failed') {
-        let severity = eventData['severity'] as string;
+        let severity = eventData.severity as string;
         eventType = severity === 'permanent' ? 'permanent_fail' : 'temporary_fail';
       }
 
@@ -157,21 +157,22 @@ export let emailEvents = SlateTrigger.create(spec, {
             eventType,
             eventId: id,
             timestamp,
-            recipient: eventData['recipient'] as string | undefined,
-            sender: headers['from'] || envelope['sender'],
-            subject: headers['subject'],
+            recipient: eventData.recipient as string | undefined,
+            sender: headers.from || envelope.sender,
+            subject: headers.subject,
             messageId:
               headers['message-id'] || (eventData['message-id'] as string | undefined),
-            severity: eventData['severity'] as string | undefined,
-            reason: eventData['reason'] as string | undefined,
-            deliveryStatusCode: deliveryStatus['code'] as number | undefined,
-            deliveryStatusMessage: (deliveryStatus['message'] ||
-              deliveryStatus['description']) as string | undefined,
+            severity: eventData.severity as string | undefined,
+            reason: eventData.reason as string | undefined,
+            deliveryStatusCode: deliveryStatus.code as number | undefined,
+            deliveryStatusMessage: (deliveryStatus.message || deliveryStatus.description) as
+              | string
+              | undefined,
             tags,
-            url: eventData['url'] as string | undefined,
-            ip: (eventData['ip'] as string | undefined) || geolocation['ip'],
-            country: geolocation['country'],
-            city: geolocation['city'],
+            url: eventData.url as string | undefined,
+            ip: (eventData.ip as string | undefined) || geolocation.ip,
+            country: geolocation.country,
+            city: geolocation.city,
             domain:
               (eventData['sending-domain'] as string | undefined) || envelope['sending-domain']
           }

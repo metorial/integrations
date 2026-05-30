@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GiteaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createRepo = SlateTool.create(spec, {
   name: 'Create Repository',
@@ -52,7 +52,7 @@ export let createRepo = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new GiteaClient({ token: ctx.auth.token, baseUrl: ctx.auth.baseUrl });
 
-    let r;
+    let r: any;
     if (ctx.input.organization) {
       r = await client.createOrgRepo(ctx.input.organization, {
         name: ctx.input.name,

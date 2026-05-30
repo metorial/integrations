@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StatsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let normalizeDateRange = (
   value:
@@ -25,8 +25,8 @@ let normalizeDateRange = (
 };
 
 let normalizeOrderBy = (
-  value?: Array<[string?, ('asc' | 'desc')?, ...unknown[]]>
-): Array<[string, string]> | undefined => {
+  value?: [string?, ('asc' | 'desc')?, ...unknown[]][]
+): [string, string][] | undefined => {
   if (!value) return undefined;
   let normalized = value
     .map(([field, direction]) => {

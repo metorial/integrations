@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { createClient, actionDescription } from '../lib/helpers';
+import { actionDescription, createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageDefaultRule = SlateTool.create(spec, {
   name: 'Manage Default Rule',

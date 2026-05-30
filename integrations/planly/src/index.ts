@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTeams,
-  manageTeam,
-  listTeamMembers,
-  manageTeamMembership,
-  listChannels,
   deleteChannel,
-  schedulePost,
-  listSchedules,
-  deleteSchedules,
-  manageScheduleGroup,
-  listScheduleGroups,
-  importMedia,
-  startMediaUpload,
-  finishMediaUpload,
-  listMedia,
   deleteMedia,
+  deleteSchedules,
+  finishMediaUpload,
   generateAiContent,
   getAiCredits,
-  listPinterestBoards
+  importMedia,
+  listChannels,
+  listMedia,
+  listPinterestBoards,
+  listScheduleGroups,
+  listSchedules,
+  listTeamMembers,
+  listTeams,
+  manageScheduleGroup,
+  manageTeam,
+  manageTeamMembership,
+  schedulePost,
+  startMediaUpload
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

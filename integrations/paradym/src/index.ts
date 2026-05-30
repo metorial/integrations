@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCredentialTemplates,
   createCredentialTemplate,
-  issueCredential,
-  getIssuanceSession,
   createVerificationRequest,
+  getIssuanceSession,
   getVerificationSession,
-  revokeCredentials,
-  managePresentationTemplate,
-  listPresentationTemplates,
-  manageDidcommConnection,
+  issueCredential,
+  listCredentialTemplates,
   listDidcommConnections,
-  manageTrustedEntity,
-  listTrustedEntities,
-  listProjects,
+  listDids,
   listIssuedCredentials,
-  listDids
+  listPresentationTemplates,
+  listProjects,
+  listTrustedEntities,
+  manageDidcommConnection,
+  managePresentationTemplate,
+  manageTrustedEntity,
+  revokeCredentials
 } from './tools';
 import { credentialEvent } from './triggers';
 

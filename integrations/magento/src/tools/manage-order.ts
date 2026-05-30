@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MagentoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orderItemSchema = z.object({
   orderItemId: z.number().optional().describe('Order item entity ID'),

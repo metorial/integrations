@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ModeClient } from '../lib/client';
-import { normalizeDefinition, getEmbedded } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ModeClient } from '../lib/client';
+import { getEmbedded, normalizeDefinition } from '../lib/helpers';
+import { spec } from '../spec';
 
 let definitionSchema = z.object({
   definitionToken: z.string().describe('Unique token of the definition'),

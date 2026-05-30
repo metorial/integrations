@@ -39,7 +39,9 @@ export let randomCatFact = SlateTool.create(spec, {
     let length = typeof data?.length === 'number' ? data.length : fact.length;
 
     if (!fact) {
-      throw new Error(`Cat Facts API returned an unexpected response: ${JSON.stringify(data)}`);
+      throw new Error(
+        `Cat Facts API returned an unexpected response: ${JSON.stringify(data)}`
+      );
     }
 
     return {

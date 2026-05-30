@@ -1,4 +1,4 @@
-import { BetaRow, BetaRowType, ErpRow, SourceId, SternRow } from './sources';
+import type { BetaRow, BetaRowType, ErpRow, SourceId, SternRow } from './sources';
 
 export type CommonControls = {
   limit: number;

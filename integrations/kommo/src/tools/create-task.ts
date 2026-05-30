@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KommoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createTaskTool = SlateTool.create(spec, {
   name: 'Create Task',
@@ -43,12 +43,11 @@ export let createTaskTool = SlateTool.create(spec, {
       complete_till: ctx.input.completeTill
     };
 
-    if (ctx.input.entityId) payload['entity_id'] = ctx.input.entityId;
-    if (ctx.input.entityType) payload['entity_type'] = ctx.input.entityType;
-    if (ctx.input.taskTypeId) payload['task_type_id'] = ctx.input.taskTypeId;
-    if (ctx.input.duration) payload['duration'] = ctx.input.duration;
-    if (ctx.input.responsibleUserId)
-      payload['responsible_user_id'] = ctx.input.responsibleUserId;
+    if (ctx.input.entityId) payload.entity_id = ctx.input.entityId;
+    if (ctx.input.entityType) payload.entity_type = ctx.input.entityType;
+    if (ctx.input.taskTypeId) payload.task_type_id = ctx.input.taskTypeId;
+    if (ctx.input.duration) payload.duration = ctx.input.duration;
+    if (ctx.input.responsibleUserId) payload.responsible_user_id = ctx.input.responsibleUserId;
 
     let result = await client.createTask(payload);
 

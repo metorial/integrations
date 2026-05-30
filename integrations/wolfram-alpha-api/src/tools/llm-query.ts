@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let llmQuery = SlateTool.create(spec, {
   name: 'LLM-Optimized Query',
@@ -37,7 +37,7 @@ Returns computed answers, image URLs, and links back to the Wolfram Alpha websit
 
     let responseText = String(llmResponse);
     let truncated =
-      responseText.length > 500 ? responseText.substring(0, 500) + '...' : responseText;
+      responseText.length > 500 ? `${responseText.substring(0, 500)}...` : responseText;
 
     return {
       output: {

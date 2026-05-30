@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SnsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let topicNotification = SlateTrigger.create(spec, {
   name: 'Topic Notification',
@@ -39,7 +39,7 @@ export let topicNotification = SlateTrigger.create(spec, {
   )
   .webhook({
     autoRegisterWebhook: async ctx => {
-      let client = new SnsClient({
+      let _client = new SnsClient({
         accessKeyId: ctx.auth.accessKeyId,
         secretAccessKey: ctx.auth.secretAccessKey,
         sessionToken: ctx.auth.sessionToken,

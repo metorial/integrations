@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let formSubmissionTrigger = SlateTrigger.create(spec, {
   name: 'Form Submission',
@@ -44,15 +43,15 @@ export let formSubmissionTrigger = SlateTrigger.create(spec, {
       // Determine event type from the payload
       // Paperform sends webhook POSTs with submission data
       // Partial submissions have a different structure
-      let isPartial = !!(data['partial'] || data['is_partial']);
+      let isPartial = !!(data.partial || data.is_partial);
       let eventType: 'submission' | 'partial_submission' = isPartial
         ? 'partial_submission'
         : 'submission';
 
-      let submissionId = String(data['id'] || data['submission_id'] || crypto.randomUUID());
+      let submissionId = String(data.id || data.submission_id || crypto.randomUUID());
 
       // The data field in the webhook contains form answers
-      let formData = (data['data'] || data) as Record<string, unknown>;
+      let formData = (data.data || data) as Record<string, unknown>;
 
       return {
         inputs: [
@@ -74,11 +73,11 @@ export let formSubmissionTrigger = SlateTrigger.create(spec, {
         id: ctx.input.submissionId,
         output: {
           submissionId: ctx.input.submissionId,
-          formId: payload['form_id'] ? String(payload['form_id']) : undefined,
+          formId: payload.form_id ? String(payload.form_id) : undefined,
           formData: ctx.input.formData,
-          ipAddress: payload['ip_address'] ? String(payload['ip_address']) : undefined,
-          createdAt: payload['created_at'] ? String(payload['created_at']) : undefined,
-          charge: (payload['charge'] as Record<string, unknown>) ?? null
+          ipAddress: payload.ip_address ? String(payload.ip_address) : undefined,
+          createdAt: payload.created_at ? String(payload.created_at) : undefined,
+          charge: (payload.charge as Record<string, unknown>) ?? null
         }
       };
     }

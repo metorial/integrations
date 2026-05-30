@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let incomingMessage = SlateTrigger.create(spec, {
   name: 'Incoming Message',
@@ -68,7 +68,7 @@ export let incomingMessage = SlateTrigger.create(spec, {
           });
           let hookId = data.hooks?.id || data.id;
           if (hookId) hookIds.push(hookId);
-        } catch (e: any) {
+        } catch (_e: any) {
           // Some hook types may not be available depending on configuration
         }
       }
@@ -84,7 +84,7 @@ export let incomingMessage = SlateTrigger.create(spec, {
       for (let hookId of hookIds) {
         try {
           await client.deleteHook(hookId);
-        } catch (e: any) {
+        } catch (_e: any) {
           // Hook may already be deleted
         }
       }

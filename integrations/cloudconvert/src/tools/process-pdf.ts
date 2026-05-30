@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let processPdf = SlateTool.create(spec, {
   name: 'Process PDF',
@@ -75,7 +75,7 @@ Select the desired operation and configure its specific options. Results are exp
       environment: ctx.config.environment
     });
 
-    let operationMap: Record<string, string> = {
+    let _operationMap: Record<string, string> = {
       ocr: 'optimize',
       encrypt: 'optimize',
       decrypt: 'optimize',

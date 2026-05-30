@@ -2,14 +2,14 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createPost,
-  getPost,
-  listPosts,
-  updatePost,
   deletePost,
+  getPost,
   listAccounts,
-  manageSchedule
+  listPosts,
+  manageSchedule,
+  updatePost
 } from './tools';
-import { postStatusChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, postStatusChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

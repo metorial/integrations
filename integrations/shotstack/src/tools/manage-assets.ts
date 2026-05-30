@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ServeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let assetSchema = z.object({
   assetId: z.string().describe('Asset ID'),

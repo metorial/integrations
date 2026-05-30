@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { DiscordClient } from '../lib/client';
 import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let auditLogEntrySchema = z.object({
   entryId: z.string().describe('The ID of the audit log entry'),

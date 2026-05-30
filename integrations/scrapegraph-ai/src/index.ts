@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  smartScrape,
-  webSearch,
+  agenticScrape,
   crawlWebsite,
+  discoverSitemap,
+  getCredits,
+  getRequestStatus,
   markdownify,
   rawScrape,
-  discoverSitemap,
-  agenticScrape,
-  getCredits,
-  getRequestStatus
+  smartScrape,
+  webSearch
 } from './tools';
 import { crawlCompleted } from './triggers';
 

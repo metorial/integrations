@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SlackClient } from '../lib/client';
 import { missingRequiredFieldError } from '../lib/errors';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageChannelMembers = SlateTool.create(spec, {
   name: 'Manage Channel Members',

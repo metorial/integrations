@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPost = SlateTool.create(spec, {
   name: 'Get Post',
@@ -37,7 +37,7 @@ Covers content types like articles, videos, jobs, events, coupons, audios, and d
       websiteDomain: ctx.config.websiteDomain
     });
 
-    let result;
+    let result: any;
     if (ctx.input.postId) {
       result = await client.getPost(ctx.input.postId);
     } else if (ctx.input.property && ctx.input.propertyValue) {

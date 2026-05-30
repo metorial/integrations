@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { CloudClient, SubscriptionClient, LocalClient } from '../lib/client';
+import { z } from 'zod';
+import { CloudClient, LocalClient, SubscriptionClient } from '../lib/client';
 import { VbmlClient } from '../lib/vbml';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendMessage = SlateTool.create(spec, {
   name: 'Send Message',
@@ -86,7 +86,7 @@ Use the **Compose VBML** tool first if you need advanced layout, styling, or dyn
       text = undefined;
     }
 
-    let result;
+    let result: any;
 
     if (apiType === 'cloud') {
       let client = new CloudClient(ctx.auth.token);

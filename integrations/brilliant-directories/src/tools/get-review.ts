@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getReview = SlateTool.create(spec, {
   name: 'Get Review',
@@ -39,7 +39,7 @@ Returns the review content, ratings, reviewer info, and associated member data.`
       websiteDomain: ctx.config.websiteDomain
     });
 
-    let result;
+    let result: any;
     if (ctx.input.reviewId) {
       result = await client.getReview(ctx.input.reviewId);
     } else if (ctx.input.property && ctx.input.propertyValue) {

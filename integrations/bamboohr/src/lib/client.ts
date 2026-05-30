@@ -10,7 +10,7 @@ export class Client {
   private http: ReturnType<typeof createAxios>;
   private companyDomain: string;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     this.companyDomain = config.companyDomain;
 
     let headers: Record<string, string> = {
@@ -21,9 +21,9 @@ export class Client {
     // For OAuth, use Bearer token
     if (config.isApiKey) {
       let encoded = btoa(`${config.token}:x`);
-      headers['Authorization'] = `Basic ${encoded}`;
+      headers.Authorization = `Basic ${encoded}`;
     } else {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     }
 
     this.http = createAxios({
@@ -85,7 +85,7 @@ export class Client {
   ): Promise<any> {
     let params: Record<string, string> = { format };
     if (filterLastChanged) {
-      params['fd'] = filterLastChanged;
+      params.fd = filterLastChanged;
     }
     let response = await this.http.get(`/reports/${reportId}`, { params });
     return response.data;
@@ -169,8 +169,8 @@ export class Client {
 
   async getWhosOut(start?: string, end?: string): Promise<any> {
     let params: Record<string, string> = {};
-    if (start) params['start'] = start;
-    if (end) params['end'] = end;
+    if (start) params.start = start;
+    if (end) params.end = end;
     let response = await this.http.get('/time_off/whos_out/', { params });
     return response.data;
   }
@@ -182,7 +182,7 @@ export class Client {
 
   async getTimeOffBalances(employeeId: string, end?: string): Promise<any> {
     let params: Record<string, string> = {};
-    if (end) params['end'] = end;
+    if (end) params.end = end;
     let response = await this.http.get(`/employees/${employeeId}/time_off/calculator/`, {
       params
     });
@@ -272,7 +272,7 @@ export class Client {
 
   async getGoals(employeeId: string, filter?: string): Promise<any> {
     let params: Record<string, string> = {};
-    if (filter) params['filter'] = filter;
+    if (filter) params.filter = filter;
     let response = await this.http.get(`/v1/performance/employees/${employeeId}/goals`, {
       params
     });
@@ -373,7 +373,7 @@ export class Client {
     trainingTypeId?: string
   ): Promise<any> {
     let params: Record<string, string> = {};
-    if (trainingTypeId) params['trainingTypeId'] = trainingTypeId;
+    if (trainingTypeId) params.trainingTypeId = trainingTypeId;
     let response = await this.http.get(`/training/record/employee/${employeeId}`, { params });
     return response.data;
   }
@@ -408,7 +408,7 @@ export class Client {
 
   async getBenefitCoverages(employeeId?: string): Promise<any> {
     let params: Record<string, string> = {};
-    if (employeeId) params['employeeId'] = employeeId;
+    if (employeeId) params.employeeId = employeeId;
     let response = await this.http.get('/benefitcoverages', { params });
     return response.data;
   }
@@ -439,7 +439,7 @@ export class Client {
     fileContent: string,
     shareWithEmployee?: boolean
   ): Promise<any> {
-    let boundary = '----SlatesBoundary' + Date.now();
+    let boundary = `----SlatesBoundary${Date.now()}`;
     let body = `--${boundary}\r\nContent-Disposition: form-data; name="category"\r\n\r\n${categoryId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="fileName"\r\n\r\n${fileName}\r\n--${boundary}\r\nContent-Disposition: form-data; name="share"\r\n\r\n${shareWithEmployee ? 'yes' : 'no'}\r\n--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n${fileContent}\r\n--${boundary}--`;
 
     let response = await this.http.post(`/employees/${employeeId}/files/`, body, {
@@ -456,7 +456,7 @@ export class Client {
     fileContent: string,
     shareWithEmployees?: boolean
   ): Promise<any> {
-    let boundary = '----SlatesBoundary' + Date.now();
+    let boundary = `----SlatesBoundary${Date.now()}`;
     let body = `--${boundary}\r\nContent-Disposition: form-data; name="category"\r\n\r\n${categoryId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="fileName"\r\n\r\n${fileName}\r\n--${boundary}\r\nContent-Disposition: form-data; name="share"\r\n\r\n${shareWithEmployees ? 'yes' : 'no'}\r\n--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n${fileContent}\r\n--${boundary}--`;
 
     let response = await this.http.post('/files/', body, {
@@ -479,7 +479,7 @@ export class Client {
 
   async getEmployeePhoto(employeeId: string, size?: string): Promise<string> {
     let params: Record<string, string> = {};
-    if (size) params['size'] = size;
+    if (size) params.size = size;
     let response = await this.http.get(`/employees/${employeeId}/photo/small`, { params });
     return response.data;
   }

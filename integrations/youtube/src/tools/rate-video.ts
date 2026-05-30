@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { youtubeServiceError } from '../lib/errors';
 import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let rateVideo = SlateTool.create(spec, {
   name: 'Rate Video',

@@ -209,7 +209,7 @@ let mapVisit = (visitData: any): Visit => {
 export class LeadfeederClient {
   private http;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.http = createAxios({
       baseURL: 'https://api.leadfeeder.com',
       headers: {

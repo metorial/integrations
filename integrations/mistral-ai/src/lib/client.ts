@@ -22,10 +22,10 @@ export class MistralClient {
     model: string;
     messages: Array<{
       role: string;
-      content: string | Array<any>;
+      content: string | any[];
       name?: string;
       toolCallId?: string;
-      toolCalls?: Array<any>;
+      toolCalls?: any[];
     }>;
     temperature?: number;
     topP?: number;
@@ -37,7 +37,7 @@ export class MistralClient {
     frequencyPenalty?: number;
     n?: number;
     responseFormat?: any;
-    tools?: Array<any>;
+    tools?: any[];
     toolChoice?: string | any;
     parallelToolCalls?: boolean;
     safePrompt?: boolean;
@@ -118,13 +118,13 @@ export class MistralClient {
     agentId: string;
     messages: Array<{
       role: string;
-      content: string | Array<any>;
+      content: string | any[];
     }>;
     maxTokens?: number;
     stop?: string | string[];
     randomSeed?: number;
     responseFormat?: any;
-    tools?: Array<any>;
+    tools?: any[];
     toolChoice?: string | any;
     parallelToolCalls?: boolean;
     presencePenalty?: number;

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { googleContactsActionScopes } from '../scopes';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { googleContactsActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 export let modifyGroupMembers = SlateTool.create(spec, {
   name: 'Modify Group Members',

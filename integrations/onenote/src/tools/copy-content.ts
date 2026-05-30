@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { requireExactlyOne } from '../lib/preconditions';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let copyContent = SlateTool.create(spec, {
   name: 'Copy Content',
@@ -53,7 +53,7 @@ export let copyContent = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let result;
+    let result: any;
 
     if (ctx.input.resourceType === 'page') {
       if (!ctx.input.destinationSectionId) {

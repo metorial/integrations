@@ -1,7 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { getItem, getUser, listStories, search, getCommentTree } from './tools';
-import { newStories, topStoriesChanges, inboundWebhook } from './triggers';
+import { getCommentTree, getItem, getUser, listStories, search } from './tools';
+import { inboundWebhook, newStories, topStoriesChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

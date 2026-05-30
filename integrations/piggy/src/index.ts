@@ -1,30 +1,30 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listContacts,
-  getContact,
-  createContact,
-  updateContact,
-  deleteContact,
-  manageContactIdentifiers,
   awardCredits,
-  listLoyaltyTransactions,
-  listRewards,
   claimReward,
-  manageVouchers,
+  createContact,
+  deleteContact,
+  getContact,
+  getLoyaltyProgram,
+  listContacts,
+  listLoyaltyTransactions,
+  listPromotions,
+  listRewards,
+  listShops,
+  manageContactIdentifiers,
   manageGiftcards,
   managePrepaid,
-  listShops,
-  listPromotions,
-  getLoyaltyProgram,
-  triggerAutomation
+  manageVouchers,
+  triggerAutomation,
+  updateContact
 } from './tools';
 import {
   contactEvents,
-  loyaltyEvents,
+  engagementEvents,
   financialEvents,
-  voucherEvents,
-  engagementEvents
+  loyaltyEvents,
+  voucherEvents
 } from './triggers';
 
 export let provider = Slate.create({

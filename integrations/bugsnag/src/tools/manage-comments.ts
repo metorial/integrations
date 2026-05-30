@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugsnagClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commentSchema = z.object({
   commentId: z.string().describe('Comment ID'),

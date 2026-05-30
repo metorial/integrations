@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HabiticaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taskOutputSchema = z.object({
   taskId: z.string().describe('Unique ID of the task'),

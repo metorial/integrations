@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listEventTypes = SlateTool.create(spec, {
   name: 'List Event Types',
@@ -36,9 +36,9 @@ export let listEventTypes = SlateTool.create(spec, {
     });
 
     let params: Record<string, any> = {};
-    if (ctx.input.username) params['username'] = ctx.input.username;
-    if (ctx.input.eventSlug) params['eventSlug'] = ctx.input.eventSlug;
-    if (ctx.input.sortCreatedAt) params['sortCreatedAt'] = ctx.input.sortCreatedAt;
+    if (ctx.input.username) params.username = ctx.input.username;
+    if (ctx.input.eventSlug) params.eventSlug = ctx.input.eventSlug;
+    if (ctx.input.sortCreatedAt) params.sortCreatedAt = ctx.input.sortCreatedAt;
 
     let eventTypes = await client.listEventTypes(params);
 

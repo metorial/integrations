@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getReports = SlateTool.create(spec, {
   name: 'Get Reports',
@@ -45,7 +45,7 @@ export let getReports = SlateTool.create(spec, {
       since: ctx.input.since
     };
 
-    let reportData;
+    let reportData: any;
     switch (ctx.input.reportType) {
       case 'avg_first_response_time':
         reportData = await client.getAvgFirstResponseTime(options);

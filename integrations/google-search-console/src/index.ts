@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  querySearchAnalytics,
+  inspectUrl,
   listSites,
   manageSite,
   manageSitemap,
-  inspectUrl,
+  querySearchAnalytics,
   runMobileFriendlyTest
 } from './tools';
 

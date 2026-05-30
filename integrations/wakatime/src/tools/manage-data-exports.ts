@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WakaTimeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageDataExports = SlateTool.create(spec, {
   name: 'Manage Data Exports',

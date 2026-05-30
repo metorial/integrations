@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSession = SlateTool.create(spec, {
   name: 'Get Session',
@@ -31,7 +31,7 @@ export let getSession = SlateTool.create(spec, {
       projectId: ctx.auth.projectId
     });
 
-    let session;
+    let session: any;
     if (ctx.input.sessionId) {
       session = await client.getSession(ctx.input.sessionId);
     } else if (ctx.input.userId) {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReviewExpressClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageReviewRequest = SlateTool.create(spec, {
   name: 'Manage Review Request',

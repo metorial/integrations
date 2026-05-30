@@ -1,32 +1,32 @@
 import { createAxios } from 'slates';
 import type {
-  FrontPaginatedResponse,
-  FrontConversation,
-  FrontMessage,
-  FrontContact,
   FrontAccount,
-  FrontTeammate,
-  FrontTag,
-  FrontInbox,
+  FrontAnalyticsExport,
   FrontChannel,
   FrontComment,
-  FrontTeam,
-  FrontLink,
+  FrontContact,
+  FrontConversation,
   FrontEvent,
-  FrontRule,
-  FrontMessageTemplate,
+  FrontInbox,
   FrontKnowledgeBase,
   FrontKnowledgeBaseArticle,
   FrontKnowledgeBaseCategory,
-  FrontAnalyticsExport,
+  FrontLink,
+  FrontMessage,
+  FrontMessageTemplate,
+  FrontPaginatedResponse,
+  FrontRule,
   FrontShift,
-  FrontSignature
+  FrontSignature,
+  FrontTag,
+  FrontTeam,
+  FrontTeammate
 } from './types';
 
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api2.frontapp.com',
       headers: {
@@ -188,10 +188,7 @@ export class Client {
     options?: Record<string, any>;
     metadata?: Record<string, any>;
   }): Promise<FrontMessage> {
-    let response = await this.axios.post(
-      '/channels/' + (data.channel_id || '') + '/messages',
-      data
-    );
+    let response = await this.axios.post(`/channels/${data.channel_id || ''}/messages`, data);
     return response.data;
   }
 
@@ -253,7 +250,7 @@ export class Client {
     tags?: string[];
     metadata?: Record<string, any>;
   }): Promise<void> {
-    await this.axios.post('/inboxes/' + (data as any).inbox_id + '/imported_messages', data);
+    await this.axios.post(`/inboxes/${(data as any).inbox_id}/imported_messages`, data);
   }
 
   // ---- Contacts ----

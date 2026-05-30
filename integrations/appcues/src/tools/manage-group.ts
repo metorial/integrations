@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AppcuesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getGroupProfile = SlateTool.create(spec, {
   name: 'Get Group Profile',

@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listEventsTool,
-  getEventTool,
-  listOrdersTool,
-  getOrderTool,
-  listParticipantsTool,
-  getParticipantTool,
   checkinParticipantTool,
-  listAffiliatesTool
+  getEventTool,
+  getOrderTool,
+  getParticipantTool,
+  listAffiliatesTool,
+  listEventsTool,
+  listOrdersTool,
+  listParticipantsTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

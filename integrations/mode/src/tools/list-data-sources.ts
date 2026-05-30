@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ModeClient } from '../lib/client';
-import { normalizeDataSource, getEmbedded } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ModeClient } from '../lib/client';
+import { getEmbedded, normalizeDataSource } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listDataSources = SlateTool.create(spec, {
   name: 'List Data Sources',

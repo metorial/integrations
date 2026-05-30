@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createCover,
+  createDocumentType,
   createProposal,
-  listProposals,
+  getCompany,
   getProposal,
   getProposalCount,
-  createCover,
-  listTemplates,
+  getQuote,
+  getSettings,
   getTemplate,
   listCompanies,
-  getCompany,
-  listDocumentTypes,
-  createDocumentType,
-  listQuotes,
-  getQuote,
   listCurrencies,
-  getSettings
+  listDocumentTypes,
+  listProposals,
+  listQuotes,
+  listTemplates
 } from './tools';
-import { proposalStatusTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, proposalStatusTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

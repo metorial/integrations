@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { RedditClient } from '../lib/client';
 import { requireRedditArrayInput, requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageMessages = SlateTool.create(spec, {
   name: 'Manage Messages',

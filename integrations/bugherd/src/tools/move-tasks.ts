@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugherdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let moveTasks = SlateTool.create(spec, {
   name: 'Move Tasks',

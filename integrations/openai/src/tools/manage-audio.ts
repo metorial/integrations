@@ -1,15 +1,12 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let audioFileInputSchema = z.object({
   filename: z.string().describe('Audio file name, including extension'),
   fileContent: z.string().optional().describe('Audio file content as a text string'),
-  fileContentBase64: z
-    .string()
-    .optional()
-    .describe('Base64-encoded audio file bytes'),
+  fileContentBase64: z.string().optional().describe('Base64-encoded audio file bytes'),
   mimeType: z.string().optional().describe('Audio MIME type, such as audio/mpeg or audio/wav')
 });
 

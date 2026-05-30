@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
-import { createClient, extractPostSummary } from '../lib/helpers';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { createClient, extractPostSummary } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let postChangesTrigger = SlateTrigger.create(spec, {
   name: 'Post Changes',

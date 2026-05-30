@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SemrushTrendsClient } from '../lib/trends-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let analyzeTraffic = SlateTool.create(spec, {
   name: 'Analyze Traffic',

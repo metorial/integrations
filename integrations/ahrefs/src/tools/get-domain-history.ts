@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDomainHistory = SlateTool.create(spec, {
   name: 'Get Domain History',
@@ -62,7 +62,7 @@ Use to track trends and analyze how a site's SEO profile has changed over time.`
       mode: ctx.input.mode
     };
 
-    let result;
+    let result: any;
     switch (ctx.input.historyType) {
       case 'referring-domains':
         result = await client.getReferringDomainsHistory(baseParams);

@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { mailchimpApiError, mailchimpServiceError } from './lib/errors';
 
@@ -95,7 +95,7 @@ export let auth = SlateAuth.create()
         baseURL: `https://${ctx.output.serverPrefix}.api.mailchimp.com/3.0`
       });
 
-      let response;
+      let response: any;
 
       try {
         response = await apiAxios.get('/', {
@@ -158,7 +158,7 @@ export let auth = SlateAuth.create()
 
       let encoded = btoa(`anystring:${ctx.output.token}`);
 
-      let response;
+      let response: any;
 
       try {
         response = await apiAxios.get('/', {

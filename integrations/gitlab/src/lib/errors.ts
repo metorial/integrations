@@ -1,4 +1,4 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
 
 type ErrorResponse = {
   status?: number;
@@ -9,7 +9,7 @@ type ErrorResponse = {
 let isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
-let stringValue = (value: unknown) => (typeof value === 'string' ? value : undefined);
+let _stringValue = (value: unknown) => (typeof value === 'string' ? value : undefined);
 
 let extractGitLabMessage = (error: unknown) => {
   let response = isRecord(error) ? (error.response as ErrorResponse | undefined) : undefined;

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SnowflakeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageGrant = SlateTool.create(spec, {
   name: 'Manage Grant',
@@ -34,7 +34,9 @@ export let manageGrant = SlateTool.create(spec, {
       grantOption: z
         .boolean()
         .optional()
-        .describe('When granting, allow the recipient role to grant the privileges to other roles'),
+        .describe(
+          'When granting, allow the recipient role to grant the privileges to other roles'
+        ),
       revokeMode: z
         .enum(['restrict', 'cascade'])
         .optional()

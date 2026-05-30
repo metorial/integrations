@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let suppressionChanges = SlateTrigger.create(spec, {
   name: 'Suppression List Changes',

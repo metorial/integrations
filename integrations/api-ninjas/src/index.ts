@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getStockPrice,
-  getExchangeRate,
-  getCommodityPrice,
-  getCryptoPrice,
-  getWeather,
-  getAirQuality,
-  geocodeLocation,
   analyzeSentiment,
   compareTextSimilarity,
-  lookupWord,
-  getNutrition,
-  searchExercises,
-  getQuotes,
-  getTrivia,
+  geocodeLocation,
+  getAirQuality,
+  getCommodityPrice,
+  getCryptoPrice,
+  getExchangeRate,
   getHistoricalEvents,
+  getNutrition,
+  getQuotes,
+  getStockPrice,
+  getTrivia,
+  getWeather,
   lookupAnimal,
-  lookupIp,
   lookupDomain,
+  lookupIp,
+  lookupWord,
+  searchExercises,
   validateContact
 } from './tools';
 

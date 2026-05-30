@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CultsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let creationSchema = z.object({
   identifier: z.string().describe('Unique identifier of the creation'),

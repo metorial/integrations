@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { AuthClient } from '../lib/client';
 import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userOutputSchema = z.object({
   userId: z.string().describe('Firebase user ID'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PineconeDataPlaneClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listVectorIdsTool = SlateTool.create(spec, {
   name: 'List Vector IDs',

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { PointagramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newPlayer = SlateTrigger.create(spec, {
   name: 'New Player',
@@ -38,7 +38,7 @@ export let newPlayer = SlateTrigger.create(spec, {
       });
 
       let result = await client.listPlayers();
-      let players: Array<Record<string, unknown>> = Array.isArray(result)
+      let players: Record<string, unknown>[] = Array.isArray(result)
         ? result
         : (result?.players ?? []);
 

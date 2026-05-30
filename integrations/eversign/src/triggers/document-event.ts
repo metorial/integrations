@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let signerInfoSchema = z.object({
   signerName: z.string().optional().describe('Signer name'),
@@ -46,7 +46,7 @@ export let documentEvent = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.event_type) {
+      if (!data?.event_type) {
         return { inputs: [] };
       }
 

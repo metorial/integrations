@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listOrganizations,
-  listSites,
-  listAudits,
   getAudit,
-  listRiskModels,
+  getComplianceData,
+  getCopeData,
+  listAudits,
   listCategories,
   listCorrectiveActions,
-  getComplianceData,
   listMembers,
+  listOrganizations,
   listPropertyInsuranceItems,
-  getCopeData
+  listRiskModels,
+  listSites
 } from './tools';
 import {
+  inboundWebhook,
   newAuditTrigger,
   newCorrectiveActionTrigger,
-  newMemberTrigger,
-  inboundWebhook
+  newMemberTrigger
 } from './triggers';
 
 export let provider = Slate.create({

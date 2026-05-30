@@ -87,7 +87,7 @@ export class Client {
     cursor?: string
   ) {
     let params: Record<string, string | number> = { limit };
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
     let response = await http.get(`/domains/${domain}/${relationship}`, {
       headers: this.headers(),
       params
@@ -111,7 +111,7 @@ export class Client {
     cursor?: string
   ) {
     let params: Record<string, string | number> = { limit };
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
     let response = await http.get(`/ip_addresses/${ip}/${relationship}`, {
       headers: this.headers(),
       params
@@ -137,7 +137,7 @@ export class Client {
     cursor?: string
   ) {
     let params: Record<string, string | number> = { limit };
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
     let response = await http.get(`/${resourceType}/${resourceId}/comments`, {
       headers: this.headers(),
       params
@@ -196,7 +196,7 @@ export class Client {
     cursor?: string
   ) {
     let params: Record<string, string | number> = { limit };
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
     let response = await http.get(`/files/${fileHash}/${relationship}`, {
       headers: this.headers(),
       params
@@ -211,7 +211,7 @@ export class Client {
     cursor?: string
   ) {
     let params: Record<string, string | number> = { limit };
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
     let response = await http.get(`/urls/${urlId}/${relationship}`, {
       headers: this.headers(),
       params
@@ -229,9 +229,9 @@ export class Client {
     descriptorsOnly?: boolean
   ) {
     let params: Record<string, string | number | boolean> = { query, limit };
-    if (cursor) params['cursor'] = cursor;
-    if (order) params['order'] = order;
-    if (descriptorsOnly !== undefined) params['descriptors_only'] = descriptorsOnly;
+    if (cursor) params.cursor = cursor;
+    if (order) params.order = order;
+    if (descriptorsOnly !== undefined) params.descriptors_only = descriptorsOnly;
     let response = await http.get('/intelligence/search', {
       headers: this.headers(),
       params
@@ -243,7 +243,7 @@ export class Client {
 
   async getLivehuntRulesets(limit: number = 10, cursor?: string) {
     let params: Record<string, string | number> = { limit };
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
     let response = await http.get('/intelligence/hunting_rulesets', {
       headers: this.headers(),
       params
@@ -266,8 +266,8 @@ export class Client {
     notificationEmails?: string[]
   ) {
     let attributes: Record<string, unknown> = { name, rules, enabled };
-    if (limit !== undefined) attributes['limit'] = limit;
-    if (notificationEmails) attributes['notification_emails'] = notificationEmails;
+    if (limit !== undefined) attributes.limit = limit;
+    if (notificationEmails) attributes.notification_emails = notificationEmails;
     let response = await http.post(
       '/intelligence/hunting_rulesets',
       {
@@ -294,12 +294,12 @@ export class Client {
     }
   ) {
     let attributes: Record<string, unknown> = {};
-    if (updates.name !== undefined) attributes['name'] = updates.name;
-    if (updates.rules !== undefined) attributes['rules'] = updates.rules;
-    if (updates.enabled !== undefined) attributes['enabled'] = updates.enabled;
-    if (updates.limit !== undefined) attributes['limit'] = updates.limit;
+    if (updates.name !== undefined) attributes.name = updates.name;
+    if (updates.rules !== undefined) attributes.rules = updates.rules;
+    if (updates.enabled !== undefined) attributes.enabled = updates.enabled;
+    if (updates.limit !== undefined) attributes.limit = updates.limit;
     if (updates.notificationEmails !== undefined)
-      attributes['notification_emails'] = updates.notificationEmails;
+      attributes.notification_emails = updates.notificationEmails;
     let response = await http.patch(
       `/intelligence/hunting_rulesets/${rulesetId}`,
       {
@@ -325,8 +325,8 @@ export class Client {
 
   async createRetrohuntJob(rules: string, corpus?: string, notificationEmail?: string) {
     let attributes: Record<string, unknown> = { rules };
-    if (corpus) attributes['corpus'] = corpus;
-    if (notificationEmail) attributes['notification_email'] = notificationEmail;
+    if (corpus) attributes.corpus = corpus;
+    if (notificationEmail) attributes.notification_email = notificationEmail;
     let response = await http.post(
       '/intelligence/retrohunt_jobs',
       {
@@ -351,7 +351,7 @@ export class Client {
 
   async getRetrohuntJobs(limit: number = 10, cursor?: string) {
     let params: Record<string, string | number> = { limit };
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
     let response = await http.get('/intelligence/retrohunt_jobs', {
       headers: this.headers(),
       params
@@ -361,7 +361,7 @@ export class Client {
 
   async getRetrohuntJobMatchingFiles(jobId: string, limit: number = 10, cursor?: string) {
     let params: Record<string, string | number> = { limit };
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
     let response = await http.get(`/intelligence/retrohunt_jobs/${jobId}/matching_files`, {
       headers: this.headers(),
       params
@@ -373,8 +373,8 @@ export class Client {
 
   async getIocStream(filter?: string, limit: number = 10, cursor?: string) {
     let params: Record<string, string | number> = { limit };
-    if (filter) params['filter'] = filter;
-    if (cursor) params['cursor'] = cursor;
+    if (filter) params.filter = filter;
+    if (cursor) params.cursor = cursor;
     let response = await http.get('/ioc_stream', {
       headers: this.headers(),
       params
@@ -384,8 +384,8 @@ export class Client {
 
   async getIocStreamNotifications(filter?: string, limit: number = 10, cursor?: string) {
     let params: Record<string, string | number> = { limit };
-    if (filter) params['filter'] = filter;
-    if (cursor) params['cursor'] = cursor;
+    if (filter) params.filter = filter;
+    if (cursor) params.cursor = cursor;
     let response = await http.get('/ioc_stream_notifications', {
       headers: this.headers(),
       params
@@ -406,7 +406,7 @@ export class Client {
 
   async getGraphs(limit: number = 10, cursor?: string) {
     let params: Record<string, string | number> = { limit };
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
     let response = await http.get('/graphs', {
       headers: this.headers(),
       params

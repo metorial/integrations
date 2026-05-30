@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MozClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let anchorTextResultSchema = z.object({
   anchorText: z.string().describe('The anchor text phrase'),

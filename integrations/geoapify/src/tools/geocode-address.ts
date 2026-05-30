@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GeoapifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let geocodeResultSchema = z.object({
   placeId: z.string().optional().describe('Unique place identifier'),

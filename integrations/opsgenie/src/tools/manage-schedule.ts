@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OpsGenieClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let rotationSchema = z.object({
   name: z.string().optional().describe('Rotation name'),

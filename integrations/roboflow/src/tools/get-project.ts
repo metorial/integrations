@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getProjectTool = SlateTool.create(spec, {
   name: 'Get Project',
@@ -59,7 +59,7 @@ export let getProjectTool = SlateTool.create(spec, {
     let project = data.project || data;
     let versions = (project.versions || []).map((v: any) => ({
       versionId: v.id || String(v.name),
-      versionNumber: typeof v.name === 'number' ? v.name : parseInt(v.name) || 0,
+      versionNumber: typeof v.name === 'number' ? v.name : Number.parseInt(v.name, 10) || 0,
       imageCount: v.images,
       preprocessing: v.preprocessing,
       augmentation: v.augmentation,

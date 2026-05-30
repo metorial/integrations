@@ -11,7 +11,7 @@ export interface ClientConfig {
 export class Client {
   private http;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let authHeader =
       config.authScheme === 'coassemble'
         ? `COASSEMBLE-V1-SHA256 UserId=${config.userId}, UserToken=${config.token}`

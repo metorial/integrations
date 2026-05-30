@@ -1,8 +1,8 @@
 import { DescribeInstancesCommand } from '@aws-sdk/client-ec2';
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { clientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 let instanceStateInputSchema = z.object({
   instanceId: z.string().describe('EC2 instance ID'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlaygroundClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTtsHistory = SlateTool.create(spec, {
   name: 'Get TTS History',

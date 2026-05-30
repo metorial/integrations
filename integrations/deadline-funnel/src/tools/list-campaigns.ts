@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeadlineFunnelClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCampaigns = SlateTool.create(spec, {
   name: 'List Campaigns',
@@ -37,7 +37,7 @@ export let listCampaigns = SlateTool.create(spec, {
 
     return {
       output: { campaigns },
-      message: `Found **${campaigns.length}** campaign(s).${campaigns.length > 0 ? '\n\n' + campaigns.map(c => `- **${c.name}** (${c.campaignId}) — ${c.campaignType}`).join('\n') : ''}`
+      message: `Found **${campaigns.length}** campaign(s).${campaigns.length > 0 ? `\n\n${campaigns.map(c => `- **${c.name}** (${c.campaignId}) — ${c.campaignType}`).join('\n')}` : ''}`
     };
   })
   .build();

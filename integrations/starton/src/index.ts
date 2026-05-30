@@ -2,15 +2,15 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   deploySmartContract,
-  interactSmartContract,
-  listSmartContracts,
+  getTransactions,
   importSmartContract,
-  uploadToIpfs,
+  interactSmartContract,
   listIpfsPins,
+  listSmartContracts,
+  listTemplates,
   manageWallets,
   manageWatchers,
-  getTransactions,
-  listTemplates
+  uploadToIpfs
 } from './tools';
 import { blockchainEvent } from './triggers';
 

@@ -4,7 +4,7 @@ export class DropboxClient {
   private api: ReturnType<typeof createAxios>;
   private content: ReturnType<typeof createAxios>;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.api = createAxios({
       baseURL: 'https://api.dropboxapi.com/2',
       headers: {

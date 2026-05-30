@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { RemarketyClient, formatProductPayload } from '../lib/client';
+import { formatProductPayload, RemarketyClient } from '../lib/client';
 import { productSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let manageProductTool = SlateTool.create(spec, {
   name: 'Manage Product',

@@ -1,27 +1,27 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  listAudiencesTool,
-  manageAudienceTool,
-  listMembersTool,
-  manageMemberTool,
-  manageTagsTool,
-  listCampaignsTool,
-  manageCampaignTool,
-  sendCampaignTool,
-  manageCampaignContentTool,
-  listTemplatesTool,
-  manageTemplateTool,
-  listAutomationsTool,
-  manageAutomationTool,
-  getCampaignReportTool,
-  searchMembersTool,
-  manageSegmentsTool,
-  getAudienceActivityTool,
   addMemberEventTool,
-  manageMergeFieldsTool,
+  getAudienceActivityTool,
+  getCampaignReportTool,
+  listAudiencesTool,
+  listAutomationsTool,
+  listCampaignsTool,
+  listMembersTool,
+  listTemplatesTool,
+  manageAudienceTool,
+  manageAutomationTool,
+  manageCampaignContentTool,
+  manageCampaignTool,
+  manageFileManagerTool,
   manageInterestGroupsTool,
-  manageFileManagerTool
+  manageMemberTool,
+  manageMergeFieldsTool,
+  manageSegmentsTool,
+  manageTagsTool,
+  manageTemplateTool,
+  searchMembersTool,
+  sendCampaignTool
 } from './tools';
 import { audienceWebhookTrigger, campaignActivityTrigger } from './triggers';
 

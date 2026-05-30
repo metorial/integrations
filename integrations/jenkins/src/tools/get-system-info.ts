@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { JenkinsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSystemInfo = SlateTool.create(spec, {
   name: 'Get System Info',

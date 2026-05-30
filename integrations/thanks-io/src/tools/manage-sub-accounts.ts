@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ThanksIoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageSubAccounts = SlateTool.create(spec, {
   name: 'Manage Sub-Accounts',
@@ -49,9 +49,10 @@ Sub-accounts have their own return address, branding fields, and can be associat
 
     if (action === 'list') {
       let result = await client.listSubAccounts();
-      let data = (Array.isArray(result) ? result : result.data || []) as Array<
-        Record<string, unknown>
-      >;
+      let data = (Array.isArray(result) ? result : result.data || []) as Record<
+        string,
+        unknown
+      >[];
       return {
         output: { subAccounts: data },
         message: `Found **${data.length}** sub-account(s).`

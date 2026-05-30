@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let treatmentInputSchema = z.object({
   treatmentName: z.string().describe('Name of the treatment (e.g., "on", "off", "v1").'),

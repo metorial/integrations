@@ -1,10 +1,10 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTransactionTypes,
   createCorrespondence,
+  deliverCorrespondence,
   getCorrespondenceStatus,
-  deliverCorrespondence
+  listTransactionTypes
 } from './tools';
 import { correspondenceProcessed, inboundWebhook } from './triggers';
 

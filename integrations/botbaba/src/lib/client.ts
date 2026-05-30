@@ -19,7 +19,7 @@ export type WhatsAppProvider = '360dialog' | 'gupshup';
 export class BotbabaClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://app.botbaba.io/api',
       headers: {
@@ -30,7 +30,7 @@ export class BotbabaClient {
     });
   }
 
-  async getBots(): Promise<Array<Record<string, unknown>>> {
+  async getBots(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/GetBots');
     let data = response.data;
     if (Array.isArray(data)) {

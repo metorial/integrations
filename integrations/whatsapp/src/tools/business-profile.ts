@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let businessProfileVerticals = [
   'UNDEFINED',
@@ -93,7 +93,11 @@ export let updateBusinessProfile = SlateTool.create(spec, {
   .input(
     z.object({
       about: z.string().max(139).optional().describe('Short about text (max 139 characters)'),
-      address: z.string().max(256).optional().describe('Business address (max 256 characters)'),
+      address: z
+        .string()
+        .max(256)
+        .optional()
+        .describe('Business address (max 256 characters)'),
       description: z
         .string()
         .max(256)

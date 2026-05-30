@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let taskEventInput = z.object({
   eventName: z.string().describe('Todoist event name'),

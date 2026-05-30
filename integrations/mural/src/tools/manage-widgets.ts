@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let widgetOutputSchema = z.object({
   widgetId: z.string(),
@@ -250,7 +250,7 @@ export let updateWidgetTool = SlateTool.create(spec, {
       case 'area':
         if (body.text) {
           body.title = body.text;
-          delete body.text;
+          body.text = undefined;
         }
         w = await client.updateArea(muralId, widgetId, body);
         break;

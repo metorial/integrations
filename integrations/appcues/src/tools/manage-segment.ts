@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AppcuesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let segmentSchema = z.object({
   segmentId: z.string().describe('Unique identifier for the segment'),

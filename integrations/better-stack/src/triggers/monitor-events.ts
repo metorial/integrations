@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { UptimeClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let monitorEvents = SlateTrigger.create(spec, {
   name: 'Monitor Status Changes',

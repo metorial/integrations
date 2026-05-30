@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ZeplinClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let noteSchema = z.object({
   noteId: z.string().describe('Note identifier'),

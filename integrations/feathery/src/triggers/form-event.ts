@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { FeatheryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let formEvent = SlateTrigger.create(spec, {
   name: 'Form Event',
@@ -38,7 +38,7 @@ export let formEvent = SlateTrigger.create(spec, {
   )
   .webhook({
     autoRegisterWebhook: async ctx => {
-      let client = new FeatheryClient({
+      let _client = new FeatheryClient({
         token: ctx.auth.token,
         region: ctx.config.region
       });
@@ -60,7 +60,7 @@ export let formEvent = SlateTrigger.create(spec, {
       };
     },
 
-    autoUnregisterWebhook: async ctx => {
+    autoUnregisterWebhook: async _ctx => {
       // Webhooks are per-form, and removing them would require
       // updating each form's integrations. Since we don't track
       // which forms were configured, this is a no-op.

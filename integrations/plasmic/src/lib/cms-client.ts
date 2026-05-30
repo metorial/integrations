@@ -39,19 +39,19 @@ export class CmsClient {
     order?: string;
     locale?: string;
     draft?: boolean;
-  }): Promise<{ rows: Array<Record<string, unknown>> }> {
+  }): Promise<{ rows: Record<string, unknown>[] }> {
     let q: Record<string, unknown> = {};
-    if (params.where) q['where'] = params.where;
-    if (params.limit !== undefined) q['limit'] = params.limit;
-    if (params.offset !== undefined) q['offset'] = params.offset;
-    if (params.order) q['order'] = params.order;
+    if (params.where) q.where = params.where;
+    if (params.limit !== undefined) q.limit = params.limit;
+    if (params.offset !== undefined) q.offset = params.offset;
+    if (params.order) q.order = params.order;
 
     let queryParams: Record<string, string> = {};
     if (Object.keys(q).length > 0) {
-      queryParams['q'] = JSON.stringify(q);
+      queryParams.q = JSON.stringify(q);
     }
-    if (params.locale) queryParams['locale'] = params.locale;
-    if (params.draft) queryParams['draft'] = '1';
+    if (params.locale) queryParams.locale = params.locale;
+    if (params.draft) queryParams.draft = '1';
 
     let headers = params.draft ? this.writeHeaders : this.readHeaders;
 
@@ -70,14 +70,14 @@ export class CmsClient {
     draft?: boolean;
   }): Promise<{ count: number }> {
     let q: Record<string, unknown> = {};
-    if (params.where) q['where'] = params.where;
+    if (params.where) q.where = params.where;
 
     let queryParams: Record<string, string> = {};
     if (Object.keys(q).length > 0) {
-      queryParams['q'] = JSON.stringify(q);
+      queryParams.q = JSON.stringify(q);
     }
-    if (params.locale) queryParams['locale'] = params.locale;
-    if (params.draft) queryParams['draft'] = '1';
+    if (params.locale) queryParams.locale = params.locale;
+    if (params.draft) queryParams.draft = '1';
 
     let headers = params.draft ? this.writeHeaders : this.readHeaders;
 
@@ -95,7 +95,7 @@ export class CmsClient {
     publish?: boolean;
   }): Promise<Record<string, unknown>> {
     let queryParams: Record<string, string> = {};
-    if (params.publish) queryParams['publish'] = '1';
+    if (params.publish) queryParams.publish = '1';
 
     let response = await cmsAxios.post(
       `/${this.cmsId}/tables/${params.modelId}/rows`,
@@ -116,7 +116,7 @@ export class CmsClient {
     publish?: boolean;
   }): Promise<Record<string, unknown>> {
     let queryParams: Record<string, string> = {};
-    if (params.publish) queryParams['publish'] = '1';
+    if (params.publish) queryParams.publish = '1';
 
     let response = await cmsAxios.put(
       `/${this.cmsId}/tables/${params.modelId}/rows/${params.rowId}`,

@@ -19,7 +19,7 @@ export class AnalyticsDataClient {
     metrics: Array<{ name: string }>;
     dimensionFilter?: any;
     metricFilter?: any;
-    orderBys?: Array<any>;
+    orderBys?: any[];
     limit?: number;
     offset?: number;
     keepEmptyRows?: boolean;

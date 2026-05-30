@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { VimeoClient } from '../lib/client';
 import {
-  videoSchema,
+  mapVideo,
   paginationInputSchema,
   paginationOutputSchema,
-  mapVideo
+  videoSchema
 } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchVideosTool = SlateTool.create(spec, {
   name: 'Search Videos',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client, type JsonPatchOp } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let bucketInputSchema = z.object({
   treatment: z.string(),

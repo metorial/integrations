@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getBacklinks = SlateTool.create(spec, {
   name: 'Get Backlinks',
@@ -75,7 +75,7 @@ Supports filtering for broken backlinks and allows sorting, filtering, and pagin
 
     let backlinks = await client.getBacklinks(params);
 
-    let brokenBacklinks;
+    let brokenBacklinks: any;
     if (ctx.input.includeBroken) {
       brokenBacklinks = await client.getBrokenBacklinks(params);
     }

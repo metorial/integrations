@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchCode,
+  closeBatchChange,
+  createCodeInsight,
+  createCodeMonitor,
+  deleteCodeInsight,
+  deleteCodeMonitor,
+  getBatchChange,
+  getCurrentUser,
   getFileContent,
-  listRepositories,
   getRepository,
   listBatchChanges,
-  getBatchChange,
-  closeBatchChange,
   listCodeInsights,
-  createCodeInsight,
-  deleteCodeInsight,
   listCodeMonitors,
-  createCodeMonitor,
-  deleteCodeMonitor,
-  getCurrentUser
+  listRepositories,
+  searchCode
 } from './tools';
 import { batchChangeEvents, codeMonitorNotification } from './triggers';
 

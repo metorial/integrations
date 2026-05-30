@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let orderStatusChanged = SlateTrigger.create(spec, {
   name: 'Order Status Changed',
@@ -98,7 +98,7 @@ export let orderStatusChanged = SlateTrigger.create(spec, {
     handleEvent: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
-      let result;
+      let result: any;
       try {
         result = await client.listOrders();
       } catch {

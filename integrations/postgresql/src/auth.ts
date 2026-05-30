@@ -118,7 +118,7 @@ let parseConnectionString = (
     );
   }
 
-  let port = url.port ? parseInt(url.port, 10) : 5432;
+  let port = url.port ? Number.parseInt(url.port, 10) : 5432;
   if (!Number.isInteger(port) || port <= 0 || port > 65535) {
     throw postgresServiceError('Invalid PostgreSQL port in connection string.');
   }

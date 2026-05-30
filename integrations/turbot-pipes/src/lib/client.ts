@@ -1,18 +1,18 @@
 import { createAxios } from 'slates';
 import type {
-  PaginationParams,
-  PaginatedResponse,
-  Workspace,
-  Connection,
-  Organization,
-  OrgMember,
-  Pipeline,
-  Process,
-  Snapshot,
   Actor,
+  Connection,
   Datatank,
   DatatankTable,
-  QueryResult
+  Organization,
+  OrgMember,
+  PaginatedResponse,
+  PaginationParams,
+  Pipeline,
+  Process,
+  QueryResult,
+  Snapshot,
+  Workspace
 } from './types';
 
 let snakeToCamel = (str: string): string => {

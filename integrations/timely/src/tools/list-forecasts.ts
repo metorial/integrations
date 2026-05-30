@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TimelyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let forecastSchema = z.object({
   forecastId: z.number().describe('Forecast/task ID'),

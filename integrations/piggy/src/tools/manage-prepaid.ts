@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let prepaidTransactionSchema = z
   .object({
@@ -114,7 +114,7 @@ export let managePrepaid = SlateTool.create(spec, {
           ...t
         }
       },
-      message: `Prepaid transaction of **${ctx.input.amountInCents}** cents for contact ${contactUuid}. New balance: ${t.prepaid_balance?.balance || t.prepaid_balance?.balance_in_cents + ' cents'}.`
+      message: `Prepaid transaction of **${ctx.input.amountInCents}** cents for contact ${contactUuid}. New balance: ${t.prepaid_balance?.balance || `${t.prepaid_balance?.balance_in_cents} cents`}.`
     };
   })
   .build();

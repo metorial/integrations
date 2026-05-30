@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let partySchema = z.object({
   partyId: z.number().describe('Unique identifier of the party'),

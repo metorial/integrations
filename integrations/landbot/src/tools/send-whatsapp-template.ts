@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlatformClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendWhatsAppTemplateTool = SlateTool.create(spec, {
   name: 'Send WhatsApp Template',
@@ -61,7 +61,7 @@ export let sendWhatsAppTemplateTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new PlatformClient(ctx.auth.token);
 
-    let templateParams: any = undefined;
+    let templateParams: any;
     if (ctx.input.headerParams || ctx.input.bodyParams || ctx.input.buttonParams) {
       templateParams = {};
       if (ctx.input.headerParams) {

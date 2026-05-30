@@ -2,23 +2,23 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   analyzeDomain,
-  getBacklinks,
-  getReferringDomains,
-  getOrganicKeywords,
-  getTopPages,
-  getAnchors,
-  getOrganicCompetitors,
-  getDomainHistory,
-  researchKeywords,
-  getKeywordIdeas,
-  getSerpOverview,
-  getRankTrackerData,
-  getSiteAudit,
-  getBrandRadar,
   batchAnalyze,
-  manageRankTracker,
+  getAnchors,
+  getBacklinks,
+  getBrandRadar,
+  getDomainHistory,
+  getKeywordIdeas,
   getLinkedDomains,
-  getMetricsByCountry
+  getMetricsByCountry,
+  getOrganicCompetitors,
+  getOrganicKeywords,
+  getRankTrackerData,
+  getReferringDomains,
+  getSerpOverview,
+  getSiteAudit,
+  getTopPages,
+  manageRankTracker,
+  researchKeywords
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

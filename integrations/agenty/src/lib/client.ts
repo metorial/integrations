@@ -196,7 +196,7 @@ export class Client {
     return response.data;
   }
 
-  async addListRows(listId: string, rows: Array<Record<string, string>>) {
+  async addListRows(listId: string, rows: Record<string, string>[]) {
     let response = await this.http.post(`/lists/${listId}/rows`, rows);
     return response.data;
   }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SpeakerRecognitionClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let identifySpeaker = SlateTool.create(spec, {
   name: 'Identify Speaker',

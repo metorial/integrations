@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { MailtrapClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let listSandboxMessages = SlateTool.create(spec, {
   name: 'List Sandbox Messages',

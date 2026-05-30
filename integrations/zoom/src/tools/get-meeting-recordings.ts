@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { ZoomClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getMeetingRecordings = SlateTool.create(spec, {
   name: 'Get Meeting Recordings',
@@ -14,9 +14,7 @@ export let getMeetingRecordings = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      meetingId: z
-        .string()
-        .describe('The meeting ID or UUID. Raw Zoom UUIDs are accepted.')
+      meetingId: z.string().describe('The meeting ID or UUID. Raw Zoom UUIDs are accepted.')
     })
   )
   .output(

@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { getEventTypeName } from '../lib/event-types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let organizationEvents = SlateTrigger.create(spec, {
   name: 'Organization Events',

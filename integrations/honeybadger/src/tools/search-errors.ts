@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HoneybadgerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let faultSchema = z.object({
   faultId: z.number().describe('Unique fault ID'),

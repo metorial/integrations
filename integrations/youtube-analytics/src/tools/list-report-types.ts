@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { YouTubeAnalyticsClient } from '../lib/client';
 import { youtubeAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listReportTypes = SlateTool.create(spec, {
   name: 'List Report Types',

@@ -96,7 +96,7 @@ export interface GetClicksResponse {
 export class Client {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.shorten.rest',
       headers: {

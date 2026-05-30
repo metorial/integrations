@@ -2,20 +2,20 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createCall,
+  deleteLead,
   getCall,
+  getLead,
+  listAgents,
   listCalls,
   listLeads,
-  getLead,
-  updateLead,
-  deleteLead,
-  sendSms,
   listTeams,
-  manageTeam,
   manageAgent,
-  listAgents,
   manageAgentSchedule,
+  manageClient,
+  manageTeam,
   manageTeamAgents,
-  manageClient
+  sendSms,
+  updateLead
 } from './tools';
 import { callCompleted, leadCreated, leadUpdated } from './triggers';
 

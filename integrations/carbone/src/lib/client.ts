@@ -158,7 +158,8 @@ export class Client {
       responseType: 'arraybuffer'
     });
 
-    let contentDisposition = headerValueToString(response.headers['content-disposition']) || '';
+    let contentDisposition =
+      headerValueToString(response.headers['content-disposition']) || '';
     let filenameMatch = contentDisposition.match(/filename="?([^";\n]+)"?/);
     let filename = filenameMatch ? filenameMatch[1]! : 'template';
 

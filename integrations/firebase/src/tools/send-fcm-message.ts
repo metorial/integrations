@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { MessagingClient } from '../lib/client';
 import { firebaseServiceError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendFcmMessage = SlateTool.create(spec, {
   name: 'Send Push Notification',

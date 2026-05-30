@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getProjectAnalytics = SlateTool.create(spec, {
   name: 'Get Project Analytics',
@@ -126,15 +126,15 @@ export let getStorageAnalytics = SlateTool.create(spec, {
     });
 
     let usage = await client.getStorageUsage();
-    let totalBytes = usage['total_storage_bytes'] as number | undefined;
-    let kbs = usage['knowledge_bases'] as Record<string, unknown>[] | undefined;
+    let totalBytes = usage.total_storage_bytes as number | undefined;
+    let kbs = usage.knowledge_bases as Record<string, unknown>[] | undefined;
 
     return {
       output: {
         totalStorageBytes: totalBytes,
         knowledgeBases: kbs
       },
-      message: `Storage usage: **${totalBytes ? (totalBytes / (1024 * 1024)).toFixed(2) + ' MB' : 'unknown'}** total.`
+      message: `Storage usage: **${totalBytes ? `${(totalBytes / (1024 * 1024)).toFixed(2)} MB` : 'unknown'}** total.`
     };
   })
   .build();

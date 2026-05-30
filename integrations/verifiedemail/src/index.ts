@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  verifyEmail,
   checkCredits,
-  listEmailLists,
   createEmailList,
-  verifyEmailList,
-  getListResults,
   deleteEmailList,
-  manageWebhook,
+  deleteWebhook,
+  getListResults,
+  listEmailLists,
   listWebhooks,
-  deleteWebhook
+  manageWebhook,
+  verifyEmail,
+  verifyEmailList
 } from './tools';
 import { verificationEvents } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSupplementsTool = SlateTool.create(spec, {
   name: 'Get Supplements',
@@ -61,7 +61,7 @@ export let getSupplementsTool = SlateTool.create(spec, {
         try {
           let result = await client.getSupplementItems(ctx.input.supplementId);
           items = Array.isArray(result) ? result : (result?.items ?? result?.data ?? []);
-        } catch (e) {
+        } catch (_e) {
           items = [];
         }
       }
@@ -70,7 +70,7 @@ export let getSupplementsTool = SlateTool.create(spec, {
         try {
           let result = await client.getSupplementNotations(ctx.input.supplementId);
           notations = Array.isArray(result) ? result : (result?.items ?? result?.data ?? []);
-        } catch (e) {
+        } catch (_e) {
           notations = [];
         }
       }

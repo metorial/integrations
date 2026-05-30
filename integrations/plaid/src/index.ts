@@ -1,35 +1,35 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getAccountsTool,
-  getBalancesTool,
-  syncTransactionsTool,
-  getTransactionsTool,
-  getAuthTool,
-  getIdentityTool,
-  getHoldingsTool,
-  getInvestmentTransactionsTool,
-  getLiabilitiesTool,
-  searchInstitutionsTool,
-  getInstitutionTool,
+  createAssetReportTool,
   createLinkTokenTool,
-  exchangePublicTokenTool,
-  getItemTool,
-  removeItemTool,
   createTransferTool,
+  enrichTransactionsTool,
+  evaluateSignalTool,
+  exchangePublicTokenTool,
+  getAccountsTool,
+  getAssetReportTool,
+  getAuthTool,
+  getBalancesTool,
+  getHoldingsTool,
+  getIdentityTool,
+  getInstitutionTool,
+  getInvestmentTransactionsTool,
+  getItemTool,
+  getLiabilitiesTool,
+  getTransactionsTool,
   getTransferTool,
   listTransfersTool,
-  evaluateSignalTool,
-  enrichTransactionsTool,
-  createAssetReportTool,
-  getAssetReportTool
+  removeItemTool,
+  searchInstitutionsTool,
+  syncTransactionsTool
 } from './tools';
 import {
+  assetsWebhookTrigger,
+  holdingsWebhookTrigger,
   itemWebhookTrigger,
   transactionsWebhookTrigger,
-  transferWebhookTrigger,
-  holdingsWebhookTrigger,
-  assetsWebhookTrigger
+  transferWebhookTrigger
 } from './triggers';
 
 export let provider = Slate.create({

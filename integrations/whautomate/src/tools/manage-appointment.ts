@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageAppointment = SlateTool.create(spec, {
   name: 'Manage Appointment',
@@ -97,7 +97,7 @@ export let manageAppointment = SlateTool.create(spec, {
 
     if (action === 'cancel') {
       if (!ctx.input.appointmentId) throw new Error('appointmentId is required for cancel');
-      let result = await client.cancelAppointment({
+      let _result = await client.cancelAppointment({
         appointmentId: ctx.input.appointmentId,
         reason: ctx.input.reason
       });

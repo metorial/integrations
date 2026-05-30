@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { ShopifyClient } from '../lib/client';
 import { shopifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pageSchema = z.object({
   pageId: z.string(),
@@ -35,10 +35,7 @@ export let managePages = SlateTool.create(spec, {
         .boolean()
         .optional()
         .describe('Whether the page should be published. False hides the page.'),
-      publishedAt: z
-        .string()
-        .optional()
-        .describe('Explicit publication timestamp (ISO 8601)'),
+      publishedAt: z.string().optional().describe('Explicit publication timestamp (ISO 8601)'),
       limit: z.number().min(1).max(250).optional().describe('Number of pages to return'),
       sinceId: z.string().optional().describe('Show pages after this ID for pagination')
     })

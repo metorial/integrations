@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  submitOrder,
+  addImages,
+  browseCatalog,
+  browseFraming,
+  deleteImages,
   getOrderStatus,
-  updateOrder,
-  updateCustomer,
-  getShippingOptions,
-  validateAddress,
   getPrices,
   getProductDetails,
-  browseCatalog,
+  getShippingOptions,
   listImages,
-  addImages,
+  listOrderStatusDefinitions,
+  submitOrder,
+  updateCustomer,
   updateImages,
-  deleteImages,
-  browseFraming,
-  listOrderStatusDefinitions
+  updateOrder,
+  validateAddress
 } from './tools';
 import { orderStatusUpdate } from './triggers';
 

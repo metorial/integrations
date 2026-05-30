@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let unsubscribeMember = SlateTool.create(spec, {
   name: 'Unsubscribe From Emails',
@@ -41,7 +41,7 @@ Can also retrieve or manage unsubscribe records.`,
       websiteDomain: ctx.config.websiteDomain
     });
 
-    let result;
+    let result: any;
     switch (ctx.input.action) {
       case 'get':
         if (!ctx.input.unsubscribeId)

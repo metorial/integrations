@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BTCPayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getServerInfo = SlateTool.create(spec, {
   name: 'Get Server Info',
@@ -51,7 +51,7 @@ export let getServerInfo = SlateTool.create(spec, {
         version: serverInfo.version as string | undefined,
         supportedPaymentMethods: serverInfo.supportedPaymentMethods as string[] | undefined,
         fullySynched: serverInfo.fullySynched as boolean | undefined,
-        syncStatuses: serverInfo.syncStatuses as Array<Record<string, unknown>> | undefined,
+        syncStatuses: serverInfo.syncStatuses as Record<string, unknown>[] | undefined,
         currentUser: {
           userId: user.id as string | undefined,
           email: user.email as string | undefined,

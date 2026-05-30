@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let batchCompletedTrigger = SlateTrigger.create(spec, {
   name: 'Batch Completed',
@@ -82,7 +82,7 @@ export let batchCompletedTrigger = SlateTrigger.create(spec, {
         baseUrl: ctx.config.baseUrl
       });
 
-      let batch;
+      let batch: any;
       try {
         batch = await client.getBatch(ctx.input.batchId);
       } catch {

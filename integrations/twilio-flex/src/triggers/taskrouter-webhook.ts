@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let taskRouterWebhookTrigger = SlateTrigger.create(spec, {
   name: 'TaskRouter Webhook',
@@ -65,8 +65,8 @@ export let taskRouterWebhookTrigger = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      let eventType = data['EventType'] || 'unknown';
-      let eventSid = data['Sid'] || `${eventType}-${Date.now()}`;
+      let eventType = data.EventType || 'unknown';
+      let eventSid = data.Sid || `${eventType}-${Date.now()}`;
 
       let resourceType = 'unknown';
       if (eventType.startsWith('task.')) resourceType = 'task';
@@ -81,19 +81,18 @@ export let taskRouterWebhookTrigger = SlateTrigger.create(spec, {
             eventType,
             eventSid,
             resourceType,
-            resourceSid:
-              data['ResourceSid'] || data['TaskSid'] || data['WorkerSid'] || data['Sid'],
-            workspaceSid: data['WorkspaceSid'],
-            taskSid: data['TaskSid'],
-            workerSid: data['WorkerSid'],
-            workerName: data['WorkerName'],
-            workerActivityName: data['WorkerActivityName'],
-            taskQueueSid: data['TaskQueueSid'],
-            taskQueueName: data['TaskQueueName'],
-            taskAttributes: data['TaskAttributes'],
-            taskAssignmentStatus: data['TaskAssignmentStatus'],
-            reservationSid: data['ReservationSid'],
-            timestamp: data['Timestamp'] || new Date().toISOString()
+            resourceSid: data.ResourceSid || data.TaskSid || data.WorkerSid || data.Sid,
+            workspaceSid: data.WorkspaceSid,
+            taskSid: data.TaskSid,
+            workerSid: data.WorkerSid,
+            workerName: data.WorkerName,
+            workerActivityName: data.WorkerActivityName,
+            taskQueueSid: data.TaskQueueSid,
+            taskQueueName: data.TaskQueueName,
+            taskAttributes: data.TaskAttributes,
+            taskAssignmentStatus: data.TaskAssignmentStatus,
+            reservationSid: data.ReservationSid,
+            timestamp: data.Timestamp || new Date().toISOString()
           }
         ]
       };

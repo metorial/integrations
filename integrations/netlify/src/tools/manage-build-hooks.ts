@@ -29,7 +29,9 @@ export let manageBuildHooks = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Action to perform'),
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
       siteId: z.string().describe('The site ID'),
       buildHookId: z.string().optional().describe('Build hook ID for get, update, or delete'),
       title: z.string().optional().describe('Build hook title for create or update'),
@@ -42,7 +44,9 @@ export let manageBuildHooks = SlateTool.create(spec, {
         .array(buildHookOutputSchema)
         .optional()
         .describe('Build hooks returned for list action'),
-      buildHook: buildHookOutputSchema.optional().describe('Build hook returned by get/create/update'),
+      buildHook: buildHookOutputSchema
+        .optional()
+        .describe('Build hook returned by get/create/update'),
       deleted: z.boolean().optional().describe('Whether the build hook was deleted')
     })
   )

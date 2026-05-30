@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let modelSchema = z.object({
   modelId: z.string().describe('Unique model identifier (e.g., "openai/gpt-4o")'),
@@ -138,7 +138,7 @@ export let listModels = SlateTool.create(spec, {
       models = models.filter(
         (m: { modelId: string; name?: string }) =>
           m.modelId.toLowerCase().includes(searchLower) ||
-          (m.name && m.name.toLowerCase().includes(searchLower))
+          m.name?.toLowerCase().includes(searchLower)
       );
     }
 

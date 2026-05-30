@@ -53,8 +53,8 @@ export class PostHogClient {
       properties: params.properties || {}
     };
     if (params.timestamp) body.timestamp = params.timestamp;
-    if (params.set) body['$set'] = params.set;
-    if (params.setOnce) body['$set_once'] = params.setOnce;
+    if (params.set) body.$set = params.set;
+    if (params.setOnce) body.$set_once = params.setOnce;
 
     let response = await this.publicHttp.post('/i/v0/e', body);
     return response.data;

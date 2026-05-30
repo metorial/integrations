@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendSignatureRequest,
-  sendTemplateRequest,
-  getSignatureRequest,
-  listSignatureRequests,
-  manageSignatureRequest,
   downloadFiles,
-  listTemplates,
-  getTemplate,
-  manageTemplate,
   getAccount,
   getEmbeddedUrls,
-  manageTeam
+  getSignatureRequest,
+  getTemplate,
+  listSignatureRequests,
+  listTemplates,
+  manageSignatureRequest,
+  manageTeam,
+  manageTemplate,
+  sendSignatureRequest,
+  sendTemplateRequest
 } from './tools';
 import { signatureRequestEvents, templateEvents } from './triggers';
 

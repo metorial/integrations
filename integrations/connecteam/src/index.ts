@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listUsers,
   createUser,
-  updateUser,
   getCustomFields,
+  listConversations,
+  listUsers,
+  manageForms,
+  manageJobs,
+  manageOnboarding,
+  manageScheduler,
+  manageTasks,
   manageTimeClock,
   manageTimeOff,
-  manageScheduler,
-  manageJobs,
-  manageForms,
-  manageTasks,
   sendChatMessage,
-  listConversations,
-  manageOnboarding
+  updateUser
 } from './tools';
 import {
-  userEvents,
-  timeActivityEvents,
   formSubmissionEvents,
   schedulerEvents,
-  taskEvents
+  taskEvents,
+  timeActivityEvents,
+  userEvents
 } from './triggers';
 
 export let provider = Slate.create({

@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  cancelRunTool,
   getAccountTool,
-  listProjectsTool,
+  getJobTool,
+  getRunArtifactTool,
+  getRunTool,
   listEnvironmentsTool,
   listJobsTool,
-  getJobTool,
-  triggerJobRunTool,
+  listProjectsTool,
   listRunsTool,
-  getRunTool,
-  cancelRunTool,
-  getRunArtifactTool,
   listUsersTool,
-  manageWebhookTool
+  manageWebhookTool,
+  triggerJobRunTool
 } from './tools';
 import { jobRunEventTrigger } from './triggers';
 

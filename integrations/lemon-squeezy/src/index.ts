@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listStoresTool,
-  listProductsTool,
-  listVariantsTool,
-  getOrderTool,
-  listOrdersTool,
-  refundOrderTool,
   createCheckoutTool,
-  manageSubscriptionTool,
-  listSubscriptionsTool,
   createDiscountTool,
-  listDiscountsTool,
+  getOrderTool,
   listCustomersTool,
+  listDiscountsTool,
+  listLicenseKeysTool,
+  listOrdersTool,
+  listProductsTool,
+  listStoresTool,
+  listSubscriptionsTool,
+  listVariantsTool,
   manageLicenseKeyTool,
-  listLicenseKeysTool
+  manageSubscriptionTool,
+  refundOrderTool
 } from './tools';
 import {
+  licenseKeyEventsTrigger,
   orderEventsTrigger,
   subscriptionEventsTrigger,
-  subscriptionPaymentEventsTrigger,
-  licenseKeyEventsTrigger
+  subscriptionPaymentEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

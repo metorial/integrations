@@ -19,7 +19,7 @@ let applySlateInterceptors = (
 ) => {
   instance.interceptors.request.use(
     request => {
-       // Has to be called in the context of an action execution
+      // Has to be called in the context of an action execution
       let ctx = getCurrentContext();
       let spec = ctx.specification;
       let providerToken = spec.key.replace(/[^A-Za-z0-9!#$%&'*+\-.^_`|~]/g, '-');

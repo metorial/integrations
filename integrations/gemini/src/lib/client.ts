@@ -79,12 +79,12 @@ export class Client {
     params: {
       contents: Array<{
         role?: string;
-        parts: Array<any>;
+        parts: any[];
       }>;
-      systemInstruction?: { parts: Array<any> };
+      systemInstruction?: { parts: any[] };
       generationConfig?: Record<string, any>;
       safetySettings?: Array<{ category: string; threshold: string }>;
-      tools?: Array<any>;
+      tools?: any[];
       toolConfig?: Record<string, any>;
       cachedContent?: string;
     }
@@ -110,7 +110,7 @@ export class Client {
   async embedContent(
     modelName: string,
     params: {
-      content: { parts: Array<any> };
+      content: { parts: any[] };
       taskType?: string;
       title?: string;
       outputDimensionality?: number;
@@ -135,7 +135,7 @@ export class Client {
     modelName: string,
     params: {
       requests: Array<{
-        content: { parts: Array<any> };
+        content: { parts: any[] };
         taskType?: string;
         title?: string;
         outputDimensionality?: number;
@@ -169,7 +169,7 @@ export class Client {
   async countTokens(
     modelName: string,
     params: {
-      contents?: Array<{ role?: string; parts: Array<any> }>;
+      contents?: Array<{ role?: string; parts: any[] }>;
       generateContentRequest?: Record<string, any>;
     }
   ): Promise<any> {
@@ -250,8 +250,8 @@ export class Client {
           'X-Goog-Upload-Offset': '0',
           'X-Goog-Upload-Command': 'upload, finalize'
         },
-        maxBodyLength: Infinity,
-        maxContentLength: Infinity
+        maxBodyLength: Number.POSITIVE_INFINITY,
+        maxContentLength: Number.POSITIVE_INFINITY
       })
     );
     return uploadResponse.data;
@@ -281,9 +281,9 @@ export class Client {
 
   async createCachedContent(params: {
     model: string;
-    contents: Array<{ role?: string; parts: Array<any> }>;
-    systemInstruction?: { parts: Array<any> };
-    tools?: Array<any>;
+    contents: Array<{ role?: string; parts: any[] }>;
+    systemInstruction?: { parts: any[] };
+    tools?: any[];
     ttl?: string;
     expireTime?: string;
     displayName?: string;

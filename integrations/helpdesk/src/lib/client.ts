@@ -1,26 +1,26 @@
 import { createAxios } from 'slates';
 import type {
-  Ticket,
-  CreateTicketInput,
-  UpdateTicketInput,
-  ListTicketsParams,
-  PaginatedResponse,
   Agent,
-  CreateAgentInput,
-  Team,
-  CreateTeamInput,
-  Tag,
-  CannedResponse,
-  CustomField,
-  Rule,
-  Macro,
-  View,
-  Webhook,
-  CreateWebhookInput,
   AuditLogEntry,
   AuditLogParams,
+  CannedResponse,
+  CreateAgentInput,
+  CreateTeamInput,
+  CreateTicketInput,
+  CreateWebhookInput,
+  CustomField,
+  ListTicketsParams,
+  Macro,
+  PaginatedResponse,
+  ReportParams,
+  Rule,
+  Tag,
+  Team,
+  Ticket,
   Transaction,
-  ReportParams
+  UpdateTicketInput,
+  View,
+  Webhook
 } from './types';
 
 export class Client {
@@ -42,22 +42,22 @@ export class Client {
 
   async listTickets(params: ListTicketsParams = {}): Promise<PaginatedResponse<Ticket>> {
     let query: Record<string, string> = {};
-    if (params.status) query['status'] = params.status;
-    if (params.teamID) query['teamID'] = params.teamID;
-    if (params.assigneeID) query['assigneeID'] = params.assigneeID;
-    if (params.tags && params.tags.length > 0) query['tags'] = params.tags.join(',');
-    if (params.requesterEmail) query['requesterEmail'] = params.requesterEmail;
-    if (params.createdFrom) query['createdFrom'] = params.createdFrom;
-    if (params.createdTo) query['createdTo'] = params.createdTo;
-    if (params.updatedFrom) query['updatedFrom'] = params.updatedFrom;
-    if (params.updatedTo) query['updatedTo'] = params.updatedTo;
-    if (params.search) query['search'] = params.search;
-    if (params.sortBy) query['sortBy'] = params.sortBy;
-    if (params.sortOrder) query['sortOrder'] = params.sortOrder;
-    if (params.pageAfter) query['pageAfter'] = params.pageAfter;
-    if (params.pageBefore) query['pageBefore'] = params.pageBefore;
-    if (params.limit) query['limit'] = String(params.limit);
-    if (params.silo) query['silo'] = params.silo;
+    if (params.status) query.status = params.status;
+    if (params.teamID) query.teamID = params.teamID;
+    if (params.assigneeID) query.assigneeID = params.assigneeID;
+    if (params.tags && params.tags.length > 0) query.tags = params.tags.join(',');
+    if (params.requesterEmail) query.requesterEmail = params.requesterEmail;
+    if (params.createdFrom) query.createdFrom = params.createdFrom;
+    if (params.createdTo) query.createdTo = params.createdTo;
+    if (params.updatedFrom) query.updatedFrom = params.updatedFrom;
+    if (params.updatedTo) query.updatedTo = params.updatedTo;
+    if (params.search) query.search = params.search;
+    if (params.sortBy) query.sortBy = params.sortBy;
+    if (params.sortOrder) query.sortOrder = params.sortOrder;
+    if (params.pageAfter) query.pageAfter = params.pageAfter;
+    if (params.pageBefore) query.pageBefore = params.pageBefore;
+    if (params.limit) query.limit = String(params.limit);
+    if (params.silo) query.silo = params.silo;
 
     let response = await this.http.get('/v1/tickets', { params: query });
     return response.data as PaginatedResponse<Ticket>;
@@ -438,14 +438,14 @@ export class Client {
 
   async queryAuditLog(params: AuditLogParams = {}): Promise<PaginatedResponse<AuditLogEntry>> {
     let query: Record<string, string> = {};
-    if (params.action) query['action'] = params.action;
-    if (params.entityType) query['entityType'] = params.entityType;
-    if (params.authorType) query['authorType'] = params.authorType;
-    if (params.authorID) query['authorID'] = params.authorID;
-    if (params.createdFrom) query['createdFrom'] = params.createdFrom;
-    if (params.createdTo) query['createdTo'] = params.createdTo;
-    if (params.limit) query['limit'] = String(params.limit);
-    if (params.pageAfter) query['pageAfter'] = params.pageAfter;
+    if (params.action) query.action = params.action;
+    if (params.entityType) query.entityType = params.entityType;
+    if (params.authorType) query.authorType = params.authorType;
+    if (params.authorID) query.authorID = params.authorID;
+    if (params.createdFrom) query.createdFrom = params.createdFrom;
+    if (params.createdTo) query.createdTo = params.createdTo;
+    if (params.limit) query.limit = String(params.limit);
+    if (params.pageAfter) query.pageAfter = params.pageAfter;
 
     let response = await this.http.get('/v1/auditlog', { params: query });
     return response.data as PaginatedResponse<AuditLogEntry>;
@@ -459,12 +459,11 @@ export class Client {
       to: params.to
     };
     if (params.agentIDs && params.agentIDs.length > 0)
-      query['agentIDs'] = params.agentIDs.join(',');
-    if (params.teamIDs && params.teamIDs.length > 0)
-      query['teamIDs'] = params.teamIDs.join(',');
-    if (params.tags && params.tags.length > 0) query['tags'] = params.tags.join(',');
-    if (params.priority) query['priority'] = params.priority;
-    if (params.includeSpam !== undefined) query['includeSpam'] = String(params.includeSpam);
+      query.agentIDs = params.agentIDs.join(',');
+    if (params.teamIDs && params.teamIDs.length > 0) query.teamIDs = params.teamIDs.join(',');
+    if (params.tags && params.tags.length > 0) query.tags = params.tags.join(',');
+    if (params.priority) query.priority = params.priority;
+    if (params.includeSpam !== undefined) query.includeSpam = String(params.includeSpam);
 
     let response = await this.http.get(`/v1/reports/${reportType}`, { params: query });
     return response.data;

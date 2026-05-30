@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { ZohoCrmClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { spec } from '../spec';
 
 export let crmRecordEvents = SlateTrigger.create(spec, {
   name: 'CRM Record Events',

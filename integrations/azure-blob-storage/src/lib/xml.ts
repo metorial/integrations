@@ -10,7 +10,7 @@ export let getTagContent = (xml: string, tag: string): string | undefined => {
 export let getAllTagContents = (xml: string, tag: string): string[] => {
   let regex = new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, 'g');
   let results: string[] = [];
-  let match;
+  let match: any;
   while ((match = regex.exec(xml)) !== null) {
     results.push(match[1]!);
   }
@@ -20,7 +20,7 @@ export let getAllTagContents = (xml: string, tag: string): string[] => {
 export let getAllElements = (xml: string, tag: string): string[] => {
   let regex = new RegExp(`<${tag}>[\\s\\S]*?</${tag}>`, 'g');
   let results: string[] = [];
-  let match;
+  let match: any;
   while ((match = regex.exec(xml)) !== null) {
     results.push(match[0]!);
   }
@@ -52,14 +52,14 @@ export let escapeXml = (str: string): string => {
 
 export let extractMetadata = (
   xml: string,
-  prefix: string = 'x-ms-meta-'
+  _prefix: string = 'x-ms-meta-'
 ): Record<string, string> => {
   let metadataSection = getTagContent(xml, 'Metadata');
   if (!metadataSection) return {};
 
   let metadata: Record<string, string> = {};
   let tagRegex = /<(\w+)>([\s\S]*?)<\/\1>/g;
-  let match;
+  let match: any;
   while ((match = tagRegex.exec(metadataSection)) !== null) {
     metadata[match[1]!] = match[2]!;
   }

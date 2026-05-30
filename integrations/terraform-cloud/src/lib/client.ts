@@ -64,7 +64,7 @@ export class Client {
     let attributes: Record<string, any> = {
       name: payload.name
     };
-    if (payload.description !== undefined) attributes['description'] = payload.description;
+    if (payload.description !== undefined) attributes.description = payload.description;
     if (payload.autoApply !== undefined) attributes['auto-apply'] = payload.autoApply;
     if (payload.executionMode !== undefined)
       attributes['execution-mode'] = payload.executionMode;
@@ -82,7 +82,7 @@ export class Client {
 
     let relationships: Record<string, any> = {};
     if (payload.projectId) {
-      relationships['project'] = {
+      relationships.project = {
         data: { id: payload.projectId, type: 'projects' }
       };
     }
@@ -112,8 +112,8 @@ export class Client {
     }
   ) {
     let attributes: Record<string, any> = {};
-    if (payload.name !== undefined) attributes['name'] = payload.name;
-    if (payload.description !== undefined) attributes['description'] = payload.description;
+    if (payload.name !== undefined) attributes.name = payload.name;
+    if (payload.description !== undefined) attributes.description = payload.description;
     if (payload.autoApply !== undefined) attributes['auto-apply'] = payload.autoApply;
     if (payload.executionMode !== undefined)
       attributes['execution-mode'] = payload.executionMode;
@@ -188,7 +188,7 @@ export class Client {
     replaceAddrs?: string[];
   }) {
     let attributes: Record<string, any> = {};
-    if (payload.message !== undefined) attributes['message'] = payload.message;
+    if (payload.message !== undefined) attributes.message = payload.message;
     if (payload.isDestroy !== undefined) attributes['is-destroy'] = payload.isDestroy;
     if (payload.autoApply !== undefined) attributes['auto-apply'] = payload.autoApply;
     if (payload.planOnly !== undefined) attributes['plan-only'] = payload.planOnly;
@@ -269,9 +269,9 @@ export class Client {
       value: payload.value,
       category: payload.category
     };
-    if (payload.description !== undefined) attributes['description'] = payload.description;
-    if (payload.hcl !== undefined) attributes['hcl'] = payload.hcl;
-    if (payload.sensitive !== undefined) attributes['sensitive'] = payload.sensitive;
+    if (payload.description !== undefined) attributes.description = payload.description;
+    if (payload.hcl !== undefined) attributes.hcl = payload.hcl;
+    if (payload.sensitive !== undefined) attributes.sensitive = payload.sensitive;
 
     let response = await this.axios.post(`/workspaces/${workspaceId}/vars`, {
       data: {
@@ -294,11 +294,11 @@ export class Client {
     }
   ) {
     let attributes: Record<string, any> = {};
-    if (payload.key !== undefined) attributes['key'] = payload.key;
-    if (payload.value !== undefined) attributes['value'] = payload.value;
-    if (payload.description !== undefined) attributes['description'] = payload.description;
-    if (payload.hcl !== undefined) attributes['hcl'] = payload.hcl;
-    if (payload.sensitive !== undefined) attributes['sensitive'] = payload.sensitive;
+    if (payload.key !== undefined) attributes.key = payload.key;
+    if (payload.value !== undefined) attributes.value = payload.value;
+    if (payload.description !== undefined) attributes.description = payload.description;
+    if (payload.hcl !== undefined) attributes.hcl = payload.hcl;
+    if (payload.sensitive !== undefined) attributes.sensitive = payload.sensitive;
 
     let response = await this.axios.patch(`/workspaces/${workspaceId}/vars/${variableId}`, {
       data: {
@@ -342,17 +342,17 @@ export class Client {
     let attributes: Record<string, any> = {
       name: payload.name
     };
-    if (payload.description !== undefined) attributes['description'] = payload.description;
-    if (payload.global !== undefined) attributes['global'] = payload.global;
+    if (payload.description !== undefined) attributes.description = payload.description;
+    if (payload.global !== undefined) attributes.global = payload.global;
 
     let relationships: Record<string, any> = {};
     if (payload.workspaceIds && payload.workspaceIds.length > 0) {
-      relationships['workspaces'] = {
+      relationships.workspaces = {
         data: payload.workspaceIds.map(id => ({ id, type: 'workspaces' }))
       };
     }
     if (payload.projectIds && payload.projectIds.length > 0) {
-      relationships['projects'] = {
+      relationships.projects = {
         data: payload.projectIds.map(id => ({ id, type: 'projects' }))
       };
     }
@@ -392,7 +392,7 @@ export class Client {
 
   async createProject(payload: { name: string; description?: string }) {
     let attributes: Record<string, any> = { name: payload.name };
-    if (payload.description !== undefined) attributes['description'] = payload.description;
+    if (payload.description !== undefined) attributes.description = payload.description;
 
     let response = await this.axios.post(`/organizations/${this.organizationName}/projects`, {
       data: {
@@ -405,8 +405,8 @@ export class Client {
 
   async updateProject(projectId: string, payload: { name?: string; description?: string }) {
     let attributes: Record<string, any> = {};
-    if (payload.name !== undefined) attributes['name'] = payload.name;
-    if (payload.description !== undefined) attributes['description'] = payload.description;
+    if (payload.name !== undefined) attributes.name = payload.name;
+    if (payload.description !== undefined) attributes.description = payload.description;
 
     let response = await this.axios.patch(`/projects/${projectId}`, {
       data: {
@@ -455,7 +455,7 @@ export class Client {
     visibility?: 'secret' | 'organization';
   }) {
     let attributes: Record<string, any> = { name: payload.name };
-    if (payload.visibility !== undefined) attributes['visibility'] = payload.visibility;
+    if (payload.visibility !== undefined) attributes.visibility = payload.visibility;
     if (payload.organizationAccess) {
       let orgAccess: Record<string, any> = {};
       let oa = payload.organizationAccess;
@@ -518,9 +518,9 @@ export class Client {
   }) {
     let attributes: Record<string, any> = { access: payload.access };
     if (payload.access === 'custom') {
-      if (payload.runsPermission !== undefined) attributes['runs'] = payload.runsPermission;
+      if (payload.runsPermission !== undefined) attributes.runs = payload.runsPermission;
       if (payload.variablesPermission !== undefined)
-        attributes['variables'] = payload.variablesPermission;
+        attributes.variables = payload.variablesPermission;
       if (payload.stateVersionsPermission !== undefined)
         attributes['state-versions'] = payload.stateVersionsPermission;
       if (payload.planOutputsPermission !== undefined)
@@ -615,10 +615,10 @@ export class Client {
     };
   }) {
     let attributes: Record<string, any> = { name: payload.name };
-    if (payload.description !== undefined) attributes['description'] = payload.description;
-    if (payload.global !== undefined) attributes['global'] = payload.global;
-    if (payload.kind !== undefined) attributes['kind'] = payload.kind;
-    if (payload.overridable !== undefined) attributes['overridable'] = payload.overridable;
+    if (payload.description !== undefined) attributes.description = payload.description;
+    if (payload.global !== undefined) attributes.global = payload.global;
+    if (payload.kind !== undefined) attributes.kind = payload.kind;
+    if (payload.overridable !== undefined) attributes.overridable = payload.overridable;
     if (payload.vcsRepo) {
       attributes['vcs-repo'] = {
         identifier: payload.vcsRepo.identifier,
@@ -632,12 +632,12 @@ export class Client {
 
     let relationships: Record<string, any> = {};
     if (payload.workspaceIds && payload.workspaceIds.length > 0) {
-      relationships['workspaces'] = {
+      relationships.workspaces = {
         data: payload.workspaceIds.map(id => ({ id, type: 'workspaces' }))
       };
     }
     if (payload.projectIds && payload.projectIds.length > 0) {
-      relationships['projects'] = {
+      relationships.projects = {
         data: payload.projectIds.map(id => ({ id, type: 'projects' }))
       };
     }
@@ -693,14 +693,14 @@ export class Client {
       'destination-type': payload.destinationType,
       triggers: payload.triggers
     };
-    if (payload.url !== undefined) attributes['url'] = payload.url;
-    if (payload.token !== undefined) attributes['token'] = payload.token;
-    if (payload.enabled !== undefined) attributes['enabled'] = payload.enabled;
+    if (payload.url !== undefined) attributes.url = payload.url;
+    if (payload.token !== undefined) attributes.token = payload.token;
+    if (payload.enabled !== undefined) attributes.enabled = payload.enabled;
     if (payload.emailAddresses) attributes['email-addresses'] = payload.emailAddresses;
 
     let relationships: Record<string, any> = {};
     if (payload.emailUserIds && payload.emailUserIds.length > 0) {
-      relationships['users'] = {
+      relationships.users = {
         data: payload.emailUserIds.map(id => ({ id, type: 'users' }))
       };
     }
@@ -729,11 +729,11 @@ export class Client {
     }
   ) {
     let attributes: Record<string, any> = {};
-    if (payload.name !== undefined) attributes['name'] = payload.name;
-    if (payload.url !== undefined) attributes['url'] = payload.url;
-    if (payload.token !== undefined) attributes['token'] = payload.token;
-    if (payload.enabled !== undefined) attributes['enabled'] = payload.enabled;
-    if (payload.triggers !== undefined) attributes['triggers'] = payload.triggers;
+    if (payload.name !== undefined) attributes.name = payload.name;
+    if (payload.url !== undefined) attributes.url = payload.url;
+    if (payload.token !== undefined) attributes.token = payload.token;
+    if (payload.enabled !== undefined) attributes.enabled = payload.enabled;
+    if (payload.triggers !== undefined) attributes.triggers = payload.triggers;
 
     let response = await this.axios.patch(
       `/notification-configurations/${notificationConfigId}`,
@@ -786,8 +786,8 @@ export class Client {
       category: payload.category || 'task'
     };
     if (payload.hmacKey !== undefined) attributes['hmac-key'] = payload.hmacKey;
-    if (payload.enabled !== undefined) attributes['enabled'] = payload.enabled;
-    if (payload.description !== undefined) attributes['description'] = payload.description;
+    if (payload.enabled !== undefined) attributes.enabled = payload.enabled;
+    if (payload.description !== undefined) attributes.description = payload.description;
 
     let response = await this.axios.post(`/organizations/${this.organizationName}/tasks`, {
       data: {

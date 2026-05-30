@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DemioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventDateSchema = z.object({
   dateId: z.number().describe('Unique ID of the event date/session'),

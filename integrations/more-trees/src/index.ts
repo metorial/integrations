@@ -2,11 +2,11 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getAccountInfo,
+  getCarbonOffset,
+  getCreditBalance,
   getForestInfo,
   listProjects,
-  plantTrees,
-  getCreditBalance,
-  getCarbonOffset
+  plantTrees
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

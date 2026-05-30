@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GristClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let columnSchema = z.object({
   columnId: z.string().describe('Column ID'),

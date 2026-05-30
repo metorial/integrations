@@ -4,7 +4,7 @@ import {
   searchContactsRecipe
 } from '@slates/google-people-recipes';
 import { includeTool } from '@slates/tool-recipes';
-import { SlateTool, createAxios } from 'slates';
+import { createAxios, SlateTool } from 'slates';
 import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 

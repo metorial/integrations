@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { UnisenderClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let subscribeContact = SlateTool.create(spec, {
   name: 'Subscribe Contact',
@@ -59,7 +59,7 @@ Set **doubleOptin** to \`3\` to add contacts without sending a confirmation emai
       request_time: ctx.input.requestTime
     });
 
-    let email = ctx.input.fields['email'] || 'contact';
+    let email = ctx.input.fields.email || 'contact';
     return {
       output: { personId: result.person_id },
       message: `Subscribed **${email}** to list(s) \`${ctx.input.listIds.join(', ')}\`. Person ID: \`${result.person_id}\``

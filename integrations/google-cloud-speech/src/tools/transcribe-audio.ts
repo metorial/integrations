@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SpeechToTextClient } from '../lib/client';
 import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let transcribeAudio = SlateTool.create(spec, {
   name: 'Transcribe Audio',

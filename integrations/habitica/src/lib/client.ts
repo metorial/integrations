@@ -3,13 +3,11 @@ import { createAxios } from 'slates';
 export class HabiticaClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(
-    private config: {
-      userId: string;
-      token: string;
-      xClient: string;
-    }
-  ) {
+  constructor(config: {
+    userId: string;
+    token: string;
+    xClient: string;
+  }) {
     this.axios = createAxios({
       baseURL: 'https://habitica.com/api/v3',
       headers: {
@@ -61,7 +59,7 @@ export class HabiticaClient {
 
   // ---- Tasks ----
 
-  async getUserTasks(taskType?: string): Promise<Array<Record<string, any>>> {
+  async getUserTasks(taskType?: string): Promise<Record<string, any>[]> {
     let params: Record<string, string> = {};
     if (taskType) params.type = taskType;
     let response = await this.axios.get('/tasks/user', { params });
@@ -136,7 +134,7 @@ export class HabiticaClient {
 
   // ---- Tags ----
 
-  async getTags(): Promise<Array<Record<string, any>>> {
+  async getTags(): Promise<Record<string, any>[]> {
     let response = await this.axios.get('/tags');
     return response.data.data;
   }
@@ -175,7 +173,7 @@ export class HabiticaClient {
 
   // ---- Groups (Parties & Guilds) ----
 
-  async getGroups(type: string): Promise<Array<Record<string, any>>> {
+  async getGroups(type: string): Promise<Record<string, any>[]> {
     let response = await this.axios.get('/groups', { params: { type } });
     return response.data.data;
   }
@@ -228,7 +226,7 @@ export class HabiticaClient {
   async getGroupMembers(
     groupId: string,
     params?: { lastId?: string; limit?: number }
-  ): Promise<Array<Record<string, any>>> {
+  ): Promise<Record<string, any>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.lastId) queryParams.lastId = params.lastId;
     if (params?.limit) queryParams.limit = String(params.limit);
@@ -238,7 +236,7 @@ export class HabiticaClient {
 
   // ---- Group Chat ----
 
-  async getGroupChat(groupId: string): Promise<Array<Record<string, any>>> {
+  async getGroupChat(groupId: string): Promise<Record<string, any>[]> {
     let response = await this.axios.get(`/groups/${groupId}/chat`);
     return response.data.data;
   }
@@ -303,7 +301,7 @@ export class HabiticaClient {
   async getChallenges(params?: {
     page?: number;
     memberOnly?: boolean;
-  }): Promise<Array<Record<string, any>>> {
+  }): Promise<Record<string, any>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.page !== undefined) queryParams.page = String(params.page);
     if (params?.memberOnly !== undefined) queryParams.member = String(params.memberOnly);
@@ -311,7 +309,7 @@ export class HabiticaClient {
     return response.data.data;
   }
 
-  async getGroupChallenges(groupId: string): Promise<Array<Record<string, any>>> {
+  async getGroupChallenges(groupId: string): Promise<Record<string, any>[]> {
     let response = await this.axios.get(`/challenges/groups/${groupId}`);
     return response.data.data;
   }
@@ -390,7 +388,7 @@ export class HabiticaClient {
 
   // ---- Webhooks ----
 
-  async getWebhooks(): Promise<Array<Record<string, any>>> {
+  async getWebhooks(): Promise<Record<string, any>[]> {
     let response = await this.axios.get('/user/webhook');
     return response.data.data;
   }

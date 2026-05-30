@@ -37,7 +37,7 @@ let parseElement = (xml: string): any => {
     let boolType = attrs.includes('type="boolean"');
     let intType = attrs.includes('type="integer"');
     if (boolType) return contentStr === 'true';
-    if (intType) return parseInt(contentStr, 10);
+    if (intType) return Number.parseInt(contentStr, 10);
     return decodeXmlEntities(contentStr);
   }
 
@@ -214,5 +214,5 @@ let escapeXml = (str: string): string => {
 };
 
 let kebabCase = (str: string): string => {
-  return str.replace(/([A-Z])/g, (_, c) => '-' + c.toLowerCase());
+  return str.replace(/([A-Z])/g, (_, c) => `-${c.toLowerCase()}`);
 };

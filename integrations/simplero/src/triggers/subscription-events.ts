@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SimpleroClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let subscriptionEvents = SlateTrigger.create(spec, {
   name: 'Subscription Events',
@@ -78,9 +78,9 @@ export let subscriptionEvents = SlateTrigger.create(spec, {
       }
 
       // Simplero sends either single object or results array
-      let items: Array<Record<string, unknown>> = [];
+      let items: Record<string, unknown>[] = [];
       if (Array.isArray(data.results)) {
-        items = data.results as Array<Record<string, unknown>>;
+        items = data.results as Record<string, unknown>[];
       } else if (data.id || data.email) {
         items = [data];
       }

@@ -1,22 +1,22 @@
 // Serializers and deserializers for Evernote Thrift types
-import { ThriftWriter, ThriftReader, TType } from './thrift';
-import type { TTypeValue } from './thrift';
+
+import { type ThriftReader, type ThriftWriter, TType } from './thrift';
 import type {
+  EvernoteData,
   EvernoteNote,
-  EvernoteNotebook,
-  EvernoteTag,
-  EvernoteNoteFilter,
-  EvernoteNotesMetadataResultSpec,
-  EvernoteNotesMetadataList,
-  EvernoteNoteMetadata,
   EvernoteNoteAttributes,
+  EvernoteNotebook,
+  EvernoteNoteFilter,
+  EvernoteNoteMetadata,
+  EvernoteNoteResultSpec,
+  EvernoteNotesMetadataList,
+  EvernoteNotesMetadataResultSpec,
   EvernoteResource,
   EvernoteResourceAttributes,
-  EvernoteData,
   EvernoteSavedSearch,
-  EvernoteUser,
   EvernoteSyncState,
-  EvernoteNoteResultSpec
+  EvernoteTag,
+  EvernoteUser
 } from './types';
 
 // -- Writers --

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LaunchDarklyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let inviteMembers = SlateTool.create(spec, {
   name: 'Invite Members',

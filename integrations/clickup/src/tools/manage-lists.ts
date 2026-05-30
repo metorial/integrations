@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickUpClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getLists = SlateTool.create(spec, {
   name: 'Get Lists',

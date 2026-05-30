@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AsticaDesignClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generateImageTool = SlateTool.create(spec, {
   name: 'Generate Image',

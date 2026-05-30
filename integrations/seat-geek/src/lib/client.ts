@@ -1,14 +1,14 @@
 import { createAxios } from 'slates';
 import type {
-  SeatGeekEventsResponse,
-  SeatGeekPerformersResponse,
-  SeatGeekVenuesResponse,
-  SeatGeekTaxonomiesResponse,
-  SeatGeekEventRecommendationsResponse,
-  SeatGeekPerformerRecommendationsResponse,
   SeatGeekEvent,
+  SeatGeekEventRecommendationsResponse,
+  SeatGeekEventsResponse,
   SeatGeekPerformer,
-  SeatGeekVenue
+  SeatGeekPerformerRecommendationsResponse,
+  SeatGeekPerformersResponse,
+  SeatGeekTaxonomiesResponse,
+  SeatGeekVenue,
+  SeatGeekVenuesResponse
 } from './types';
 
 let api = createAxios({
@@ -41,10 +41,10 @@ export class Client {
       client_secret: this.clientSecret
     };
     if (this.affiliateId) {
-      params['aid'] = this.affiliateId;
+      params.aid = this.affiliateId;
     }
     if (this.referralId) {
-      params['rid'] = this.referralId;
+      params.rid = this.referralId;
     }
     return params;
   }

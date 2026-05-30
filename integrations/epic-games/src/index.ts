@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  lookupProductUser,
-  getAccountInfo,
-  getFriends,
-  manageSanctions,
-  querySanctions,
-  sendPlayerReport,
-  findPlayerReports,
   checkOwnership,
+  findPlayerReports,
+  getAccountInfo,
+  getAntiCheatStatus,
   getEntitlements,
-  redeemEntitlements,
+  getFriends,
+  lookupProductUser,
+  manageSanctions,
   manageVoiceRoom,
-  getAntiCheatStatus
+  querySanctions,
+  redeemEntitlements,
+  sendPlayerReport
 } from './tools';
-import { sanctionsSync, playerReportsPoll, inboundWebhook } from './triggers';
+import { inboundWebhook, playerReportsPoll, sanctionsSync } from './triggers';
 
 export let provider = Slate.create({
   spec,

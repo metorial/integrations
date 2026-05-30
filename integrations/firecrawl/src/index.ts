@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  scrapePageTool,
-  crawlWebsiteTool,
-  getCrawlStatusTool,
-  searchWebTool,
-  mapWebsiteTool,
-  extractDataTool,
-  getExtractStatusTool,
   batchScrapeTool,
+  crawlWebsiteTool,
+  extractDataTool,
+  getAgentStatusTool,
   getBatchScrapeStatusTool,
+  getCrawlStatusTool,
+  getExtractStatusTool,
+  mapWebsiteTool,
   runAgentTool,
-  getAgentStatusTool
+  scrapePageTool,
+  searchWebTool
 } from './tools';
 import {
-  crawlEventsTrigger,
+  agentEventsTrigger,
   batchScrapeEventsTrigger,
-  extractEventsTrigger,
-  agentEventsTrigger
+  crawlEventsTrigger,
+  extractEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

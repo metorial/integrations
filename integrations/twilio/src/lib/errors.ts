@@ -1,4 +1,4 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
 
 type ErrorResponse = {
   status?: number;

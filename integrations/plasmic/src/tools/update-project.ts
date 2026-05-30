@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ProjectClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateProject = SlateTool.create(spec, {
   name: 'Update Project',
@@ -78,10 +78,10 @@ export let updateProject = SlateTool.create(spec, {
 
     let body: Record<string, unknown> = {};
     if (ctx.input.components) {
-      body['upsertComponents'] = ctx.input.components;
+      body.upsertComponents = ctx.input.components;
     }
     if (ctx.input.tokens) {
-      body['upsertTokens'] = ctx.input.tokens;
+      body.upsertTokens = ctx.input.tokens;
     }
 
     let result = await client.updateProject(body as any);

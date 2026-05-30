@@ -88,10 +88,10 @@ export class PlacidClient {
     page?: number;
   }): Promise<PlacidPaginatedResponse<PlacidTemplate>> {
     let queryParams: Record<string, string | number> = {};
-    if (params?.collectionId) queryParams['collection_id'] = params.collectionId;
-    if (params?.titleFilter) queryParams['title_filter'] = params.titleFilter;
-    if (params?.orderBy) queryParams['order_by'] = params.orderBy;
-    if (params?.page) queryParams['page'] = params.page;
+    if (params?.collectionId) queryParams.collection_id = params.collectionId;
+    if (params?.titleFilter) queryParams.title_filter = params.titleFilter;
+    if (params?.orderBy) queryParams.order_by = params.orderBy;
+    if (params?.page) queryParams.page = params.page;
 
     let response = await this.api.get('/templates', { params: queryParams });
     return response.data;
@@ -114,12 +114,12 @@ export class PlacidClient {
     let body: Record<string, unknown> = {
       title: params.title
     };
-    if (params.width !== undefined) body['width'] = params.width;
-    if (params.height !== undefined) body['height'] = params.height;
-    if (params.tags !== undefined) body['tags'] = params.tags;
-    if (params.customData !== undefined) body['custom_data'] = params.customData;
-    if (params.fromTemplate) body['from_template'] = params.fromTemplate;
-    if (params.addToCollections) body['add_to_collections'] = params.addToCollections;
+    if (params.width !== undefined) body.width = params.width;
+    if (params.height !== undefined) body.height = params.height;
+    if (params.tags !== undefined) body.tags = params.tags;
+    if (params.customData !== undefined) body.custom_data = params.customData;
+    if (params.fromTemplate) body.from_template = params.fromTemplate;
+    if (params.addToCollections) body.add_to_collections = params.addToCollections;
 
     let response = await this.api.post('/templates', body);
     return response.data;
@@ -134,9 +134,9 @@ export class PlacidClient {
     }
   ): Promise<PlacidTemplate> {
     let body: Record<string, unknown> = {};
-    if (params.title !== undefined) body['title'] = params.title;
-    if (params.tags !== undefined) body['tags'] = params.tags;
-    if (params.customData !== undefined) body['custom_data'] = params.customData;
+    if (params.title !== undefined) body.title = params.title;
+    if (params.tags !== undefined) body.tags = params.tags;
+    if (params.customData !== undefined) body.custom_data = params.customData;
 
     let response = await this.api.patch(`/templates/${templateUuid}`, body);
     return response.data;
@@ -152,7 +152,7 @@ export class PlacidClient {
     perPage?: number;
   }): Promise<PlacidPaginatedResponse<PlacidCollection>> {
     let queryParams: Record<string, number> = {};
-    if (params?.perPage) queryParams['per_page'] = params.perPage;
+    if (params?.perPage) queryParams.per_page = params.perPage;
 
     let response = await this.api.get('/collections', { params: queryParams });
     return response.data;
@@ -171,8 +171,8 @@ export class PlacidClient {
     let body: Record<string, unknown> = {
       title: params.title
     };
-    if (params.templateUuids) body['template_uuids'] = params.templateUuids;
-    if (params.customData !== undefined) body['custom_data'] = params.customData;
+    if (params.templateUuids) body.template_uuids = params.templateUuids;
+    if (params.customData !== undefined) body.custom_data = params.customData;
 
     let response = await this.api.post('/collections', body);
     return response.data;
@@ -188,10 +188,10 @@ export class PlacidClient {
     }
   ): Promise<PlacidCollection> {
     let body: Record<string, unknown> = {};
-    if (params.title !== undefined) body['title'] = params.title;
-    if (params.customData !== undefined) body['custom_data'] = params.customData;
-    if (params.addTemplateUuids) body['add_template_uuids'] = params.addTemplateUuids;
-    if (params.removeTemplateUuids) body['remove_template_uuids'] = params.removeTemplateUuids;
+    if (params.title !== undefined) body.title = params.title;
+    if (params.customData !== undefined) body.custom_data = params.customData;
+    if (params.addTemplateUuids) body.add_template_uuids = params.addTemplateUuids;
+    if (params.removeTemplateUuids) body.remove_template_uuids = params.removeTemplateUuids;
 
     let response = await this.api.patch(`/collections/${collectionId}`, body);
     return response.data;
@@ -215,12 +215,12 @@ export class PlacidClient {
     let body: Record<string, unknown> = {
       template_uuid: params.templateUuid
     };
-    if (params.layers) body['layers'] = params.layers;
-    if (params.modifications) body['modifications'] = params.modifications;
-    if (params.transfer) body['transfer'] = params.transfer;
-    if (params.webhookSuccess) body['webhook_success'] = params.webhookSuccess;
-    if (params.passthrough) body['passthrough'] = params.passthrough;
-    if (params.createNow !== undefined) body['create_now'] = params.createNow;
+    if (params.layers) body.layers = params.layers;
+    if (params.modifications) body.modifications = params.modifications;
+    if (params.transfer) body.transfer = params.transfer;
+    if (params.webhookSuccess) body.webhook_success = params.webhookSuccess;
+    if (params.passthrough) body.passthrough = params.passthrough;
+    if (params.createNow !== undefined) body.create_now = params.createNow;
 
     let response = await this.api.post('/images', body);
     return response.data;
@@ -253,10 +253,10 @@ export class PlacidClient {
         ...(page.layers ? { layers: page.layers } : {})
       }))
     };
-    if (params.modifications) body['modifications'] = params.modifications;
-    if (params.transfer) body['transfer'] = params.transfer;
-    if (params.webhookSuccess) body['webhook_success'] = params.webhookSuccess;
-    if (params.passthrough) body['passthrough'] = params.passthrough;
+    if (params.modifications) body.modifications = params.modifications;
+    if (params.transfer) body.transfer = params.transfer;
+    if (params.webhookSuccess) body.webhook_success = params.webhookSuccess;
+    if (params.passthrough) body.passthrough = params.passthrough;
 
     let response = await this.api.post('/pdfs', body);
     return response.data;
@@ -271,9 +271,9 @@ export class PlacidClient {
     let body: Record<string, unknown> = {
       urls: params.urls
     };
-    if (params.webhookSuccess) body['webhook_success'] = params.webhookSuccess;
-    if (params.passthrough) body['passthrough'] = params.passthrough;
-    if (params.transfer) body['transfer'] = params.transfer;
+    if (params.webhookSuccess) body.webhook_success = params.webhookSuccess;
+    if (params.passthrough) body.passthrough = params.passthrough;
+    if (params.transfer) body.transfer = params.transfer;
 
     let response = await this.api.post('/pdfs/merge', body);
     return response.data;
@@ -309,18 +309,18 @@ export class PlacidClient {
         let clipBody: Record<string, unknown> = {
           template_uuid: clip.templateUuid
         };
-        if (clip.layers) clipBody['layers'] = clip.layers;
-        if (clip.audio) clipBody['audio'] = clip.audio;
-        if (clip.audioDuration) clipBody['audio_duration'] = clip.audioDuration;
-        if (clip.audioTrimStart) clipBody['audio_trim_start'] = clip.audioTrimStart;
-        if (clip.audioTrimEnd) clipBody['audio_trim_end'] = clip.audioTrimEnd;
+        if (clip.layers) clipBody.layers = clip.layers;
+        if (clip.audio) clipBody.audio = clip.audio;
+        if (clip.audioDuration) clipBody.audio_duration = clip.audioDuration;
+        if (clip.audioTrimStart) clipBody.audio_trim_start = clip.audioTrimStart;
+        if (clip.audioTrimEnd) clipBody.audio_trim_end = clip.audioTrimEnd;
         return clipBody;
       })
     };
-    if (params.modifications) body['modifications'] = params.modifications;
-    if (params.transfer) body['transfer'] = params.transfer;
-    if (params.webhookSuccess) body['webhook_success'] = params.webhookSuccess;
-    if (params.passthrough) body['passthrough'] = params.passthrough;
+    if (params.modifications) body.modifications = params.modifications;
+    if (params.transfer) body.transfer = params.transfer;
+    if (params.webhookSuccess) body.webhook_success = params.webhookSuccess;
+    if (params.passthrough) body.passthrough = params.passthrough;
 
     let response = await this.api.post('/videos', body);
     return response.data;

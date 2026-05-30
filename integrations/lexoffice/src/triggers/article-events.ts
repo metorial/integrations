@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ARTICLE_EVENT_TYPES = ['article.created', 'article.changed', 'article.deleted'] as const;
 
@@ -49,7 +49,7 @@ export let articleEvents = SlateTrigger.create(spec, {
       for (let sub of subs) {
         try {
           await client.deleteEventSubscription(sub.subscriptionId);
-        } catch (e) {
+        } catch (_e) {
           /* ignore cleanup errors */
         }
       }
@@ -84,7 +84,7 @@ export let articleEvents = SlateTrigger.create(spec, {
           title = article.title;
           articleNumber = article.articleNumber;
           articleType = article.type;
-        } catch (e) {
+        } catch (_e) {
           /* resource may not be accessible */
         }
       }

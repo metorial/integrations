@@ -2,15 +2,15 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createContact,
+  createContactRecord,
   createOpportunity,
   createTask,
   findTask,
-  logTime,
-  listUsers,
   getNotifications,
-  createContactRecord
+  listUsers,
+  logTime
 } from './tools';
-import { newTaskCreated, inboundWebhook } from './triggers';
+import { inboundWebhook, newTaskCreated } from './triggers';
 
 export let provider = Slate.create({
   spec,

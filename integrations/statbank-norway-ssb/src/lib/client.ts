@@ -86,7 +86,10 @@ let baseDataParams = (query: TableQuery) =>
     outputFormatParams: query.outputFormatParams?.join(',')
   });
 
-let addPlacementParams = (params: Record<string, string | number | boolean>, query: TableQuery) => {
+let addPlacementParams = (
+  params: Record<string, string | number | boolean>,
+  query: TableQuery
+) => {
   if (query.placement?.heading?.length) {
     params.heading = query.placement.heading.join(',');
   }
@@ -95,7 +98,10 @@ let addPlacementParams = (params: Record<string, string | number | boolean>, que
   }
 };
 
-let addSelectionParams = (params: Record<string, string | number | boolean>, query: TableQuery) => {
+let addSelectionParams = (
+  params: Record<string, string | number | boolean>,
+  query: TableQuery
+) => {
   for (let selection of query.selection ?? []) {
     params[`valueCodes[${selection.variableCode}]`] = selection.valueCodes.join(',');
     if (selection.codelist) {

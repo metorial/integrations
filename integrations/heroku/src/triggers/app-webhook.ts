@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let appWebhook = SlateTrigger.create(spec, {
   name: 'App Webhook',
@@ -109,7 +109,7 @@ export let appWebhook = SlateTrigger.create(spec, {
       for (let reg of registrations) {
         try {
           await client.deleteWebhook(reg.appName, reg.webhookId);
-        } catch (e) {
+        } catch (_e) {
           // Ignore errors during unregistration (app may have been deleted)
         }
       }

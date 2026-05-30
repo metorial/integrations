@@ -46,8 +46,8 @@ export class BartClient {
       cmd: 'etd',
       orig: params.station
     };
-    if (params.platform) queryParams['plat'] = String(params.platform);
-    if (params.direction) queryParams['dir'] = params.direction;
+    if (params.platform) queryParams.plat = String(params.platform);
+    if (params.direction) queryParams.dir = params.direction;
 
     let response = await etdApi.get('', { params: queryParams });
     return response.data?.root;
@@ -83,7 +83,7 @@ export class BartClient {
       ...this.baseParams(),
       cmd: 'routes'
     };
-    if (date) queryParams['date'] = date;
+    if (date) queryParams.date = date;
 
     let response = await routeApi.get('', { params: queryParams });
     return response.data?.root;
@@ -95,7 +95,7 @@ export class BartClient {
       cmd: 'routeinfo',
       route
     };
-    if (date) queryParams['date'] = date;
+    if (date) queryParams.date = date;
 
     let response = await routeApi.get('', { params: queryParams });
     return response.data?.root;
@@ -116,7 +116,7 @@ export class BartClient {
       cmd: 'stnsched',
       orig: station
     };
-    if (date) queryParams['date'] = date;
+    if (date) queryParams.date = date;
 
     let response = await schedApi.get('', { params: queryParams });
     return response.data?.root;
@@ -128,8 +128,8 @@ export class BartClient {
       cmd: 'routesched',
       route: params.route
     };
-    if (params.date) queryParams['date'] = params.date;
-    if (params.time) queryParams['time'] = params.time;
+    if (params.date) queryParams.date = params.date;
+    if (params.time) queryParams.time = params.time;
 
     let response = await schedApi.get('', { params: queryParams });
     return response.data?.root;
@@ -144,7 +144,7 @@ export class BartClient {
       orig: params.origin,
       dest: params.destination
     };
-    if (params.date) queryParams['date'] = params.date;
+    if (params.date) queryParams.date = params.date;
 
     let response = await schedApi.get('', { params: queryParams });
     return response.data?.root;
@@ -167,10 +167,10 @@ export class BartClient {
       orig: params.origin,
       dest: params.destination
     };
-    if (params.time) queryParams['time'] = params.time;
-    if (params.date) queryParams['date'] = params.date;
-    if (params.tripsBefore !== undefined) queryParams['b'] = String(params.tripsBefore);
-    if (params.tripsAfter !== undefined) queryParams['a'] = String(params.tripsAfter);
+    if (params.time) queryParams.time = params.time;
+    if (params.date) queryParams.date = params.date;
+    if (params.tripsBefore !== undefined) queryParams.b = String(params.tripsBefore);
+    if (params.tripsAfter !== undefined) queryParams.a = String(params.tripsAfter);
 
     let response = await schedApi.get('', { params: queryParams });
     return response.data?.root;
@@ -183,7 +183,7 @@ export class BartClient {
       ...this.baseParams(),
       cmd: 'bsa'
     };
-    if (station) queryParams['orig'] = station;
+    if (station) queryParams.orig = station;
 
     let response = await bsaApi.get('', { params: queryParams });
     return response.data?.root;

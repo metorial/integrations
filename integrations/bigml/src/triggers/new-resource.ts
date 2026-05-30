@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
-import { createClient, statusLabel } from '../lib/helpers';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { createClient, statusLabel } from '../lib/helpers';
+import { spec } from '../spec';
 
 let resourceTypeEnum = z.enum([
   'source',
@@ -88,7 +88,7 @@ export let newResource = SlateTrigger.create(spec, {
         try {
           let filters: Record<string, string> = {};
           if (lastChecked) {
-            filters['created__gt'] = lastChecked;
+            filters.created__gt = lastChecked;
           }
 
           let result = await client.listResources(resourceType, {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GumroadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageProduct = SlateTool.create(spec, {
   name: 'Manage Product',
@@ -44,7 +44,7 @@ export let manageProduct = SlateTool.create(spec, {
       };
     }
 
-    let product;
+    let product: any;
     if (action === 'enable') {
       product = await client.enableProduct(productId);
     } else {

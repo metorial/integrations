@@ -1,16 +1,16 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  getProfileTool,
-  getMediaTool,
-  publishMediaTool,
-  manageCommentsTool,
   getInsightsTool,
-  searchHashtagsTool,
-  sendMessageTool,
+  getMediaTool,
   getMentionsTool,
+  getProfileTool,
+  getPublishingLimitTool,
   getStoriesTool,
-  getPublishingLimitTool
+  manageCommentsTool,
+  publishMediaTool,
+  searchHashtagsTool,
+  sendMessageTool
 } from './tools';
 import { newMediaTrigger, webhookEventsTrigger } from './triggers';
 

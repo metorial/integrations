@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { DiscordClient } from '../lib/client';
 import { discordServiceError } from '../lib/errors';
 import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let roleOutputSchema = z.object({
   roleId: z.string().describe('Role ID'),

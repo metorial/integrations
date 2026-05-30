@@ -100,10 +100,10 @@ export class DiffbotClient {
       url: options.url
     };
 
-    if (options.fields) params['fields'] = options.fields;
-    if (options.timeout) params['timeout'] = options.timeout;
-    if (options.paging !== undefined) params['paging'] = options.paging;
-    if (options.discussion !== undefined) params['discussion'] = options.discussion;
+    if (options.fields) params.fields = options.fields;
+    if (options.timeout) params.timeout = options.timeout;
+    if (options.paging !== undefined) params.paging = options.paging;
+    if (options.discussion !== undefined) params.discussion = options.discussion;
 
     if (options.body) {
       let response = await extractApi.post(endpoint, options.body, {
@@ -125,10 +125,10 @@ export class DiffbotClient {
       query: options.query
     };
 
-    if (options.size !== undefined) params['size'] = options.size;
-    if (options.from !== undefined) params['from'] = options.from;
-    if (options.type) params['type'] = options.type;
-    if (options.filter) params['filter'] = options.filter;
+    if (options.size !== undefined) params.size = options.size;
+    if (options.from !== undefined) params.from = options.from;
+    if (options.type) params.type = options.type;
+    if (options.filter) params.filter = options.filter;
 
     let response = await kgApi.get('/kg/v3/dql', { params });
     return response.data;
@@ -140,15 +140,15 @@ export class DiffbotClient {
       type: options.entityType === 'organization' ? 'Organization' : 'Person'
     };
 
-    if (options.name) params['name'] = options.name;
-    if (options.url) params['url'] = options.url;
-    if (options.email) params['email'] = options.email;
-    if (options.phone) params['phone'] = options.phone;
-    if (options.employer) params['employer'] = options.employer;
-    if (options.title) params['title'] = options.title;
-    if (options.location) params['location'] = options.location;
-    if (options.description) params['description'] = options.description;
-    if (options.customId) params['customId'] = options.customId;
+    if (options.name) params.name = options.name;
+    if (options.url) params.url = options.url;
+    if (options.email) params.email = options.email;
+    if (options.phone) params.phone = options.phone;
+    if (options.employer) params.employer = options.employer;
+    if (options.title) params.title = options.title;
+    if (options.location) params.location = options.location;
+    if (options.description) params.description = options.description;
+    if (options.customId) params.customId = options.customId;
 
     let response = await kgApi.get('/kg/v3/enhance', { params });
     return response.data;
@@ -160,13 +160,13 @@ export class DiffbotClient {
       type: options.entityType === 'organization' ? 'Organization' : 'Person'
     };
 
-    if (options.name) params['name'] = options.name;
-    if (options.url) params['url'] = options.url;
-    if (options.email) params['email'] = options.email;
-    if (options.phone) params['phone'] = options.phone;
-    if (options.employer) params['employer'] = options.employer;
-    if (options.title) params['title'] = options.title;
-    if (options.location) params['location'] = options.location;
+    if (options.name) params.name = options.name;
+    if (options.url) params.url = options.url;
+    if (options.email) params.email = options.email;
+    if (options.phone) params.phone = options.phone;
+    if (options.employer) params.employer = options.employer;
+    if (options.title) params.title = options.title;
+    if (options.location) params.location = options.location;
 
     let response = await kgApi.get('/kg/v3/enhance/combine', { params });
     return response.data;
@@ -177,8 +177,8 @@ export class DiffbotClient {
       token: this.token
     };
 
-    if (options.lang) params['lang'] = options.lang;
-    if (options.tagMode) params['tagMode'] = options.tagMode;
+    if (options.lang) params.lang = options.lang;
+    if (options.tagMode) params.tagMode = options.tagMode;
 
     let response = await nlApi.post('/v1/', options.content, {
       params,
@@ -196,18 +196,18 @@ export class DiffbotClient {
       seeds: options.seeds.join(' ')
     };
 
-    if (options.apiType) params['apiUrl'] = `https://api.diffbot.com/v3/${options.apiType}`;
-    if (options.maxToCrawl !== undefined) params['maxToCrawl'] = options.maxToCrawl;
-    if (options.maxToProcess !== undefined) params['maxToProcess'] = options.maxToProcess;
-    if (options.maxHops !== undefined) params['maxHops'] = options.maxHops;
-    if (options.urlCrawlPattern) params['urlCrawlPattern'] = options.urlCrawlPattern;
-    if (options.urlProcessPattern) params['urlProcessPattern'] = options.urlProcessPattern;
-    if (options.repeat !== undefined) params['repeat'] = options.repeat;
+    if (options.apiType) params.apiUrl = `https://api.diffbot.com/v3/${options.apiType}`;
+    if (options.maxToCrawl !== undefined) params.maxToCrawl = options.maxToCrawl;
+    if (options.maxToProcess !== undefined) params.maxToProcess = options.maxToProcess;
+    if (options.maxHops !== undefined) params.maxHops = options.maxHops;
+    if (options.urlCrawlPattern) params.urlCrawlPattern = options.urlCrawlPattern;
+    if (options.urlProcessPattern) params.urlProcessPattern = options.urlProcessPattern;
+    if (options.repeat !== undefined) params.repeat = options.repeat;
     if (options.repeatFrequency !== undefined)
-      params['repeatFrequency'] = options.repeatFrequency;
-    if (options.notifyWebhook) params['notifyWebhook'] = options.notifyWebhook;
+      params.repeatFrequency = options.repeatFrequency;
+    if (options.notifyWebhook) params.notifyWebhook = options.notifyWebhook;
     if (options.onlyProcessIfNew !== undefined)
-      params['onlyProcessIfNew'] = options.onlyProcessIfNew ? 1 : 0;
+      params.onlyProcessIfNew = options.onlyProcessIfNew ? 1 : 0;
 
     let response = await extractApi.post('/v3/crawl', null, { params });
     return response.data;
@@ -280,8 +280,8 @@ export class DiffbotClient {
       token: this.token,
       name: crawlName
     };
-    if (format) params['format'] = format;
-    if (num !== undefined) params['num'] = num;
+    if (format) params.format = format;
+    if (num !== undefined) params.num = num;
 
     let response = await extractApi.get('/v3/crawl/data', { params });
     return response.data;
@@ -294,8 +294,8 @@ export class DiffbotClient {
       urls: options.urls.join(' ')
     };
 
-    if (options.apiType) params['apiUrl'] = `https://api.diffbot.com/v3/${options.apiType}`;
-    if (options.notifyWebhook) params['notifyWebhook'] = options.notifyWebhook;
+    if (options.apiType) params.apiUrl = `https://api.diffbot.com/v3/${options.apiType}`;
+    if (options.notifyWebhook) params.notifyWebhook = options.notifyWebhook;
 
     let response = await extractApi.post('/v3/bulk', null, { params });
     return response.data;
@@ -335,8 +335,8 @@ export class DiffbotClient {
       token: this.token,
       name: jobName
     };
-    if (format) params['format'] = format;
-    if (num !== undefined) params['num'] = num;
+    if (format) params.format = format;
+    if (num !== undefined) params.num = num;
 
     let response = await extractApi.get('/v3/bulk/data', { params });
     return response.data;

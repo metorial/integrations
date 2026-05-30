@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let categorySchema = z.object({
   guid: z.string().optional().describe('MX-assigned unique identifier'),
@@ -60,7 +60,7 @@ export let listCategories = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new MxClient({ token: ctx.auth.token, environment: ctx.config.environment });
 
-    let result;
+    let result: any;
     if (ctx.input.userGuid) {
       result = await client.listCategories(ctx.input.userGuid, {
         page: ctx.input.page,

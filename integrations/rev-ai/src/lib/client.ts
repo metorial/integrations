@@ -89,7 +89,7 @@ export class RevAIClient {
   private topicAxios: ReturnType<typeof createAxios>;
   private langIdAxios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     let headers = {
       Authorization: `Bearer ${config.token}`,
       'Content-Type': 'application/json'
@@ -221,7 +221,7 @@ export class RevAIClient {
     if (params?.startingAfter !== undefined) queryParams.starting_after = params.startingAfter;
 
     let response = await this.sttAxios.get('/jobs', { params: queryParams });
-    return (response.data as Array<Record<string, unknown>>).map(j => this.normalizeJob(j));
+    return (response.data as Record<string, unknown>[]).map(j => this.normalizeJob(j));
   }
 
   async deleteTranscriptionJob(jobId: string): Promise<void> {
@@ -234,7 +234,7 @@ export class RevAIClient {
     });
     let monologues = (response.data.monologues || []).map((m: Record<string, unknown>) => ({
       speaker: m.speaker as number,
-      elements: ((m.elements || []) as Array<Record<string, unknown>>).map(e => ({
+      elements: ((m.elements || []) as Record<string, unknown>[]).map(e => ({
         type: e.type as string,
         value: e.value as string,
         ts: e.ts as number | undefined,
@@ -317,9 +317,7 @@ export class RevAIClient {
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
 
     let response = await this.sttAxios.get('/vocabularies', { params: queryParams });
-    return (response.data as Array<Record<string, unknown>>).map(v =>
-      this.normalizeVocabulary(v)
-    );
+    return (response.data as Record<string, unknown>[]).map(v => this.normalizeVocabulary(v));
   }
 
   async deleteCustomVocabulary(vocabularyId: string): Promise<void> {
@@ -360,15 +358,13 @@ export class RevAIClient {
     let response = await this.sentimentAxios.get(`/jobs/${jobId}/result`, {
       headers: { Accept: 'application/vnd.rev.sentiment.v1.0+json' }
     });
-    let messages = ((response.data.messages || []) as Array<Record<string, unknown>>).map(
-      m => ({
-        content: m.content as string,
-        score: m.score as number,
-        sentiment: m.sentiment as string,
-        ts: m.ts as number | undefined,
-        endTs: m.end_ts as number | undefined
-      })
-    );
+    let messages = ((response.data.messages || []) as Record<string, unknown>[]).map(m => ({
+      content: m.content as string,
+      score: m.score as number,
+      sentiment: m.sentiment as string,
+      ts: m.ts as number | undefined,
+      endTs: m.end_ts as number | undefined
+    }));
     return { messages };
   }
 
@@ -381,7 +377,7 @@ export class RevAIClient {
     if (params?.startingAfter !== undefined) queryParams.starting_after = params.startingAfter;
 
     let response = await this.sentimentAxios.get('/jobs', { params: queryParams });
-    return (response.data as Array<Record<string, unknown>>).map(j => this.normalizeJob(j));
+    return (response.data as Record<string, unknown>[]).map(j => this.normalizeJob(j));
   }
 
   async deleteSentimentAnalysisJob(jobId: string): Promise<void> {
@@ -429,10 +425,10 @@ export class RevAIClient {
       headers: { Accept: 'application/vnd.rev.topic.v1.0+json' },
       params: queryParams
     });
-    let topics = ((response.data.topics || []) as Array<Record<string, unknown>>).map(t => ({
+    let topics = ((response.data.topics || []) as Record<string, unknown>[]).map(t => ({
       topicName: t.topic_name as string,
       score: t.score as number,
-      informants: ((t.informants || []) as Array<Record<string, unknown>>).map(inf => ({
+      informants: ((t.informants || []) as Record<string, unknown>[]).map(inf => ({
         content: inf.content as string,
         ts: inf.ts as number | undefined,
         endTs: inf.end_ts as number | undefined
@@ -450,7 +446,7 @@ export class RevAIClient {
     if (params?.startingAfter !== undefined) queryParams.starting_after = params.startingAfter;
 
     let response = await this.topicAxios.get('/jobs', { params: queryParams });
-    return (response.data as Array<Record<string, unknown>>).map(j => this.normalizeJob(j));
+    return (response.data as Record<string, unknown>[]).map(j => this.normalizeJob(j));
   }
 
   async deleteTopicExtractionJob(jobId: string): Promise<void> {
@@ -502,7 +498,7 @@ export class RevAIClient {
     return {
       topLanguage: response.data.top_language as string,
       languageConfidences: (
-        (response.data.language_confidences || []) as Array<Record<string, unknown>>
+        (response.data.language_confidences || []) as Record<string, unknown>[]
       ).map(lc => ({
         language: lc.language as string,
         confidence: lc.confidence as number
@@ -519,7 +515,7 @@ export class RevAIClient {
     if (params?.startingAfter !== undefined) queryParams.starting_after = params.startingAfter;
 
     let response = await this.langIdAxios.get('/jobs', { params: queryParams });
-    return (response.data as Array<Record<string, unknown>>).map(j => this.normalizeJob(j));
+    return (response.data as Record<string, unknown>[]).map(j => this.normalizeJob(j));
   }
 
   async deleteLanguageIdentificationJob(jobId: string): Promise<void> {

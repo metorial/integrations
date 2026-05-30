@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let companySchema = z.object({
   companyId: z.number().describe('Company ID'),
@@ -42,7 +42,7 @@ export let listCompanies = SlateTool.create(spec, {
       accountName: ctx.config.accountName
     });
 
-    let result;
+    let result: any;
     if (ctx.input.query) {
       result = await client.searchCompanies(ctx.input.query, {
         page: ctx.input.page,

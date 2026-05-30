@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let fileEventsTrigger = SlateTrigger.create(spec, {
   name: 'File Events',
@@ -64,7 +64,7 @@ export let fileEventsTrigger = SlateTrigger.create(spec, {
             isActive: true
           });
           registrations.push({ projectId, webhookId: webhook.id });
-        } catch (e) {
+        } catch (_e) {
           // Skip projects where webhook creation fails (e.g., permission issues)
         }
       }
@@ -79,7 +79,7 @@ export let fileEventsTrigger = SlateTrigger.create(spec, {
       for (let reg of registrations) {
         try {
           await client.deleteWebhook(reg.projectId, reg.webhookId);
-        } catch (e) {
+        } catch (_e) {
           // Ignore errors during cleanup
         }
       }
@@ -92,7 +92,7 @@ export let fileEventsTrigger = SlateTrigger.create(spec, {
       let events = data.events ? data.events : [data];
 
       let inputs = events
-        .filter((evt: any) => evt.event && evt.event.startsWith('file.'))
+        .filter((evt: any) => evt.event?.startsWith('file.'))
         .map((evt: any) => {
           let projectId = String(evt.project_id || evt.project?.id || '');
           let projectName = evt.project?.name || evt.project || undefined;

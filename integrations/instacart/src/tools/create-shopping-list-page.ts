@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IdpClient } from '../lib/idp-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let lineItemSchema = z.object({
   name: z.string().describe('Product name used to match against available items'),

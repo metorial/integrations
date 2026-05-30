@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EverhourClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let timerSchema = z.object({
   status: z.string().describe('Timer status: active or stopped'),
@@ -130,7 +130,7 @@ export let getRunningTimers = SlateTool.create(spec, {
     }
 
     let timer = await client.getCurrentTimer();
-    if (!timer || !timer.status) {
+    if (!timer?.status) {
       return {
         output: { timers: [] },
         message: `No active timer running.`

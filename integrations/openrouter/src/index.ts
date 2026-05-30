@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendChatCompletion,
-  createEmbedding,
-  listModels,
-  getModel,
-  getGenerationStats,
-  getCredits,
-  getKeyInfo,
-  listApiKeys,
   createApiKey,
-  deleteApiKey,
-  listGuardrails,
+  createEmbedding,
   createGuardrail,
-  updateGuardrail,
-  deleteGuardrail
+  deleteApiKey,
+  deleteGuardrail,
+  getCredits,
+  getGenerationStats,
+  getKeyInfo,
+  getModel,
+  listApiKeys,
+  listGuardrails,
+  listModels,
+  sendChatCompletion,
+  updateGuardrail
 } from './tools';
 import { creditBalanceChange, inboundWebhook } from './triggers';
 

@@ -116,7 +116,7 @@ export class BigQueryClient {
       tableId: string;
       friendlyName?: string;
       description?: string;
-      schema?: { fields: Array<any> };
+      schema?: { fields: any[] };
       expirationTime?: string;
       timePartitioning?: { type: string; field?: string; expirationMs?: string };
       rangePartitioning?: {
@@ -173,7 +173,7 @@ export class BigQueryClient {
     updates: {
       friendlyName?: string;
       description?: string;
-      schema?: { fields: Array<any> };
+      schema?: { fields: any[] };
       expirationTime?: string;
       labels?: Record<string, string>;
     }
@@ -204,7 +204,7 @@ export class BigQueryClient {
     maximumBytesBilled?: string;
     dryRun?: boolean;
     labels?: Record<string, string>;
-    queryParameters?: Array<any>;
+    queryParameters?: any[];
     parameterMode?: string;
   }) {
     let body: any = {
@@ -407,7 +407,7 @@ export class BigQueryClient {
     writeDisposition?: string;
     createDisposition?: string;
     autodetect?: boolean;
-    schema?: { fields: Array<any> };
+    schema?: { fields: any[] };
     skipLeadingRows?: number;
     maxBadRecords?: number;
     allowJaggedRows?: boolean;

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { XataWorkspaceClient, XataCoreClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { XataCoreClient, XataWorkspaceClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let listDatabases = SlateTool.create(spec, {
   name: 'List Databases',

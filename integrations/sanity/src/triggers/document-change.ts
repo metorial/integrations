@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SanityClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let documentChange = SlateTrigger.create(spec, {
   name: 'Document Change',

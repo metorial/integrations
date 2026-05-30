@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let extractContent = SlateTool.create(spec, {
   name: 'Extract Content',
@@ -116,7 +116,7 @@ Returns excerpts and/or full content from the target pages.`,
     }
     return {
       output: result,
-      message: parts.join(', ') + '.'
+      message: `${parts.join(', ')}.`
     };
   })
   .build();

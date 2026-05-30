@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { NextDnsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let dnsQueryLog = SlateTrigger.create(spec, {
   name: 'DNS Query Log',
@@ -113,7 +113,7 @@ export let dnsQueryLog = SlateTrigger.create(spec, {
         deviceName: entry.device?.name as string | undefined,
         deviceModel: entry.device?.model as string | undefined,
         status: entry.status as string,
-        reasons: entry.reasons as Array<Record<string, unknown>> | undefined
+        reasons: entry.reasons as Record<string, unknown>[] | undefined
       }));
 
       return {

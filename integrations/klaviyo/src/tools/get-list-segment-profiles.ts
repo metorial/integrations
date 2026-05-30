@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient, extractPaginationCursor } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getListSegmentProfiles = SlateTool.create(spec, {
   name: 'Get List or Segment Profiles',
@@ -52,7 +52,7 @@ Use this to see who is in a particular audience.`,
       throw new Error('Either listId or segmentId must be provided');
     }
 
-    let result;
+    let result: any;
     let sourceName: string;
 
     if (ctx.input.listId) {
@@ -71,7 +71,7 @@ Use this to see who is in a particular audience.`,
       sourceName = `segment ${ctx.input.segmentId}`;
     }
 
-    let profiles = result.data.map(p => ({
+    let profiles = result.data.map((p: any) => ({
       profileId: p.id ?? '',
       email: p.attributes?.email ?? undefined,
       phoneNumber: p.attributes?.phone_number ?? undefined,

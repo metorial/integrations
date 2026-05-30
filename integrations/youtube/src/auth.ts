@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { youtubeOAuthError, youtubeServiceError } from './lib/errors';
 import { youtubeScopes } from './scopes';
@@ -84,7 +84,7 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response;
+      let response: any;
       try {
         response = await googleAxios.post(
           '/token',
@@ -128,7 +128,7 @@ export let auth = SlateAuth.create()
         throw youtubeServiceError('No refresh token available');
       }
 
-      let response;
+      let response: any;
       try {
         response = await googleAxios.post(
           '/token',
@@ -168,7 +168,7 @@ export let auth = SlateAuth.create()
       input: any;
       scopes: string[];
     }) => {
-      let response;
+      let response: any;
       try {
         response = await userInfoAxios.get('/oauth2/v2/userinfo', {
           headers: {

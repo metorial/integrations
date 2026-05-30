@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SuperchatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactListSchema = z.object({
   contactListId: z.string().describe('Unique contact list identifier'),

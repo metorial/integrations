@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let partSchema = z
   .union([
@@ -227,7 +227,7 @@ export let generateText = SlateTool.create(spec, {
       ? { parts: [{ text: ctx.input.systemInstruction }] }
       : undefined;
 
-    let tools: Array<any> | undefined = undefined;
+    let tools: any[] | undefined;
     if (
       ctx.input.enableCodeExecution ||
       ctx.input.enableGoogleSearch ||

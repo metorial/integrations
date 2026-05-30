@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTag = SlateTool.create(spec, {
   name: 'Manage Tag',
@@ -44,7 +44,7 @@ export let manageTag = SlateTool.create(spec, {
     if (ctx.input.icon !== undefined) data.icon = ctx.input.icon;
     if (ctx.input.isFavorite !== undefined) data.is_favorite = ctx.input.isFavorite;
 
-    let tag;
+    let tag: any;
     if (ctx.input.tagId) {
       tag = await client.updateTag(ctx.input.tagId, data);
     } else {

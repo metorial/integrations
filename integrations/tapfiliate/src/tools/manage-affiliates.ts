@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TapfiliateClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let affiliateSchema = z.object({
   affiliateId: z.string().describe('Unique identifier of the affiliate'),
@@ -254,7 +254,7 @@ export let manageAffiliateGroup = SlateTool.create(spec, {
       if (!ctx.input.groupId) {
         throw new Error('groupId is required when action is "assign"');
       }
-      let result = await client.setAffiliateGroup(ctx.input.affiliateId, ctx.input.groupId);
+      let _result = await client.setAffiliateGroup(ctx.input.affiliateId, ctx.input.groupId);
       return {
         output: { affiliateId: ctx.input.affiliateId, groupId: ctx.input.groupId },
         message: `Assigned affiliate \`${ctx.input.affiliateId}\` to group \`${ctx.input.groupId}\`.`

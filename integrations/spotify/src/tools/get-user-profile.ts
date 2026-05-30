@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SpotifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUserProfile = SlateTool.create(spec, {
   name: 'Get User Profile',
@@ -40,7 +40,7 @@ export let getUserProfile = SlateTool.create(spec, {
       market: ctx.config.market
     });
 
-    let user;
+    let user: any;
     if (ctx.input.userId) {
       user = await client.getUserProfile(ctx.input.userId);
     } else {

@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { DynamicsClient } from '../lib/client';
 import { resolveDynamicsInstanceUrl } from '../lib/resolve-instance-url';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let recordChanged = SlateTrigger.create(spec, {
   name: 'Record Changed',

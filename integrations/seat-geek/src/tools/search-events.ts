@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventSchema = z.object({
   eventId: z.number().describe('Unique event ID'),
@@ -159,7 +159,7 @@ export let searchEvents = SlateTool.create(spec, {
 
     let params: Record<string, string> = {};
 
-    if (ctx.input.query) params['q'] = ctx.input.query;
+    if (ctx.input.query) params.q = ctx.input.query;
     if (ctx.input.performerIds?.length)
       params['performers.id'] = ctx.input.performerIds.join(',');
     if (ctx.input.performerSlugs?.length)
@@ -172,11 +172,11 @@ export let searchEvents = SlateTool.create(spec, {
     if (ctx.input.taxonomyId) params['taxonomies.id'] = String(ctx.input.taxonomyId);
     if (ctx.input.dateFrom) params['datetime_utc.gte'] = ctx.input.dateFrom;
     if (ctx.input.dateTo) params['datetime_utc.lte'] = ctx.input.dateTo;
-    if (ctx.input.postalCode) params['postal_code'] = ctx.input.postalCode;
-    if (ctx.input.latitude) params['lat'] = String(ctx.input.latitude);
-    if (ctx.input.longitude) params['lon'] = String(ctx.input.longitude);
-    if (ctx.input.geoIp) params['geoip'] = ctx.input.geoIp;
-    if (ctx.input.range) params['range'] = ctx.input.range;
+    if (ctx.input.postalCode) params.postal_code = ctx.input.postalCode;
+    if (ctx.input.latitude) params.lat = String(ctx.input.latitude);
+    if (ctx.input.longitude) params.lon = String(ctx.input.longitude);
+    if (ctx.input.geoIp) params.geoip = ctx.input.geoIp;
+    if (ctx.input.range) params.range = ctx.input.range;
     if (ctx.input.lowestPriceMin)
       params['lowest_price.gte'] = String(ctx.input.lowestPriceMin);
     if (ctx.input.lowestPriceMax)
@@ -185,9 +185,9 @@ export let searchEvents = SlateTool.create(spec, {
       params['average_price.gte'] = String(ctx.input.averagePriceMin);
     if (ctx.input.averagePriceMax)
       params['average_price.lte'] = String(ctx.input.averagePriceMax);
-    if (ctx.input.sort) params['sort'] = ctx.input.sort;
-    if (ctx.input.page) params['page'] = String(ctx.input.page);
-    if (ctx.input.perPage) params['per_page'] = String(ctx.input.perPage);
+    if (ctx.input.sort) params.sort = ctx.input.sort;
+    if (ctx.input.page) params.page = String(ctx.input.page);
+    if (ctx.input.perPage) params.per_page = String(ctx.input.perPage);
 
     let response = await client.searchEvents(params);
 

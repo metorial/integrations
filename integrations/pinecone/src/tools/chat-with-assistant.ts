@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { PineconeControlPlaneClient, PineconeAssistantClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { PineconeAssistantClient, PineconeControlPlaneClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let chatWithAssistantTool = SlateTool.create(spec, {
   name: 'Chat with Assistant',

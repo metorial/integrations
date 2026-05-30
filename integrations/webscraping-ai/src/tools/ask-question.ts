@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { scrapingOptionsSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let askQuestion = SlateTool.create(spec, {
   name: 'Ask Question About Page',

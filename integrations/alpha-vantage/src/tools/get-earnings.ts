@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let earningsEntrySchema = z.object({
   fiscalDateEnding: z.string().describe('End date of the fiscal period'),
@@ -44,12 +44,12 @@ export let getEarnings = SlateTool.create(spec, {
     let rawEarnings: any[] = data[reportsKey] || [];
 
     let earnings = rawEarnings.map((e: any) => ({
-      fiscalDateEnding: e['fiscalDateEnding'] || '',
-      reportedDate: e['reportedDate'] || '',
-      reportedEPS: e['reportedEPS'] || '',
-      estimatedEPS: e['estimatedEPS'] || '',
-      surprise: e['surprise'] || '',
-      surprisePercentage: e['surprisePercentage'] || ''
+      fiscalDateEnding: e.fiscalDateEnding || '',
+      reportedDate: e.reportedDate || '',
+      reportedEPS: e.reportedEPS || '',
+      estimatedEPS: e.estimatedEPS || '',
+      surprise: e.surprise || '',
+      surprisePercentage: e.surprisePercentage || ''
     }));
 
     return {

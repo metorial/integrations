@@ -1,4 +1,4 @@
-import { HttpResponse, type HttpHandler, type HttpRequest } from '@smithy/protocol-http';
+import { type HttpHandler, type HttpRequest, HttpResponse } from '@smithy/protocol-http';
 import { buildQueryString } from '@smithy/querystring-builder';
 import type { HttpHandlerOptions } from '@smithy/types';
 import { createAxios } from 'slates';

@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateImage,
-  generateBatchPdf,
-  listTemplates,
-  getTemplate,
-  deleteImage,
-  listWorkspaces,
   createWorkspace,
-  updateWorkspace,
+  deleteImage,
+  deleteMediaAsset,
   deleteWorkspace,
-  listMediaAssets,
+  generateBatchPdf,
+  generateImage,
   getMediaAsset,
-  deleteMediaAsset
+  getTemplate,
+  listMediaAssets,
+  listTemplates,
+  listWorkspaces,
+  updateWorkspace
 } from './tools';
 import { newImageGenerated } from './triggers';
 

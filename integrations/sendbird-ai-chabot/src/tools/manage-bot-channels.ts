@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageBotChannels = SlateTool.create(spec, {
   name: 'Manage Bot Channels',
@@ -57,24 +57,22 @@ export let manageBotChannels = SlateTool.create(spec, {
         output: { success: true, action: 'join' },
         message: `Bot **${botUserId}** joined **${channelUrls.length}** channel(s).`
       };
+    } else if (leaveAll) {
+      await client.leaveAllChannels(botUserId);
+      return {
+        output: { success: true, action: 'leave_all' },
+        message: `Bot **${botUserId}** left all channels.`
+      };
+    } else if (channelUrl) {
+      await client.leaveChannel(botUserId, channelUrl);
+      return {
+        output: { success: true, action: 'leave' },
+        message: `Bot **${botUserId}** left the specified channel.`
+      };
     } else {
-      if (leaveAll) {
-        await client.leaveAllChannels(botUserId);
-        return {
-          output: { success: true, action: 'leave_all' },
-          message: `Bot **${botUserId}** left all channels.`
-        };
-      } else if (channelUrl) {
-        await client.leaveChannel(botUserId, channelUrl);
-        return {
-          output: { success: true, action: 'leave' },
-          message: `Bot **${botUserId}** left the specified channel.`
-        };
-      } else {
-        throw new Error(
-          'Provide either channelUrl or set leaveAll to true when action is "leave"'
-        );
-      }
+      throw new Error(
+        'Provide either channelUrl or set leaveAll to true when action is "leave"'
+      );
     }
   })
   .build();

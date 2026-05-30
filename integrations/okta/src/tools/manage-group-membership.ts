@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OktaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageGroupMembershipTool = SlateTool.create(spec, {
   name: 'Manage Group Membership',

@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  managePrompt,
   callPrompt,
-  manageDataset,
-  manageEvaluator,
-  runEvaluation,
-  manageFlow,
-  manageTool,
-  manageLogs,
-  logPromptResult,
   deployPrompt,
-  manageDirectory
+  logPromptResult,
+  manageDataset,
+  manageDirectory,
+  manageEvaluator,
+  manageFlow,
+  manageLogs,
+  managePrompt,
+  manageTool,
+  runEvaluation
 } from './tools';
-import { newLogs, newEvaluations, inboundWebhook } from './triggers';
+import { inboundWebhook, newEvaluations, newLogs } from './triggers';
 
 export let provider = Slate.create({
   spec,

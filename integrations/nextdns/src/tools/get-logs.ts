@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NextDnsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let logEntrySchema = z.object({
   timestamp: z.string().describe('ISO 8601 timestamp of the query'),

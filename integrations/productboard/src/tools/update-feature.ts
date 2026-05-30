@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateFeatureTool = SlateTool.create(spec, {
   name: 'Update Feature',
@@ -39,7 +39,7 @@ export let updateFeatureTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let parent: any = undefined;
+    let parent: any;
     if (ctx.input.parentFeatureId) {
       parent = { feature: { id: ctx.input.parentFeatureId } };
     } else if (ctx.input.parentComponentId) {
@@ -48,7 +48,7 @@ export let updateFeatureTool = SlateTool.create(spec, {
       parent = { product: { id: ctx.input.parentProductId } };
     }
 
-    let timeframe: any = undefined;
+    let timeframe: any;
     if (ctx.input.startDate !== undefined || ctx.input.endDate !== undefined) {
       timeframe = {};
       if (ctx.input.startDate !== undefined) timeframe.startDate = ctx.input.startDate;

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let normalizeErrorText = (errorText: string | Record<string, never>): string => {
   if (typeof errorText === 'string') return errorText;

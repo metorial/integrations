@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listUsers = SlateTool.create(spec, {
   name: 'List Users',
@@ -65,7 +65,7 @@ export let listUsers = SlateTool.create(spec, {
       };
     }
 
-    let result;
+    let result: any;
     if (ctx.input.userType === 'customer') {
       result = await client.listCustomerUsers({
         offset: ctx.input.offset,

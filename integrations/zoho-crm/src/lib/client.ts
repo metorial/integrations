@@ -43,7 +43,7 @@ export interface NotificationWatch {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: ZohoClientConfig) {
+  constructor(config: ZohoClientConfig) {
     this.http = createAxios({
       baseURL: `${config.apiBaseUrl}/crm/v7`,
       headers: {

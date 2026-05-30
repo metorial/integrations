@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HubSpotClient } from '../lib/client';
 import { hubSpotActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pipelineStageSchema = z.object({
   stageId: z.string().optional().describe('Stage ID'),

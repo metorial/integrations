@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let recipientSchema = z.object({
   recipientId: z.number().describe('Unique identifier of the recipient'),
@@ -59,7 +59,7 @@ export let documentEventTrigger = SlateTrigger.create(spec, {
       let status = String(payload.status ?? '');
       let createdAt = String(data.createdAt ?? new Date().toISOString());
 
-      let rawRecipients = (payload.recipients ?? []) as Array<Record<string, unknown>>;
+      let rawRecipients = (payload.recipients ?? []) as Record<string, unknown>[];
       let recipients = rawRecipients.map(r => ({
         recipientId: Number(r.id ?? r.recipientId ?? 0),
         email: String(r.email ?? ''),

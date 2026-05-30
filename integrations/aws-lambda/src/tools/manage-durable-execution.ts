@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { createClient } from '../lib/helpers';
-import { lambdaServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { lambdaServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageDurableExecution = SlateTool.create(spec, {
   name: 'Manage Durable Execution',
@@ -166,8 +166,8 @@ export let manageDurableExecution = SlateTool.create(spec, {
       if (!ctx.input.durableExecutionArn)
         throw lambdaServiceError('durableExecutionArn is required');
       let params: Record<string, any> = {};
-      if (ctx.input.stopErrorMessage) params['ErrorMessage'] = ctx.input.stopErrorMessage;
-      if (ctx.input.stopErrorType) params['ErrorType'] = ctx.input.stopErrorType;
+      if (ctx.input.stopErrorMessage) params.ErrorMessage = ctx.input.stopErrorMessage;
+      if (ctx.input.stopErrorType) params.ErrorType = ctx.input.stopErrorType;
       let result = await client.stopDurableExecution(ctx.input.durableExecutionArn, params);
       return {
         output: {

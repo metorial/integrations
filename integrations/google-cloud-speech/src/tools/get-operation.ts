@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SpeechToTextClient } from '../lib/client';
 import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getOperation = SlateTool.create(spec, {
   name: 'Get Operation',

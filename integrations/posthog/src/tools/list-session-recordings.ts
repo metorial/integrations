@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let recordingOutput = z.object({
   recordingId: z.string().describe('Session recording ID'),
@@ -95,7 +95,7 @@ Returns timing, activity metrics, and user information. Does not include the raw
         keypressCount: r.keypress_count,
         pageCount: r.page_count
       },
-      message: `Retrieved session recording **${r.id}** (${r.recording_duration ? Math.round(r.recording_duration) + 's' : 'unknown duration'}).`
+      message: `Retrieved session recording **${r.id}** (${r.recording_duration ? `${Math.round(r.recording_duration)}s` : 'unknown duration'}).`
     };
   })
   .build();

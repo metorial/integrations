@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCheckins,
-  getCheckin,
   createCheckin,
-  updateCheckin,
   deleteCheckin,
+  getCheckin,
   getCheckinResponses,
-  sendCheckinReminders,
-  listForms,
-  listTemplates,
-  getTemplate,
-  listUsers,
-  getUser,
-  updateUser,
-  listTeams,
+  getOrganization,
   getTeamMembers,
-  manageTeamMembers,
-  sendMessage,
-  sendEmail,
+  getTemplate,
+  getUser,
   giveKudos,
-  getOrganization
+  listCheckins,
+  listForms,
+  listTeams,
+  listTemplates,
+  listUsers,
+  manageTeamMembers,
+  sendCheckinReminders,
+  sendEmail,
+  sendMessage,
+  updateCheckin,
+  updateUser
 } from './tools';
 import {
   checkinResponseTrigger,

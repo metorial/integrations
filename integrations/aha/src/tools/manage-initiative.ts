@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AhaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let initiativeOutputSchema = z.object({
   initiativeId: z.string().optional().describe('Initiative ID'),

@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getCodingSummaries,
-  getCodingStats,
-  getDurations,
-  getHeartbeats,
+  createExternalDuration,
   createHeartbeat,
   deleteHeartbeat,
-  listProjects,
-  getProjectCommits,
-  getGoals,
-  createExternalDuration,
-  getLeaderboard,
-  getPrivateLeaderboards,
-  getUserProfile,
   getAllTime,
+  getCodingStats,
+  getCodingSummaries,
+  getDurations,
+  getGoals,
+  getHeartbeats,
   getInsights,
-  getOrganizations,
+  getLeaderboard,
   getMachines,
+  getOrganizations,
+  getPrivateLeaderboards,
+  getProjectCommits,
+  getUserProfile,
+  listProjects,
   manageDataExports
 } from './tools';
 import { codingActivityTrigger, goalProgressTrigger, inboundWebhook } from './triggers';

@@ -70,10 +70,10 @@ export class Client {
       api_key: this.token
     };
     if (this.organizationId) {
-      params['organization'] = this.organizationId;
+      params.organization = this.organizationId;
     }
     if (this.projectId) {
-      params['project'] = this.projectId;
+      params.project = this.projectId;
     }
     return params;
   }
@@ -129,12 +129,12 @@ export class Client {
     let ax = this.createAxiosInstance();
     let params: Record<string, string> = { ...this.getAuthParams() };
 
-    if (options?.limit !== undefined) params['limit'] = String(options.limit);
-    if (options?.offset !== undefined) params['offset'] = String(options.offset);
-    if (options?.orderBy) params['order_by'] = options.orderBy;
-    if (options?.tags) params['tags'] = options.tags;
-    if (options?.name) params['name'] = options.name;
-    if (options?.project) params['project'] = options.project;
+    if (options?.limit !== undefined) params.limit = String(options.limit);
+    if (options?.offset !== undefined) params.offset = String(options.offset);
+    if (options?.orderBy) params.order_by = options.orderBy;
+    if (options?.tags) params.tags = options.tags;
+    if (options?.name) params.name = options.name;
+    if (options?.project) params.project = options.project;
 
     if (options?.filters) {
       for (let [key, value] of Object.entries(options.filters)) {

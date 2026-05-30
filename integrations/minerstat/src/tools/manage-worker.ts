@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageWorkerTool = SlateTool.create(spec, {
   name: 'Manage Worker',
@@ -102,7 +102,7 @@ export let manageWorkerTool = SlateTool.create(spec, {
       }
       case 'update': {
         ctx.progress(
-          `Updating worker${ctx.input.workerName ? ' ' + ctx.input.workerName : ''}...`
+          `Updating worker${ctx.input.workerName ? ` ${ctx.input.workerName}` : ''}...`
         );
         result = await client.updateWorker({
           name: ctx.input.workerName,
@@ -116,7 +116,7 @@ export let manageWorkerTool = SlateTool.create(spec, {
       }
       case 'delete': {
         ctx.progress(
-          `Deleting worker${ctx.input.workerName ? ' ' + ctx.input.workerName : ''}...`
+          `Deleting worker${ctx.input.workerName ? ` ${ctx.input.workerName}` : ''}...`
         );
         result = await client.deleteWorker({
           name: ctx.input.workerName,

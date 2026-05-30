@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PushoverClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let groupMemberSchema = z.object({
   userKey: z.string().describe('Pushover user key of the group member'),

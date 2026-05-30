@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { VbmlClient } from '../lib/vbml';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let formatText = SlateTool.create(spec, {
   name: 'Format Text',

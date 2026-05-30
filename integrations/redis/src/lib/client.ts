@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class RedisCloudClient {
   private http;
 
-  constructor(private auth: { accountKey: string; userKey: string }) {
+  constructor(auth: { accountKey: string; userKey: string }) {
     this.http = createAxios({
       baseURL: 'https://api.redislabs.com/v1',
       headers: {

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/utils';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let workerEvents = SlateTrigger.create(spec, {
   name: 'Worker Events',
@@ -68,7 +68,7 @@ export let workerEvents = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
 
       let meta = data?.data?.meta ?? data?.meta ?? {};
-      let resource = data?.data?.resource ?? data?.resource ?? {};
+      let _resource = data?.data?.resource ?? data?.resource ?? {};
 
       let eventType = meta.event_type ?? data?.event_type ?? 'worker.unknown';
       let trackingId = meta.tracking_id ?? data?.id ?? `${eventType}-${Date.now()}`;

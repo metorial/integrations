@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import * as resourceManager from '../lib/resource-manager';
+import { spec } from '../spec';
 
 export let listClouds = SlateTool.create(spec, {
   name: 'List Clouds',

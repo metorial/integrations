@@ -70,7 +70,7 @@ export class Client {
     };
 
     if (options.timeout !== undefined) {
-      params['timeout'] = options.timeout;
+      params.timeout = options.timeout;
     }
 
     let response = await api.get('/verify', { params });

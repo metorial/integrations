@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BTCPayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let invoiceEvents = SlateTrigger.create(spec, {
   name: 'Invoice Events',
@@ -115,7 +115,7 @@ export let invoiceEvents = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let body = (await ctx.request.json()) as Record<string, unknown>;
 
-      if (!body || !body.type) {
+      if (!body?.type) {
         return { inputs: [] };
       }
 

@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let setupIntentEvents = SlateTrigger.create(spec, {
   name: 'Setup Intent Events',
@@ -35,7 +35,7 @@ export let setupIntentEvents = SlateTrigger.create(spec, {
       let body = (await ctx.request.json()) as any;
       let eventType = body.type;
 
-      if (!eventType || !eventType.startsWith('setup_intent.')) {
+      if (!eventType?.startsWith('setup_intent.')) {
         return { inputs: [] };
       }
 

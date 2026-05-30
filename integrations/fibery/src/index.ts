@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getSchemaTool,
-  queryEntitiesTool,
+  batchCreateOrUpdateTool,
   createEntityTool,
-  updateEntityTool,
   deleteEntityTool,
-  manageDocumentTool,
+  getSchemaTool,
   manageCollectionTool,
-  uploadFileTool,
-  batchCreateOrUpdateTool
+  manageDocumentTool,
+  queryEntitiesTool,
+  updateEntityTool,
+  uploadFileTool
 } from './tools';
 import { entityChangesTrigger } from './triggers';
 

@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let dropletSchema = z.object({
   dropletId: z.number().describe('Unique identifier for the Droplet'),

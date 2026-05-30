@@ -1,4 +1,4 @@
-import { extractHeader, GmailMessage, parseMessage, ParsedMessage } from './client';
+import { extractHeader, type GmailMessage, type ParsedMessage, parseMessage } from './client';
 
 export let buildReplyHeaders = (
   parentMessage: GmailMessage

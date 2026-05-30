@@ -1,30 +1,30 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createConnection,
+  deleteConnection,
+  getConnection,
+  getFlow,
+  getFlowErrors,
+  getJob,
   getTokenInfo,
   listConnections,
-  getConnection,
-  createConnection,
-  updateConnection,
-  deleteConnection,
-  listFlows,
-  getFlow,
-  manageFlow,
   listExports,
-  manageExport,
+  listFlows,
   listImports,
-  manageImport,
   listIntegrations,
+  listJobs,
+  manageExport,
+  manageFlow,
+  manageImport,
   manageIntegration,
-  getFlowErrors,
+  manageState,
+  manageUsers,
   resolveErrors,
   retryErrors,
-  listJobs,
-  getJob,
-  manageUsers,
-  manageState
+  updateConnection
 } from './tools';
-import { jobCompleted, flowErrorDetected, inboundWebhook } from './triggers';
+import { flowErrorDetected, inboundWebhook, jobCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,

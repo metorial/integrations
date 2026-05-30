@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listSessions = SlateTool.create(spec, {
   name: 'List Sessions',
@@ -33,7 +33,7 @@ export let listSessions = SlateTool.create(spec, {
       projectId: ctx.auth.projectId
     });
 
-    let sessions;
+    let sessions: any;
     if (ctx.input.searchTerm) {
       sessions = await client.searchSessions({
         searchTerm: ctx.input.searchTerm,

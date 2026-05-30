@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DopplerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let secretEntrySchema = z.object({
   raw: z.string().optional().describe('Raw secret value'),

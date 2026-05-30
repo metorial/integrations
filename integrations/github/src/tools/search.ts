@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let search = SlateTool.create(spec, {
   name: 'Search GitHub',
@@ -41,7 +41,10 @@ Supports qualifiers for filtering (e.g., "language:python stars:>100" for reposi
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let { type, query, ...params } = ctx.input;
     let result: any;
 

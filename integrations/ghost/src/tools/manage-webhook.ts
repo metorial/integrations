@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GhostAdminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let webhookOutputSchema = z.object({
   webhookId: z.string().describe('Unique webhook ID'),

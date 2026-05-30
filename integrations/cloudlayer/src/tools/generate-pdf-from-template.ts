@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { pdfOptionsSchema, jobResponseSchema } from '../lib/schemas';
+import { Client } from '../lib/client';
+import { jobResponseSchema, pdfOptionsSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let generatePdfFromTemplate = SlateTool.create(spec, {
   name: 'Generate PDF from Template',

@@ -56,7 +56,7 @@ export interface QrCodeParams {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

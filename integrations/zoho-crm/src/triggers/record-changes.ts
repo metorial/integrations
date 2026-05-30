@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let recordChanges = SlateTrigger.create(spec, {
   name: 'Record Changes',
@@ -57,7 +57,7 @@ Supports all standard and custom modules.`
         channelExpiry
       }));
 
-      let result = await client.enableNotifications(watches);
+      let _result = await client.enableNotifications(watches);
 
       return {
         registrationDetails: {

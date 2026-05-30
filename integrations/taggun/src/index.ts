@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  addMerchantKeyword,
   extractReceipt,
-  validateReceipt,
   manageCampaign,
   submitFeedback,
-  addMerchantKeyword
+  validateReceipt
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

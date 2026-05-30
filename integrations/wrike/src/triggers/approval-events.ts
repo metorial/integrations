@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { WrikeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let approvalEvents = SlateTrigger.create(spec, {
   name: 'Approval Events',

@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  queryDocuments,
   getDocument,
-  mutateDocuments,
   listProjects,
   manageDatasets,
   manageWebhooks,
+  mutateDocuments,
+  queryDocuments,
   uploadAsset
 } from './tools';
 import { documentChange } from './triggers';

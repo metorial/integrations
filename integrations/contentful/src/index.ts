@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchEntries,
-  getEntry,
-  createEntry,
-  updateEntry,
-  manageEntryLifecycle,
-  searchAssets,
-  getAsset,
   createAsset,
-  manageAssetLifecycle,
+  createEntry,
+  getAsset,
+  getEntry,
   listContentTypes,
-  manageContentType,
-  manageTags,
-  listLocales,
   listEnvironments,
-  syncContent,
+  listLocales,
+  manageAssetLifecycle,
+  manageContentType,
+  manageEntryLifecycle,
+  manageRelease,
+  manageTags,
   scheduleAction,
-  manageRelease
+  searchAssets,
+  searchEntries,
+  syncContent,
+  updateEntry
 } from './tools';
-import { entryEvents, assetEvents, contentTypeEvents } from './triggers';
+import { assetEvents, contentTypeEvents, entryEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

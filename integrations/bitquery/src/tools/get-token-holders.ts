@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let holderSchema = z.object({
   holderAddress: z.string().describe('Holder wallet address'),
@@ -63,7 +63,7 @@ Use this for token distribution analysis, identifying whales, or tracking holder
     let { blockchain, tokenAddress, limit } = ctx.input;
     ctx.info(`Fetching top holders for token ${tokenAddress} on ${blockchain}`);
 
-    let holders: Array<z.infer<typeof holderSchema>> = [];
+    let holders: z.infer<typeof holderSchema>[] = [];
 
     if (blockchain === 'solana') {
       let query = `query GetSolanaTokenHolders($tokenAddress: String!, $limit: Int!) {
@@ -93,7 +93,7 @@ Use this for token distribution analysis, identifying whales, or tracking holder
       holders = raw
         .map((h: any) => ({
           holderAddress: h.BalanceUpdate?.Account?.Address || '',
-          balance: parseFloat(h.balance) || 0
+          balance: Number.parseFloat(h.balance) || 0
         }))
         .filter((h: any) => h.balance > 0 && h.holderAddress);
     } else if (ctx.config.apiVersion === 'v1') {
@@ -165,7 +165,7 @@ Use this for token distribution analysis, identifying whales, or tracking holder
       holders = raw
         .map((h: any) => ({
           holderAddress: h.BalanceUpdate?.Address || '',
-          balance: parseFloat(h.balance) || 0
+          balance: Number.parseFloat(h.balance) || 0
         }))
         .filter((h: any) => h.balance > 0 && h.holderAddress);
     }

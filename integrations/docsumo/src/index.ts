@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  uploadDocument,
-  listDocuments,
+  deleteDocument,
   getDocument,
   getExtractedData,
-  deleteDocument,
-  updateReviewStatus,
+  getReviewUrl,
+  listDocuments,
   listDocumentTypes,
-  getReviewUrl
+  updateReviewStatus,
+  uploadDocument
 } from './tools';
 import { documentStatusChanged } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let programSchema = z.object({
   programId: z.string().describe('Unique program ID'),
@@ -47,7 +47,7 @@ export let listPrograms = SlateTool.create(spec, {
       count: ctx.input.count
     });
 
-    let programs = ((result.programs as Array<Record<string, unknown>>) || []).map(p => ({
+    let programs = ((result.programs as Record<string, unknown>[]) || []).map(p => ({
       programId: p.id as string,
       isActive: p.isActive as boolean | undefined,
       name: p.name as string | undefined,

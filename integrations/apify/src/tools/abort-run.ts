@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ApifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let abortRun = SlateTool.create(spec, {
   name: 'Abort Run',

@@ -1,4 +1,4 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
 
 type ErrorResponse = {
   status?: number;
@@ -54,7 +54,9 @@ export let hubSpotApiError = (error: unknown, operation?: string) => {
     return error;
   }
 
-  let config = isRecord(error) ? (error.config as Record<string, unknown> | undefined) : undefined;
+  let config = isRecord(error)
+    ? (error.config as Record<string, unknown> | undefined)
+    : undefined;
   let method = stringValue(config?.method)?.toUpperCase();
   let url = stringValue(config?.url);
   let inferredOperation = [method, url].filter(Boolean).join(' ');

@@ -181,7 +181,7 @@ export class Client {
   private http: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; region: string }) {
-    let baseURL = BASE_URLS[config.region] || BASE_URLS['us'];
+    let baseURL = BASE_URLS[config.region] || BASE_URLS.us;
     this.http = createAxios({
       baseURL: `${baseURL}/api/v1`,
       headers: {

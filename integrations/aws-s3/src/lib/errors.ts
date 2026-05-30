@@ -1,4 +1,4 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
 
 export let s3ServiceError = (message: string) =>
   new ServiceError(badRequestError({ message }));

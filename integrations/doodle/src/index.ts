@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  addCommentTool,
   createPollTool,
+  deletePollTool,
+  getCommentsTool,
   getPollTool,
   listPollsTool,
-  deletePollTool,
   participateInPollTool,
-  removeParticipantTool,
-  addCommentTool,
-  getCommentsTool
+  removeParticipantTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

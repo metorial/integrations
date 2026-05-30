@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class KlazifyClient {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://www.klazify.com/api',
       headers: {

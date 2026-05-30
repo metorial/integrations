@@ -9,7 +9,7 @@ let getBaseUrl = (region: BoldSignRegion): string => {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private options: { token: string; region: BoldSignRegion }) {
+  constructor(options: { token: string; region: BoldSignRegion }) {
     this.axios = createAxios({
       baseURL: getBaseUrl(options.region),
       headers: {
@@ -110,7 +110,7 @@ export class Client {
       totalRecordsCount: number;
       totalPages: number;
     };
-    result: Array<Record<string, any>>;
+    result: Record<string, any>[];
   }> {
     let queryParams = new URLSearchParams();
 
@@ -226,7 +226,7 @@ export class Client {
       totalRecordsCount: number;
       totalPages: number;
     };
-    result: Array<Record<string, any>>;
+    result: Record<string, any>[];
   }> {
     let queryParams = new URLSearchParams();
 
@@ -325,7 +325,7 @@ export class Client {
 
   async listUsers(params: { page?: number; pageSize?: number; searchKey?: string }): Promise<{
     pageDetails: Record<string, any>;
-    result: Array<Record<string, any>>;
+    result: Record<string, any>[];
   }> {
     let response = await this.axios.get('/v1/users/list', {
       params: {
@@ -348,7 +348,7 @@ export class Client {
 
   async listTeams(params: { page?: number; pageSize?: number; searchKey?: string }): Promise<{
     pageDetails: Record<string, any>;
-    result: Array<Record<string, any>>;
+    result: Record<string, any>[];
   }> {
     let response = await this.axios.get('/v1/teams/list', {
       params: {
@@ -362,7 +362,7 @@ export class Client {
 
   // ─── Brands ─────────────────────────────────────────────
 
-  async listBrands(): Promise<{ result: Array<Record<string, any>> }> {
+  async listBrands(): Promise<{ result: Record<string, any>[] }> {
     let response = await this.axios.get('/v1/brand/list');
     return response.data;
   }
@@ -371,7 +371,7 @@ export class Client {
 
   async listSenderIdentities(params: { page?: number; pageSize?: number }): Promise<{
     pageDetails: Record<string, any>;
-    result: Array<Record<string, any>>;
+    result: Record<string, any>[];
   }> {
     let response = await this.axios.get('/v1/senderIdentities/list', {
       params: {
@@ -401,7 +401,7 @@ export class Client {
     searchKey?: string;
   }): Promise<{
     pageDetails: Record<string, any>;
-    result: Array<Record<string, any>>;
+    result: Record<string, any>[];
   }> {
     let response = await this.axios.get('/v1/contacts/list', {
       params: {

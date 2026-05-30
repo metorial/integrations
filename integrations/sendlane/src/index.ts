@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listContacts,
-  getContact,
   addContactToList,
-  removeContactFromList,
-  unsubscribeContact,
-  listLists,
+  getContact,
+  listCampaigns,
+  listContacts,
+  listCustomFields,
   listListContacts,
+  listLists,
+  listSenders,
   listTags,
   manageContactTags,
-  listCampaigns,
-  listCustomFields,
-  updateContactCustomFields,
-  listSenders,
-  updateSmsConsent,
   manageSuppression,
-  trackOrder,
+  removeContactFromList,
   trackCheckout,
+  trackCustomEvent,
+  trackOrder,
   trackOrderFulfilled,
-  trackCustomEvent
+  unsubscribeContact,
+  updateContactCustomFields,
+  updateSmsConsent
 } from './tools';
-import { newContact, newUnsubscribe, inboundWebhook } from './triggers';
+import { inboundWebhook, newContact, newUnsubscribe } from './triggers';
 
 export let provider = Slate.create({
   spec,

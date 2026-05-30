@@ -1,15 +1,15 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { VimeoClient } from '../lib/client';
 import {
-  showcaseSchema,
-  videoSchema,
+  mapShowcase,
+  mapVideo,
   paginationInputSchema,
   paginationOutputSchema,
-  mapShowcase,
-  mapVideo
+  showcaseSchema,
+  videoSchema
 } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listShowcasesTool = SlateTool.create(spec, {
   name: 'List Showcases',

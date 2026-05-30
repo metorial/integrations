@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SpotifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTrack = SlateTool.create(spec, {
   name: 'Get Track',
@@ -77,7 +77,7 @@ export let getTrack = SlateTool.create(spec, {
       market: ctx.config.market
     });
 
-    let tracksData;
+    let tracksData: any;
     if (ctx.input.trackIds.length === 1) {
       let track = await client.getTrack(ctx.input.trackIds[0]!, ctx.input.market);
       tracksData = [track];
@@ -98,14 +98,14 @@ export let getTrack = SlateTool.create(spec, {
             if (f) audioFeaturesMap[f.id] = f;
           }
         }
-      } catch (e) {
+      } catch (_e) {
         ctx.warn(
           'Audio features could not be retrieved. This endpoint may be restricted for your application.'
         );
       }
     }
 
-    let tracks = tracksData.map(t => {
+    let tracks = tracksData.map((t: any) => {
       let features = audioFeaturesMap[t.id];
       return {
         trackId: t.id,
@@ -116,7 +116,7 @@ export let getTrack = SlateTool.create(spec, {
         trackNumber: t.track_number,
         discNumber: t.disc_number,
         isLocal: t.is_local,
-        artists: t.artists.map(a => ({ artistId: a.id, name: a.name })),
+        artists: t.artists.map((a: any) => ({ artistId: a.id, name: a.name })),
         album: {
           albumId: t.album.id,
           name: t.album.name,
@@ -149,6 +149,6 @@ export let getTrack = SlateTool.create(spec, {
 
     return {
       output: { tracks },
-      message: `Retrieved ${tracks.length} track(s): ${tracks.map(t => `**${t.name}** by ${t.artists.map(a => a.name).join(', ')}`).join('; ')}.`
+      message: `Retrieved ${tracks.length} track(s): ${tracks.map((t: any) => `**${t.name}** by ${t.artists.map((a: any) => a.name).join(', ')}`).join('; ')}.`
     };
   });

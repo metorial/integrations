@@ -15,7 +15,7 @@ export interface PaginationParams {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.humanitix.com/v1',
       headers: {

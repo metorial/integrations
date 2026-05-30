@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { TelegramClient } from '../lib/client';
 import { generateSecretToken, verifySecretToken } from '../lib/webhook-utils';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pollOptionSchema = z.object({
   text: z.string().describe('Option text'),

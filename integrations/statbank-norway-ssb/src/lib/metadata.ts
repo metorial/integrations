@@ -15,7 +15,8 @@ export type TableSummary = {
 
 type JsonRecord = Record<string, unknown>;
 
-let isRecord = (value: unknown): value is JsonRecord => typeof value === 'object' && value !== null;
+let isRecord = (value: unknown): value is JsonRecord =>
+  typeof value === 'object' && value !== null;
 
 let stringValue = (value: unknown) => (typeof value === 'string' ? value : undefined);
 
@@ -137,7 +138,9 @@ export let summarizeMetadata = (metadata: unknown, valueLimit: number) => {
   let dimension = isRecord(metadata.dimension) ? metadata.dimension : {};
   let dimensionIds = stringArray(metadata.id);
   let sizes = Array.isArray(metadata.size)
-    ? metadata.size.map(value => numberValue(value)).filter((value): value is number => value !== undefined)
+    ? metadata.size
+        .map(value => numberValue(value))
+        .filter((value): value is number => value !== undefined)
     : [];
   let extension = isRecord(metadata.extension) ? metadata.extension : {};
   let px = isRecord(extension.px) ? extension.px : {};
@@ -233,10 +236,14 @@ export let summarizeJsonData = (data: unknown) => {
   }
 
   let sizes = Array.isArray(data.size)
-    ? data.size.map(value => numberValue(value)).filter((value): value is number => value !== undefined)
+    ? data.size
+        .map(value => numberValue(value))
+        .filter((value): value is number => value !== undefined)
     : [];
   let valueCount = Array.isArray(data.value) ? data.value.length : undefined;
-  let cellCount = sizes.length ? sizes.reduce((product, size) => product * size, 1) : valueCount;
+  let cellCount = sizes.length
+    ? sizes.reduce((product, size) => product * size, 1)
+    : valueCount;
 
   return {
     label: stringValue(data.label),

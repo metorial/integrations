@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listCustomers = SlateTool.create(spec, {
   name: 'List Customers',
@@ -63,8 +63,9 @@ export let listCustomers = SlateTool.create(spec, {
       showHistory: ctx.input.includeHistory ? 1 : 0
     });
 
-    let count = typeof data.count === 'number' ? data.count : parseInt(data.count || '0', 10);
-    let customers: Array<Record<string, unknown>> = [];
+    let count =
+      typeof data.count === 'number' ? data.count : Number.parseInt(data.count || '0', 10);
+    let customers: Record<string, unknown>[] = [];
 
     for (let i = 1; i <= count; i++) {
       customers.push({

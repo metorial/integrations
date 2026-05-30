@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createGraphQLClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let queryFieldSchema = z.object({
   fieldName: z.string().describe('The GraphQL field name to use in queries.'),

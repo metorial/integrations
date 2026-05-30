@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getJobTool = SlateTool.create(spec, {
   name: 'Get Job Details',
@@ -66,14 +66,14 @@ export let getJobTool = SlateTool.create(spec, {
     if (ctx.input.includeMilestone) {
       try {
         milestone = await client.getJobCurrentMilestone(jobId);
-      } catch (e) {
+      } catch (_e) {
         /* optional */
       }
     }
     if (ctx.input.includeRepresentatives) {
       try {
         representatives = await client.getJobRepresentatives(jobId);
-      } catch (e) {
+      } catch (_e) {
         /* optional */
       }
     }
@@ -81,7 +81,7 @@ export let getJobTool = SlateTool.create(spec, {
       try {
         insurance = await client.getJobInsurance(jobId);
         adjuster = await client.getJobAdjuster(jobId);
-      } catch (e) {
+      } catch (_e) {
         /* optional */
       }
     }
@@ -89,7 +89,7 @@ export let getJobTool = SlateTool.create(spec, {
       try {
         let result = await client.getJobContacts(jobId);
         contacts = Array.isArray(result) ? result : (result?.items ?? result?.data ?? []);
-      } catch (e) {
+      } catch (_e) {
         /* optional */
       }
     }
@@ -97,7 +97,7 @@ export let getJobTool = SlateTool.create(spec, {
       try {
         let result = await client.getJobHistory(jobId);
         history = Array.isArray(result) ? result : (result?.items ?? result?.data ?? []);
-      } catch (e) {
+      } catch (_e) {
         /* optional */
       }
     }

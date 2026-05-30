@@ -78,11 +78,11 @@ export class Client {
     }
   ): Promise<PaginatedResponse<any>> {
     let query: Record<string, string> = {};
-    if (params?.limit) query['limit'] = String(params.limit);
-    if (params?.after) query['after'] = params.after;
-    if (params?.before) query['before'] = params.before;
-    if (params?.state) query['state'] = params.state;
-    if (params?.period) query['period'] = params.period;
+    if (params?.limit) query.limit = String(params.limit);
+    if (params?.after) query.after = params.after;
+    if (params?.before) query.before = params.before;
+    if (params?.state) query.state = params.state;
+    if (params?.period) query.period = params.period;
 
     let response = await this.api.get('/events', { params: query });
     return response.data;
@@ -102,10 +102,10 @@ export class Client {
       time_zone: params.timeZone
     };
 
-    if (params.phoneNumber) body['phone_number'] = params.phoneNumber;
-    if (params.metadata) body['metadata'] = params.metadata;
+    if (params.phoneNumber) body.phone_number = params.phoneNumber;
+    if (params.metadata) body.metadata = params.metadata;
     if (params.fields) {
-      body['fields'] = params.fields.map(f => ({
+      body.fields = params.fields.map(f => ({
         id: f.fieldId,
         value: f.value
       }));
@@ -117,7 +117,7 @@ export class Client {
 
   async cancelEvent(eventId: string, params?: CancelEventParams): Promise<any> {
     let body: Record<string, any> = {};
-    if (params?.cancelReason) body['cancel_reason'] = params.cancelReason;
+    if (params?.cancelReason) body.cancel_reason = params.cancelReason;
 
     let response = await this.api.post(`/events/${eventId}/cancel`, body);
     return response.data;
@@ -127,9 +127,9 @@ export class Client {
 
   async listLinks(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let query: Record<string, string> = {};
-    if (params?.limit) query['limit'] = String(params.limit);
-    if (params?.after) query['after'] = params.after;
-    if (params?.before) query['before'] = params.before;
+    if (params?.limit) query.limit = String(params.limit);
+    if (params?.after) query.after = params.after;
+    if (params?.before) query.before = params.before;
 
     let response = await this.api.get('/links', { params: query });
     return response.data;
@@ -145,13 +145,13 @@ export class Client {
       name: params.name
     };
 
-    if (params.slug) body['slug'] = params.slug;
-    if (params.privateName) body['private_name'] = params.privateName;
-    if (params.description) body['description'] = params.description;
-    if (params.defaultDuration) body['default_duration'] = params.defaultDuration;
-    if (params.durations) body['durations'] = params.durations;
-    if (params.increment) body['increment'] = params.increment;
-    if (params.state) body['state'] = params.state;
+    if (params.slug) body.slug = params.slug;
+    if (params.privateName) body.private_name = params.privateName;
+    if (params.description) body.description = params.description;
+    if (params.defaultDuration) body.default_duration = params.defaultDuration;
+    if (params.durations) body.durations = params.durations;
+    if (params.increment) body.increment = params.increment;
+    if (params.state) body.state = params.state;
 
     let response = await this.api.post('/links', body);
     return response.data;
@@ -160,15 +160,14 @@ export class Client {
   async updateLink(linkId: string, params: UpdateLinkParams): Promise<any> {
     let body: Record<string, any> = {};
 
-    if (params.name !== undefined) body['name'] = params.name;
-    if (params.slug !== undefined) body['slug'] = params.slug;
-    if (params.privateName !== undefined) body['private_name'] = params.privateName;
-    if (params.description !== undefined) body['description'] = params.description;
-    if (params.defaultDuration !== undefined)
-      body['default_duration'] = params.defaultDuration;
-    if (params.durations !== undefined) body['durations'] = params.durations;
-    if (params.increment !== undefined) body['increment'] = params.increment;
-    if (params.state !== undefined) body['state'] = params.state;
+    if (params.name !== undefined) body.name = params.name;
+    if (params.slug !== undefined) body.slug = params.slug;
+    if (params.privateName !== undefined) body.private_name = params.privateName;
+    if (params.description !== undefined) body.description = params.description;
+    if (params.defaultDuration !== undefined) body.default_duration = params.defaultDuration;
+    if (params.durations !== undefined) body.durations = params.durations;
+    if (params.increment !== undefined) body.increment = params.increment;
+    if (params.state !== undefined) body.state = params.state;
 
     let response = await this.api.patch(`/links/${linkId}`, body);
     return response.data;
@@ -199,9 +198,9 @@ export class Client {
 
   async listWorkflows(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let query: Record<string, string> = {};
-    if (params?.limit) query['limit'] = String(params.limit);
-    if (params?.after) query['after'] = params.after;
-    if (params?.before) query['before'] = params.before;
+    if (params?.limit) query.limit = String(params.limit);
+    if (params?.after) query.after = params.after;
+    if (params?.before) query.before = params.before;
 
     let response = await this.api.get('/workflows', { params: query });
     return response.data;
@@ -216,9 +215,9 @@ export class Client {
 
   async listWebhooks(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let query: Record<string, string> = {};
-    if (params?.limit) query['limit'] = String(params.limit);
-    if (params?.after) query['after'] = params.after;
-    if (params?.before) query['before'] = params.before;
+    if (params?.limit) query.limit = String(params.limit);
+    if (params?.after) query.after = params.after;
+    if (params?.before) query.before = params.before;
 
     let response = await this.api.get('/webhooks', { params: query });
     return response.data;

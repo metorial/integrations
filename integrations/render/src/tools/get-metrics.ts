@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RenderClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getMetrics = SlateTool.create(spec, {
   name: 'Get Metrics',
@@ -78,7 +78,8 @@ export let getMetrics = SlateTool.create(spec, {
           for (let point of series.values) {
             dataPoints.push({
               timestamp: point.timestamp || point[0],
-              value: typeof point.value === 'number' ? point.value : parseFloat(point[1]),
+              value:
+                typeof point.value === 'number' ? point.value : Number.parseFloat(point[1]),
               labels
             });
           }

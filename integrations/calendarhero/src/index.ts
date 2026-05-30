@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getProfile,
-  listMeetingTypes,
-  listMeetings,
-  createMeetingRequest,
-  manageMeetingRequest,
   createContact,
-  searchContacts,
+  createMeetingRequest,
+  deleteContact,
   getContact,
-  updateContact,
-  deleteContact
+  getProfile,
+  listMeetings,
+  listMeetingTypes,
+  manageMeetingRequest,
+  searchContacts,
+  updateContact
 } from './tools';
-import { meetingEvents, contactEvents } from './triggers';
+import { contactEvents, meetingEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchAddresses,
+  getKeyInfo,
+  getUsageStats,
   resolveAddress,
-  verifyAddress,
+  searchAddresses,
   validateEmail,
   validatePhone,
-  getKeyInfo,
-  getUsageStats
+  verifyAddress
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

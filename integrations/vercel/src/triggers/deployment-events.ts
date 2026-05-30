@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let webhookEvents = [
   'deployment.created',
@@ -96,7 +96,7 @@ export let deploymentEventsTrigger = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let data = (await ctx.request.json()) as any;
 
-      if (!data.type || !data.type.startsWith('deployment.')) {
+      if (!data.type?.startsWith('deployment.')) {
         return { inputs: [] };
       }
 

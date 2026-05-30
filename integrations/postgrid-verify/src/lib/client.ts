@@ -145,7 +145,7 @@ export class Client {
   private standardApi: ReturnType<typeof createAxios>;
   private intlApi: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string }) {
+  constructor(params: { token: string }) {
     this.standardApi = createAxios({
       baseURL: 'https://api.postgrid.com/v1/addver',
       headers: {
@@ -168,9 +168,9 @@ export class Client {
     options?: VerificationOptions
   ): Promise<VerificationResult> {
     let params: Record<string, string> = {};
-    if (options?.includeDetails) params['includeDetails'] = 'true';
-    if (options?.properCase) params['properCase'] = 'true';
-    if (options?.geocode) params['geocode'] = 'true';
+    if (options?.includeDetails) params.includeDetails = 'true';
+    if (options?.properCase) params.properCase = 'true';
+    if (options?.geocode) params.geocode = 'true';
 
     let response = await this.standardApi.post('/verifications', { address }, { params });
     return response.data.data;
@@ -181,9 +181,9 @@ export class Client {
     options?: VerificationOptions
   ): Promise<VerificationResult[]> {
     let params: Record<string, string> = {};
-    if (options?.includeDetails) params['includeDetails'] = 'true';
-    if (options?.properCase) params['properCase'] = 'true';
-    if (options?.geocode) params['geocode'] = 'true';
+    if (options?.includeDetails) params.includeDetails = 'true';
+    if (options?.properCase) params.properCase = 'true';
+    if (options?.geocode) params.geocode = 'true';
 
     let response = await this.standardApi.post(
       '/verifications/batch',
@@ -198,8 +198,8 @@ export class Client {
     options?: { properCase?: boolean; provInsteadOfPC?: boolean }
   ): Promise<AutocompletePreview[]> {
     let params: Record<string, string> = { partialStreet };
-    if (options?.properCase) params['properCase'] = 'true';
-    if (options?.provInsteadOfPC) params['provInsteadOfPC'] = 'true';
+    if (options?.properCase) params.properCase = 'true';
+    if (options?.provInsteadOfPC) params.provInsteadOfPC = 'true';
 
     let response = await this.standardApi.get('/completions', { params });
     return response.data.data;
@@ -210,8 +210,8 @@ export class Client {
     options?: { geocode?: boolean; properCase?: boolean }
   ): Promise<AutocompleteResult> {
     let params: Record<string, string> = {};
-    if (options?.geocode) params['geocode'] = 'true';
-    if (options?.properCase) params['properCase'] = 'true';
+    if (options?.geocode) params.geocode = 'true';
+    if (options?.properCase) params.properCase = 'true';
 
     let response = await this.standardApi.post('/completions', { id: previewId }, { params });
     return response.data.data;
@@ -225,8 +225,8 @@ export class Client {
       container: containerId,
       advanced: 'true'
     };
-    if (options?.properCase) params['properCase'] = 'true';
-    if (options?.provInsteadOfPC) params['provInsteadOfPC'] = 'true';
+    if (options?.properCase) params.properCase = 'true';
+    if (options?.provInsteadOfPC) params.provInsteadOfPC = 'true';
 
     let response = await this.standardApi.get('/completions', { params });
     return response.data.data;
@@ -237,9 +237,9 @@ export class Client {
     options?: { includeDetails?: boolean; geoData?: boolean; properCase?: boolean }
   ): Promise<IntlVerificationResult> {
     let params: Record<string, string> = {};
-    if (options?.includeDetails) params['includeDetails'] = 'true';
-    if (options?.geoData) params['geoData'] = 'true';
-    if (options?.properCase) params['properCase'] = 'true';
+    if (options?.includeDetails) params.includeDetails = 'true';
+    if (options?.geoData) params.geoData = 'true';
+    if (options?.properCase) params.properCase = 'true';
 
     let response = await this.intlApi.post('/verifications', { address }, { params });
     return response.data.data;
@@ -250,9 +250,9 @@ export class Client {
     options?: { includeDetails?: boolean; geoData?: boolean; properCase?: boolean }
   ): Promise<IntlVerificationResult[]> {
     let params: Record<string, string> = {};
-    if (options?.includeDetails) params['includeDetails'] = 'true';
-    if (options?.geoData) params['geoData'] = 'true';
-    if (options?.properCase) params['properCase'] = 'true';
+    if (options?.includeDetails) params.includeDetails = 'true';
+    if (options?.geoData) params.geoData = 'true';
+    if (options?.properCase) params.properCase = 'true';
 
     let response = await this.intlApi.post('/verifications/batch', { addresses }, { params });
     return response.data.data;
@@ -263,8 +263,8 @@ export class Client {
     options?: { countriesFilter?: string; properCase?: boolean }
   ): Promise<IntlAutocompletePreview[]> {
     let params: Record<string, string> = { partialStreet };
-    if (options?.countriesFilter) params['countriesFilter'] = options.countriesFilter;
-    if (options?.properCase) params['properCase'] = 'true';
+    if (options?.countriesFilter) params.countriesFilter = options.countriesFilter;
+    if (options?.properCase) params.properCase = 'true';
 
     let response = await this.intlApi.get('/completions', { params });
     return response.data.data;
@@ -275,8 +275,8 @@ export class Client {
     options?: { geoData?: boolean; properCase?: boolean }
   ): Promise<IntlAutocompleteResult> {
     let params: Record<string, string> = {};
-    if (options?.geoData) params['geoData'] = 'true';
-    if (options?.properCase) params['properCase'] = 'true';
+    if (options?.geoData) params.geoData = 'true';
+    if (options?.properCase) params.properCase = 'true';
 
     let response = await this.intlApi.post('/completions', { id: previewId }, { params });
     return response.data.data;
@@ -290,8 +290,8 @@ export class Client {
       container: containerId,
       advanced: 'true'
     };
-    if (options?.countriesFilter) params['countriesFilter'] = options.countriesFilter;
-    if (options?.properCase) params['properCase'] = 'true';
+    if (options?.countriesFilter) params.countriesFilter = options.countriesFilter;
+    if (options?.properCase) params.properCase = 'true';
 
     let response = await this.intlApi.get('/completions', { params });
     return response.data.data;

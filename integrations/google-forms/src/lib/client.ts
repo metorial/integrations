@@ -2,11 +2,11 @@ import { createAxios } from 'slates';
 import type {
   GoogleForm,
   GoogleFormResponse,
-  GoogleFormsWatch,
+  GoogleFormsBatchUpdateRequest,
+  GoogleFormsBatchUpdateResponse,
   GoogleFormsListResponsesResult,
   GoogleFormsListWatchesResult,
-  GoogleFormsBatchUpdateRequest,
-  GoogleFormsBatchUpdateResponse
+  GoogleFormsWatch
 } from './types';
 
 export class GoogleFormsClient {

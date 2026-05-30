@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let prospectInputSchema = z.object({
   email: z.string().describe('Prospect email address (required)'),
@@ -88,7 +88,7 @@ export let addProspects = SlateTool.create(spec, {
       return prospect;
     });
 
-    let result;
+    let result: any;
     if (ctx.input.campaignId) {
       result = await client.addProspectsToCampaign(ctx.input.campaignId, mapped);
     } else {

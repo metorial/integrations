@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 import type {
-  AuthMethod,
   AnnotateImageRequest,
   AnnotateImageResponse,
-  ImageSource,
+  AuthMethod,
   Feature,
-  ImageContext
+  ImageContext,
+  ImageSource
 } from './types';
 
 let BASE_URL = 'https://vision.googleapis.com/v1';

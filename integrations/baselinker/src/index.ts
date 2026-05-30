@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getOrders,
-  createOrder,
-  updateOrder,
-  manageOrderProducts,
   addOrderPayment,
-  getOrderStatuses,
+  createOrder,
+  getCouriers,
+  getExternalStorages,
   getInventories,
   getInventoryProducts,
-  manageInventoryProducts,
-  updateInventoryStockPrices,
+  getOrderStatuses,
+  getOrders,
   manageCourierShipments,
-  getCouriers,
+  manageInventoryProducts,
+  manageOrderProducts,
   manageOrderReturns,
-  getExternalStorages
+  updateInventoryStockPrices,
+  updateOrder
 } from './tools';
-import { orderEvents, inboundWebhook } from './triggers';
+import { inboundWebhook, orderEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

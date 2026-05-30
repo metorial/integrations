@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDeal = SlateTool.create(spec, {
   name: 'Get Deal',
@@ -72,8 +72,7 @@ export let getDeal = SlateTool.create(spec, {
         createdAt: deal.created_at ?? null,
         updatedAt: deal.updated_at ?? null
       },
-      message:
-        `Retrieved deal **${deal.name}**` + (deal.value ? ` (value: ${deal.value})` : '')
+      message: `Retrieved deal **${deal.name}**${deal.value ? ` (value: ${deal.value})` : ''}`
     };
   })
   .build();

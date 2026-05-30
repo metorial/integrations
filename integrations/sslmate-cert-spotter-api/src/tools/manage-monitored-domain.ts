@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CertSpotterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageMonitoredDomain = SlateTool.create(spec, {
   name: 'Manage Monitored Domain',

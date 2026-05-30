@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createUser,
-  getUser,
-  updateUser,
-  deleteUser,
-  listUsers,
+  blockUser,
   createGroupChannel,
-  updateGroupChannel,
-  listGroupChannels,
-  deleteGroupChannel,
-  manageGroupChannelMembers,
   createOpenChannel,
-  listOpenChannels,
-  sendMessage,
-  listMessages,
-  searchMessages,
+  createUser,
+  deleteGroupChannel,
   deleteMessage,
+  deleteUser,
+  getUser,
+  listGroupChannels,
+  listMessages,
+  listOpenChannels,
+  listUsers,
+  manageGroupChannelMembers,
   moderateChannel,
-  blockUser
+  searchMessages,
+  sendMessage,
+  updateGroupChannel,
+  updateUser
 } from './tools';
 import { chatEvents } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addTicketConversation = SlateTool.create(spec, {
   name: 'Add Ticket Conversation',
@@ -41,7 +41,7 @@ export let addTicketConversation = SlateTool.create(spec, {
       authType: ctx.auth.authType
     });
 
-    let conversation;
+    let conversation: any;
     if (ctx.input.conversationType === 'reply') {
       conversation = await client.createTicketReply(
         ctx.input.ticketId,

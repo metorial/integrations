@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphHopperClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let geocodeResultSchema = z.object({
   name: z.string().optional().describe('Place name'),
@@ -98,7 +98,7 @@ Use for address lookup, place search, or finding what is at a given coordinate.`
       osmTag: ctx.input.osmTags
     });
 
-    let results = ((result.hits || []) as Array<Record<string, unknown>>).map(hit => ({
+    let results = ((result.hits || []) as Record<string, unknown>[]).map(hit => ({
       name: hit.name as string | undefined,
       country: hit.country as string | undefined,
       city: hit.city as string | undefined,

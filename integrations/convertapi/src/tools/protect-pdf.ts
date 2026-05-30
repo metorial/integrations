@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileSourceSchema = z
   .object({
@@ -61,16 +61,16 @@ Set user and owner passwords, and control permissions for printing, copying, and
     let parameters: Record<string, string> = {};
 
     if (ctx.input.userPassword) {
-      parameters['UserPassword'] = ctx.input.userPassword;
+      parameters.UserPassword = ctx.input.userPassword;
     }
     if (ctx.input.ownerPassword) {
-      parameters['OwnerPassword'] = ctx.input.ownerPassword;
+      parameters.OwnerPassword = ctx.input.ownerPassword;
     }
     if (ctx.input.allowPrinting !== undefined) {
-      parameters['AllowPrint'] = ctx.input.allowPrinting ? 'true' : 'false';
+      parameters.AllowPrint = ctx.input.allowPrinting ? 'true' : 'false';
     }
     if (ctx.input.allowCopying !== undefined) {
-      parameters['AllowCopy'] = ctx.input.allowCopying ? 'true' : 'false';
+      parameters.AllowCopy = ctx.input.allowCopying ? 'true' : 'false';
     }
 
     let result = await client.convert({

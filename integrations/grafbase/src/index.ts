@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getViewer,
-  createGraph,
-  getGraph,
-  deleteGraph,
-  createBranch,
-  getBranch,
-  deleteBranch,
-  publishSubgraph,
   checkSubgraph,
-  listSubgraphs,
+  createBranch,
+  createGraph,
+  deleteBranch,
+  deleteGraph,
+  executeGraphQL,
+  getBranch,
+  getGraph,
   getSchema,
-  executeGraphQL
+  getViewer,
+  listSubgraphs,
+  publishSubgraph
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

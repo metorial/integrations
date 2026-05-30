@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { StockClient } from '../lib/stock';
+import { spec } from '../spec';
 
 export let searchStock = SlateTool.create(spec, {
   name: 'Search Stock',

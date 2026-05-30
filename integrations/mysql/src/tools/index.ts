@@ -1,10 +1,10 @@
-export { executeQuery } from './execute-query';
-export { listTables } from './list-tables';
-export { describeTable } from './describe-table';
-export { insertRows } from './insert-rows';
-export { updateRows } from './update-rows';
 export { deleteRows } from './delete-rows';
-export { manageTable } from './manage-table';
-export { manageIndexes } from './manage-indexes';
+export { describeTable } from './describe-table';
+export { executeQuery } from './execute-query';
+export { insertRows } from './insert-rows';
 export { listDatabases } from './list-databases';
+export { listTables } from './list-tables';
+export { manageIndexes } from './manage-indexes';
+export { manageTable } from './manage-table';
 export { manageUsers } from './manage-users';
+export { updateRows } from './update-rows';

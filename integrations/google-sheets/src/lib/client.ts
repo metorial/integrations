@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class SheetsClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://sheets.googleapis.com/v4',
       headers: {

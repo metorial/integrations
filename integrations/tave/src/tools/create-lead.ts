@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TaveLeadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createLead = SlateTool.create(spec, {
   name: 'Create Lead',
@@ -70,16 +70,16 @@ export let createLead = SlateTool.create(spec, {
       JobType: ctx.input.jobType
     };
 
-    if (ctx.input.lastName) leadData['LastName'] = ctx.input.lastName;
-    if (ctx.input.email) leadData['Email'] = ctx.input.email;
-    if (ctx.input.homePhone) leadData['HomePhone'] = ctx.input.homePhone;
-    if (ctx.input.mobilePhone) leadData['MobilePhone'] = ctx.input.mobilePhone;
-    if (ctx.input.workPhone) leadData['WorkPhone'] = ctx.input.workPhone;
-    if (ctx.input.jobRole) leadData['JobRole'] = ctx.input.jobRole;
-    if (ctx.input.brand) leadData['Brand'] = ctx.input.brand;
-    if (ctx.input.source) leadData['Source'] = ctx.input.source;
-    if (ctx.input.eventDate) leadData['EventDate'] = ctx.input.eventDate;
-    if (ctx.input.message) leadData['Message'] = ctx.input.message;
+    if (ctx.input.lastName) leadData.LastName = ctx.input.lastName;
+    if (ctx.input.email) leadData.Email = ctx.input.email;
+    if (ctx.input.homePhone) leadData.HomePhone = ctx.input.homePhone;
+    if (ctx.input.mobilePhone) leadData.MobilePhone = ctx.input.mobilePhone;
+    if (ctx.input.workPhone) leadData.WorkPhone = ctx.input.workPhone;
+    if (ctx.input.jobRole) leadData.JobRole = ctx.input.jobRole;
+    if (ctx.input.brand) leadData.Brand = ctx.input.brand;
+    if (ctx.input.source) leadData.Source = ctx.input.source;
+    if (ctx.input.eventDate) leadData.EventDate = ctx.input.eventDate;
+    if (ctx.input.message) leadData.Message = ctx.input.message;
 
     if (ctx.input.customFields) {
       for (let [key, value] of Object.entries(ctx.input.customFields)) {
@@ -100,7 +100,7 @@ export let createLead = SlateTool.create(spec, {
         success: true,
         response
       },
-      message: `Successfully created lead for **${ctx.input.firstName}${ctx.input.lastName ? ' ' + ctx.input.lastName : ''}** with job type **${ctx.input.jobType}**.`
+      message: `Successfully created lead for **${ctx.input.firstName}${ctx.input.lastName ? ` ${ctx.input.lastName}` : ''}** with job type **${ctx.input.jobType}**.`
     };
   })
   .build();

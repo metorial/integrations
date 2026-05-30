@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageFileContent = SlateTool.create(spec, {
   name: 'Manage File Content',
@@ -46,7 +46,10 @@ export let manageFileContent = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let { owner, repo, path, action } = ctx.input;
 
     if (action === 'read') {

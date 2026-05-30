@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTopPages = SlateTool.create(spec, {
   name: 'Get Top Pages',
@@ -71,7 +71,7 @@ Use to identify a site's highest-traffic content and most linked-to pages.`,
       offset: ctx.input.offset
     };
 
-    let result;
+    let result: any;
     switch (reportType) {
       case 'pages-by-traffic':
         result = await client.getPagesByTraffic(params);

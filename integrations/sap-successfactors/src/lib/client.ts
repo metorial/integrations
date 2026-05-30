@@ -1,15 +1,13 @@
 import { createAxios } from 'slates';
-import type { QueryOptions, ODataCollectionResponse, ODataResponse } from './types';
+import type { ODataCollectionResponse, ODataResponse, QueryOptions } from './types';
 
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(
-    private config: {
-      token: string;
-      apiServerUrl: string;
-    }
-  ) {
+  constructor(config: {
+    token: string;
+    apiServerUrl: string;
+  }) {
     this.axios = createAxios({
       baseURL: `${config.apiServerUrl}/odata/v2`,
       headers: {
@@ -27,14 +25,14 @@ export class Client {
 
     if (!options) return params;
 
-    if (options.top !== undefined) params['$top'] = String(options.top);
-    if (options.skip !== undefined) params['$skip'] = String(options.skip);
-    if (options.filter) params['$filter'] = options.filter;
-    if (options.select) params['$select'] = options.select;
-    if (options.expand) params['$expand'] = options.expand;
-    if (options.orderBy) params['$orderby'] = options.orderBy;
-    if (options.inlineCount) params['$inlinecount'] = 'allpages';
-    if (options.search) params['$search'] = options.search;
+    if (options.top !== undefined) params.$top = String(options.top);
+    if (options.skip !== undefined) params.$skip = String(options.skip);
+    if (options.filter) params.$filter = options.filter;
+    if (options.select) params.$select = options.select;
+    if (options.expand) params.$expand = options.expand;
+    if (options.orderBy) params.$orderby = options.orderBy;
+    if (options.inlineCount) params.$inlinecount = 'allpages';
+    if (options.search) params.$search = options.search;
 
     return params;
   }
@@ -78,7 +76,9 @@ export class Client {
     });
     return {
       results: response.data.d.results,
-      count: response.data.d.__count ? parseInt(response.data.d.__count, 10) : undefined,
+      count: response.data.d.__count
+        ? Number.parseInt(response.data.d.__count, 10)
+        : undefined,
       nextLink: response.data.d.__next
     };
   }

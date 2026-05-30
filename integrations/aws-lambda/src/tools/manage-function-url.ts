@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { createClient } from '../lib/helpers';
-import { lambdaServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { lambdaServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let corsConfigSchema = z
   .object({
@@ -77,19 +77,18 @@ export let manageFunctionUrl = SlateTool.create(spec, {
 
     let buildParams = (): Record<string, any> => {
       let params: Record<string, any> = {};
-      if (ctx.input.authType) params['AuthType'] = ctx.input.authType;
-      if (ctx.input.invokeMode) params['InvokeMode'] = ctx.input.invokeMode;
+      if (ctx.input.authType) params.AuthType = ctx.input.authType;
+      if (ctx.input.invokeMode) params.InvokeMode = ctx.input.invokeMode;
       if (ctx.input.cors) {
         let corsObj: Record<string, any> = {};
         if (ctx.input.cors.allowCredentials !== undefined)
-          corsObj['AllowCredentials'] = ctx.input.cors.allowCredentials;
-        if (ctx.input.cors.allowHeaders) corsObj['AllowHeaders'] = ctx.input.cors.allowHeaders;
-        if (ctx.input.cors.allowMethods) corsObj['AllowMethods'] = ctx.input.cors.allowMethods;
-        if (ctx.input.cors.allowOrigins) corsObj['AllowOrigins'] = ctx.input.cors.allowOrigins;
-        if (ctx.input.cors.exposeHeaders)
-          corsObj['ExposeHeaders'] = ctx.input.cors.exposeHeaders;
-        if (ctx.input.cors.maxAge !== undefined) corsObj['MaxAge'] = ctx.input.cors.maxAge;
-        params['Cors'] = corsObj;
+          corsObj.AllowCredentials = ctx.input.cors.allowCredentials;
+        if (ctx.input.cors.allowHeaders) corsObj.AllowHeaders = ctx.input.cors.allowHeaders;
+        if (ctx.input.cors.allowMethods) corsObj.AllowMethods = ctx.input.cors.allowMethods;
+        if (ctx.input.cors.allowOrigins) corsObj.AllowOrigins = ctx.input.cors.allowOrigins;
+        if (ctx.input.cors.exposeHeaders) corsObj.ExposeHeaders = ctx.input.cors.exposeHeaders;
+        if (ctx.input.cors.maxAge !== undefined) corsObj.MaxAge = ctx.input.cors.maxAge;
+        params.Cors = corsObj;
       }
       return params;
     };

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TextToSpeechClient } from '../lib/client';
 import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let synthesizeSpeech = SlateTool.create(spec, {
   name: 'Synthesize Speech',
@@ -80,7 +80,7 @@ Supports multiple voice types including Standard, WaveNet, Neural2, Studio, and 
 
     let inputText = ctx.input.ssml || ctx.input.text;
     ctx.info(
-      `Synthesizing speech for ${inputText ? inputText.substring(0, 50) + '...' : 'empty input'}`
+      `Synthesizing speech for ${inputText ? `${inputText.substring(0, 50)}...` : 'empty input'}`
     );
 
     let response = await client.synthesize({

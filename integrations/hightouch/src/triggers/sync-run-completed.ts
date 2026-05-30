@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let rowCountsSchema = z.object({
   addedCount: z.number().describe('Number of rows added'),
@@ -115,7 +115,7 @@ export let syncRunCompleted = SlateTrigger.create(spec, {
           }
         } catch (err) {
           // Skip syncs that may have been deleted
-          ctx.warn('Failed to fetch runs for sync ' + syncId + ': ' + String(err));
+          ctx.warn(`Failed to fetch runs for sync ${syncId}: ${String(err)}`);
         }
       }
 

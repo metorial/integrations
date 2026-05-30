@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  executeWorkerCommandTool,
   getCoinsTool,
   getHardwareTool,
-  getPoolsTool,
-  listWorkersTool,
-  getWorkerHistoryTool,
   getMiningStatisticsTool,
-  manageWorkerTool,
-  executeWorkerCommandTool,
-  manageTagsTool,
+  getPoolsTool,
+  getWorkerHistoryTool,
+  listWorkersTool,
+  manageClockTuneTool,
   manageCustomersTool,
-  manageClockTuneTool
+  manageTagsTool,
+  manageWorkerTool
 } from './tools';
 import {
-  workerStatusChangeTrigger,
-  workerTemperatureAlertTrigger,
+  inboundWebhook,
   workerHashrateDropTrigger,
-  inboundWebhook
+  workerStatusChangeTrigger,
+  workerTemperatureAlertTrigger
 } from './triggers';
 
 export let provider = Slate.create({

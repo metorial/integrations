@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CanvasClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let gradeSubmissionTool = SlateTool.create(spec, {
   name: 'Grade Submission',

@@ -30,24 +30,24 @@ export let getStats = async (config: ClientConfig, params: StatsParams) => {
   };
 
   if (params.fields && params.fields.length > 0) {
-    queryParams['fields'] = params.fields.join(',');
+    queryParams.fields = params.fields.join(',');
   }
-  if (params.start) queryParams['start'] = params.start;
-  if (params.end) queryParams['end'] = params.end;
-  if (params.timezone) queryParams['timezone'] = params.timezone;
-  if (params.limit !== undefined) queryParams['limit'] = String(params.limit);
-  if (params.interval) queryParams['interval'] = params.interval;
-  if (params.page) queryParams['page'] = params.page;
-  if (params.country) queryParams['country'] = params.country;
-  if (params.referrer) queryParams['referrer'] = params.referrer;
-  if (params.utmSource) queryParams['utm_source'] = params.utmSource;
-  if (params.utmMedium) queryParams['utm_medium'] = params.utmMedium;
-  if (params.utmCampaign) queryParams['utm_campaign'] = params.utmCampaign;
-  if (params.utmContent) queryParams['utm_content'] = params.utmContent;
-  if (params.utmTerm) queryParams['utm_term'] = params.utmTerm;
-  if (params.browserName) queryParams['browser_name'] = params.browserName;
-  if (params.osName) queryParams['os_name'] = params.osName;
-  if (params.deviceType) queryParams['device_type'] = params.deviceType;
+  if (params.start) queryParams.start = params.start;
+  if (params.end) queryParams.end = params.end;
+  if (params.timezone) queryParams.timezone = params.timezone;
+  if (params.limit !== undefined) queryParams.limit = String(params.limit);
+  if (params.interval) queryParams.interval = params.interval;
+  if (params.page) queryParams.page = params.page;
+  if (params.country) queryParams.country = params.country;
+  if (params.referrer) queryParams.referrer = params.referrer;
+  if (params.utmSource) queryParams.utm_source = params.utmSource;
+  if (params.utmMedium) queryParams.utm_medium = params.utmMedium;
+  if (params.utmCampaign) queryParams.utm_campaign = params.utmCampaign;
+  if (params.utmContent) queryParams.utm_content = params.utmContent;
+  if (params.utmTerm) queryParams.utm_term = params.utmTerm;
+  if (params.browserName) queryParams.browser_name = params.browserName;
+  if (params.osName) queryParams.os_name = params.osName;
+  if (params.deviceType) queryParams.device_type = params.deviceType;
 
   let response = await client.get(`/${params.hostname}.json`, { params: queryParams });
   return response.data;
@@ -70,13 +70,13 @@ export let getEvents = async (config: ClientConfig, params: EventsParams) => {
   };
 
   if (params.events && params.events.length > 0) {
-    queryParams['events'] = params.events.join(',');
+    queryParams.events = params.events.join(',');
   } else {
-    queryParams['events'] = '*';
+    queryParams.events = '*';
   }
-  if (params.start) queryParams['start'] = params.start;
-  if (params.end) queryParams['end'] = params.end;
-  if (params.timezone) queryParams['timezone'] = params.timezone;
+  if (params.start) queryParams.start = params.start;
+  if (params.end) queryParams.end = params.end;
+  if (params.timezone) queryParams.timezone = params.timezone;
 
   let response = await client.get(`/${params.hostname}.json`, { params: queryParams });
   return response.data;

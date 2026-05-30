@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TaskRouterClient } from '../lib/taskrouter-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let workflowSchema = z.object({
   workflowSid: z.string().describe('Workflow SID'),

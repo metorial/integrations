@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageStores,
   createInvoice,
   getInvoices,
-  refundInvoice,
-  manageWallet,
+  getNotifications,
+  getServerInfo,
   manageLightning,
   managePaymentRequests,
-  managePullPayments,
   managePayouts,
-  getNotifications,
-  getServerInfo
+  managePullPayments,
+  manageStores,
+  manageWallet,
+  refundInvoice
 } from './tools';
 import { invoiceEvents, payoutEvents } from './triggers';
 

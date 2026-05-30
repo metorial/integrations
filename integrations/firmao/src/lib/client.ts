@@ -4,12 +4,10 @@ import type { FirmaoListParams, FirmaoListResponse } from './types';
 export class FirmaoClient {
   private axios;
 
-  constructor(
-    private params: {
-      token: string;
-      organizationId: string;
-    }
-  ) {
+  constructor(params: {
+    token: string;
+    organizationId: string;
+  }) {
     this.axios = createAxios({
       baseURL: `https://system.firmao.net/${params.organizationId}/svc/v1`,
       headers: {
@@ -85,7 +83,7 @@ export class FirmaoClient {
     fileContent: string,
     description?: string
   ): Promise<any> {
-    let boundary = '----FormBoundary' + Math.random().toString(36).substring(2);
+    let boundary = `----FormBoundary${Math.random().toString(36).substring(2)}`;
     let body = '';
 
     if (description) {

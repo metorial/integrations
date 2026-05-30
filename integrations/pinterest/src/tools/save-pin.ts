@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let savePin = SlateTool.create(spec, {
   name: 'Save Pin',
@@ -21,10 +21,7 @@ export let savePin = SlateTool.create(spec, {
     z.object({
       pinId: z.string().describe('ID of the Pin to save'),
       boardId: z.string().describe('Destination board ID'),
-      boardSectionId: z
-        .string()
-        .optional()
-        .describe('Destination board section ID'),
+      boardSectionId: z.string().optional().describe('Destination board section ID'),
       adAccountId: z
         .string()
         .optional()

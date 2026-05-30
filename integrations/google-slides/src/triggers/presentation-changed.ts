@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { DriveClient } from '../lib/drive-client';
 import { googleSlidesActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let presentationChanged = SlateTrigger.create(spec, {
   name: 'Presentation Changed',

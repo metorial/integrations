@@ -1,4 +1,4 @@
-import { Client, SentryRegion } from './client';
+import { Client, type SentryRegion } from './client';
 
 export let createClient = (ctx: {
   auth: { token: string };

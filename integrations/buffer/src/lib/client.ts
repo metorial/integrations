@@ -134,7 +134,7 @@ export interface EditUpdateParams {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://api.bufferapp.com/1',
       params: {
@@ -242,9 +242,7 @@ export class Client {
     return response.data;
   }
 
-  async createUpdate(
-    params: CreateUpdateParams
-  ): Promise<{
+  async createUpdate(params: CreateUpdateParams): Promise<{
     success: boolean;
     updates: BufferUpdate[];
     buffer_count: number;

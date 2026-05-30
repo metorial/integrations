@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KlazifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDomainRegistration = SlateTool.create(spec, {
   name: 'Get Domain Registration',

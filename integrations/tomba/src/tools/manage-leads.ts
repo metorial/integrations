@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { TombaClient } from '../lib/client';
+import { spec } from '../spec';
 
 let leadOutputSchema = z.object({
   leadId: z.string().nullable().optional().describe('Lead ID'),

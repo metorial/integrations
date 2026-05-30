@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
-import { createClient, escapeIdentifier } from '../lib/helpers';
-import { postgresServiceError } from '../lib/errors';
 import { z } from 'zod';
+import { postgresServiceError } from '../lib/errors';
+import { createClient, escapeIdentifier } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageSchemas = SlateTool.create(spec, {
   name: 'Manage Schemas',

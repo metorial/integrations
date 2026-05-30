@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createContact,
-  getContact,
-  listContacts,
-  updateContact,
-  createProduct,
-  getProduct,
-  listProducts,
-  deleteProduct,
-  sendEvent,
-  listCampaigns,
-  listAutomations,
-  listCategories,
   createCategory,
-  deleteCategory
+  createContact,
+  createProduct,
+  deleteCategory,
+  deleteProduct,
+  getContact,
+  getProduct,
+  listAutomations,
+  listCampaigns,
+  listCategories,
+  listContacts,
+  listProducts,
+  sendEvent,
+  updateContact
 } from './tools';
-import { contactChanges, campaignChanges, inboundWebhook } from './triggers';
+import { campaignChanges, contactChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

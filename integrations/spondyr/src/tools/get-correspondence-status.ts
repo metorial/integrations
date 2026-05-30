@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SpondyrClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCorrespondenceStatus = SlateTool.create(spec, {
   name: 'Get Correspondence Status',

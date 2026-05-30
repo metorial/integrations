@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let trackingEventSchema = z.object({
   occurredAt: z.string().describe('When the event occurred'),
@@ -64,7 +64,7 @@ export let trackPackage = SlateTool.create(spec, {
       baseUrl: ctx.config.baseUrl
     });
 
-    let tracking;
+    let tracking: any;
 
     if (ctx.input.labelId) {
       tracking = await client.getLabelTrackingInfo(ctx.input.labelId);
@@ -74,7 +74,7 @@ export let trackPackage = SlateTool.create(spec, {
       throw new Error('Provide either labelId, or both carrierCode and trackingNumber.');
     }
 
-    let events = tracking.events.map(e => ({
+    let events = tracking.events.map((e: any) => ({
       occurredAt: e.occurred_at,
       description: e.description,
       cityLocality: e.city_locality,

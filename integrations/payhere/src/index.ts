@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listPlans,
+  cancelSubscription,
   createPlan,
-  updatePlan,
-  listPayments,
+  getCompany,
+  getCustomer,
   getPayment,
   listCustomers,
-  getCustomer,
+  listPayments,
+  listPlans,
   listSubscriptions,
-  cancelSubscription,
   refundPayment,
-  getCompany,
-  updateCompany
+  updateCompany,
+  updatePlan
 } from './tools';
 import { paymentEvents, subscriptionEvents } from './triggers';
 

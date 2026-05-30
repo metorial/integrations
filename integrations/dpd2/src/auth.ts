@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
@@ -41,7 +41,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await axios.get('/');
+      let _response = await axios.get('/');
 
       return {
         profile: {

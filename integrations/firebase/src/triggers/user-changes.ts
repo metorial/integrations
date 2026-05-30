@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { AuthClient } from '../lib/client';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let userChanges = SlateTrigger.create(spec, {
   name: 'User Account Changes',

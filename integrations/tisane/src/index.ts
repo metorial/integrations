@@ -2,13 +2,13 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   analyzeText,
-  detectLanguage,
-  semanticSimilarity,
-  compareEntities,
-  translateText,
   cleanUpText,
+  compareEntities,
+  detectLanguage,
   listLanguages,
-  lookupWord
+  lookupWord,
+  semanticSimilarity,
+  translateText
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

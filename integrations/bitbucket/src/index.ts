@@ -1,39 +1,39 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  listRepositoriesTool,
-  getRepositoryTool,
+  browseSourceTool,
+  commentOnIssueTool,
+  commentOnPullRequestTool,
+  createCommitStatusTool,
+  createIssueTool,
+  createPullRequestTool,
   createRepositoryTool,
-  updateRepositoryTool,
   deleteRepositoryTool,
   forkRepositoryTool,
-  listPullRequestsTool,
   getPullRequestTool,
-  createPullRequestTool,
-  managePullRequestTool,
-  commentOnPullRequestTool,
-  listPullRequestCommentsTool,
-  listIssuesTool,
-  createIssueTool,
-  updateIssueTool,
-  commentOnIssueTool,
-  manageBranchesTool,
-  manageTagsTool,
+  getRepositoryTool,
   listCommitsTool,
-  managePipelinesTool,
-  browseSourceTool,
-  searchCodeTool,
+  listIssuesTool,
+  listPullRequestCommentsTool,
+  listPullRequestsTool,
+  listRepositoriesTool,
   listWorkspaceMembersTool,
-  manageProjectsTool,
-  createCommitStatusTool,
-  manageWebhooksTool,
+  manageBranchesTool,
+  manageBranchRestrictionsTool,
   manageDefaultReviewersTool,
-  manageBranchRestrictionsTool
+  managePipelinesTool,
+  manageProjectsTool,
+  managePullRequestTool,
+  manageTagsTool,
+  manageWebhooksTool,
+  searchCodeTool,
+  updateIssueTool,
+  updateRepositoryTool
 } from './tools';
 import {
-  repositoryEventsTrigger,
+  issueEventsTrigger,
   pullRequestEventsTrigger,
-  issueEventsTrigger
+  repositoryEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

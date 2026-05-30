@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  transcribeAudioTool,
-  textToSpeechTool,
   analyzeTextTool,
-  listProjectsTool,
-  getProjectTool,
-  updateProjectTool,
-  deleteProjectTool,
-  listMembersTool,
-  removeMemberTool,
-  updateMemberScopesTool,
-  sendInvitationTool,
-  listKeysTool,
   createKeyTool,
   deleteKeyTool,
-  listModelsTool,
+  deleteProjectTool,
+  getBalancesTool,
   getModelTool,
+  getProjectTool,
   getUsageTool,
-  getBalancesTool
+  listKeysTool,
+  listMembersTool,
+  listModelsTool,
+  listProjectsTool,
+  removeMemberTool,
+  sendInvitationTool,
+  textToSpeechTool,
+  transcribeAudioTool,
+  updateMemberScopesTool,
+  updateProjectTool
 } from './tools';
 import { transcriptionCallbackTrigger } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { GhostAdminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let tagEventTypes = ['tag.added', 'tag.edited', 'tag.deleted'] as const;
 

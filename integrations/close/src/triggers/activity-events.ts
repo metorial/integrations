@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let activityEventsTrigger = SlateTrigger.create(spec, {
   name: 'Activity Events',
@@ -87,7 +87,7 @@ export let activityEventsTrigger = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let data = (await ctx.request.json()) as any;
 
-      if (!data || !data.event) {
+      if (!data?.event) {
         return { inputs: [] };
       }
 
@@ -113,7 +113,7 @@ export let activityEventsTrigger = SlateTrigger.create(spec, {
       let currentData = ctx.input.currentData || {};
       let activityType = ctx.input.objectType.replace('activity.', '');
       let body = currentData.body_text || currentData.note || currentData.body_preview || '';
-      let bodyPreview = body.length > 200 ? body.substring(0, 200) + '...' : body;
+      let bodyPreview = body.length > 200 ? `${body.substring(0, 200)}...` : body;
 
       return {
         type: `activity.${activityType}.${ctx.input.eventAction}`,

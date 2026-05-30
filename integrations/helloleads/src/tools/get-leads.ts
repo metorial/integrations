@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HelloLeadsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let leadSchema = z.object({
   leadId: z.string().describe('Unique identifier of the lead'),

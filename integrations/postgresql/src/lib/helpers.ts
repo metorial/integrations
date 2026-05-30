@@ -1,4 +1,4 @@
-import { PostgresClient, type ConnectionConfig } from './client';
+import { type ConnectionConfig, PostgresClient } from './client';
 
 export interface AuthOutput {
   host: string;
@@ -31,12 +31,12 @@ export let createClient = (auth: AuthOutput, config: ConfigOutput): PostgresClie
 
 // Escape an identifier (table name, column name, etc.) for safe use in SQL
 export let escapeIdentifier = (name: string): string => {
-  return '"' + name.replace(/"/g, '""') + '"';
+  return `"${name.replace(/"/g, '""')}"`;
 };
 
 // Escape a literal value for safe use in SQL
 export let escapeLiteral = (value: string): string => {
-  return "'" + value.replace(/'/g, "''") + "'";
+  return `'${value.replace(/'/g, "''")}'`;
 };
 
 // Build a qualified table name with optional schema

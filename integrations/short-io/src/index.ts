@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  archiveLink,
   createLink,
-  updateLink,
   deleteLink,
-  getLink,
-  listLinks,
-  listDomains,
-  getLinkStatistics,
-  getDomainStatistics,
   generateQrCode,
-  archiveLink
+  getDomainStatistics,
+  getLink,
+  getLinkStatistics,
+  listDomains,
+  listLinks,
+  updateLink
 } from './tools';
-import { newLink, inboundWebhook } from './triggers';
+import { inboundWebhook, newLink } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EverhourClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let timeRecordSchema = z.object({
   timeRecordId: z.number().describe('Time record ID'),

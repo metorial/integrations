@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client, parseMessage } from '../lib/client';
 import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let mailboxChanges = SlateTrigger.create(spec, {
   name: 'Mailbox Changes',

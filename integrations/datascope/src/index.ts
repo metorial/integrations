@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getFormAnswers,
-  updateFormAnswer,
-  listLocations,
-  createLocation,
-  updateLocation,
-  getListElements,
-  createListElement,
-  updateListElement,
-  createList,
-  bulkUpdateListElements,
   assignTask,
+  bulkUpdateListElements,
+  createList,
+  createListElement,
+  createLocation,
+  getFormAnswers,
+  getGeneratedFiles,
+  getListElements,
   getNotifications,
-  getGeneratedFiles
+  listLocations,
+  updateFormAnswer,
+  updateListElement,
+  updateLocation
 } from './tools';
 import { formSubmission } from './triggers';
 

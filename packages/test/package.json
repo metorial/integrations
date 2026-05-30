@@ -34,9 +34,9 @@
   "unpkg": "./dist/index.module.js",
   "scripts": {
     "test": "vitest run --passWithNoTests",
-    "lint": "prettier src/**/*.ts --check",
     "build": "tsup --config tsup.config.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "biome:check": "biome check --write src"
   },
   "dependencies": {
     "@lowerdeck/testing-tools": "latest",

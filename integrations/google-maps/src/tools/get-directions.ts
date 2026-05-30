@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleMapsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let routeLegSchema = z.object({
   startAddress: z.string().optional().describe('Starting address of the leg'),
@@ -100,15 +100,15 @@ export let getDirectionsTool = SlateTool.create(spec, {
       throw new Error(`Directions request failed: ${response.status}`);
     }
 
-    let rawRoutes = (response.routes as Array<Record<string, unknown>>) || [];
+    let rawRoutes = (response.routes as Record<string, unknown>[]) || [];
 
     let routes = rawRoutes.map(route => {
-      let rawLegs = (route.legs as Array<Record<string, unknown>>) || [];
+      let rawLegs = (route.legs as Record<string, unknown>[]) || [];
 
       let legs = rawLegs.map(leg => {
         let distance = leg.distance as Record<string, unknown> | undefined;
         let duration = leg.duration as Record<string, unknown> | undefined;
-        let rawSteps = (leg.steps as Array<Record<string, unknown>>) || [];
+        let rawSteps = (leg.steps as Record<string, unknown>[]) || [];
 
         let steps = rawSteps.map(step => {
           let stepDist = step.distance as Record<string, unknown> | undefined;

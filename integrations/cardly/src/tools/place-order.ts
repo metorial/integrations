@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CardlyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let recipientSchema = z.object({
   firstName: z.string().describe('Recipient first name, as it should appear on the envelope'),

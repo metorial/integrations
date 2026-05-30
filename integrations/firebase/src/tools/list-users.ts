@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { AuthClient } from '../lib/client';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listUsers = SlateTool.create(spec, {
   name: 'List Users',

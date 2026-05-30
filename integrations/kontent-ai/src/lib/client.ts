@@ -16,7 +16,7 @@ import type {
 export class ManagementClient {
   private axios;
 
-  constructor(private params: { token: string; environmentId: string }) {
+  constructor(params: { token: string; environmentId: string }) {
     this.axios = createAxios({
       baseURL: `https://manage.kontent.ai/v2/projects/${params.environmentId}`,
       headers: {
@@ -106,8 +106,7 @@ export class ManagementClient {
     itemIdentifier: string,
     itemIdentifierType: 'id' | 'codename' | 'external_id' = 'id'
   ): Promise<LanguageVariant[]> {
-    let path =
-      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) + '/variants';
+    let path = `${this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType)}/variants`;
     let response = await this.axios.get(path);
     return response.data;
   }

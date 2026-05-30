@@ -16,7 +16,7 @@ export class GraphHopperClient {
   // ─── Routing ───────────────────────────────────────────────────────
 
   async calculateRoute(params: {
-    points: Array<[number, number]>;
+    points: [number, number][];
     profile: string;
     locale?: string;
     elevation?: boolean;
@@ -90,9 +90,9 @@ export class GraphHopperClient {
 
   async calculateMatrix(params: {
     profile: string;
-    fromPoints?: Array<[number, number]>;
-    toPoints?: Array<[number, number]>;
-    points?: Array<[number, number]>;
+    fromPoints?: [number, number][];
+    toPoints?: [number, number][];
+    points?: [number, number][];
     outArrays?: string[];
     failFast?: boolean;
   }) {
@@ -222,12 +222,12 @@ export class GraphHopperClient {
   // ─── Route Optimization (VRP) ─────────────────────────────────────
 
   async optimizeRoute(params: {
-    vehicles: Array<Record<string, unknown>>;
-    vehicleTypes?: Array<Record<string, unknown>>;
-    services?: Array<Record<string, unknown>>;
-    shipments?: Array<Record<string, unknown>>;
-    objectives?: Array<Record<string, unknown>>;
-    relations?: Array<Record<string, unknown>>;
+    vehicles: Record<string, unknown>[];
+    vehicleTypes?: Record<string, unknown>[];
+    services?: Record<string, unknown>[];
+    shipments?: Record<string, unknown>[];
+    objectives?: Record<string, unknown>[];
+    relations?: Record<string, unknown>[];
     configuration?: Record<string, unknown>;
   }) {
     let body: Record<string, unknown> = {
@@ -249,12 +249,12 @@ export class GraphHopperClient {
   }
 
   async optimizeRouteAsync(params: {
-    vehicles: Array<Record<string, unknown>>;
-    vehicleTypes?: Array<Record<string, unknown>>;
-    services?: Array<Record<string, unknown>>;
-    shipments?: Array<Record<string, unknown>>;
-    objectives?: Array<Record<string, unknown>>;
-    relations?: Array<Record<string, unknown>>;
+    vehicles: Record<string, unknown>[];
+    vehicleTypes?: Record<string, unknown>[];
+    services?: Record<string, unknown>[];
+    shipments?: Record<string, unknown>[];
+    objectives?: Record<string, unknown>[];
+    relations?: Record<string, unknown>[];
     configuration?: Record<string, unknown>;
   }) {
     let body: Record<string, unknown> = {

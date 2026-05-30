@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let contactEvents = SlateTrigger.create(spec, {
   name: 'Contact Events',
@@ -53,7 +53,7 @@ export let contactEvents = SlateTrigger.create(spec, {
 
       let params: Record<string, any> = {};
       if (lastPollTime) {
-        params['updatedSince'] = lastPollTime;
+        params.updatedSince = lastPollTime;
       }
 
       let contacts = await client.listContacts(params);

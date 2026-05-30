@@ -2,11 +2,11 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getEventContent,
+  inviteAttendees,
   listParticipants,
-  listRegistrations,
-  inviteAttendees
+  listRegistrations
 } from './tools';
-import { newParticipant, newRegistration, inboundWebhook } from './triggers';
+import { inboundWebhook, newParticipant, newRegistration } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClassMarkerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let resultSchema = z.object({
   userId: z.string().optional().describe('User ID of the exam taker'),
@@ -102,15 +102,13 @@ export let getExamResults = SlateTool.create(spec, {
       } else {
         data = await client.getGroupRecentResults({ finishedAfterTimestamp, limit });
       }
+    } else if (linkId && testId) {
+      data = await client.getLinkTestResults(linkId, testId, {
+        finishedAfterTimestamp,
+        limit
+      });
     } else {
-      if (linkId && testId) {
-        data = await client.getLinkTestResults(linkId, testId, {
-          finishedAfterTimestamp,
-          limit
-        });
-      } else {
-        data = await client.getLinkRecentResults({ finishedAfterTimestamp, limit });
-      }
+      data = await client.getLinkRecentResults({ finishedAfterTimestamp, limit });
     }
 
     let rawResults = data.results || [];

@@ -25,10 +25,10 @@ export class AddressZenClient {
     let queryParams: Record<string, any> = {
       q: params.query
     };
-    if (params.limit !== undefined) queryParams['limit'] = params.limit;
-    if (params.postcode) queryParams['postcode'] = params.postcode;
-    if (params.postcodeOutward) queryParams['postcode_outward'] = params.postcodeOutward;
-    if (params.dataset) queryParams['dataset'] = params.dataset;
+    if (params.limit !== undefined) queryParams.limit = params.limit;
+    if (params.postcode) queryParams.postcode = params.postcode;
+    if (params.postcodeOutward) queryParams.postcode_outward = params.postcodeOutward;
+    if (params.dataset) queryParams.dataset = params.dataset;
     if (params.filter) {
       for (let [key, value] of Object.entries(params.filter)) {
         queryParams[key] = value;
@@ -57,13 +57,13 @@ export class AddressZenClient {
     tags?: string;
   }): Promise<any> {
     let queryParams: Record<string, any> = {};
-    if (params.query) queryParams['query'] = params.query;
-    if (params.postcode) queryParams['postcode'] = params.postcode;
-    if (params.latitude !== undefined) queryParams['lat'] = params.latitude;
-    if (params.longitude !== undefined) queryParams['lon'] = params.longitude;
-    if (params.limit !== undefined) queryParams['limit'] = params.limit;
-    if (params.page !== undefined) queryParams['page'] = params.page;
-    if (params.tags) queryParams['tags'] = params.tags;
+    if (params.query) queryParams.query = params.query;
+    if (params.postcode) queryParams.postcode = params.postcode;
+    if (params.latitude !== undefined) queryParams.lat = params.latitude;
+    if (params.longitude !== undefined) queryParams.lon = params.longitude;
+    if (params.limit !== undefined) queryParams.limit = params.limit;
+    if (params.page !== undefined) queryParams.page = params.page;
+    if (params.tags) queryParams.tags = params.tags;
     if (params.filter) {
       for (let [key, value] of Object.entries(params.filter)) {
         queryParams[key] = value;
@@ -84,12 +84,12 @@ export class AddressZenClient {
     let body: Record<string, any> = {
       query: params.query
     };
-    if (params.zipCode) body['zip_code'] = params.zipCode;
-    if (params.city) body['city'] = params.city;
-    if (params.state) body['state'] = params.state;
+    if (params.zipCode) body.zip_code = params.zipCode;
+    if (params.city) body.city = params.city;
+    if (params.state) body.state = params.state;
 
     let queryParams: Record<string, any> = {};
-    if (params.tags) queryParams['tags'] = params.tags;
+    if (params.tags) queryParams.tags = params.tags;
 
     let res = await this.axios.post('/verify/addresses', body, { params: queryParams });
     return res.data;
@@ -97,7 +97,7 @@ export class AddressZenClient {
 
   async cleanseAddress(params: { query: string; tags?: string }): Promise<any> {
     let queryParams: Record<string, any> = {};
-    if (params.tags) queryParams['tags'] = params.tags;
+    if (params.tags) queryParams.tags = params.tags;
 
     let res = await this.axios.post(
       '/cleanse/addresses',
@@ -141,9 +141,9 @@ export class AddressZenClient {
     }
   ): Promise<any> {
     let queryParams: Record<string, any> = {};
-    if (params?.startDate) queryParams['start'] = params.startDate;
-    if (params?.endDate) queryParams['end'] = params.endDate;
-    if (params?.tags) queryParams['tags'] = params.tags;
+    if (params?.startDate) queryParams.start = params.startDate;
+    if (params?.endDate) queryParams.end = params.endDate;
+    if (params?.tags) queryParams.tags = params.tags;
 
     let res = await this.axios.get(`/keys/${encodeURIComponent(key)}/usage`, {
       params: queryParams
@@ -160,9 +160,9 @@ export class AddressZenClient {
     }
   ): Promise<any> {
     let queryParams: Record<string, any> = {};
-    if (params?.startDate) queryParams['start'] = params.startDate;
-    if (params?.endDate) queryParams['end'] = params.endDate;
-    if (params?.tags) queryParams['tags'] = params.tags;
+    if (params?.startDate) queryParams.start = params.startDate;
+    if (params?.endDate) queryParams.end = params.endDate;
+    if (params?.tags) queryParams.tags = params.tags;
 
     let res = await this.axios.get(`/keys/${encodeURIComponent(key)}/lookups`, {
       params: queryParams

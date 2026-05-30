@@ -1,37 +1,37 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listOrganizations,
-  getOrganization,
   createOrganization,
-  updateOrganization,
-  listPolicies,
-  managePolicy,
-  manageScheduledPolicy,
+  getBilling,
+  getOrganization,
+  getQueryLog,
+  getTrafficReport,
+  listCategories,
   listNetworks,
-  manageNetwork,
-  manageNetworkSecretKey,
-  manageIpAddresses,
+  listOrganizations,
+  listPolicies,
   listRoamingClients,
-  manageRoamingClient,
-  manageOrganizationUsers,
+  lookupDomain,
+  manageBlockPage,
   manageCollection,
   manageCollectionUsers,
-  manageBlockPage,
-  lookupDomain,
-  suggestDomainCategorization,
-  listCategories,
+  manageIpAddresses,
   manageMacAddresses,
-  getTrafficReport,
-  getQueryLog,
-  getBilling
+  manageNetwork,
+  manageNetworkSecretKey,
+  manageOrganizationUsers,
+  managePolicy,
+  manageRoamingClient,
+  manageScheduledPolicy,
+  suggestDomainCategorization,
+  updateOrganization
 } from './tools';
 import {
-  organizationChanges,
-  roamingClientChanges,
+  inboundWebhook,
   networkChanges,
+  organizationChanges,
   policyChanges,
-  inboundWebhook
+  roamingClientChanges
 } from './triggers';
 
 export let provider = Slate.create({

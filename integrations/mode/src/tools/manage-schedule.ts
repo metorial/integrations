@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ModeClient } from '../lib/client';
-import { normalizeSchedule, getEmbedded } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ModeClient } from '../lib/client';
+import { getEmbedded, normalizeSchedule } from '../lib/helpers';
+import { spec } from '../spec';
 
 let scheduleSchema = z.object({
   scheduleToken: z.string().describe('Unique token of the schedule'),

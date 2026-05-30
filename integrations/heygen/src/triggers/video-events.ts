@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { HeyGenClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ALL_WEBHOOK_EVENTS = [
   'avatar_video.success',

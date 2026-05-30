@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
@@ -34,7 +34,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await ax.post('/api/v2/ethereum/state', {
+      let _response = await ax.post('/api/v2/ethereum/state', {
         chain: 'mainnet'
       });
 

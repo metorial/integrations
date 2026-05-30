@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { listEvents, getEvent, registerParticipant, getParticipants } from './tools';
+import { getEvent, getParticipants, listEvents, registerParticipant } from './tools';
 import { webinarEvents } from './triggers';
 
 export let provider = Slate.create({

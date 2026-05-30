@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LinearClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 import { mapIssueToOutput } from './create-issue';
 
 export let searchIssuesTool = SlateTool.create(spec, {

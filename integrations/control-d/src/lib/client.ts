@@ -1,27 +1,27 @@
 import { createAxios } from 'slates';
 import type {
+  AnalyticsEndpoint,
+  AnalyticsLevel,
   ApiResponse,
-  Profile,
-  Filter,
-  Service,
-  ServiceCategory,
-  RuleFolder,
+  Proxy as ControlDProxy,
   CustomRule,
+  DefaultRule,
   Device,
+  Filter,
+  IpInfo,
   LearnedIp,
-  Proxy,
   Organization,
   OrgMember,
-  SubOrganization,
-  User,
   Payment,
-  Subscription,
   Product,
+  Profile,
   ProfileOptionDefinition,
-  DefaultRule,
-  AnalyticsLevel,
-  AnalyticsEndpoint,
-  IpInfo
+  RuleFolder,
+  Service,
+  ServiceCategory,
+  SubOrganization,
+  Subscription,
+  User
 } from './types';
 
 export class Client {
@@ -490,8 +490,8 @@ export class Client {
 
   // ─── Proxies ──────────────────────────────────────────────
 
-  async listProxies(): Promise<Proxy[]> {
-    let res = await this.axios.get<ApiResponse<{ proxies: Proxy[] }>>('/proxies');
+  async listProxies(): Promise<ControlDProxy[]> {
+    let res = await this.axios.get<ApiResponse<{ proxies: ControlDProxy[] }>>('/proxies');
     return res.data.body.proxies;
   }
 

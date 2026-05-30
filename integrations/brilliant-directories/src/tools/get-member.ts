@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getMember = SlateTool.create(spec, {
   name: 'Get Member',
@@ -49,7 +49,7 @@ Returns member profile data including contact information, subscription details,
       websiteDomain: ctx.config.websiteDomain
     });
 
-    let result;
+    let result: any;
     if (ctx.input.userId) {
       result = await client.getUser(ctx.input.userId);
     } else if (ctx.input.property && ctx.input.propertyValue) {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createTicket = SlateTool.create(spec, {
   name: 'Create Ticket',
@@ -76,19 +76,19 @@ export let createTicket = SlateTool.create(spec, {
       description: ctx.input.description
     };
 
-    if (ctx.input.requesterId) ticketData['requester_id'] = ctx.input.requesterId;
-    if (ctx.input.email) ticketData['email'] = ctx.input.email;
-    if (ctx.input.phone) ticketData['phone'] = ctx.input.phone;
-    if (ctx.input.name) ticketData['name'] = ctx.input.name;
-    if (ctx.input.priority) ticketData['priority'] = ctx.input.priority;
-    if (ctx.input.status) ticketData['status'] = ctx.input.status;
-    if (ctx.input.source) ticketData['source'] = ctx.input.source;
-    if (ctx.input.type) ticketData['type'] = ctx.input.type;
-    if (ctx.input.groupId) ticketData['group_id'] = ctx.input.groupId;
-    if (ctx.input.responderId) ticketData['responder_id'] = ctx.input.responderId;
-    if (ctx.input.ccEmails) ticketData['cc_emails'] = ctx.input.ccEmails;
-    if (ctx.input.tags) ticketData['tags'] = ctx.input.tags;
-    if (ctx.input.customFields) ticketData['custom_fields'] = ctx.input.customFields;
+    if (ctx.input.requesterId) ticketData.requester_id = ctx.input.requesterId;
+    if (ctx.input.email) ticketData.email = ctx.input.email;
+    if (ctx.input.phone) ticketData.phone = ctx.input.phone;
+    if (ctx.input.name) ticketData.name = ctx.input.name;
+    if (ctx.input.priority) ticketData.priority = ctx.input.priority;
+    if (ctx.input.status) ticketData.status = ctx.input.status;
+    if (ctx.input.source) ticketData.source = ctx.input.source;
+    if (ctx.input.type) ticketData.type = ctx.input.type;
+    if (ctx.input.groupId) ticketData.group_id = ctx.input.groupId;
+    if (ctx.input.responderId) ticketData.responder_id = ctx.input.responderId;
+    if (ctx.input.ccEmails) ticketData.cc_emails = ctx.input.ccEmails;
+    if (ctx.input.tags) ticketData.tags = ctx.input.tags;
+    if (ctx.input.customFields) ticketData.custom_fields = ctx.input.customFields;
 
     let ticket = await client.createTicket(ticketData);
 

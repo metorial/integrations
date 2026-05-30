@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageAccounts,
-  sendCrypto,
-  listTransactions,
   buySellCrypto,
   depositWithdraw,
-  manageOrders,
-  listProducts,
   getCandles,
-  getPrices,
   getExchangeRates,
+  getPrices,
   getUserProfile,
+  listProducts,
+  listTransactions,
+  manageAccounts,
   manageAddresses,
-  manageCommerceCharges
+  manageCommerceCharges,
+  manageOrders,
+  sendCrypto
 } from './tools';
 import { accountNotifications, commerceChargeEvents, transactionPolling } from './triggers';
 

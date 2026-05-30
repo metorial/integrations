@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let postEvents = SlateTrigger.create(spec, {
   name: 'Post Events',
@@ -113,7 +113,7 @@ export let postEvents = SlateTrigger.create(spec, {
               slug: t.slug
             }));
           }
-        } catch (e) {
+        } catch (_e) {
           // Post may not be accessible, return what we have
         }
       }

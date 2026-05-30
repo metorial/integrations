@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CmpClient } from '../lib/cmp-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCmpAsset = SlateTool.create(spec, {
   name: 'Manage CMP Asset',

@@ -139,7 +139,7 @@ export class Client {
   async getPageAccessToken(pageId: string): Promise<string> {
     let pages = await this.getMyPages('id,access_token');
     let page = pages.find(p => p.id === pageId);
-    if (!page || !page.access_token) {
+    if (!page?.access_token) {
       throw facebookServiceError(
         `Could not retrieve an access token for page ${pageId}. Ensure the authenticated user can manage this Page and has granted the required Page permissions.`
       );

@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  validateEmail,
-  validatePhone,
-  getWeather,
+  analyzeSentiment,
+  callApi,
+  checkSpelling,
+  checkSsl,
   convertCurrency,
   dnsLookup,
-  checkSsl,
-  lookupIp,
-  analyzeSentiment,
-  checkSpelling,
   generateQrCode,
-  callApi
+  getWeather,
+  lookupIp,
+  validateEmail,
+  validatePhone
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

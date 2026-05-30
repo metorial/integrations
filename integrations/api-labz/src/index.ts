@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateBusinessReport,
-  extractIdData,
+  aiSearch,
+  callModule,
   convertDocument,
-  pdfToJson,
-  imageToJson,
-  trackExpense,
+  deepResearch,
+  extractIdData,
+  generateBusinessReport,
   generateSocialMediaContent,
+  imageToJson,
+  pdfToJson,
   textToFlowDiagram,
   textToImage,
-  deepResearch,
-  aiSearch,
-  callModule
+  trackExpense
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

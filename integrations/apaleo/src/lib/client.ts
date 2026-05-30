@@ -286,11 +286,7 @@ export class ApaleoClient {
   // ─── Unit Groups (Room Types) ───
 
   async listUnitGroups(
-    params: {
-      propertyId?: string;
-      pageNumber?: number;
-      pageSize?: number;
-    } = {}
+    params: { propertyId?: string; pageNumber?: number; pageSize?: number } = {}
   ) {
     let query: Record<string, any> = {};
     if (params.propertyId) query.propertyId = params.propertyId;

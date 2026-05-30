@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageProject = SlateTool.create(spec, {
   name: 'Manage Project',
@@ -41,7 +41,7 @@ export let manageProject = SlateTool.create(spec, {
     if (ctx.input.tags) body.tags = ctx.input.tags;
     if (ctx.input.category !== undefined) body.category = ctx.input.category;
 
-    let result;
+    let result: any;
 
     if (ctx.input.projectId) {
       result = await client.updateResource(ctx.input.projectId, body);

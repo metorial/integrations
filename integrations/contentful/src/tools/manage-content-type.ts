@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let fieldSchema = z.object({
   fieldId: z.string().describe('Unique field ID (used in API).'),

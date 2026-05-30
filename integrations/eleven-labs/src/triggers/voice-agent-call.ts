@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let voiceAgentCall = SlateTrigger.create(spec, {
   name: 'Voice Agent Call',
@@ -58,8 +58,8 @@ export let voiceAgentCall = SlateTrigger.create(spec, {
 
       return {
         registrationDetails: {
-          webhookId: data['webhook_id'] as string,
-          webhookSecret: data['webhook_secret'] as string | undefined
+          webhookId: data.webhook_id as string,
+          webhookSecret: data.webhook_secret as string | undefined
         }
       };
     },
@@ -78,15 +78,13 @@ export let voiceAgentCall = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      let eventType = (data['type'] || data['event_type'] || 'unknown') as string;
-      let conversationId = (data['conversation_id'] ||
-        (data['data'] && (data['data'] as Record<string, unknown>)['conversation_id'])) as
+      let eventType = (data.type || data.event_type || 'unknown') as string;
+      let conversationId = (data.conversation_id ||
+        (data.data && (data.data as Record<string, unknown>).conversation_id)) as
         | string
         | undefined;
-      let agentId = (data['agent_id'] ||
-        (data['data'] && (data['data'] as Record<string, unknown>)['agent_id'])) as
-        | string
-        | undefined;
+      let agentId = (data.agent_id ||
+        (data.data && (data.data as Record<string, unknown>).agent_id)) as string | undefined;
 
       let eventId = conversationId
         ? `${eventType}_${conversationId}`
@@ -107,14 +105,14 @@ export let voiceAgentCall = SlateTrigger.create(spec, {
 
     handleEvent: async ctx => {
       let payload = ctx.input.payload as Record<string, unknown>;
-      let innerData = (payload['data'] || payload) as Record<string, unknown>;
+      let innerData = (payload.data || payload) as Record<string, unknown>;
 
-      let transcript: Array<Record<string, unknown>> | undefined;
-      if (innerData['transcript'] && Array.isArray(innerData['transcript'])) {
-        transcript = (innerData['transcript'] as Array<Record<string, unknown>>).map(t => ({
-          role: t['role'] as string | undefined,
-          message: (t['message'] || t['text']) as string | undefined,
-          timestamp: t['timestamp'] as number | undefined
+      let transcript: Record<string, unknown>[] | undefined;
+      if (innerData.transcript && Array.isArray(innerData.transcript)) {
+        transcript = (innerData.transcript as Record<string, unknown>[]).map(t => ({
+          role: t.role as string | undefined,
+          message: (t.message || t.text) as string | undefined,
+          timestamp: t.timestamp as number | undefined
         }));
       }
 
@@ -124,14 +122,14 @@ export let voiceAgentCall = SlateTrigger.create(spec, {
         output: {
           conversationId: ctx.input.conversationId,
           agentId: ctx.input.agentId,
-          status: innerData['status'] as string | undefined,
+          status: innerData.status as string | undefined,
           transcript,
-          analysis: innerData['analysis'],
-          audioBase64: innerData['audio'] as string | undefined,
+          analysis: innerData.analysis,
+          audioBase64: innerData.audio as string | undefined,
           errorMessage:
-            (innerData['error'] as string | undefined) ||
-            (innerData['error_message'] as string | undefined),
-          metadata: innerData['metadata']
+            (innerData.error as string | undefined) ||
+            (innerData.error_message as string | undefined),
+          metadata: innerData.metadata
         }
       };
     }

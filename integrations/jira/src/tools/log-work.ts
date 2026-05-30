@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { JiraClient } from '../lib/client';
 import { jiraServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let logWorkTool = SlateTool.create(spec, {
   name: 'Log Work',

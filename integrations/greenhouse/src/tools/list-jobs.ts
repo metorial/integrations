@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { mapJob } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listJobsTool = SlateTool.create(spec, {
   name: 'List Jobs',
@@ -59,8 +59,10 @@ export let listJobsTool = SlateTool.create(spec, {
       page: ctx.input.page,
       perPage,
       status: ctx.input.status,
-      departmentId: ctx.input.departmentId ? parseInt(ctx.input.departmentId) : undefined,
-      officeId: ctx.input.officeId ? parseInt(ctx.input.officeId) : undefined
+      departmentId: ctx.input.departmentId
+        ? Number.parseInt(ctx.input.departmentId, 10)
+        : undefined,
+      officeId: ctx.input.officeId ? Number.parseInt(ctx.input.officeId, 10) : undefined
     });
 
     let jobs = results.map(mapJob);

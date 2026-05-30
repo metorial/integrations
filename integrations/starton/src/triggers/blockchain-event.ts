@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { StartonClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let blockchainEvent = SlateTrigger.create(spec, {
   name: 'Blockchain Event',

@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private api: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.api = createAxios({
       baseURL: 'https://api.canva.com/rest/v1',
       headers: {
@@ -91,11 +91,11 @@ export class Client {
     continuation?: string;
   }): Promise<{ designs: CanvaDesign[]; continuation?: string }> {
     let queryParams: Record<string, string> = {};
-    if (params?.query) queryParams['query'] = params.query;
-    if (params?.ownership) queryParams['ownership'] = params.ownership;
-    if (params?.sortBy) queryParams['sort_by'] = params.sortBy;
-    if (params?.limit) queryParams['limit'] = String(params.limit);
-    if (params?.continuation) queryParams['continuation'] = params.continuation;
+    if (params?.query) queryParams.query = params.query;
+    if (params?.ownership) queryParams.ownership = params.ownership;
+    if (params?.sortBy) queryParams.sort_by = params.sortBy;
+    if (params?.limit) queryParams.limit = String(params.limit);
+    if (params?.continuation) queryParams.continuation = params.continuation;
 
     let res = await this.api.get('/designs', { params: queryParams });
     let data = res.data as { items: RawCanvaDesign[]; continuation?: string };
@@ -121,8 +121,8 @@ export class Client {
     let body: Record<string, unknown> = {
       design_type: params.designType
     };
-    if (params.title) body['title'] = params.title;
-    if (params.assetId) body['asset_id'] = params.assetId;
+    if (params.title) body.title = params.title;
+    if (params.assetId) body.asset_id = params.assetId;
 
     let res = await this.api.post('/designs', body, {
       headers: { 'Content-Type': 'application/json' }
@@ -166,7 +166,7 @@ export class Client {
   }): Promise<CanvaImportJob> {
     let titleBase64 = btoa(params.title);
     let metadata: Record<string, string> = { title_base64: titleBase64 };
-    if (params.mimeType) metadata['mime_type'] = params.mimeType;
+    if (params.mimeType) metadata.mime_type = params.mimeType;
 
     let res = await this.api.post(
       '/imports/url',
@@ -242,10 +242,10 @@ export class Client {
     }
   ): Promise<{ items: CanvaFolderItem[]; continuation?: string }> {
     let queryParams: Record<string, string | string[]> = {};
-    if (params?.limit) queryParams['limit'] = String(params.limit);
-    if (params?.continuation) queryParams['continuation'] = params.continuation;
-    if (params?.itemTypes) queryParams['item_types'] = params.itemTypes;
-    if (params?.sortBy) queryParams['sort_by'] = params.sortBy;
+    if (params?.limit) queryParams.limit = String(params.limit);
+    if (params?.continuation) queryParams.continuation = params.continuation;
+    if (params?.itemTypes) queryParams.item_types = params.itemTypes;
+    if (params?.sortBy) queryParams.sort_by = params.sortBy;
 
     let res = await this.api.get(`/folders/${folderId}/items`, { params: queryParams });
     let data = res.data as { items: RawFolderItem[]; continuation?: string };
@@ -280,7 +280,7 @@ export class Client {
     let body: Record<string, string> = {
       message_plaintext: params.messagePlaintext
     };
-    if (params.assigneeId) body['assignee_id'] = params.assigneeId;
+    if (params.assigneeId) body.assignee_id = params.assigneeId;
 
     let res = await this.api.post(`/designs/${designId}/comments`, body, {
       headers: { 'Content-Type': 'application/json' }
@@ -324,8 +324,8 @@ export class Client {
     }
   ): Promise<{ replies: CanvaCommentReply[]; continuation?: string }> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit) queryParams['limit'] = String(params.limit);
-    if (params?.continuation) queryParams['continuation'] = params.continuation;
+    if (params?.limit) queryParams.limit = String(params.limit);
+    if (params?.continuation) queryParams.continuation = params.continuation;
 
     let res = await this.api.get(`/designs/${designId}/comments/${threadId}/replies`, {
       params: queryParams
@@ -348,12 +348,12 @@ export class Client {
     dataset?: string;
   }): Promise<{ templates: CanvaBrandTemplate[]; continuation?: string }> {
     let queryParams: Record<string, string> = {};
-    if (params?.query) queryParams['query'] = params.query;
-    if (params?.limit) queryParams['limit'] = String(params.limit);
-    if (params?.continuation) queryParams['continuation'] = params.continuation;
-    if (params?.ownership) queryParams['ownership'] = params.ownership;
-    if (params?.sortBy) queryParams['sort_by'] = params.sortBy;
-    if (params?.dataset) queryParams['dataset'] = params.dataset;
+    if (params?.query) queryParams.query = params.query;
+    if (params?.limit) queryParams.limit = String(params.limit);
+    if (params?.continuation) queryParams.continuation = params.continuation;
+    if (params?.ownership) queryParams.ownership = params.ownership;
+    if (params?.sortBy) queryParams.sort_by = params.sortBy;
+    if (params?.dataset) queryParams.dataset = params.dataset;
 
     let res = await this.api.get('/brand-templates', { params: queryParams });
     let data = res.data as { items: RawBrandTemplate[]; continuation?: string };
@@ -388,7 +388,7 @@ export class Client {
       brand_template_id: params.brandTemplateId,
       data: params.data
     };
-    if (params.title) body['title'] = params.title;
+    if (params.title) body.title = params.title;
 
     let res = await this.api.post('/autofills', body, {
       headers: { 'Content-Type': 'application/json' }

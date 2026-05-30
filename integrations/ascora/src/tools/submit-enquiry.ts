@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AscoraClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let submitEnquiry = SlateTool.create(spec, {
   name: 'Submit Enquiry',

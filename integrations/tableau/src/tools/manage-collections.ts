@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { tableauServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let collectionSchema = z.object({
   collectionId: z.string(),

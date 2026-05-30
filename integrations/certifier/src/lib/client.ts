@@ -110,7 +110,7 @@ export interface CreateInteractionParams {
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private params: { token: string }) {
+  constructor(params: { token: string }) {
     this.headers = {
       Authorization: `Bearer ${params.token}`,
       'Certifier-Version': '2022-10-26',

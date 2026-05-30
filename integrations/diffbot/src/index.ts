@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  extractPage,
-  searchKnowledgeGraph,
-  enhanceEntity,
   analyzeText,
+  enhanceEntity,
+  extractPage,
+  manageBulkJob,
   manageCrawl,
-  manageBulkJob
+  searchKnowledgeGraph
 } from './tools';
 import { crawlBulkJobCompleted, inboundWebhook } from './triggers';
 

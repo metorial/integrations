@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { hookdeckServiceError, requireHookdeckInput } from '../lib/errors';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { hookdeckServiceError, requireHookdeckInput } from '../lib/errors';
+import { spec } from '../spec';
 
 let connectionSchema = z.object({
   connectionId: z.string().describe('Connection ID (prefixed with web_)'),

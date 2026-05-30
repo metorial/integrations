@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let dealEventTypes = [
   'deal_add',
@@ -86,7 +86,7 @@ export let dealEvents = SlateTrigger.create(spec, {
         data = Object.fromEntries(params.entries());
       }
 
-      let eventType = data.type || data['type'] || 'unknown';
+      let eventType = data.type || data.type || 'unknown';
 
       return {
         inputs: [
@@ -101,24 +101,22 @@ export let dealEvents = SlateTrigger.create(spec, {
     handleEvent: async ctx => {
       let p = ctx.input.payload as Record<string, any>;
 
-      let dealId = String(p['deal[id]'] || p['dealId'] || '');
-      let dealTitle = String(p['deal[title]'] || p['dealTitle'] || '');
-      let dealValue = String(p['deal[value]'] || p['dealValue'] || '');
-      let dealCurrency = String(p['deal[currency]'] || p['dealCurrency'] || '');
+      let dealId = String(p['deal[id]'] || p.dealId || '');
+      let dealTitle = String(p['deal[title]'] || p.dealTitle || '');
+      let dealValue = String(p['deal[value]'] || p.dealValue || '');
+      let dealCurrency = String(p['deal[currency]'] || p.dealCurrency || '');
       let pipelineId = String(
-        p['deal[pipeline_id]'] || p['deal[group]'] || p['pipelineId'] || ''
+        p['deal[pipeline_id]'] || p['deal[group]'] || p.pipelineId || ''
       );
-      let pipelineTitle = String(p['deal[pipeline_title]'] || p['pipelineTitle'] || '');
-      let stageId = String(p['deal[stage_id]'] || p['deal[stage]'] || p['stageId'] || '');
-      let stageTitle = String(p['deal[stage_title]'] || p['stageTitle'] || '');
-      let contactId = String(
-        p['deal[contact_id]'] || p['deal[contact]'] || p['contactId'] || ''
-      );
-      let contactEmail = String(p['deal[contact_email]'] || p['contactEmail'] || '');
-      let ownerId = String(p['deal[owner]'] || p['ownerId'] || '');
-      let status = String(p['deal[status]'] || p['status'] || '');
-      let initiatedBy = String(p['initiated_by'] || p['source'] || '');
-      let occurredAt = String(p['date_time'] || p['dateTime'] || '');
+      let pipelineTitle = String(p['deal[pipeline_title]'] || p.pipelineTitle || '');
+      let stageId = String(p['deal[stage_id]'] || p['deal[stage]'] || p.stageId || '');
+      let stageTitle = String(p['deal[stage_title]'] || p.stageTitle || '');
+      let contactId = String(p['deal[contact_id]'] || p['deal[contact]'] || p.contactId || '');
+      let contactEmail = String(p['deal[contact_email]'] || p.contactEmail || '');
+      let ownerId = String(p['deal[owner]'] || p.ownerId || '');
+      let status = String(p['deal[status]'] || p.status || '');
+      let initiatedBy = String(p.initiated_by || p.source || '');
+      let occurredAt = String(p.date_time || p.dateTime || '');
 
       let uniqueId = `${ctx.input.eventType}-${dealId}-${occurredAt || Date.now()}`;
 

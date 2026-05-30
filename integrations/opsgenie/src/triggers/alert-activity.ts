@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let alertActivityTrigger = SlateTrigger.create(spec, {
   name: 'Alert Activity',
@@ -63,7 +63,7 @@ export let alertActivityTrigger = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.alert) {
+      if (!data?.alert) {
         return { inputs: [] };
       }
 

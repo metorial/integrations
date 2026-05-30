@@ -1,6 +1,5 @@
-import { SlateAuth, axios } from 'slates';
+import { SlateAuth } from 'slates';
 import { z } from 'zod';
-import { requestToken, exchangeToken, getBaseUrl, percentEncode } from './lib/oauth';
 import { Client } from './lib/client';
 
 export let auth = SlateAuth.create()
@@ -32,7 +31,7 @@ export let auth = SlateAuth.create()
         .describe('Temporary OAuth token secret (set during auth flow)')
     }),
 
-    getOutput: async ctx => {
+    getOutput: async _ctx => {
       // This is called after the user provides the input values
       // For OAuth 1.0a, this shouldn't be called directly in the standard flow
       // but the framework requires it. The actual token exchange happens via the OAuth flow.

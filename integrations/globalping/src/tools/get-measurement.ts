@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getMeasurement = SlateTool.create(spec, {
   name: 'Get Measurement',
@@ -56,7 +56,7 @@ export let getMeasurement = SlateTool.create(spec, {
 
     let data = await client.getMeasurement(ctx.input.measurementId);
 
-    let results = (data.results as Array<Record<string, unknown>> | undefined) ?? [];
+    let results = (data.results as Record<string, unknown>[] | undefined) ?? [];
 
     return {
       output: {

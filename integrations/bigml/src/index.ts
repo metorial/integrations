@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createSource,
-  createDataset,
-  trainModel,
-  createPrediction,
-  createBatchPrediction,
-  createEvaluation,
-  createCluster,
   createAnomalyDetector,
+  createBatchPrediction,
+  createCluster,
+  createDataset,
+  createEvaluation,
   createOptiml,
-  executeWhizzml,
-  listResources,
-  getResource,
-  updateResource,
+  createPrediction,
+  createSource,
   deleteResource,
-  manageProject
+  executeWhizzml,
+  getResource,
+  listResources,
+  manageProject,
+  trainModel,
+  updateResource
 } from './tools';
-import { newResource, resourceCompleted, inboundWebhook } from './triggers';
+import { inboundWebhook, newResource, resourceCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,

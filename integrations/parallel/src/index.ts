@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  webSearch,
-  extractContent,
-  deepResearch,
-  getTaskRun,
   chatCompletion,
+  createMonitor,
+  deepResearch,
+  enrichFindall,
+  extractContent,
   findEntities,
   getFindallResults,
+  getTaskRun,
   ingestFindall,
-  enrichFindall,
-  createMonitor,
-  manageMonitor
+  manageMonitor,
+  webSearch
 } from './tools';
 import { monitorEvents, taskRunEvents } from './triggers';
 

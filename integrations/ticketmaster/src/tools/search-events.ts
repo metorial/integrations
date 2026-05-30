@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DiscoveryClient } from '../lib/client';
 import { mapEvent, mapPagination } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let imageSchema = z.object({
   url: z.string(),

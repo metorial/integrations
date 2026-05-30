@@ -1,32 +1,32 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listWorkbooks,
-  manageWorkbook,
-  listDatasources,
-  manageDatasource,
-  listViews,
-  getViewData,
   exportView,
+  getSiteInfo,
+  getViewData,
+  listDatasources,
+  listViews,
+  listWorkbooks,
+  manageAlerts,
+  manageCollections,
   manageCustomViews,
-  manageUsers,
-  manageGroups,
-  manageProjects,
-  managePermissions,
-  manageJobs,
+  manageDatasource,
   manageFavorites,
   manageFlows,
-  manageCollections,
-  manageAlerts,
-  getSiteInfo
+  manageGroups,
+  manageJobs,
+  managePermissions,
+  manageProjects,
+  manageUsers,
+  manageWorkbook
 } from './tools';
 import {
   datasourceEvents,
-  workbookEvents,
-  userEvents,
   labelEvents,
   siteEvents,
-  viewEvents
+  userEvents,
+  viewEvents,
+  workbookEvents
 } from './triggers';
 
 export let provider = Slate.create({

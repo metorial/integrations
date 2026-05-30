@@ -3,13 +3,11 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(
-    private config: {
-      token: string;
-      loginEmail: string;
-      brandSubdomain: string;
-    }
-  ) {
+  constructor(config: {
+    token: string;
+    loginEmail: string;
+    brandSubdomain: string;
+  }) {
     this.axios = createAxios({
       baseURL: `https://${config.brandSubdomain}.reamaze.io/api/v1`,
       headers: {
@@ -38,16 +36,16 @@ export class Client {
     origin?: string;
   }) {
     let query: Record<string, string> = {};
-    if (params?.filter) query['filter'] = params.filter;
-    if (params?.for) query['for'] = params.for;
-    if (params?.forId) query['for_id'] = params.forId;
-    if (params?.sort) query['sort'] = params.sort;
-    if (params?.tag) query['tag'] = params.tag;
-    if (params?.category) query['category'] = params.category;
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.startDate) query['start_date'] = params.startDate;
-    if (params?.endDate) query['end_date'] = params.endDate;
-    if (params?.origin) query['origin'] = params.origin;
+    if (params?.filter) query.filter = params.filter;
+    if (params?.for) query.for = params.for;
+    if (params?.forId) query.for_id = params.forId;
+    if (params?.sort) query.sort = params.sort;
+    if (params?.tag) query.tag = params.tag;
+    if (params?.category) query.category = params.category;
+    if (params?.page) query.page = String(params.page);
+    if (params?.startDate) query.start_date = params.startDate;
+    if (params?.endDate) query.end_date = params.endDate;
+    if (params?.origin) query.origin = params.origin;
 
     let response = await this.axios.get('/conversations', { params: query });
     return response.data;
@@ -122,13 +120,13 @@ export class Client {
     let body: Record<string, any> = {
       conversation: {} as Record<string, any>
     };
-    if (data.status !== undefined) body['conversation']['status'] = data.status;
-    if (data.assignee) body['conversation']['assignee'] = { email: data.assignee };
-    if (data.tagList) body['conversation']['tag_list'] = data.tagList;
-    if (data.category) body['conversation']['category'] = data.category;
-    if (data.data) body['conversation']['data'] = data.data;
-    if (data.holdUntil) body['conversation']['hold_until'] = data.holdUntil;
-    if (data.brand) body['conversation']['brand'] = data.brand;
+    if (data.status !== undefined) body.conversation.status = data.status;
+    if (data.assignee) body.conversation.assignee = { email: data.assignee };
+    if (data.tagList) body.conversation.tag_list = data.tagList;
+    if (data.category) body.conversation.category = data.category;
+    if (data.data) body.conversation.data = data.data;
+    if (data.holdUntil) body.conversation.hold_until = data.holdUntil;
+    if (data.brand) body.conversation.brand = data.brand;
 
     let response = await this.axios.put(`/conversations/${slug}`, body);
     return response.data;
@@ -154,13 +152,13 @@ export class Client {
         visibility: data.visibility ?? 0
       }
     };
-    if (data.user) body['message']['user'] = data.user;
+    if (data.user) body.message.user = data.user;
     if (data.suppressNotifications !== undefined)
-      body['message']['suppress_notifications'] = data.suppressNotifications;
+      body.message.suppress_notifications = data.suppressNotifications;
     if (data.suppressAutoresolve !== undefined)
-      body['message']['suppress_autoresolve'] = data.suppressAutoresolve;
-    if (data.attachment) body['message']['attachment'] = data.attachment;
-    if (data.recipients) body['message']['recipients'] = data.recipients;
+      body.message.suppress_autoresolve = data.suppressAutoresolve;
+    if (data.attachment) body.message.attachment = data.attachment;
+    if (data.recipients) body.message.recipients = data.recipients;
 
     let response = await this.axios.post(`/conversations/${conversationSlug}/messages`, body);
     return response.data;
@@ -176,10 +174,10 @@ export class Client {
     data?: Record<string, string>;
   }) {
     let query: Record<string, string> = {};
-    if (params?.q) query['q'] = params.q;
-    if (params?.sort) query['sort'] = params.sort;
-    if (params?.type) query['type'] = params.type;
-    if (params?.page) query['page'] = String(params.page);
+    if (params?.q) query.q = params.q;
+    if (params?.sort) query.sort = params.sort;
+    if (params?.type) query.type = params.type;
+    if (params?.page) query.page = String(params.page);
     if (params?.data) {
       for (let [key, value] of Object.entries(params.data)) {
         query[`data[${key}]`] = value;
@@ -285,9 +283,9 @@ export class Client {
     topicSlug?: string;
   }) {
     let query: Record<string, string> = {};
-    if (params?.status) query['status'] = params.status;
-    if (params?.q) query['q'] = params.q;
-    if (params?.page) query['page'] = String(params.page);
+    if (params?.status) query.status = params.status;
+    if (params?.q) query.q = params.q;
+    if (params?.page) query.page = String(params.page);
 
     let path = params?.topicSlug ? `/topics/${params.topicSlug}/articles` : '/articles';
 
@@ -331,10 +329,10 @@ export class Client {
     let body: Record<string, any> = {
       article: {} as Record<string, any>
     };
-    if (data.title !== undefined) body['article']['title'] = data.title;
-    if (data.body !== undefined) body['article']['body'] = data.body;
-    if (data.status !== undefined) body['article']['status'] = data.status;
-    if (data.topicId !== undefined) body['article']['topic_id'] = data.topicId;
+    if (data.title !== undefined) body.article.title = data.title;
+    if (data.body !== undefined) body.article.body = data.body;
+    if (data.status !== undefined) body.article.status = data.status;
+    if (data.topicId !== undefined) body.article.topic_id = data.topicId;
 
     let response = await this.axios.put(`/articles/${articleId}`, body);
     return response.data;
@@ -344,7 +342,7 @@ export class Client {
 
   async listChannels(channelType?: string) {
     let query: Record<string, string> = {};
-    if (channelType) query['channel'] = channelType;
+    if (channelType) query.channel = channelType;
 
     let response = await this.axios.get('/channels', { params: query });
     return response.data;
@@ -354,8 +352,8 @@ export class Client {
 
   async listResponseTemplates(params?: { q?: string; page?: number }) {
     let query: Record<string, string> = {};
-    if (params?.q) query['q'] = params.q;
-    if (params?.page) query['page'] = String(params.page);
+    if (params?.q) query.q = params.q;
+    if (params?.page) query.page = String(params.page);
 
     let response = await this.axios.get('/response_templates', { params: query });
     return response.data;
@@ -381,8 +379,8 @@ export class Client {
     }
   ) {
     let body: Record<string, any> = { response_template: {} as Record<string, any> };
-    if (data.name !== undefined) body['response_template']['name'] = data.name;
-    if (data.body !== undefined) body['response_template']['body'] = data.body;
+    if (data.name !== undefined) body.response_template.name = data.name;
+    if (data.body !== undefined) body.response_template.body = data.body;
 
     let response = await this.axios.put(`/response_templates/${templateId}`, body);
     return response.data;
@@ -412,8 +410,8 @@ export class Client {
     }
   ) {
     let query: Record<string, string> = {};
-    if (params?.startDate) query['start_date'] = params.startDate;
-    if (params?.endDate) query['end_date'] = params.endDate;
+    if (params?.startDate) query.start_date = params.startDate;
+    if (params?.endDate) query.end_date = params.endDate;
 
     let response = await this.axios.get(`/reports/${type}`, { params: query });
     return response.data;
@@ -453,7 +451,7 @@ export class Client {
       }
     };
     if (data.systems) {
-      body['incident']['incidents_systems_attributes'] = data.systems.map(s => ({
+      body.incident.incidents_systems_attributes = data.systems.map(s => ({
         system_id: s.systemId,
         status: s.status
       }));
@@ -481,15 +479,15 @@ export class Client {
     let body: Record<string, any> = {
       incident: {} as Record<string, any>
     };
-    if (data.title !== undefined) body['incident']['title'] = data.title;
+    if (data.title !== undefined) body.incident.title = data.title;
     if (data.updates) {
-      body['incident']['updates_attributes'] = data.updates.map(u => ({
+      body.incident.updates_attributes = data.updates.map(u => ({
         status: u.status,
         message: u.message
       }));
     }
     if (data.systems) {
-      body['incident']['incidents_systems_attributes'] = data.systems.map(s => ({
+      body.incident.incidents_systems_attributes = data.systems.map(s => ({
         id: s.id,
         system_id: s.systemId,
         status: s.status
@@ -519,13 +517,13 @@ export class Client {
     page?: number;
   }) {
     let query: Record<string, string> = {};
-    if (params?.rating !== undefined) query['rating'] = String(params.rating);
-    if (params?.assigneeId !== undefined) query['assignee_id'] = String(params.assigneeId);
-    if (params?.createdAfter) query['created_after'] = params.createdAfter;
-    if (params?.createdBefore) query['created_before'] = params.createdBefore;
-    if (params?.updatedAfter) query['updated_after'] = params.updatedAfter;
-    if (params?.updatedBefore) query['updated_before'] = params.updatedBefore;
-    if (params?.page !== undefined) query['page'] = String(params.page);
+    if (params?.rating !== undefined) query.rating = String(params.rating);
+    if (params?.assigneeId !== undefined) query.assignee_id = String(params.assigneeId);
+    if (params?.createdAfter) query.created_after = params.createdAfter;
+    if (params?.createdBefore) query.created_before = params.createdBefore;
+    if (params?.updatedAfter) query.updated_after = params.updatedAfter;
+    if (params?.updatedBefore) query.updated_before = params.updatedBefore;
+    if (params?.page !== undefined) query.page = String(params.page);
 
     let response = await this.axios.get('/satisfaction_ratings', { params: query });
     return response.data;

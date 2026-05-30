@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { googleContactsActionScopes } from '../scopes';
-import { contactOutputSchema, formatContact } from '../lib/schemas';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { contactOutputSchema, formatContact } from '../lib/schemas';
+import { googleContactsActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 export let searchDirectory = SlateTool.create(spec, {
   name: 'Search Directory',

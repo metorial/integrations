@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listDatabases,
   createDatabase,
-  getDatabase,
-  deleteDatabase,
-  updateDatabaseConfiguration,
   createDatabaseToken,
-  invalidateDatabaseTokens,
-  listGroups,
   createGroup,
-  getGroup,
-  deleteGroup,
-  manageGroupLocations,
   createGroupToken,
+  deleteDatabase,
+  deleteGroup,
+  getDatabase,
+  getGroup,
+  getOrganization,
+  invalidateDatabaseTokens,
   invalidateGroupTokens,
+  listAuditLogs,
+  listDatabases,
+  listGroups,
+  listLocations,
+  manageApiTokens,
+  manageGroupLocations,
+  manageMembers,
   transferGroup,
   unarchiveGroup,
-  listLocations,
-  getOrganization,
-  manageMembers,
-  manageApiTokens,
-  listAuditLogs
+  updateDatabaseConfiguration
 } from './tools';
 import { auditLogActivity, databaseChanges, inboundWebhook } from './triggers';
 

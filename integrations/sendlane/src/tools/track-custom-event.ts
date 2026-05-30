@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SendlaneEcommerceClient } from '../lib/ecommerce-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let trackCustomEvent = SlateTool.create(spec, {
   name: 'Track Custom Event',

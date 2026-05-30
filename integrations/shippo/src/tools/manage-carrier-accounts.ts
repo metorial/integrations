@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ShippoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCarrierAccounts = SlateTool.create(spec, {
   name: 'List Carrier Accounts',

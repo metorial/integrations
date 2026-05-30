@@ -48,24 +48,24 @@ export class Client {
     let page = params.pageNumber ?? 1;
     let queryParams: Record<string, string> = {};
 
-    if (params.searchQuery) queryParams['search_query'] = params.searchQuery;
-    if (params.searchType) queryParams['search_type'] = params.searchType;
-    if (params.searchOperator) queryParams['search_operator'] = params.searchOperator;
+    if (params.searchQuery) queryParams.search_query = params.searchQuery;
+    if (params.searchType) queryParams.search_type = params.searchType;
+    if (params.searchOperator) queryParams.search_operator = params.searchOperator;
     if (params.filterUnread !== undefined)
-      queryParams['filter_unread'] = String(params.filterUnread ? 1 : 0);
+      queryParams.filter_unread = String(params.filterUnread ? 1 : 0);
     if (params.filterResolved !== undefined)
-      queryParams['filter_resolved'] = String(params.filterResolved ? 1 : 0);
+      queryParams.filter_resolved = String(params.filterResolved ? 1 : 0);
     if (params.filterNotResolved !== undefined)
-      queryParams['filter_not_resolved'] = String(params.filterNotResolved ? 1 : 0);
+      queryParams.filter_not_resolved = String(params.filterNotResolved ? 1 : 0);
     if (params.filterAssigned !== undefined)
-      queryParams['filter_assigned'] = String(params.filterAssigned ? 1 : 0);
+      queryParams.filter_assigned = String(params.filterAssigned ? 1 : 0);
     if (params.filterUnassigned !== undefined)
-      queryParams['filter_unassigned'] = String(params.filterUnassigned ? 1 : 0);
-    if (params.filterInboxId) queryParams['filter_inbox_id'] = params.filterInboxId;
-    if (params.filterDateStart) queryParams['filter_date_start'] = params.filterDateStart;
-    if (params.filterDateEnd) queryParams['filter_date_end'] = params.filterDateEnd;
-    if (params.orderDateCreated) queryParams['order_date_created'] = params.orderDateCreated;
-    if (params.orderDateUpdated) queryParams['order_date_updated'] = params.orderDateUpdated;
+      queryParams.filter_unassigned = String(params.filterUnassigned ? 1 : 0);
+    if (params.filterInboxId) queryParams.filter_inbox_id = params.filterInboxId;
+    if (params.filterDateStart) queryParams.filter_date_start = params.filterDateStart;
+    if (params.filterDateEnd) queryParams.filter_date_end = params.filterDateEnd;
+    if (params.orderDateCreated) queryParams.order_date_created = params.orderDateCreated;
+    if (params.orderDateUpdated) queryParams.order_date_updated = params.orderDateUpdated;
 
     let response = await axios.get(this.url(`/conversations/${page}`), {
       headers: this.headers(),
@@ -183,7 +183,7 @@ export class Client {
 
   async getMessagesInConversation(sessionId: string, timestampBefore?: number) {
     let params: Record<string, string> = {};
-    if (timestampBefore) params['timestamp_before'] = String(timestampBefore);
+    if (timestampBefore) params.timestamp_before = String(timestampBefore);
 
     let response = await axios.get(this.url(`/conversation/${sessionId}/messages`), {
       headers: this.headers(),
@@ -297,9 +297,9 @@ export class Client {
   ) {
     let page = params.pageNumber ?? 1;
     let queryParams: Record<string, string> = {};
-    if (params.searchQuery) queryParams['search_query'] = params.searchQuery;
-    if (params.searchType) queryParams['search_type'] = params.searchType;
-    if (params.searchOperator) queryParams['search_operator'] = params.searchOperator;
+    if (params.searchQuery) queryParams.search_query = params.searchQuery;
+    if (params.searchType) queryParams.search_type = params.searchType;
+    if (params.searchOperator) queryParams.search_operator = params.searchOperator;
 
     let response = await axios.get(this.url(`/people/profiles/${page}`), {
       headers: this.headers(),
@@ -581,7 +581,7 @@ export class Client {
 
   async inviteOperator(email: string, role?: string) {
     let body: Record<string, string> = { email };
-    if (role) body['role'] = role;
+    if (role) body.role = role;
     let response = await axios.post(this.url('/operator'), body, {
       headers: this.headers()
     });

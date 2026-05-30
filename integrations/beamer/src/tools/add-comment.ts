@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commentOutputSchema = z.object({
   commentId: z.number().describe('Unique comment ID'),
@@ -47,7 +47,7 @@ export let addCommentTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let comment;
+    let comment: any;
 
     if (ctx.input.resourceType === 'post') {
       comment = await client.createPostComment(ctx.input.resourceId, {

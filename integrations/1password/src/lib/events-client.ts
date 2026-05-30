@@ -8,7 +8,7 @@ let EVENTS_API_BASE_URLS: Record<string, string> = {
 };
 
 export let getEventsBaseUrl = (region: string): string => {
-  return EVENTS_API_BASE_URLS[region] || EVENTS_API_BASE_URLS['us']!;
+  return EVENTS_API_BASE_URLS[region] || EVENTS_API_BASE_URLS.us!;
 };
 
 export interface AuditEvent {
@@ -132,7 +132,7 @@ export class EventsClient {
   constructor(config: { token: string; region: string }) {
     let baseUrl = getEventsBaseUrl(config.region);
     this.http = createAxios({
-      baseURL: baseUrl + '/api/v1',
+      baseURL: `${baseUrl}/api/v1`,
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
@@ -167,9 +167,9 @@ export class EventsClient {
       return { cursor: params.cursor };
     }
     let body: Record<string, unknown> = {};
-    if (params.limit) body['limit'] = params.limit;
-    if (params.startTime) body['start_time'] = params.startTime;
-    if (params.endTime) body['end_time'] = params.endTime;
+    if (params.limit) body.limit = params.limit;
+    if (params.startTime) body.start_time = params.startTime;
+    if (params.endTime) body.end_time = params.endTime;
     return body;
   }
 }

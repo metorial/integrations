@@ -39,7 +39,7 @@ export interface SubmissionsResponse {
   form: string;
   results: number;
   pagination: SubmissionsPagination;
-  submissions: Array<Record<string, any>>;
+  submissions: Record<string, any>[];
 }
 
 export interface CreateFormResponse {

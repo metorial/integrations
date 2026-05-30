@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ACTION_EVENT_TYPES = [
   'com.blackbaud.action.add.v1',
@@ -50,7 +50,7 @@ export let actionEvents = SlateTrigger.create(spec, {
           if (result?.id) {
             subscriptionIds.push(result.id);
           }
-        } catch (e) {
+        } catch (_e) {
           // Some event types may not be available
         }
       }
@@ -70,7 +70,7 @@ export let actionEvents = SlateTrigger.create(spec, {
       for (let id of ids) {
         try {
           await client.deleteWebhookSubscription(id);
-        } catch (e) {
+        } catch (_e) {
           // Best effort cleanup
         }
       }

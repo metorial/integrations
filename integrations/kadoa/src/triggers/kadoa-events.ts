@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { KadoaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let kadoaEvents = SlateTrigger.create(spec, {
   name: 'Kadoa Events',

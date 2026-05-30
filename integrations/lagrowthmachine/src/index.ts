@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchLead,
-  createOrUpdateLead,
-  removeLeadFromAudiences,
-  updateLeadCampaignStatus,
-  getCampaigns,
-  listAudiences,
-  sendLinkedInMessage,
-  importFromLinkedIn,
-  listIdentities,
-  listMembers,
   createInboxWebhook,
+  createOrUpdateLead,
+  deleteInboxWebhook,
+  getCampaigns,
+  importFromLinkedIn,
+  listAudiences,
+  listIdentities,
   listInboxWebhooks,
-  deleteInboxWebhook
+  listMembers,
+  removeLeadFromAudiences,
+  searchLead,
+  sendLinkedInMessage,
+  updateLeadCampaignStatus
 } from './tools';
 import {
+  campaignEvents,
   emailEvents,
-  linkedinEvents,
-  twitterEvents,
   leadLifecycleEvents,
-  campaignEvents
+  linkedinEvents,
+  twitterEvents
 } from './triggers';
 
 export let provider = Slate.create({

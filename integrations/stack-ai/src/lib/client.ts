@@ -33,15 +33,15 @@ export class Client {
   ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = { ...inputs };
     if (options?.userId) {
-      body['user_id'] = options.userId;
+      body.user_id = options.userId;
     }
 
     let params: Record<string, unknown> = {};
     if (options?.version !== undefined) {
-      params['version'] = options.version;
+      params.version = options.version;
     }
     if (options?.verbose !== undefined) {
-      params['verbose'] = options.verbose;
+      params.verbose = options.verbose;
     }
 
     let response = await this.axios.post(`/inference/v0/run/${this.orgId}/${flowId}`, body, {
@@ -102,8 +102,8 @@ export class Client {
     has_more?: boolean;
   }> {
     let params: Record<string, unknown> = {};
-    if (cursor) params['cursor'] = cursor;
-    if (pageSize) params['page_size'] = pageSize;
+    if (cursor) params.cursor = cursor;
+    if (pageSize) params.page_size = pageSize;
 
     let response = await this.axios.get('/v1/knowledge-bases', { params });
     return response.data;
@@ -122,10 +122,10 @@ export class Client {
     indexingParams?: Record<string, unknown>;
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = { name: data.name };
-    if (data.description) body['description'] = data.description;
-    if (data.connectionId) body['connection_id'] = data.connectionId;
-    if (data.connectionSourceIds) body['connection_source_ids'] = data.connectionSourceIds;
-    if (data.indexingParams) body['indexing_params'] = data.indexingParams;
+    if (data.description) body.description = data.description;
+    if (data.connectionId) body.connection_id = data.connectionId;
+    if (data.connectionSourceIds) body.connection_source_ids = data.connectionSourceIds;
+    if (data.indexingParams) body.indexing_params = data.indexingParams;
 
     let response = await this.axios.post('/v1/knowledge-bases', body);
     return response.data;
@@ -140,9 +140,9 @@ export class Client {
     }
   ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {};
-    if (data.name !== undefined) body['name'] = data.name;
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.indexingParams !== undefined) body['indexing_params'] = data.indexingParams;
+    if (data.name !== undefined) body.name = data.name;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.indexingParams !== undefined) body.indexing_params = data.indexingParams;
 
     let response = await this.axios.patch(`/v1/knowledge-bases/${knowledgeBaseId}`, body);
     return response.data;
@@ -169,8 +169,8 @@ export class Client {
     has_more?: boolean;
   }> {
     let params: Record<string, unknown> = {};
-    if (cursor) params['cursor'] = cursor;
-    if (pageSize) params['page_size'] = pageSize;
+    if (cursor) params.cursor = cursor;
+    if (pageSize) params.page_size = pageSize;
 
     let response = await this.axios.get(`/v1/knowledge-bases/${knowledgeBaseId}/resources`, {
       params
@@ -199,8 +199,8 @@ export class Client {
 
   async listConnections(limit?: number, offset?: number): Promise<Record<string, unknown>[]> {
     let params: Record<string, unknown> = {};
-    if (limit) params['limit'] = limit;
-    if (offset) params['offset'] = offset;
+    if (limit) params.limit = limit;
+    if (offset) params.offset = offset;
 
     let response = await this.axios.get('/connections', { params });
     return response.data;
@@ -247,10 +247,10 @@ export class Client {
     }
   ): Promise<Record<string, unknown>[]> {
     let params: Record<string, unknown> = {};
-    if (options?.page !== undefined) params['page'] = options.page;
-    if (options?.pageSize !== undefined) params['page_size'] = options.pageSize;
-    if (options?.startDate) params['start_date'] = options.startDate;
-    if (options?.endDate) params['end_date'] = options.endDate;
+    if (options?.page !== undefined) params.page = options.page;
+    if (options?.pageSize !== undefined) params.page_size = options.pageSize;
+    if (options?.startDate) params.start_date = options.startDate;
+    if (options?.endDate) params.end_date = options.endDate;
 
     let response = await this.axios.get(`/analytics/org/${this.orgId}/flows/${flowId}`, {
       params
@@ -265,10 +265,10 @@ export class Client {
     endDate?: string;
   }): Promise<Record<string, unknown>[]> {
     let params: Record<string, unknown> = {};
-    if (options?.page !== undefined) params['page'] = options.page;
-    if (options?.pageSize !== undefined) params['page_size'] = options.pageSize;
-    if (options?.startDate) params['start_date'] = options.startDate;
-    if (options?.endDate) params['end_date'] = options.endDate;
+    if (options?.page !== undefined) params.page = options.page;
+    if (options?.pageSize !== undefined) params.page_size = options.pageSize;
+    if (options?.startDate) params.start_date = options.startDate;
+    if (options?.endDate) params.end_date = options.endDate;
 
     let response = await this.axios.get('/organizations/analytics/projects-run-summary', {
       params
@@ -359,9 +359,9 @@ export class Client {
     query?: string;
   }): Promise<Record<string, unknown>[]> {
     let body: Record<string, unknown> = {};
-    if (options?.offset !== undefined) body['offset'] = options.offset;
-    if (options?.limit !== undefined) body['limit'] = options.limit;
-    if (options?.query) body['query'] = options.query;
+    if (options?.offset !== undefined) body.offset = options.offset;
+    if (options?.limit !== undefined) body.limit = options.limit;
+    if (options?.query) body.query = options.query;
 
     let response = await this.axios.post('/folders', body);
     return response.data;

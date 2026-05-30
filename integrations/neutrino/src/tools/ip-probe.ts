@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NeutrinoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let ipProbeTool = SlateTool.create(spec, {
   name: 'IP Probe',
@@ -75,7 +75,7 @@ export let ipProbeTool = SlateTool.create(spec, {
         asCountryCode: result.asCountryCode ?? '',
         asDomains: result.asDomains ?? []
       },
-      message: `**${result.ip}**: ${result.providerType} provider${result.providerDomain ? ` (${result.providerDomain})` : ''} in ${result.city ? result.city + ', ' : ''}${result.country}.${result.isVpn ? ' ⚠️ VPN detected.' : ''}${result.isProxy ? ' ⚠️ Proxy detected.' : ''}${result.isHosting ? ' Hosted in data center.' : ''}`
+      message: `**${result.ip}**: ${result.providerType} provider${result.providerDomain ? ` (${result.providerDomain})` : ''} in ${result.city ? `${result.city}, ` : ''}${result.country}.${result.isVpn ? ' ⚠️ VPN detected.' : ''}${result.isProxy ? ' ⚠️ Proxy detected.' : ''}${result.isHosting ? ' Hosted in data center.' : ''}`
     };
   })
   .build();

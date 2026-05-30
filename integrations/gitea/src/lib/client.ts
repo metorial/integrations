@@ -1,21 +1,21 @@
 import { createAxios } from 'slates';
 import type {
-  GiteaRepository,
   GiteaBranch,
-  GiteaIssue,
   GiteaComment,
-  GiteaPullRequest,
-  GiteaRelease,
-  GiteaOrganization,
-  GiteaTeam,
+  GiteaCommit,
   GiteaFileContent,
   GiteaFileResponse,
-  GiteaCommit,
-  GiteaTag,
-  GiteaWebhook,
-  GiteaUser,
+  GiteaIssue,
   GiteaLabel,
   GiteaMilestone,
+  GiteaOrganization,
+  GiteaPullRequest,
+  GiteaRelease,
+  GiteaRepository,
+  GiteaTag,
+  GiteaTeam,
+  GiteaUser,
+  GiteaWebhook,
   GiteaWikiPage
 } from './types';
 

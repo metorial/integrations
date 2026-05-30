@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let searchEvents = SlateTrigger.create(spec, {
   name: 'Search Events',
@@ -32,7 +32,7 @@ export let searchEvents = SlateTrigger.create(spec, {
   )
   .webhook({
     handleRequest: async ctx => {
-      let signature = ctx.request.headers.get('x-serply-signature');
+      let _signature = ctx.request.headers.get('x-serply-signature');
       let body = (await ctx.request.json()) as any;
 
       let eventType = body.type || body.event || 'unknown';

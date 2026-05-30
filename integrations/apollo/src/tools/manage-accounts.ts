@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { apolloServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let accountFieldsSchema = z.object({
   name: z.string().optional().describe('Account/company name'),

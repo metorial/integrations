@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
-import { createClient, extractCommentSummary } from '../lib/helpers';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { createClient, extractCommentSummary } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let newCommentTrigger = SlateTrigger.create(spec, {
   name: 'New Comment',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listViews = SlateTool.create(spec, {
   name: 'List Views',
@@ -48,7 +48,7 @@ export let listViews = SlateTool.create(spec, {
       token: ctx.auth.token
     });
 
-    let views;
+    let views: any;
     if (ctx.input.tableId) {
       views = await client.listTableViews(
         ctx.input.teamId,
@@ -61,7 +61,7 @@ export let listViews = SlateTool.create(spec, {
 
     return {
       output: {
-        views: views.map(v => ({
+        views: views.map((v: any) => ({
           viewId: v.id,
           caption: v.caption,
           type: v.type,

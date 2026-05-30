@@ -80,7 +80,7 @@ let toSnakeCase = (str: string): string => {
   return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 };
 
-let convertKeysToSnakeCase = (obj: Record<string, any>): Record<string, any> => {
+let _convertKeysToSnakeCase = (obj: Record<string, any>): Record<string, any> => {
   let result: Record<string, any> = {};
   for (let [key, value] of Object.entries(obj)) {
     result[toSnakeCase(key)] = value;

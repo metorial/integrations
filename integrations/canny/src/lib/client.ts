@@ -230,12 +230,7 @@ export class CannyClient {
   // ── Companies ──
 
   async listCompanies(
-    params: {
-      limit?: number;
-      cursor?: string;
-      search?: string;
-      segment?: string;
-    } = {}
+    params: { limit?: number; cursor?: string; search?: string; segment?: string } = {}
   ) {
     return this.post<{ companies: any[]; cursor: string; hasNextPage: boolean }>(
       '/v2/companies/list',
@@ -324,13 +319,7 @@ export class CannyClient {
 
   // ── Status Changes ──
 
-  async listStatusChanges(
-    params: {
-      boardID?: string;
-      limit?: number;
-      skip?: number;
-    } = {}
-  ) {
+  async listStatusChanges(params: { boardID?: string; limit?: number; skip?: number } = {}) {
     return this.post<{ statusChanges: any[]; hasMore: boolean }>(
       '/v1/status_changes/list',
       params

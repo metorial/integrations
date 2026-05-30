@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let requisitionOutputSchema = z.object({
   requisitionId: z.number().describe('Coupa internal requisition ID'),
@@ -69,7 +69,7 @@ export let searchRequisitions = SlateTool.create(spec, {
         filters[key] = value;
       }
     }
-    if (ctx.input.status) filters['status'] = ctx.input.status;
+    if (ctx.input.status) filters.status = ctx.input.status;
     if (ctx.input.requestedById) filters['requested-by[id]'] = String(ctx.input.requestedById);
     if (ctx.input.createdAfter) filters['created-at[gt]'] = ctx.input.createdAfter;
     if (ctx.input.updatedAfter) filters['updated-at[gt]'] = ctx.input.updatedAfter;
@@ -90,7 +90,7 @@ export let searchRequisitions = SlateTool.create(spec, {
       department: r.department ?? null,
       currency: r.currency ?? null,
       requisitionLines: r['requisition-lines'] ?? r.requisition_lines ?? null,
-      totalAmount: r['total'] ?? r.total ?? null,
+      totalAmount: r.total ?? r.total ?? null,
       justification: r.justification ?? null,
       createdAt: r['created-at'] ?? r.created_at ?? null,
       updatedAt: r['updated-at'] ?? r.updated_at ?? null,
@@ -191,7 +191,7 @@ export let createRequisition = SlateTool.create(spec, {
         department: result.department ?? null,
         currency: result.currency ?? null,
         requisitionLines: result['requisition-lines'] ?? result.requisition_lines ?? null,
-        totalAmount: result['total'] ?? result.total ?? null,
+        totalAmount: result.total ?? result.total ?? null,
         justification: result.justification ?? null,
         createdAt: result['created-at'] ?? result.created_at ?? null,
         updatedAt: result['updated-at'] ?? result.updated_at ?? null,

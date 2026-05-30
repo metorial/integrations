@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageJobInsuranceTool = SlateTool.create(spec, {
   name: 'Manage Job Insurance',
@@ -55,12 +55,12 @@ export let manageJobInsuranceTool = SlateTool.create(spec, {
 
     try {
       insurance = await client.getJobInsurance(jobId);
-    } catch (e) {
+    } catch (_e) {
       /* may not exist */
     }
     try {
       adjuster = await client.getJobAdjuster(jobId);
-    } catch (e) {
+    } catch (_e) {
       /* may not exist */
     }
 

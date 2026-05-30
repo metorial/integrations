@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SuperchatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let channelSchema = z.object({
   channelId: z.string().describe('Unique channel identifier'),

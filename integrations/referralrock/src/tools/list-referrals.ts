@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let referralSchema = z.object({
   referralId: z.string().describe('Unique referral ID'),
@@ -99,7 +99,7 @@ export let listReferrals = SlateTool.create(spec, {
       count: ctx.input.count
     });
 
-    let referrals = ((result.referrals as Array<Record<string, unknown>>) || []).map(r => ({
+    let referrals = ((result.referrals as Record<string, unknown>[]) || []).map(r => ({
       referralId: r.id as string,
       displayName: r.displayName as string | undefined,
       firstName: r.firstName as string | undefined,

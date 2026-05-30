@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickSendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendVoiceTool = SlateTool.create(spec, {
   name: 'Send Voice Message',
@@ -81,7 +81,7 @@ export let sendVoiceTool = SlateTool.create(spec, {
     }));
 
     let totalPrice = sentMessages.reduce(
-      (sum: number, msg: any) => sum + (parseFloat(msg.message_price) || 0),
+      (sum: number, msg: any) => sum + (Number.parseFloat(msg.message_price) || 0),
       0
     );
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SnsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTopic = SlateTool.create(spec, {
   name: 'Get Topic',
@@ -59,22 +59,22 @@ export let getTopic = SlateTool.create(spec, {
 
     return {
       output: {
-        topicArn: attrs['TopicArn'] || ctx.input.topicArn,
-        owner: attrs['Owner'] || undefined,
-        displayName: attrs['DisplayName'] || undefined,
-        policy: attrs['Policy'] || undefined,
-        deliveryPolicy: attrs['DeliveryPolicy'] || undefined,
-        effectiveDeliveryPolicy: attrs['EffectiveDeliveryPolicy'] || undefined,
-        kmsMasterKeyId: attrs['KmsMasterKeyId'] || undefined,
-        fifoTopic: attrs['FifoTopic'] || undefined,
-        contentBasedDeduplication: attrs['ContentBasedDeduplication'] || undefined,
-        subscriptionsConfirmed: attrs['SubscriptionsConfirmed'] || undefined,
-        subscriptionsPending: attrs['SubscriptionsPending'] || undefined,
-        subscriptionsDeleted: attrs['SubscriptionsDeleted'] || undefined,
-        tracingConfig: attrs['TracingConfig'] || undefined,
+        topicArn: attrs.TopicArn || ctx.input.topicArn,
+        owner: attrs.Owner || undefined,
+        displayName: attrs.DisplayName || undefined,
+        policy: attrs.Policy || undefined,
+        deliveryPolicy: attrs.DeliveryPolicy || undefined,
+        effectiveDeliveryPolicy: attrs.EffectiveDeliveryPolicy || undefined,
+        kmsMasterKeyId: attrs.KmsMasterKeyId || undefined,
+        fifoTopic: attrs.FifoTopic || undefined,
+        contentBasedDeduplication: attrs.ContentBasedDeduplication || undefined,
+        subscriptionsConfirmed: attrs.SubscriptionsConfirmed || undefined,
+        subscriptionsPending: attrs.SubscriptionsPending || undefined,
+        subscriptionsDeleted: attrs.SubscriptionsDeleted || undefined,
+        tracingConfig: attrs.TracingConfig || undefined,
         tags: Object.keys(tags).length > 0 ? tags : undefined
       },
-      message: `Retrieved topic **${topicName}** with ${attrs['SubscriptionsConfirmed'] || 0} confirmed subscriptions`
+      message: `Retrieved topic **${topicName}** with ${attrs.SubscriptionsConfirmed || 0} confirmed subscriptions`
     };
   })
   .build();

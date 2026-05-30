@@ -48,8 +48,8 @@ export let fetchOEmbed = async (
   let shareUrl = normalizeToShareUrl(loomUrl);
 
   let params: Record<string, string> = { url: shareUrl };
-  if (options?.maxWidth) params['maxwidth'] = String(options.maxWidth);
-  if (options?.maxHeight) params['maxheight'] = String(options.maxHeight);
+  if (options?.maxWidth) params.maxwidth = String(options.maxWidth);
+  if (options?.maxHeight) params.maxheight = String(options.maxHeight);
 
   let response = await http.get('/v1/oembed', { params });
   let data = response.data;

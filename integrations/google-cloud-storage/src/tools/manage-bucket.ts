@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageBucket = SlateTool.create(spec, {
   name: 'Manage Bucket',

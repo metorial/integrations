@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoodyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let shipmentSchema = z.object({
   carrier: z.string().nullable().describe('Shipping carrier name'),
@@ -139,7 +139,7 @@ export let getOrder = SlateTool.create(spec, {
         workspaceId: o.workspace_id,
         workspaceName: o.workspace_name
       },
-      message: `Order **${o.reference_id}** for **${o.recipient_first_name}${o.recipient_last_name ? ' ' + o.recipient_last_name : ''}** — status: **${o.status}**.`
+      message: `Order **${o.reference_id}** for **${o.recipient_first_name}${o.recipient_last_name ? ` ${o.recipient_last_name}` : ''}** — status: **${o.status}**.`
     };
   })
   .build();

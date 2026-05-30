@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClearoutClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let companyMatchSchema = z.object({
   name: z.string().describe('Company name'),
@@ -39,7 +39,7 @@ Use this to enrich forms that capture company names, validate user-entered domai
     });
 
     let result = await client.autocompleteCompany(ctx.input.companyName);
-    let data = (result.data ?? []) as Array<Record<string, unknown>>;
+    let data = (result.data ?? []) as Record<string, unknown>[];
 
     let matches = data.map(entry => ({
       name: String(entry.name ?? ''),

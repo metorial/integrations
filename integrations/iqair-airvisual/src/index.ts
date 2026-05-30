@@ -2,10 +2,10 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getCityAirQuality,
+  getCityRanking,
   getNearestAirQuality,
   getStationAirQuality,
-  listLocations,
-  getCityRanking
+  listLocations
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

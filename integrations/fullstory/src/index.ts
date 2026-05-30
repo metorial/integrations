@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createOrUpdateUser,
-  getUser,
-  listUsers,
-  deleteUser,
+  createAnnotation,
   createEvent,
-  listSessions,
-  listSegments,
-  getSegment,
+  createOrUpdateUser,
+  deleteUser,
   exportSegment,
   getOperationStatus,
-  createAnnotation,
-  manageWebhookEndpoint,
-  listWebhookEndpoints
+  getSegment,
+  getUser,
+  listSegments,
+  listSessions,
+  listUsers,
+  listWebhookEndpoints,
+  manageWebhookEndpoint
 } from './tools';
 import { fullstoryEvents } from './triggers';
 

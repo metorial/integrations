@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileSchema = z.object({
   fileName: z.string().describe('Resource name of the file (e.g. "files/abc123")'),

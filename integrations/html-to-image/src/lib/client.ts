@@ -80,7 +80,7 @@ export interface TemplateListItem {
 export class Client {
   private axios;
 
-  constructor(private credentials: { userId: string; token: string }) {
+  constructor(credentials: { userId: string; token: string }) {
     this.axios = createAxios({
       baseURL: 'https://hcti.io/v1',
       auth: {
@@ -139,7 +139,7 @@ export class Client {
     if (perPage !== undefined) params.per_page = perPage;
 
     let response = await this.axios.get('/image', { params });
-    let items = response.data as Array<Record<string, unknown>>;
+    let items = response.data as Record<string, unknown>[];
 
     return items.map(item => this.mapImageItem(item));
   }
@@ -213,7 +213,7 @@ export class Client {
 
   async listTemplates(): Promise<TemplateListItem[]> {
     let response = await this.axios.get('/template');
-    let items = response.data as Array<Record<string, unknown>>;
+    let items = response.data as Record<string, unknown>[];
 
     return items.map(item => ({
       templateId: item.template_id as string,
@@ -233,7 +233,7 @@ export class Client {
 
   async getTemplateVersions(templateId: string): Promise<TemplateListItem[]> {
     let response = await this.axios.get(`/template/${templateId}`);
-    let items = response.data as Array<Record<string, unknown>>;
+    let items = response.data as Record<string, unknown>[];
 
     return items.map(item => ({
       templateId: item.template_id as string,

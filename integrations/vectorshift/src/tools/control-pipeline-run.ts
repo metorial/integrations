@@ -1,12 +1,12 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import {
   createApiClient,
-  terminatePipelineRun,
   pausePipelineRun,
-  resumePipelineRun
+  resumePipelineRun,
+  terminatePipelineRun
 } from '../lib/client';
+import { spec } from '../spec';
 
 export let controlPipelineRunTool = SlateTool.create(spec, {
   name: 'Control Pipeline Run',

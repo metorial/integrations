@@ -498,12 +498,7 @@ export class WordPressClient {
   // ──────────────────────────────── Media ────────────────────────────────
 
   async listMedia(
-    params: {
-      mediaType?: string;
-      search?: string;
-      perPage?: number;
-      page?: number;
-    } = {}
+    params: { mediaType?: string; search?: string; perPage?: number; page?: number } = {}
   ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/media`, {
@@ -581,11 +576,7 @@ export class WordPressClient {
   // ──────────────────────────────── Categories ────────────────────────────────
 
   async listCategories(
-    params: {
-      search?: string;
-      perPage?: number;
-      page?: number;
-    } = {}
+    params: { search?: string; perPage?: number; page?: number } = {}
   ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/categories`, {
@@ -679,11 +670,7 @@ export class WordPressClient {
   // ──────────────────────────────── Tags ────────────────────────────────
 
   async listTags(
-    params: {
-      search?: string;
-      perPage?: number;
-      page?: number;
-    } = {}
+    params: { search?: string; perPage?: number; page?: number } = {}
   ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/tags`, {
@@ -738,12 +725,7 @@ export class WordPressClient {
   // ──────────────────────────────── Users ────────────────────────────────
 
   async listUsers(
-    params: {
-      search?: string;
-      perPage?: number;
-      page?: number;
-      roles?: string;
-    } = {}
+    params: { search?: string; perPage?: number; page?: number; roles?: string } = {}
   ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/users`, {
@@ -789,7 +771,7 @@ export class WordPressClient {
       let wpcomHttp = createAxios({
         baseURL: 'https://public-api.wordpress.com/rest/v1.1',
         headers: {
-          Authorization: `Bearer ${this.http.defaults.headers.common?.['Authorization']?.toString().replace('Bearer ', '')}`
+          Authorization: `Bearer ${this.http.defaults.headers.common?.Authorization?.toString().replace('Bearer ', '')}`
         }
       });
       let response = await wpcomHttp.get('/me');
@@ -850,11 +832,7 @@ export class WordPressClient {
   }
 
   async getStatsTopPosts(
-    params: {
-      period?: string;
-      num?: number;
-      date?: string;
-    } = {}
+    params: { period?: string; num?: number; date?: string } = {}
   ): Promise<any> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/stats/top-posts`, {
@@ -873,11 +851,7 @@ export class WordPressClient {
   }
 
   async getStatsReferrers(
-    params: {
-      period?: string;
-      num?: number;
-      date?: string;
-    } = {}
+    params: { period?: string; num?: number; date?: string } = {}
   ): Promise<any> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/stats/referrers`, {

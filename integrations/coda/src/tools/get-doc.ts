@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDocTool = SlateTool.create(spec, {
   name: 'Get Doc',
@@ -44,7 +44,7 @@ export let getDocTool = SlateTool.create(spec, {
         workspaceId: doc.workspace?.id,
         folderId: doc.folder?.id,
         browserLink: doc.browserLink,
-        published: doc.published?.browserLink ? true : false
+        published: !!doc.published?.browserLink
       },
       message: `Retrieved doc **${doc.name}** (${doc.id}).`
     };

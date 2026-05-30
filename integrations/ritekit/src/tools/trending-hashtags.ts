@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RiteKitClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let trendingSchema = z.object({
   tag: z.string().describe('Hashtag text without the # symbol'),

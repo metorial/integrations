@@ -1,3 +1,3 @@
-export * from './search-events';
-export * from './list-coins';
 export * from './list-categories';
+export * from './list-coins';
+export * from './search-events';

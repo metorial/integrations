@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://papertrailapp.com/api/v1',
       headers: {

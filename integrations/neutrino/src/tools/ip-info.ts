@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NeutrinoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let ipInfoTool = SlateTool.create(spec, {
   name: 'IP Geolocation',
@@ -89,7 +89,7 @@ export let ipInfoTool = SlateTool.create(spec, {
         }
       },
       message: result.valid
-        ? `**${result.ip}** is located in ${result.city ? result.city + ', ' : ''}${result.region ? result.region + ', ' : ''}${result.country} (${result.countryCode}). Coordinates: ${result.latitude}, ${result.longitude}.${result.hostname ? ` Hostname: ${result.hostname}` : ''}`
+        ? `**${result.ip}** is located in ${result.city ? `${result.city}, ` : ''}${result.region ? `${result.region}, ` : ''}${result.country} (${result.countryCode}). Coordinates: ${result.latitude}, ${result.longitude}.${result.hostname ? ` Hostname: ${result.hostname}` : ''}`
         : `**${ctx.input.ip}** is not a valid IP address.`
     };
   })

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConnectClient } from '../lib/connect-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let productCodeSchema = z.object({
   type: z.enum(['upc', 'rrc']).describe('Product code type'),
@@ -124,7 +124,7 @@ Requires **Connect OAuth** authentication with the \`connect:fulfillment\` scope
       environment: ctx.config.environment
     });
 
-    let order;
+    let order: any;
     if (ctx.input.fulfillmentType === 'delivery') {
       order = await client.createDeliveryOrder({
         userId: ctx.input.userId,

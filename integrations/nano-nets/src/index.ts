@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  classifyImage,
   createModel,
-  getModel,
+  detectObjects,
   extractDocumentData,
+  extractFullText,
+  getModel,
   getPredictionResults,
   listProcessedFiles,
+  retryFileProcessing,
   reviewFile,
   trainModel,
-  uploadTrainingData,
-  classifyImage,
-  detectObjects,
-  extractFullText,
-  retryFileProcessing
+  uploadTrainingData
 } from './tools';
 import { documentProcessed } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FingertipClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createSite = SlateTool.create(spec, {
   name: 'Create Site',

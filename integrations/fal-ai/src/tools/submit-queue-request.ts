@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FalClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let submitQueueRequest = SlateTool.create(spec, {
   name: 'Submit Queue Request',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getJobFinancialsTool = SlateTool.create(spec, {
   name: 'Get Job Financials',
@@ -67,7 +67,7 @@ export let getJobFinancialsTool = SlateTool.create(spec, {
         try {
           accountingStatus = await client.getAccountingIntegrationStatus(ctx.input.jobId);
           parts.push('accounting status');
-        } catch (e) {
+        } catch (_e) {
           /* optional */
         }
       }
@@ -87,7 +87,7 @@ export let getJobFinancialsTool = SlateTool.create(spec, {
           let result = await client.getFinancialAmendments(ctx.input.financialId);
           amendments = Array.isArray(result) ? result : (result?.items ?? result?.data ?? []);
           parts.push(`${amendments.length} amendment(s)`);
-        } catch (e) {
+        } catch (_e) {
           /* optional */
         }
       }

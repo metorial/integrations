@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { PlanyoClient } from '../lib/client';
 import { RESOURCE_EVENTS } from '../lib/webhook-events';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let resourceEvents = SlateTrigger.create(spec, {
   name: 'Resource Events',
@@ -43,7 +43,7 @@ export let resourceEvents = SlateTrigger.create(spec, {
         try {
           await client.addNotificationCallback(eventCode, webhookUrl);
           registeredEvents.push(eventCode);
-        } catch (e) {
+        } catch (_e) {
           // Continue
         }
       }
@@ -66,7 +66,7 @@ export let resourceEvents = SlateTrigger.create(spec, {
       for (let eventCode of details.registeredEvents) {
         try {
           await client.removeNotificationCallback(eventCode, details.webhookUrl);
-        } catch (e) {
+        } catch (_e) {
           // Best effort
         }
       }

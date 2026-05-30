@@ -150,7 +150,7 @@ export let buildXml = (root: XmlNode, declaration: boolean = true): string => {
       }
     }
     if (!node.children?.length && !node.text) {
-      return xml + '/>';
+      return `${xml}/>`;
     }
     xml += '>';
     if (node.text) {

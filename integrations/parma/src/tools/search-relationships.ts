@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ParmaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let relationshipSchema = z.object({
   relationshipId: z.string().describe('Unique ID of the relationship'),

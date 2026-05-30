@@ -2,24 +2,24 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createClient,
-  createProject,
   createDeal,
+  createProject,
   createTask,
   createTasksFromTemplate,
   listClients,
+  listDeals,
   listProjects,
   listTasks,
-  listDeals,
   listTaskTemplates
 } from './tools';
 import {
-  proposalEvents,
   contractEvents,
-  invoiceEvents,
   dealUpdated,
-  taskUpdated,
   eventScheduled,
-  formSubmitted
+  formSubmitted,
+  invoiceEvents,
+  proposalEvents,
+  taskUpdated
 } from './triggers';
 
 export let provider = Slate.create({

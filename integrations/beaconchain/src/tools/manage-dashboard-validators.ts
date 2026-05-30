@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BeaconchainClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageDashboardValidators = SlateTool.create(spec, {
   name: 'Manage Dashboard Validators',

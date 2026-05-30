@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getPost,
-  listPosts,
-  publishPost,
-  updatePost,
   deletePost,
-  manageDraft,
+  getPost,
   getPublication,
-  manageSeries,
-  manageComments,
   getUser,
-  searchPosts,
+  listPosts,
   listStaticPages,
-  subscribeNewsletter
+  manageComments,
+  manageDraft,
+  manageSeries,
+  publishPost,
+  searchPosts,
+  subscribeNewsletter,
+  updatePost
 } from './tools';
 import { postEvents, staticPageEvents } from './triggers';
 

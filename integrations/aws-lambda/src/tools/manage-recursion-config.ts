@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { createClient } from '../lib/helpers';
-import { lambdaServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { lambdaServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageRecursionConfig = SlateTool.create(spec, {
   name: 'Manage Recursion Config',

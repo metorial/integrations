@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getContentItem = SlateTool.create(spec, {
   name: 'Get Content Item',
@@ -59,7 +59,7 @@ export let getContentItem = SlateTool.create(spec, {
 
     let item = await client.getContentItem(ctx.input.identifier, ctx.input.identifierType);
 
-    let variants;
+    let variants: any;
     if (ctx.input.includeVariants) {
       let rawVariants = await client.listLanguageVariants(item.id, 'id');
       variants = rawVariants.map(v => ({

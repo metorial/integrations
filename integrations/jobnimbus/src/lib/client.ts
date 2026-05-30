@@ -16,7 +16,7 @@ export interface ListResponse<T> {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
@@ -28,9 +28,9 @@ export class Client {
 
   private buildQueryParams(params?: ListParams): Record<string, string> {
     let query: Record<string, string> = {};
-    if (params?.from !== undefined) query['from'] = String(params.from);
-    if (params?.size !== undefined) query['size'] = String(params.size);
-    if (params?.filter) query['filter'] = JSON.stringify(params.filter);
+    if (params?.from !== undefined) query.from = String(params.from);
+    if (params?.size !== undefined) query.size = String(params.size);
+    if (params?.filter) query.filter = JSON.stringify(params.filter);
     return query;
   }
 

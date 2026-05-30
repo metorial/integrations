@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let optionalString = (value: unknown) =>
   typeof value === 'string' && value.length > 0 ? value : undefined;
@@ -10,7 +10,9 @@ let optionalNumber = (value: unknown) =>
   typeof value === 'number' && Number.isFinite(value) ? value : undefined;
 
 let optionalStringArray = (value: unknown) =>
-  Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : undefined;
+  Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : undefined;
 
 export let searchOrganizations = SlateTool.create(spec, {
   name: 'Search Organizations',

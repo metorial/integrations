@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SearchConsoleClient } from '../lib/client';
 import { googleSearchConsoleActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageSite = SlateTool.create(spec, {
   name: 'Manage Site',

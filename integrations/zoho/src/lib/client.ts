@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
-import { getApiBaseUrl, getDeskBaseUrl, getPeopleBaseUrl, getProjectsBaseUrl } from './urls';
-import type { Datacenter } from './urls';
 import { zohoApiError } from './errors';
+import type { Datacenter } from './urls';
+import { getApiBaseUrl, getDeskBaseUrl, getPeopleBaseUrl, getProjectsBaseUrl } from './urls';
 
 let createZohoAxios = (config: Parameters<typeof createAxios>[0], operation: string) => {
   let http = createAxios(config);

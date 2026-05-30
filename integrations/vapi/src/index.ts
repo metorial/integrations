@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageAssistant,
-  listAssistants,
-  manageCall,
-  listCalls,
   getCallTranscript,
-  managePhoneNumber,
+  listAssistants,
+  listCalls,
+  listFiles,
   listPhoneNumbers,
-  manageSquad,
-  manageWorkflow,
-  manageTool,
+  manageAssistant,
+  manageCall,
   manageCampaign,
-  listFiles
+  managePhoneNumber,
+  manageSquad,
+  manageTool,
+  manageWorkflow
 } from './tools';
-import { callEvent, assistantRequest, toolCallRequest } from './triggers';
+import { assistantRequest, callEvent, toolCallRequest } from './triggers';
 
 export let provider = Slate.create({
   spec,

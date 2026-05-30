@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let reviewPullRequest = SlateTool.create(spec, {
   name: 'Review Pull Request',
@@ -54,7 +54,10 @@ Optionally include inline comments on specific files and lines. Can also request
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let { owner, repo, pullNumber, action } = ctx.input;
 
     if (action === 'request_reviewers') {

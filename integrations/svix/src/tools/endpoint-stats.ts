@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getEndpointStats = SlateTool.create(spec, {
   name: 'Get Endpoint Stats',
@@ -15,8 +15,14 @@ export let getEndpointStats = SlateTool.create(spec, {
     z.object({
       applicationId: z.string().describe('Application ID or UID'),
       endpointId: z.string().describe('Endpoint ID or UID'),
-      since: z.string().optional().describe('Filter stats to deliveries after this ISO timestamp'),
-      until: z.string().optional().describe('Filter stats to deliveries before this ISO timestamp'),
+      since: z
+        .string()
+        .optional()
+        .describe('Filter stats to deliveries after this ISO timestamp'),
+      until: z
+        .string()
+        .optional()
+        .describe('Filter stats to deliveries before this ISO timestamp'),
       includeSecret: z
         .boolean()
         .optional()

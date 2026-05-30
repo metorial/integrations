@@ -109,10 +109,10 @@ export class CuttlyClient {
       short: params.url
     };
 
-    if (params.name) queryParams['name'] = params.name;
-    if (params.userDomain) queryParams['userDomain'] = '1';
-    if (params.noTitle) queryParams['noTitle'] = '1';
-    if (params.publicStats) queryParams['public'] = '1';
+    if (params.name) queryParams.name = params.name;
+    if (params.userDomain) queryParams.userDomain = '1';
+    if (params.noTitle) queryParams.noTitle = '1';
+    if (params.publicStats) queryParams.public = '1';
 
     let response = await this.http.get('', { params: queryParams });
     let urlData = response.data?.url;
@@ -132,28 +132,28 @@ export class CuttlyClient {
       edit: params.shortLink
     };
 
-    if (params.name !== undefined) queryParams['name'] = params.name;
-    if (params.source !== undefined) queryParams['source'] = params.source;
-    if (params.title !== undefined) queryParams['title'] = params.title;
-    if (params.tag !== undefined) queryParams['tag'] = params.tag;
-    if (params.unique !== undefined) queryParams['unique'] = String(params.unique);
-    if (params.mobile !== undefined) queryParams['mobile'] = params.mobile;
-    if (params.destination !== undefined) queryParams['destination'] = params.destination;
-    if (params.packageId !== undefined) queryParams['package_id'] = params.packageId;
-    if (params.referrer !== undefined) queryParams['referrer'] = params.referrer;
-    if (params.expire !== undefined) queryParams['expire'] = String(params.expire);
-    if (params.expireCond !== undefined) queryParams['expireCond'] = params.expireCond;
+    if (params.name !== undefined) queryParams.name = params.name;
+    if (params.source !== undefined) queryParams.source = params.source;
+    if (params.title !== undefined) queryParams.title = params.title;
+    if (params.tag !== undefined) queryParams.tag = params.tag;
+    if (params.unique !== undefined) queryParams.unique = String(params.unique);
+    if (params.mobile !== undefined) queryParams.mobile = params.mobile;
+    if (params.destination !== undefined) queryParams.destination = params.destination;
+    if (params.packageId !== undefined) queryParams.package_id = params.packageId;
+    if (params.referrer !== undefined) queryParams.referrer = params.referrer;
+    if (params.expire !== undefined) queryParams.expire = String(params.expire);
+    if (params.expireCond !== undefined) queryParams.expireCond = params.expireCond;
     if (params.expireRedirect !== undefined)
-      queryParams['expireRedirect'] = params.expireRedirect;
+      queryParams.expireRedirect = params.expireRedirect;
     if (params.expireUnique !== undefined)
-      queryParams['expireUnique'] = String(params.expireUnique);
-    if (params.abtest !== undefined) queryParams['abtest'] = String(params.abtest);
-    if (params.abtestB !== undefined) queryParams['abtest_b'] = String(params.abtestB);
+      queryParams.expireUnique = String(params.expireUnique);
+    if (params.abtest !== undefined) queryParams.abtest = String(params.abtest);
+    if (params.abtestB !== undefined) queryParams.abtest_b = String(params.abtestB);
     if (params.abtestBVariation !== undefined)
-      queryParams['abtest_bvariation'] = params.abtestBVariation;
-    if (params.abtestC !== undefined) queryParams['abtest_c'] = String(params.abtestC);
+      queryParams.abtest_bvariation = params.abtestBVariation;
+    if (params.abtestC !== undefined) queryParams.abtest_c = String(params.abtestC);
     if (params.abtestCVariation !== undefined)
-      queryParams['abtest_cvariation'] = params.abtestCVariation;
+      queryParams.abtest_cvariation = params.abtestCVariation;
 
     let response = await this.http.get('', { params: queryParams });
     let editData = response.data?.url;
@@ -230,8 +230,8 @@ export class CuttlyClient {
       stats: params.shortLink
     };
 
-    if (params.dateFrom) queryParams['date_from'] = params.dateFrom;
-    if (params.dateTo) queryParams['date_to'] = params.dateTo;
+    if (params.dateFrom) queryParams.date_from = params.dateFrom;
+    if (params.dateTo) queryParams.date_to = params.dateTo;
 
     let response = await this.http.get('', { params: queryParams });
     let statsData = response.data?.stats;

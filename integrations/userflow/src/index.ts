@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createOrUpdateUser,
-  getUser,
-  listUsers,
-  deleteUser,
   createOrUpdateGroup,
-  getGroup,
-  listGroups,
+  createOrUpdateUser,
   deleteGroup,
-  removeGroupMembership,
-  trackEvent,
-  listEventDefinitions,
-  listContent,
+  deleteUser,
   getContent,
-  manageWebhookSubscription
+  getGroup,
+  getUser,
+  listContent,
+  listEventDefinitions,
+  listGroups,
+  listUsers,
+  manageWebhookSubscription,
+  removeGroupMembership,
+  trackEvent
 } from './tools';
-import { userEvents, groupEvents, eventTracked } from './triggers';
+import { eventTracked, groupEvents, userEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

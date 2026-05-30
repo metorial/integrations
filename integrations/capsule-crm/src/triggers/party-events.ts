@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let partyEvents = SlateTrigger.create(spec, {
   name: 'Party Events',

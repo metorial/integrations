@@ -23,8 +23,8 @@ export class MozClient {
     };
 
     if (isBasicAuth) {
-      v2Headers['Authorization'] = config.token;
-      v3Headers['Authorization'] = config.token;
+      v2Headers.Authorization = config.token;
+      v3Headers.Authorization = config.token;
     } else {
       v2Headers['x-moz-token'] = config.token;
       v3Headers['x-moz-token'] = config.token;

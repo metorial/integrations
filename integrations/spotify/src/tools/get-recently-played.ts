@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SpotifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRecentlyPlayed = SlateTool.create(spec, {
   name: 'Get Recently Played',

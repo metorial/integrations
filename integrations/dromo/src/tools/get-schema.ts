@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DromoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let schemaFieldSchema = z.object({
   key: z.string().describe('Unique key for the field'),

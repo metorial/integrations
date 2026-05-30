@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { DiscordClient } from '../lib/client';
 import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newMessage = SlateTrigger.create(spec, {
   name: 'New Message',

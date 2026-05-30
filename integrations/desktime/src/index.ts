@@ -1,10 +1,10 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createProject,
   getCompanyInfo,
   getEmployee,
   getEmployees,
-  createProject,
   startProjectTracking,
   stopProjectTracking
 } from './tools';

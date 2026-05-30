@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Auth0Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createUserTool = SlateTool.create(spec, {
   name: 'Create User',

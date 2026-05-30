@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  queryAnalytics,
-  getRealtimeVisitors,
-  sendEvent,
-  createSite,
-  updateSite,
-  deleteSite,
-  getSite,
-  listSites,
-  createGoal,
-  listGoals,
-  deleteGoal,
-  listCustomProperties,
   createCustomProperty,
-  deleteCustomProperty,
+  createGoal,
   createSharedLink,
-  listGuests,
+  createSite,
+  deleteCustomProperty,
+  deleteGoal,
+  deleteSite,
+  getRealtimeVisitors,
+  getSite,
   inviteGuest,
+  listCustomProperties,
+  listGoals,
+  listGuests,
+  listSites,
+  listTeams,
+  queryAnalytics,
   removeGuest,
-  listTeams
+  sendEvent,
+  updateSite
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -56,7 +56,7 @@ export class Client {
     queryParams?: Record<string, string>
   ): Promise<JsonApiResource> {
     let params = new URLSearchParams(queryParams);
-    let url = `/${resourceType}/${resourceId}${params.toString() ? '?' + params.toString() : ''}`;
+    let url = `/${resourceType}/${resourceId}${params.toString() ? `?${params.toString()}` : ''}`;
     let response = await api.get(url, { headers: this.headers() });
     return response.data.data;
   }
@@ -66,7 +66,7 @@ export class Client {
     params?: Record<string, string>
   ): Promise<PaginatedResult<JsonApiResource>> {
     let query = new URLSearchParams(params);
-    let url = `/${resourceType}${query.toString() ? '?' + query.toString() : ''}`;
+    let url = `/${resourceType}${query.toString() ? `?${query.toString()}` : ''}`;
     let response = await api.get(url, { headers: this.headers() });
     let body: JsonApiResponse = response.data;
     let records = Array.isArray(body.data) ? body.data : [body.data];

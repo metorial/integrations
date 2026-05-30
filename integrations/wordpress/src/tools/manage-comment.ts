@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, extractCommentSummary } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, extractCommentSummary } from '../lib/helpers';
+import { spec } from '../spec';
 
 let commentOutputSchema = z.object({
   commentId: z.string().describe('Unique identifier of the comment'),

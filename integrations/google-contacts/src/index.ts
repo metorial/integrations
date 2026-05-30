@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createContact,
-  getContact,
-  updateContact,
-  deleteContact,
-  listContacts,
-  searchContacts,
-  createContactGroup,
-  updateContactGroup,
-  deleteContactGroup,
-  listContactGroups,
-  getContactGroup,
-  modifyGroupMembers,
-  listOtherContacts,
-  searchOtherContacts,
   copyOtherContact,
-  searchDirectory
+  createContact,
+  createContactGroup,
+  deleteContact,
+  deleteContactGroup,
+  getContact,
+  getContactGroup,
+  listContactGroups,
+  listContacts,
+  listOtherContacts,
+  modifyGroupMembers,
+  searchContacts,
+  searchDirectory,
+  searchOtherContacts,
+  updateContact,
+  updateContactGroup
 } from './tools';
 import { contactChanged, inboundWebhook } from './triggers';
 

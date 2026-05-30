@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { bitbucketServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let branchRestrictionKinds = [
   'push',
@@ -94,11 +94,15 @@ export let manageBranchRestrictionsTool = SlateTool.create(spec, {
       branchType: z
         .string()
         .optional()
-        .describe('Branching model branch type, required when branchMatchKind is branching_model'),
+        .describe(
+          'Branching model branch type, required when branchMatchKind is branching_model'
+        ),
       pattern: z
         .string()
         .optional()
-        .describe('Glob pattern for branch matching. Defaults to * when creating with glob matching.'),
+        .describe(
+          'Glob pattern for branch matching. Defaults to * when creating with glob matching.'
+        ),
       value: z
         .number()
         .optional()
@@ -221,8 +225,7 @@ export let manageBranchRestrictionsTool = SlateTool.create(spec, {
         kind: ctx.input.kind,
         branchMatchKind,
         branchType: ctx.input.branchType,
-        pattern:
-          branchMatchKind === 'glob' ? (ctx.input.pattern ?? '*') : ctx.input.pattern,
+        pattern: branchMatchKind === 'glob' ? (ctx.input.pattern ?? '*') : ctx.input.pattern,
         value: ctx.input.value,
         userUuids: ctx.input.userUuids,
         groupSlugs: ctx.input.groupSlugs

@@ -96,7 +96,7 @@ export class Client {
   async whisperFromUrl(url: string, options: WhisperOptions = {}): Promise<WhisperResponse> {
     let ax = this.getAxios();
     let params = this.buildWhisperParams(options);
-    params['url_in_post'] = 'true';
+    params.url_in_post = 'true';
 
     let response = await ax.post('/whisper', url, {
       params,
@@ -159,7 +159,7 @@ export class Client {
     let ax = this.getAxios();
     let params: Record<string, any> = { whisper_hash: whisperHash };
     if (textOnly) {
-      params['text_only'] = 'true';
+      params.text_only = 'true';
     }
 
     let response = await ax.get('/whisper-retrieve', { params });
@@ -282,29 +282,29 @@ export class Client {
   private buildWhisperParams(options: WhisperOptions): Record<string, any> {
     let params: Record<string, any> = {};
 
-    if (options.mode) params['mode'] = options.mode;
-    if (options.outputMode) params['output_mode'] = options.outputMode;
-    if (options.pageSeparator !== undefined) params['page_seperator'] = options.pageSeparator;
-    if (options.pagesToExtract) params['pages_to_extract'] = options.pagesToExtract;
+    if (options.mode) params.mode = options.mode;
+    if (options.outputMode) params.output_mode = options.outputMode;
+    if (options.pageSeparator !== undefined) params.page_seperator = options.pageSeparator;
+    if (options.pagesToExtract) params.pages_to_extract = options.pagesToExtract;
     if (options.medianFilterSize !== undefined)
-      params['median_filter_size'] = options.medianFilterSize;
+      params.median_filter_size = options.medianFilterSize;
     if (options.gaussianBlurRadius !== undefined)
-      params['gaussian_blur_radius'] = options.gaussianBlurRadius;
+      params.gaussian_blur_radius = options.gaussianBlurRadius;
     if (options.lineSplitterTolerance !== undefined)
-      params['line_splitter_tolerance'] = options.lineSplitterTolerance;
+      params.line_splitter_tolerance = options.lineSplitterTolerance;
     if (options.lineSplitterStrategy)
-      params['line_splitter_strategy'] = options.lineSplitterStrategy;
+      params.line_splitter_strategy = options.lineSplitterStrategy;
     if (options.horizontalStretchFactor !== undefined)
-      params['horizontal_stretch_factor'] = options.horizontalStretchFactor;
+      params.horizontal_stretch_factor = options.horizontalStretchFactor;
     if (options.markVerticalLines !== undefined)
-      params['mark_vertical_lines'] = options.markVerticalLines;
+      params.mark_vertical_lines = options.markVerticalLines;
     if (options.markHorizontalLines !== undefined)
-      params['mark_horizontal_lines'] = options.markHorizontalLines;
-    if (options.tag) params['tag'] = options.tag;
-    if (options.fileName) params['file_name'] = options.fileName;
-    if (options.useWebhook) params['use_webhook'] = options.useWebhook;
-    if (options.webhookMetadata) params['webhook_metadata'] = options.webhookMetadata;
-    if (options.addLineNos !== undefined) params['add_line_nos'] = options.addLineNos;
+      params.mark_horizontal_lines = options.markHorizontalLines;
+    if (options.tag) params.tag = options.tag;
+    if (options.fileName) params.file_name = options.fileName;
+    if (options.useWebhook) params.use_webhook = options.useWebhook;
+    if (options.webhookMetadata) params.webhook_metadata = options.webhookMetadata;
+    if (options.addLineNos !== undefined) params.add_line_nos = options.addLineNos;
 
     return params;
   }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listBookings = SlateTool.create(spec, {
   name: 'List Bookings',
@@ -46,16 +46,16 @@ export let listBookings = SlateTool.create(spec, {
     });
 
     let params: Record<string, any> = {};
-    if (ctx.input.status) params['status'] = ctx.input.status;
-    if (ctx.input.attendeeEmail) params['attendeeEmail'] = ctx.input.attendeeEmail;
-    if (ctx.input.attendeeName) params['attendeeName'] = ctx.input.attendeeName;
-    if (ctx.input.eventTypeId) params['eventTypeId'] = ctx.input.eventTypeId;
-    if (ctx.input.eventTypeIds) params['eventTypeIds'] = ctx.input.eventTypeIds;
-    if (ctx.input.afterStart) params['afterStart'] = ctx.input.afterStart;
-    if (ctx.input.beforeEnd) params['beforeEnd'] = ctx.input.beforeEnd;
-    if (ctx.input.sortStart) params['sortStart'] = ctx.input.sortStart;
-    if (ctx.input.take) params['take'] = ctx.input.take;
-    if (ctx.input.skip) params['skip'] = ctx.input.skip;
+    if (ctx.input.status) params.status = ctx.input.status;
+    if (ctx.input.attendeeEmail) params.attendeeEmail = ctx.input.attendeeEmail;
+    if (ctx.input.attendeeName) params.attendeeName = ctx.input.attendeeName;
+    if (ctx.input.eventTypeId) params.eventTypeId = ctx.input.eventTypeId;
+    if (ctx.input.eventTypeIds) params.eventTypeIds = ctx.input.eventTypeIds;
+    if (ctx.input.afterStart) params.afterStart = ctx.input.afterStart;
+    if (ctx.input.beforeEnd) params.beforeEnd = ctx.input.beforeEnd;
+    if (ctx.input.sortStart) params.sortStart = ctx.input.sortStart;
+    if (ctx.input.take) params.take = ctx.input.take;
+    if (ctx.input.skip) params.skip = ctx.input.skip;
 
     let bookings = await client.listBookings(params);
 

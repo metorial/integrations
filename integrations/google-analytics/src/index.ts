@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  runReport,
-  runRealtimeReport,
-  runFunnelReport,
-  sendEvents,
-  validateEvents,
+  auditDataAccess,
   getMetadata,
   listAccountsAndProperties,
-  manageDataStreams,
+  manageAudiences,
   manageCustomDimensions,
   manageCustomMetrics,
+  manageDataStreams,
   manageKeyEvents,
-  manageAudiences,
-  auditDataAccess
+  runFunnelReport,
+  runRealtimeReport,
+  runReport,
+  sendEvents,
+  validateEvents
 } from './tools';
-import { propertyChange, inboundWebhook } from './triggers';
+import { inboundWebhook, propertyChange } from './triggers';
 
 export let provider = Slate.create({
   spec,

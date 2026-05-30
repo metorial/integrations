@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import * as containerRegistry from '../lib/container-registry';
+import { spec } from '../spec';
 
 export let listRegistries = SlateTool.create(spec, {
   name: 'List Container Registries',

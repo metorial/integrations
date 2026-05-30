@@ -10,7 +10,7 @@ export interface ClientConfig {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let baseURL = config.apiUrl || DEFAULT_API_URL;
     // Extract base URL (remove /graphql suffix if present for baseURL)
     let base = baseURL.replace(/\/graphql$/, '');

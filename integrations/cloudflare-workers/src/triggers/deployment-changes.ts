@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let deploymentVersionSchema = z.object({
   versionId: z.string().describe('Deployed version UUID'),
@@ -53,7 +53,7 @@ export let deploymentChanges = SlateTrigger.create(spec, {
 
       let previousDeployments: Record<string, string> = ctx.state?.knownDeployments || {};
       let currentDeployments: Record<string, string> = {};
-      let inputs: Array<any> = [];
+      let inputs: any[] = [];
       let isFirstRun = Object.keys(previousDeployments).length === 0;
 
       for (let script of scriptList) {

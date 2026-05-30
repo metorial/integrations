@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { listForms, getFormItems, getFormResults, manageWebhooks } from './tools';
+import { getFormItems, getFormResults, listForms, manageWebhooks } from './tools';
 import { resultCompleted } from './triggers';
 
 export let provider = Slate.create({

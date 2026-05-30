@@ -1,18 +1,18 @@
 import { createAxios } from 'slates';
 import type {
+  UniOneDomainInfo,
   UniOneEmailMessage,
+  UniOneEventDump,
+  UniOneProject,
   UniOneSendResponse,
+  UniOneSuppressionEntry,
+  UniOneSystemInfo,
+  UniOneTag,
   UniOneTemplate,
   UniOneTemplateListItem,
-  UniOneSuppressionEntry,
-  UniOneDomainInfo,
+  UniOneValidationResult,
   UniOneWebhookConfig,
-  UniOneWebhookInfo,
-  UniOneEventDump,
-  UniOneTag,
-  UniOneProject,
-  UniOneSystemInfo,
-  UniOneValidationResult
+  UniOneWebhookInfo
 } from './types';
 
 let BASE_URLS: Record<string, string> = {
@@ -25,7 +25,7 @@ export class Client {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; datacenter?: string }) {
-    let baseURL = BASE_URLS[config.datacenter ?? 'auto'] ?? BASE_URLS['auto'];
+    let baseURL = BASE_URLS[config.datacenter ?? 'auto'] ?? BASE_URLS.auto;
 
     this.axios = createAxios({
       baseURL
@@ -110,7 +110,7 @@ export class Client {
   }): Promise<{ status: string; suppressions: UniOneSuppressionEntry[] }> {
     let body: Record<string, unknown> = { email: params.email };
     if (params.allProjects !== undefined) {
-      body['all_projects'] = params.allProjects ? 1 : 0;
+      body.all_projects = params.allProjects ? 1 : 0;
     }
     let response = await this.axios.post('/suppression/get.json', body);
     return response.data;
@@ -124,11 +124,11 @@ export class Client {
     limit?: number;
   }): Promise<{ status: string; suppressions: UniOneSuppressionEntry[]; cursor?: string }> {
     let body: Record<string, unknown> = {};
-    if (params?.cause) body['cause'] = params.cause;
-    if (params?.source) body['source'] = params.source;
-    if (params?.startTime) body['start_time'] = params.startTime;
-    if (params?.cursor) body['cursor'] = params.cursor;
-    if (params?.limit) body['limit'] = params.limit;
+    if (params?.cause) body.cause = params.cause;
+    if (params?.source) body.source = params.source;
+    if (params?.startTime) body.start_time = params.startTime;
+    if (params?.cursor) body.cursor = params.cursor;
+    if (params?.limit) body.limit = params.limit;
     let response = await this.axios.post('/suppression/list.json', body);
     return response.data;
   }
@@ -206,9 +206,9 @@ export class Client {
       start_time: params.startTime,
       end_time: params.endTime
     };
-    if (params.limit !== undefined) body['limit'] = params.limit;
-    if (params.allEvents !== undefined) body['all_events'] = params.allEvents ? 1 : 0;
-    if (params.filter) body['filter'] = params.filter;
+    if (params.limit !== undefined) body.limit = params.limit;
+    if (params.allEvents !== undefined) body.all_events = params.allEvents ? 1 : 0;
+    if (params.filter) body.filter = params.filter;
     let response = await this.axios.post('/event-dump/create.json', body);
     return response.data;
   }
@@ -250,11 +250,11 @@ export class Client {
     backendId?: number;
   }): Promise<{ status: string; project: UniOneProject }> {
     let body: Record<string, unknown> = { name: params.name };
-    if (params.country) body['country'] = params.country;
-    if (params.sendEnabled !== undefined) body['send_enabled'] = params.sendEnabled;
+    if (params.country) body.country = params.country;
+    if (params.sendEnabled !== undefined) body.send_enabled = params.sendEnabled;
     if (params.customUnsubscribeUrlEnabled !== undefined)
-      body['custom_unsubscribe_url_enabled'] = params.customUnsubscribeUrlEnabled;
-    if (params.backendId !== undefined) body['backend_id'] = params.backendId;
+      body.custom_unsubscribe_url_enabled = params.customUnsubscribeUrlEnabled;
+    if (params.backendId !== undefined) body.backend_id = params.backendId;
     let response = await this.axios.post('/project/create.json', body);
     return response.data;
   }
@@ -268,12 +268,12 @@ export class Client {
     backendId?: number;
   }): Promise<{ status: string }> {
     let body: Record<string, unknown> = { id: params.projectId };
-    if (params.name) body['name'] = params.name;
-    if (params.country) body['country'] = params.country;
-    if (params.sendEnabled !== undefined) body['send_enabled'] = params.sendEnabled;
+    if (params.name) body.name = params.name;
+    if (params.country) body.country = params.country;
+    if (params.sendEnabled !== undefined) body.send_enabled = params.sendEnabled;
     if (params.customUnsubscribeUrlEnabled !== undefined)
-      body['custom_unsubscribe_url_enabled'] = params.customUnsubscribeUrlEnabled;
-    if (params.backendId !== undefined) body['backend_id'] = params.backendId;
+      body.custom_unsubscribe_url_enabled = params.customUnsubscribeUrlEnabled;
+    if (params.backendId !== undefined) body.backend_id = params.backendId;
     let response = await this.axios.post('/project/update.json', body);
     return response.data;
   }

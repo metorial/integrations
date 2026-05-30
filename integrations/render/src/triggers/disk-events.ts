@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { RenderClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let diskEvents = SlateTrigger.create(spec, {
   name: 'Disk Events',

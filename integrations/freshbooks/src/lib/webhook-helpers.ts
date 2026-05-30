@@ -1,4 +1,4 @@
-import { FreshBooksClient } from './client';
+import type { FreshBooksClient } from './client';
 
 export let parseWebhookRequest = async (
   request: Request

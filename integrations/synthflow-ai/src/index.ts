@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listAgents,
-  getAgent,
   createAgent,
-  updateAgent,
   deleteAgent,
-  makeCall,
-  getCall,
-  listCalls,
-  manageKnowledgeBase,
-  listVoices,
-  manageContact,
-  manageAction,
-  listPhoneNumbers,
   exportAnalytics,
+  getAgent,
+  getCall,
+  listAgents,
+  listCalls,
+  listPhoneNumbers,
+  listVoices,
+  makeCall,
+  manageAction,
+  manageContact,
+  manageKnowledgeBase,
   manageSubaccount,
-  runSimulation
+  runSimulation,
+  updateAgent
 } from './tools';
-import { postCallWebhook, inboundCallWebhook, callCompletedPolling } from './triggers';
+import { callCompletedPolling, inboundCallWebhook, postCallWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { optionalBoolean, optionalNumber, optionalString } from '../lib/output';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getIssueTool = SlateTool.create(spec, {
   name: 'Get Issue Details',
@@ -60,7 +60,7 @@ export let getIssueTool = SlateTool.create(spec, {
 
     let issue = await client.getIssue(ctx.input.issueId);
 
-    let latestEvent: any = undefined;
+    let latestEvent: any;
     if (ctx.input.includeLatestEvent) {
       try {
         latestEvent = await client.getLatestEvent(ctx.input.issueId);
@@ -69,7 +69,7 @@ export let getIssueTool = SlateTool.create(spec, {
       }
     }
 
-    let tags: any[] | undefined = undefined;
+    let tags: any[] | undefined;
     if (ctx.input.includeTags) {
       try {
         tags = await client.listIssueTags(ctx.input.issueId);

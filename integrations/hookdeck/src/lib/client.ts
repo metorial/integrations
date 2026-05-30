@@ -1,20 +1,20 @@
 import { createAxios } from '@slates/provider';
 import { hookdeckApiError } from './errors';
 import type {
-  PaginationParams,
-  PaginatedResponse,
-  HookdeckSource,
-  HookdeckDestination,
-  HookdeckConnection,
-  HookdeckEvent,
-  HookdeckRequest,
-  HookdeckIssue,
-  HookdeckTransformation,
-  HookdeckBookmark,
-  HookdeckIssueTrigger,
   HookdeckAttempt,
+  HookdeckBookmark,
+  HookdeckBulkOperation,
+  HookdeckConnection,
+  HookdeckDestination,
+  HookdeckEvent,
+  HookdeckIssue,
+  HookdeckIssueTrigger,
   HookdeckMetricsResponse,
-  HookdeckBulkOperation
+  HookdeckRequest,
+  HookdeckSource,
+  HookdeckTransformation,
+  PaginatedResponse,
+  PaginationParams
 } from './types';
 
 type DataResponse<T> = {

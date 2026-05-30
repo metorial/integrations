@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ImgixClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let assetSchema = z.object({
   originPath: z.string().describe('Origin path of the asset in the storage backend'),

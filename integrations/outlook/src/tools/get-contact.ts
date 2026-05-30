@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { optionalEmailAddresses, optionalString } from '../lib/output';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressSchema = z
   .object({

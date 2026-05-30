@@ -59,13 +59,13 @@ export class Client {
     let queryParams: Record<string, string> = {};
 
     if (params?.collectedAfter) {
-      queryParams['collected_after'] = params.collectedAfter;
+      queryParams.collected_after = params.collectedAfter;
     }
     if (params?.wisepopId) {
-      queryParams['wisepop_id'] = String(params.wisepopId);
+      queryParams.wisepop_id = String(params.wisepopId);
     }
     if (params?.pageSize) {
-      queryParams['page_size'] = String(params.pageSize);
+      queryParams.page_size = String(params.pageSize);
     }
 
     let response = await this.axios.get('/contacts', { params: queryParams });
@@ -106,10 +106,10 @@ export class Client {
   async deleteUserData(params: DeleteUserDataParams): Promise<{ deleted: number }> {
     let body: Record<string, string> = {};
     if (params.email) {
-      body['email'] = params.email;
+      body.email = params.email;
     }
     if (params.phone) {
-      body['phone'] = params.phone;
+      body.phone = params.phone;
     }
 
     let response = await this.axios.delete('/data-privacy', {

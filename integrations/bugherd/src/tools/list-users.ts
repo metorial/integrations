@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugherdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userSchema = z.object({
   userId: z.number().describe('User ID'),
@@ -36,7 +36,7 @@ export let listUsers = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new BugherdClient(ctx.auth.token);
 
-    let rawUsers;
+    let rawUsers: any;
     if (ctx.input.role === 'members') {
       rawUsers = await client.listMembers();
     } else if (ctx.input.role === 'guests') {
@@ -45,7 +45,7 @@ export let listUsers = SlateTool.create(spec, {
       rawUsers = await client.listUsers();
     }
 
-    let users = rawUsers.map(u => ({
+    let users = rawUsers.map((u: any) => ({
       userId: u.id,
       email: u.email,
       displayName: u.display_name,
@@ -56,7 +56,7 @@ export let listUsers = SlateTool.create(spec, {
 
     return {
       output: { users },
-      message: `Found **${users.length}** ${ctx.input.role === 'all' ? '' : ctx.input.role + ' '}user(s).`
+      message: `Found **${users.length}** ${ctx.input.role === 'all' ? '' : `${ctx.input.role} `}user(s).`
     };
   })
   .build();

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let audioBibleSchema = z.object({
   audioBibleId: z.string().describe('Unique identifier for the audio Bible version'),

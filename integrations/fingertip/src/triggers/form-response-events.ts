@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { FingertipClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let formResponseEvents = SlateTrigger.create(spec, {
   name: 'Form Response Events',

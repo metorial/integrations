@@ -81,7 +81,7 @@ export class Client {
     return this.get('/station', { station, city, state, country });
   }
 
-  async getCityRanking(): Promise<Array<CityRankingEntry>> {
+  async getCityRanking(): Promise<CityRankingEntry[]> {
     return this.get('/city_ranking');
   }
 }
@@ -130,10 +130,10 @@ export interface CityData {
     weather: WeatherData;
     pollution: PollutionData;
   };
-  forecasts?: Array<Record<string, any>>;
+  forecasts?: Record<string, any>[];
   history?: {
-    weather?: Array<Record<string, any>>;
-    pollution?: Array<Record<string, any>>;
+    weather?: Record<string, any>[];
+    pollution?: Record<string, any>[];
   };
 }
 

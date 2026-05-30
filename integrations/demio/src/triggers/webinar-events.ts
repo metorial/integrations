@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { DemioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let webinarEvents = SlateTrigger.create(spec, {
   name: 'Webinar Events',

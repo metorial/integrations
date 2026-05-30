@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DataRobotClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let datasetSchema = z.object({
   datasetId: z.string().describe('Unique dataset identifier'),

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { RipplingClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let employeeLifecycle = SlateTrigger.create(spec, {
   name: 'Employee Lifecycle Events',

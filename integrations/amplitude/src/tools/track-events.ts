@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AmplitudeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventSchema = z.object({
   userId: z
@@ -117,7 +117,7 @@ export let trackEventsTool = SlateTool.create(spec, {
       region: ctx.config.region
     });
 
-    let result;
+    let result: any;
     if (ctx.input.useBatchApi) {
       result = await client.batchTrackEvents(ctx.input.events, {
         minIdLength: ctx.input.minIdLength

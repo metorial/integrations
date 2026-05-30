@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { MondayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let columnValueChangesTrigger = SlateTrigger.create(spec, {
   name: 'Column Value Changes',

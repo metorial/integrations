@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProducts,
+  calculateBatchPrice,
+  cancelOrder,
+  getOrder,
+  getOrderBatch,
   getProduct,
   listCards,
-  sendGift,
-  getOrder,
-  listOrders,
-  cancelOrder,
-  updateOrderExpiration,
-  getOrderBatch,
   listOrderBatches,
   listOrderBatchOrders,
-  calculateBatchPrice,
+  listOrders,
   listPaymentMethods,
-  listWorkspaces
+  listProducts,
+  listWorkspaces,
+  sendGift,
+  updateOrderExpiration
 } from './tools';
-import { orderEvents, orderBatchEvents } from './triggers';
+import { orderBatchEvents, orderEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

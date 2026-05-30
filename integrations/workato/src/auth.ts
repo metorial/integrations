@@ -1,4 +1,4 @@
-import { SlateAuth, axios } from 'slates';
+import { axios, SlateAuth } from 'slates';
 import { z } from 'zod';
 import { getApiBaseUrl } from './lib/urls';
 

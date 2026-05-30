@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  validateEmail,
-  scoreEmail,
   findEmail,
+  getAccountInfo,
   getActivityData,
-  getAccountInfo
+  scoreEmail,
+  validateEmail
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

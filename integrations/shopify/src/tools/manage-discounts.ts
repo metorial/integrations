@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { ShopifyClient } from '../lib/client';
 import { shopifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let priceRuleSchema = z.object({
   priceRuleId: z.string(),
@@ -194,8 +194,7 @@ Supports:
 
     if (ctx.input.action === 'delete_code') {
       if (!ctx.input.priceRuleId) throw shopifyServiceError('priceRuleId is required');
-      if (!ctx.input.discountCodeId)
-        throw shopifyServiceError('discountCodeId is required');
+      if (!ctx.input.discountCodeId) throw shopifyServiceError('discountCodeId is required');
       await client.deleteDiscountCode(ctx.input.priceRuleId, ctx.input.discountCodeId);
       return {
         output: { deleted: true },

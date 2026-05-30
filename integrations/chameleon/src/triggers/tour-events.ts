@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ChameleonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let tourEvents = SlateTrigger.create(spec, {
   name: 'Tour Events',

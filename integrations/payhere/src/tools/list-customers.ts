@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PayhereClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCustomers = SlateTool.create(spec, {
   name: 'List Customers',

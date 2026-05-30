@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WriterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let invokeAgent = SlateTool.create(spec, {
   name: 'Invoke No-Code Agent',
@@ -53,7 +53,7 @@ export let invokeAgent = SlateTool.create(spec, {
     let results = await client.generateFromApplication(ctx.input.applicationId, inputs);
 
     let preview = results[0]?.suggestion || '';
-    if (preview.length > 200) preview = preview.substring(0, 200) + '...';
+    if (preview.length > 200) preview = `${preview.substring(0, 200)}...`;
 
     return {
       output: { outputs: results },

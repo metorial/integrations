@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendPostcard,
-  sendNotecard,
-  sendLetter,
-  sendGiftcard,
-  manageRecipients,
+  listGiftcardBrands,
+  listHandwritingStyles,
+  listTemplates,
   manageMailingLists,
   manageOrders,
-  listTemplates,
-  listHandwritingStyles,
-  listGiftcardBrands,
+  manageRecipients,
   manageSubAccounts,
-  radiusSearch
+  radiusSearch,
+  sendGiftcard,
+  sendLetter,
+  sendNotecard,
+  sendPostcard
 } from './tools';
 import {
-  orderStatusEvents,
   mailDeliveryEvents,
   mailStatusEvents,
+  orderStatusEvents,
   qrScanEvents
 } from './triggers';
 

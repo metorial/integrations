@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DropboxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileRequestSchema = z.object({
   fileRequestId: z.string().describe('Unique ID of the file request'),

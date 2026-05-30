@@ -1,2 +1,2 @@
-export { tableChanges } from './table-changes';
 export * from './inbound-webhook';
+export { tableChanges } from './table-changes';

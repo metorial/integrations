@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let storageEvents = SlateTrigger.create(spec, {
   name: 'Storage Events',
@@ -48,7 +48,7 @@ export let storageEvents = SlateTrigger.create(spec, {
             events: ['cluster.storage', 'keyspace.storage']
           });
           registrations.push({ databaseName: db.name, webhookId: webhook.id });
-        } catch (e) {
+        } catch (_e) {
           // May fail if database already has 5 webhooks
         }
       }
@@ -71,7 +71,7 @@ export let storageEvents = SlateTrigger.create(spec, {
       for (let reg of details.registrations) {
         try {
           await client.deleteWebhook(reg.databaseName, reg.webhookId);
-        } catch (e) {
+        } catch (_e) {
           // Best effort cleanup
         }
       }

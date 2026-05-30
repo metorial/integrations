@@ -1,33 +1,33 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listContacts,
-  getContact,
   createContact,
-  updateContact,
-  listSalesInvoices,
-  getSalesInvoice,
-  createSalesInvoice,
-  manageSalesInvoice,
-  manageRecurringInvoices,
-  listEstimates,
   createEstimate,
-  manageEstimate,
-  manageProducts,
-  manageLedgerAccounts,
-  listTaxRates,
-  manageTimeEntries,
-  manageProjects,
+  createSalesInvoice,
+  getContact,
+  getSalesInvoice,
+  linkBooking,
+  listContacts,
+  listEstimates,
   listFinancialMutations,
-  linkBooking
+  listSalesInvoices,
+  listTaxRates,
+  manageEstimate,
+  manageLedgerAccounts,
+  manageProducts,
+  manageProjects,
+  manageRecurringInvoices,
+  manageSalesInvoice,
+  manageTimeEntries,
+  updateContact
 } from './tools';
 import {
   contactEvents,
-  salesInvoiceEvents,
+  documentEvents,
   estimateEvents,
   paymentEvents,
-  documentEvents,
-  recurringInvoiceEvents
+  recurringInvoiceEvents,
+  salesInvoiceEvents
 } from './triggers';
 
 export let provider = Slate.create({

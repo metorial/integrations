@@ -5,7 +5,7 @@ let BASE_URL = 'https://bidsketch.com/api/v1';
 export class BidsketchClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

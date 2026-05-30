@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let plantTrees = SlateTool.create(spec, {
   name: 'Plant Trees',
@@ -94,7 +94,7 @@ export let plantTrees = SlateTool.create(spec, {
     let accountCode = ctx.config.accountCode;
     let isGifting = ctx.input.recipients && ctx.input.recipients.length > 0;
 
-    let result;
+    let result: any;
 
     if (isGifting) {
       result = await client.plantForOthers({

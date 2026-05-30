@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { VimeoClient } from '../lib/client';
-import { videoSchema, mapVideo } from '../lib/schemas';
-import { spec } from '../spec';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { VimeoClient } from '../lib/client';
+import { mapVideo, videoSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let newVideoTrigger = SlateTrigger.create(spec, {
   name: 'New Video Uploaded',

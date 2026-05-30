@@ -8,7 +8,7 @@ export interface ClientConfig {
 export class PandaDocClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let authHeader =
       config.authType === 'api_key' ? `API-Key ${config.token}` : `Bearer ${config.token}`;
 
@@ -298,9 +298,9 @@ export interface CreateDocumentParams {
   fields?: Record<string, { value: any }>;
   metadata?: Record<string, string>;
   tags?: string[];
-  pricing_tables?: Array<any>;
-  content_placeholders?: Array<any>;
-  images?: Array<any>;
+  pricing_tables?: any[];
+  content_placeholders?: any[];
+  images?: any[];
 }
 
 export interface ListDocumentsParams {

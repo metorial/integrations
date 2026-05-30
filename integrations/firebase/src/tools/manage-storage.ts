@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { StorageClient } from '../lib/client';
 import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let storageObjectSchema = z.object({
   objectName: z.string().describe('Full object path/name in the bucket'),

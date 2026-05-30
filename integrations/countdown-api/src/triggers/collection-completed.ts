@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
-let downloadLinksSchema = z
+let _downloadLinksSchema = z
   .object({
     pages: z
       .array(z.string())

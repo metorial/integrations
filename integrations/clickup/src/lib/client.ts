@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class ClickUpClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.clickup.com/api/v2',
       headers: {

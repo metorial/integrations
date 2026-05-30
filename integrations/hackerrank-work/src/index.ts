@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTests,
-  getTest,
+  createInterview,
   createTest,
-  updateTest,
+  getCandidateReport,
+  getInterview,
+  getQuestion,
+  getTest,
   inviteCandidate,
   listCandidates,
-  getCandidateReport,
-  createInterview,
   listInterviews,
-  getInterview,
-  manageUser,
+  listQuestions,
+  listTeams,
+  listTests,
   listUsers,
   manageTeam,
-  listTeams,
-  listQuestions,
-  getQuestion
+  manageUser,
+  updateTest
 } from './tools';
 import { candidateStatusChange, inboundWebhook } from './triggers';
 

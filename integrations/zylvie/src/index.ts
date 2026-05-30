@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createProduct,
-  updateProduct,
-  deleteProduct,
   createCoupon,
-  updateCoupon,
+  createProduct,
   deleteCoupon,
+  deleteProduct,
+  getAccount,
   listCoupons,
-  verifyLicenseKey,
   redeemLicenseKey,
   refundLicenseKey,
-  verifySubscription,
-  getAccount
+  updateCoupon,
+  updateProduct,
+  verifyLicenseKey,
+  verifySubscription
 } from './tools';
 import {
-  newSaleTrigger,
-  newLeadTrigger,
   newAffiliateTrigger,
+  newLeadTrigger,
+  newSaleTrigger,
   newSubscriptionTrigger,
   subscriptionCancellationTrigger
 } from './triggers';

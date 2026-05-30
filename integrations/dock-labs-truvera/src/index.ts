@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageDid,
-  issueCredential,
-  getCredentials,
-  deleteCredential,
-  verifyCredential,
-  manageSchema,
-  manageRegistry,
-  manageAnchor,
-  createProofRequest,
-  getProofRequests,
   createPresentation,
+  createProofRequest,
+  deleteCredential,
+  getCredentials,
+  getJobStatus,
+  getProofRequests,
+  issueCredential,
+  manageAnchor,
+  manageDid,
   manageProfile,
+  manageRegistry,
+  manageSchema,
   sendMessage,
-  getJobStatus
+  verifyCredential
 } from './tools';
 import {
   credentialEvents,
   didEvents,
+  proofEvents,
   registryEvents,
-  schemaEvents,
-  proofEvents
+  schemaEvents
 } from './triggers';
 
 export let provider = Slate.create({

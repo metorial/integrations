@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transactionSchema = z.object({
   transactionId: z.string().describe('Unique identifier of the transaction'),
@@ -117,7 +117,7 @@ export let listTransactions = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let data;
+    let data: any;
     if (ctx.input.cardId) {
       data = await client.listTransactionsByCard(ctx.input.cardId, ctx.input.programId, {
         from: ctx.input.from,

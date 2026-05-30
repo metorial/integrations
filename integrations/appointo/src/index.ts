@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProducts,
-  listBookings,
-  createBooking,
-  rescheduleBooking,
   cancelBooking,
-  updateBooking,
-  listAppointments,
+  createBooking,
   getAvailability,
+  listAppointments,
+  listBookings,
+  listProducts,
+  listSubscriptionContracts,
+  rescheduleBooking,
   updateAppointmentConfig,
-  listSubscriptionContracts
+  updateBooking
 } from './tools';
 import { bookingEvents, inboundWebhook } from './triggers';
 

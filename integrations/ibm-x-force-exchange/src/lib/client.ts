@@ -87,9 +87,9 @@ export class XForceClient {
     limit?: number
   ): Promise<any> {
     let params: Record<string, string | number> = {};
-    if (startDate) params['startDate'] = startDate;
-    if (endDate) params['endDate'] = endDate;
-    if (limit) params['limit'] = limit;
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    if (limit) params.limit = limit;
     let res = await this.http.get(`/vulnerabilities`, { params });
     return res.data;
   }
@@ -168,10 +168,10 @@ export class XForceClient {
     limit?: number;
   }): Promise<any> {
     let queryParams: Record<string, string | number> = {};
-    if (params?.type) queryParams['type'] = params.type;
-    if (params?.startDate) queryParams['startDate'] = params.startDate;
-    if (params?.endDate) queryParams['endDate'] = params.endDate;
-    if (params?.limit) queryParams['limit'] = params.limit;
+    if (params?.type) queryParams.type = params.type;
+    if (params?.startDate) queryParams.startDate = params.startDate;
+    if (params?.endDate) queryParams.endDate = params.endDate;
+    if (params?.limit) queryParams.limit = params.limit;
     let res = await this.http.get(`/report`, { params: queryParams });
     return res.data;
   }

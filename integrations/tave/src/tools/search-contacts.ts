@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TavePublicClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactSchema = z.object({
   contactId: z.string().describe('ID of the contact'),
@@ -84,7 +84,7 @@ export let searchContacts = SlateTool.create(spec, {
         contacts,
         totalCount
       },
-      message: `Found **${contacts.length}** contact(s)${ctx.input.query ? ' matching "' + ctx.input.query + '"' : ''}${totalCount > contacts.length ? ' (showing page ' + (ctx.input.page ?? 1) + ' of results)' : ''}.`
+      message: `Found **${contacts.length}** contact(s)${ctx.input.query ? ` matching "${ctx.input.query}"` : ''}${totalCount > contacts.length ? ` (showing page ${ctx.input.page ?? 1} of results)` : ''}.`
     };
   })
   .build();

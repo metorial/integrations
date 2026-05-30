@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let bannerGenerated = SlateTrigger.create(spec, {
   name: 'Banner Generated',

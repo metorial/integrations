@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let lineItemSchema = z.object({
   type: z.string().nullable().describe('Line item type (e.g. donation)'),

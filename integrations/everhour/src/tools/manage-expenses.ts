@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EverhourClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let expenseSchema = z.object({
   expenseId: z.number().describe('Expense ID'),
@@ -64,7 +64,7 @@ export let listExpenses = SlateTool.create(spec, {
       userId: e.user
     }));
 
-    let categories;
+    let categories: any;
     if (ctx.input.includeCategories) {
       let cats = await client.listExpenseCategories();
       categories = cats.map((c: any) => ({

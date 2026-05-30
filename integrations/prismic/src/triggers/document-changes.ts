@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ContentApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let documentChanges = SlateTrigger.create(spec, {
   name: 'Document Changes',
@@ -43,7 +43,7 @@ export let documentChanges = SlateTrigger.create(spec, {
       }
 
       return {
-        inputs: documentIds.map(docId => ({
+        inputs: documentIds.map(_docId => ({
           eventType: 'published_or_unpublished' as const,
           documentIds,
           masterRef,

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { FUNNEL_COMPUTE_MUTATION } from '../lib/graphql';
+import { spec } from '../spec';
 
 let filterDataStringSchema = z.object({
   value: z.string().optional(),

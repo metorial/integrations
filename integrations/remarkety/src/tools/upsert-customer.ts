@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { RemarketyClient, formatCustomerPayload } from '../lib/client';
+import { formatCustomerPayload, RemarketyClient } from '../lib/client';
 import { customerSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let upsertCustomerTool = SlateTool.create(spec, {
   name: 'Create or Update Customer',

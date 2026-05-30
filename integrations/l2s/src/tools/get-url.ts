@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { L2sClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUrl = SlateTool.create(spec, {
   name: 'Get URL Details',

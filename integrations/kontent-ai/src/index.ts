@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listContentItems,
-  getContentItem,
   createContentItem,
+  deleteAsset,
   deleteContentItem,
-  upsertLanguageVariant,
-  manageWorkflow,
-  listContentTypes,
+  getAsset,
+  getContentItem,
   getContentType,
   listAssets,
-  getAsset,
-  updateAsset,
-  deleteAsset,
+  listCollections,
+  listContentItems,
+  listContentTypes,
+  listLanguages,
   listTaxonomyGroups,
   listWorkflows,
-  listLanguages,
-  listCollections
+  manageWorkflow,
+  updateAsset,
+  upsertLanguageVariant
 } from './tools';
-import { contentItemEvents, assetEvents, contentTypeEvents, taxonomyEvents } from './triggers';
+import { assetEvents, contentItemEvents, contentTypeEvents, taxonomyEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

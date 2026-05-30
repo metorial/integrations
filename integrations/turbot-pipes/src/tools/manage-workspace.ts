@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createWorkspace = SlateTool.create(spec, {
   name: 'Create Workspace',
@@ -56,7 +56,7 @@ export let createWorkspace = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let workspace;
+    let workspace: any;
     if (ctx.input.ownerType === 'org') {
       workspace = await client.createOrgWorkspace(ownerHandle, {
         handle: ctx.input.handle,
@@ -138,7 +138,7 @@ export let updateWorkspace = SlateTool.create(spec, {
       dbVolumeSizeBytes: ctx.input.dbVolumeSizeBytes
     };
 
-    let workspace;
+    let workspace: any;
     if (ctx.input.ownerType === 'org') {
       workspace = await client.updateOrgWorkspace(
         ownerHandle,
@@ -199,7 +199,7 @@ export let deleteWorkspace = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let workspace;
+    let workspace: any;
     if (ctx.input.ownerType === 'org') {
       workspace = await client.deleteOrgWorkspace(ownerHandle, ctx.input.workspaceHandle);
     } else {

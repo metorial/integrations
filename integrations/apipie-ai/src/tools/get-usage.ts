@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUsage = SlateTool.create(spec, {
   name: 'Get Usage History',
@@ -71,7 +71,7 @@ export let getUsage = SlateTool.create(spec, {
     }));
 
     let totalCost = queries.reduce(
-      (sum: number, q: any) => sum + parseFloat(q.cost || '0'),
+      (sum: number, q: any) => sum + Number.parseFloat(q.cost || '0'),
       0
     );
 

@@ -1,20 +1,20 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  executeQuery,
-  listTables,
-  describeTable,
-  insertRows,
-  updateRows,
   deleteRows,
-  manageTable,
-  manageIndexes,
+  describeTable,
+  executeQuery,
+  insertRows,
   listSchemas,
+  listTables,
+  manageIndexes,
   manageRoles,
   manageSchemas,
-  manageViews
+  manageTable,
+  manageViews,
+  updateRows
 } from './tools';
-import { tableChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, tableChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

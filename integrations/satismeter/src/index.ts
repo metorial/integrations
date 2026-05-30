@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listSurveysTool,
-  listResponsesTool,
-  getSurveyStatisticsTool,
-  upsertUserTool,
-  listUsersTool,
   deleteUserTool,
-  trackEventTool,
-  insertResponseTool,
+  getSurveyStatisticsTool,
   getUnsubscribesTool,
-  updateUnsubscribesTool
+  insertResponseTool,
+  listResponsesTool,
+  listSurveysTool,
+  listUsersTool,
+  trackEventTool,
+  updateUnsubscribesTool,
+  upsertUserTool
 } from './tools';
 import { surveyResponseTrigger } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RocketadminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAuditLogs = SlateTool.create(spec, {
   name: 'Get Audit Logs',
@@ -68,7 +68,7 @@ export let getAuditLogs = SlateTool.create(spec, {
 
     let logs = Array.isArray(result)
       ? result
-      : (result.logs as Array<Record<string, unknown>>) || [];
+      : (result.logs as Record<string, unknown>[]) || [];
     let pagination = !Array.isArray(result)
       ? {
           total: result.total_count as number | undefined,

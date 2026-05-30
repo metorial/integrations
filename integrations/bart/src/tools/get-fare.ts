@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BartClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fareTypeSchema = z.object({
   amount: z.string().describe('Fare amount in USD'),

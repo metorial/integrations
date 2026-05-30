@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createMember,
-  updateMember,
-  findUser,
-  listMembers,
-  deactivateMember,
-  manageGroup,
-  listGroups,
-  createThread,
-  createComment,
   createChannel,
-  listChannels,
+  createComment,
   createEvent,
+  createMember,
+  createThread,
+  deactivateMember,
+  findUser,
+  getRecentPosts,
+  listChannels,
+  listGroups,
+  listMembers,
+  manageGroup,
   sendDirectMessage,
   sendInvitation,
-  getRecentPosts
+  updateMember
 } from './tools';
 import { communityEvents, newPosts } from './triggers';
 

@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createSubscriber,
-  updateSubscriber,
-  getSubscriber,
-  deleteSubscribers,
-  listSubscribers,
-  manageSubscriberGroups,
-  manageGroup,
-  listGroups,
   createCampaign,
+  createSubscriber,
+  deleteSubscribers,
+  getCampaignStatistics,
+  getSubscriber,
   listCampaigns,
+  listGroups,
+  listSegments,
+  listSubscribers,
+  manageGroup,
+  manageSubscriberGroups,
   sendTransactionalEmail,
   startWorkflow,
-  listSegments,
-  getCampaignStatistics
+  updateSubscriber
 } from './tools';
-import { subscriberEvents, campaignEvents, groupEvents } from './triggers';
+import { campaignEvents, groupEvents, subscriberEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

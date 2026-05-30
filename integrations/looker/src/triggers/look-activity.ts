@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { LookerClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let lookActivity = SlateTrigger.create(spec, {
   name: 'Look Changes',

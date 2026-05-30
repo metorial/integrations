@@ -1,23 +1,23 @@
 import { createAxios } from 'slates';
 import type {
-  Session,
-  CreateSessionParams,
-  SessionDebugUrls,
-  SessionLog,
-  SessionRecordingEvent,
   Context,
   ContextCreateResponse,
+  CreateSessionParams,
   Extension,
+  FetchPageParams,
+  FetchPageResponse,
   Project,
   ProjectUsage,
-  FetchPageParams,
-  FetchPageResponse
+  Session,
+  SessionDebugUrls,
+  SessionLog,
+  SessionRecordingEvent
 } from './types';
 
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string }) {
+  constructor(params: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://api.browserbase.com/v1',
       headers: {
@@ -36,8 +36,8 @@ export class Client {
 
   async listSessions(options?: { status?: string; query?: string }): Promise<Session[]> {
     let params: Record<string, string> = {};
-    if (options?.status) params['status'] = options.status;
-    if (options?.query) params['q'] = options.query;
+    if (options?.status) params.status = options.status;
+    if (options?.query) params.q = options.query;
     let res = await this.http.get('/sessions', { params });
     return (res.data as unknown[]).map((s: unknown) => this.mapSession(s));
   }

@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { InstagramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPublishingLimitTool = SlateTool.create(spec, {
   name: 'Get Publishing Limit',
@@ -21,7 +21,9 @@ export let getPublishingLimitTool = SlateTool.create(spec, {
       since: z
         .string()
         .optional()
-        .describe('Optional Unix timestamp or strtotime-compatible start time for quota usage.')
+        .describe(
+          'Optional Unix timestamp or strtotime-compatible start time for quota usage.'
+        )
     })
   )
   .output(

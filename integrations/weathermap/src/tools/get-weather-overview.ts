@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OpenWeatherClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getWeatherOverview = SlateTool.create(spec, {
   name: 'Get Weather Overview',

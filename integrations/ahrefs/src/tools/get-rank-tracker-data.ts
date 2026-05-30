@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRankTrackerData = SlateTool.create(spec, {
   name: 'Get Rank Tracker Data',
@@ -45,7 +45,7 @@ Use to monitor keyword rankings over time and track SEO progress.`,
     let client = new Client({ token: ctx.auth.token });
     let reportType = ctx.input.reportType || 'overview';
 
-    let result;
+    let result: any;
     switch (reportType) {
       case 'competitors':
         result = await client.getRankTrackerCompetitorsOverview({

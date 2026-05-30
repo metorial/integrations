@@ -1,12 +1,12 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import {
-  toPunycode,
-  fromPunycode,
-  extractDomain,
-  extractExtension
-} from '../lib/domain-utils';
 import { z } from 'zod';
+import {
+  extractDomain,
+  extractExtension,
+  fromPunycode,
+  toPunycode
+} from '../lib/domain-utils';
+import { spec } from '../spec';
 
 export let domainUtilities = SlateTool.create(spec, {
   name: 'Domain Utilities',

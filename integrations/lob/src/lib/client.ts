@@ -29,7 +29,7 @@ export interface LobAddress {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     let encoded = Buffer.from(`${config.token}:`).toString('base64');
     this.axios = createAxios({
       baseURL: BASE_URL,

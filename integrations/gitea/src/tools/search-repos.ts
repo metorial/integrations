@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GiteaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchRepos = SlateTool.create(spec, {
   name: 'Search Repositories',
@@ -59,7 +59,7 @@ export let searchRepos = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new GiteaClient({ token: ctx.auth.token, baseUrl: ctx.auth.baseUrl });
 
-    let repos;
+    let repos: any;
     if (ctx.input.owner) {
       repos = await client.searchRepos({
         q: ctx.input.query,
@@ -69,7 +69,7 @@ export let searchRepos = SlateTool.create(spec, {
         order: ctx.input.order
       });
       repos = repos.filter(
-        r => r.owner.login.toLowerCase() === ctx.input.owner!.toLowerCase()
+        (r: any) => r.owner.login.toLowerCase() === ctx.input.owner!.toLowerCase()
       );
     } else if (ctx.input.query) {
       repos = await client.searchRepos({
@@ -88,7 +88,7 @@ export let searchRepos = SlateTool.create(spec, {
       });
     }
 
-    let repositories = repos.map(r => ({
+    let repositories = repos.map((r: any) => ({
       repositoryId: r.id,
       name: r.name,
       fullName: r.full_name,

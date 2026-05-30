@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPurchaseOrder = SlateTool.create(spec, {
   name: 'Get Purchase Order',
@@ -53,7 +53,7 @@ export let getPurchaseOrder = SlateTool.create(spec, {
         currency: po.currency ?? null,
         paymentTerms: po['payment-term'] ?? po.payment_term ?? null,
         orderLines: po['order-lines'] ?? po.order_lines ?? null,
-        totalAmount: po['total'] ?? po.total ?? null,
+        totalAmount: po.total ?? po.total ?? null,
         createdAt: po['created-at'] ?? po.created_at ?? null,
         updatedAt: po['updated-at'] ?? po.updated_at ?? null,
         createdBy: po['created-by'] ?? po.created_by ?? null,

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let leadFormSubmit = SlateTrigger.create(spec, {
   name: 'Lead Form Submission',

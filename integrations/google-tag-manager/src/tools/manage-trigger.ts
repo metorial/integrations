@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GtmClient } from '../lib/client';
 import { googleTagManagerActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let parameterSchema = z.object({
   type: z.string().optional().describe('Parameter type'),

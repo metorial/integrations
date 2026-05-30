@@ -1,30 +1,30 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendMessageTool,
-  editMessageTool,
-  deleteMessageTool,
-  forwardMessageTool,
-  sendMediaTool,
-  getChatTool,
-  updateChatTool,
-  manageChatMemberTool,
-  pinMessageTool,
-  sendPollTool,
-  stopPollTool,
-  sendInvoiceTool,
   answerCallbackQueryTool,
   answerInlineQueryTool,
-  getFileTool
+  deleteMessageTool,
+  editMessageTool,
+  forwardMessageTool,
+  getChatTool,
+  getFileTool,
+  manageChatMemberTool,
+  pinMessageTool,
+  sendInvoiceTool,
+  sendMediaTool,
+  sendMessageTool,
+  sendPollTool,
+  stopPollTool,
+  updateChatTool
 } from './tools';
 import {
-  messageReceivedTrigger,
   callbackQueryReceivedTrigger,
-  inlineQueryReceivedTrigger,
-  chatMemberUpdatedTrigger,
-  pollUpdatedTrigger,
-  paymentReceivedTrigger,
   chatBoostUpdatedTrigger,
+  chatMemberUpdatedTrigger,
+  inlineQueryReceivedTrigger,
+  messageReceivedTrigger,
+  paymentReceivedTrigger,
+  pollUpdatedTrigger,
   reactionUpdatedTrigger
 } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HabiticaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let challengeOutputSchema = z.object({
   challengeId: z.string().describe('Challenge ID'),

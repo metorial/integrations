@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { flattenResource, buildFilterParams } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { buildFilterParams, flattenResource } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listMailings = SlateTool.create(spec, {
   name: 'List Mailings',
@@ -55,7 +55,7 @@ Mailings include delivery tracking data such as bounced, delivered, opened, and 
     if (ctx.input.pageSize) params['page[size]'] = ctx.input.pageSize.toString();
     if (ctx.input.pageOffset !== undefined)
       params['page[offset]'] = ctx.input.pageOffset.toString();
-    if (ctx.input.sortBy) params['sort'] = ctx.input.sortBy;
+    if (ctx.input.sortBy) params.sort = ctx.input.sortBy;
 
     let result = await client.listMailings(params);
 

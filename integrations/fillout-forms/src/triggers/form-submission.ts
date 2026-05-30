@@ -1,16 +1,16 @@
 import { SlateTrigger } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import {
-  questionResponseSchema,
   calculationResponseSchema,
-  urlParameterResponseSchema,
-  schedulingResponseSchema,
+  loginResponseSchema,
   paymentResponseSchema,
+  questionResponseSchema,
   quizResponseSchema,
-  loginResponseSchema
+  schedulingResponseSchema,
+  urlParameterResponseSchema
 } from '../lib/types';
+import { spec } from '../spec';
 
 export let formSubmission = SlateTrigger.create(spec, {
   name: 'Form Submission',

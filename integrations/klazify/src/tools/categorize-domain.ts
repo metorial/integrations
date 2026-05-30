@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KlazifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let categorySchema = z.object({
   confidence: z.number().describe('Confidence score from 0 to 1'),

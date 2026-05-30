@@ -1,10 +1,7 @@
 {
   "name": "@metorial/airtable",
   "description": "Create, read, update, and delete records in Airtable bases and tables. Manage base schemas including creating tables and fields. Filter records using formulas, sort by fields, and scope queries to specific views. Upsert records to find, create, or update in a single call. Upload attachments to records, read and write record comments, list accessible bases, and receive real-time base change events through webhooks.",
-  "categories": [
-    "apis-and-http-requests",
-    "task-and-project-management"
-  ],
+  "categories": ["apis-and-http-requests", "task-and-project-management"],
   "skills": [
     "create and update records",
     "filter and sort records",

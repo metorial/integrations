@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BlazeMeterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let testRunCompleted = SlateTrigger.create(spec, {
   name: 'Performance Test Run Event',

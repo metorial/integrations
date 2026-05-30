@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
 
-import { createLocalSlateTransport, createSlatesClient } from '@slates/client';
-import type { SlateAuthenticationMethod, SlatesAction } from '@slates/proto';
-import { $ } from 'bun';
-import { access, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { access, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createLocalSlateTransport, createSlatesClient } from '@slates/client';
+import type { SlateAuthenticationMethod, SlatesAction } from '@slates/proto';
+import { $ } from 'bun';
 
 type JsonValue =
   | null
@@ -668,7 +668,7 @@ function renderSummary(report: ValidationReport) {
 
   if (report.affectedIntegrations.length === 0) {
     lines.push('No integrations were changed in this pull request.');
-    return lines.join('\n').trimEnd() + '\n';
+    return `${lines.join('\n').trimEnd()}\n`;
   }
 
   for (const comparison of report.comparisons) {
@@ -704,7 +704,7 @@ function renderSummary(report: ValidationReport) {
     lines.push('');
   }
 
-  return lines.join('\n').trimEnd() + '\n';
+  return `${lines.join('\n').trimEnd()}\n`;
 }
 
 function renderComment(report: ValidationReport) {
@@ -719,7 +719,7 @@ function renderComment(report: ValidationReport) {
   if (report.affectedIntegrations.length === 0) {
     lines.push('No integrations were changed in this pull request.');
     lines.push('');
-    return lines.join('\n').trimEnd() + '\n';
+    return `${lines.join('\n').trimEnd()}\n`;
   }
 
   lines.push('### Changed integrations');
@@ -780,7 +780,7 @@ function renderComment(report: ValidationReport) {
     lines.push('');
   }
 
-  return lines.join('\n').trimEnd() + '\n';
+  return `${lines.join('\n').trimEnd()}\n`;
 }
 
 function formatBaseProviderName(comparison: IntegrationComparison) {

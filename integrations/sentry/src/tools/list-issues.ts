@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { optionalBoolean, optionalNumber, optionalString } from '../lib/output';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listIssuesTool = SlateTool.create(spec, {
   name: 'List Issues',

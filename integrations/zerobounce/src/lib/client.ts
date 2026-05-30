@@ -12,7 +12,7 @@ export class Client {
 
   constructor(config: { token: string; region: string }) {
     this.apiKey = config.token;
-    let baseURL = BASE_URLS[config.region] || BASE_URLS['default'];
+    let baseURL = BASE_URLS[config.region] || BASE_URLS.default;
     this.axios = createAxios({ baseURL });
   }
 
@@ -27,12 +27,11 @@ export class Client {
       api_key: this.apiKey,
       email: params.email
     };
-    if (params.ipAddress) queryParams['ip_address'] = params.ipAddress;
-    if (params.timeout !== undefined) queryParams['timeout'] = String(params.timeout);
+    if (params.ipAddress) queryParams.ip_address = params.ipAddress;
+    if (params.timeout !== undefined) queryParams.timeout = String(params.timeout);
     if (params.activityData !== undefined)
-      queryParams['activity_data'] = String(params.activityData);
-    if (params.verifyPlus !== undefined)
-      queryParams['verify_plus'] = String(params.verifyPlus);
+      queryParams.activity_data = String(params.activityData);
+    if (params.verifyPlus !== undefined) queryParams.verify_plus = String(params.verifyPlus);
 
     let response = await this.axios.get('/validate', { params: queryParams });
     return response.data;
@@ -51,9 +50,9 @@ export class Client {
         ip_address: e.ipAddress || null
       }))
     };
-    if (params.timeout !== undefined) body['timeout'] = params.timeout;
-    if (params.activityData !== undefined) body['activity_data'] = params.activityData;
-    if (params.verifyPlus !== undefined) body['verify_plus'] = params.verifyPlus;
+    if (params.timeout !== undefined) body.timeout = params.timeout;
+    if (params.activityData !== undefined) body.activity_data = params.activityData;
+    if (params.verifyPlus !== undefined) body.verify_plus = params.verifyPlus;
 
     let response = await this.axios.post('/validatebatch', body);
     return response.data;
@@ -79,11 +78,11 @@ export class Client {
     let queryParams: Record<string, string> = {
       api_key: this.apiKey
     };
-    if (params.domain) queryParams['domain'] = params.domain;
-    if (params.companyName) queryParams['company_name'] = params.companyName;
-    if (params.firstName) queryParams['first_name'] = params.firstName;
-    if (params.middleName) queryParams['middle_name'] = params.middleName;
-    if (params.lastName) queryParams['last_name'] = params.lastName;
+    if (params.domain) queryParams.domain = params.domain;
+    if (params.companyName) queryParams.company_name = params.companyName;
+    if (params.firstName) queryParams.first_name = params.firstName;
+    if (params.middleName) queryParams.middle_name = params.middleName;
+    if (params.lastName) queryParams.last_name = params.lastName;
 
     let response = await this.axios.get('/guessformat', { params: queryParams });
     return response.data;

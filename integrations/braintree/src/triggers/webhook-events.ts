@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { verifyAndParseWebhook, generateChallengeResponse } from '../lib/webhook';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { generateChallengeResponse, verifyAndParseWebhook } from '../lib/webhook';
+import { spec } from '../spec';
 
 let WEBHOOK_KIND_MAP: Record<string, string> = {
   // Subscription events

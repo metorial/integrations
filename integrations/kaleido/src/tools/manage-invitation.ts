@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { KaleidoClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageInvitation = SlateTool.create(spec, {
   name: 'Manage Invitation',

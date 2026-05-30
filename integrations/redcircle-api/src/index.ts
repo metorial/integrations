@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchProducts,
-  getProductDetails,
-  getReviews,
   browseCategories,
   checkStoreStock,
-  manageZipcodes,
-  manageCollections,
+  getAccount,
   getCollectionResults,
+  getProductDetails,
+  getReviews,
+  manageCollections,
   manageDestinations,
-  getAccount
+  manageZipcodes,
+  searchProducts
 } from './tools';
 import { collectionCompleted } from './triggers';
 

@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  webSearch,
   bingSearch,
-  newsSearch,
   imageSearch,
-  videoSearch,
-  productSearch,
   jobSearch,
+  newsSearch,
+  productSearch,
   scholarSearch,
-  serpRanking
+  serpRanking,
+  videoSearch,
+  webSearch
 } from './tools';
 import { searchEvents } from './triggers';
 

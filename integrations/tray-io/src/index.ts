@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listConnectors,
-  getConnectorOperations,
   callConnector,
-  listUsers,
+  createAuthentication,
+  createSolutionInstance,
   createUser,
+  deleteAuthentication,
+  deleteSolutionInstance,
   deleteUser,
   generateUserToken,
-  listSolutions,
-  listSolutionInstances,
+  getConnectorOperations,
   getSolutionInstance,
-  createSolutionInstance,
-  updateSolutionInstance,
-  deleteSolutionInstance,
-  upgradeSolutionInstance,
   listAuthentications,
-  createAuthentication,
-  deleteAuthentication
+  listConnectors,
+  listSolutionInstances,
+  listSolutions,
+  listUsers,
+  updateSolutionInstance,
+  upgradeSolutionInstance
 } from './tools';
-import { workflowWebhook, solutionInstanceChanges } from './triggers';
+import { solutionInstanceChanges, workflowWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

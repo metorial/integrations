@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { generateImageTool, listDesignsTool, aiDesignAssistantTool } from './tools';
+import { aiDesignAssistantTool, generateImageTool, listDesignsTool } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

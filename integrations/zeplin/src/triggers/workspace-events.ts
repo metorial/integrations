@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let actorSchema = z
   .object({
@@ -49,7 +49,7 @@ export let workspaceEvents = SlateTrigger.create(spec, {
         ctx.request.headers.get('zeplin-delivery-id') ||
         `${body.event}-${body.timestamp}-${body.resource?.id}`;
 
-      let actor: any = undefined;
+      let actor: any;
       if (body.actor?.user) {
         actor = {
           userId: body.actor.user.id,
@@ -77,7 +77,7 @@ export let workspaceEvents = SlateTrigger.create(spec, {
     handleEvent: async ctx => {
       let eventType = `${ctx.input.event}.${ctx.input.action}`;
 
-      let actor: any = undefined;
+      let actor: any;
       if (ctx.input.actor) {
         actor = {
           userId: ctx.input.actor.userId || ctx.input.actor.user?.id,

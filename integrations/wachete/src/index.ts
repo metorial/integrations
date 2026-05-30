@@ -2,15 +2,15 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createMonitor,
-  updateMonitor,
-  getMonitor,
   deleteMonitor,
-  searchMonitors,
-  listNotifications,
+  getCrawlerPages,
   getHistory,
+  getMonitor,
   listFolders,
+  listNotifications,
   manageFolder,
-  getCrawlerPages
+  searchMonitors,
+  updateMonitor
 } from './tools';
 import { contentChange, inboundWebhook } from './triggers';
 

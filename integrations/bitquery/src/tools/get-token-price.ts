@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ohlcCandleSchema = z.object({
   time: z.string().describe('Candle timestamp'),
@@ -75,7 +75,7 @@ Useful for charting, price analysis, and building trading dashboards. Supports E
     let { blockchain, baseCurrency, quoteCurrency, since, till, intervalMinutes } = ctx.input;
     ctx.info(`Fetching OHLC data for token pair on ${blockchain}`);
 
-    let candles: Array<z.infer<typeof ohlcCandleSchema>> = [];
+    let candles: z.infer<typeof ohlcCandleSchema>[] = [];
 
     if (blockchain === 'solana') {
       let query = `query GetSolanaOHLC($baseCurrency: String!, $quoteCurrency: String!, $since: DateTime!, $till: DateTime!, $interval: Int!) {

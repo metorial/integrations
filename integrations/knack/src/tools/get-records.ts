@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KnackClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let filterRuleSchema = z.object({
   field: z.string().describe('Field key to filter on (e.g., "field_1")'),
@@ -96,7 +96,7 @@ export let getRecords = SlateTool.create(spec, {
       filters: ctx.input.filters
     };
 
-    let result;
+    let result: any;
 
     if (ctx.input.sceneKey && ctx.input.viewKey) {
       ctx.info(

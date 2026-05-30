@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WriterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let textCompletion = SlateTool.create(spec, {
   name: 'Text Completion',
@@ -74,7 +74,7 @@ export let textCompletion = SlateTool.create(spec, {
 
     let completions = result.choices.map(c => ({ text: c.text }));
     let firstText = completions[0]?.text || '';
-    let preview = firstText.length > 200 ? firstText.substring(0, 200) + '...' : firstText;
+    let preview = firstText.length > 200 ? `${firstText.substring(0, 200)}...` : firstText;
 
     return {
       output: {

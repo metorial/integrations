@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RealtimeClient } from '../lib/realtime-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSnapshot = SlateTool.create(spec, {
   name: 'Get Snapshot',

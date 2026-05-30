@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let uartCommunicate = SlateTool.create(spec, {
   name: 'UART Communicate',
@@ -51,7 +51,7 @@ export let uartCommunicate = SlateTool.create(spec, {
       deviceName: ctx.auth.deviceName
     });
 
-    let response;
+    let response: any;
     let operationDesc: string;
 
     switch (ctx.input.operation) {

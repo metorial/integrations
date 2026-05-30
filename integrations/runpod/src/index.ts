@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listPods,
-  getPod,
-  createPod,
-  updatePod,
-  managePod,
-  listEndpoints,
-  getEndpoint,
   createEndpoint,
-  updateEndpoint,
-  deleteEndpoint,
-  runJob,
-  getJobStatus,
-  manageJob,
-  listNetworkVolumes,
   createNetworkVolume,
-  manageNetworkVolume,
-  listTemplates,
+  createPod,
   createTemplate,
+  deleteEndpoint,
+  getBilling,
+  getEndpoint,
+  getJobStatus,
+  getPod,
+  listEndpoints,
+  listNetworkVolumes,
+  listPods,
+  listTemplates,
+  manageJob,
+  manageNetworkVolume,
+  managePod,
   manageTemplate,
-  getBilling
+  runJob,
+  updateEndpoint,
+  updatePod
 } from './tools';
 import { serverlessJobCompleted } from './triggers';
 

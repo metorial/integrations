@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchApisAndDomains,
-  getApiDefinition,
-  saveApiDefinition,
   deleteApi,
-  updateApiSettings,
-  getDomainDefinition,
-  saveDomainDefinition,
   deleteDomain,
+  getApiDefinition,
+  getCollaboration,
   getComments,
+  getDomainDefinition,
   manageIntegrations,
   manageProjects,
   runStandardization,
-  getCollaboration
+  saveApiDefinition,
+  saveDomainDefinition,
+  searchApisAndDomains,
+  updateApiSettings
 } from './tools';
 import { apiVersionEvent } from './triggers';
 

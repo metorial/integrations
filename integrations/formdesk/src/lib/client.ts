@@ -85,7 +85,7 @@ export interface SignOnParams {
 export class FormdeskClient {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private clientConfig: ClientConfig) {
+  constructor(clientConfig: ClientConfig) {
     this.http = createAxios({
       baseURL: `https://${clientConfig.host}/api/rest/v1/${clientConfig.domain}`,
       headers: {
@@ -110,18 +110,18 @@ export class FormdeskClient {
   async getResultIDs(params: GetResultIDsParams): Promise<any> {
     let queryParams: Record<string, string> = {};
 
-    if (params.createdAfter) queryParams['created_after'] = params.createdAfter;
-    if (params.createdBefore) queryParams['created_before'] = params.createdBefore;
-    if (params.changedAfter) queryParams['changed_after'] = params.changedAfter;
-    if (params.changedBefore) queryParams['changed_before'] = params.changedBefore;
-    if (params.completedAfter) queryParams['completed_after'] = params.completedAfter;
-    if (params.completedBefore) queryParams['completed_before'] = params.completedBefore;
-    if (params.status) queryParams['status'] = params.status;
-    if (params.syncStatus) queryParams['sync_status'] = params.syncStatus;
-    if (params.visitorId) queryParams['visitor'] = params.visitorId;
-    if (params.filter) queryParams['filter'] = params.filter;
-    if (params.limit !== undefined) queryParams['limit'] = String(params.limit);
-    if (params.offset !== undefined) queryParams['offset'] = String(params.offset);
+    if (params.createdAfter) queryParams.created_after = params.createdAfter;
+    if (params.createdBefore) queryParams.created_before = params.createdBefore;
+    if (params.changedAfter) queryParams.changed_after = params.changedAfter;
+    if (params.changedBefore) queryParams.changed_before = params.changedBefore;
+    if (params.completedAfter) queryParams.completed_after = params.completedAfter;
+    if (params.completedBefore) queryParams.completed_before = params.completedBefore;
+    if (params.status) queryParams.status = params.status;
+    if (params.syncStatus) queryParams.sync_status = params.syncStatus;
+    if (params.visitorId) queryParams.visitor = params.visitorId;
+    if (params.filter) queryParams.filter = params.filter;
+    if (params.limit !== undefined) queryParams.limit = String(params.limit);
+    if (params.offset !== undefined) queryParams.offset = String(params.offset);
 
     let response = await this.http.get(
       `/forms/${encodeURIComponent(params.formName)}/results`,
@@ -134,7 +134,7 @@ export class FormdeskClient {
 
   async getResult(resultId: string, includeFiles?: boolean): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (includeFiles) queryParams['include_files'] = 'true';
+    if (includeFiles) queryParams.include_files = 'true';
 
     let response = await this.http.get(`/results/${encodeURIComponent(resultId)}`, {
       params: queryParams
@@ -145,7 +145,7 @@ export class FormdeskClient {
   async addResult(params: AddResultParams): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params.processMessages !== undefined) {
-      queryParams['process_messages'] = params.processMessages ? 'true' : 'false';
+      queryParams.process_messages = params.processMessages ? 'true' : 'false';
     }
 
     let response = await this.http.post(
@@ -159,7 +159,7 @@ export class FormdeskClient {
   async updateResult(params: UpdateResultParams): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params.processMessages !== undefined) {
-      queryParams['process_messages'] = params.processMessages ? 'true' : 'false';
+      queryParams.process_messages = params.processMessages ? 'true' : 'false';
     }
 
     let response = await this.http.put(
@@ -172,7 +172,7 @@ export class FormdeskClient {
 
   async removeResult(resultId: string, filesOnly?: boolean): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (filesOnly) queryParams['files_only'] = 'true';
+    if (filesOnly) queryParams.files_only = 'true';
 
     let response = await this.http.delete(`/results/${encodeURIComponent(resultId)}`, {
       params: queryParams
@@ -190,15 +190,15 @@ export class FormdeskClient {
       format: params.format
     };
 
-    if (params.createdAfter) queryParams['created_after'] = params.createdAfter;
-    if (params.createdBefore) queryParams['created_before'] = params.createdBefore;
-    if (params.changedAfter) queryParams['changed_after'] = params.changedAfter;
-    if (params.changedBefore) queryParams['changed_before'] = params.changedBefore;
-    if (params.completedAfter) queryParams['completed_after'] = params.completedAfter;
-    if (params.completedBefore) queryParams['completed_before'] = params.completedBefore;
-    if (params.status) queryParams['status'] = params.status;
-    if (params.syncStatus) queryParams['sync_status'] = params.syncStatus;
-    if (params.filter) queryParams['filter'] = params.filter;
+    if (params.createdAfter) queryParams.created_after = params.createdAfter;
+    if (params.createdBefore) queryParams.created_before = params.createdBefore;
+    if (params.changedAfter) queryParams.changed_after = params.changedAfter;
+    if (params.changedBefore) queryParams.changed_before = params.changedBefore;
+    if (params.completedAfter) queryParams.completed_after = params.completedAfter;
+    if (params.completedBefore) queryParams.completed_before = params.completedBefore;
+    if (params.status) queryParams.status = params.status;
+    if (params.syncStatus) queryParams.sync_status = params.syncStatus;
+    if (params.filter) queryParams.filter = params.filter;
 
     let response = await this.http.get(
       `/forms/${encodeURIComponent(params.formName)}/export`,
@@ -210,21 +210,21 @@ export class FormdeskClient {
     return {
       content: Buffer.from(response.data).toString('base64'),
       contentType: String(response.headers['content-type'] ?? 'application/octet-stream'),
-      credits: response.headers['credits']
+      credits: response.headers.credits
     };
   }
 
   async getResultPdf(params: GetPdfParams): Promise<any> {
     let queryParams: Record<string, string> = {};
 
-    if (params.paperSize) queryParams['papersize'] = params.paperSize;
-    if (params.orientation) queryParams['orientation'] = params.orientation;
-    if (params.scale) queryParams['scale'] = params.scale;
-    if (params.marginTop) queryParams['margin_top'] = params.marginTop;
-    if (params.marginRight) queryParams['margin_right'] = params.marginRight;
-    if (params.marginBottom) queryParams['margin_bottom'] = params.marginBottom;
-    if (params.marginLeft) queryParams['margin_left'] = params.marginLeft;
-    if (params.password) queryParams['password'] = params.password;
+    if (params.paperSize) queryParams.papersize = params.paperSize;
+    if (params.orientation) queryParams.orientation = params.orientation;
+    if (params.scale) queryParams.scale = params.scale;
+    if (params.marginTop) queryParams.margin_top = params.marginTop;
+    if (params.marginRight) queryParams.margin_right = params.marginRight;
+    if (params.marginBottom) queryParams.margin_bottom = params.marginBottom;
+    if (params.marginLeft) queryParams.margin_left = params.marginLeft;
+    if (params.password) queryParams.password = params.password;
 
     let response = await this.http.get(`/results/${encodeURIComponent(params.resultId)}/pdf`, {
       params: queryParams,
@@ -249,7 +249,7 @@ export class FormdeskClient {
 
   async getVisitors(search?: string): Promise<any[]> {
     let queryParams: Record<string, string> = {};
-    if (search) queryParams['search'] = search;
+    if (search) queryParams.search = search;
 
     let response = await this.http.get('/visitors', {
       params: queryParams
@@ -283,7 +283,7 @@ export class FormdeskClient {
 
   async getVisitorResults(visitorId: string, formList?: string): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (formList) queryParams['form_list'] = formList;
+    if (formList) queryParams.form_list = formList;
 
     let response = await this.http.get(`/visitors/${encodeURIComponent(visitorId)}/results`, {
       params: queryParams
@@ -302,10 +302,10 @@ export class FormdeskClient {
     };
     let queryParams: Record<string, string> = {};
 
-    if (params.expires !== undefined) queryParams['expires'] = String(params.expires);
-    if (params.reuse !== undefined) queryParams['reuse'] = params.reuse ? 'true' : 'false';
+    if (params.expires !== undefined) queryParams.expires = String(params.expires);
+    if (params.reuse !== undefined) queryParams.reuse = params.reuse ? 'true' : 'false';
     if (params.preventChange !== undefined)
-      queryParams['preventchange'] = params.preventChange ? 'true' : 'false';
+      queryParams.preventchange = params.preventChange ? 'true' : 'false';
 
     let response = await this.http.post(
       `/forms/${encodeURIComponent(params.formName)}/park`,

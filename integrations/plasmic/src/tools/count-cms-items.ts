@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CmsClient } from '../lib/cms-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let countCmsItems = SlateTool.create(spec, {
   name: 'Count CMS Items',

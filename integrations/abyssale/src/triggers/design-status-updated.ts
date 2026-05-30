@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let designStatusUpdated = SlateTrigger.create(spec, {
   name: 'Design Status Updated',

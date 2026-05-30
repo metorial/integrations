@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { S3Client } from '../lib/client';
 import { s3ServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageObjectTagsTool = SlateTool.create(spec, {
   name: 'Manage Object Tags',

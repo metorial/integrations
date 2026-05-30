@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MigrationApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let migrationDocumentOutputSchema = z.object({
   documentId: z.string().describe('ID of the created or updated document'),

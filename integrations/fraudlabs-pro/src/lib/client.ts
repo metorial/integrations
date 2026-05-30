@@ -134,7 +134,7 @@ export class Client {
       id: params.transactionId
     };
     if (params.idType) {
-      queryParams['id_type'] = params.idType;
+      queryParams.id_type = params.idType;
     }
 
     let response = await http.get('/order/result', { params: queryParams });

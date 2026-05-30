@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class BotstarClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://apis.botstar.com/v1',
       headers: {

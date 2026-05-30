@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listVideos,
+  addWhitelistedDomain,
+  createGroup,
   createVideo,
   deleteVideos,
-  getVideoAnalytics,
   getTopVideos,
-  updateVideoSource,
+  getVideoAnalytics,
   listGroups,
-  createGroup,
-  updatePlayerSettings,
+  listVideos,
   listWhitelistedDomains,
-  addWhitelistedDomain
+  updatePlayerSettings,
+  updateVideoSource
 } from './tools';
 import { videoWebhook } from './triggers';
 

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { GoogleDocsClient, Request } from '../lib/client';
+import { z } from 'zod';
+import { GoogleDocsClient, type Request } from '../lib/client';
 import { googleDocsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageNamedRanges = SlateTool.create(spec, {
   name: 'Manage Named Ranges',

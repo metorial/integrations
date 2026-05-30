@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listAgents,
-  createAgent,
-  getAgent,
-  updateAgent,
-  deleteAgent,
+  analyzeMessage,
   cloneAgent,
-  sendMessage,
+  createAgent,
+  deleteAgent,
+  getAccountInfo,
+  getAgent,
+  getCitation,
+  getMessages,
+  getReports,
+  listAgents,
   listConversations,
   manageConversation,
-  getMessages,
-  analyzeMessage,
-  manageSources,
   manageDocuments,
-  manageSettings,
   manageLabels,
-  getReports,
-  getCitation,
-  getAccountInfo
+  manageSettings,
+  manageSources,
+  sendMessage,
+  updateAgent
 } from './tools';
-import { newConversation, newMessage, inboundWebhook } from './triggers';
+import { inboundWebhook, newConversation, newMessage } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MeetClient } from '../lib/client';
 import { googleMeetServiceError } from '../lib/errors';
 import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addMemberTool = SlateTool.create(spec, {
   name: 'Add Space Member',
@@ -80,9 +80,7 @@ export let getMemberTool = SlateTool.create(spec, {
     z.object({
       memberName: z
         .string()
-        .describe(
-          'Full resource name of the member (e.g., "spaces/abc123/members/def456")'
-        )
+        .describe('Full resource name of the member (e.g., "spaces/abc123/members/def456")')
     })
   )
   .output(

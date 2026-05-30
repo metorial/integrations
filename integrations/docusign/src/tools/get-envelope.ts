@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getEnvelope = SlateTool.create(spec, {
   name: 'Get Envelope',
@@ -82,12 +82,12 @@ export let getEnvelope = SlateTool.create(spec, {
       includeParts.length > 0 ? includeParts.join(',') : undefined
     );
 
-    let recipients: any = undefined;
+    let recipients: any;
     if (ctx.input.includeRecipients) {
       recipients = await client.getRecipients(ctx.input.envelopeId, ctx.input.includeTabs);
     }
 
-    let documents: any = undefined;
+    let documents: any;
     if (ctx.input.includeDocuments) {
       let docList = await client.listDocuments(ctx.input.envelopeId);
       documents = docList.envelopeDocuments?.map((doc: any) => ({

@@ -1,4 +1,4 @@
-import { SlateTool, createAxios } from 'slates';
+import { createAxios, SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 
@@ -99,7 +99,9 @@ export let request = SlateTool.create(spec, {
       ok: z.boolean().describe('True when status is in the 2xx range.'),
       url: z.string().describe('Final request URL including query parameters.'),
       method: z.string().describe('HTTP method actually used.'),
-      headers: z.record(z.string(), z.string()).describe('Response headers (lowercased keys).'),
+      headers: z
+        .record(z.string(), z.string())
+        .describe('Response headers (lowercased keys).'),
       body: z.string().describe('Raw response body text.'),
       bodyTruncated: z.boolean().describe('True when the body was truncated in the output.'),
       bodyByteLength: z.number().describe('Byte length of the full response body.'),
@@ -110,16 +112,8 @@ export let request = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let {
-      method,
-      url,
-      headers,
-      query,
-      jsonBody,
-      textBody,
-      timeoutMs,
-      maxResponseBytes
-    } = ctx.input;
+    let { method, url, headers, query, jsonBody, textBody, timeoutMs, maxResponseBytes } =
+      ctx.input;
 
     let hasBody = method !== 'GET' && method !== 'HEAD';
     let data: string | undefined;
@@ -144,7 +138,8 @@ export let request = SlateTool.create(spec, {
       timeout: timeoutMs === 0 ? 0 : timeoutMs
     });
 
-    let rawBody = typeof response.data === 'string' ? response.data : String(response.data ?? '');
+    let rawBody =
+      typeof response.data === 'string' ? response.data : String(response.data ?? '');
     let bodyByteLength = Buffer.byteLength(rawBody, 'utf8');
     let truncated = false;
     let body = rawBody;

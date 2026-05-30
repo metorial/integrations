@@ -2,26 +2,26 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createPost,
-  updatePost,
-  getPost,
-  listPosts,
-  schedulePost,
-  deletePosts,
-  listAccounts,
-  listMedia,
-  getMediaFile,
-  deleteMediaFiles,
   createTag,
-  listTags,
+  deleteMediaFiles,
+  deletePosts,
   deleteTag,
+  getMediaFile,
+  getPost,
+  listAccounts,
+  listAutoresponders,
+  listMedia,
+  listPosts,
   listReports,
-  listAutoresponders
+  listTags,
+  schedulePost,
+  updatePost
 } from './tools';
 import {
-  newPostCreated,
-  newFileUploaded,
+  inboundWebhook,
   newAccountConnected,
-  inboundWebhook
+  newFileUploaded,
+  newPostCreated
 } from './triggers';
 
 export let provider = Slate.create({

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let watcherAlertTrigger = SlateTrigger.create(spec, {
   name: 'Watcher Alert',
@@ -96,7 +96,7 @@ export let watcherAlertTrigger = SlateTrigger.create(spec, {
         let executionResult = source.result || {};
 
         return {
-          executionId: hit._id || source.watch_id + '_' + (triggerEvent.triggered_time || ''),
+          executionId: hit._id || `${source.watch_id}_${triggerEvent.triggered_time || ''}`,
           watchId: source.watch_id || '',
           executionState: source.state || executionResult.execution_state || 'unknown',
           triggeredTime: triggerEvent.triggered_time || '',

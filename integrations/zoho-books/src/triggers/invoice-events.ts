@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let invoiceEventsTrigger = SlateTrigger.create(spec, {
   name: 'Invoice Events',
@@ -62,7 +62,7 @@ export let invoiceEventsTrigger = SlateTrigger.create(spec, {
 
       let resp = await client.listInvoices(query);
       let invoices = resp.invoices || [];
-      let inputs: Array<any> = [];
+      let inputs: any[] = [];
       let newKnownInvoices = { ...knownInvoices };
 
       for (let inv of invoices) {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickUpClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSpaceTags = SlateTool.create(spec, {
   name: 'Get Space Tags',

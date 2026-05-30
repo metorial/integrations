@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { TombaClient } from '../lib/client';
+import { spec } from '../spec';
 
 let technologySchema = z.object({
   slug: z.string().nullable().optional(),

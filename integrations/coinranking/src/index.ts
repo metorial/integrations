@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchCoins,
-  listCoins,
   getCoinDetails,
   getCoinPrice,
   getCoinPriceHistory,
-  getTrendingCoins,
   getGlobalStats,
-  listReferenceCurrencies
+  getTrendingCoins,
+  listCoins,
+  listReferenceCurrencies,
+  searchCoins
 } from './tools';
 import { coinPriceChangeTrigger, inboundWebhook } from './triggers';
 

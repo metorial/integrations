@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listIssues = SlateTool.create(spec, {
   name: 'List Issues',
@@ -55,7 +55,10 @@ Filter by state, labels, assignee, milestone, and since date. Note: GitHub's API
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let items = await client.listIssues(ctx.input.owner, ctx.input.repo, {
       state: ctx.input.state,
       labels: ctx.input.labels,

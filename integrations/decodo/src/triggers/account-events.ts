@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let normalizeEventType = (rawType: string): string => {
   let type = rawType.toLowerCase().replace(/[\s-]+/g, '_');
@@ -90,7 +90,7 @@ export let accountEvents = SlateTrigger.create(spec, {
 
       let normalizedType = normalizeEventType(rawType);
       let eventId = String(
-        data['id'] || data['event_id'] || `${normalizedType}-${ctx.input.receivedAt}`
+        data.id || data.event_id || `${normalizedType}-${ctx.input.receivedAt}`
       );
 
       return {
@@ -99,28 +99,28 @@ export let accountEvents = SlateTrigger.create(spec, {
         output: {
           eventType: normalizedType,
           message:
-            data['message'] != null
-              ? String(data['message'])
-              : data['description'] != null
-                ? String(data['description'])
+            data.message != null
+              ? String(data.message)
+              : data.description != null
+                ? String(data.description)
                 : undefined,
           username:
-            data['username'] != null
-              ? String(data['username'])
-              : data['user'] != null
-                ? String(data['user'])
+            data.username != null
+              ? String(data.username)
+              : data.user != null
+                ? String(data.user)
                 : undefined,
           usagePercent:
-            typeof data['usage_percent'] === 'number'
-              ? data['usage_percent']
-              : typeof data['usage_percentage'] === 'number'
-                ? data['usage_percentage']
+            typeof data.usage_percent === 'number'
+              ? data.usage_percent
+              : typeof data.usage_percentage === 'number'
+                ? data.usage_percentage
                 : undefined,
           subscriptionType:
-            data['service_type'] != null
-              ? String(data['service_type'])
-              : data['subscription_type'] != null
-                ? String(data['subscription_type'])
+            data.service_type != null
+              ? String(data.service_type)
+              : data.subscription_type != null
+                ? String(data.subscription_type)
                 : undefined,
           rawPayload: data
         }

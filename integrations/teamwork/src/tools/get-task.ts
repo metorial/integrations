@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getTask = SlateTool.create(spec, {
   name: 'Get Task',
@@ -87,8 +87,8 @@ export let getTask = SlateTool.create(spec, {
         createdOn: t['created-on'] || t.createdOn || undefined,
         lastChangedOn: t['last-changed-on'] || t.lastChangedOn || undefined,
         tags: tags.length > 0 ? tags : undefined,
-        parentTaskId: t['parentTaskId']
-          ? String(t['parentTaskId'])
+        parentTaskId: t.parentTaskId
+          ? String(t.parentTaskId)
           : t['parent-id']
             ? String(t['parent-id'])
             : undefined

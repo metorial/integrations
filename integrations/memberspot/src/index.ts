@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listUsersTool,
-  findUserTool,
-  grantAccessTool,
-  manageAccessTool,
   deleteUsersTool,
-  listOffersTool,
-  getCourseProgressTool,
-  manageCustomPropertiesTool,
   enableChapterAccessTool,
+  findUserTool,
+  getCourseProgressTool,
   getExamResultsTool,
-  getLoginTokenTool
+  getLoginTokenTool,
+  grantAccessTool,
+  listOffersTool,
+  listUsersTool,
+  manageAccessTool,
+  manageCustomPropertiesTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -59,8 +59,8 @@ export class Client {
 
   async getComponentUptime(componentId: string, start?: string, end?: string): Promise<any> {
     let params: Record<string, string> = {};
-    if (start) params['start'] = start;
-    if (end) params['end'] = end;
+    if (start) params.start = start;
+    if (end) params.end = end;
     let response = await this.api.get(
       `/pages/${this.pageId}/components/${componentId}/uptime`,
       { params }
@@ -155,12 +155,12 @@ export class Client {
     sortDirection?: string;
   }): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.type) queryParams['type'] = params.type;
-    if (params?.state) queryParams['state'] = params.state;
-    if (params?.limit) queryParams['per_page'] = params.limit;
-    if (params?.page) queryParams['page'] = params.page;
-    if (params?.sortField) queryParams['sort_field'] = params.sortField;
-    if (params?.sortDirection) queryParams['sort_direction'] = params.sortDirection;
+    if (params?.type) queryParams.type = params.type;
+    if (params?.state) queryParams.state = params.state;
+    if (params?.limit) queryParams.per_page = params.limit;
+    if (params?.page) queryParams.page = params.page;
+    if (params?.sortField) queryParams.sort_field = params.sortField;
+    if (params?.sortDirection) queryParams.sort_direction = params.sortDirection;
     let response = await this.api.get(`/pages/${this.pageId}/subscribers`, {
       params: queryParams
     });

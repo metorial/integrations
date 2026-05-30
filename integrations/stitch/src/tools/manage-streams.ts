@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StitchConnectClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listStreams = SlateTool.create(spec, {
   name: 'List Streams',

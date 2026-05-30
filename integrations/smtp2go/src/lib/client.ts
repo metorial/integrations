@@ -3,12 +3,10 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(
-    private options: {
-      token: string;
-      baseUrl: string;
-    }
-  ) {
+  constructor(options: {
+    token: string;
+    baseUrl: string;
+  }) {
     this.axios = createAxios({
       baseURL: options.baseUrl,
       headers: {

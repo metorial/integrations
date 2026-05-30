@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let campaignOutputSchema = z.object({
   campaignId: z.string().describe('Unique identifier of the campaign'),
@@ -284,7 +284,7 @@ export let sendCampaign = SlateTool.create(spec, {
   .output(campaignOutputSchema)
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let result;
+    let result: any;
 
     if (ctx.input.action === 'send') {
       result = await client.sendCampaign(ctx.input.campaignId);

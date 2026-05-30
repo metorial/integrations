@@ -118,7 +118,7 @@ export interface AuditLogAction {
 export class Client {
   private http;
 
-  constructor(private opts: { token: string }) {
+  constructor(opts: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://hub.docker.com',
       headers: {

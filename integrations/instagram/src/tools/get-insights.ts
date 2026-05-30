@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { InstagramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let insightValueSchema = z.object({
   name: z.string().describe('Metric name'),

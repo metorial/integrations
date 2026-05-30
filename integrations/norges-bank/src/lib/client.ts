@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { norgesBankApiError } from './errors';
 import type {
   ExchangeBaseCurrency,
   Frequency,
@@ -6,7 +7,6 @@ import type {
   GenericTenor,
   NorgesBankLocale
 } from './options';
-import { norgesBankApiError } from './errors';
 
 export type RawSdmxJson = {
   meta: unknown;

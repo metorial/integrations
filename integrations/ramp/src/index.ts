@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTransactions,
-  getTransaction,
-  listUsers,
-  manageUser,
-  listCards,
-  manageCard,
-  listBills,
-  manageBill,
-  listReimbursements,
+  getBusiness,
   getReimbursement,
+  getTransaction,
+  listBills,
+  listCards,
+  listEntities,
+  listReimbursements,
+  listTransactions,
+  listUsers,
+  listVendors,
+  manageBill,
+  manageCard,
   manageDepartment,
   manageLimit,
   manageSpendProgram,
-  getBusiness,
-  listVendors,
-  listEntities
+  manageUser
 } from './tools';
 import {
-  transactionEvents,
   billEvents,
+  inboundWebhook,
   reimbursementEvents,
-  inboundWebhook
+  transactionEvents
 } from './triggers';
 
 export let provider = Slate.create({

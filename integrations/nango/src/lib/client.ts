@@ -149,7 +149,7 @@ export class NangoClient {
     };
 
     if (params.retries !== undefined) {
-      requestHeaders['Retries'] = String(params.retries);
+      requestHeaders.Retries = String(params.retries);
     }
     if (params.baseUrlOverride) {
       requestHeaders['Base-Url-Override'] = params.baseUrlOverride;

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let labelSchema = z.object({
   labelId: z.string().describe('Label ID.'),

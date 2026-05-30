@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { ZendeskClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let userEvents = SlateTrigger.create(spec, {
   name: 'User Events',

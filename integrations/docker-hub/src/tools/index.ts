@@ -1,18 +1,18 @@
-export { listRepositories } from './list-repositories';
-export { getRepository } from './get-repository';
+export { listAuditLogActions, listAuditLogs } from './audit-logs';
 export { createRepository } from './create-repository';
-export { updateRepository } from './update-repository';
 export { deleteRepository } from './delete-repository';
-export { listTags } from './list-tags';
 export { deleteTag } from './delete-tag';
-export { searchRepositories } from './search-repositories';
-export { listOrgMembers, removeOrgMember } from './manage-org-members';
-export { listTeams, createTeam, deleteTeam, manageTeamMembers } from './manage-teams';
-export { listWebhooks, createWebhook, deleteWebhook } from './manage-webhooks';
+export { getRepository } from './get-repository';
+export { listRepositories } from './list-repositories';
+export { listTags } from './list-tags';
 export {
-  listAccessTokens,
   createAccessToken,
-  updateAccessToken,
-  deleteAccessToken
+  deleteAccessToken,
+  listAccessTokens,
+  updateAccessToken
 } from './manage-access-tokens';
-export { listAuditLogs, listAuditLogActions } from './audit-logs';
+export { listOrgMembers, removeOrgMember } from './manage-org-members';
+export { createTeam, deleteTeam, listTeams, manageTeamMembers } from './manage-teams';
+export { createWebhook, deleteWebhook, listWebhooks } from './manage-webhooks';
+export { searchRepositories } from './search-repositories';
+export { updateRepository } from './update-repository';

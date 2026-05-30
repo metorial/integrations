@@ -1,10 +1,10 @@
-import { createAxios } from 'slates';
 import { AxiosHeaders } from 'axios';
+import { createAxios } from 'slates';
 
 export class Client {
   private api: ReturnType<typeof createAxios>;
 
-  constructor(private authConfig: { token: string; apiKey?: string; apiSecret?: string }) {
+  constructor(authConfig: { token: string; apiKey?: string; apiSecret?: string }) {
     this.api = createAxios({
       baseURL: 'https://api.agencyzoom.com/v1/api'
     });

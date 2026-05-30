@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { mapCandidate } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCandidatesTool = SlateTool.create(spec, {
   name: 'List Candidates',
@@ -68,7 +68,7 @@ export let listCandidatesTool = SlateTool.create(spec, {
       page: ctx.input.page,
       perPage,
       email: ctx.input.email,
-      jobId: ctx.input.jobId ? parseInt(ctx.input.jobId) : undefined,
+      jobId: ctx.input.jobId ? Number.parseInt(ctx.input.jobId, 10) : undefined,
       createdAfter: ctx.input.createdAfter,
       createdBefore: ctx.input.createdBefore,
       updatedAfter: ctx.input.updatedAfter,

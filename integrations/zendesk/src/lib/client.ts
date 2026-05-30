@@ -10,7 +10,7 @@ export interface ZendeskClientConfig {
 export class ZendeskClient {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: ZendeskClientConfig) {
+  constructor(config: ZendeskClientConfig) {
     let authHeader =
       config.tokenType === 'basic' ? `Basic ${config.token}` : `Bearer ${config.token}`;
 

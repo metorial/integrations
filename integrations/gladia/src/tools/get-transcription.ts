@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTranscription = SlateTool.create(spec, {
   name: 'Get Transcription',
@@ -87,7 +87,7 @@ export let getTranscription = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let result;
+    let result: any;
     if (ctx.input.waitForCompletion) {
       ctx.info('Polling for transcription completion...');
       result = await client.pollTranscriptionUntilDone(ctx.input.transcriptionId);
@@ -95,7 +95,7 @@ export let getTranscription = SlateTool.create(spec, {
       result = await client.getTranscription(ctx.input.transcriptionId);
     }
 
-    let utterances = result.result?.transcription?.utterances?.map(u => ({
+    let utterances = result.result?.transcription?.utterances?.map((u: any) => ({
       text: u.text,
       language: u.language,
       start: u.start,

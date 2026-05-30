@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactOutputSchema = z.object({
   contactId: z.string(),
@@ -104,7 +104,7 @@ export let getContact = SlateTool.create(spec, {
 
     let contact = await client.getContact(ctx.input.contactId);
 
-    let conversations;
+    let conversations: any;
     if (ctx.input.includeConversations) {
       let convResult = await client.listContactConversations(ctx.input.contactId);
       conversations = convResult._results.map(c => ({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listVersionsTool = SlateTool.create(spec, {
   name: 'List Versions',
@@ -172,7 +172,7 @@ export let manageVersionLifecycleTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let response;
+    let response: any;
     switch (ctx.input.action) {
       case 'release':
         response = await client.releaseVersion(ctx.input.versionId);

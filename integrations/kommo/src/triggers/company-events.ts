@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { KommoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let COMPANY_WEBHOOK_SETTINGS = [
   'add_company',
@@ -80,7 +80,7 @@ export let companyEventsTrigger = SlateTrigger.create(spec, {
         }
       }
 
-      let inputs: Array<any> = [];
+      let inputs: any[] = [];
 
       let eventTypes: Record<string, string> = {
         add_company: 'company.added',

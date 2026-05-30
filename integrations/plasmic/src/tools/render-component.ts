@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ProjectClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let renderComponent = SlateTool.create(spec, {
   name: 'Render Component',

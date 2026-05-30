@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FaradayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listTraits = SlateTool.create(spec, {
   name: 'List Traits',

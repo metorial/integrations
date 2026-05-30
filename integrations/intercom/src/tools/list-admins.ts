@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { arrayOrUndefined, booleanOrUndefined, stringOrUndefined } from '../lib/output';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listAdmins = SlateTool.create(spec, {
   name: 'List Admins',

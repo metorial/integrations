@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BotstarClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createUserAttribute = SlateTool.create(spec, {
   name: 'Create User Attribute',

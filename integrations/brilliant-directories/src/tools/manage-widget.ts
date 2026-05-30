@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getWidget = SlateTool.create(spec, {
   name: 'Get Widget',
@@ -36,7 +36,7 @@ export let getWidget = SlateTool.create(spec, {
       websiteDomain: ctx.config.websiteDomain
     });
 
-    let result;
+    let result: any;
     if (ctx.input.render) {
       let params: Record<string, any> = {};
       if (ctx.input.widgetId) params.widget_id = ctx.input.widgetId;

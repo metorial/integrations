@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TapfiliateClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commissionSchema = z.object({
   commissionId: z.number().describe('Unique numeric ID of the commission'),

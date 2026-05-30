@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
@@ -78,7 +78,7 @@ export let auth = SlateAuth.create()
         let cookieArray = Array.isArray(cookies) ? cookies : [cookies];
         for (let cookie of cookieArray) {
           let match = cookie.match(/rocketadmin_cookie=([^;]+)/);
-          if (match && match[1]) {
+          if (match?.[1]) {
             token = match[1];
             break;
           }

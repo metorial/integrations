@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { mapScheduledInterview } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listScheduledInterviewsTool = SlateTool.create(spec, {
   name: 'List Scheduled Interviews',
@@ -77,7 +77,9 @@ export let listScheduledInterviewsTool = SlateTool.create(spec, {
     let results = await client.listScheduledInterviews({
       page: ctx.input.page,
       perPage,
-      applicationId: ctx.input.applicationId ? parseInt(ctx.input.applicationId) : undefined,
+      applicationId: ctx.input.applicationId
+        ? Number.parseInt(ctx.input.applicationId, 10)
+        : undefined,
       createdAfter: ctx.input.createdAfter,
       createdBefore: ctx.input.createdBefore,
       updatedAfter: ctx.input.updatedAfter,

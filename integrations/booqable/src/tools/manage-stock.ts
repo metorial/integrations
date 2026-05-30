@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { buildClientConfig, flattenSingleResource, flattenResourceList } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { buildClientConfig, flattenResourceList, flattenSingleResource } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageStock = SlateTool.create(spec, {
   name: 'Manage Stock',
@@ -46,8 +46,8 @@ export let manageStock = SlateTool.create(spec, {
 
     if (ctx.input.action === 'list') {
       let filters: Record<string, string> = {};
-      if (ctx.input.productId) filters['item_id'] = ctx.input.productId;
-      if (ctx.input.locationId) filters['location_id'] = ctx.input.locationId;
+      if (ctx.input.productId) filters.item_id = ctx.input.productId;
+      if (ctx.input.locationId) filters.location_id = ctx.input.locationId;
 
       let response = await client.listStockItems({
         pagination: {

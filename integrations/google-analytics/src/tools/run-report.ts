@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AnalyticsDataClient } from '../lib/client';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let dimensionFilterSchema: z.ZodType<any> = z
   .object({

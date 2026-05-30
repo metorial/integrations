@@ -29,10 +29,10 @@ export class ProjectClient {
     } = {}
   ) {
     let queryParams: Record<string, string> = {};
-    if (params.select) queryParams['select'] = params.select;
-    if (params.order) queryParams['order'] = params.order;
-    if (params.limit !== undefined) queryParams['limit'] = String(params.limit);
-    if (params.offset !== undefined) queryParams['offset'] = String(params.offset);
+    if (params.select) queryParams.select = params.select;
+    if (params.order) queryParams.order = params.order;
+    if (params.limit !== undefined) queryParams.limit = String(params.limit);
+    if (params.offset !== undefined) queryParams.offset = String(params.offset);
 
     if (params.filters) {
       for (let [key, value] of Object.entries(params.filters)) {
@@ -62,7 +62,7 @@ export class ProjectClient {
     } = {}
   ) {
     let queryParams: Record<string, string> = {};
-    if (params.onConflict) queryParams['on_conflict'] = params.onConflict;
+    if (params.onConflict) queryParams.on_conflict = params.onConflict;
 
     let headers: Record<string, string> = {
       Prefer: params.returning === 'minimal' ? 'return=minimal' : 'return=representation'
@@ -137,13 +137,13 @@ export class ProjectClient {
     } = {}
   ) {
     let queryParams: Record<string, string> = {};
-    if (params.onConflict) queryParams['on_conflict'] = params.onConflict;
+    if (params.onConflict) queryParams.on_conflict = params.onConflict;
 
     let headers: Record<string, string> = {
       Prefer: `return=representation,resolution=merge-duplicates`
     };
     if (params.returning === 'minimal') {
-      headers['Prefer'] = 'return=minimal,resolution=merge-duplicates';
+      headers.Prefer = 'return=minimal,resolution=merge-duplicates';
     }
     if (params.schema) {
       headers['Content-Profile'] = params.schema;
@@ -176,12 +176,7 @@ export class ProjectClient {
 
   // ─── Auth ─────────────────────────────────────────────────
 
-  async listAuthUsers(
-    params: {
-      page?: number;
-      perPage?: number;
-    } = {}
-  ) {
+  async listAuthUsers(params: { page?: number; perPage?: number } = {}) {
     let response = await this.http.get('/auth/v1/admin/users', {
       params: {
         page: params.page,

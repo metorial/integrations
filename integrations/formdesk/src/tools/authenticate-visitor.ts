@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FormdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let authenticateVisitor = SlateTool.create(spec, {
   name: 'Authenticate Visitor',
@@ -45,7 +45,7 @@ export let authenticateVisitor = SlateTool.create(spec, {
         },
         message: `Visitor "${ctx.input.username}" authenticated successfully.`
       };
-    } catch (e: any) {
+    } catch (_e: any) {
       return {
         output: {
           authenticated: false,

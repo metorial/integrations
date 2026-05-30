@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HereClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let wlanMeasurementSchema = z.object({
   mac: z.string().describe('Wi-Fi access point MAC address (e.g. "A0:EC:F9:1E:32:C1")')

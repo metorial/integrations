@@ -2,7 +2,7 @@ import {
   createSlatesTestClient,
   expectToolCall,
   loadSlatesProfile,
-  SlatesTestClient
+  type SlatesTestClient
 } from '@slates/test';
 
 export interface GoogleCalendarLiveHarness {
@@ -99,7 +99,7 @@ export let createManagedCalendar = async (
   harness: GoogleCalendarLiveHarness,
   label: string
 ) => {
-  let result;
+  let result: any;
 
   try {
     result = await expectToolCall({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EverhourClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let sectionSchema = z.object({
   sectionId: z.number().describe('Section ID'),

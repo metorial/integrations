@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LeverlyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let stopReattempts = SlateTool.create(spec, {
   name: 'Stop Reattempts',

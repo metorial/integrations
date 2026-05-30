@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PersonaClient } from '../lib/client';
 import { normalizeResource } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createAccount = SlateTool.create(spec, {
   name: 'Create Account',

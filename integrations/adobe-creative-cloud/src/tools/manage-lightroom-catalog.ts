@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { LightroomClient } from '../lib/lightroom';
+import { spec } from '../spec';
 
 export let manageLightroomCatalog = SlateTool.create(spec, {
   name: 'Manage Lightroom Catalog',

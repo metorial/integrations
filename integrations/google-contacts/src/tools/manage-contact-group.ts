@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { googleContactsActionScopes } from '../scopes';
-import { contactGroupSchema, customFieldSchema, formatContactGroup } from '../lib/schemas';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { contactGroupSchema, customFieldSchema, formatContactGroup } from '../lib/schemas';
+import { googleContactsActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 export let createContactGroup = SlateTool.create(spec, {
   name: 'Create Contact Group',
@@ -55,7 +55,9 @@ export let updateContactGroup = SlateTool.create(spec, {
       etag: z
         .string()
         .optional()
-        .describe('ETag/fingerprint for concurrency control. Omit to use the latest server copy.'),
+        .describe(
+          'ETag/fingerprint for concurrency control. Omit to use the latest server copy.'
+        ),
       name: z.string().describe('New name for the contact group'),
       clientData: z
         .array(customFieldSchema)

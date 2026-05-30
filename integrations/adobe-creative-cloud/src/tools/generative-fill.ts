@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { FireflyClient } from '../lib/firefly';
+import { spec } from '../spec';
 
 export let generativeFill = SlateTool.create(spec, {
   name: 'Generative Fill',

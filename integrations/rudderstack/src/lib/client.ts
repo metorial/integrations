@@ -20,7 +20,7 @@ let getControlPlaneBaseUrl = (region?: string): string => {
 export class ControlPlaneClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: ControlPlaneClientConfig) {
+  constructor(config: ControlPlaneClientConfig) {
     let baseURL = getControlPlaneBaseUrl(config.region);
     let basicAuth = btoa(`:${config.token}`);
 
@@ -308,7 +308,7 @@ export class ControlPlaneClient {
 export class DataPlaneClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: DataPlaneClientConfig) {
+  constructor(config: DataPlaneClientConfig) {
     let basicAuth = btoa(`${config.sourceWriteKey}:`);
 
     this.axios = createAxios({

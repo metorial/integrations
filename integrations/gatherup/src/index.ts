@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBusinesses,
-  getBusiness,
-  createBusiness,
-  updateBusiness,
-  deleteBusiness,
-  searchBusiness,
-  listCustomers,
-  createCustomer,
-  updateCustomer,
-  deleteCustomer,
-  createCustomersBulk,
-  sendFeedbackRequest,
-  getFeedbacks,
-  getOnlineReviews,
-  replyToReview,
-  getSurveyResults,
-  getReviewWidget,
-  getGoogleQA,
-  getFacebookRecommendations,
   configureAutoFeedback,
-  createUser
+  createBusiness,
+  createCustomer,
+  createCustomersBulk,
+  createUser,
+  deleteBusiness,
+  deleteCustomer,
+  getBusiness,
+  getFacebookRecommendations,
+  getFeedbacks,
+  getGoogleQA,
+  getOnlineReviews,
+  getReviewWidget,
+  getSurveyResults,
+  listBusinesses,
+  listCustomers,
+  replyToReview,
+  searchBusiness,
+  sendFeedbackRequest,
+  updateBusiness,
+  updateCustomer
 } from './tools';
-import { newFeedback, newOnlineReview, inboundWebhook } from './triggers';
+import { inboundWebhook, newFeedback, newOnlineReview } from './triggers';
 
 export let provider = Slate.create({
   spec,

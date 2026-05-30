@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { getStats } from '../lib/stats';
 import { z } from 'zod';
+import { getStats } from '../lib/stats';
+import { spec } from '../spec';
 
 let histogramEntrySchema = z.object({
   date: z.string().describe('Date or datetime label for the histogram bucket'),
@@ -253,25 +253,25 @@ export let getStatisticsTool = SlateTool.create(spec, {
     );
 
     let output: Record<string, unknown> = {};
-    if (data.pageviews !== undefined) output['pageviews'] = data.pageviews;
-    if (data.visitors !== undefined) output['visitors'] = data.visitors;
-    if (data.histogram) output['histogram'] = data.histogram;
-    if (data.pages) output['pages'] = data.pages;
-    if (data.countries) output['countries'] = data.countries;
-    if (data.referrers) output['referrers'] = data.referrers;
-    if (data.utm_sources) output['utmSources'] = data.utm_sources;
-    if (data.utm_mediums) output['utmMediums'] = data.utm_mediums;
-    if (data.utm_campaigns) output['utmCampaigns'] = data.utm_campaigns;
-    if (data.utm_contents) output['utmContents'] = data.utm_contents;
-    if (data.utm_terms) output['utmTerms'] = data.utm_terms;
-    if (data.browser_names) output['browserNames'] = data.browser_names;
-    if (data.os_names) output['osNames'] = data.os_names;
-    if (data.device_types) output['deviceTypes'] = data.device_types;
-    if (data.seconds_on_page !== undefined) output['secondsOnPage'] = data.seconds_on_page;
+    if (data.pageviews !== undefined) output.pageviews = data.pageviews;
+    if (data.visitors !== undefined) output.visitors = data.visitors;
+    if (data.histogram) output.histogram = data.histogram;
+    if (data.pages) output.pages = data.pages;
+    if (data.countries) output.countries = data.countries;
+    if (data.referrers) output.referrers = data.referrers;
+    if (data.utm_sources) output.utmSources = data.utm_sources;
+    if (data.utm_mediums) output.utmMediums = data.utm_mediums;
+    if (data.utm_campaigns) output.utmCampaigns = data.utm_campaigns;
+    if (data.utm_contents) output.utmContents = data.utm_contents;
+    if (data.utm_terms) output.utmTerms = data.utm_terms;
+    if (data.browser_names) output.browserNames = data.browser_names;
+    if (data.os_names) output.osNames = data.os_names;
+    if (data.device_types) output.deviceTypes = data.device_types;
+    if (data.seconds_on_page !== undefined) output.secondsOnPage = data.seconds_on_page;
 
     let parts: string[] = [];
-    if (output['pageviews'] !== undefined) parts.push(`**${output['pageviews']}** page views`);
-    if (output['visitors'] !== undefined) parts.push(`**${output['visitors']}** visitors`);
+    if (output.pageviews !== undefined) parts.push(`**${output.pageviews}** page views`);
+    if (output.visitors !== undefined) parts.push(`**${output.visitors}** visitors`);
     let dateRange = `${ctx.input.start || 'last 30 days'} to ${ctx.input.end || 'today'}`;
     let summary =
       parts.length > 0

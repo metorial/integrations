@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getGreenPowerIndex,
-  getBestHour,
-  getMarketData,
-  getDispatch,
+  calculateCo2Offset,
   createEnergySchedule,
-  getStrommix,
+  getBestHour,
+  getDispatch,
+  getGreenPowerIndex,
+  getMarketData,
   getMeritOrder,
   getSolarPrediction,
-  submitMeterReading,
   getStromkontoBalances,
+  getStrommix,
   getTariffInfo,
-  calculateCo2Offset
+  submitMeterReading
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

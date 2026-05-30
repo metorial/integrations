@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createReward = SlateTool.create(spec, {
   name: 'Create Reward',
@@ -64,7 +64,7 @@ export let createReward = SlateTool.create(spec, {
 
     let result = await client.createRewards([rewardInfo]);
 
-    let results = result as unknown as Array<Record<string, unknown>>;
+    let results = result as unknown as Record<string, unknown>[];
     let first = Array.isArray(results) ? results[0] : result;
     let reward = (first?.reward || {}) as Record<string, unknown>;
     let resultInfo = (first?.resultInfo || {}) as Record<string, unknown>;

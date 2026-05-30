@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createFunction = SlateTool.create(spec, {
   name: 'Create Function',
@@ -75,12 +75,12 @@ export let createFunction = SlateTool.create(spec, {
     let client = createClient(ctx.config, ctx.auth);
 
     let codeObj: Record<string, any> = {};
-    if (ctx.input.code.s3Bucket) codeObj['S3Bucket'] = ctx.input.code.s3Bucket;
-    if (ctx.input.code.s3Key) codeObj['S3Key'] = ctx.input.code.s3Key;
+    if (ctx.input.code.s3Bucket) codeObj.S3Bucket = ctx.input.code.s3Bucket;
+    if (ctx.input.code.s3Key) codeObj.S3Key = ctx.input.code.s3Key;
     if (ctx.input.code.s3ObjectVersion)
-      codeObj['S3ObjectVersion'] = ctx.input.code.s3ObjectVersion;
-    if (ctx.input.code.imageUri) codeObj['ImageUri'] = ctx.input.code.imageUri;
-    if (ctx.input.code.zipFile) codeObj['ZipFile'] = ctx.input.code.zipFile;
+      codeObj.S3ObjectVersion = ctx.input.code.s3ObjectVersion;
+    if (ctx.input.code.imageUri) codeObj.ImageUri = ctx.input.code.imageUri;
+    if (ctx.input.code.zipFile) codeObj.ZipFile = ctx.input.code.zipFile;
 
     let params: Record<string, any> = {
       FunctionName: ctx.input.functionName,
@@ -88,22 +88,22 @@ export let createFunction = SlateTool.create(spec, {
       Code: codeObj
     };
 
-    if (ctx.input.runtime) params['Runtime'] = ctx.input.runtime;
-    if (ctx.input.handler) params['Handler'] = ctx.input.handler;
-    if (ctx.input.description) params['Description'] = ctx.input.description;
-    if (ctx.input.timeout) params['Timeout'] = ctx.input.timeout;
-    if (ctx.input.memorySize) params['MemorySize'] = ctx.input.memorySize;
-    if (ctx.input.packageType) params['PackageType'] = ctx.input.packageType;
-    if (ctx.input.architectures) params['Architectures'] = ctx.input.architectures;
-    if (ctx.input.environment) params['Environment'] = { Variables: ctx.input.environment };
-    if (ctx.input.layers) params['Layers'] = ctx.input.layers;
-    if (ctx.input.publish !== undefined) params['Publish'] = ctx.input.publish;
+    if (ctx.input.runtime) params.Runtime = ctx.input.runtime;
+    if (ctx.input.handler) params.Handler = ctx.input.handler;
+    if (ctx.input.description) params.Description = ctx.input.description;
+    if (ctx.input.timeout) params.Timeout = ctx.input.timeout;
+    if (ctx.input.memorySize) params.MemorySize = ctx.input.memorySize;
+    if (ctx.input.packageType) params.PackageType = ctx.input.packageType;
+    if (ctx.input.architectures) params.Architectures = ctx.input.architectures;
+    if (ctx.input.environment) params.Environment = { Variables: ctx.input.environment };
+    if (ctx.input.layers) params.Layers = ctx.input.layers;
+    if (ctx.input.publish !== undefined) params.Publish = ctx.input.publish;
     if (ctx.input.ephemeralStorageSize)
-      params['EphemeralStorage'] = { Size: ctx.input.ephemeralStorageSize };
-    if (ctx.input.tags) params['Tags'] = ctx.input.tags;
-    if (ctx.input.tracingMode) params['TracingConfig'] = { Mode: ctx.input.tracingMode };
+      params.EphemeralStorage = { Size: ctx.input.ephemeralStorageSize };
+    if (ctx.input.tags) params.Tags = ctx.input.tags;
+    if (ctx.input.tracingMode) params.TracingConfig = { Mode: ctx.input.tracingMode };
     if (ctx.input.vpcSubnetIds || ctx.input.vpcSecurityGroupIds) {
-      params['VpcConfig'] = {
+      params.VpcConfig = {
         SubnetIds: ctx.input.vpcSubnetIds || [],
         SecurityGroupIds: ctx.input.vpcSecurityGroupIds || []
       };

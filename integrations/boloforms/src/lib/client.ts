@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class BoloFormsClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string }) {
+  constructor(params: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://sapi.boloforms.com/signature',
       headers: {

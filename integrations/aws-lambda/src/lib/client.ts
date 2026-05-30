@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer';
 import {
   AddPermissionCommand,
+  LambdaClient as AwsLambdaClient,
   CreateAliasCommand,
   CreateEventSourceMappingCommand,
   CreateFunctionCommand,
@@ -30,14 +31,13 @@ import {
   GetProvisionedConcurrencyConfigCommand,
   GetRuntimeManagementConfigCommand,
   InvokeCommand,
-  LambdaClient as AwsLambdaClient,
   ListAliasesCommand,
   ListDurableExecutionsByFunctionCommand,
   ListEventSourceMappingsCommand,
   ListFunctionEventInvokeConfigsCommand,
   ListFunctionsCommand,
-  ListLayerVersionsCommand,
   ListLayersCommand,
+  ListLayerVersionsCommand,
   ListTagsCommand,
   ListVersionsByFunctionCommand,
   PublishLayerVersionCommand,

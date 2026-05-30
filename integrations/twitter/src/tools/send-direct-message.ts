@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwitterClient } from '../lib/client';
 import { twitterServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendDirectMessage = SlateTool.create(spec, {
   name: 'Send Direct Message',

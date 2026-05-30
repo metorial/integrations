@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ClassroomClient } from '../lib/client';
-import { spec } from '../spec';
-import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
+import { ClassroomClient } from '../lib/client';
+import { googleClassroomActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 export let updateCourse = SlateTool.create(spec, {
   name: 'Update Course',
@@ -28,14 +28,16 @@ export let updateCourse = SlateTool.create(spec, {
     })
   )
   .output(
-    z.object({
-      courseId: z.string().optional().describe('ID of the updated course'),
-      name: z.string().optional().describe('Name of the updated course'),
-      section: z.string().optional().describe('Section of the course'),
-      courseState: z.string().optional().describe('State of the course'),
-      alternateLink: z.string().optional().describe('URL to the course in Classroom'),
-      updateTime: z.string().optional().describe('When the course was last updated')
-    }).passthrough()
+    z
+      .object({
+        courseId: z.string().optional().describe('ID of the updated course'),
+        name: z.string().optional().describe('Name of the updated course'),
+        section: z.string().optional().describe('Section of the course'),
+        courseState: z.string().optional().describe('State of the course'),
+        alternateLink: z.string().optional().describe('URL to the course in Classroom'),
+        updateTime: z.string().optional().describe('When the course was last updated')
+      })
+      .passthrough()
   )
   .handleInvocation(async ctx => {
     let client = new ClassroomClient({ token: ctx.auth.token });

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let clientEventTypes = ['NEW_CLIENT', 'CLIENT_UPDATED', 'CLIENT_DELETED'] as const;
 

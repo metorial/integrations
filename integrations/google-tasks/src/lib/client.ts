@@ -1,12 +1,12 @@
 import { createAxios } from 'slates';
 import type {
+  InsertTaskParams,
+  ListTasksParams,
+  MoveTaskParams,
+  Task,
   TaskList,
   TaskListsResponse,
-  Task,
-  TasksResponse,
-  ListTasksParams,
-  InsertTaskParams,
-  MoveTaskParams
+  TasksResponse
 } from './types';
 
 export class GoogleTasksClient {
@@ -128,9 +128,13 @@ export class GoogleTasksClient {
   }
 
   async moveTask(taskListId: string, taskId: string, params?: MoveTaskParams): Promise<Task> {
-    let response = await this.api.post(`/lists/${taskListId}/tasks/${taskId}/move`, {}, {
-      params
-    });
+    let response = await this.api.post(
+      `/lists/${taskListId}/tasks/${taskId}/move`,
+      {},
+      {
+        params
+      }
+    );
     return response.data;
   }
 

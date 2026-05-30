@@ -1,25 +1,25 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  getSubreddit,
-  getPost,
   getContentInfo,
-  searchReddit,
-  listUserContent,
-  submitPost,
-  managePost,
-  submitComment,
-  manageComment,
-  vote,
-  saveContent,
+  getPost,
+  getSubreddit,
   getUser,
-  manageMessages,
-  manageSubscriptions,
-  moderateContent,
+  listUserContent,
+  manageComment,
   manageFlair,
-  manageWiki
+  manageMessages,
+  managePost,
+  manageSubscriptions,
+  manageWiki,
+  moderateContent,
+  saveContent,
+  searchReddit,
+  submitComment,
+  submitPost,
+  vote
 } from './tools';
-import { newPost, newComment, newMessage, inboundWebhook } from './triggers';
+import { inboundWebhook, newComment, newMessage, newPost } from './triggers';
 
 export let provider = Slate.create({
   spec,

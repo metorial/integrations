@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getExchangeRates,
   convertCurrency,
+  getExchangeRates,
+  getFluctuation,
   getHistoricalRates,
   getTimeSeries,
-  getFluctuation,
   listCurrencies
 } from './tools';
 

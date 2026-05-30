@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { lineItemInputSchema, mapLineItemInput } from '../lib/schemas';
-import { z } from 'zod';
+import { spec } from '../spec';
 
 let recurringOutputSchema = z.object({
   recurringId: z.string().optional().describe('Recurring document ID'),

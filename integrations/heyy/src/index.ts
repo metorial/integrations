@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getBusinessTool,
-  listContactsTool,
-  createContactTool,
-  updateContactTool,
-  deleteContactTool,
-  sendWhatsAppMessageTool,
-  listChannelsTool,
-  listMessageTemplatesTool,
-  createBroadcastTool,
-  listBroadcastsTool,
-  startBroadcastTool,
   addBroadcastRecipientsTool,
+  createBroadcastTool,
+  createContactTool,
+  deleteContactTool,
+  getBusinessTool,
+  listBroadcastsTool,
+  listChannelsTool,
   listChatsTool,
-  updateChatTool,
+  listContactsTool,
+  listMessageTemplatesTool,
   listWorkflowsTool,
-  triggerWorkflowTool
+  sendWhatsAppMessageTool,
+  startBroadcastTool,
+  triggerWorkflowTool,
+  updateChatTool,
+  updateContactTool
 } from './tools';
 import { incomingMessageTrigger } from './triggers';
 

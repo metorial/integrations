@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AffinityClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let entityFileSchema = z.object({
   entityFileId: z.number().describe('Unique identifier of the entity file'),

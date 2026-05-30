@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createTemplate,
   generateImage,
   getImage,
-  listImages,
-  createTemplate,
-  updateTemplate,
   getTemplate,
-  listTemplates
+  listImages,
+  listTemplates,
+  updateTemplate
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

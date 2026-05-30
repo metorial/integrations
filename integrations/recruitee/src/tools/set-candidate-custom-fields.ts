@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RecruiteeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let setCandidateCustomFields = SlateTool.create(spec, {
   name: 'Set Candidate Custom Fields',

@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TikTokBusinessClient } from '../lib/client';
 import { tiktokServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listAdvertisers = SlateTool.create(spec, {
   name: 'List Advertisers',
@@ -21,7 +21,9 @@ export let listAdvertisers = SlateTool.create(spec, {
       secret: z
         .string()
         .optional()
-        .describe('TikTok Business App Secret. Defaults to the secret saved during OAuth setup.')
+        .describe(
+          'TikTok Business App Secret. Defaults to the secret saved during OAuth setup.'
+        )
     })
   )
   .output(
@@ -31,7 +33,10 @@ export let listAdvertisers = SlateTool.create(spec, {
           z.object({
             advertiserId: z.string().describe('TikTok Ads advertiser/account ID.'),
             advertiserName: z.string().optional().describe('Advertiser account name.'),
-            advertiserRole: z.string().optional().describe('Role granted for this advertiser.'),
+            advertiserRole: z
+              .string()
+              .optional()
+              .describe('Role granted for this advertiser.'),
             isValid: z
               .boolean()
               .optional()

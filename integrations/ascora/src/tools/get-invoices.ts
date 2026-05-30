@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AscoraAccountingClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let invoiceLineSchema = z.object({
   partNumber: z.string().optional().describe('Part or item number'),

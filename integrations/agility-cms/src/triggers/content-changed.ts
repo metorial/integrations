@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { MgmtClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let contentChanged = SlateTrigger.create(spec, {
   name: 'Content Changed',

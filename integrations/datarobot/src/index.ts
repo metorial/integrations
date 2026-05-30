@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
-  getProject,
-  createProject,
-  manageProject,
-  startAutopilot,
-  listModels,
-  getModel,
-  listDatasets,
-  getDataset,
-  manageDataset,
-  listDeployments,
-  getDeployment,
   createDeployment,
-  manageDeployment,
-  makePredictions,
+  createProject,
+  getDataset,
+  getDeployment,
   getDeploymentMonitoring,
+  getModel,
+  getProject,
+  listDatasets,
+  listDeployments,
   listModelPackages,
-  registerModel
+  listModels,
+  listProjects,
+  makePredictions,
+  manageDataset,
+  manageDeployment,
+  manageProject,
+  registerModel,
+  startAutopilot
 } from './tools';
-import { deploymentEvents, projectEvents, datasetEvents } from './triggers';
+import { datasetEvents, deploymentEvents, projectEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

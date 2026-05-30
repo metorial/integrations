@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAccount = SlateTool.create(spec, {
   name: 'Get Account',
@@ -58,27 +58,25 @@ export let getAccount = SlateTool.create(spec, {
 
     return {
       output: {
-        userId: user['user_id'] as string | undefined,
-        firstName: user['first_name'] as string | undefined,
-        tier: subscription['tier'] as string | undefined,
-        characterCount: subscription['character_count'] as number | undefined,
-        characterLimit: subscription['character_limit'] as number | undefined,
-        voiceSlotsUsed: subscription['voice_slots_used'] as number | undefined,
-        maxVoiceSlots: subscription['max_voice_slots'] as number | undefined,
-        canUseInstantVoiceCloning: subscription['can_use_instant_voice_cloning'] as
+        userId: user.user_id as string | undefined,
+        firstName: user.first_name as string | undefined,
+        tier: subscription.tier as string | undefined,
+        characterCount: subscription.character_count as number | undefined,
+        characterLimit: subscription.character_limit as number | undefined,
+        voiceSlotsUsed: subscription.voice_slots_used as number | undefined,
+        maxVoiceSlots: subscription.max_voice_slots as number | undefined,
+        canUseInstantVoiceCloning: subscription.can_use_instant_voice_cloning as
           | boolean
           | undefined,
-        canUseProfessionalVoiceCloning: subscription['can_use_professional_voice_cloning'] as
+        canUseProfessionalVoiceCloning: subscription.can_use_professional_voice_cloning as
           | boolean
           | undefined,
-        status: subscription['status'] as string | undefined,
-        billingPeriod: subscription['billing_period'] as string | undefined,
-        nextCharacterCountReset: subscription['next_character_count_reset'] as
-          | number
-          | undefined,
-        currency: subscription['currency'] as string | undefined
+        status: subscription.status as string | undefined,
+        billingPeriod: subscription.billing_period as string | undefined,
+        nextCharacterCountReset: subscription.next_character_count_reset as number | undefined,
+        currency: subscription.currency as string | undefined
       },
-      message: `Account: **${user['first_name'] || 'N/A'}** | Tier: **${subscription['tier']}** | Characters: ${subscription['character_count']}/${subscription['character_limit']} | Voice slots: ${subscription['voice_slots_used']}/${subscription['max_voice_slots']}`
+      message: `Account: **${user.first_name || 'N/A'}** | Tier: **${subscription.tier}** | Characters: ${subscription.character_count}/${subscription.character_limit} | Voice slots: ${subscription.voice_slots_used}/${subscription.max_voice_slots}`
     };
   })
   .build();

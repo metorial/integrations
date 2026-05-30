@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { pinterestServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAnalytics = SlateTool.create(spec, {
   name: 'Get Analytics',
@@ -72,7 +72,7 @@ export let getAnalytics = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let analytics;
+    let analytics: any;
 
     if (ctx.input.scope === 'user_account') {
       analytics = await client.getUserAccountAnalytics({

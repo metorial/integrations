@@ -49,7 +49,7 @@ let getSigningKey = async (
   region: string,
   service: string
 ): Promise<ArrayBuffer> => {
-  let kDate = await hmacSha256(textEncoder.encode('AWS4' + secretKey), dateStamp);
+  let kDate = await hmacSha256(textEncoder.encode(`AWS4${secretKey}`), dateStamp);
   let kRegion = await hmacSha256(kDate, region);
   let kService = await hmacSha256(kRegion, service);
   let kSigning = await hmacSha256(kService, 'aws4_request');
@@ -86,7 +86,7 @@ let uriEncode = (str: string, encodeSlash: boolean = true): string => {
     } else {
       let bytes = textEncoder.encode(ch);
       for (let b of bytes) {
-        encoded += '%' + b.toString(16).toUpperCase().padStart(2, '0');
+        encoded += `%${b.toString(16).toUpperCase().padStart(2, '0')}`;
       }
     }
   }
@@ -126,7 +126,7 @@ export let signRequest = async (
 
   let signedHeaders = { ...headers };
   signedHeaders['x-amz-date'] = amzDate;
-  signedHeaders['host'] = parsedUrl.host;
+  signedHeaders.host = parsedUrl.host;
 
   if (sessionToken) {
     signedHeaders['x-amz-security-token'] = sessionToken;
@@ -157,13 +157,12 @@ export let signRequest = async (
   let headerKeys = Object.keys(signedHeaders)
     .map(k => k.toLowerCase())
     .sort();
-  let canonicalHeaders =
-    headerKeys
-      .map(
-        k =>
-          `${k}:${signedHeaders[Object.keys(signedHeaders).find(h => h.toLowerCase() === k)!]!.trim()}`
-      )
-      .join('\n') + '\n';
+  let canonicalHeaders = `${headerKeys
+    .map(
+      k =>
+        `${k}:${signedHeaders[Object.keys(signedHeaders).find(h => h.toLowerCase() === k)!]!.trim()}`
+    )
+    .join('\n')}\n`;
   let signedHeadersStr = headerKeys.join(';');
 
   let canonicalRequest = [
@@ -194,7 +193,7 @@ export let signRequest = async (
   for (let key of Object.keys(signedHeaders)) {
     resultHeaders[key] = signedHeaders[key]!;
   }
-  resultHeaders['Authorization'] = authorization;
+  resultHeaders.Authorization = authorization;
 
   return resultHeaders;
 };

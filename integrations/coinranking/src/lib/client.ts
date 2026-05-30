@@ -82,15 +82,15 @@ export class CoinrankingClient {
   async listCoins(params: ListCoinsParams = {}) {
     let query: Record<string, unknown> = {};
     let refCurrency = this.refCurrency(params.referenceCurrencyUuid);
-    if (refCurrency) query['referenceCurrencyUuid'] = refCurrency;
-    if (params.timePeriod) query['timePeriod'] = params.timePeriod;
+    if (refCurrency) query.referenceCurrencyUuid = refCurrency;
+    if (params.timePeriod) query.timePeriod = params.timePeriod;
     if (params.tiers && params.tiers.length > 0) query['tiers[]'] = params.tiers;
-    if (params.orderBy) query['orderBy'] = params.orderBy;
-    if (params.orderDirection) query['orderDirection'] = params.orderDirection;
-    if (params.limit !== undefined) query['limit'] = params.limit;
-    if (params.offset !== undefined) query['offset'] = params.offset;
+    if (params.orderBy) query.orderBy = params.orderBy;
+    if (params.orderDirection) query.orderDirection = params.orderDirection;
+    if (params.limit !== undefined) query.limit = params.limit;
+    if (params.offset !== undefined) query.offset = params.offset;
     if (params.tags && params.tags.length > 0) query['tags[]'] = params.tags;
-    if (params.search) query['search'] = params.search;
+    if (params.search) query.search = params.search;
 
     let response = await this.axios.get('/coins', { params: query });
     return response.data;
@@ -99,8 +99,8 @@ export class CoinrankingClient {
   async getCoin(params: GetCoinParams) {
     let query: Record<string, unknown> = {};
     let refCurrency = this.refCurrency(params.referenceCurrencyUuid);
-    if (refCurrency) query['referenceCurrencyUuid'] = refCurrency;
-    if (params.timePeriod) query['timePeriod'] = params.timePeriod;
+    if (refCurrency) query.referenceCurrencyUuid = refCurrency;
+    if (params.timePeriod) query.timePeriod = params.timePeriod;
 
     let response = await this.axios.get(`/coin/${params.coinUuid}`, { params: query });
     return response.data;
@@ -109,8 +109,8 @@ export class CoinrankingClient {
   async getCoinPrice(params: GetCoinPriceParams) {
     let query: Record<string, unknown> = {};
     let refCurrency = this.refCurrency(params.referenceCurrencyUuid);
-    if (refCurrency) query['referenceCurrencyUuid'] = refCurrency;
-    if (params.timestamp !== undefined) query['timestamp'] = params.timestamp;
+    if (refCurrency) query.referenceCurrencyUuid = refCurrency;
+    if (params.timestamp !== undefined) query.timestamp = params.timestamp;
 
     let response = await this.axios.get(`/coin/${params.coinUuid}/price`, { params: query });
     return response.data;
@@ -119,8 +119,8 @@ export class CoinrankingClient {
   async getCoinPriceHistory(params: GetCoinPriceHistoryParams) {
     let query: Record<string, unknown> = {};
     let refCurrency = this.refCurrency(params.referenceCurrencyUuid);
-    if (refCurrency) query['referenceCurrencyUuid'] = refCurrency;
-    if (params.timePeriod) query['timePeriod'] = params.timePeriod;
+    if (refCurrency) query.referenceCurrencyUuid = refCurrency;
+    if (params.timePeriod) query.timePeriod = params.timePeriod;
 
     let response = await this.axios.get(`/coin/${params.coinUuid}/history`, { params: query });
     return response.data;
@@ -129,11 +129,11 @@ export class CoinrankingClient {
   async getTrendingCoins(params: GetTrendingCoinsParams = {}) {
     let query: Record<string, unknown> = {};
     let refCurrency = this.refCurrency(params.referenceCurrencyUuid);
-    if (refCurrency) query['referenceCurrencyUuid'] = refCurrency;
-    if (params.timePeriod) query['timePeriod'] = params.timePeriod;
+    if (refCurrency) query.referenceCurrencyUuid = refCurrency;
+    if (params.timePeriod) query.timePeriod = params.timePeriod;
     if (params.tiers && params.tiers.length > 0) query['tiers[]'] = params.tiers;
-    if (params.limit !== undefined) query['limit'] = params.limit;
-    if (params.offset !== undefined) query['offset'] = params.offset;
+    if (params.limit !== undefined) query.limit = params.limit;
+    if (params.offset !== undefined) query.offset = params.offset;
 
     let response = await this.axios.get('/coins/trending', { params: query });
     return response.data;
@@ -142,7 +142,7 @@ export class CoinrankingClient {
   async getGlobalStats(params: GetGlobalStatsParams = {}) {
     let query: Record<string, unknown> = {};
     let refCurrency = this.refCurrency(params.referenceCurrencyUuid);
-    if (refCurrency) query['referenceCurrencyUuid'] = refCurrency;
+    if (refCurrency) query.referenceCurrencyUuid = refCurrency;
 
     let response = await this.axios.get('/stats', { params: query });
     return response.data;
@@ -151,9 +151,9 @@ export class CoinrankingClient {
   async listReferenceCurrencies(params: ListReferenceCurrenciesParams = {}) {
     let query: Record<string, unknown> = {};
     if (params.types && params.types.length > 0) query['types[]'] = params.types;
-    if (params.search) query['search'] = params.search;
-    if (params.limit !== undefined) query['limit'] = params.limit;
-    if (params.offset !== undefined) query['offset'] = params.offset;
+    if (params.search) query.search = params.search;
+    if (params.limit !== undefined) query.limit = params.limit;
+    if (params.offset !== undefined) query.offset = params.offset;
 
     let response = await this.axios.get('/reference-currencies', { params: query });
     return response.data;
@@ -164,7 +164,7 @@ export class CoinrankingClient {
       query: params.query
     };
     let refCurrency = this.refCurrency(params.referenceCurrencyUuid);
-    if (refCurrency) query['referenceCurrencyUuid'] = refCurrency;
+    if (refCurrency) query.referenceCurrencyUuid = refCurrency;
 
     let response = await this.axios.get('/search-suggestions', { params: query });
     return response.data;

@@ -149,7 +149,7 @@ export interface ApolloUser {
   [key: string]: any;
 }
 
-export interface PaginatedResponse<T> {
+export interface PaginatedResponse<_T> {
   [key: string]: any;
   pagination?: {
     page?: number;

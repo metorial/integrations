@@ -142,7 +142,7 @@ export class Client {
       'api-key': this.token
     };
     if (fields && fields.length > 0) {
-      params['fields'] = fields.join(',');
+      params.fields = fields.join(',');
     }
     return params;
   }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WakaTimeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getProjectCommits = SlateTool.create(spec, {
   name: 'Get Project Commits',

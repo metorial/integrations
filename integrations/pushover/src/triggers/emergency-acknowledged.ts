@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let emergencyAcknowledged = SlateTrigger.create(spec, {
   name: 'Emergency Notification Acknowledged',
@@ -57,7 +57,7 @@ export let emergencyAcknowledged = SlateTrigger.create(spec, {
       }
 
       let receiptId = params.receipt || '';
-      let acknowledgedAt = parseInt(params.acknowledged_at || '0', 10);
+      let acknowledgedAt = Number.parseInt(params.acknowledged_at || '0', 10);
       let acknowledgedByUserKey = params.acknowledged_by || '';
       let acknowledgedByDevice = params.acknowledged_by_device || '';
 

@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { enrichContact, getEnrichmentResult, enrichCompany, checkCredits } from './tools';
+import { checkCredits, enrichCompany, enrichContact, getEnrichmentResult } from './tools';
 import { enrichmentCompleted } from './triggers';
 
 export let provider = Slate.create({

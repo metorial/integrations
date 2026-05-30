@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from 'node:crypto';
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 import { salesforceOAuthError, salesforceServiceError } from './lib/errors';
 
@@ -134,7 +134,7 @@ export let auth = SlateAuth.create()
         );
       }
 
-      let response;
+      let response: any;
       try {
         response = await http.post(
           '/services/oauth2/token',
@@ -162,7 +162,7 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           instanceUrl: data.instance_url,
           expiresAt: data.issued_at
-            ? new Date(parseInt(data.issued_at) + 7200 * 1000).toISOString()
+            ? new Date(Number.parseInt(data.issued_at, 10) + 7200 * 1000).toISOString()
             : undefined
         },
         input: ctx.input
@@ -179,7 +179,7 @@ export let auth = SlateAuth.create()
       let baseUrl = getLoginUrl(ctx.input.environment, ctx.input.customDomain);
       let http = createAxios({ baseURL: baseUrl });
 
-      let response;
+      let response: any;
       try {
         response = await http.post(
           '/services/oauth2/token',
@@ -205,7 +205,7 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
           instanceUrl: data.instance_url || ctx.output.instanceUrl,
           expiresAt: data.issued_at
-            ? new Date(parseInt(data.issued_at) + 7200 * 1000).toISOString()
+            ? new Date(Number.parseInt(data.issued_at, 10) + 7200 * 1000).toISOString()
             : undefined
         },
         input: ctx.input

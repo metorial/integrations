@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BiginClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRecord = SlateTool.create(spec, {
   name: 'Get Record',

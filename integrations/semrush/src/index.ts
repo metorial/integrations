@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getDomainOverview,
-  getDomainKeywords,
-  getDomainCompetitors,
-  compareDomains,
-  researchKeyword,
   analyzeBacklinks,
   analyzeTraffic,
-  manageProject,
-  managePositionTracking,
-  manageSiteAudit,
+  compareDomains,
+  getDomainCompetitors,
+  getDomainKeywords,
+  getDomainOverview,
+  getMapRankings,
   manageListing,
-  getMapRankings
+  managePositionTracking,
+  manageProject,
+  manageSiteAudit,
+  researchKeyword
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

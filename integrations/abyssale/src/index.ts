@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listDesigns,
-  getDesignFormat,
+  createDynamicImage,
+  createProject,
+  duplicateWorkspaceTemplate,
+  exportBanners,
   generateImage,
   generateMultiFormat,
+  getDesignFormat,
+  getDuplicationStatus,
   getGenerationStatus,
-  createDynamicImage,
-  exportBanners,
-  listProjects,
-  createProject,
+  listDesigns,
   listFonts,
-  duplicateWorkspaceTemplate,
-  getDuplicationStatus
+  listProjects
 } from './tools';
 import {
   bannerGenerated,
   batchGenerationCompleted,
-  exportCompleted,
-  designStatusUpdated
+  designStatusUpdated,
+  exportCompleted
 } from './triggers';
 
 export let provider = Slate.create({

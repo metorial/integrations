@@ -10,7 +10,7 @@ api.interceptors.response.use(
   error => Promise.reject(zoomApiError(error))
 );
 
-export interface PaginatedResponse<T> {
+export interface PaginatedResponse<_T> {
   page_count?: number;
   page_number?: number;
   page_size?: number;

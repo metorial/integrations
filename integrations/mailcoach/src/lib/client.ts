@@ -19,8 +19,8 @@ export class Client {
   async listEmailLists(params?: { search?: string; sort?: string; page?: number }) {
     let query: Record<string, string> = {};
     if (params?.search) query['filter[search]'] = params.search;
-    if (params?.sort) query['sort'] = params.sort;
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.sort) query.sort = params.sort;
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get('/email-lists', { params: query });
     return response.data;
   }
@@ -87,8 +87,8 @@ export class Client {
     let query: Record<string, string> = {};
     if (params?.search) query['filter[search]'] = params.search;
     if (params?.status) query['filter[status]'] = params.status;
-    if (params?.sort) query['sort'] = params.sort;
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.sort) query.sort = params.sort;
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get(`/email-lists/${emailListUuid}/subscribers`, {
       params: query
     });
@@ -170,8 +170,8 @@ export class Client {
     let query: Record<string, string> = {};
     if (params?.search) query['filter[search]'] = params.search;
     if (params?.status) query['filter[status]'] = params.status;
-    if (params?.sort) query['sort'] = params.sort;
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.sort) query.sort = params.sort;
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get('/campaigns', { params: query });
     return response.data;
   }
@@ -239,21 +239,21 @@ export class Client {
 
   async getCampaignOpens(campaignUuid: string, params?: { page?: number }) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get(`/campaigns/${campaignUuid}/opens`, { params: query });
     return response.data;
   }
 
   async getCampaignClicks(campaignUuid: string, params?: { page?: number }) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get(`/campaigns/${campaignUuid}/clicks`, { params: query });
     return response.data;
   }
 
   async getCampaignUnsubscribes(campaignUuid: string, params?: { page?: number }) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get(`/campaigns/${campaignUuid}/unsubscribes`, {
       params: query
     });
@@ -263,7 +263,7 @@ export class Client {
   async getCampaignBounces(campaignUuid: string, params?: { type?: string; page?: number }) {
     let query: Record<string, string> = {};
     if (params?.type) query['filter[type]'] = params.type;
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get(`/campaigns/${campaignUuid}/bounces`, {
       params: query
     });
@@ -275,8 +275,8 @@ export class Client {
   async listTemplates(params?: { search?: string; sort?: string; page?: number }) {
     let query: Record<string, string> = {};
     if (params?.search) query['filter[search]'] = params.search;
-    if (params?.sort) query['sort'] = params.sort;
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.sort) query.sort = params.sort;
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get('/templates', { params: query });
     return response.data;
   }
@@ -326,7 +326,7 @@ export class Client {
 
   async listTags(emailListUuid: string, params?: { page?: number }) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get(`/email-lists/${emailListUuid}/tags`, {
       params: query
     });
@@ -363,7 +363,7 @@ export class Client {
 
   async listSegments(emailListUuid: string, params?: { page?: number }) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get(`/email-lists/${emailListUuid}/segments`, {
       params: query
     });
@@ -424,8 +424,8 @@ export class Client {
     let query: Record<string, string> = {};
     if (params?.search) query['filter[search]'] = params.search;
     if (params?.reason) query['filter[reason]'] = params.reason;
-    if (params?.sort) query['sort'] = params.sort;
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.sort) query.sort = params.sort;
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get('/suppressions', { params: query });
     return response.data;
   }
@@ -450,7 +450,7 @@ export class Client {
     let query: Record<string, string> = {};
     if (params?.subscriberUuid) query['filter[subscriber_uuid]'] = params.subscriberUuid;
     if (params?.campaignUuid) query['filter[campaign_uuid]'] = params.campaignUuid;
-    if (params?.page) query['page'] = params.page.toString();
+    if (params?.page) query.page = params.page.toString();
     let response = await this.http.get('/sends', { params: query });
     return response.data;
   }

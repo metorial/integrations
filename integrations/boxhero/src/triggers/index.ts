@@ -1,2 +1,2 @@
-export { transactionEvents } from './transaction-events';
 export { itemEvents } from './item-events';
+export { transactionEvents } from './transaction-events';

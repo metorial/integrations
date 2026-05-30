@@ -1,32 +1,32 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageAccount,
   getAccount,
-  manageContact,
-  getContact,
-  manageActivity,
   getActivity,
-  manageOpportunity,
-  getOpportunity,
-  manageProduct,
-  getProduct,
-  manageSalesOrder,
-  getSalesOrder,
-  manageSalesOrderLine,
-  manageCalendarEntry,
   getCalendarEntry,
+  getContact,
+  getOpportunity,
+  getProduct,
+  getSalesOrder,
   getUser,
   getValues,
-  lookupExternalId
+  lookupExternalId,
+  manageAccount,
+  manageActivity,
+  manageCalendarEntry,
+  manageContact,
+  manageOpportunity,
+  manageProduct,
+  manageSalesOrder,
+  manageSalesOrderLine
 } from './tools';
 import {
   accountChanges,
-  contactChanges,
-  opportunityChanges,
   activityChanges,
-  salesOrderChanges,
-  inboundWebhook
+  contactChanges,
+  inboundWebhook,
+  opportunityChanges,
+  salesOrderChanges
 } from './triggers';
 
 export let provider = Slate.create({

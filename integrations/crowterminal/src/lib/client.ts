@@ -1,14 +1,14 @@
 import { createAxios } from 'slates';
 import type {
-  Post,
   Account,
-  ScheduleSlot,
   CreatePostParams,
-  UpdatePostParams,
-  ListPostsParams,
   CreateScheduleSlotParams,
+  ListPostsParams,
   PaginatedResponse,
-  PostJob
+  Post,
+  PostJob,
+  ScheduleSlot,
+  UpdatePostParams
 } from './types';
 
 let DEFAULT_BASE_URL = 'https://api.crowterminal.com/v1';

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listFiles = SlateTool.create(spec, {
   name: 'List Files',
@@ -115,7 +115,7 @@ export let uploadFile = SlateTool.create(spec, {
         scope: ctx.input.employeeId ? 'employee' : 'company',
         fileName: ctx.input.fileName
       },
-      message: `Uploaded file **${ctx.input.fileName}** to ${ctx.input.employeeId ? 'employee **' + ctx.input.employeeId + '**' : 'company'} files.`
+      message: `Uploaded file **${ctx.input.fileName}** to ${ctx.input.employeeId ? `employee **${ctx.input.employeeId}**` : 'company'} files.`
     };
   })
   .build();
@@ -161,7 +161,7 @@ export let deleteFile = SlateTool.create(spec, {
         fileId: ctx.input.fileId,
         scope: ctx.input.employeeId ? 'employee' : 'company'
       },
-      message: `Deleted file **${ctx.input.fileId}** from ${ctx.input.employeeId ? 'employee **' + ctx.input.employeeId + '**' : 'company'} files.`
+      message: `Deleted file **${ctx.input.fileId}** from ${ctx.input.employeeId ? `employee **${ctx.input.employeeId}**` : 'company'} files.`
     };
   })
   .build();

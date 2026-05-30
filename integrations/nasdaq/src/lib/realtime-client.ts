@@ -106,8 +106,8 @@ export class RealtimeClient {
     let queryParams: Record<string, string> = {
       symbols: params.symbols.join(',')
     };
-    if (params.source) queryParams['source'] = params.source;
-    if (params.offset) queryParams['offset'] = params.offset;
+    if (params.source) queryParams.source = params.source;
+    if (params.offset) queryParams.offset = params.offset;
 
     return this.request('/lastsale', queryParams);
   }
@@ -116,8 +116,8 @@ export class RealtimeClient {
     let queryParams: Record<string, string> = {
       symbols: params.symbols.join(',')
     };
-    if (params.source) queryParams['source'] = params.source;
-    if (params.offset) queryParams['offset'] = params.offset;
+    if (params.source) queryParams.source = params.source;
+    if (params.offset) queryParams.offset = params.offset;
 
     return this.request('/lasttrade', queryParams);
   }
@@ -126,8 +126,8 @@ export class RealtimeClient {
     let queryParams: Record<string, string> = {
       symbols: params.symbols.join(',')
     };
-    if (params.source) queryParams['source'] = params.source;
-    if (params.offset) queryParams['offset'] = params.offset;
+    if (params.source) queryParams.source = params.source;
+    if (params.offset) queryParams.offset = params.offset;
 
     return this.request('/lastquote', queryParams);
   }
@@ -136,8 +136,8 @@ export class RealtimeClient {
     let queryParams: Record<string, string> = {
       symbols: params.symbols.join(',')
     };
-    if (params.source) queryParams['source'] = params.source;
-    if (params.offset) queryParams['offset'] = params.offset;
+    if (params.source) queryParams.source = params.source;
+    if (params.offset) queryParams.offset = params.offset;
 
     return this.request('/snapshot', queryParams);
   }
@@ -146,11 +146,11 @@ export class RealtimeClient {
     let queryParams: Record<string, string> = {
       symbols: params.symbols.join(',')
     };
-    if (params.source) queryParams['source'] = params.source;
-    if (params.offset) queryParams['offset'] = params.offset;
-    if (params.barPrecision) queryParams['barPrecision'] = params.barPrecision;
-    if (params.dateRange) queryParams['dateRange'] = params.dateRange;
-    if (params.adjusted !== undefined) queryParams['adjusted'] = String(params.adjusted);
+    if (params.source) queryParams.source = params.source;
+    if (params.offset) queryParams.offset = params.offset;
+    if (params.barPrecision) queryParams.barPrecision = params.barPrecision;
+    if (params.dateRange) queryParams.dateRange = params.dateRange;
+    if (params.adjusted !== undefined) queryParams.adjusted = String(params.adjusted);
 
     // Use bars-all for Nasdaq/CQT sources (which support 10+ year history)
     let endpoint =
@@ -162,8 +162,8 @@ export class RealtimeClient {
 
   async getTrends(params?: { source?: string; offset?: string }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.source) queryParams['source'] = params.source;
-    if (params?.offset) queryParams['offset'] = params.offset;
+    if (params?.source) queryParams.source = params.source;
+    if (params?.offset) queryParams.offset = params.offset;
 
     return this.request('/trends', queryParams);
   }
@@ -172,8 +172,8 @@ export class RealtimeClient {
     let queryParams: Record<string, string> = {
       symbol: params.symbol
     };
-    if (params.source) queryParams['source'] = params.source;
-    if (params.offset) queryParams['offset'] = params.offset;
+    if (params.source) queryParams.source = params.source;
+    if (params.offset) queryParams.offset = params.offset;
 
     return this.request('/chain', queryParams);
   }
@@ -200,13 +200,13 @@ export class RealtimeClient {
 
   async getIndexValue(params: IndexParams): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params.symbols) queryParams['symbols'] = params.symbols.join(',');
+    if (params.symbols) queryParams.symbols = params.symbols.join(',');
     return this.request('/indexvalue', queryParams);
   }
 
   async getIndexSnapshot(params: IndexParams): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params.symbols) queryParams['symbols'] = params.symbols.join(',');
+    if (params.symbols) queryParams.symbols = params.symbols.join(',');
     return this.request('/indexsnapshot', queryParams);
   }
 }

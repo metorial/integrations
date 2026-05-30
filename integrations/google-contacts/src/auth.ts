@@ -1,5 +1,5 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
-import { SlateAuth, createAxios } from 'slates';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 import { googleContactsScopes } from './scopes';
 

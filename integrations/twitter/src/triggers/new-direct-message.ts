@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { TwitterClient } from '../lib/client';
 import { dmEventSchema, mapDmEvent } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newDirectMessage = SlateTrigger.create(spec, {
   name: 'New Direct Message',

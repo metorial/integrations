@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let moneySchema = z.object({
   currency: z.string().describe('ISO 4217 currency code (e.g., "USD")'),

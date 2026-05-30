@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WebexClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let messageSchema = z.object({
   messageId: z.string().describe('ID of the message'),

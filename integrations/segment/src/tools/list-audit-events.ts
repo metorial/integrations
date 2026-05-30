@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SegmentClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listAuditEvents = SlateTool.create(spec, {
   name: 'List Audit Events',

@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  submitSigningRequest,
-  getSigningRequest,
-  resubmitSigningRequest,
   approveDenySigningRequest,
-  listProjects,
-  getProject,
-  listCertificates,
+  getAuditLog,
   getCertificate,
+  getProject,
   getSigningPolicies,
-  getAuditLog
+  getSigningRequest,
+  listCertificates,
+  listProjects,
+  resubmitSigningRequest,
+  submitSigningRequest
 } from './tools';
 import { signingRequestStatusChange } from './triggers';
 

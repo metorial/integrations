@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SitesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCustomProperties = SlateTool.create(spec, {
   name: 'List Custom Properties',

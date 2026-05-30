@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listRecords,
-  getRecord,
   createRecord,
-  updateRecord,
   deleteRecord,
-  publishRecord,
+  getRecord,
+  getSiteInfo,
   listModels,
-  manageModel,
-  manageField,
+  listRecords,
   listUploads,
-  manageUpload,
-  manageEnvironment,
   manageBuildTrigger,
+  manageEnvironment,
+  manageField,
+  manageModel,
+  manageUpload,
+  publishRecord,
   searchSite,
-  getSiteInfo
+  updateRecord
 } from './tools';
 import {
-  recordEvents,
-  modelEvents,
-  uploadEvents,
   buildEvents,
-  environmentEvents
+  environmentEvents,
+  modelEvents,
+  recordEvents,
+  uploadEvents
 } from './triggers';
 
 export let provider = Slate.create({

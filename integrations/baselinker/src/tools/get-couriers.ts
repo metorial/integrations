@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BaseLinkerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCouriers = SlateTool.create(spec, {
   name: 'Get Couriers',
@@ -42,9 +42,9 @@ export let getCouriers = SlateTool.create(spec, {
     let client = new BaseLinkerClient({ token: ctx.auth.token });
 
     let couriersResult = await client.getCouriersList();
-    let courierFields: any = undefined;
-    let orderPackages: any = undefined;
-    let packageStatusHistory: any = undefined;
+    let courierFields: any;
+    let orderPackages: any;
+    let packageStatusHistory: any;
 
     if (ctx.input.courierCodeForFields) {
       let fieldsResult = await client.getCourierFields(ctx.input.courierCodeForFields);

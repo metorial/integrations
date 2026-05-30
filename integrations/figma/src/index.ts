@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getFile,
-  exportImages,
-  getImageFills,
-  listComments,
-  postComment,
+  createDevResource,
   deleteComment,
-  getFileVersions,
-  listTeamProjects,
-  listProjectFiles,
+  deleteDevResource,
+  exportImages,
   getComponents,
+  getDevResources,
+  getFile,
+  getFileVersions,
+  getImageFills,
   getStyles,
   getUser,
   getVariables,
-  updateVariables,
-  getDevResources,
-  createDevResource,
-  deleteDevResource
+  listComments,
+  listProjectFiles,
+  listTeamProjects,
+  postComment,
+  updateVariables
 } from './tools';
-import { fileEvents, commentEvents, libraryPublish, devModeStatusEvents } from './triggers';
+import { commentEvents, devModeStatusEvents, fileEvents, libraryPublish } from './triggers';
 
 export let provider = Slate.create({
   spec,

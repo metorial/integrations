@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EmeliaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageAdvancedCampaign = SlateTool.create(spec, {
   name: 'Manage Advanced Campaign',

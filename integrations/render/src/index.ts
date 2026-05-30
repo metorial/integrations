@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listServices,
-  getService,
-  updateService,
-  manageService,
-  listDeploys,
-  manageDeploys,
-  manageEnvVars,
-  scaleService,
-  manageCustomDomains,
-  managePostgres,
-  listPostgres,
-  manageKeyValue,
-  manageEnvGroups,
-  manageJobs,
-  manageDisks,
-  queryLogs,
   getMetrics,
+  getService,
+  listDeploys,
+  listPostgres,
+  listServices,
+  listWorkspaces,
+  manageCustomDomains,
+  manageDeploys,
+  manageDisks,
+  manageEnvGroups,
+  manageEnvVars,
+  manageJobs,
+  manageKeyValue,
+  managePostgres,
   manageProjects,
-  listWorkspaces
+  manageService,
+  queryLogs,
+  scaleService,
+  updateService
 } from './tools';
-import { deploymentEvents, serviceEvents, databaseEvents, diskEvents } from './triggers';
+import { databaseEvents, deploymentEvents, diskEvents, serviceEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

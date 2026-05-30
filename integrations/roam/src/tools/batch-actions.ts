@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { RoamClient, WriteAction } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { RoamClient, type WriteAction } from '../lib/client';
+import { spec } from '../spec';
 
 let createBlockActionSchema = z.object({
   action: z.literal('create-block'),
@@ -127,6 +127,10 @@ Actions are executed in the provided order. For creating nested blocks, assign a
             action: 'delete-page',
             page: { uid: a.pageUid }
           };
+        default:
+          throw new Error(
+            `Unsupported Roam batch action: ${(a as { action: string }).action}`
+          );
       }
     });
 

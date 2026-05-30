@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CincopaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let leadEvents = SlateTrigger.create(spec, {
   name: 'Lead Events',

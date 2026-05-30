@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
@@ -160,7 +160,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: {
+    getProfile: async (_ctx: {
       output: { token: string; refreshToken?: string; expiresAt?: string };
       input: { apiKey: string; apiSecret: string };
     }) => {
@@ -213,7 +213,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: {
+    getProfile: async (_ctx: {
       output: { token: string; refreshToken?: string; expiresAt?: string };
       input: { siteUrl: string; username: string; password: string };
     }) => {

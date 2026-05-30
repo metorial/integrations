@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EgnyteClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userOutputSchema = z.object({
   userId: z.number().describe('User ID'),

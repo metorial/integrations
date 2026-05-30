@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GumroadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUser = SlateTool.create(spec, {
   name: 'Get User Profile',

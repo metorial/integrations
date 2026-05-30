@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { VisionClient } from '../lib/client';
-import { imageSourceSchema, boundingPolySchema, likelihoodSchema } from '../lib/schemas';
+import { boundingPolySchema, imageSourceSchema, likelihoodSchema } from '../lib/schemas';
 import { googleCloudVisionActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let detectFaces = SlateTool.create(spec, {
   name: 'Detect Faces',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { StormboardClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageTags = SlateTool.create(spec, {
   name: 'Manage Tags',

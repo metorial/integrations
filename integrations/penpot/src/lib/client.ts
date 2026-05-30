@@ -52,7 +52,7 @@ export class Client {
 
   async getTeam(params: { id?: string; fileId?: string }): Promise<any> {
     let data: Record<string, any> = {};
-    if (params.id) data['id'] = params.id;
+    if (params.id) data.id = params.id;
     if (params.fileId) data['file-id'] = params.fileId;
     return this.rpcGet('get-team', data);
   }
@@ -300,7 +300,7 @@ export class Client {
       'is-local': isLocal,
       url
     };
-    if (name) data['name'] = name;
+    if (name) data.name = name;
     return this.rpc('create-file-media-object-from-url', data);
   }
 
@@ -368,7 +368,7 @@ export class Client {
 
   async createFileSnapshot(fileId: string, label?: string): Promise<any> {
     let data: Record<string, any> = { 'file-id': fileId };
-    if (label) data['label'] = label;
+    if (label) data.label = label;
     return this.rpc('create-file-snapshot', data);
   }
 

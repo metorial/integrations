@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { RemoteConfigClient } from '../lib/client';
 import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateRemoteConfig = SlateTool.create(spec, {
   name: 'Update Remote Config',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ArmClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageFunctionApp = SlateTool.create(spec, {
   name: 'Manage Function App',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HarvestClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generateReport = SlateTool.create(spec, {
   name: 'Generate Report',

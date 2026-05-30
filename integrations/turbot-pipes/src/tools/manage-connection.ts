@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let connectionOutputSchema = z.object({
   connectionId: z.string().describe('Unique connection identifier'),
@@ -54,7 +54,7 @@ export let createConnection = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let connection;
+    let connection: any;
     if (ctx.input.ownerType === 'org') {
       connection = await client.createOrgConnection(ownerHandle, {
         handle: ctx.input.handle,
@@ -112,7 +112,7 @@ export let updateConnection = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let connection;
+    let connection: any;
     if (ctx.input.ownerType === 'org') {
       connection = await client.updateOrgConnection(ownerHandle, ctx.input.connectionHandle, {
         handle: ctx.input.handle,
@@ -171,7 +171,7 @@ export let deleteConnection = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let connection;
+    let connection: any;
     if (ctx.input.ownerType === 'org') {
       connection = await client.deleteOrgConnection(ownerHandle, ctx.input.connectionHandle);
     } else {

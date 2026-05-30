@@ -8,7 +8,7 @@ let jsonApiHeaders = {
 export class ImgixClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.imgix.com/api/v1',
       headers: {
@@ -29,7 +29,7 @@ export class ImgixClient {
     pageSize?: number;
   }) {
     let query: Record<string, string> = {};
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.filterName) query['filter[name]'] = params.filterName;
     if (params?.filterEnabled !== undefined)
       query['filter[enabled]'] = String(params.filterEnabled);
@@ -85,7 +85,7 @@ export class ImgixClient {
     let query: Record<string, string> = {};
     if (params?.cursor) query['page[cursor]'] = params.cursor;
     if (params?.limit !== undefined) query['page[limit]'] = String(params.limit);
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.filterOriginPath) query['filter[origin_path]'] = params.filterOriginPath;
     if (params?.filterMediaKind) query['filter[media_kind]'] = params.filterMediaKind;
     if (params?.filterKeyword) query['filter[keyword]'] = params.filterKeyword;
@@ -129,8 +129,8 @@ export class ImgixClient {
 
   async purge(url: string, options?: { subImage?: boolean; sourceId?: string }) {
     let attributes: Record<string, any> = { url };
-    if (options?.subImage !== undefined) attributes['sub_image'] = options.subImage;
-    if (options?.sourceId) attributes['source_id'] = options.sourceId;
+    if (options?.subImage !== undefined) attributes.sub_image = options.subImage;
+    if (options?.sourceId) attributes.source_id = options.sourceId;
 
     let response = await this.axios.post('/purge', {
       data: {
@@ -149,7 +149,7 @@ export class ImgixClient {
     filterCompleted?: boolean;
   }) {
     let query: Record<string, string> = {};
-    if (params?.sort) query['sort'] = params.sort;
+    if (params?.sort) query.sort = params.sort;
     if (params?.filterReportType) query['filter[report_type]'] = params.filterReportType;
     if (params?.filterCompleted !== undefined)
       query['filter[completed]'] = String(params.filterCompleted);

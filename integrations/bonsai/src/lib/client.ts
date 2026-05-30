@@ -1,9 +1,9 @@
 import { createAxios } from 'slates';
 import type {
   BonsaiClient,
+  BonsaiDeal,
   BonsaiProject,
   BonsaiTask,
-  BonsaiDeal,
   BonsaiTaskTemplate
 } from './types';
 

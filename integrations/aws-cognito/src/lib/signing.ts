@@ -63,7 +63,7 @@ let getSigningKey = async (
   region: string,
   service: string
 ): Promise<Uint8Array> => {
-  let kDate = await hmacSha256(textEncoder.encode('AWS4' + secretKey), dateStamp);
+  let kDate = await hmacSha256(textEncoder.encode(`AWS4${secretKey}`), dateStamp);
   let kRegion = await hmacSha256(kDate, region);
   let kService = await hmacSha256(kRegion, service);
   let kSigning = await hmacSha256(kService, 'aws4_request');
@@ -103,8 +103,7 @@ export let signRequest = async (
   let payloadHash = hexEncode(await sha256(params.body));
 
   let sortedHeaderKeys = Object.keys(headers).sort();
-  let canonicalHeaders =
-    sortedHeaderKeys.map(k => `${k.toLowerCase()}:${headers[k]!.trim()}`).join('\n') + '\n';
+  let canonicalHeaders = `${sortedHeaderKeys.map(k => `${k.toLowerCase()}:${headers[k]!.trim()}`).join('\n')}\n`;
   let signedHeaders = sortedHeaderKeys.map(k => k.toLowerCase()).join(';');
 
   let canonicalRequest = [

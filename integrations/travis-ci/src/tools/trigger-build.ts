@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TravisCIClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let triggerBuild = SlateTool.create(spec, {
   name: 'Trigger Build',

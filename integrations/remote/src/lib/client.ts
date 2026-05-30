@@ -8,7 +8,7 @@ let getBaseUrl = (environment: string) =>
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string; environment: string }) {
+  constructor(params: { token: string; environment: string }) {
     this.http = createAxios({
       baseURL: `${getBaseUrl(params.environment)}/v1`,
       headers: {

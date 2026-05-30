@@ -1,9 +1,6 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
 
-export let oneOfRequiredError = (
-  message: string,
-  fields: [string, string, ...string[]]
-) =>
+export let oneOfRequiredError = (message: string, fields: [string, string, ...string[]]) =>
   new ServiceError(
     badRequestError({
       message,

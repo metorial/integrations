@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendNotification,
-  checkReceipt,
   cancelEmergency,
+  checkAppLimits,
+  checkReceipt,
+  listSounds,
   manageGroup,
   manageGroupMembers,
-  validateUser,
+  migrateSubscription,
   pushGlance,
-  checkAppLimits,
-  listSounds,
-  migrateSubscription
+  sendNotification,
+  validateUser
 } from './tools';
 import { emergencyAcknowledged } from './triggers';
 

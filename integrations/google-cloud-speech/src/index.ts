@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  transcribeAudio,
   batchTranscribeAudio,
-  getOperation,
   createRecognizer,
+  deleteRecognizer,
+  getOperation,
   getRecognizer,
   listRecognizers,
-  updateRecognizer,
-  deleteRecognizer,
+  listVoices,
   synthesizeSpeech,
-  listVoices
+  transcribeAudio,
+  updateRecognizer
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

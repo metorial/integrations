@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CultsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let illustrationSchema = z.object({
   imageUrl: z.string().nullable().describe('Image URL'),

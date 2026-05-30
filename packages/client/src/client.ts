@@ -1,6 +1,5 @@
 import {
   SLATES_PROTOCOL_VERSION,
-  SlatesParticipant,
   type SlateAuthenticationMethod,
   type SlatesAction,
   type SlatesMessageActionGetResponse,
@@ -21,12 +20,13 @@ import {
   type SlatesMessageConfigDefaultGetResponse,
   type SlatesMessageConfigSchemaGetResponse,
   type SlatesMessageProviderIdentifyResponse,
+  type SlatesParticipant,
   type SlatesRequests,
   type SlatesResponsesByMethod
 } from '@slates/proto';
 import { randomUUID } from 'crypto';
 import { SlateProtocolError } from './error';
-import { SlatesClientState, SlatesProtocolClientOptions } from './types';
+import type { SlatesClientState, SlatesProtocolClientOptions } from './types';
 
 let createDefaultParticipants = (): SlatesParticipant[] => [
   {

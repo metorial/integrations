@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NotionClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getBlockChildren = SlateTool.create(spec, {
   name: 'Get Block Children',

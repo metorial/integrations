@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageProject,
-  getProject,
-  searchProjects,
-  manageResource,
-  getResource,
-  searchResources,
-  manageBooking,
   getBooking,
-  searchBookings,
-  manageTimeEntry,
-  searchTimeEntries,
-  manageEvent,
-  manageMilestone,
-  manageVacation,
+  getProject,
+  getResource,
+  listBookingCategories,
+  manageBooking,
   manageClient,
+  manageEvent,
   manageHoliday,
-  listBookingCategories
+  manageMilestone,
+  manageProject,
+  manageResource,
+  manageTimeEntry,
+  manageVacation,
+  searchBookings,
+  searchProjects,
+  searchResources,
+  searchTimeEntries
 } from './tools';
-import { projectEvents, bookingEvents, resourceEvents, timeEntryEvents } from './triggers';
+import { bookingEvents, projectEvents, resourceEvents, timeEntryEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private http;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://secure.splitwise.com/api/v3.0',
       headers: {

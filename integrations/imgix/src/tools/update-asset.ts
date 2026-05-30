@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ImgixClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateAsset = SlateTool.create(spec, {
   name: 'Update Asset',
@@ -40,10 +40,10 @@ export let updateAsset = SlateTool.create(spec, {
     let client = new ImgixClient(ctx.auth.token);
 
     let attributes: Record<string, any> = {};
-    if (ctx.input.name !== undefined) attributes['name'] = ctx.input.name;
-    if (ctx.input.description !== undefined) attributes['description'] = ctx.input.description;
-    if (ctx.input.categories) attributes['categories'] = ctx.input.categories;
-    if (ctx.input.customFields) attributes['custom_fields'] = ctx.input.customFields;
+    if (ctx.input.name !== undefined) attributes.name = ctx.input.name;
+    if (ctx.input.description !== undefined) attributes.description = ctx.input.description;
+    if (ctx.input.categories) attributes.categories = ctx.input.categories;
+    if (ctx.input.customFields) attributes.custom_fields = ctx.input.customFields;
 
     let result = await client.updateAsset(
       ctx.input.sourceId,

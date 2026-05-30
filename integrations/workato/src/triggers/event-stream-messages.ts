@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let eventStreamMessagesTrigger = SlateTrigger.create(spec, {
   name: 'Event Stream Messages',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageOpportunityDriver = SlateTool.create(spec, {
   name: 'Manage Opportunity Driver',
@@ -67,7 +67,7 @@ export let manageOpportunityDriver = SlateTool.create(spec, {
         let result = await client.createOpportunityDriver(ctx.input.opportunityId, data);
         return {
           output: { driver: result },
-          message: `Added driver${ctx.input.firstName ? ` **${ctx.input.firstName}${ctx.input.lastName ? ' ' + ctx.input.lastName : ''}**` : ''} to opportunity **${ctx.input.opportunityId}**.`
+          message: `Added driver${ctx.input.firstName ? ` **${ctx.input.firstName}${ctx.input.lastName ? ` ${ctx.input.lastName}` : ''}**` : ''} to opportunity **${ctx.input.opportunityId}**.`
         };
       }
       case 'update': {

@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let lineItemSchema = z.object({
   productId: z.string().describe('Unique product identifier'),

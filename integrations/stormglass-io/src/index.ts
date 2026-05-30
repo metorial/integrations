@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getWeatherTool,
-  getMarineDataTool,
-  getTideDataTool,
-  listTideStationsTool,
   getAstronomyDataTool,
-  getSolarDataTool,
+  getBioDataTool,
   getElevationTool,
-  getBioDataTool
+  getMarineDataTool,
+  getSolarDataTool,
+  getTideDataTool,
+  getWeatherTool,
+  listTideStationsTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

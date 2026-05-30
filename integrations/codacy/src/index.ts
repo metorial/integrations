@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listOrganizations,
-  listRepositories,
-  getRepositoryAnalysis,
-  searchIssues,
-  listPullRequests,
-  getPullRequestAnalysis,
   addRepository,
-  listFiles,
-  searchSecurityItems,
-  searchSbomDependencies,
-  listRepositoryTools,
   configureAnalysisTool,
-  manageDastTarget,
-  listCodingStandards,
-  listPeople,
   getCommitAnalysis,
-  manageRepositoryToken
+  getPullRequestAnalysis,
+  getRepositoryAnalysis,
+  listCodingStandards,
+  listFiles,
+  listOrganizations,
+  listPeople,
+  listPullRequests,
+  listRepositories,
+  listRepositoryTools,
+  manageDastTarget,
+  manageRepositoryToken,
+  searchIssues,
+  searchSbomDependencies,
+  searchSecurityItems
 } from './tools';
-import { newPullRequests, newSecurityItems, inboundWebhook } from './triggers';
+import { inboundWebhook, newPullRequests, newSecurityItems } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchProducts,
-  getProduct,
-  getInventory,
   createBooking,
   getBooking,
-  listCities,
+  getInventory,
+  getProduct,
   listCategories,
-  listCollections
+  listCities,
+  listCollections,
+  searchProducts
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

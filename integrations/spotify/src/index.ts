@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchCatalog,
-  getArtist,
-  getAlbum,
-  getTrack,
-  managePlaylist,
   controlPlayback,
-  manageLibrary,
-  getUserProfile,
+  getAlbum,
+  getArtist,
+  getRecentlyPlayed,
   getTopItems,
+  getTrack,
+  getUserProfile,
   manageFollowing,
-  getRecentlyPlayed
+  manageLibrary,
+  managePlaylist,
+  searchCatalog
 } from './tools';
-import { recentlyPlayedTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, recentlyPlayedTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

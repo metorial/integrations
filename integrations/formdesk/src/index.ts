@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listForms,
-  getFormResults,
-  getResultDetails,
   addResult,
-  updateResult,
-  removeResult,
-  markResultProcessed,
+  addVisitor,
+  authenticateVisitor,
   exportResults,
-  getResultPdf,
   getFile,
   getFormFilters,
-  listVisitors,
-  addVisitor,
-  updateVisitor,
-  removeVisitor,
+  getFormResults,
+  getResultDetails,
+  getResultPdf,
   getVisitorResults,
-  authenticateVisitor,
+  listForms,
+  listVisitors,
+  markResultProcessed,
+  parkData,
+  removeResult,
+  removeVisitor,
   signOn,
-  parkData
+  updateResult,
+  updateVisitor
 } from './tools';
-import { newFormSubmission, inboundWebhook } from './triggers';
+import { inboundWebhook, newFormSubmission } from './triggers';
 
 export let provider = Slate.create({
   spec,

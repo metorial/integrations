@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRepositoryAnalysis = SlateTool.create(spec, {
   name: 'Get Repository Analysis',
@@ -74,7 +74,7 @@ export let getRepositoryAnalysis = SlateTool.create(spec, {
 
     return {
       output: result,
-      message: `Repository **${result.repositoryName}**: Grade **${result.gradeLetter ?? 'N/A'}**, ${result.totalIssues ?? 0} issues, ${result.coverage != null ? result.coverage + '% coverage' : 'no coverage data'}.`
+      message: `Repository **${result.repositoryName}**: Grade **${result.gradeLetter ?? 'N/A'}**, ${result.totalIssues ?? 0} issues, ${result.coverage != null ? `${result.coverage}% coverage` : 'no coverage data'}.`
     };
   })
   .build();

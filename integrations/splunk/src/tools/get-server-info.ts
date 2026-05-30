@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createSplunkClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createSplunkClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getServerInfo = SlateTool.create(spec, {
   name: 'Get Server Info',

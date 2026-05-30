@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let batchFetch = SlateTool.create(spec, {
   name: 'Batch Fetch Podcasts or Episodes',

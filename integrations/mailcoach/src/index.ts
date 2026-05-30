@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  getCampaignAnalytics,
+  importSubscribers,
+  listCampaigns,
   listEmailLists,
-  manageEmailList,
   listSubscribers,
+  manageCampaign,
+  manageEmailList,
+  manageSegment,
   manageSubscriber,
   manageSubscriberTags,
-  listCampaigns,
-  manageCampaign,
-  sendCampaign,
-  getCampaignAnalytics,
-  manageTemplate,
-  sendTransactionalEmail,
-  manageTag,
-  manageSegment,
   manageSuppression,
-  importSubscribers
+  manageTag,
+  manageTemplate,
+  sendCampaign,
+  sendTransactionalEmail
 } from './tools';
 import { mailcoachEvents } from './triggers';
 

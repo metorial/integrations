@@ -65,13 +65,13 @@ export class ClarityClient {
     };
 
     if (params.dimension1) {
-      queryParams['dimension1'] = params.dimension1;
+      queryParams.dimension1 = params.dimension1;
     }
     if (params.dimension2) {
-      queryParams['dimension2'] = params.dimension2;
+      queryParams.dimension2 = params.dimension2;
     }
     if (params.dimension3) {
-      queryParams['dimension3'] = params.dimension3;
+      queryParams.dimension3 = params.dimension3;
     }
 
     let response = await this.axios.get('/export-data/api/v1/project-live-insights', {
@@ -88,37 +88,37 @@ export class ClarityClient {
     };
 
     if (params.sortBy) {
-      body['sortBy'] = params.sortBy;
+      body.sortBy = params.sortBy;
     }
 
     if (params.count) {
-      body['count'] = params.count;
+      body.count = params.count;
     }
 
     if (params.filters) {
       let filters: Record<string, any> = {};
 
       if (params.filters.urls && params.filters.urls.length > 0) {
-        filters['urls'] = params.filters.urls;
+        filters.urls = params.filters.urls;
       }
       if (params.filters.deviceTypes && params.filters.deviceTypes.length > 0) {
-        filters['deviceTypes'] = params.filters.deviceTypes;
+        filters.deviceTypes = params.filters.deviceTypes;
       }
       if (params.filters.browsers && params.filters.browsers.length > 0) {
-        filters['browsers'] = params.filters.browsers;
+        filters.browsers = params.filters.browsers;
       }
       if (params.filters.operatingSystems && params.filters.operatingSystems.length > 0) {
-        filters['operatingSystems'] = params.filters.operatingSystems;
+        filters.operatingSystems = params.filters.operatingSystems;
       }
       if (params.filters.countries && params.filters.countries.length > 0) {
-        filters['countries'] = params.filters.countries;
+        filters.countries = params.filters.countries;
       }
       if (params.filters.cities && params.filters.cities.length > 0) {
-        filters['cities'] = params.filters.cities;
+        filters.cities = params.filters.cities;
       }
 
       if (Object.keys(filters).length > 0) {
-        body['filters'] = filters;
+        body.filters = filters;
       }
     }
 

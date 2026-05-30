@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let communicationWaySchema = z
   .object({
@@ -134,7 +134,7 @@ export let createContact = SlateTool.create(spec, {
           contact: { id: contactId, objectName: 'Contact' },
           type: cw.type,
           value: cw.value,
-          key: cw.key ? parseInt(cw.key) : 2
+          key: cw.key ? Number.parseInt(cw.key, 10) : 2
         });
       }
     }

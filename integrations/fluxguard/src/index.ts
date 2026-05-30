@@ -2,17 +2,17 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   addPage,
-  getPage,
+  createCategory,
+  createWebhook,
   deletePage,
   deleteSite,
-  startCrawl,
-  listCategories,
-  createCategory,
-  listWebhooks,
-  createWebhook,
   deleteWebhook,
+  getAccount,
+  getPage,
   getWebhookSample,
-  getAccount
+  listCategories,
+  listWebhooks,
+  startCrawl
 } from './tools';
 import { pageChangeTrigger } from './triggers';
 

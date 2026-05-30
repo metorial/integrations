@@ -27,9 +27,9 @@
   "unpkg": "./dist/index.module.js",
   "scripts": {
     "test": "vitest run --passWithNoTests",
-    "lint": "prettier src/**/*.ts --check",
     "build": "tsup --config ../../tsup.packages.config.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "biome:check": "biome check --write src"
   },
   "dependencies": {
     "@slates/provider": "1.0.0-rc.12"

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let orderActivity = SlateTrigger.create(spec, {
   name: 'Order Activity',
@@ -85,7 +85,7 @@ export let orderActivity = SlateTrigger.create(spec, {
       if (orderId) {
         try {
           order = await client.getOrder(orderId);
-        } catch (e) {
+        } catch (_e) {
           order = { id: orderId };
         }
       }

@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
-import { createClientFromContext } from '../lib/helpers';
 import { z } from 'zod';
+import { createClientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 let vendorOutputSchema = z.object({
   vendorId: z.string().describe('Vendor ID'),

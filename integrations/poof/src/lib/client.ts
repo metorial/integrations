@@ -7,7 +7,7 @@ let api = createAxios({
 export class PoofClient {
   private headers: Record<string, string>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.headers = {
       'Content-Type': 'application/json',
       Authorization: config.token

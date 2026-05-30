@@ -71,7 +71,7 @@ export interface OutputResult {
 export class TinifyClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     let authString = Buffer.from(`api:${token}`).toString('base64');
     this.axios = createAxios({
       baseURL: 'https://api.tinify.com',
@@ -93,8 +93,8 @@ export class TinifyClient {
     );
 
     let data = response.data;
-    let outputUrl = response.headers['location'] || response.headers['Location'] || '';
-    let compressionCount = parseInt(
+    let outputUrl = response.headers.location || response.headers.Location || '';
+    let compressionCount = Number.parseInt(
       response.headers['compression-count'] || response.headers['Compression-Count'] || '0',
       10
     );
@@ -118,8 +118,8 @@ export class TinifyClient {
     });
 
     let data = response.data;
-    let outputUrl = response.headers['location'] || response.headers['Location'] || '';
-    let compressionCount = parseInt(
+    let outputUrl = response.headers.location || response.headers.Location || '';
+    let compressionCount = Number.parseInt(
       response.headers['compression-count'] || response.headers['Compression-Count'] || '0',
       10
     );
@@ -142,24 +142,24 @@ export class TinifyClient {
       headers: { 'Content-Type': 'application/json' }
     });
 
-    let compressionCount = parseInt(
+    let compressionCount = Number.parseInt(
       String(
         response.headers['compression-count'] ?? response.headers['Compression-Count'] ?? '0'
       ),
       10
     );
-    let locationHeader = response.headers['location'] || response.headers['Location'];
+    let locationHeader = response.headers.location || response.headers.Location;
 
     return {
       outputUrl: typeof locationHeader === 'string' ? locationHeader : undefined,
       storageUrl: typeof locationHeader === 'string' ? locationHeader : undefined,
       width:
-        parseInt(
+        Number.parseInt(
           String(response.headers['image-width'] ?? response.headers['Image-Width'] ?? '0'),
           10
         ) || undefined,
       height:
-        parseInt(
+        Number.parseInt(
           String(response.headers['image-height'] ?? response.headers['Image-Height'] ?? '0'),
           10
         ) || undefined,
@@ -170,7 +170,7 @@ export class TinifyClient {
             ? response.headers['Content-Type']
             : undefined,
       contentLength:
-        parseInt(
+        Number.parseInt(
           String(
             response.headers['content-length'] ?? response.headers['Content-Length'] ?? '0'
           ),
@@ -296,7 +296,7 @@ export class TinifyClient {
       }
     );
 
-    let compressionCount = parseInt(
+    let compressionCount = Number.parseInt(
       response.headers['compression-count'] || response.headers['Compression-Count'] || '0',
       10
     );

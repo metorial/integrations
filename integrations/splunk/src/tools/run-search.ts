@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createSplunkClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createSplunkClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let runSearch = SlateTool.create(spec, {
   name: 'Run Search',

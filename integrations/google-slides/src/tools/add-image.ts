@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SlidesClient } from '../lib/client';
 import { googleSlidesActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addImage = SlateTool.create(spec, {
   name: 'Add Image',
@@ -88,7 +88,7 @@ export let addImage = SlateTool.create(spec, {
         throw new Error('slideObjectId is required for insert mode');
       }
 
-      let transform: any = undefined;
+      let transform: any;
       if (ctx.input.translateXPt !== undefined || ctx.input.translateYPt !== undefined) {
         transform = {
           scaleX: 1,

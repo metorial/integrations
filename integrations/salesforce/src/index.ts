@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getRecord,
-  createRecord,
-  updateRecord,
-  deleteRecord,
-  upsertRecord,
-  queryRecords,
-  searchRecords,
-  describeObject,
-  manageBulkJob,
   compositeRequest,
-  runReport,
+  createRecord,
+  deleteRecord,
+  describeObject,
   getOrgLimits,
-  manageChatter
+  getRecord,
+  manageBulkJob,
+  manageChatter,
+  queryRecords,
+  runReport,
+  searchRecords,
+  updateRecord,
+  upsertRecord
 } from './tools';
-import { recordChanges, newRecord, inboundWebhook } from './triggers';
+import { inboundWebhook, newRecord, recordChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

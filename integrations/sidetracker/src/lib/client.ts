@@ -10,7 +10,7 @@ export interface PaginatedResponse<T> {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://app.sidetracker.io/api/',
       headers: {

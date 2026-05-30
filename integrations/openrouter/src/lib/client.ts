@@ -9,7 +9,7 @@ export interface ClientConfig {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let headers: Record<string, string> = {
       Authorization: `Bearer ${config.token}`,
       'Content-Type': 'application/json'
@@ -34,10 +34,10 @@ export class Client {
     model: string;
     messages: Array<{
       role: string;
-      content: string | Array<Record<string, unknown>>;
+      content: string | Record<string, unknown>[];
       name?: string;
       toolCallId?: string;
-      toolCalls?: Array<Record<string, unknown>>;
+      toolCalls?: Record<string, unknown>[];
     }>;
     temperature?: number;
     maxTokens?: number;
@@ -48,14 +48,14 @@ export class Client {
     repetitionPenalty?: number;
     stop?: string | string[];
     seed?: number;
-    tools?: Array<Record<string, unknown>>;
+    tools?: Record<string, unknown>[];
     toolChoice?: string | Record<string, unknown>;
     responseFormat?: Record<string, unknown>;
     models?: string[];
     route?: string;
     provider?: Record<string, unknown>;
     transforms?: string[];
-    plugins?: Array<Record<string, unknown>>;
+    plugins?: Record<string, unknown>[];
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       model: params.model,
@@ -114,7 +114,7 @@ export class Client {
 
   async listModels(params?: {
     supportedParameters?: string;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.supportedParameters) {
       queryParams.supported_parameters = params.supportedParameters;
@@ -171,7 +171,7 @@ export class Client {
     return response.data;
   }
 
-  async listApiKeys(): Promise<Array<Record<string, unknown>>> {
+  async listApiKeys(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/keys');
     return response.data?.data || response.data || [];
   }
@@ -210,7 +210,7 @@ export class Client {
     return response.data;
   }
 
-  async listGuardrails(): Promise<Array<Record<string, unknown>>> {
+  async listGuardrails(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/guardrails');
     return response.data?.data || response.data || [];
   }

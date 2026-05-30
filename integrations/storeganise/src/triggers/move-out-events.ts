@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let moveOutEventsTrigger = SlateTrigger.create(spec, {
   name: 'Move-Out & Transfer Events',

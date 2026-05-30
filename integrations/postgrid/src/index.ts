@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  autocompleteAddress,
+  autocompleteInternationalAddress,
+  cancelOrder,
   createContact,
+  createTemplate,
+  getOrder,
   listContacts,
+  listTemplates,
+  sendCheque,
   sendLetter,
   sendPostcard,
-  sendCheque,
   sendSelfMailer,
-  getOrder,
-  cancelOrder,
-  createTemplate,
-  listTemplates,
   verifyAddress,
-  verifyInternationalAddress,
-  autocompleteAddress,
-  autocompleteInternationalAddress
+  verifyInternationalAddress
 } from './tools';
 import { mailOrderEvents } from './triggers';
 

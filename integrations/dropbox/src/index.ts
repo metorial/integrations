@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listFolder,
-  getFileMetadata,
   createFolder,
-  moveOrCopy,
   deleteFile,
-  uploadFile,
   downloadFile,
-  searchFiles,
-  manageSharedLink,
-  shareFolder,
-  manageFileRequest,
+  fileRevisions,
   getAccountInfo,
-  fileRevisions
+  getFileMetadata,
+  listFolder,
+  manageFileRequest,
+  manageSharedLink,
+  moveOrCopy,
+  searchFiles,
+  shareFolder,
+  uploadFile
 } from './tools';
 import { fileChanges, inboundWebhook } from './triggers';
 

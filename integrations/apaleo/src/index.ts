@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listReservations,
-  getReservation,
-  createBooking,
-  manageReservation,
-  searchOffers,
-  listProperties,
-  listUnits,
   changeUnitState,
-  listUnitGroups,
-  listRatePlans,
+  createBooking,
+  getReservation,
+  listBlocks,
   listFolios,
+  listProperties,
+  listRatePlans,
+  listReservations,
+  listUnitGroups,
+  listUnits,
+  manageCompany,
   manageFolio,
   manageInvoice,
-  manageCompany,
-  listBlocks,
+  manageReservation,
+  searchOffers,
   triggerNightAudit
 } from './tools';
 import {
-  reservationEvents,
+  blockEvents,
   bookingEvents,
   folioEvents,
   invoiceEvents,
-  propertyEvents,
   nightAuditEvents,
-  blockEvents
+  propertyEvents,
+  reservationEvents
 } from './triggers';
 
 export let provider = Slate.create({

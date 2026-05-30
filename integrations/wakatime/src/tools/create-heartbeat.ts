@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WakaTimeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let heartbeatInputSchema = z.object({
   entity: z.string().describe('File path, app name, or domain being tracked'),

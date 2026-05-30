@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let itemSchema = z.object({
   itemId: z.string().describe('Unique identifier for the item'),

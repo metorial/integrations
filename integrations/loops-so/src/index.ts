@@ -2,16 +2,16 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createContact,
-  updateContact,
-  findContact,
   deleteContact,
+  findContact,
+  listContactProperties,
+  listMailingLists,
+  listTransactionalEmails,
   sendEvent,
   sendTransactionalEmail,
-  listMailingLists,
-  listContactProperties,
-  listTransactionalEmails
+  updateContact
 } from './tools';
-import { contactEvents, emailSendingEvents, emailEngagementEvents } from './triggers';
+import { contactEvents, emailEngagementEvents, emailSendingEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let EVENT_TYPES = ['person_created', 'person_updated', 'person_deleted'] as const;
 
@@ -71,7 +71,7 @@ export let personEvents = SlateTrigger.create(spec, {
       for (let reg of details.registrations) {
         try {
           await client.deleteWebhookSubscription(reg.subscriptionId);
-        } catch (e) {
+        } catch (_e) {
           // Subscription may already be deleted
         }
       }

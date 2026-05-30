@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let functionNamespaceSchema = z.object({
   namespaceId: z.string().describe('Function namespace ID'),

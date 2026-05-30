@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AbyssaleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDesignFormat = SlateTool.create(spec, {
   name: 'Get Design Format',

@@ -1,32 +1,32 @@
 import { createAxios } from 'slates';
-import {
+import type {
+  FolderEntitiesResponse,
   GtmAccount,
-  GtmContainer,
-  GtmWorkspace,
-  GtmTag,
-  GtmTrigger,
-  GtmVariable,
   GtmBuiltInVariable,
+  GtmContainer,
   GtmContainerVersion,
   GtmContainerVersionHeader,
+  GtmCreateVersionResponse,
   GtmEnvironment,
   GtmFolder,
-  GtmUserPermission,
-  GtmCreateVersionResponse,
   GtmPublishResponse,
+  GtmTag,
+  GtmTrigger,
+  GtmUserPermission,
+  GtmVariable,
+  GtmWorkspace,
   GtmWorkspaceStatus,
   ListAccountsResponse,
-  ListContainersResponse,
-  ListWorkspacesResponse,
-  ListTagsResponse,
-  ListTriggersResponse,
-  ListVariablesResponse,
   ListBuiltInVariablesResponse,
-  ListVersionHeadersResponse,
+  ListContainersResponse,
   ListEnvironmentsResponse,
   ListFoldersResponse,
+  ListTagsResponse,
+  ListTriggersResponse,
   ListUserPermissionsResponse,
-  FolderEntitiesResponse
+  ListVariablesResponse,
+  ListVersionHeadersResponse,
+  ListWorkspacesResponse
 } from './types';
 
 let gtmAxios = createAxios({
@@ -462,12 +462,7 @@ export class GtmClient {
     triggerId: string,
     data: Partial<GtmTrigger>
   ): Promise<GtmTrigger> {
-    let existing = await this.getTrigger(
-      accountId,
-      containerId,
-      workspaceId,
-      triggerId
-    );
+    let existing = await this.getTrigger(accountId, containerId, workspaceId, triggerId);
     let payload = this.compactObject({
       ...this.pickDefined(existing, [
         'name',
@@ -569,12 +564,7 @@ export class GtmClient {
     variableId: string,
     data: Partial<GtmVariable>
   ): Promise<GtmVariable> {
-    let existing = await this.getVariable(
-      accountId,
-      containerId,
-      workspaceId,
-      variableId
-    );
+    let existing = await this.getVariable(accountId, containerId, workspaceId, variableId);
     let payload = this.compactObject({
       ...this.pickDefined(existing, [
         'name',

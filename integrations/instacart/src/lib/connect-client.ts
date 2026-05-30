@@ -457,8 +457,8 @@ export class ConnectClient {
 
   private mapOrder(data: Record<string, unknown>): Order {
     let fulfillmentDetails = data.fulfillment_details as Record<string, unknown> | undefined;
-    let items = data.items as Array<Record<string, unknown>> | undefined;
-    let warnings = data.warnings as Array<Record<string, unknown>> | undefined;
+    let items = data.items as Record<string, unknown>[] | undefined;
+    let warnings = data.warnings as Record<string, unknown>[] | undefined;
 
     return {
       orderId: (data.id || '') as string,

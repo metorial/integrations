@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { validateEmail, bulkValidateEmails } from './tools';
+import { bulkValidateEmails, validateEmail } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

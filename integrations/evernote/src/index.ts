@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listNotebooksTool,
+  copyNoteTool,
   createNotebookTool,
-  updateNotebookTool,
   createNoteTool,
-  getNoteTool,
-  getNoteContentTool,
-  updateNoteTool,
   deleteNoteTool,
-  searchNotesTool,
+  getNoteContentTool,
+  getNoteTool,
+  listNotebooksTool,
   listTagsTool,
   manageTagTool,
-  copyNoteTool
+  searchNotesTool,
+  updateNotebookTool,
+  updateNoteTool
 } from './tools';
 import { noteChangesTrigger, noteUpdatesPollTrigger } from './triggers';
 

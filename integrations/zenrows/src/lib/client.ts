@@ -151,7 +151,7 @@ export class Client {
       axiosConfig.headers = headers;
     }
 
-    let response;
+    let response: any;
     if (method === 'POST') {
       response = await universalAxios.post('', params.postBody || '', axiosConfig);
     } else if (method === 'PUT') {

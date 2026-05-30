@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlacekeyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let optionalFieldEnum = z.enum([
   'address_placekey',

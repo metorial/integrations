@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createContract,
-  queryContract,
-  withdrawContract,
-  generatePdfPreview,
-  manageSigners,
-  listTemplates,
-  getTemplate,
-  createTemplate,
-  updateTemplate,
   copyTemplate,
+  createContract,
+  createTemplate,
   deleteTemplate,
-  manageCollaborators
+  generatePdfPreview,
+  getTemplate,
+  listTemplates,
+  manageCollaborators,
+  manageSigners,
+  queryContract,
+  updateTemplate,
+  withdrawContract
 } from './tools';
-import { contractEvents, signerEvents, errorEvents } from './triggers';
+import { contractEvents, errorEvents, signerEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

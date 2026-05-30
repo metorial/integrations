@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AdminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageBotTool = SlateTool.create(spec, {
   name: 'Manage Bot',

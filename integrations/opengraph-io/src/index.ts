@@ -1,6 +1,6 @@
-import { Slate, SlateTool } from 'slates';
+import { Slate, type SlateTool } from 'slates';
 import { spec } from './spec';
-import { unfurlUrl, scrapeHtml, captureScreenshot, extractContent, queryPage } from './tools';
+import { captureScreenshot, extractContent, queryPage, scrapeHtml, unfurlUrl } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

@@ -1,2 +1,2 @@
-export { messageEvents } from './message-events';
 export { domainEvents } from './domain-events';
+export { messageEvents } from './message-events';

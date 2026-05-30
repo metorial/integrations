@@ -3,11 +3,11 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://app.planly.com/api'
     });
-    this.axios.defaults.headers.common['Authorization'] = `Bearer ${config.token}`;
+    this.axios.defaults.headers.common.Authorization = `Bearer ${config.token}`;
     this.axios.defaults.headers.common['Content-Type'] = 'application/json';
   }
 

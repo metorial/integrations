@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let placeholderFieldSchema = z.object({
   apiKey: z.string().describe('The placeholder key to set a value for'),

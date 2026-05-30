@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let INVOICE_EVENT_TYPES = [
   'invoice.created',
@@ -62,7 +62,7 @@ export let invoiceEvents = SlateTrigger.create(spec, {
 
     handleRequest: async ctx => {
       let body = (await ctx.request.json()) as any;
-      if (!body || !body.type) return { inputs: [] };
+      if (!body?.type) return { inputs: [] };
 
       let invoice = body.data?.object?.invoice || body.data?.object || {};
 

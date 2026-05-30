@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleMapsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let placeSchema = z.object({
   placeId: z.string().describe('Unique Google place identifier'),
@@ -91,7 +91,7 @@ export let searchPlacesTool = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new GoogleMapsClient({ token: ctx.auth.token });
-    let rawPlaces: Array<Record<string, unknown>>;
+    let rawPlaces: Record<string, unknown>[];
 
     if (ctx.input.textQuery) {
       let locationBias: { latitude: number; longitude: number; radius: number } | undefined;

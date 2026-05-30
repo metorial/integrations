@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let entityTypes = [
   'lead',
@@ -67,7 +67,7 @@ export let entityChange = SlateTrigger.create(spec, {
               type: entityType,
               event: eventType
             });
-          } catch (e) {
+          } catch (_e) {
             // Some entity/event combinations may not be available
           }
         }
@@ -88,7 +88,7 @@ export let entityChange = SlateTrigger.create(spec, {
         for (let webhook of details.webhooks) {
           try {
             await client.deleteWebhook(webhook.webhookId);
-          } catch (e) {
+          } catch (_e) {
             // Webhook may already be deleted
           }
         }

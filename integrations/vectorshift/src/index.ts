@@ -1,37 +1,37 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  runPipelineTool,
+  addDataToKnowledgeBaseTool,
   bulkRunPipelineTool,
   controlPipelineRunTool,
-  listPipelinesTool,
-  getPipelineTool,
-  deletePipelineTool,
-  createKnowledgeBaseTool,
-  listKnowledgeBasesTool,
-  getKnowledgeBaseTool,
-  deleteKnowledgeBaseTool,
-  addDataToKnowledgeBaseTool,
-  queryKnowledgeBaseTool,
-  manageDocumentsTool,
-  runChatbotTool,
-  listChatbotsTool,
-  getChatbotTool,
   createChatbotTool,
-  deleteChatbotTool,
-  terminateChatbotSessionTool,
-  runTransformationTool,
-  listTransformationsTool,
-  getTransformationTool,
+  createKnowledgeBaseTool,
   createTransformationTool,
-  deleteTransformationTool
+  deleteChatbotTool,
+  deleteKnowledgeBaseTool,
+  deletePipelineTool,
+  deleteTransformationTool,
+  getChatbotTool,
+  getKnowledgeBaseTool,
+  getPipelineTool,
+  getTransformationTool,
+  listChatbotsTool,
+  listKnowledgeBasesTool,
+  listPipelinesTool,
+  listTransformationsTool,
+  manageDocumentsTool,
+  queryKnowledgeBaseTool,
+  runChatbotTool,
+  runPipelineTool,
+  runTransformationTool,
+  terminateChatbotSessionTool
 } from './tools';
 import {
-  pipelineChangesTrigger,
-  knowledgeBaseChangesTrigger,
   chatbotChangesTrigger,
-  transformationChangesTrigger,
-  inboundWebhook
+  inboundWebhook,
+  knowledgeBaseChangesTrigger,
+  pipelineChangesTrigger,
+  transformationChangesTrigger
 } from './triggers';
 
 export let provider = Slate.create({

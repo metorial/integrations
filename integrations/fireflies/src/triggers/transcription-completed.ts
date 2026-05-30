@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { FirefliesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let transcriptionCompleted = SlateTrigger.create(spec, {
   name: 'Transcription Completed',
@@ -72,7 +72,7 @@ export let transcriptionCompleted = SlateTrigger.create(spec, {
       let transcript: any = null;
       try {
         transcript = await client.getTranscript(ctx.input.meetingId);
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Could not fetch transcript details');
       }
 

@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { sendLetter, sendPostcard, getBalance } from './tools';
+import { getBalance, sendLetter, sendPostcard } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

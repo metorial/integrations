@@ -1,4 +1,4 @@
-import { GeocodeResult, ResultAnnotations } from './types';
+import type { GeocodeResult, ResultAnnotations } from './types';
 
 export interface MappedAnnotations {
   timezone?: {

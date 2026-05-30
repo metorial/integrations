@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TrackingClient } from '../lib/tracking';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let identifyUser = SlateTool.create(spec, {
   name: 'Identify User',

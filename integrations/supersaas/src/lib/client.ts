@@ -80,7 +80,7 @@ export class Client {
     }
 
     let url = foreignKey
-      ? `/api/users/${encodeURIComponent(foreignKey + 'fk')}.json`
+      ? `/api/users/${encodeURIComponent(`${foreignKey}fk`)}.json`
       : '/api/users.json';
 
     let response = await this.axios.post(url, null, {
@@ -216,7 +216,7 @@ export class Client {
       schedule_id: scheduleId
     };
     if (userId) {
-      bookingParams['user'] = userId;
+      bookingParams.user = userId;
     }
     for (let [key, value] of Object.entries(bookingData)) {
       if (value !== undefined && value !== null) {

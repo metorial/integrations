@@ -4,7 +4,7 @@ export class MezmoClient {
   private api: ReturnType<typeof createAxios>;
   private ingestionApi: ReturnType<typeof createAxios>;
 
-  constructor(private options: { token: string; ingestionKey?: string }) {
+  constructor(options: { token: string; ingestionKey?: string }) {
     this.api = createAxios({
       baseURL: 'https://api.mezmo.com',
       headers: {
@@ -81,7 +81,7 @@ export class MezmoClient {
 
     let response = await this.api.get('/v2/export', { params: queryParams });
     return response.data as {
-      lines: Array<Record<string, unknown>>;
+      lines: Record<string, unknown>[];
       pagination_id: string | null;
     };
   }
@@ -90,7 +90,7 @@ export class MezmoClient {
 
   async listViews() {
     let response = await this.api.get('/v1/config/view');
-    return response.data as Array<ViewResponse>;
+    return response.data as ViewResponse[];
   }
 
   async getView(viewId: string) {
@@ -117,7 +117,7 @@ export class MezmoClient {
 
   async listPresetAlerts() {
     let response = await this.api.get('/v1/config/presetalert');
-    return response.data as Array<PresetAlertResponse>;
+    return response.data as PresetAlertResponse[];
   }
 
   async getPresetAlert(presetId: string) {
@@ -144,7 +144,7 @@ export class MezmoClient {
 
   async listCategories(type: string) {
     let response = await this.api.get(`/v1/config/categories/${type}`);
-    return response.data as Array<CategoryResponse>;
+    return response.data as CategoryResponse[];
   }
 
   async createCategory(type: string, name: string) {
@@ -166,7 +166,7 @@ export class MezmoClient {
 
   async listBoards() {
     let response = await this.api.get('/v1/config/boards');
-    return response.data as Array<BoardResponse>;
+    return response.data as BoardResponse[];
   }
 
   async getBoard(boardId: string) {
@@ -188,7 +188,7 @@ export class MezmoClient {
 
   async listExclusionRules() {
     let response = await this.api.get('/v1/config/ingestion/exclusions');
-    return response.data as Array<ExclusionRuleResponse>;
+    return response.data as ExclusionRuleResponse[];
   }
 
   async getExclusionRule(ruleId: string) {
@@ -300,7 +300,7 @@ export class MezmoClient {
     let response = await this.api.get('/v1/config/keys', {
       params: type ? { type } : undefined
     });
-    return response.data as Array<KeyResponse>;
+    return response.data as KeyResponse[];
   }
 
   async createKey(params: { name?: string; type: 'ingestion' | 'service' }) {

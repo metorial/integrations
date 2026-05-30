@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { removeBackground, getAccountInfo, submitFeedback } from './tools';
+import { getAccountInfo, removeBackground, submitFeedback } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taskSchema = z.object({
   taskId: z.string().describe('ID of the task'),
@@ -59,7 +59,7 @@ Use this to check the progress of an ongoing job or to retrieve download URLs fo
       environment: ctx.config.environment
     });
 
-    let job;
+    let job: any;
     if (ctx.input.waitForCompletion) {
       job = await client.waitForJob(ctx.input.jobId);
     } else {

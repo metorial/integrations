@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CanvasClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newSubmissionsTrigger = SlateTrigger.create(spec, {
   name: 'New Submissions',
@@ -105,10 +105,7 @@ export let newSubmissionsTrigger = SlateTrigger.create(spec, {
             let changeType: 'submitted' | 'graded' | 'updated' = 'updated';
             if (!previousState && sub.submitted_at) {
               changeType = 'submitted';
-            } else if (
-              sub.graded_at &&
-              (!previousState || !previousState.includes(sub.graded_at))
-            ) {
+            } else if (sub.graded_at && !previousState?.includes(sub.graded_at)) {
               changeType = 'graded';
             }
 

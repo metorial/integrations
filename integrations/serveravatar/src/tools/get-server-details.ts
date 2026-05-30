@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ServerAvatarClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getServerDetails = SlateTool.create(spec, {
   name: 'Get Server Details',
@@ -49,7 +49,7 @@ Specify which details to include using the include parameter.`,
     let server = await client.getServer(orgId, serverId);
 
     let resourceUsage: Record<string, unknown> | undefined;
-    let services: Array<Record<string, unknown>> | undefined;
+    let services: Record<string, unknown>[] | undefined;
     let logs: Record<string, unknown> | undefined;
     let summary: Record<string, unknown> | undefined;
 

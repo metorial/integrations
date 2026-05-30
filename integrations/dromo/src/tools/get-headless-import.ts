@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DromoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getHeadlessImport = SlateTool.create(spec, {
   name: 'Get Headless Import',

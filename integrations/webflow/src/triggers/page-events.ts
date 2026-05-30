@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let PAGE_TRIGGER_TYPES = ['page_created', 'page_metadata_updated', 'page_deleted'] as const;
 

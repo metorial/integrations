@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCampaign = SlateTool.create(spec, {
   name: 'Get Campaign',
@@ -45,7 +45,7 @@ export let getCampaign = SlateTool.create(spec, {
 
     let campaign = await client.getCampaign(ctx.input.campaignId);
 
-    let statistics;
+    let statistics: any;
     if (ctx.input.includeStatistics) {
       try {
         statistics = await client.getCampaignStatistics(ctx.input.campaignId);

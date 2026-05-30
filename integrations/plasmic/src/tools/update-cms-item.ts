@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CmsClient } from '../lib/cms-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateCmsItem = SlateTool.create(spec, {
   name: 'Update CMS Item',

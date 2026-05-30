@@ -7,7 +7,7 @@ let httpClient = createAxios({
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.headers = {
       'Circle-Token': config.token,
       'Content-Type': 'application/json'

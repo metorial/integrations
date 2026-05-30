@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoSquaredClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRealtimeAnalytics = SlateTool.create(spec, {
   name: 'Real-Time Analytics',

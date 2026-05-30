@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickSendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let smsRecipientSchema = z.object({
   to: z.string().describe('Recipient phone number in E.164 format (e.g., +1234567890)'),
@@ -79,7 +79,7 @@ export let sendSmsTool = SlateTool.create(spec, {
     }));
 
     let totalPrice = sentMessages.reduce(
-      (sum: number, msg: any) => sum + (parseFloat(msg.message_price) || 0),
+      (sum: number, msg: any) => sum + (Number.parseFloat(msg.message_price) || 0),
       0
     );
 

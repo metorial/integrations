@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageProducts,
-  manageOrders,
-  manageContacts,
+  getSiteProperties,
   manageBlog,
   manageBookings,
-  manageEvents,
   manageCollections,
-  getSiteProperties,
+  manageContacts,
   manageDataItems,
-  managePricingPlans,
+  manageEvents,
+  manageMedia,
   manageMembers,
-  manageMedia
+  manageOrders,
+  managePricingPlans,
+  manageProducts
 } from './tools';
 import {
-  ecommerceEvents,
+  blogEvents,
+  bookingEvents,
   catalogEvents,
   contactEvents,
-  bookingEvents,
-  blogEvents,
+  ecommerceEvents,
   siteEvents
 } from './triggers';
 

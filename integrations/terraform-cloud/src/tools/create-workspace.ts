@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { mapWorkspace } from '../lib/mappers';
-import { z } from 'zod';
+import { spec } from '../spec';
 
 export let createWorkspaceTool = SlateTool.create(spec, {
   name: 'Create Workspace',

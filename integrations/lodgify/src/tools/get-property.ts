@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getProperty = SlateTool.create(spec, {
   name: 'Get Property',
@@ -38,7 +38,7 @@ export let getProperty = SlateTool.create(spec, {
       includeInOut: ctx.input.includeInOut
     });
 
-    let rooms: Array<Record<string, unknown>> | undefined;
+    let rooms: Record<string, unknown>[] | undefined;
     if (ctx.input.includeRooms) {
       rooms = await client.getPropertyRooms(ctx.input.propertyId);
     }

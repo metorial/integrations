@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { JenkinsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageView = SlateTool.create(spec, {
   name: 'Manage View',

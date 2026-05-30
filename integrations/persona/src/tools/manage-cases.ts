@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PersonaClient } from '../lib/client';
 import { normalizeResource } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createCase = SlateTool.create(spec, {
   name: 'Create Case',
@@ -28,7 +28,7 @@ export let createCase = SlateTool.create(spec, {
     let client = new PersonaClient({ token: ctx.auth.token });
     let attrs: Record<string, any> = {};
     if (ctx.input.caseTemplateId) attrs['case-template-id'] = ctx.input.caseTemplateId;
-    if (ctx.input.caseName) attrs['name'] = ctx.input.caseName;
+    if (ctx.input.caseName) attrs.name = ctx.input.caseName;
     if (ctx.input.creatorId) attrs['creator-id'] = ctx.input.creatorId;
 
     let result = await client.createCase(attrs);

@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listAddresses,
-  getAddress,
-  createAddress,
-  updateAddress,
-  deleteAddress,
-  listJobs,
-  getJob,
-  createJob,
-  updateJob,
-  cancelJob,
-  rescheduleJob,
-  checkBookingAvailability,
   addPro,
-  listToDoLists,
-  listGuestReservations,
-  getGuestReservation,
+  cancelJob,
+  checkBookingAvailability,
+  createAddress,
   createGuestReservation,
-  deleteGuestReservation,
-  listIssues,
-  getIssue,
   createIssue,
+  createJob,
+  deleteAddress,
+  deleteGuestReservation,
+  deleteIssue,
+  getAddress,
+  getGuestReservation,
+  getIssue,
+  getJob,
+  listAddresses,
+  listGuestReservations,
+  listIssues,
+  listJobs,
+  listToDoLists,
+  rescheduleJob,
   resolveIssue,
-  deleteIssue
+  updateAddress,
+  updateJob
 } from './tools';
 import { bookingUpdates } from './triggers';
 

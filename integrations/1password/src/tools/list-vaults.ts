@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConnectClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listVaults = SlateTool.create(spec, {
   name: 'List Vaults',
@@ -59,7 +59,7 @@ export let listVaults = SlateTool.create(spec, {
 
     return {
       output: { vaults: mapped },
-      message: `Found **${mapped.length}** vault(s).${mapped.length > 0 ? '\n' + mapped.map(v => `- **${v.name}** (${v.itemCount} items)`).join('\n') : ''}`
+      message: `Found **${mapped.length}** vault(s).${mapped.length > 0 ? `\n${mapped.map(v => `- **${v.name}** (${v.itemCount} items)`).join('\n')}` : ''}`
     };
   })
   .build();

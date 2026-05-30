@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listAgents,
-  getAgent,
   createAgent,
-  updateAgent,
-  deleteAgent,
-  makePhoneCall,
-  createWebCall,
-  getCall,
-  listCalls,
-  deleteCall,
   createBatchCall,
-  listPhoneNumbers,
-  getPhoneNumber,
-  purchasePhoneNumber,
-  updatePhoneNumber,
-  deletePhoneNumber,
-  listKnowledgeBases,
-  getKnowledgeBase,
+  createWebCall,
+  deleteAgent,
+  deleteCall,
   deleteKnowledgeBase,
+  deletePhoneNumber,
+  getAgent,
+  getCall,
+  getConcurrency,
+  getKnowledgeBase,
+  getPhoneNumber,
+  listAgents,
+  listCalls,
+  listKnowledgeBases,
+  listPhoneNumbers,
   listVoices,
-  getConcurrency
+  makePhoneCall,
+  purchasePhoneNumber,
+  updateAgent,
+  updatePhoneNumber
 } from './tools';
 import { callEvents, transferEvents } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDividendsAndSplits = SlateTool.create(spec, {
   name: 'Get Dividends & Splits',
@@ -55,22 +55,22 @@ export let getDividendsAndSplits = SlateTool.create(spec, {
 
     if (dataType === 'dividends' || dataType === 'both') {
       let divData = await client.dividends({ symbol });
-      let rawDividends: any[] = divData['data'] || [];
+      let rawDividends: any[] = divData.data || [];
       dividends = rawDividends.map((d: any) => ({
-        exDividendDate: d['ex_dividend_date'] || '',
-        declarationDate: d['declaration_date'] || '',
-        recordDate: d['record_date'] || '',
-        paymentDate: d['payment_date'] || '',
-        amount: d['amount'] || ''
+        exDividendDate: d.ex_dividend_date || '',
+        declarationDate: d.declaration_date || '',
+        recordDate: d.record_date || '',
+        paymentDate: d.payment_date || '',
+        amount: d.amount || ''
       }));
     }
 
     if (dataType === 'splits' || dataType === 'both') {
       let splitData = await client.splits({ symbol });
-      let rawSplits: any[] = splitData['data'] || [];
+      let rawSplits: any[] = splitData.data || [];
       splits = rawSplits.map((s: any) => ({
-        effectiveDate: s['effective_date'] || '',
-        splitRatio: s['split_ratio'] || ''
+        effectiveDate: s.effective_date || '',
+        splitRatio: s.split_ratio || ''
       }));
     }
 

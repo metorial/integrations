@@ -283,13 +283,13 @@ export class Client {
     let queryParams: Record<string, any> = {};
 
     if (params.page !== undefined) {
-      queryParams['page'] = params.page;
+      queryParams.page = params.page;
     }
     if (params.limit !== undefined) {
-      queryParams['limit'] = params.limit;
+      queryParams.limit = params.limit;
     }
     if (params.additionalFields && params.additionalFields.length > 0) {
-      queryParams['additional_fields'] = params.additionalFields.join(',');
+      queryParams.additional_fields = params.additionalFields.join(',');
     }
     if (params.filters) {
       for (let [key, value] of Object.entries(params.filters)) {

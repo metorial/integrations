@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createTransaction,
-  findTransaction,
-  searchTransactions,
-  refundTransaction,
-  voidTransaction,
-  settleTransaction,
-  createCustomer,
-  updateCustomer,
-  findCustomer,
-  deleteCustomer,
-  createSubscription,
-  findSubscription,
-  updateSubscription,
-  cancelSubscription,
-  findDispute,
   acceptDispute,
   addDisputeEvidence,
-  finalizeDispute,
-  vaultPaymentMethod,
-  findPaymentMethod,
+  cancelSubscription,
+  createCustomer,
+  createSubscription,
+  createTransaction,
+  deleteCustomer,
   deletePaymentMethod,
-  getSettlementReport
+  finalizeDispute,
+  findCustomer,
+  findDispute,
+  findPaymentMethod,
+  findSubscription,
+  findTransaction,
+  getSettlementReport,
+  refundTransaction,
+  searchTransactions,
+  settleTransaction,
+  updateCustomer,
+  updateSubscription,
+  vaultPaymentMethod,
+  voidTransaction
 } from './tools';
 import { webhookEvents } from './triggers';
 

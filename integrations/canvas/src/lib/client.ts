@@ -60,12 +60,12 @@ export class CanvasClient {
     perPage?: number;
   }): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.enrollmentType) queryParams['enrollment_type'] = params.enrollmentType;
-    if (params?.enrollmentState) queryParams['enrollment_state'] = params.enrollmentState;
+    if (params?.enrollmentType) queryParams.enrollment_type = params.enrollmentType;
+    if (params?.enrollmentState) queryParams.enrollment_state = params.enrollmentState;
     if (params?.state) queryParams['state[]'] = params.state;
-    if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
+    if (params?.searchTerm) queryParams.search_term = params.searchTerm;
     if (params?.include) queryParams['include[]'] = params.include;
-    if (params?.perPage) queryParams['per_page'] = params.perPage;
+    if (params?.perPage) queryParams.per_page = params.perPage;
     return this.fetchPaginated('/courses', queryParams);
   }
 
@@ -115,10 +115,10 @@ export class CanvasClient {
     }
   ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
+    if (params?.searchTerm) queryParams.search_term = params.searchTerm;
     if (params?.enrollmentType) queryParams['enrollment_type[]'] = params.enrollmentType;
     if (params?.include) queryParams['include[]'] = params.include;
-    if (params?.perPage) queryParams['per_page'] = params.perPage;
+    if (params?.perPage) queryParams.per_page = params.perPage;
     return this.fetchPaginated(`/courses/${courseId}/users`, queryParams);
   }
 
@@ -137,7 +137,7 @@ export class CanvasClient {
     if (params?.type) queryParams['type[]'] = params.type;
     if (params?.state) queryParams['state[]'] = params.state;
     if (params?.include) queryParams['include[]'] = params.include;
-    if (params?.userId) queryParams['user_id'] = params.userId;
+    if (params?.userId) queryParams.user_id = params.userId;
     return this.fetchPaginated(`/courses/${courseId}/enrollments`, queryParams);
   }
 
@@ -193,11 +193,11 @@ export class CanvasClient {
     }
   ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
+    if (params?.searchTerm) queryParams.search_term = params.searchTerm;
     if (params?.include) queryParams['include[]'] = params.include;
-    if (params?.orderBy) queryParams['order_by'] = params.orderBy;
-    if (params?.bucket) queryParams['bucket'] = params.bucket;
-    if (params?.perPage) queryParams['per_page'] = params.perPage;
+    if (params?.orderBy) queryParams.order_by = params.orderBy;
+    if (params?.bucket) queryParams.bucket = params.bucket;
+    if (params?.perPage) queryParams.per_page = params.perPage;
     return this.fetchPaginated(`/courses/${courseId}/assignments`, queryParams);
   }
 
@@ -247,7 +247,7 @@ export class CanvasClient {
   ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.include) queryParams['include[]'] = params.include;
-    if (params?.perPage) queryParams['per_page'] = params.perPage;
+    if (params?.perPage) queryParams.per_page = params.perPage;
     return this.fetchPaginated(
       `/courses/${courseId}/assignments/${assignmentId}/submissions`,
       queryParams
@@ -280,11 +280,10 @@ export class CanvasClient {
     }
   ): Promise<any> {
     let body: Record<string, any> = {};
-    if (data.postedGrade !== undefined)
-      body['submission'] = { posted_grade: data.postedGrade };
+    if (data.postedGrade !== undefined) body.submission = { posted_grade: data.postedGrade };
     if (data.excuse !== undefined)
-      body['submission'] = { ...body['submission'], excuse: data.excuse };
-    if (data.comment) body['comment'] = { text_comment: data.comment };
+      body.submission = { ...body.submission, excuse: data.excuse };
+    if (data.comment) body.comment = { text_comment: data.comment };
     let response = await this.http.put(
       `/courses/${courseId}/assignments/${assignmentId}/submissions/${userId}`,
       body
@@ -303,9 +302,9 @@ export class CanvasClient {
     }
   ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
+    if (params?.searchTerm) queryParams.search_term = params.searchTerm;
     if (params?.include) queryParams['include[]'] = params.include;
-    if (params?.studentId) queryParams['student_id'] = params.studentId;
+    if (params?.studentId) queryParams.student_id = params.studentId;
     return this.fetchPaginated(`/courses/${courseId}/modules`, queryParams);
   }
 
@@ -368,9 +367,9 @@ export class CanvasClient {
     }
   ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.orderBy) queryParams['order_by'] = params.orderBy;
-    if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
-    if (params?.filterBy) queryParams['filter_by'] = params.filterBy;
+    if (params?.orderBy) queryParams.order_by = params.orderBy;
+    if (params?.searchTerm) queryParams.search_term = params.searchTerm;
+    if (params?.filterBy) queryParams.filter_by = params.filterBy;
     if (params?.include) queryParams['include[]'] = params.include;
     return this.fetchPaginated(`/courses/${courseId}/discussion_topics`, queryParams);
   }
@@ -422,10 +421,10 @@ export class CanvasClient {
     }
   ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.sort) queryParams['sort'] = params.sort;
-    if (params?.order) queryParams['order'] = params.order;
-    if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
-    if (params?.published !== undefined) queryParams['published'] = params.published;
+    if (params?.sort) queryParams.sort = params.sort;
+    if (params?.order) queryParams.order = params.order;
+    if (params?.searchTerm) queryParams.search_term = params.searchTerm;
+    if (params?.published !== undefined) queryParams.published = params.published;
     return this.fetchPaginated(`/courses/${courseId}/pages`, queryParams);
   }
 
@@ -467,10 +466,10 @@ export class CanvasClient {
     }
   ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
+    if (params?.searchTerm) queryParams.search_term = params.searchTerm;
     if (params?.contentTypes) queryParams['content_types[]'] = params.contentTypes;
-    if (params?.sort) queryParams['sort'] = params.sort;
-    if (params?.order) queryParams['order'] = params.order;
+    if (params?.sort) queryParams.sort = params.sort;
+    if (params?.order) queryParams.order = params.order;
     return this.fetchPaginated(`/courses/${courseId}/files`, queryParams);
   }
 
@@ -491,11 +490,11 @@ export class CanvasClient {
     allEvents?: boolean;
   }): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.type) queryParams['type'] = params.type;
-    if (params?.startDate) queryParams['start_date'] = params.startDate;
-    if (params?.endDate) queryParams['end_date'] = params.endDate;
+    if (params?.type) queryParams.type = params.type;
+    if (params?.startDate) queryParams.start_date = params.startDate;
+    if (params?.endDate) queryParams.end_date = params.endDate;
     if (params?.contextCodes) queryParams['context_codes[]'] = params.contextCodes;
-    if (params?.allEvents !== undefined) queryParams['all_events'] = params.allEvents;
+    if (params?.allEvents !== undefined) queryParams.all_events = params.allEvents;
     return this.fetchPaginated('/calendar_events', queryParams);
   }
 
@@ -516,7 +515,7 @@ export class CanvasClient {
 
   async deleteCalendarEvent(eventId: string, cancelReason?: string): Promise<any> {
     let params: Record<string, any> = {};
-    if (cancelReason) params['cancel_reason'] = cancelReason;
+    if (cancelReason) params.cancel_reason = cancelReason;
     let response = await this.http.delete(`/calendar_events/${eventId}`, { params });
     return response.data;
   }
@@ -529,7 +528,7 @@ export class CanvasClient {
     include?: string[];
   }): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.scope) queryParams['scope'] = params.scope;
+    if (params?.scope) queryParams.scope = params.scope;
     if (params?.filter) queryParams['filter[]'] = params.filter;
     if (params?.include) queryParams['include[]'] = params.include;
     return this.fetchPaginated('/conversations', queryParams);
@@ -571,8 +570,8 @@ export class CanvasClient {
     }
   ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
-    if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
-    if (params?.perPage) queryParams['per_page'] = params.perPage;
+    if (params?.searchTerm) queryParams.search_term = params.searchTerm;
+    if (params?.perPage) queryParams.per_page = params.perPage;
     return this.fetchPaginated(`/courses/${courseId}/quizzes`, queryParams);
   }
 
@@ -622,7 +621,7 @@ export class CanvasClient {
   ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.include) queryParams['include[]'] = params.include;
-    if (params?.style) queryParams['style'] = params.style;
+    if (params?.style) queryParams.style = params.style;
     let response = await this.http.get(`/courses/${courseId}/rubrics/${rubricId}`, {
       params: queryParams
     });
@@ -659,10 +658,10 @@ export class CanvasClient {
     let queryParams: Record<string, any> = {
       'context_codes[]': contextCodes
     };
-    if (params?.startDate) queryParams['start_date'] = params.startDate;
-    if (params?.endDate) queryParams['end_date'] = params.endDate;
-    if (params?.activeOnly !== undefined) queryParams['active_only'] = params.activeOnly;
-    if (params?.latestOnly !== undefined) queryParams['latest_only'] = params.latestOnly;
+    if (params?.startDate) queryParams.start_date = params.startDate;
+    if (params?.endDate) queryParams.end_date = params.endDate;
+    if (params?.activeOnly !== undefined) queryParams.active_only = params.activeOnly;
+    if (params?.latestOnly !== undefined) queryParams.latest_only = params.latestOnly;
     return this.fetchPaginated('/announcements', queryParams);
   }
 

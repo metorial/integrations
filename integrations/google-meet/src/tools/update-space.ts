@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MeetClient } from '../lib/client';
 import { googleMeetServiceError } from '../lib/errors';
 import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateSpaceTool = SlateTool.create(spec, {
   name: 'Update Meeting Space',
@@ -82,7 +82,9 @@ export let updateSpaceTool = SlateTool.create(spec, {
     }
     if (ctx.input.moderationRestrictions) {
       let moderationRestrictions = Object.fromEntries(
-        Object.entries(ctx.input.moderationRestrictions).filter(([, value]) => value !== undefined)
+        Object.entries(ctx.input.moderationRestrictions).filter(
+          ([, value]) => value !== undefined
+        )
       );
 
       if (Object.keys(moderationRestrictions).length > 0) {

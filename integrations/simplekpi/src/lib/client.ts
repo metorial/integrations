@@ -3,13 +3,11 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(
-    private params: {
-      subdomain: string;
-      email: string;
-      token: string;
-    }
-  ) {
+  constructor(params: {
+    subdomain: string;
+    email: string;
+    token: string;
+  }) {
     let encoded = Buffer.from(`${params.email}:${params.token}`).toString('base64');
 
     this.axios = createAxios({

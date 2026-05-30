@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let textToSpeech = SlateTool.create(spec, {
   name: 'Text to Speech',
@@ -107,7 +107,7 @@ export let textToSpeech = SlateTool.create(spec, {
     });
 
     let textPreview =
-      ctx.input.text.length > 80 ? ctx.input.text.slice(0, 80) + '...' : ctx.input.text;
+      ctx.input.text.length > 80 ? `${ctx.input.text.slice(0, 80)}...` : ctx.input.text;
 
     return {
       output: result,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageAttributeOwnershipTool = SlateTool.create(spec, {
   name: 'Manage Attribute Ownership',
@@ -64,7 +64,7 @@ export let manageAttributeOwnershipTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
-    let result;
+    let result: any;
     if (ctx.input.action === 'acquire') {
       let payload = ctx.input.attributes.map(a => ({
         template: a.templateName,
@@ -79,7 +79,7 @@ export let manageAttributeOwnershipTool = SlateTool.create(spec, {
       result = await client.releaseAttributes(payload);
     }
 
-    let failures = result.failed.map(f => ({
+    let failures = result.failed.map((f: any) => ({
       attributeName: (f as Record<string, unknown>).name as string | undefined,
       error: f.error
     }));

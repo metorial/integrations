@@ -9,7 +9,7 @@ export interface StripeClientConfig {
 export class StripeClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: StripeClientConfig) {
+  constructor(config: StripeClientConfig) {
     let headers: Record<string, string> = {
       Authorization: `Bearer ${config.token}`,
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -142,7 +142,7 @@ export class StripeClient {
     return this.post(`/subscriptions/${subscriptionId}`, params);
   }
 
-  async cancelSubscription(subscriptionId: string, params?: Record<string, any>) {
+  async cancelSubscription(subscriptionId: string, _params?: Record<string, any>) {
     return this.del(`/subscriptions/${subscriptionId}`);
   }
 

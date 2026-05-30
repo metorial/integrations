@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { parseFormUrlEncoded } from '../lib/webhook-parser';
+import { spec } from '../spec';
 
 export let incomingCall = SlateTrigger.create(spec, {
   name: 'Incoming Call',
@@ -49,17 +49,17 @@ export let incomingCall = SlateTrigger.create(spec, {
       return {
         inputs: [
           {
-            callSid: data['CallSid'] || '',
-            from: data['From'] || data['Caller'] || '',
-            to: data['To'] || data['Called'] || '',
-            callStatus: data['CallStatus'] || '',
-            direction: data['Direction'] || 'inbound',
-            accountSid: data['AccountSid'] || '',
-            callerName: data['CallerName'],
-            fromCity: data['FromCity'] || data['CallerCity'],
-            fromState: data['FromState'] || data['CallerState'],
-            fromCountry: data['FromCountry'] || data['CallerCountry'],
-            forwardedFrom: data['ForwardedFrom']
+            callSid: data.CallSid || '',
+            from: data.From || data.Caller || '',
+            to: data.To || data.Called || '',
+            callStatus: data.CallStatus || '',
+            direction: data.Direction || 'inbound',
+            accountSid: data.AccountSid || '',
+            callerName: data.CallerName,
+            fromCity: data.FromCity || data.CallerCity,
+            fromState: data.FromState || data.CallerState,
+            fromCountry: data.FromCountry || data.CallerCountry,
+            forwardedFrom: data.ForwardedFrom
           }
         ]
       };

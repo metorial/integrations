@@ -168,8 +168,8 @@ export class Client {
   }): Promise<any[]> {
     let queryParams: Record<string, string> = {};
 
-    if (params?.parentId !== undefined) queryParams['parent__id'] = String(params.parentId);
-    if (params?.titleContains) queryParams['title__icontains'] = params.titleContains;
+    if (params?.parentId !== undefined) queryParams.parent__id = String(params.parentId);
+    if (params?.titleContains) queryParams.title__icontains = params.titleContains;
 
     let response = await this.axios.get('/categories/', { params: queryParams });
     return Array.isArray(response.data)
@@ -188,9 +188,8 @@ export class Client {
   }): Promise<any[]> {
     let queryParams: Record<string, string> = {};
 
-    if (params?.categoryId !== undefined)
-      queryParams['category__id'] = String(params.categoryId);
-    if (params?.nameContains) queryParams['name__icontains'] = params.nameContains;
+    if (params?.categoryId !== undefined) queryParams.category__id = String(params.categoryId);
+    if (params?.nameContains) queryParams.name__icontains = params.nameContains;
 
     let response = await this.axios.get('/templates/', { params: queryParams });
     return Array.isArray(response.data)

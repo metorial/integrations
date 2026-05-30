@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  initiateCallTool,
-  sendSmsTool,
-  listSmsTool,
-  listCallsTool,
   hlrLookupTool,
-  listUsersTool,
+  initiateCallTool,
+  listCallsTool,
   listCampaignsTool,
+  listSmsTool,
+  listUsersTool,
   manageCampaignTool,
-  manageContactsTool
+  manageContactsTool,
+  sendSmsTool
 } from './tools';
 import { callEventTrigger, smsEventTrigger } from './triggers';
 

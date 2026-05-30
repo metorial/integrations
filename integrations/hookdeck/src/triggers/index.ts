@@ -1,2 +1,2 @@
-export * from './issue-notification';
 export * from './event-successful';
+export * from './issue-notification';

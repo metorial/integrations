@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listFunctions,
-  getFunction,
+  configureAsyncInvocation,
   createFunction,
-  updateFunction,
   deleteFunction,
+  getAccountSettings,
+  getFunction,
   invokeFunction,
-  publishVersion,
+  listFunctions,
   manageAlias,
-  manageLayer,
+  manageConcurrency,
+  manageDurableExecution,
   manageEventSourceMapping,
   manageFunctionUrl,
-  manageConcurrency,
+  manageLayer,
   managePermission,
-  manageTags,
-  configureAsyncInvocation,
-  manageDurableExecution,
-  getAccountSettings,
+  manageRecursionConfig,
   manageRuntimeManagement,
-  manageRecursionConfig
+  manageTags,
+  publishVersion,
+  updateFunction
 } from './tools/index';
 import { functionChanges, inboundWebhook } from './triggers/index';
 

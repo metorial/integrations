@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 import type {
-  Wachet,
-  NotificationListResponse,
+  CrawlerPage,
   DataHistoryResponse,
-  FolderContentResponse,
   Folder,
-  CrawlerPage
+  FolderContentResponse,
+  NotificationListResponse,
+  Wachet
 } from './types';
 
 let http = createAxios({
@@ -15,7 +15,7 @@ let http = createAxios({
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.headers = {
       Authorization: `bearer ${config.token}`,
       'Content-Type': 'application/json'

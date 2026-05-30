@@ -1,37 +1,37 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getRecordTool,
+  addListEntryTool,
+  createCommentTool,
+  createNoteTool,
   createRecordTool,
-  updateRecordTool,
+  createTaskTool,
+  deleteCommentTool,
+  deleteListEntryTool,
+  deleteNoteTool,
   deleteRecordTool,
+  deleteTaskTool,
+  getListsTool,
+  getRecordTool,
+  getThreadTool,
+  listAttributesTool,
+  listNotesTool,
+  listObjectsTool,
+  listTasksTool,
+  listWorkspaceMembersTool,
+  queryListEntriesTool,
   queryRecordsTool,
   searchRecordsTool,
-  listObjectsTool,
-  listAttributesTool,
-  getListsTool,
-  addListEntryTool,
   updateListEntryTool,
-  deleteListEntryTool,
-  queryListEntriesTool,
-  listNotesTool,
-  createNoteTool,
-  deleteNoteTool,
-  listTasksTool,
-  createTaskTool,
-  updateTaskTool,
-  deleteTaskTool,
-  createCommentTool,
-  getThreadTool,
-  deleteCommentTool,
-  listWorkspaceMembersTool
+  updateRecordTool,
+  updateTaskTool
 } from './tools';
 import {
-  recordEventsTrigger,
+  commentEventsTrigger,
   listEntryEventsTrigger,
   noteEventsTrigger,
-  taskEventsTrigger,
-  commentEventsTrigger
+  recordEventsTrigger,
+  taskEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

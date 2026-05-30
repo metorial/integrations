@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NerdGraphClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createChangeTrackingMarker = SlateTool.create(spec, {
   name: 'Create Change Tracking Marker',

@@ -315,11 +315,7 @@ export class ZohoInventoryClient {
   // ─── Packages ─────────────────────────────────────────────────
 
   async listPackages(
-    params: {
-      page?: number;
-      per_page?: number;
-      salesorder_id?: string;
-    } = {}
+    params: { page?: number; per_page?: number; salesorder_id?: string } = {}
   ) {
     let response = await this.http.get('/packages', { params });
     return response.data;
@@ -346,11 +342,7 @@ export class ZohoInventoryClient {
   // ─── Shipment Orders ──────────────────────────────────────────
 
   async listShipmentOrders(
-    params: {
-      page?: number;
-      per_page?: number;
-      salesorder_id?: string;
-    } = {}
+    params: { page?: number; per_page?: number; salesorder_id?: string } = {}
   ) {
     let response = await this.http.get('/shipmentorders', { params });
     return response.data;
@@ -580,11 +572,7 @@ export class ZohoInventoryClient {
   // ─── Purchase Receives ────────────────────────────────────────
 
   async listPurchaseReceives(
-    params: {
-      page?: number;
-      per_page?: number;
-      purchaseorder_id?: string;
-    } = {}
+    params: { page?: number; per_page?: number; purchaseorder_id?: string } = {}
   ) {
     let response = await this.http.get('/purchasereceives', { params });
     return response.data;

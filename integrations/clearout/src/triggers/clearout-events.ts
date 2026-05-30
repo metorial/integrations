@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let webhookPayloadSchema = z.object({
   eventId: z.string().describe('Unique identifier for this webhook delivery'),
@@ -136,7 +136,7 @@ export let clearoutEvents = SlateTrigger.create(spec, {
         };
       } else if (eventType === 'email_finder.instant.completed') {
         let data = payloadData ?? {};
-        let emailsRaw = (data.emails ?? []) as Array<Record<string, unknown>>;
+        let emailsRaw = (data.emails ?? []) as Record<string, unknown>[];
         let company = data.company as Record<string, unknown> | undefined;
         finder = {
           emails: emailsRaw.map(e => ({

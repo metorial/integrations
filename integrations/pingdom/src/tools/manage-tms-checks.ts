@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let tmsCheckSummarySchema = z.object({
   checkId: z.number().describe('Transaction check ID'),

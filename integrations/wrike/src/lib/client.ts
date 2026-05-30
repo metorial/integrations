@@ -1,18 +1,18 @@
 import { createAxios } from 'slates';
 import type {
-  WrikeTask,
-  WrikeFolder,
+  WrikeApproval,
+  WrikeAttachment,
   WrikeComment,
   WrikeContact,
-  WrikeTimelog,
   WrikeCustomField,
-  WrikeWorkflow,
-  WrikeSpace,
-  WrikeWebhook,
-  WrikeAttachment,
   WrikeDependency,
-  WrikeApproval,
-  WrikeResponse
+  WrikeFolder,
+  WrikeResponse,
+  WrikeSpace,
+  WrikeTask,
+  WrikeTimelog,
+  WrikeWebhook,
+  WrikeWorkflow
 } from './types';
 
 export class WrikeClient {

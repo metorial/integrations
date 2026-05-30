@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KommoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let noteOutputSchema = z.object({
   noteId: z.number().describe('Note ID'),

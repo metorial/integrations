@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let jobEvents = SlateTrigger.create(spec, {
   name: 'Job Events',
@@ -47,7 +47,7 @@ export let jobEvents = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
       let event = data.event as string | undefined;
 
-      if (!event || !event.startsWith('job.')) {
+      if (!event?.startsWith('job.')) {
         return { inputs: [] };
       }
 

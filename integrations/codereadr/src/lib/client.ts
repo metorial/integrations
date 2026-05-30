@@ -1,5 +1,12 @@
 import { createAxios } from 'slates';
-import { parseXml, findChild, findChildren, getChildText, nodeToObject, XmlNode } from './xml';
+import {
+  findChild,
+  findChildren,
+  getChildText,
+  nodeToObject,
+  parseXml,
+  type XmlNode
+} from './xml';
 
 let apiAxios = createAxios({
   baseURL: 'https://api.codereadr.com/api/'

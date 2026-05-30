@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { EmeliaClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let scraperWebhook = SlateTrigger.create(spec, {
   name: 'LinkedIn Scraper Event',

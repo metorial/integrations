@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { EventsClient } from '../lib/events-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let signInAttemptEventsTrigger = SlateTrigger.create(spec, {
   name: 'Sign-In Attempt Events',

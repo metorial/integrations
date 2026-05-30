@@ -26,7 +26,11 @@ describe('resolveIntegration', () => {
       JSON.stringify({ main: 'src/index.ts' }, null, 2),
       'utf-8'
     );
-    await writeFile(path.join(integrationDir, 'src', 'index.ts'), 'export let provider = {};\n', 'utf-8');
+    await writeFile(
+      path.join(integrationDir, 'src', 'index.ts'),
+      'export let provider = {};\n',
+      'utf-8'
+    );
 
     let resolved = await resolveIntegration('demo', { cwd });
 
@@ -44,7 +48,11 @@ describe('resolveIntegration', () => {
       JSON.stringify({ source: 'src/index.ts' }, null, 2),
       'utf-8'
     );
-    await writeFile(path.join(integrationDir, 'src', 'index.ts'), 'export let provider = {};\n', 'utf-8');
+    await writeFile(
+      path.join(integrationDir, 'src', 'index.ts'),
+      'export let provider = {};\n',
+      'utf-8'
+    );
 
     let resolved = await resolveIntegration('./custom/demo', { cwd });
 

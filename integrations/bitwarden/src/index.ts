@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listMembers,
-  getMember,
-  inviteMember,
-  updateMember,
-  removeMember,
-  reinviteMember,
-  revokeRestoreMember,
-  listGroups,
-  getGroup,
   createGroup,
-  updateGroup,
-  deleteGroup,
-  listCollections,
-  updateCollection,
   deleteCollection,
+  deleteGroup,
+  getGroup,
+  getMember,
+  importOrganization,
+  inviteMember,
+  listCollections,
+  listGroups,
+  listMembers,
   listPolicies,
-  updatePolicy,
   queryEvents,
-  importOrganization
+  reinviteMember,
+  removeMember,
+  revokeRestoreMember,
+  updateCollection,
+  updateGroup,
+  updateMember,
+  updatePolicy
 } from './tools';
-import { organizationEvents, inboundWebhook } from './triggers';
+import { inboundWebhook, organizationEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

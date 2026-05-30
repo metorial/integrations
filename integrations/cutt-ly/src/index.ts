@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { shortenUrl, editLink, getLinkAnalytics, deleteLink } from './tools';
+import { deleteLink, editLink, getLinkAnalytics, shortenUrl } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

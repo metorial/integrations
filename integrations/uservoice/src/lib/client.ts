@@ -47,15 +47,15 @@ export class Client {
 
     let result: Record<string, string> = {};
 
-    if (params.page) result['page'] = String(params.page);
-    if (params.perPage) result['per_page'] = String(params.perPage);
-    if (params.sort) result['sort'] = params.sort;
-    if (params.cursor) result['cursor'] = params.cursor;
+    if (params.page) result.page = String(params.page);
+    if (params.perPage) result.per_page = String(params.perPage);
+    if (params.sort) result.sort = params.sort;
+    if (params.cursor) result.cursor = params.cursor;
     if (params.includes && params.includes.length > 0) {
-      result['includes'] = params.includes.join(',');
+      result.includes = params.includes.join(',');
     }
-    if (params.updatedAfter) result['updated_after'] = params.updatedAfter;
-    if (params.updatedBefore) result['updated_before'] = params.updatedBefore;
+    if (params.updatedAfter) result.updated_after = params.updatedAfter;
+    if (params.updatedBefore) result.updated_before = params.updatedBefore;
 
     for (let [key, value] of Object.entries(params)) {
       if (
@@ -91,7 +91,7 @@ export class Client {
 
   async getSuggestion(suggestionId: number, includes?: string[]): Promise<any> {
     let p: Record<string, string> = {};
-    if (includes && includes.length > 0) p['includes'] = includes.join(',');
+    if (includes && includes.length > 0) p.includes = includes.join(',');
     let response = await this.http.get(`/suggestions/${suggestionId}`, { params: p });
     return response.data.suggestions?.[0];
   }
@@ -107,9 +107,9 @@ export class Client {
       title: data.title,
       links: { forum: data.forumId }
     };
-    if (data.body) payload['body'] = data.body;
-    if (data.categoryId) payload['links']['category'] = data.categoryId;
-    if (data.labelIds && data.labelIds.length > 0) payload['links']['labels'] = data.labelIds;
+    if (data.body) payload.body = data.body;
+    if (data.categoryId) payload.links.category = data.categoryId;
+    if (data.labelIds && data.labelIds.length > 0) payload.links.labels = data.labelIds;
 
     let response = await this.http.post('/suggestions', payload);
     return response.data.suggestions?.[0];
@@ -126,14 +126,14 @@ export class Client {
     }
   ): Promise<any> {
     let payload: Record<string, any> = {};
-    if (data.title !== undefined) payload['title'] = data.title;
-    if (data.body !== undefined) payload['body'] = data.body;
+    if (data.title !== undefined) payload.title = data.title;
+    if (data.body !== undefined) payload.body = data.body;
 
     let links: Record<string, any> = {};
-    if (data.categoryId !== undefined) links['category'] = data.categoryId;
-    if (data.labelIds !== undefined) links['labels'] = data.labelIds;
-    if (data.statusId !== undefined) links['status'] = data.statusId;
-    if (Object.keys(links).length > 0) payload['links'] = links;
+    if (data.categoryId !== undefined) links.category = data.categoryId;
+    if (data.labelIds !== undefined) links.labels = data.labelIds;
+    if (data.statusId !== undefined) links.status = data.statusId;
+    if (Object.keys(links).length > 0) payload.links = links;
 
     let response = await this.http.put(`/suggestions/${suggestionId}`, payload);
     return response.data.suggestions?.[0];
@@ -158,9 +158,9 @@ export class Client {
         new_status: data.statusId
       }
     };
-    if (data.body) payload['body'] = data.body;
+    if (data.body) payload.body = data.body;
     if (data.notifySupporters !== undefined)
-      payload['notify_subscribers'] = data.notifySupporters;
+      payload.notify_subscribers = data.notifySupporters;
 
     let response = await this.http.post('/status_updates', payload);
     return response.data.status_updates?.[0];
@@ -201,9 +201,9 @@ export class Client {
     isPublic?: boolean;
   }): Promise<any> {
     let payload: Record<string, any> = { name: data.name };
-    if (data.welcomeMessage) payload['welcome_message'] = data.welcomeMessage;
-    if (data.prompt) payload['prompt'] = data.prompt;
-    if (data.isPublic !== undefined) payload['is_public'] = data.isPublic;
+    if (data.welcomeMessage) payload.welcome_message = data.welcomeMessage;
+    if (data.prompt) payload.prompt = data.prompt;
+    if (data.isPublic !== undefined) payload.is_public = data.isPublic;
 
     let response = await this.http.post('/forums', payload);
     return response.data.forums?.[0];
@@ -219,10 +219,10 @@ export class Client {
     }
   ): Promise<any> {
     let payload: Record<string, any> = {};
-    if (data.name !== undefined) payload['name'] = data.name;
-    if (data.welcomeMessage !== undefined) payload['welcome_message'] = data.welcomeMessage;
-    if (data.prompt !== undefined) payload['prompt'] = data.prompt;
-    if (data.isPublic !== undefined) payload['is_public'] = data.isPublic;
+    if (data.name !== undefined) payload.name = data.name;
+    if (data.welcomeMessage !== undefined) payload.welcome_message = data.welcomeMessage;
+    if (data.prompt !== undefined) payload.prompt = data.prompt;
+    if (data.isPublic !== undefined) payload.is_public = data.isPublic;
 
     let response = await this.http.put(`/forums/${forumId}`, payload);
     return response.data.forums?.[0];
@@ -259,7 +259,7 @@ export class Client {
     let payload: Record<string, any> = {
       links: { suggestion: data.suggestionId }
     };
-    if (data.userId) payload['links']['user'] = data.userId;
+    if (data.userId) payload.links.user = data.userId;
 
     let response = await this.http.post('/supporters', payload);
     return response.data.supporters?.[0];

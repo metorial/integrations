@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NeuronWriterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let importContent = SlateTool.create(spec, {
   name: 'Import Content',

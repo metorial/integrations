@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GtmClient } from '../lib/client';
 import { googleTagManagerActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let accountSchema = z.object({
   accountId: z.string().optional().describe('GTM account ID'),

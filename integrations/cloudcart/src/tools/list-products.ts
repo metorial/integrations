@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listProducts = SlateTool.create(spec, {
   name: 'List Products',
@@ -55,10 +55,10 @@ export let listProducts = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token, domain: ctx.config.domain });
 
     let filters: Record<string, string> = {};
-    if (ctx.input.sku) filters['sku'] = ctx.input.sku;
-    if (ctx.input.barcode) filters['barcode'] = ctx.input.barcode;
-    if (ctx.input.categoryId) filters['category_id'] = ctx.input.categoryId;
-    if (ctx.input.vendorId) filters['vendor_id'] = ctx.input.vendorId;
+    if (ctx.input.sku) filters.sku = ctx.input.sku;
+    if (ctx.input.barcode) filters.barcode = ctx.input.barcode;
+    if (ctx.input.categoryId) filters.category_id = ctx.input.categoryId;
+    if (ctx.input.vendorId) filters.vendor_id = ctx.input.vendorId;
 
     let res = await client.listProducts({
       pagination: { pageNumber: ctx.input.pageNumber, pageSize: ctx.input.pageSize },

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { createApiClient, listDocuments, deleteDocuments } from '../lib/client';
+import { createApiClient, deleteDocuments, listDocuments } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageDocumentsTool = SlateTool.create(spec, {
   name: 'Manage Knowledge Base Documents',

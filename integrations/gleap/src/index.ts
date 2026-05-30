@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTickets,
-  getTicket,
-  createTicket,
-  updateTicket,
-  deleteTicket,
-  listSessions,
-  getSession,
   createSession,
-  updateSession,
+  createTicket,
+  deleteTicket,
   getMessages,
-  sendMessage,
-  listCollections,
-  manageCollection,
+  getSession,
+  getTicket,
   listArticles,
-  manageArticle,
+  listCollections,
   listEngagements,
+  listSessions,
+  listTickets,
+  manageAiContent,
+  manageArticle,
+  manageCollection,
   manageEngagement,
   manageTeam,
-  manageAiContent
+  sendMessage,
+  updateSession,
+  updateTicket
 } from './tools';
 import { feedbackWebhook, ticketUpdated } from './triggers';
 

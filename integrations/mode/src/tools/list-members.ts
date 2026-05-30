@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ModeClient } from '../lib/client';
-import { normalizeMember, getEmbedded } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ModeClient } from '../lib/client';
+import { getEmbedded, normalizeMember } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listMembers = SlateTool.create(spec, {
   name: 'List Members',

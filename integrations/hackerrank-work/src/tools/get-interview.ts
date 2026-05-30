@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getInterview = SlateTool.create(spec, {
   name: 'Get Interview',
@@ -35,7 +35,7 @@ export let getInterview = SlateTool.create(spec, {
     let interviewResult = await client.getInterview(ctx.input.interviewId);
     let interview = interviewResult.data ?? interviewResult;
 
-    let transcript: any = undefined;
+    let transcript: any;
     if (ctx.input.includeTranscript) {
       try {
         let transcriptResult = await client.getInterviewTranscript(ctx.input.interviewId);

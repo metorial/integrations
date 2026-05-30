@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FilesComClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFileInfo = SlateTool.create(spec, {
   name: 'Get File Info',
@@ -74,5 +74,5 @@ let formatBytes = (bytes: number): string => {
   if (bytes === 0) return '0 B';
   let units = ['B', 'KB', 'MB', 'GB', 'TB'];
   let i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${units[i]}`;
+  return `${(bytes / 1024 ** i).toFixed(1)} ${units[i]}`;
 };

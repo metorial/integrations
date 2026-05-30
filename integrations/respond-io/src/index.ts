@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  addComment,
+  assignConversation,
   createContact,
-  getContact,
-  updateContact,
   deleteContact,
+  getContact,
   listContacts,
-  mergeContacts,
-  manageContactTags,
-  sendMessage,
-  sendTemplateMessage,
+  listCustomFields,
   listMessages,
   listMessageTemplates,
+  listWorkspaceResources,
+  manageContactTags,
   manageConversation,
-  assignConversation,
-  addComment,
-  listCustomFields,
-  listWorkspaceResources
+  mergeContacts,
+  sendMessage,
+  sendTemplateMessage,
+  updateContact
 } from './tools';
-import { messageEvent, contactEvent, conversationEvent, commentEvent } from './triggers';
+import { commentEvent, contactEvent, conversationEvent, messageEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,

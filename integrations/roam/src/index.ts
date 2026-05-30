@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  queryGraph,
-  pullData,
-  getPage,
-  createPage,
-  updatePage,
-  deletePage,
-  createBlock,
-  updateBlock,
-  moveBlock,
-  deleteBlock,
   addDailyNote,
+  batchActions,
+  createBlock,
+  createPage,
+  deleteBlock,
+  deletePage,
+  getPage,
+  moveBlock,
+  pullData,
+  queryGraph,
   searchBlocks,
-  batchActions
+  updateBlock,
+  updatePage
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

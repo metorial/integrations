@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AddressZenClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let validatePhone = SlateTool.create(spec, {
   name: 'Validate Phone Number',

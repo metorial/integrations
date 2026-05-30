@@ -2,19 +2,19 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createObject,
-  queryObjects,
-  updateObject,
+  deleteFile,
   deleteObject,
   findUsers,
-  registerUser,
   listFiles,
-  deleteFile,
-  publishMessage,
-  sendEmail,
+  manageCache,
   manageCounter,
-  manageCache
+  publishMessage,
+  queryObjects,
+  registerUser,
+  sendEmail,
+  updateObject
 } from './tools';
-import { dataChanges, newUser, inboundWebhook } from './triggers';
+import { dataChanges, inboundWebhook, newUser } from './triggers';
 
 export let provider = Slate.create({
   spec,

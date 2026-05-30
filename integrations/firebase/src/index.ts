@@ -1,24 +1,24 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  manageFirestoreDocument,
-  queryFirestore,
-  manageRealtimeData,
-  manageUser,
+  getFirebaseApps,
+  getRemoteConfig,
   listUsers,
   lookupUser,
-  sendFcmMessage,
-  manageTopicSubscriptions,
-  getRemoteConfig,
-  updateRemoteConfig,
+  manageFirestoreDocument,
+  manageRealtimeData,
   manageStorage,
-  getFirebaseApps
+  manageTopicSubscriptions,
+  manageUser,
+  queryFirestore,
+  sendFcmMessage,
+  updateRemoteConfig
 } from './tools';
 import {
   firestoreDocumentChanges,
+  inboundWebhook,
   realtimeDbChanges,
-  userChanges,
-  inboundWebhook
+  userChanges
 } from './triggers';
 
 export let provider = Slate.create({

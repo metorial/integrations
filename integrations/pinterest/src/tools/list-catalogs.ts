@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { pinterestServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCatalogs = SlateTool.create(spec, {
   name: 'List Catalogs',
@@ -41,7 +41,7 @@ export let listCatalogs = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let result;
+    let result: any;
     if (ctx.input.resource === 'catalogs') {
       result = await client.listCatalogs({
         bookmark: ctx.input.bookmark,

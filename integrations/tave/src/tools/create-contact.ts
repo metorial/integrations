@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TavePublicClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createContact = SlateTool.create(spec, {
   name: 'Create Contact',
@@ -45,14 +45,14 @@ export let createContact = SlateTool.create(spec, {
       first_name: ctx.input.firstName
     };
 
-    if (ctx.input.lastName) data['last_name'] = ctx.input.lastName;
-    if (ctx.input.email) data['email'] = ctx.input.email;
-    if (ctx.input.phone) data['phone'] = ctx.input.phone;
-    if (ctx.input.contactKind) data['contact_kind'] = ctx.input.contactKind;
-    if (ctx.input.brand) data['brand'] = ctx.input.brand;
+    if (ctx.input.lastName) data.last_name = ctx.input.lastName;
+    if (ctx.input.email) data.email = ctx.input.email;
+    if (ctx.input.phone) data.phone = ctx.input.phone;
+    if (ctx.input.contactKind) data.contact_kind = ctx.input.contactKind;
+    if (ctx.input.brand) data.brand = ctx.input.brand;
 
     if (ctx.input.customFields) {
-      data['custom_fields'] = ctx.input.customFields;
+      data.custom_fields = ctx.input.customFields;
     }
 
     ctx.info({ message: 'Creating contact in Tave', firstName: ctx.input.firstName });
@@ -67,7 +67,7 @@ export let createContact = SlateTool.create(spec, {
         email: result.email ?? ctx.input.email,
         raw: result
       },
-      message: `Successfully created contact **${ctx.input.firstName}${ctx.input.lastName ? ' ' + ctx.input.lastName : ''}**${ctx.input.email ? ' (' + ctx.input.email + ')' : ''}.`
+      message: `Successfully created contact **${ctx.input.firstName}${ctx.input.lastName ? ` ${ctx.input.lastName}` : ''}**${ctx.input.email ? ` (${ctx.input.email})` : ''}.`
     };
   })
   .build();

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let managePaymentsTool = SlateTool.create(spec, {
   name: 'Manage Payments',
@@ -96,7 +96,7 @@ export let managePaymentsTool = SlateTool.create(spec, {
     let overview: any;
     try {
       overview = await client.getJobPaymentsOverview(jobId);
-    } catch (e) {
+    } catch (_e) {
       /* optional */
     }
 

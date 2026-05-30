@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let logAlert = SlateTrigger.create(spec, {
   name: 'Log Alert',
@@ -60,7 +60,7 @@ export let logAlert = SlateTrigger.create(spec, {
             query,
             matches,
             viewUrl,
-            lines: lines as Array<Record<string, unknown>>,
+            lines: lines as Record<string, unknown>[],
             rawPayload: data
           }
         ]

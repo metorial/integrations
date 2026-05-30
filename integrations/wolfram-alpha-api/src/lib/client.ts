@@ -81,32 +81,32 @@ export class Client {
       output: params.output ?? 'json'
     };
 
-    if (params.format) queryParams['format'] = params.format;
-    if (params.includePodId) queryParams['includepodid'] = params.includePodId;
-    if (params.excludePodId) queryParams['excludepodid'] = params.excludePodId;
-    if (params.podTitle) queryParams['podtitle'] = params.podTitle;
-    if (params.podIndex) queryParams['podindex'] = params.podIndex;
-    if (params.scanner) queryParams['scanner'] = params.scanner;
-    if (params.podState) queryParams['podstate'] = params.podState;
-    if (params.units) queryParams['units'] = params.units;
-    if (params.ip) queryParams['ip'] = params.ip;
-    if (params.latLong) queryParams['latlong'] = params.latLong;
-    if (params.location) queryParams['location'] = params.location;
-    if (params.timeout != null) queryParams['scantimeout'] = params.timeout;
-    if (params.maxWidth != null) queryParams['maxwidth'] = params.maxWidth;
-    if (params.plotWidth != null) queryParams['plotwidth'] = params.plotWidth;
-    if (params.mag != null) queryParams['mag'] = params.mag;
-    if (params.reinterpret != null) queryParams['reinterpret'] = params.reinterpret;
-    if (params.translation != null) queryParams['translation'] = params.translation;
-    if (params.ignoreCase != null) queryParams['ignorecase'] = params.ignoreCase;
-    if (params.sig != null) queryParams['sig'] = params.sig;
+    if (params.format) queryParams.format = params.format;
+    if (params.includePodId) queryParams.includepodid = params.includePodId;
+    if (params.excludePodId) queryParams.excludepodid = params.excludePodId;
+    if (params.podTitle) queryParams.podtitle = params.podTitle;
+    if (params.podIndex) queryParams.podindex = params.podIndex;
+    if (params.scanner) queryParams.scanner = params.scanner;
+    if (params.podState) queryParams.podstate = params.podState;
+    if (params.units) queryParams.units = params.units;
+    if (params.ip) queryParams.ip = params.ip;
+    if (params.latLong) queryParams.latlong = params.latLong;
+    if (params.location) queryParams.location = params.location;
+    if (params.timeout != null) queryParams.scantimeout = params.timeout;
+    if (params.maxWidth != null) queryParams.maxwidth = params.maxWidth;
+    if (params.plotWidth != null) queryParams.plotwidth = params.plotWidth;
+    if (params.mag != null) queryParams.mag = params.mag;
+    if (params.reinterpret != null) queryParams.reinterpret = params.reinterpret;
+    if (params.translation != null) queryParams.translation = params.translation;
+    if (params.ignoreCase != null) queryParams.ignorecase = params.ignoreCase;
+    if (params.sig != null) queryParams.sig = params.sig;
 
     // Handle assumption parameter
     if (params.assumption) {
       let assumptions = Array.isArray(params.assumption)
         ? params.assumption
         : [params.assumption];
-      queryParams['assumption'] = assumptions.join('&assumption=');
+      queryParams.assumption = assumptions.join('&assumption=');
     }
 
     let response = await this.axios.get('/v2/query', {
@@ -122,8 +122,8 @@ export class Client {
       i: params.input
     };
 
-    if (params.units) queryParams['units'] = params.units;
-    if (params.timeout != null) queryParams['timeout'] = params.timeout;
+    if (params.units) queryParams.units = params.units;
+    if (params.timeout != null) queryParams.timeout = params.timeout;
 
     let response = await this.axios.get('/v1/result', {
       params: queryParams
@@ -138,8 +138,8 @@ export class Client {
       i: params.input
     };
 
-    if (params.units) queryParams['units'] = params.units;
-    if (params.timeout != null) queryParams['timeout'] = params.timeout;
+    if (params.units) queryParams.units = params.units;
+    if (params.timeout != null) queryParams.timeout = params.timeout;
 
     let response = await this.axios.get('/v1/spoken', {
       params: queryParams
@@ -154,13 +154,13 @@ export class Client {
       i: params.input
     };
 
-    if (params.layout) queryParams['layout'] = params.layout;
-    if (params.background) queryParams['background'] = params.background;
-    if (params.foreground) queryParams['foreground'] = params.foreground;
-    if (params.fontsize != null) queryParams['fontsize'] = params.fontsize;
-    if (params.width != null) queryParams['width'] = params.width;
-    if (params.units) queryParams['units'] = params.units;
-    if (params.timeout != null) queryParams['timeout'] = params.timeout;
+    if (params.layout) queryParams.layout = params.layout;
+    if (params.background) queryParams.background = params.background;
+    if (params.foreground) queryParams.foreground = params.foreground;
+    if (params.fontsize != null) queryParams.fontsize = params.fontsize;
+    if (params.width != null) queryParams.width = params.width;
+    if (params.units) queryParams.units = params.units;
+    if (params.timeout != null) queryParams.timeout = params.timeout;
 
     // Build URL manually since we return the image URL
     let url = new URL('https://api.wolframalpha.com/v1/simple');
@@ -177,8 +177,8 @@ export class Client {
       input: params.input
     };
 
-    if (params.maxchars != null) queryParams['maxchars'] = params.maxchars;
-    if (params.units) queryParams['units'] = params.units;
+    if (params.maxchars != null) queryParams.maxchars = params.maxchars;
+    if (params.units) queryParams.units = params.units;
 
     let response = await this.axios.get('/api/v1/llm-api', {
       params: queryParams
@@ -208,7 +208,7 @@ export class Client {
       output: 'json'
     };
 
-    if (params.mode) queryParams['mode'] = params.mode;
+    if (params.mode) queryParams.mode = params.mode;
 
     let response = await this.axios.get('/queryrecognizer/query.jsp', {
       params: queryParams

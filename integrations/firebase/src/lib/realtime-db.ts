@@ -32,18 +32,18 @@ export class RealtimeDbClient {
   ): Promise<any> {
     let params: Record<string, any> = { ...this.authParams };
 
-    if (query?.orderBy) params['orderBy'] = `"${query.orderBy}"`;
+    if (query?.orderBy) params.orderBy = `"${query.orderBy}"`;
     if (query?.startAt !== undefined)
-      params['startAt'] =
+      params.startAt =
         typeof query.startAt === 'string' ? `"${query.startAt}"` : query.startAt;
     if (query?.endAt !== undefined)
-      params['endAt'] = typeof query.endAt === 'string' ? `"${query.endAt}"` : query.endAt;
-    if (query?.limitToFirst) params['limitToFirst'] = query.limitToFirst;
-    if (query?.limitToLast) params['limitToLast'] = query.limitToLast;
+      params.endAt = typeof query.endAt === 'string' ? `"${query.endAt}"` : query.endAt;
+    if (query?.limitToFirst) params.limitToFirst = query.limitToFirst;
+    if (query?.limitToLast) params.limitToLast = query.limitToLast;
     if (query?.equalTo !== undefined)
-      params['equalTo'] =
+      params.equalTo =
         typeof query.equalTo === 'string' ? `"${query.equalTo}"` : query.equalTo;
-    if (query?.shallow) params['shallow'] = true;
+    if (query?.shallow) params.shallow = true;
 
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 

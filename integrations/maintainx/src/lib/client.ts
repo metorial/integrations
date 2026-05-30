@@ -1,10 +1,10 @@
 import { createAxios } from 'slates';
 import type {
-  PaginationParams,
-  WorkOrderStatus,
-  WorkOrderPriority,
   AssetStatus,
-  DowntimeType
+  DowntimeType,
+  PaginationParams,
+  WorkOrderPriority,
+  WorkOrderStatus
 } from './types';
 
 export interface ClientConfig {
@@ -15,7 +15,7 @@ export interface ClientConfig {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let headers: Record<string, string> = {
       Authorization: `Bearer ${config.token}`
     };
@@ -58,7 +58,7 @@ export class Client {
 
     if (params?.expand) {
       for (let exp of params.expand) {
-        queryParams[`expand`] = exp;
+        queryParams.expand = exp;
       }
     }
 
@@ -70,7 +70,7 @@ export class Client {
     let params: Record<string, any> = {};
     if (expand) {
       for (let exp of expand) {
-        params['expand'] = exp;
+        params.expand = exp;
       }
     }
     let response = await this.axios.get(`/workorders/${workOrderId}`, { params });
@@ -158,7 +158,7 @@ export class Client {
 
     if (params?.expand) {
       for (let exp of params.expand) {
-        queryParams['expand'] = exp;
+        queryParams.expand = exp;
       }
     }
 

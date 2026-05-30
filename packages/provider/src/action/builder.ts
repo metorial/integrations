@@ -4,10 +4,10 @@ import type { SlateSpecification } from '../specification/specification';
 import type {
   SlateAction,
   SlateActionCreateParameters,
-  SlateActionScopes,
   SlateActionParameters,
   SlateActionParametersTool,
   SlateActionParametersTrigger,
+  SlateActionScopes,
   SlateActionType,
   SlatePollingOptions,
   SlateToolInvocationHandler,

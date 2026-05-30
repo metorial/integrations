@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let scrapeResult = SlateTrigger.create(spec, {
   name: 'Scrape Result Received',
@@ -50,12 +50,12 @@ export let scrapeResult = SlateTrigger.create(spec, {
       }
 
       // Extract identifiers from either async job webhooks or callback responses
-      let taskId = (parsed['TaskID'] as string) || (parsed['taskId'] as string) || undefined;
-      let jobId = (parsed['JobID'] as string) || (parsed['jobId'] as string) || undefined;
-      let url = (parsed['URL'] as string) || (parsed['url'] as string) || '';
+      let taskId = (parsed.TaskID as string) || (parsed.taskId as string) || undefined;
+      let jobId = (parsed.JobID as string) || (parsed.jobId as string) || undefined;
+      let url = (parsed.URL as string) || (parsed.url as string) || '';
       let statusCode =
-        (parsed['StatusCode'] as number) || (parsed['statusCode'] as number) || undefined;
-      let content = (parsed['Content'] as string) || (parsed['content'] as string) || body;
+        (parsed.StatusCode as number) || (parsed.statusCode as number) || undefined;
+      let content = (parsed.Content as string) || (parsed.content as string) || body;
 
       let webhookId =
         taskId || `webhook-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;

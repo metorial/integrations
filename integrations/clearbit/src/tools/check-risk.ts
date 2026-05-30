@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClearbitClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let checkRisk = SlateTool.create(spec, {
   name: 'Check Risk Score',

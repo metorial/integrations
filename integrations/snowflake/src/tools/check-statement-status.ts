@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SnowflakeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let checkStatementStatus = SlateTool.create(spec, {
   name: 'Check Statement Status',

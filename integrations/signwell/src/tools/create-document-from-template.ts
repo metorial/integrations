@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SignWellClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createDocumentFromTemplate = SlateTool.create(spec, {
   name: 'Create Document from Template',

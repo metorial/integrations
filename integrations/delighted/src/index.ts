@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendSurvey,
-  listSurveyResponses,
   addSurveyResponse,
-  getMetrics,
-  listPeople,
-  deletePerson,
-  unsubscribePerson,
-  cancelPendingSurveys,
-  getAutopilotConfig,
   addToAutopilot,
+  cancelPendingSurveys,
+  deletePerson,
+  getAutopilotConfig,
+  getMetrics,
   listAutopilotMembers,
-  removeFromAutopilot
+  listPeople,
+  listSurveyResponses,
+  removeFromAutopilot,
+  sendSurvey,
+  unsubscribePerson
 } from './tools';
 import { surveyResponseTrigger, unsubscribeTrigger } from './triggers';
 

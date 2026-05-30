@@ -3,7 +3,7 @@ import {
   normalizeMicrosoftRedirectUri,
   normalizeMicrosoftRedirectUriForIntegration
 } from '@slates/oauth-microsoft';
-import { SlatesOAuthCredentialRecord, SlatesStoredAuth } from '@slates/profiles';
+import type { SlatesOAuthCredentialRecord, SlatesStoredAuth } from '@slates/profiles';
 import {
   chooseAuthMethod,
   createClientContext,
@@ -17,7 +17,7 @@ import {
   promptForObjectSchema,
   promptForString
 } from '../lib/prompts';
-import { JsonInput, WithProfile } from '../lib/types';
+import type { JsonInput, WithProfile } from '../lib/types';
 
 type JsonObject = Record<string, any>;
 let NOTION_INTEGRATION_KEY = 'notion';

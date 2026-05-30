@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { letterStatusEnum, postageServiceEnum, envelopeEnum } from '../lib/schemas';
+import { envelopeEnum, letterStatusEnum, postageServiceEnum } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let letterUpdated = SlateTrigger.create(spec, {
   name: 'Letter Updated',

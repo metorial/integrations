@@ -1,4 +1,5 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import {
   arrayOrUndefined,
@@ -8,7 +9,6 @@ import {
   timestampOrUndefined
 } from '../lib/output';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCompany = SlateTool.create(spec, {
   name: 'Get Company',

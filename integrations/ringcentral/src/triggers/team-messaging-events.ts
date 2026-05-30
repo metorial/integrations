@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let teamMessagingEvents = SlateTrigger.create(spec, {
   name: 'Team Messaging Events',
@@ -65,7 +65,7 @@ export let teamMessagingEvents = SlateTrigger.create(spec, {
       let body = (await ctx.request.json()) as any;
 
       let postBody = body.body;
-      if (!postBody || !postBody.id) {
+      if (!postBody?.id) {
         return { inputs: [] };
       }
 

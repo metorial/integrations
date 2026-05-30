@@ -3,13 +3,11 @@ import { createAxios } from 'slates';
 export class Client {
   private ax;
 
-  constructor(
-    private config: {
-      token: string;
-      apiBaseUrl?: string;
-      shard?: string;
-    }
-  ) {
+  constructor(config: {
+    token: string;
+    apiBaseUrl?: string;
+    shard?: string;
+  }) {
     let baseURL = config.apiBaseUrl || `https://api.${config.shard || 'na1'}.adobesign.com/`;
     // Ensure trailing slash is removed for consistent URL joining
     if (baseURL.endsWith('/')) {
@@ -31,7 +29,7 @@ export class Client {
     mimeType?: string;
   }): Promise<{ transientDocumentId: string }> {
     // Build multipart form data manually
-    let boundary = '----SlatesFormBoundary' + Date.now().toString(36);
+    let boundary = `----SlatesFormBoundary${Date.now().toString(36)}`;
     let mimeType = params.mimeType || 'application/pdf';
 
     // Decode base64 to binary
@@ -59,8 +57,8 @@ export class Client {
       headers: {
         'Content-Type': `multipart/form-data; boundary=${boundary}`
       },
-      maxBodyLength: Infinity,
-      maxContentLength: Infinity
+      maxBodyLength: Number.POSITIVE_INFINITY,
+      maxContentLength: Number.POSITIVE_INFINITY
     });
 
     return { transientDocumentId: response.data.transientDocumentId };

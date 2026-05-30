@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PendoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listGuides = SlateTool.create(spec, {
   name: 'List Guides',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BenzingaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCalendarEventsTool = SlateTool.create(spec, {
   name: 'Get Calendar Events',

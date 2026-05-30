@@ -2,19 +2,19 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getAccountInfo,
+  getCampaignReport,
+  getCampaigns,
   getLists,
-  manageLists,
+  manageCampaigns,
   manageCustomFields,
+  manageLists,
+  manageSegments,
+  manageSuppressionList,
+  searchSubscribers,
+  sendCampaign,
   subscribe,
   unsubscribe,
-  searchSubscribers,
-  updateSubscriber,
-  manageSuppressionList,
-  manageSegments,
-  manageCampaigns,
-  getCampaigns,
-  sendCampaign,
-  getCampaignReport
+  updateSubscriber
 } from './tools';
 import { subscriberEvents } from './triggers';
 

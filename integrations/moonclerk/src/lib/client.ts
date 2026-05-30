@@ -279,7 +279,7 @@ let mapForm = (raw: Record<string, unknown>): Form => {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.moonclerk.com',
       headers: {
@@ -291,13 +291,13 @@ export class Client {
 
   async listPayments(params?: PaymentListParams): Promise<Payment[]> {
     let queryParams: Record<string, string> = {};
-    if (params?.count) queryParams['count'] = String(params.count);
-    if (params?.offset) queryParams['offset'] = String(params.offset);
-    if (params?.formId) queryParams['form_id'] = String(params.formId);
-    if (params?.customerId) queryParams['customer_id'] = String(params.customerId);
-    if (params?.dateFrom) queryParams['date_from'] = params.dateFrom;
-    if (params?.dateTo) queryParams['date_to'] = params.dateTo;
-    if (params?.status) queryParams['status'] = params.status;
+    if (params?.count) queryParams.count = String(params.count);
+    if (params?.offset) queryParams.offset = String(params.offset);
+    if (params?.formId) queryParams.form_id = String(params.formId);
+    if (params?.customerId) queryParams.customer_id = String(params.customerId);
+    if (params?.dateFrom) queryParams.date_from = params.dateFrom;
+    if (params?.dateTo) queryParams.date_to = params.dateTo;
+    if (params?.status) queryParams.status = params.status;
 
     let response = await this.axios.get('/payments', { params: queryParams });
     let payments = (response.data as Record<string, unknown>).payments as Record<
@@ -318,14 +318,14 @@ export class Client {
 
   async listCustomers(params?: CustomerListParams): Promise<Customer[]> {
     let queryParams: Record<string, string> = {};
-    if (params?.count) queryParams['count'] = String(params.count);
-    if (params?.offset) queryParams['offset'] = String(params.offset);
-    if (params?.formId) queryParams['form_id'] = String(params.formId);
-    if (params?.checkoutFrom) queryParams['checkout_from'] = params.checkoutFrom;
-    if (params?.checkoutTo) queryParams['checkout_to'] = params.checkoutTo;
-    if (params?.nextPaymentFrom) queryParams['next_payment_from'] = params.nextPaymentFrom;
-    if (params?.nextPaymentTo) queryParams['next_payment_to'] = params.nextPaymentTo;
-    if (params?.status) queryParams['status'] = params.status;
+    if (params?.count) queryParams.count = String(params.count);
+    if (params?.offset) queryParams.offset = String(params.offset);
+    if (params?.formId) queryParams.form_id = String(params.formId);
+    if (params?.checkoutFrom) queryParams.checkout_from = params.checkoutFrom;
+    if (params?.checkoutTo) queryParams.checkout_to = params.checkoutTo;
+    if (params?.nextPaymentFrom) queryParams.next_payment_from = params.nextPaymentFrom;
+    if (params?.nextPaymentTo) queryParams.next_payment_to = params.nextPaymentTo;
+    if (params?.status) queryParams.status = params.status;
 
     let response = await this.axios.get('/customers', { params: queryParams });
     let customers = (response.data as Record<string, unknown>).customers as Record<

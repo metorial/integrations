@@ -1,12 +1,12 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HyperbrowserClient } from '../lib/client';
 import {
-  sessionOptionsSchema,
+  scrapeJobDataSchema,
   scrapeOptionsSchema,
-  scrapeJobDataSchema
+  sessionOptionsSchema
 } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let scrapeWebpage = SlateTool.create(spec, {
   name: 'Scrape Webpage',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EosAccountServicesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let friendSchema = z.object({
   accountId: z.string().describe("Friend's Epic Games account ID"),

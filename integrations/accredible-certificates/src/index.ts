@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  issueCredential,
-  getCredential,
-  updateCredential,
-  deleteCredential,
-  searchCredentials,
   createGroup,
-  getGroup,
-  updateGroup,
+  deleteCredential,
   deleteGroup,
+  getCredential,
+  getGroup,
+  issueCredential,
+  listDesigns,
   listGroups,
-  listDesigns
+  searchCredentials,
+  updateCredential,
+  updateGroup
 } from './tools';
 import { credentialEvents, inboundWebhook } from './triggers';
 

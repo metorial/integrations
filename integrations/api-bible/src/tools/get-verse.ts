@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let verseSummarySchema = z.object({
   verseId: z.string().describe('Unique verse identifier (e.g., "GEN.1.1")'),

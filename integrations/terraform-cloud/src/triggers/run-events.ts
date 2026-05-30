@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let runEventsTrigger = SlateTrigger.create(spec, {
   name: 'Run Events',
@@ -40,7 +40,7 @@ export let runEventsTrigger = SlateTrigger.create(spec, {
   )
   .webhook({
     autoRegisterWebhook: async ctx => {
-      let client = createClient(ctx);
+      let _client = createClient(ctx);
 
       // We need to find existing workspaces to register notifications
       // The user must specify which workspace to watch via notification configuration
@@ -65,7 +65,7 @@ export let runEventsTrigger = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!body || !body.notifications) {
+      if (!body?.notifications) {
         return { inputs: [] };
       }
 

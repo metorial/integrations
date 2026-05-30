@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SharePointClient } from '../lib/client';
 import { spec } from '../spec';
 import { oneOfRequiredError } from './errors';
-import { z } from 'zod';
 
 export let getSite = SlateTool.create(spec, {
   name: 'Get Site',
@@ -57,10 +57,11 @@ export let getSite = SlateTool.create(spec, {
     } else if (ctx.input.siteId) {
       site = await client.getSite(ctx.input.siteId);
     } else {
-      throw oneOfRequiredError(
-        'One of siteId, hostname, or getRootSite must be provided.',
-        ['siteId', 'hostname', 'getRootSite']
-      );
+      throw oneOfRequiredError('One of siteId, hostname, or getRootSite must be provided.', [
+        'siteId',
+        'hostname',
+        'getRootSite'
+      ]);
     }
 
     return {

@@ -1,4 +1,4 @@
-import { AdobeAuthConfig, createAdobeAxios } from './client';
+import { type AdobeAuthConfig, createAdobeAxios } from './client';
 
 let PHOTOSHOP_BASE_URL = 'https://image.adobe.io';
 

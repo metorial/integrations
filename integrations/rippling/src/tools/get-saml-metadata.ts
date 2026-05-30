@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RipplingClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSamlMetadata = SlateTool.create(spec, {
   name: 'Get SAML Metadata',

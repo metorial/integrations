@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  solveCaptcha,
-  solveImageCaptcha,
+  getBalance,
   getTaskResult,
   reportSolution,
-  getBalance
+  solveCaptcha,
+  solveImageCaptcha
 } from './tools';
 import { captchaSolved } from './triggers';
 

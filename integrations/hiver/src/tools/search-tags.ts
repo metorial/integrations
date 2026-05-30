@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchTags = SlateTool.create(spec, {
   name: 'Search Inbox Tags',
@@ -37,14 +37,14 @@ export let searchTags = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let tagsList;
+    let tagsList: any;
     if (ctx.input.query) {
       tagsList = await client.searchInboxTags(ctx.input.inboxId, ctx.input.query);
     } else {
       tagsList = await client.getInboxTags(ctx.input.inboxId);
     }
 
-    let mapped = tagsList.map(t => ({
+    let mapped = tagsList.map((t: any) => ({
       tagId: String(t.id),
       name: t.name,
       color: t.color

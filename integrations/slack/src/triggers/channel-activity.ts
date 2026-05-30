@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SlackClient } from '../lib/client';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let channelActivity = SlateTrigger.create(spec, {
   name: 'Channel Activity',
@@ -80,29 +80,27 @@ export let channelActivity = SlateTrigger.create(spec, {
               creator: channel.creator
             });
           }
-        } else {
-          if (channel.is_archived && !known.isArchived) {
-            inputs.push({
-              eventType: 'archived',
-              channelId: channel.id,
-              channelName: channel.name,
-              isPrivate: channel.is_private
-            });
-          } else if (!channel.is_archived && known.isArchived) {
-            inputs.push({
-              eventType: 'unarchived',
-              channelId: channel.id,
-              channelName: channel.name,
-              isPrivate: channel.is_private
-            });
-          } else if (channel.name !== known.name) {
-            inputs.push({
-              eventType: 'updated',
-              channelId: channel.id,
-              channelName: channel.name,
-              isPrivate: channel.is_private
-            });
-          }
+        } else if (channel.is_archived && !known.isArchived) {
+          inputs.push({
+            eventType: 'archived',
+            channelId: channel.id,
+            channelName: channel.name,
+            isPrivate: channel.is_private
+          });
+        } else if (!channel.is_archived && known.isArchived) {
+          inputs.push({
+            eventType: 'unarchived',
+            channelId: channel.id,
+            channelName: channel.name,
+            isPrivate: channel.is_private
+          });
+        } else if (channel.name !== known.name) {
+          inputs.push({
+            eventType: 'updated',
+            channelId: channel.id,
+            channelName: channel.name,
+            isPrivate: channel.is_private
+          });
         }
       }
 

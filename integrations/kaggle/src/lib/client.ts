@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class KaggleClient {
   private http;
 
-  constructor(private credentials: { token: string; username: string }) {
+  constructor(credentials: { token: string; username: string }) {
     this.http = createAxios({
       baseURL: 'https://www.kaggle.com/api/v1',
       headers: {
@@ -257,7 +257,7 @@ export class KaggleClient {
     lastModifiedDateUtc: number
   ) {
     let response = await this.http.post(
-      '/datasets/upload/file/' + encodeURIComponent(fileName),
+      `/datasets/upload/file/${encodeURIComponent(fileName)}`,
       null,
       {
         params: {

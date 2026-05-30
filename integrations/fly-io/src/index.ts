@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listApps,
-  getApp,
-  createApp,
-  deleteApp,
-  listMachines,
-  getMachine,
-  createMachine,
-  updateMachine,
   controlMachine,
+  createApp,
+  createMachine,
+  createVolume,
+  deleteApp,
   deleteMachine,
-  waitForMachine,
+  getApp,
+  getMachine,
+  listApps,
+  listMachines,
+  listVolumes,
+  manageCertificates,
   manageMachineLease,
   manageMachineMetadata,
-  listVolumes,
-  createVolume,
-  manageVolume,
   manageSecrets,
-  manageCertificates,
-  requestOidcToken
+  manageVolume,
+  requestOidcToken,
+  updateMachine,
+  waitForMachine
 } from './tools';
-import { machineStateChanged, appMachinesChanged, inboundWebhook } from './triggers';
+import { appMachinesChanged, inboundWebhook, machineStateChanged } from './triggers';
 
 export let provider = Slate.create({
   spec,

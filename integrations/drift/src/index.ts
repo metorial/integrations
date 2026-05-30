@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getContact,
   createContact,
-  updateContact,
-  deleteContact,
-  listConversations,
-  getConversation,
   createConversation,
-  sendMessage,
+  deleteContact,
+  getBookedMeetings,
+  getContact,
+  getConversation,
+  listConversations,
+  listPlaybooks,
+  listTeams,
   listUsers,
   manageAccount,
-  getBookedMeetings,
-  listPlaybooks,
-  listTeams
+  sendMessage,
+  updateContact
 } from './tools';
 import {
-  conversationEvent,
   contactEvent,
+  conversationEvent,
   meetingEvent,
-  userEvent,
-  playbookEvent
+  playbookEvent,
+  userEvent
 } from './triggers';
 
 export let provider = Slate.create({

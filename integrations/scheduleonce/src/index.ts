@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBookings,
   getBooking,
   listBookingCalendars,
   listBookingPages,
+  listBookings,
   listEventTypes,
-  listUsers,
-  listTeams
+  listTeams,
+  listUsers
 } from './tools';
 import { bookingEvents } from './triggers';
 

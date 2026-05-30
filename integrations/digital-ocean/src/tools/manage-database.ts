@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let databaseClusterSchema = z.object({
   databaseId: z.string().describe('Unique ID of the database cluster'),

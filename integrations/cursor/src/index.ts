@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  launchAgent,
-  getAgent,
-  listAgents,
-  followUpAgent,
-  stopAgent,
   deleteAgent,
-  getConversation,
-  listAgentArtifacts,
+  deleteRepoBlocklist,
   downloadArtifact,
-  listRepositories,
-  listModels,
+  followUpAgent,
+  getAgent,
   getApiKeyInfo,
+  getAuditLogs,
+  getConversation,
+  getDailyUsage,
+  getRepoBlocklists,
+  getSpend,
   getTeamMembers,
+  getUsageEvents,
+  launchAgent,
+  listAgentArtifacts,
+  listAgents,
+  listModels,
+  listRepositories,
   removeTeamMember,
   setSpendLimit,
-  getDailyUsage,
-  getSpend,
-  getUsageEvents,
-  getAuditLogs,
-  getRepoBlocklists,
-  upsertRepoBlocklists,
-  deleteRepoBlocklist
+  stopAgent,
+  upsertRepoBlocklists
 } from './tools';
 import { agentStatusChange } from './triggers';
 

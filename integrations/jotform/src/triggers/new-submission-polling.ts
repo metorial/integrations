@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newSubmissionPollingTrigger = SlateTrigger.create(spec, {
   name: 'New Submission',

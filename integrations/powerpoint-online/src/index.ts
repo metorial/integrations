@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getPresentation,
-  listFiles,
-  uploadPresentation,
-  downloadPresentation,
+  createFolder,
   deletePresentation,
-  moveCopyFile,
-  updateFileMetadata,
-  shareFile,
-  managePermissions,
-  searchPresentations,
-  versionHistory,
+  downloadPresentation,
+  getPresentation,
   getThumbnails,
-  createFolder
+  listFiles,
+  managePermissions,
+  moveCopyFile,
+  searchPresentations,
+  shareFile,
+  updateFileMetadata,
+  uploadPresentation,
+  versionHistory
 } from './tools';
 import { driveItemChanges } from './triggers';
 

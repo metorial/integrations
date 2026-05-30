@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { HNClient, StoryListType } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { HNClient, type StoryListType } from '../lib/client';
+import { spec } from '../spec';
 
 export let listStories = SlateTool.create(spec, {
   name: 'List Stories',

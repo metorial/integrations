@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let describeImage = SlateTool.create(spec, {
   name: 'Describe Image',
@@ -68,7 +68,7 @@ export let describeImage = SlateTool.create(spec, {
         status: 'completed',
         prompts: result.content
       },
-      message: `Description completed. ${result.content?.length ?? 0} prompt suggestions generated.${result.content ? '\n\n' + result.content.map((p, i) => `${i + 1}. ${p}`).join('\n') : ''}`
+      message: `Description completed. ${result.content?.length ?? 0} prompt suggestions generated.${result.content ? `\n\n${result.content.map((p, i) => `${i + 1}. ${p}`).join('\n')}` : ''}`
     };
   })
   .build();

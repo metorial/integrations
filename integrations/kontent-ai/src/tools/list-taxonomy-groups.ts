@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taxonomyTermSchema: z.ZodType<any> = z.lazy(() =>
   z.object({

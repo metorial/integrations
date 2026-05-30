@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let receiptOutputSchema = z.object({
   receiptId: z.number().describe('Coupa internal receipt ID'),
@@ -65,7 +65,7 @@ export let searchReceipts = SlateTool.create(spec, {
         filters[key] = value;
       }
     }
-    if (ctx.input.status) filters['status'] = ctx.input.status;
+    if (ctx.input.status) filters.status = ctx.input.status;
     if (ctx.input.purchaseOrderId)
       filters['order-header-id'] = String(ctx.input.purchaseOrderId);
     if (ctx.input.createdAfter) filters['created-at[gt]'] = ctx.input.createdAfter;

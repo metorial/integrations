@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { AlchemyClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let nftActivity = SlateTrigger.create(spec, {
   name: 'NFT Activity',

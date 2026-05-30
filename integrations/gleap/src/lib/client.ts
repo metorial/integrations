@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class GleapClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; projectId: string }) {
+  constructor(config: { token: string; projectId: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.gleap.io/v3',
       headers: {

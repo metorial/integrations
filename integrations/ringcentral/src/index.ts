@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendSms,
-  sendFax,
+  getPresence,
+  listCallLogs,
+  listExtensions,
+  listMessages,
+  listPhoneNumbers,
   makeCall,
   manageCall,
-  listCallLogs,
-  sendTeamMessage,
   manageMeeting,
-  listMessages,
-  getPresence,
-  updatePresence,
-  listExtensions,
-  listPhoneNumbers
+  sendFax,
+  sendSms,
+  sendTeamMessage,
+  updatePresence
 } from './tools';
 import {
-  telephonyEvents,
-  smsEvents,
-  presenceEvents,
   messageEvents,
-  teamMessagingEvents
+  presenceEvents,
+  smsEvents,
+  teamMessagingEvents,
+  telephonyEvents
 } from './triggers';
 
 export let provider = Slate.create({

@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listAssistants,
-  manageAssistant,
-  listContacts,
-  manageContact,
-  listConversations,
   deleteConversation,
-  makeCall,
   disconnectCall,
-  sendMessage,
-  listWidgets,
+  listAssistants,
+  listContacts,
+  listConversations,
   listDataSources,
+  listForms,
+  listWebhooks,
+  listWidgets,
+  makeCall,
+  manageAssistant,
+  manageCampaign,
+  manageContact,
   manageDataSource,
   manageForm,
-  listForms,
   manageWebhook,
-  listWebhooks,
-  manageCampaign
+  sendMessage
 } from './tools';
-import { newConversation, newContact, newFormSubmission, inboundWebhook } from './triggers';
+import { inboundWebhook, newContact, newConversation, newFormSubmission } from './triggers';
 
 export let provider = Slate.create({
   spec,

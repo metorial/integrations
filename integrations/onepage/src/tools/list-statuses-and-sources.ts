@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { statusSchema, leadSourceSchema, predefinedItemSchema } from '../lib/schemas';
+import { Client } from '../lib/client';
+import { leadSourceSchema, predefinedItemSchema, statusSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let listStatusesAndSources = SlateTool.create(spec, {
   name: 'List Statuses and Lead Sources',

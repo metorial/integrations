@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { LookerClient } from '../lib/client';
+import { spec } from '../spec';
 
 let alertOutputSchema = z.object({
   alertId: z.string().describe('Alert ID'),

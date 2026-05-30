@@ -8,7 +8,7 @@ export interface ClientConfig {
 export class Client {
   private axios;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let baseURL = config.websiteDomain.replace(/\/+$/, '');
     this.axios = createAxios({
       baseURL,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AshbyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let itemOutputSchema = z.object({
   resourceId: z.string().describe('Unique resource ID'),

@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listGalleries,
   createGallery,
-  manageGallery,
   galleryItems,
-  listAssets,
-  manageAsset,
   getAssetTags,
-  uploadMedia,
+  listAssets,
+  listGalleries,
+  manageAsset,
+  manageGallery,
+  manageLiveStream,
   managePortal,
-  manageLiveStream
+  uploadMedia
 } from './tools';
-import { assetEvents, galleryEvents, leadEvents, accountEvents } from './triggers';
+import { accountEvents, assetEvents, galleryEvents, leadEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

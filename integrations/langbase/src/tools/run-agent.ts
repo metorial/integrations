@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let inputMessageSchema = z.object({
   role: z.enum(['user', 'assistant', 'system', 'tool']).describe('Role of the message sender'),

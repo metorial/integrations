@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WorkableClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let employeeSummarySchema = z.object({
   employeeId: z.string().describe('Employee ID'),

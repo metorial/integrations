@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listWorkflows,
-  listWorkflowRuns,
   createWorkflowRun,
-  getWorkflowRun,
-  updateWorkflowRun,
   deleteWorkflowRun,
-  listTasks,
-  updateTask,
-  manageTaskAssignees,
-  manageApprovals,
-  listWorkflowFormFields,
-  manageFormFields,
+  getWorkflowRun,
   listDataSets,
+  listTasks,
+  listUsers,
+  listWorkflowFormFields,
+  listWorkflowRuns,
+  listWorkflows,
+  manageApprovals,
   manageDataSetRecords,
-  listUsers
+  manageFormFields,
+  manageTaskAssignees,
+  updateTask,
+  updateWorkflowRun
 } from './tools';
-import { workflowRunEvents, dataSetEvents } from './triggers';
+import { dataSetEvents, workflowRunEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NerdGraphClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let thresholdSchema = z.object({
   threshold: z.number().describe('Threshold value'),

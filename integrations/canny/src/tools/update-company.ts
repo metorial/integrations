@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CannyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateCompanyTool = SlateTool.create(spec, {
   name: 'Update Company',

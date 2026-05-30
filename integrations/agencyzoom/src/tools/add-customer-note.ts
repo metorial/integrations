@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addCustomerNote = SlateTool.create(spec, {
   name: 'Add Customer Note',
@@ -38,7 +38,7 @@ export let addCustomerNote = SlateTool.create(spec, {
 
     let noteId = result.noteId || result.id || '';
     let preview =
-      ctx.input.note.length > 80 ? ctx.input.note.substring(0, 80) + '...' : ctx.input.note;
+      ctx.input.note.length > 80 ? `${ctx.input.note.substring(0, 80)}...` : ctx.input.note;
 
     return {
       output: { note: result },

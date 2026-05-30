@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NgrokClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let botUserOutputSchema = z.object({
   botUserId: z.string().describe('Bot user ID'),

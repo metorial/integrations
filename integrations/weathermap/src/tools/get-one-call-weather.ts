@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OpenWeatherClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let weatherConditionSchema = z.object({
   conditionId: z.number().describe('Weather condition ID'),

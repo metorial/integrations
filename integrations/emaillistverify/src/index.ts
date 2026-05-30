@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  verifyEmail,
+  checkBulkStatus,
+  domainSearch,
   enrichEmail,
   findEmail,
-  domainSearch,
   uploadBulkFile,
-  checkBulkStatus
+  verifyEmail
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

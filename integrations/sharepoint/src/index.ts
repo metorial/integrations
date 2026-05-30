@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getSite,
-  listSites,
-  search,
-  searchDrive,
-  manageList,
-  manageListItems,
-  manageFile,
+  getContentTypes,
   getDrive,
   getFileVersions,
-  managePermissions,
+  getSite,
+  listSites,
   manageColumns,
-  getContentTypes
+  manageFile,
+  manageList,
+  manageListItems,
+  managePermissions,
+  search,
+  searchDrive
 } from './tools';
-import { listItemChanges, driveItemChanges, inboundWebhook } from './triggers';
+import { driveItemChanges, inboundWebhook, listItemChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PiloterrClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let linkedinJobSearch = SlateTool.create(spec, {
   name: 'LinkedIn Job Search',

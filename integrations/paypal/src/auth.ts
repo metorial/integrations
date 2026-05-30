@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { paypalApiError } from './lib/errors';
 
@@ -34,7 +34,7 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.input.clientId}:${ctx.input.clientSecret}`);
 
-      let response;
+      let response: any;
       try {
         response = await client.post('/v1/oauth2/token', 'grant_type=client_credentials', {
           headers: {

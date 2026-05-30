@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TypeformClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let answerSchema = z.object({
   fieldId: z.string().describe('ID of the answered field'),

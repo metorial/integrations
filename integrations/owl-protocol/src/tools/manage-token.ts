@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OwlClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getToken = SlateTool.create(spec, {
   name: 'Get Token',

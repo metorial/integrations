@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MagentoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pageOutputSchema = z.object({
   pageId: z.number().optional().describe('CMS page ID'),

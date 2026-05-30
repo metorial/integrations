@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  getBillingTool,
+  getMetricsTool,
+  getNetworkInfoTool,
+  listClustersTool,
+  listEventsTool,
   listOrganizationsTool,
   listProjectsTool,
-  manageProjectTool,
-  listClustersTool,
+  manageAlertConfigurationsTool,
+  manageAlertsTool,
+  manageBackupsTool,
   manageClusterTool,
   manageDatabaseUserTool,
   manageIpAccessListTool,
-  manageAlertsTool,
-  manageAlertConfigurationsTool,
-  manageBackupsTool,
-  manageSearchIndexesTool,
-  getMetricsTool,
-  getNetworkInfoTool,
-  listEventsTool,
-  getBillingTool
+  manageProjectTool,
+  manageSearchIndexesTool
 } from './tools';
 import { alertWebhookTrigger, projectEventsTrigger } from './triggers';
 

@@ -9,7 +9,7 @@ export class Client {
   private http;
 
   constructor(private config: { token: string; region: string }) {
-    let baseURL = BASE_URLS[config.region] ?? BASE_URLS['us'];
+    let baseURL = BASE_URLS[config.region] ?? BASE_URLS.us;
     this.http = createAxios({ baseURL });
   }
 

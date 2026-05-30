@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let actorSchema = z
   .object({
@@ -68,7 +68,7 @@ export let projectEvents = SlateTrigger.create(spec, {
         context.screenName = body.context.screen.extra?.name;
       }
 
-      let actor: any = undefined;
+      let actor: any;
       if (body.actor?.user) {
         actor = {
           userId: body.actor.user.id,
@@ -107,7 +107,7 @@ export let projectEvents = SlateTrigger.create(spec, {
         };
       }
 
-      let actor: any = undefined;
+      let actor: any;
       if (ctx.input.actor) {
         actor = {
           userId: ctx.input.actor.userId || ctx.input.actor.user?.id,

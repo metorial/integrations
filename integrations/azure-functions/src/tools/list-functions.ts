@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ArmClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let functionSummarySchema = z.object({
   functionName: z.string().describe('Name of the function'),
@@ -38,7 +38,7 @@ export let listFunctions = SlateTool.create(spec, {
       resourceGroupName: ctx.config.resourceGroupName
     });
 
-    ctx.info('Listing functions in app: ' + ctx.input.appName);
+    ctx.info(`Listing functions in app: ${ctx.input.appName}`);
 
     let functions = await client.listFunctions(ctx.input.appName);
 
@@ -56,7 +56,7 @@ export let listFunctions = SlateTool.create(spec, {
         functions: mapped,
         count: mapped.length
       },
-      message: `Found **${mapped.length}** function(s) in **${ctx.input.appName}**.${mapped.length > 0 ? '\n\nFunctions: ' + mapped.map((f: any) => `\`${f.functionName}\`${f.isDisabled ? ' (disabled)' : ''}`).join(', ') : ''}`
+      message: `Found **${mapped.length}** function(s) in **${ctx.input.appName}**.${mapped.length > 0 ? `\n\nFunctions: ${mapped.map((f: any) => `\`${f.functionName}\`${f.isDisabled ? ' (disabled)' : ''}`).join(', ')}` : ''}`
     };
   })
   .build();

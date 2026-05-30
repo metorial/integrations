@@ -90,10 +90,10 @@ export class Client {
   ): Promise<UserAccessResponse> {
     let params: Record<string, string> = {};
     if (options?.templateId) {
-      params['template_id'] = options.templateId;
+      params.template_id = options.templateId;
     }
     if (options?.editorOptions) {
-      params['options'] = JSON.stringify(options.editorOptions);
+      params.options = JSON.stringify(options.editorOptions);
     }
 
     let response = await this.axios.get(`/v1/api/users/${userId}/access/`, { params });

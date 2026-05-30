@@ -1,26 +1,26 @@
 import { createAxios } from 'slates';
 import type {
-  Api2PdfResponse,
-  HtmlToPdfParams,
-  UrlToPdfParams,
-  MarkdownToPdfParams,
-  HtmlToImageParams,
-  UrlToImageParams,
-  MarkdownToImageParams,
   AnyToPdfParams,
-  ThumbnailParams,
+  Api2PdfResponse,
+  BarcodeParams,
+  DataLoaderParams,
+  ExtractPagesParams,
   HtmlToDocxParams,
+  HtmlToImageParams,
+  HtmlToPdfParams,
   HtmlToXlsxParams,
+  MarkdownToImageParams,
+  MarkdownToPdfParams,
+  MarkitdownParams,
   MergePdfsParams,
   PasswordPdfParams,
-  ExtractPagesParams,
+  ThumbnailParams,
+  UrlToImageParams,
+  UrlToPdfParams,
   WatermarkPdfParams,
-  BarcodeParams,
-  ZipParams,
-  MarkitdownParams,
-  DataLoaderParams,
   WkhtmlHtmlToPdfParams,
-  WkhtmlUrlToPdfParams
+  WkhtmlUrlToPdfParams,
+  ZipParams
 } from './types';
 
 export class Api2PdfClient {

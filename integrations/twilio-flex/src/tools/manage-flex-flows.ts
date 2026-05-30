@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FlexClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let flexFlowSchema = z.object({
   flexFlowSid: z.string().describe('Flex Flow SID'),

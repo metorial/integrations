@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ExaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let monitorSchema = z.object({
   monitorId: z.string().describe('Monitor identifier'),

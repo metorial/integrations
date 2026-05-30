@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ShipdayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orderItemSchema = z.object({
   name: z.string().describe('Name of the item'),

@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listPipelines,
-  getPipeline,
-  createPipeline,
-  updatePipeline,
-  deletePipeline,
   archivePipeline,
-  listBuilds,
-  getBuild,
+  createAnnotation,
   createBuild,
+  createPipeline,
+  deletePipeline,
+  getBuild,
+  getJobLog,
+  getPipeline,
+  listAgents,
+  listArtifacts,
+  listBuilds,
+  listPipelines,
   manageBuild,
   manageJob,
-  getJobLog,
-  listAgents,
   stopAgent,
-  listArtifacts,
-  createAnnotation
+  updatePipeline
 } from './tools';
-import { buildEvents, jobEvents, agentEvents } from './triggers';
+import { agentEvents, buildEvents, jobEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SmartsheetClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendSheetEmail = SlateTool.create(spec, {
   name: 'Send Sheet via Email',

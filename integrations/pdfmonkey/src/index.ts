@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateDocument,
-  getDocument,
-  listDocuments,
-  deleteDocument,
-  getTemplate,
-  listTemplates,
   createTemplate,
-  updateTemplate,
+  deleteDocument,
   deleteTemplate,
-  getAccountInfo
+  generateDocument,
+  getAccountInfo,
+  getDocument,
+  getTemplate,
+  listDocuments,
+  listTemplates,
+  updateTemplate
 } from './tools';
 import { documentGenerated } from './triggers';
 

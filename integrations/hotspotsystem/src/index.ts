@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listLocations,
   listCustomers,
+  listLocations,
   listSubscribers,
-  listVouchers,
   listTransactions,
+  listVouchers,
   verifyCredentials
 } from './tools';
 import {
   customerCreated,
-  subscriberCreated,
   macTransactionCreated,
-  voucherTransactionCreated,
+  paidTransactionCreated,
   socialTransactionCreated,
-  paidTransactionCreated
+  subscriberCreated,
+  voucherTransactionCreated
 } from './triggers';
 
 export let provider = Slate.create({

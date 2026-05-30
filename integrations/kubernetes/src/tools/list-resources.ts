@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createKubeClient, resourceApiPaths } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let supportedTypes = Object.keys(resourceApiPaths);
 

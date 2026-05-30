@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let scrapeUrl = SlateTool.create(spec, {
   name: 'Scrape URL',
@@ -169,7 +169,7 @@ export let scrapeUrl = SlateTool.create(spec, {
     });
 
     let contentPreview =
-      result.content.length > 200 ? result.content.substring(0, 200) + '...' : result.content;
+      result.content.length > 200 ? `${result.content.substring(0, 200)}...` : result.content;
 
     return {
       output: result,

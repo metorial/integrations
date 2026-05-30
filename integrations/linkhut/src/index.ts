@@ -2,15 +2,15 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   addBookmark,
-  deleteBookmark,
-  getBookmarks,
-  listRecentBookmarks,
-  listAllBookmarks,
-  getTagSuggestions,
-  listTags,
-  manageTag,
   checkForUpdates,
-  getBookmarkDates
+  deleteBookmark,
+  getBookmarkDates,
+  getBookmarks,
+  getTagSuggestions,
+  listAllBookmarks,
+  listRecentBookmarks,
+  listTags,
+  manageTag
 } from './tools';
 import { bookmarkUpdated, inboundWebhook } from './triggers';
 

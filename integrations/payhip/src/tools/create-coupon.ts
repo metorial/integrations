@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CouponClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createCoupon = SlateTool.create(spec, {
   name: 'Create Coupon',

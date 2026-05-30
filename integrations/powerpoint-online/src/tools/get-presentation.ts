@@ -2,7 +2,6 @@ import { SlateTool } from 'slates';
 import { GraphClient } from '../lib/client';
 import { driveItemLocationSchema, driveItemOutputSchema, mapDriveItem } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPresentation = SlateTool.create(spec, {
   name: 'Get Presentation',

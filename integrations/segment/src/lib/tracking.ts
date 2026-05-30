@@ -7,7 +7,7 @@ export class TrackingClient {
     let baseURL =
       region === 'eu' ? 'https://events.eu1.segmentapis.com' : 'https://api.segment.io';
 
-    let encoded = btoa(writeKey + ':');
+    let encoded = btoa(`${writeKey}:`);
 
     this.http = createAxios({
       baseURL,

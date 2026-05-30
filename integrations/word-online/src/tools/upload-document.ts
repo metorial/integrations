@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let uploadDocument = SlateTool.create(spec, {
   name: 'Upload Document',
@@ -57,7 +57,7 @@ For large files, use the **Create Upload Session** tool instead.`,
       throw new Error('Either parentFolderId or folderPath must be provided.');
     }
 
-    let item;
+    let item: any;
     if (ctx.input.parentFolderId) {
       item = await client.uploadSmallFile(
         ctx.input.parentFolderId,

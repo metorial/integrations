@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TextToSpeechClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let synthesizeSpeech = SlateTool.create(spec, {
   name: 'Synthesize Speech',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ApifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRun = SlateTool.create(spec, {
   name: 'Get Run',
@@ -67,7 +67,7 @@ export let getRun = SlateTool.create(spec, {
     let client = new ApifyClient({ token: ctx.auth.token });
     let run = await client.getRun(ctx.input.runId);
 
-    let datasetItems: Array<Record<string, any>> | undefined;
+    let datasetItems: Record<string, any>[] | undefined;
     if (ctx.input.includeDatasetItems && run.defaultDatasetId) {
       datasetItems = await client.getRunDatasetItems(ctx.input.runId, {
         limit: ctx.input.datasetItemsLimit,

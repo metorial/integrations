@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let recipientSchema = z.object({
   email: z.string().describe('Recipient email address'),
@@ -126,46 +126,44 @@ Can reference a stored template by ID, include attachments, schedule delivery up
       }))
     };
 
-    if (ctx.input.templateId) message['template_id'] = ctx.input.templateId;
-    if (ctx.input.templateEngine) message['template_engine'] = ctx.input.templateEngine;
-    if (ctx.input.subject) message['subject'] = ctx.input.subject;
-    if (ctx.input.fromEmail) message['from_email'] = ctx.input.fromEmail;
-    if (ctx.input.fromName) message['from_name'] = ctx.input.fromName;
-    if (ctx.input.replyTo) message['reply_to'] = ctx.input.replyTo;
-    if (ctx.input.replyToName) message['reply_to_name'] = ctx.input.replyToName;
+    if (ctx.input.templateId) message.template_id = ctx.input.templateId;
+    if (ctx.input.templateEngine) message.template_engine = ctx.input.templateEngine;
+    if (ctx.input.subject) message.subject = ctx.input.subject;
+    if (ctx.input.fromEmail) message.from_email = ctx.input.fromEmail;
+    if (ctx.input.fromName) message.from_name = ctx.input.fromName;
+    if (ctx.input.replyTo) message.reply_to = ctx.input.replyTo;
+    if (ctx.input.replyToName) message.reply_to_name = ctx.input.replyToName;
     if (ctx.input.globalSubstitutions)
-      message['global_substitutions'] = ctx.input.globalSubstitutions;
-    if (ctx.input.globalMetadata) message['global_metadata'] = ctx.input.globalMetadata;
-    if (ctx.input.tags) message['tags'] = ctx.input.tags;
-    if (ctx.input.headers) message['headers'] = ctx.input.headers;
-    if (ctx.input.attachments) message['attachments'] = ctx.input.attachments;
-    if (ctx.input.inlineAttachments)
-      message['inline_attachments'] = ctx.input.inlineAttachments;
+      message.global_substitutions = ctx.input.globalSubstitutions;
+    if (ctx.input.globalMetadata) message.global_metadata = ctx.input.globalMetadata;
+    if (ctx.input.tags) message.tags = ctx.input.tags;
+    if (ctx.input.headers) message.headers = ctx.input.headers;
+    if (ctx.input.attachments) message.attachments = ctx.input.attachments;
+    if (ctx.input.inlineAttachments) message.inline_attachments = ctx.input.inlineAttachments;
 
     if (ctx.input.html || ctx.input.plaintext || ctx.input.amp) {
       let body: Record<string, string> = {};
-      if (ctx.input.html) body['html'] = ctx.input.html;
-      if (ctx.input.plaintext) body['plaintext'] = ctx.input.plaintext;
-      if (ctx.input.amp) body['amp'] = ctx.input.amp;
-      message['body'] = body;
+      if (ctx.input.html) body.html = ctx.input.html;
+      if (ctx.input.plaintext) body.plaintext = ctx.input.plaintext;
+      if (ctx.input.amp) body.amp = ctx.input.amp;
+      message.body = body;
     }
 
-    if (ctx.input.trackLinks !== undefined)
-      message['track_links'] = ctx.input.trackLinks ? 1 : 0;
-    if (ctx.input.trackRead !== undefined) message['track_read'] = ctx.input.trackRead ? 1 : 0;
+    if (ctx.input.trackLinks !== undefined) message.track_links = ctx.input.trackLinks ? 1 : 0;
+    if (ctx.input.trackRead !== undefined) message.track_read = ctx.input.trackRead ? 1 : 0;
     if (ctx.input.skipUnsubscribe !== undefined)
-      message['skip_unsubscribe'] = ctx.input.skipUnsubscribe ? 1 : 0;
+      message.skip_unsubscribe = ctx.input.skipUnsubscribe ? 1 : 0;
     if (ctx.input.bypassGlobal !== undefined)
-      message['bypass_global'] = ctx.input.bypassGlobal ? 1 : 0;
+      message.bypass_global = ctx.input.bypassGlobal ? 1 : 0;
     if (ctx.input.bypassUnavailable !== undefined)
-      message['bypass_unavailable'] = ctx.input.bypassUnavailable ? 1 : 0;
+      message.bypass_unavailable = ctx.input.bypassUnavailable ? 1 : 0;
     if (ctx.input.bypassUnsubscribed !== undefined)
-      message['bypass_unsubscribed'] = ctx.input.bypassUnsubscribed ? 1 : 0;
+      message.bypass_unsubscribed = ctx.input.bypassUnsubscribed ? 1 : 0;
     if (ctx.input.bypassComplained !== undefined)
-      message['bypass_complained'] = ctx.input.bypassComplained ? 1 : 0;
+      message.bypass_complained = ctx.input.bypassComplained ? 1 : 0;
 
     if (ctx.input.sendAt) {
-      message['options'] = { send_at: ctx.input.sendAt };
+      message.options = { send_at: ctx.input.sendAt };
     }
 
     let result = await client.sendEmail(message as any);

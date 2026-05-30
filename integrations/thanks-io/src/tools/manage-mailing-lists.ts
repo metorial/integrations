@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ThanksIoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageMailingLists = SlateTool.create(spec, {
   name: 'Manage Mailing Lists',
@@ -72,7 +72,7 @@ Mailing lists organize recipients for targeted mail campaigns and can be associa
       let result = await client.listMailingLists({
         itemsPerPage: ctx.input.itemsPerPage
       });
-      let data = (result.data || []) as Array<Record<string, unknown>>;
+      let data = (result.data || []) as Record<string, unknown>[];
       let meta = result.meta as Record<string, unknown> | undefined;
       return {
         output: {
@@ -132,7 +132,7 @@ Mailing lists organize recipients for targeted mail campaigns and can be associa
         limit: ctx.input.recipientLimit,
         updatedSince: ctx.input.updatedSince
       });
-      let data = (result.data || []) as Array<Record<string, unknown>>;
+      let data = (result.data || []) as Record<string, unknown>[];
       let meta = result.meta as Record<string, unknown> | undefined;
       return {
         output: {

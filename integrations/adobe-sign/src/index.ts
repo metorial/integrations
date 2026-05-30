@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  uploadDocument,
   createAgreement,
-  getAgreement,
-  listAgreements,
-  updateAgreementState,
-  getSigningUrls,
-  sendReminder,
-  downloadAuditTrail,
-  getFormData,
-  createWebForm,
-  listWebForms,
   createLibraryTemplate,
+  createWebForm,
+  downloadAuditTrail,
+  getAgreement,
+  getFormData,
+  getSigningUrls,
+  listAgreements,
   listLibraryTemplates,
+  listUsers,
+  listWebForms,
   sendInBulk,
-  listUsers
+  sendReminder,
+  updateAgreementState,
+  uploadDocument
 } from './tools';
-import { agreementEvents, webFormEvents, megaSignEvents } from './triggers';
+import { agreementEvents, megaSignEvents, webFormEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

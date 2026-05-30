@@ -59,7 +59,7 @@ export interface EventType {
   internalNote: string | null;
   poolingType: string | null;
   secret: boolean;
-  customQuestions: Array<Record<string, any>>;
+  customQuestions: Record<string, any>[];
 }
 
 export interface Invitee {
@@ -162,7 +162,7 @@ export interface AvailabilitySchedule {
   name: string;
   user: string;
   timezone: string;
-  rules: Array<Record<string, any>>;
+  rules: Record<string, any>[];
 }
 
 export interface RoutingForm {
@@ -172,7 +172,7 @@ export interface RoutingForm {
   organization: string;
   createdAt: string;
   updatedAt: string;
-  questions: Array<Record<string, any>>;
+  questions: Record<string, any>[];
 }
 
 export interface RoutingFormSubmission {
@@ -221,7 +221,7 @@ let mapKeys = (obj: Record<string, any>): Record<string, any> => {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.calendly.com',
       headers: {

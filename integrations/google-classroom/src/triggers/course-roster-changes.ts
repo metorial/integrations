@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { ClassroomClient } from '../lib/client';
-import { spec } from '../spec';
-import { googleClassroomActionScopes } from '../scopes';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { ClassroomClient } from '../lib/client';
+import { googleClassroomActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 let rosterMemberSchema = z.object({
   courseId: z.string().optional().describe('Course ID'),
@@ -48,9 +48,9 @@ export let courseRosterChanges = SlateTrigger.create(spec, {
       let client = new ClassroomClient({ token: ctx.auth.token });
 
       let previousState = ctx.state || {};
-      let previousTeacherIds: string[] = previousState.teacherIds || [];
-      let previousStudentIds: string[] = previousState.studentIds || [];
-      let courseId: string | undefined = previousState.courseId;
+      let _previousTeacherIds: string[] = previousState.teacherIds || [];
+      let _previousStudentIds: string[] = previousState.studentIds || [];
+      let _courseId: string | undefined = previousState.courseId;
 
       // On first poll, we need to get the courses and pick the first one
       // or the user should have configured this. Since we can't configure per-trigger,

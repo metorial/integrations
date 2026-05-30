@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getAthleteProfile,
-  updateAthlete,
-  listActivities,
-  getActivity,
   createActivity,
-  updateActivity,
-  getActivityStreams,
   exploreSegments,
-  getSegment,
-  starSegment,
-  getSegmentEfforts,
-  getRoute,
-  listRoutes,
+  getActivity,
+  getActivityStreams,
+  getAthleteProfile,
   getClub,
+  getGear,
+  getRoute,
+  getSegment,
+  getSegmentEfforts,
+  listActivities,
   listClubs,
-  getGear
+  listRoutes,
+  starSegment,
+  updateActivity,
+  updateAthlete
 } from './tools';
 import { activityEvent, inboundWebhook } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let exportRecord = SlateTool.create(spec, {
   name: 'Export Record',
@@ -75,15 +75,15 @@ export let exportRecord = SlateTool.create(spec, {
       case 'mailMerge':
         format = 'custom';
         if (ctx.input.mailMergeTemplateId) {
-          exportParams['cid'] = ctx.input.mailMergeTemplateId;
+          exportParams.cid = ctx.input.mailMergeTemplateId;
         }
         break;
       case 'customPrint':
         format = 'carbone';
         if (ctx.input.customPrintTemplateId) {
-          exportParams['ragicCustomPrintTemplateId'] = ctx.input.customPrintTemplateId;
+          exportParams.ragicCustomPrintTemplateId = ctx.input.customPrintTemplateId;
         }
-        exportParams['fileFormat'] = ctx.input.customPrintFileFormat || 'pdf';
+        exportParams.fileFormat = ctx.input.customPrintFileFormat || 'pdf';
         break;
       default:
         format = 'pdf';

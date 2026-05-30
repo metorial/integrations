@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let metaValue = z.union([z.string(), z.number(), z.boolean()]);
 
@@ -85,7 +85,7 @@ export let createOrUpdateUser = SlateTool.create(spec, {
       // User doesn't exist, we'll create
     }
 
-    let user;
+    let user: any;
 
     if (existingUser) {
       user = await client.updateUser(input.uid, {

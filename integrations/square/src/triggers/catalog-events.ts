@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let CATALOG_EVENT_TYPES = ['catalog.version.updated'];
 
@@ -47,7 +47,7 @@ export let catalogEvents = SlateTrigger.create(spec, {
 
     handleRequest: async ctx => {
       let body = (await ctx.request.json()) as any;
-      if (!body || !body.type) return { inputs: [] };
+      if (!body?.type) return { inputs: [] };
 
       let catalog = body.data?.object || body.data || {};
 

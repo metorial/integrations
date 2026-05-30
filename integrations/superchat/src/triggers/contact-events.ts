@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SuperchatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactEventTypes = ['contact_created', 'contact_updated', 'contact_deleted'] as const;
 

@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  matchBusiness,
-  lookupBusiness,
-  verifyBusiness,
   graphqlQuery,
-  searchBusinesses
+  lookupBusiness,
+  matchBusiness,
+  searchBusinesses,
+  verifyBusiness
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

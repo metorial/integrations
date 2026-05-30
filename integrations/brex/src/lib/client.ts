@@ -15,7 +15,7 @@ export interface Money {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
@@ -141,7 +141,7 @@ export class Client {
     let queryParams: Record<string, any> = { ...params };
     if (params?.expand) {
       queryParams['expand[]'] = params.expand;
-      delete queryParams.expand;
+      queryParams.expand = undefined;
     }
     let response = await this.axios.get('/v1/expenses/card', { params: queryParams });
     return response.data as PaginatedResponse<any>;
@@ -246,7 +246,7 @@ export class Client {
     let queryParams: Record<string, any> = { ...params };
     if (params?.user_ids) {
       queryParams['user_ids[]'] = params.user_ids;
-      delete queryParams.user_ids;
+      queryParams.user_ids = undefined;
     }
     let response = await this.axios.get('/v2/transactions/card/primary', {
       params: queryParams

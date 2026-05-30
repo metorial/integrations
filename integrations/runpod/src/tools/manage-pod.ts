@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RunPodClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let managePod = SlateTool.create(spec, {
   name: 'Manage Pod',
@@ -59,7 +59,7 @@ export let managePod = SlateTool.create(spec, {
         action,
         success: true
       },
-      message: `Successfully **${action === 'terminate' ? 'terminated' : action + 'ed'}** Pod **${podId}**.`
+      message: `Successfully **${action === 'terminate' ? 'terminated' : `${action}ed`}** Pod **${podId}**.`
     };
   })
   .build();

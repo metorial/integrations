@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  geocode,
   getAirQuality,
-  getAirQualityHistory,
   getAirQualityForecast,
-  getWeather,
-  getWeatherForecast,
-  getWeatherHistory,
+  getAirQualityHistory,
+  getElevation,
+  getNaturalDisasters,
+  getNaturalDisastersHistory,
+  getNdvi,
   getPollen,
   getPollenForecast,
   getPollenHistory,
-  getWildfire,
-  getWildfireRisk,
-  getNaturalDisasters,
-  getNaturalDisastersHistory,
   getSoil,
   getWaterVapor,
-  getNdvi,
-  getElevation,
-  geocode
+  getWeather,
+  getWeatherForecast,
+  getWeatherHistory,
+  getWildfire,
+  getWildfireRisk
 } from './tools';
-import { airQualityChange, naturalDisasterAlert, inboundWebhook } from './triggers';
+import { airQualityChange, inboundWebhook, naturalDisasterAlert } from './triggers';
 
 export let provider = Slate.create({
   spec,

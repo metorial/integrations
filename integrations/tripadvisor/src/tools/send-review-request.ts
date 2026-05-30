@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReviewExpressClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let guestRequestSchema = z.object({
   locationId: z.string().describe('Tripadvisor location ID of the hotel'),

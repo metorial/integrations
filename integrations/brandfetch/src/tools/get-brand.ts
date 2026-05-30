@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BrandApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let logoFormatSchema = z.object({
   src: z.string().describe('URL to the asset'),
