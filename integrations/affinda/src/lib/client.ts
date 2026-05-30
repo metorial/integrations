@@ -1,4 +1,3 @@
-// @ts-expect-error -- Buffer import required for Function Bay ncc build environment
 import { Buffer } from 'buffer';
 import { createAxios } from 'slates';
 
