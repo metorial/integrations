@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { optionalBoolean, optionalNumber, optionalString } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -74,23 +75,23 @@ export let listIssuesTool = SlateTool.create(spec, {
 
     let mapped = (issues || []).map((issue: any) => ({
       issueId: String(issue.id),
-      shortId: issue.shortId || '',
-      title: issue.title || '',
-      culprit: issue.culprit,
-      level: issue.level || 'error',
-      status: issue.status || 'unresolved',
+      shortId: optionalString(issue.shortId) ?? '',
+      title: optionalString(issue.title) ?? '',
+      culprit: optionalString(issue.culprit),
+      level: optionalString(issue.level) ?? 'error',
+      status: optionalString(issue.status) ?? 'unresolved',
       statusDetails: issue.statusDetails,
-      isPublic: issue.isPublic,
-      isBookmarked: issue.isBookmarked,
-      platform: issue.platform,
-      projectSlug: issue.project?.slug,
-      projectName: issue.project?.name,
-      count: issue.count,
-      userCount: issue.userCount,
-      firstSeen: issue.firstSeen,
-      lastSeen: issue.lastSeen,
+      isPublic: optionalBoolean(issue.isPublic),
+      isBookmarked: optionalBoolean(issue.isBookmarked),
+      platform: optionalString(issue.platform),
+      projectSlug: optionalString(issue.project?.slug),
+      projectName: optionalString(issue.project?.name),
+      count: optionalString(issue.count),
+      userCount: optionalNumber(issue.userCount),
+      firstSeen: optionalString(issue.firstSeen),
+      lastSeen: optionalString(issue.lastSeen),
       assignedTo: issue.assignedTo,
-      permalink: issue.permalink
+      permalink: optionalString(issue.permalink)
     }));
 
     return {

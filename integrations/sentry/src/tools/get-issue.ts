@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { createClient } from '../lib/helpers';
+import { optionalBoolean, optionalNumber, optionalString } from '../lib/output';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -80,23 +81,23 @@ export let getIssueTool = SlateTool.create(spec, {
     return {
       output: {
         issueId: String(issue.id),
-        shortId: issue.shortId || '',
-        title: issue.title || '',
-        culprit: issue.culprit,
-        level: issue.level,
-        status: issue.status,
-        substatus: issue.substatus,
-        platform: issue.platform,
-        projectSlug: issue.project?.slug,
-        projectName: issue.project?.name,
-        count: issue.count,
-        userCount: issue.userCount,
-        firstSeen: issue.firstSeen,
-        lastSeen: issue.lastSeen,
+        shortId: optionalString(issue.shortId) ?? '',
+        title: optionalString(issue.title) ?? '',
+        culprit: optionalString(issue.culprit),
+        level: optionalString(issue.level) ?? 'error',
+        status: optionalString(issue.status) ?? 'unresolved',
+        substatus: optionalString(issue.substatus),
+        platform: optionalString(issue.platform),
+        projectSlug: optionalString(issue.project?.slug),
+        projectName: optionalString(issue.project?.name),
+        count: optionalString(issue.count),
+        userCount: optionalNumber(issue.userCount),
+        firstSeen: optionalString(issue.firstSeen),
+        lastSeen: optionalString(issue.lastSeen),
         assignedTo: issue.assignedTo,
-        isPublic: issue.isPublic,
-        isBookmarked: issue.isBookmarked,
-        permalink: issue.permalink,
+        isPublic: optionalBoolean(issue.isPublic),
+        isBookmarked: optionalBoolean(issue.isBookmarked),
+        permalink: optionalString(issue.permalink),
         metadata: issue.metadata,
         latestEvent,
         tags

@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { sentryServiceError } from '../lib/errors';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
@@ -69,6 +70,6 @@ export let getEventTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error('Provide either eventId+projectSlug or issueId');
+    throw sentryServiceError('Provide either eventId+projectSlug or issueId');
   })
   .build();
