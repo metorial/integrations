@@ -1,5 +1,4 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { jiraApiError } from './errors';
 
 export interface JiraClientConfig {
@@ -9,8 +8,8 @@ export interface JiraClientConfig {
 }
 
 export class JiraClient {
-  private api: AxiosInstance;
-  private agileApi: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
+  private agileApi: ReturnType<typeof createAxios>;
 
   constructor(private config: JiraClientConfig) {
     let baseURL = `https://api.atlassian.com/ex/jira/${config.cloudId}/rest/api/3`;

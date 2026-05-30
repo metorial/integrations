@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface SignPathClientConfig {
   token: string;
@@ -8,7 +7,7 @@ export interface SignPathClientConfig {
 }
 
 export class SignPathClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private organizationId: string;
 
   constructor(config: SignPathClientConfig) {
@@ -21,7 +20,7 @@ export class SignPathClient {
     });
   }
 
-  private get preAxios(): AxiosInstance {
+  private get preAxios(): ReturnType<typeof createAxios> {
     let ax = createAxios({
       baseURL: `${this.axios.defaults.baseURL}`.replace('/API/v1/', '/API/v1-pre/'),
       headers: this.axios.defaults.headers as Record<string, string>

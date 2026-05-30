@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export let encodeFormBody = (params: Record<string, string | undefined>): string => {
   let parts: string[] = [];
@@ -12,7 +11,7 @@ export let encodeFormBody = (params: Record<string, string | undefined>): string
 };
 
 export class FlexClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private token: string) {
     this.axios = createAxios({

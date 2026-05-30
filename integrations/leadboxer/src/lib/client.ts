@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface LeadFilters {
   search?: string;
@@ -29,9 +28,9 @@ export interface TagUpdateParams {
 }
 
 export class LeadBoxerClient {
-  private dataApi: AxiosInstance;
-  private legacyApi: AxiosInstance;
-  private trackingApi: AxiosInstance;
+  private dataApi: ReturnType<typeof createAxios>;
+  private legacyApi: ReturnType<typeof createAxios>;
+  private trackingApi: ReturnType<typeof createAxios>;
 
   constructor(
     private config: {

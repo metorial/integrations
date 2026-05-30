@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface JobData {
   date: string;
@@ -120,7 +119,7 @@ export interface SearchJobsParams {
 }
 
 export class DetrackClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.http = createAxios({

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type {
   SquareClientConfig,
   SquarePayment,
@@ -19,7 +18,7 @@ let BASE_URLS: Record<string, string> = {
 };
 
 export class SquareClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: SquareClientConfig) {
     let baseURL = BASE_URLS[config.environment] || BASE_URLS['production']!;

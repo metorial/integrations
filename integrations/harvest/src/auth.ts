@@ -74,7 +74,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let response = await harvestIdApi.post('/oauth2/token', {
         refresh_token: ctx.output.refreshToken,
         client_id: ctx.clientId,

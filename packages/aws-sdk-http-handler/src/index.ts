@@ -1,11 +1,12 @@
-import type { AxiosInstance } from 'axios';
 import { HttpResponse, type HttpHandler, type HttpRequest } from '@smithy/protocol-http';
 import { buildQueryString } from '@smithy/querystring-builder';
 import type { HttpHandlerOptions } from '@smithy/types';
 import { createAxios } from 'slates';
 
+type SlatesAxiosInstance = ReturnType<typeof createAxios>;
+
 export interface SlatesAwsSdkHttpHandlerConfig {
-  axiosInstance?: AxiosInstance;
+  axiosInstance?: SlatesAxiosInstance;
   requestTimeout?: number;
 }
 
@@ -106,7 +107,7 @@ let normalizeTransportError = (error: unknown) => {
 };
 
 export class SlatesAwsSdkHttpHandler implements HttpHandler<SlatesAwsSdkHttpHandlerConfig> {
-  private readonly axiosClient: AxiosInstance;
+  private readonly axiosClient: SlatesAxiosInstance;
   private config: SlatesAwsSdkHttpHandlerConfig;
 
   constructor(config: SlatesAwsSdkHttpHandlerConfig = {}) {

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ClientConfig {
   baseUrl: string;
@@ -210,7 +209,7 @@ let mapMessageToApi = (msg: ChatMessage): Record<string, unknown> => {
 };
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: ClientConfig) {
     let headers: Record<string, string> = {

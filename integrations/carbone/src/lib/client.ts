@@ -103,6 +103,12 @@ export interface TagItem {
   name: string;
 }
 
+let headerValueToString = (value: unknown): string | undefined => {
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) return value.join(', ');
+  return undefined;
+};
+
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
@@ -152,13 +158,14 @@ export class Client {
       responseType: 'arraybuffer'
     });
 
-    let contentDisposition = response.headers['content-disposition'] || '';
+    let contentDisposition = headerValueToString(response.headers['content-disposition']) || '';
     let filenameMatch = contentDisposition.match(/filename="?([^";\n]+)"?/);
     let filename = filenameMatch ? filenameMatch[1]! : 'template';
 
     return {
       content: response.data,
-      contentType: response.headers['content-type'] || 'application/octet-stream',
+      contentType:
+        headerValueToString(response.headers['content-type']) || 'application/octet-stream',
       filename
     };
   }

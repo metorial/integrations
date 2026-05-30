@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface SuperSaasAuth {
   token: string;
@@ -7,7 +6,7 @@ export interface SuperSaasAuth {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(auth: SuperSaasAuth) {
     this.axios = createAxios({

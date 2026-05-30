@@ -117,7 +117,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let httpClient = createAxios({ baseURL: 'https://app.omnisend.com' });
 
       let response = await httpClient.post(

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface CreateTinyUrlParams {
   url: string;
@@ -81,7 +80,7 @@ export interface ApiResponse<T> {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private params: { token: string }) {
     this.axios = createAxios({

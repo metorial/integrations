@@ -1,5 +1,4 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { quickBooksApiError } from './errors';
 
 export interface QuickBooksClientConfig {
@@ -16,7 +15,7 @@ export interface QuickBooksQueryResult {
 }
 
 export class QuickBooksClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private companyId: string;
 
   constructor(config: QuickBooksClientConfig) {

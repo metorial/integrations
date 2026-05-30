@@ -1,8 +1,7 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export class PlaygroundClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(apiKey: string) {
     this.axios = createAxios({

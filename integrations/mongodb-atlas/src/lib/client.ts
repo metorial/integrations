@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import { parseDigestChallenge, buildDigestHeader } from './digest';
 
 let BASE_URL = 'https://cloud.mongodb.com/api/atlas/v2';
@@ -13,7 +12,7 @@ export interface ClientConfig {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private config: ClientConfig;
 
   constructor(config: ClientConfig) {

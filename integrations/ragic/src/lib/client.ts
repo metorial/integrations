@@ -333,7 +333,7 @@ export class Client {
     });
 
     return {
-      contentType: response.headers?.['content-type'] || 'application/octet-stream',
+      contentType: String(response.headers?.['content-type'] ?? 'application/octet-stream'),
       data: response.data
     };
   }

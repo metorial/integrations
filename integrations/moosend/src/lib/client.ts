@@ -1,10 +1,9 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URL = 'https://api.moosend.com/v3';
 
 export class MoosendClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private token: string;
 
   constructor(config: { token: string }) {

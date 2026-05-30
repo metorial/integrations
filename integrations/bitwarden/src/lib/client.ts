@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type {
   MemberResponse,
   GroupResponse,
@@ -11,7 +10,7 @@ import type {
 } from './types';
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string; serverUrl: string }) {
     this.http = createAxios({

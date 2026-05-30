@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface CreateDiscussionParams {
   title: string;
@@ -37,7 +36,7 @@ export interface MembershipSyncParams {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private token: string;
 
   constructor(config: { token: string; baseUrl: string }) {

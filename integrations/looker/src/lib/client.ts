@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class LookerClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { instanceUrl: string; token: string }) {
     let baseUrl = config.instanceUrl.replace(/\/+$/, '');

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import { AxiosInstance } from 'axios';
 
 export interface KnackClientConfig {
   applicationId: string;
@@ -34,7 +33,7 @@ export interface KnackRecordsResponse {
 }
 
 export class KnackClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
   private applicationId: string;
   private token: string;
   private authMode: 'api_key' | 'view_based';

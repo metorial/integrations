@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let gasApi = createAxios({
   baseURL: 'https://api.blocknative.com'

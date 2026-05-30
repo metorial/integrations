@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ClientConfig {
   siteUrl: string;
@@ -32,7 +31,7 @@ export interface WebhookConfig {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: ClientConfig) {
     let siteUrl = config.siteUrl.replace(/\/+$/, '');

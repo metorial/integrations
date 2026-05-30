@@ -233,7 +233,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let domain = ctx.output.canvasDomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
       let http = createAxios({
         baseURL: `https://${domain}`

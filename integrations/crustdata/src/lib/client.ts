@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URL = 'https://api.crustdata.com';
 
@@ -26,7 +25,7 @@ export interface SortOption {
 }
 
 export class CrustdataClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.http = createAxios({

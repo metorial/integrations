@@ -124,7 +124,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let domain = ctx.output.domain || ctx.input.domain;
       let http = createAxios({
         baseURL: `https://${domain}.egnyte.com`

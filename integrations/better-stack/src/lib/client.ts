@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PaginatedResponse<T> {
   data: T[];
@@ -12,7 +11,7 @@ export interface PaginatedResponse<T> {
 }
 
 export class UptimeClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(params: { token: string; teamName?: string }) {
     this.axios = createAxios({

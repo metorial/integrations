@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface HashtagStats {
   tag: string;
@@ -89,7 +88,7 @@ export interface PersonInsights {
 }
 
 export class RiteKitClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private clientId: string;
 
   constructor(config: { token: string }) {

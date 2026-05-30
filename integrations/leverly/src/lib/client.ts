@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let LEVERLY_BASE_URL = 'https://app.leverly.com';
 
@@ -30,7 +29,7 @@ export interface StopReattemptsParams {
 }
 
 export class LeverlyClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private accountId: string;
 
   constructor(config: { username: string; token: string; accountId: string }) {

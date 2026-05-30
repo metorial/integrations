@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URL = 'https://api.parallel.ai';
 
@@ -222,7 +221,7 @@ export interface EnrichFindAllParams {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private token: string) {
     this.axios = createAxios({

@@ -188,7 +188,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let site = ctx.input.site || 'datadoghq.com';
       let http = createAxios({ baseURL: `https://api.${site}` });
 

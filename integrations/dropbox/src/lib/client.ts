@@ -1,9 +1,8 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class DropboxClient {
-  private api: AxiosInstance;
-  private content: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
+  private content: ReturnType<typeof createAxios>;
 
   constructor(private token: string) {
     this.api = createAxios({

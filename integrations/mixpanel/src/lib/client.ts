@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface MixpanelClientConfig {
   serviceAccountUsername?: string;
@@ -28,10 +27,10 @@ let getAppBaseUrl = (residency: 'us' | 'eu'): string => {
 };
 
 export class MixpanelClient {
-  private ingestionAxios: AxiosInstance;
-  private queryAxios: AxiosInstance;
-  private exportAxios: AxiosInstance;
-  private appAxios: AxiosInstance;
+  private ingestionAxios: ReturnType<typeof createAxios>;
+  private queryAxios: ReturnType<typeof createAxios>;
+  private exportAxios: ReturnType<typeof createAxios>;
+  private appAxios: ReturnType<typeof createAxios>;
   private config: MixpanelClientConfig;
 
   constructor(config: MixpanelClientConfig) {

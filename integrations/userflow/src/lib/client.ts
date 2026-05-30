@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type {
   UserflowListResponse,
   UserflowUser,
@@ -22,7 +21,7 @@ export interface ClientConfig {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(config: ClientConfig) {
     this.http = createAxios({

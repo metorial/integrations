@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let regionBaseUrls: Record<string, string> = {
   us: 'https://api.docugenerate.com/v1',
@@ -55,7 +54,7 @@ export interface GenerateDocumentParams {
 }
 
 export class DocuGenerateClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string; region: string }) {
     let baseURL = regionBaseUrls[config.region] || regionBaseUrls['us'];

@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 import type {
   CloudinaryConfig,
@@ -96,7 +95,7 @@ let normalizeUploadResponse = (raw: any): CloudinaryUploadResponse => {
 };
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private cloudName: string;
 
   constructor(config: CloudinaryConfig) {

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let contentApi = createAxios({
   baseURL: 'https://api.autobound.ai/api'
@@ -137,8 +136,8 @@ export interface CreateWebhookResponse {
 }
 
 export class AutoboundClient {
-  private contentAxios: AxiosInstance;
-  private signalsAxios: AxiosInstance;
+  private contentAxios: ReturnType<typeof createAxios>;
+  private signalsAxios: ReturnType<typeof createAxios>;
 
   constructor(private token: string) {
     this.contentAxios = contentApi;

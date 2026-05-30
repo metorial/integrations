@@ -1,5 +1,4 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { instagramApiError } from './errors';
 
 export interface ClientConfig {
@@ -23,7 +22,7 @@ type MediaContainerParams = {
 };
 
 export class InstagramClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
   private token: string;
 
   constructor(config: ClientConfig) {

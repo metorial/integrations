@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URL = 'https://www.hackerrank.com/x/api/v3';
 
@@ -20,7 +19,7 @@ export interface PaginatedResponse<T> {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private params: { token: string }) {
     this.axios = createAxios({

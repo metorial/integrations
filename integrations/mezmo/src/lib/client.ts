@@ -1,9 +1,8 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class MezmoClient {
-  private api: AxiosInstance;
-  private ingestionApi: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
+  private ingestionApi: ReturnType<typeof createAxios>;
 
   constructor(private options: { token: string; ingestionKey?: string }) {
     this.api = createAxios({

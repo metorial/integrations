@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   production: 'https://api.notif.immo',
@@ -7,7 +6,7 @@ let BASE_URLS: Record<string, string> = {
 };
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; environment?: string }) {
     let baseURL = BASE_URLS[config.environment ?? 'production'] ?? BASE_URLS['production'];

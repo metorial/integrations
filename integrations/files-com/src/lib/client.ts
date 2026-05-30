@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface FilesComClientConfig {
   token: string;
@@ -7,7 +6,7 @@ export interface FilesComClientConfig {
 }
 
 export class FilesComClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private baseUrl: string;
 
   constructor(config: FilesComClientConfig) {

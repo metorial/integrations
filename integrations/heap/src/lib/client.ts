@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://heapanalytics.com',
@@ -43,7 +42,7 @@ export interface IdentifyParams {
 }
 
 export class HeapClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private appId: string;
   private apiKey: string;
 

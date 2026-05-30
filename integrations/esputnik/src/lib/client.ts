@@ -1,8 +1,7 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     let basicToken = Buffer.from(`x:${config.token}`).toString('base64');

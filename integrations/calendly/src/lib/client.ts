@@ -1,5 +1,4 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { calendlyApiError } from './errors';
 
 export interface PaginationParams {
@@ -220,7 +219,7 @@ let mapKeys = (obj: Record<string, any>): Record<string, any> => {
 };
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({

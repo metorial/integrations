@@ -1,5 +1,4 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { facebookApiError, facebookServiceError } from './errors';
 
 export interface PaginatedResponse<T> {
@@ -75,7 +74,7 @@ export interface FacebookInsight {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private token: string;
   private apiVersion: string;
 

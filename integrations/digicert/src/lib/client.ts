@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   certcentral: 'https://www.digicert.com/services/v2',
@@ -7,7 +6,7 @@ let BASE_URLS: Record<string, string> = {
 };
 
 export class CertCentralClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(opts: { token: string; platform: string }) {
     let baseURL = BASE_URLS[opts.platform] || BASE_URLS.certcentral;

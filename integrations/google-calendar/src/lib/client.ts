@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export interface EventDateTime {
@@ -131,7 +130,7 @@ export interface WatchResponse {
 }
 
 export class GoogleCalendarClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.api = createAxios({

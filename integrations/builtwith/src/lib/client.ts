@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface DomainLookupOptions {
   domain: string;
@@ -38,7 +37,7 @@ export interface TrustOptions {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private token: string;
 
   constructor(config: { token: string }) {

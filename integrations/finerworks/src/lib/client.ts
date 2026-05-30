@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface FinerworksClientConfig {
   webApiKey: string;
@@ -8,7 +7,7 @@ export interface FinerworksClientConfig {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private testMode: boolean;
 
   constructor(config: FinerworksClientConfig) {

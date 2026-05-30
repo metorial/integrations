@@ -1,5 +1,4 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { zendeskApiError } from './errors';
 
 export interface ZendeskClientConfig {
@@ -9,7 +8,7 @@ export interface ZendeskClientConfig {
 }
 
 export class ZendeskClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(private config: ZendeskClientConfig) {
     let authHeader =

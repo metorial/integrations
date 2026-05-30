@@ -93,7 +93,7 @@ export let auth = SlateAuth.create()
         }
       };
     },
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let axios = createAxios({ baseURL: 'https://api.addressfinder.io' });
 
       let params = new URLSearchParams({

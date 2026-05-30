@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export interface SpeechParams {
@@ -55,7 +54,7 @@ export interface AccountInfo {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private params: { token: string }) {
     this.axios = createAxios({

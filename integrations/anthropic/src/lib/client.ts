@@ -1,6 +1,5 @@
 import { createAxios } from 'slates';
 import { Buffer } from 'node:buffer';
-import type { AxiosInstance } from 'axios';
 import { anthropicApiError } from './errors';
 
 let FILES_API_BETA = 'files-api-2025-04-14';
@@ -67,7 +66,7 @@ export interface AnthropicReportResult {
 }
 
 export class AnthropicClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string; apiVersion: string }) {
     this.axios = createAxios({

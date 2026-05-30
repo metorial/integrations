@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 // ---- Shared Types ----
 
@@ -85,10 +84,10 @@ export interface AccountInfo {
 // ---- Client ----
 
 export class RevAIClient {
-  private sttAxios: AxiosInstance;
-  private sentimentAxios: AxiosInstance;
-  private topicAxios: AxiosInstance;
-  private langIdAxios: AxiosInstance;
+  private sttAxios: ReturnType<typeof createAxios>;
+  private sentimentAxios: ReturnType<typeof createAxios>;
+  private topicAxios: ReturnType<typeof createAxios>;
+  private langIdAxios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string }) {
     let headers = {

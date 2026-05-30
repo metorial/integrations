@@ -5,6 +5,30 @@ let http = createAxios({
   baseURL: 'https://doodle.com'
 });
 
+type DoodleOAuthOutput = {
+  token: string;
+  refreshToken?: string;
+  expiresAt?: string;
+};
+
+type DoodleAuthorizationContext = {
+  clientId: string;
+  redirectUri: string;
+  state: string;
+  scopes: string[];
+};
+
+type DoodleCallbackContext = DoodleAuthorizationContext & {
+  clientSecret: string;
+  code: string;
+};
+
+type DoodleTokenRefreshContext = {
+  clientId: string;
+  clientSecret: string;
+  output: DoodleOAuthOutput;
+};
+
 export let auth = SlateAuth.create()
   .output(
     z.object({
@@ -41,7 +65,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async ctx => {
+    getAuthorizationUrl: async (ctx: DoodleAuthorizationContext) => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -55,7 +79,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async ctx => {
+    handleCallback: async (ctx: DoodleCallbackContext) => {
       let response = await http.post(
         '/oauth2/token',
         new URLSearchParams({
@@ -86,7 +110,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: DoodleTokenRefreshContext) => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }

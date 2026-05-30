@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export type Chain = 'mainnet' | 'hoodi';
 
@@ -14,7 +13,7 @@ export interface PaginationParams {
 }
 
 export class BeaconchainClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private params: { token: string; chain: Chain }) {
     this.axios = createAxios({

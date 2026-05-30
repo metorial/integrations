@@ -1,9 +1,8 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { netlifyApiError } from './errors';
 
 export class Client {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string }) {
     this.api = createAxios({

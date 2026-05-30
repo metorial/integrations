@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import { AxiosInstance } from 'axios';
 
 export interface ScrapeParams {
   url?: string;
@@ -101,7 +100,7 @@ let toSnakeCase = (params: ScrapeParams): Record<string, any> => {
 };
 
 export class ScrapingClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(basicToken: string) {
     this.axios = createAxios({

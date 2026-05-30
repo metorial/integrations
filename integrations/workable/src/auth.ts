@@ -65,7 +65,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let axios = createAxios();
       let response = await axios.post('https://www.workable.com/oauth/token', {
         client_id: ctx.clientId,

@@ -283,7 +283,7 @@ export class TextToSpeechClient {
 
     return {
       audioBase64,
-      contentType: response.headers?.['content-type'] || 'audio/wav'
+      contentType: String(response.headers?.['content-type'] ?? 'audio/wav')
     };
   }
 }

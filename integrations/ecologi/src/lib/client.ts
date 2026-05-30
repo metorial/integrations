@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URL = 'https://public.ecologi.com';
 
@@ -48,7 +47,7 @@ export interface ImpactResponse {
 }
 
 export class EcologiClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(token?: string) {
     this.axios = createAxios({

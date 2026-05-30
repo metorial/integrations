@@ -45,7 +45,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let api = createAxios({ baseURL: 'https://api.piggy.eu' });
 
       let response = await api.post('/oauth/token', {

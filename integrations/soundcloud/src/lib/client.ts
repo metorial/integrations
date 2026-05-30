@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PaginatedResponse<T> {
   collection: T[];
@@ -127,7 +126,7 @@ export interface SoundCloudOEmbed {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string }) {
     this.http = createAxios({

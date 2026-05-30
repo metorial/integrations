@@ -117,7 +117,7 @@ export let auth = SlateAuth.create()
       }
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         throw googleMeetServiceError('No refresh token available for Google Meet OAuth refresh.');
       }

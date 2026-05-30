@@ -66,7 +66,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let subdomain = ctx.output.subdomain || ctx.input.subdomain;
       let http = createAxios({
         baseURL: `https://${subdomain}.kommo.com`

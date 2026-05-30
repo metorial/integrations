@@ -1,5 +1,4 @@
 import { createAxios } from '@slates/provider';
-import type { AxiosInstance } from 'axios';
 import { stripeApiError } from './errors';
 
 export interface StripeClientConfig {
@@ -8,7 +7,7 @@ export interface StripeClientConfig {
 }
 
 export class StripeClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: StripeClientConfig) {
     let headers: Record<string, string> = {

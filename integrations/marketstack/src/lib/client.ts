@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PaginatedResponse<T> {
   pagination: {
@@ -204,7 +203,7 @@ export interface RealTimePrice {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private accessKey: string;
 
   constructor(params: { token: string }) {

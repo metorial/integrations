@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface PaginationParams {
   limit?: number;
@@ -119,7 +118,7 @@ export interface EmbeddingParams {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; baseUrl: string }) {
     this.axios = createAxios({

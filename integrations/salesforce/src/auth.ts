@@ -169,7 +169,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
         throw salesforceServiceError(
           'No Salesforce refresh token available. Re-authorize with the refresh_token scope.'

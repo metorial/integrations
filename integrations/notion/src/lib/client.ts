@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let NOTION_API_VERSION = '2022-06-28';
 
@@ -11,7 +10,7 @@ export interface PaginatedResponse<T> {
 }
 
 export class NotionClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.axios = createAxios({

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface FormsiteForm {
   formDir: string;
@@ -67,7 +66,7 @@ export interface PaginationInfo {
 }
 
 export class FormsiteClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private userDir: string;
 
   constructor(private config: { token: string; server: string; userDir: string }) {

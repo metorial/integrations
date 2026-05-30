@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URLS = {
   production: 'https://pro-api.coinmarketcap.com',
@@ -296,7 +295,7 @@ let transformKeys = (obj: any): any => {
 };
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private clientConfig: ClientConfig) {
     let baseURL = BASE_URLS[clientConfig.environment] || BASE_URLS.production;

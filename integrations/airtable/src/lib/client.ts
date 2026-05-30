@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import { airtableApiError, airtableServiceError } from './errors';
 import type {
   AirtableRecord,
@@ -13,8 +12,8 @@ import type {
 } from './types';
 
 export class Client {
-  private api: AxiosInstance;
-  private contentApi: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
+  private contentApi: ReturnType<typeof createAxios>;
   private baseId?: string;
 
   constructor(config: { token: string; baseId?: string }) {

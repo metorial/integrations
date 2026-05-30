@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface CodacyClientConfig {
   token: string;
@@ -23,7 +22,7 @@ export interface PaginatedResponse<T> {
 }
 
 export class CodacyClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private provider: string;
   private organization: string;
 

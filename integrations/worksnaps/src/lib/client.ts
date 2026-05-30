@@ -7,7 +7,6 @@ import {
   hyphenateKeys,
   type XmlObject
 } from './xml';
-import type { AxiosInstance } from 'axios';
 
 export interface ProjectData {
   name?: string;
@@ -79,7 +78,7 @@ export interface SummaryReportFilter {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.http = createAxios({

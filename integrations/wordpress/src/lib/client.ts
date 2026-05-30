@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface WordPressClientConfig {
   siteUrl: string;
@@ -9,7 +8,7 @@ export interface WordPressClientConfig {
 }
 
 export class WordPressClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private siteUrl: string;
   private apiType: 'wpcom' | 'selfhosted';
   private siteId: string;

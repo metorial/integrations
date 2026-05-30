@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface MemberVaultProduct {
   courseId: string;
@@ -27,7 +26,7 @@ export interface DeleteUserParams {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private token: string;
 
   constructor(config: { token: string; subdomain: string }) {

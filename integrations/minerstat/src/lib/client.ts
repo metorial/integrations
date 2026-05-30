@@ -1,10 +1,9 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 let BASE_URL = 'https://api.minerstat.com/v2';
 
 export class DeveloperClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { developerApiKey: string }) {
     this.axios = createAxios({
@@ -33,7 +32,7 @@ export class DeveloperClient {
 }
 
 export class MonitoringClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private accessKey: string;
 
   constructor(config: { accessKey: string }) {
@@ -108,7 +107,7 @@ export class MonitoringClient {
 }
 
 export class ManagementClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string }) {
     this.axios = createAxios({

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface KlaviyoClientConfig {
   token: string;
@@ -32,7 +31,7 @@ export interface PaginatedResponse {
 }
 
 export class KlaviyoClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: KlaviyoClientConfig) {
     let authHeader = config.isOAuth

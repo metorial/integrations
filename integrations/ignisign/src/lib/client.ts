@@ -1,8 +1,7 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export class IgnisignClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private appId: string;
   private appEnv: string;
 

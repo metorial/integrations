@@ -1,4 +1,3 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 // @ts-ignore -- Buffer import required for Function Bay ncc build environment
 import { Buffer } from 'buffer';
@@ -15,7 +14,7 @@ export interface ClientConfig {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(config: ClientConfig) {
     let baseURL = BASE_URLS[config.region ?? 'global'] ?? BASE_URLS['global']!;

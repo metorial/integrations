@@ -1,12 +1,11 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface CoinbaseClientConfig {
   token: string;
 }
 
 export class CoinbaseClient {
-  private v2: AxiosInstance;
+  private v2: ReturnType<typeof createAxios>;
 
   constructor(config: CoinbaseClientConfig) {
     this.v2 = createAxios({

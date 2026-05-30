@@ -1,8 +1,7 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export class AblyRestClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(apiKey: string) {
     let encoded = Buffer.from(apiKey).toString('base64');

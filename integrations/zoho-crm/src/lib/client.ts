@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface ZohoClientConfig {
   token: string;
@@ -42,7 +41,7 @@ export interface NotificationWatch {
 }
 
 export class Client {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
 
   constructor(private config: ZohoClientConfig) {
     this.http = createAxios({

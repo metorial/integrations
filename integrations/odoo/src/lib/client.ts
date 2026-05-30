@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export type OdooDomainFilter = Array<string | [string, string, unknown]>;
 
@@ -12,7 +11,7 @@ export interface OdooClientConfig {
 }
 
 export class OdooClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private database: string;
   private uid: number;
   private token: string;

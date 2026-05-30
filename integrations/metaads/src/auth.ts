@@ -99,7 +99,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async ctx => {
+    handleTokenRefresh: async (ctx: any) => {
       let axios = createAxios({ baseURL: 'https://graph.facebook.com' });
 
       // Meta long-lived tokens can be refreshed by exchanging again

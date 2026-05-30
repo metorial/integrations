@@ -1,13 +1,12 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 interface ClientConfig {
   token: string;
 }
 
 export class MozClient {
-  private v2: AxiosInstance;
-  private v3: AxiosInstance;
+  private v2: ReturnType<typeof createAxios>;
+  private v3: ReturnType<typeof createAxios>;
   private token: string;
 
   constructor(config: ClientConfig) {

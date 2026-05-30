@@ -203,9 +203,12 @@ export class DeepgramClient {
     let audioBase64 = btoa(binary);
 
     return {
-      contentType: response.headers['content-type'] || 'audio/mp3',
+      contentType: String(response.headers['content-type'] ?? 'audio/mp3'),
       audioBase64,
-      requestId: response.headers['dg-request-id']
+      requestId:
+        typeof response.headers['dg-request-id'] === 'string'
+          ? response.headers['dg-request-id']
+          : undefined
     };
   }
 

@@ -1,7 +1,5 @@
 import { createAxios } from 'slates';
 
-type AxiosInstance = ReturnType<typeof createAxios>;
-
 let suggestionsAxios = createAxios({
   baseURL: 'https://suggestions.dadata.ru/suggestions/api/4_1/rs'
 });
@@ -20,7 +18,7 @@ export interface ClientConfig {
 }
 
 export class SuggestionsClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: ClientConfig) {
     this.axios = suggestionsAxios;
@@ -228,7 +226,7 @@ export class SuggestionsClient {
 }
 
 export class CleanerClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: ClientConfig) {
     this.axios = cleanerAxios;
@@ -284,7 +282,7 @@ export class CleanerClient {
 }
 
 export class ProfileClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: ClientConfig) {
     this.axios = profileAxios;

@@ -1,12 +1,11 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface CommerceClientConfig {
   token: string;
 }
 
 export class CommerceClient {
-  private api: AxiosInstance;
+  private api: ReturnType<typeof createAxios>;
 
   constructor(config: CommerceClientConfig) {
     this.api = createAxios({

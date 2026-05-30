@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type {
   PaginatedResponse,
   QrCode,
@@ -15,7 +14,7 @@ import type {
 } from './types';
 
 export class BeaconstacClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(private config: { token: string; organizationId?: string }) {
     this.axios = createAxios({

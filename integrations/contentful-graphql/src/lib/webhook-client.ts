@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface WebhookClientConfig {
   managementToken: string;
@@ -11,7 +10,7 @@ let getCmaBaseUrl = (region: 'us' | 'eu') =>
   region === 'eu' ? 'https://api.eu.contentful.com' : 'https://api.contentful.com';
 
 export class ContentfulWebhookClient {
-  private cma: AxiosInstance;
+  private cma: ReturnType<typeof createAxios>;
   private spaceId: string;
 
   constructor(config: WebhookClientConfig) {

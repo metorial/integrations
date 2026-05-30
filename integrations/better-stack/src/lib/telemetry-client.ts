@@ -1,9 +1,8 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 import type { PaginatedResponse } from './client';
 
 export class TelemetryClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(params: { token: string; teamName?: string }) {
     this.axios = createAxios({

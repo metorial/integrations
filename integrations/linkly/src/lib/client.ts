@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface LinklyAuth {
   token: string;
@@ -86,7 +85,7 @@ export interface ClickCountersParams {
 }
 
 export class Client {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
   private apiKey: string;
   private workspaceId: number;
 

@@ -1,5 +1,4 @@
 import { createAxios } from 'slates';
-import type { AxiosInstance } from 'axios';
 
 export interface GraphQLClientConfig {
   token: string;
@@ -14,7 +13,7 @@ let getGraphQLBaseUrl = (region: 'us' | 'eu') =>
   region === 'eu' ? 'https://graphql.eu.contentful.com' : 'https://graphql.contentful.com';
 
 export class ContentfulGraphQLClient {
-  private http: AxiosInstance;
+  private http: ReturnType<typeof createAxios>;
   private spaceId: string;
   private environmentId: string;
 

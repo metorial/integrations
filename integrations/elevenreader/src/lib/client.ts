@@ -1,8 +1,7 @@
-import type { AxiosInstance } from 'axios';
 import { createAxios } from 'slates';
 
 export class ElevenLabsClient {
-  private axios: AxiosInstance;
+  private axios: ReturnType<typeof createAxios>;
 
   constructor(token: string) {
     this.axios = createAxios({
@@ -131,7 +130,7 @@ export class ElevenLabsClient {
 
     let buffer = Buffer.from(response.data);
     let audioBase64 = buffer.toString('base64');
-    let contentType = response.headers['content-type'] || 'audio/mpeg';
+    let contentType = String(response.headers['content-type'] ?? 'audio/mpeg');
 
     return { audioBase64, contentType };
   }
@@ -214,7 +213,7 @@ export class ElevenLabsClient {
 
     let buffer = Buffer.from(response.data);
     let audioBase64 = buffer.toString('base64');
-    let contentType = response.headers['content-type'] || 'audio/mpeg';
+    let contentType = String(response.headers['content-type'] ?? 'audio/mpeg');
 
     return { audioBase64, contentType };
   }
@@ -310,7 +309,7 @@ export class ElevenLabsClient {
 
     let resultBuffer = Buffer.from(response.data);
     let audioBase64 = resultBuffer.toString('base64');
-    let contentType = response.headers['content-type'] || 'audio/mpeg';
+    let contentType = String(response.headers['content-type'] ?? 'audio/mpeg');
 
     return { audioBase64, contentType };
   }
