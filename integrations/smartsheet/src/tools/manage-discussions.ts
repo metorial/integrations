@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SmartsheetClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commentSchema = z.object({
   commentId: z.number().optional().describe('Comment ID'),
@@ -53,7 +53,7 @@ export let manageDiscussions = SlateTool.create(spec, {
     let client = new SmartsheetClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
-      let result;
+      let result: any;
       if (ctx.input.rowId) {
         result = await client.listRowDiscussions(ctx.input.sheetId, ctx.input.rowId, {
           include: 'comments',
@@ -89,7 +89,7 @@ export let manageDiscussions = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'create') {
-      let result;
+      let result: any;
       if (ctx.input.rowId) {
         result = await client.createDiscussionOnRow(ctx.input.sheetId, ctx.input.rowId, {
           comment: { text: ctx.input.commentText! }
@@ -117,7 +117,7 @@ export let manageDiscussions = SlateTool.create(spec, {
         text: ctx.input.commentText!
       });
 
-      let c = result.result || result;
+      let _c = result.result || result;
       return {
         output: {
           success: true

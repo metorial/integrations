@@ -216,7 +216,7 @@ export class Client {
       'Content-Type': 'application/json'
     };
     if (config.token) {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     }
     this.axios = createAxios({
       baseURL: config.baseUrl,

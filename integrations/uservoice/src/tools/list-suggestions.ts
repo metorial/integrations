@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let suggestionSchema = z.object({
   suggestionId: z.number().describe('Unique ID of the suggestion'),
@@ -61,12 +61,12 @@ export let listSuggestions = SlateTool.create(spec, {
     });
 
     let params: Record<string, unknown> = {};
-    if (ctx.input.forumId) params['forum'] = ctx.input.forumId;
-    if (ctx.input.sort) params['sort'] = ctx.input.sort;
-    if (ctx.input.page) params['page'] = ctx.input.page;
-    if (ctx.input.perPage) params['perPage'] = ctx.input.perPage;
-    if (ctx.input.updatedAfter) params['updatedAfter'] = ctx.input.updatedAfter;
-    if (ctx.input.state) params['state'] = ctx.input.state;
+    if (ctx.input.forumId) params.forum = ctx.input.forumId;
+    if (ctx.input.sort) params.sort = ctx.input.sort;
+    if (ctx.input.page) params.page = ctx.input.page;
+    if (ctx.input.perPage) params.perPage = ctx.input.perPage;
+    if (ctx.input.updatedAfter) params.updatedAfter = ctx.input.updatedAfter;
+    if (ctx.input.state) params.state = ctx.input.state;
 
     let result = await client.listSuggestions(params);
 

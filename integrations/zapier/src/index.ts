@@ -1,24 +1,24 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  listApps,
-  listZaps,
+  createActionRun,
+  createAuthentication,
+  createWorkflowStep,
   createZap,
-  listActions,
   getActionInputFields,
   getActionOutputFields,
-  getInputFieldChoices,
-  testActionStep,
-  createActionRun,
   getActionRun,
-  listAuthentications,
-  createAuthentication,
-  getZapTemplates,
-  listCategories,
+  getInputFieldChoices,
   getZapRuns,
-  createWorkflowStep
+  getZapTemplates,
+  listActions,
+  listApps,
+  listAuthentications,
+  listCategories,
+  listZaps,
+  testActionStep
 } from './tools';
-import { zapRunActivity, inboundWebhook } from './triggers';
+import { inboundWebhook, zapRunActivity } from './triggers';
 
 export let provider = Slate.create({
   spec,

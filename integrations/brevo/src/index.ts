@@ -1,35 +1,35 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  addContactsToList,
+  createContactList,
+  createDeal,
+  createEmailCampaign,
+  createOrUpdateContact,
+  deleteContact,
+  deleteDeal,
+  getAccount,
+  getContact,
+  getDeal,
+  getEmailCampaign,
+  listContactLists,
+  listContacts,
+  listDeals,
+  listEmailCampaigns,
+  listSenders,
+  removeContactsFromList,
+  sendEmailCampaignNow,
   sendTransactionalEmail,
   sendTransactionalSms,
-  createOrUpdateContact,
-  getContact,
+  trackEvent,
   updateContact,
-  deleteContact,
-  listContacts,
-  listContactLists,
-  createContactList,
-  addContactsToList,
-  removeContactsFromList,
-  createDeal,
-  getDeal,
-  updateDeal,
-  deleteDeal,
-  listDeals,
-  createEmailCampaign,
-  getEmailCampaign,
-  listEmailCampaigns,
-  sendEmailCampaignNow,
-  getAccount,
-  listSenders,
-  trackEvent
+  updateDeal
 } from './tools';
 import {
-  transactionalEmailEvents,
-  transactionalSmsEvents,
+  inboundEmailEvents,
   marketingEvents,
-  inboundEmailEvents
+  transactionalEmailEvents,
+  transactionalSmsEvents
 } from './triggers';
 
 export let provider = Slate.create({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { JiraClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageCustomerTool = SlateTool.create(spec, {
   name: 'Manage Customer',

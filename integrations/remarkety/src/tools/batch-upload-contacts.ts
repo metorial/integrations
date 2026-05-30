@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { formatContactForBatch, RemarketyClient } from '../lib/client';
 import { spec } from '../spec';
-import { RemarketyClient, formatContactForBatch } from '../lib/client';
 
 let batchContactSchema = z.object({
   email: z.string().describe('Contact email address'),

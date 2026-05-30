@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchQuestions,
-  getQuestion,
+  browseTags,
   getAnswers,
+  getInbox,
+  getPostRevisions,
+  getQuestion,
   getUser,
   getUserActivity,
-  browseTags,
-  getInbox,
+  listSites,
   manageComment,
-  postQuestion,
   postAnswer,
-  getPostRevisions,
-  listSites
+  postQuestion,
+  searchQuestions
 } from './tools';
-import { newQuestions, newAnswers, inboundWebhook } from './triggers';
+import { inboundWebhook, newAnswers, newQuestions } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listJobs,
+  executeScript,
+  getBuild,
   getJob,
   getJobConfig,
-  manageJob,
-  triggerBuild,
-  getBuild,
+  getSystemInfo,
   listBuilds,
-  stopBuild,
-  manageQueue,
-  manageView,
-  manageNode,
-  managePlugins,
+  listJobs,
   manageCredentials,
   manageFolder,
-  executeScript,
-  getSystemInfo
+  manageJob,
+  manageNode,
+  managePlugins,
+  manageQueue,
+  manageView,
+  stopBuild,
+  triggerBuild
 } from './tools';
-import { buildEvent, jobStatusChange, inboundWebhook } from './triggers';
+import { buildEvent, inboundWebhook, jobStatusChange } from './triggers';
 
 export let jenkins = Slate.create({
   spec,

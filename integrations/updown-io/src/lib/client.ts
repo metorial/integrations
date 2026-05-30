@@ -1,5 +1,5 @@
 import { createAxios } from 'slates';
-import type { Check, Downtime, MetricsEntry, Recipient, StatusPage, Node } from './types';
+import type { Check, Downtime, MetricsEntry, Node, Recipient, StatusPage } from './types';
 
 let mapCheck = (raw: any): Check => ({
   token: raw.token,
@@ -95,7 +95,7 @@ let mapMetricsEntry = (raw: any): MetricsEntry => ({
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://updown.io/api',
       headers: {

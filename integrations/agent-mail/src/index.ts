@@ -2,32 +2,32 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createInbox,
-  listInboxes,
-  getInbox,
-  updateInbox,
-  deleteInbox,
-  sendEmail,
-  replyToEmail,
-  forwardEmail,
-  listMessages,
-  getMessage,
-  updateMessageLabels,
-  listThreads,
-  getThread,
-  deleteThread,
-  manageDraft,
-  listDrafts,
   deleteDraft,
+  deleteInbox,
+  deleteThread,
+  forwardEmail,
   getAttachment,
-  manageDomain,
+  getInbox,
+  getMessage,
+  getThread,
   listDomains,
-  managePod,
-  listPods,
-  manageListEntry,
+  listDrafts,
+  listInboxes,
   listListEntries,
-  manageWebhook
+  listMessages,
+  listPods,
+  listThreads,
+  manageDomain,
+  manageDraft,
+  manageListEntry,
+  managePod,
+  manageWebhook,
+  replyToEmail,
+  sendEmail,
+  updateInbox,
+  updateMessageLabels
 } from './tools';
-import { messageEvents, domainEvents } from './triggers';
+import { domainEvents, messageEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

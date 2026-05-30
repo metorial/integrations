@@ -7,7 +7,7 @@ let http = createAxios({
 export interface Data247Response {
   response: {
     status: string;
-    results?: Array<Record<string, string>>;
+    results?: Record<string, string>[];
     message?: string;
   };
 }
@@ -25,7 +25,7 @@ export class Client {
     return response.data;
   }
 
-  private validateResponse(data: Data247Response): Array<Record<string, string>> {
+  private validateResponse(data: Data247Response): Record<string, string>[] {
     if (data.response.status !== 'OK') {
       throw new Error(
         `Data247 API error: ${data.response.status} - ${data.response.message || 'Unknown error'}`
@@ -48,7 +48,7 @@ export class Client {
     return results[0] || {};
   }
 
-  async smsGatewayLookupBatch(phones: string[]): Promise<Array<Record<string, string>>> {
+  async smsGatewayLookupBatch(phones: string[]): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'MT' };
     phones.forEach((phone, i) => {
       params[`p${i + 1}`] = phone;
@@ -64,7 +64,7 @@ export class Client {
     return results[0] || {};
   }
 
-  async carrierLookupUSABatch(phones: string[]): Promise<Array<Record<string, string>>> {
+  async carrierLookupUSABatch(phones: string[]): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'CU' };
     phones.forEach((phone, i) => {
       params[`p${i + 1}`] = phone;
@@ -80,9 +80,7 @@ export class Client {
     return results[0] || {};
   }
 
-  async carrierLookupInternationalBatch(
-    phones: string[]
-  ): Promise<Array<Record<string, string>>> {
+  async carrierLookupInternationalBatch(phones: string[]): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'CI' };
     phones.forEach((phone, i) => {
       params[`p${i + 1}`] = phone;
@@ -98,7 +96,7 @@ export class Client {
     return results[0] || {};
   }
 
-  async carrierTypeLookupBatch(phones: string[]): Promise<Array<Record<string, string>>> {
+  async carrierTypeLookupBatch(phones: string[]): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'CT' };
     phones.forEach((phone, i) => {
       params[`p${i + 1}`] = phone;
@@ -114,7 +112,7 @@ export class Client {
     return results[0] || {};
   }
 
-  async verifyEmailBatch(emails: string[]): Promise<Array<Record<string, string>>> {
+  async verifyEmailBatch(emails: string[]): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'VE' };
     emails.forEach((email, i) => {
       params[`p${i + 1}`] = email;
@@ -148,7 +146,7 @@ export class Client {
     return results[0] || {};
   }
 
-  async verifyPhoneBatch(phones: string[]): Promise<Array<Record<string, string>>> {
+  async verifyPhoneBatch(phones: string[]): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'VP' };
     phones.forEach((phone, i) => {
       params[`p${i + 1}`] = phone;
@@ -212,7 +210,7 @@ export class Client {
     return results[0] || {};
   }
 
-  async reversePhoneBatch(phones: string[]): Promise<Array<Record<string, string>>> {
+  async reversePhoneBatch(phones: string[]): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'APR' };
     phones.forEach((phone, i) => {
       params[`p${i + 1}`] = phone;
@@ -235,7 +233,7 @@ export class Client {
     return results[0] || {};
   }
 
-  async nameLookupBatch(phones: string[]): Promise<Array<Record<string, string>>> {
+  async nameLookupBatch(phones: string[]): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'NL' };
     phones.forEach((phone, i) => {
       params[`p${i + 1}`] = phone;
@@ -321,7 +319,7 @@ export class Client {
     return results[0] || {};
   }
 
-  async ipGeolocationBatch(ips: string[]): Promise<Array<Record<string, string>>> {
+  async ipGeolocationBatch(ips: string[]): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'GI' };
     ips.forEach((ip, i) => {
       params[`p${i + 1}`] = ip;
@@ -348,7 +346,7 @@ export class Client {
     phones: string[],
     orgId?: string,
     san?: string
-  ): Promise<Array<Record<string, string>>> {
+  ): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'DC' };
     if (orgId) params.org_id = orgId;
     if (san) params.san = san;
@@ -397,7 +395,7 @@ export class Client {
     return results[0] || {};
   }
 
-  async trustPhoneBatch(phones: string[]): Promise<Array<Record<string, string>>> {
+  async trustPhoneBatch(phones: string[]): Promise<Record<string, string>[]> {
     let params: Record<string, string> = { api: 'TP' };
     phones.forEach((phone, i) => {
       params[`p${i + 1}`] = phone;

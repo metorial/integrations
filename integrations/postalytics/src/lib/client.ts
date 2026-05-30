@@ -130,7 +130,7 @@ export class PostalyticsClient {
 
   // ---- Contacts ----
 
-  async getContactLists(): Promise<Array<Record<string, unknown>>> {
+  async getContactLists(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/api/v1/contacts');
     return response.data;
   }
@@ -143,7 +143,7 @@ export class PostalyticsClient {
   async getContactsOnList(
     listId: string,
     params?: { start?: number; limit?: number }
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.start !== undefined) queryParams.start = String(params.start);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -230,7 +230,7 @@ export class PostalyticsClient {
 
   // ---- Templates ----
 
-  async getTemplates(): Promise<Array<Record<string, unknown>>> {
+  async getTemplates(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/api/v1/templates');
     return response.data;
   }
@@ -260,12 +260,12 @@ export class PostalyticsClient {
 
   // ---- Campaigns ----
 
-  async getCampaigns(): Promise<Array<Record<string, unknown>>> {
+  async getCampaigns(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/api/v1/campaigns');
     return response.data;
   }
 
-  async getDripCampaigns(): Promise<Array<Record<string, unknown>>> {
+  async getDripCampaigns(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/api/v1/campaigns/drips');
     return response.data;
   }
@@ -352,7 +352,7 @@ export class PostalyticsClient {
 
   // ---- Flows ----
 
-  async getFlows(): Promise<Array<Record<string, unknown>>> {
+  async getFlows(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/api/v1/flow');
     return response.data;
   }
@@ -397,7 +397,7 @@ export class PostalyticsClient {
 
   // ---- Webhooks ----
 
-  async getWebhooks(): Promise<Array<Record<string, unknown>>> {
+  async getWebhooks(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/api/v1/webhooks');
     return response.data;
   }
@@ -444,7 +444,7 @@ export class PostalyticsClient {
 
   // ---- Suppression Lists ----
 
-  async getSuppressionLists(): Promise<Array<Record<string, unknown>>> {
+  async getSuppressionLists(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/api/v1/lists/suppression');
     return response.data;
   }

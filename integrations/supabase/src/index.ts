@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
+  getAuthConfig,
   getProject,
-  manageProject,
+  invokeRpc,
   listOrganizations,
-  runQuery,
-  queryTable,
-  manageTableRows,
+  listProjects,
+  manageAuthUsers,
   manageEdgeFunctions,
+  manageProject,
   manageSecrets,
   manageStorageBuckets,
   manageStorageObjects,
-  manageAuthUsers,
-  invokeRpc,
-  getAuthConfig
+  manageTableRows,
+  queryTable,
+  runQuery
 } from './tools';
 import { databaseChangesTrigger, databaseWebhookTrigger } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoreClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getStatistics = SlateTool.create(spec, {
   name: 'Get Statistics',
@@ -97,7 +97,7 @@ export let getStatistics = SlateTool.create(spec, {
       if (!bytes || bytes === 0) return '0 B';
       let units = ['B', 'KB', 'MB', 'GB', 'TB'];
       let i = Math.floor(Math.log(bytes) / Math.log(1024));
-      return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${units[i]}`;
+      return `${(bytes / 1024 ** i).toFixed(2)} ${units[i]}`;
     };
 
     let pullZoneInfo = ctx.input.pullZoneId ? ` for pull zone ${ctx.input.pullZoneId}` : '';

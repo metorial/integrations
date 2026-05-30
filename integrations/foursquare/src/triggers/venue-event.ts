@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let venueEventInputSchema = z.object({
   eventId: z.string().describe('Event ID'),

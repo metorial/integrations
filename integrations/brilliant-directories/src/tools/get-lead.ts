@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getLead = SlateTool.create(spec, {
   name: 'Get Lead',
@@ -39,7 +39,7 @@ Returns lead data including contact information, categories, and timestamps.`,
       websiteDomain: ctx.config.websiteDomain
     });
 
-    let result;
+    let result: any;
     if (ctx.input.leadId) {
       result = await client.getLead(ctx.input.leadId);
     } else if (ctx.input.property && ctx.input.propertyValue) {

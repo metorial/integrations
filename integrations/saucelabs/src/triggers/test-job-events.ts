@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let testJobEvents = SlateTrigger.create(spec, {
   name: 'Test Job Events',
@@ -61,7 +61,7 @@ export let testJobEvents = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.id) {
+      if (!data?.id) {
         return { inputs: [] };
       }
 

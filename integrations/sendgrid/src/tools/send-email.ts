@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let emailAddressSchema = z.object({
   email: z.string().describe('Email address'),
@@ -111,12 +111,12 @@ export let sendEmail = SlateTool.create(spec, {
       }
     }
 
-    let mailSettings: any = undefined;
+    let mailSettings: any;
     if (ctx.input.sandboxMode) {
       mailSettings = { sandboxMode: { enable: true } };
     }
 
-    let trackingSettings: any = undefined;
+    let trackingSettings: any;
     if (ctx.input.clickTracking !== undefined || ctx.input.openTracking !== undefined) {
       trackingSettings = {};
       if (ctx.input.clickTracking !== undefined) {
@@ -127,7 +127,7 @@ export let sendEmail = SlateTool.create(spec, {
       }
     }
 
-    let asm: any = undefined;
+    let asm: any;
     if (ctx.input.suppressionGroupId) {
       asm = { groupId: ctx.input.suppressionGroupId };
     }

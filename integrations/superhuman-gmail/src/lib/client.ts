@@ -113,7 +113,7 @@ export class Client {
 
     let payload: Record<string, string> = { raw: encoded };
     if (params.threadId) {
-      payload['threadId'] = params.threadId;
+      payload.threadId = params.threadId;
     }
 
     let response = await gmailAxios.post(`/users/${this.userId}/messages/send`, payload, {
@@ -254,7 +254,7 @@ export class Client {
       message: { raw: encoded }
     };
     if (params.threadId) {
-      payload['message']['threadId'] = params.threadId;
+      payload.message.threadId = params.threadId;
     }
 
     let response = await gmailAxios.post(`/users/${this.userId}/drafts`, payload, {
@@ -284,7 +284,7 @@ export class Client {
       message: { raw: encoded }
     };
     if (params.threadId) {
-      payload['message']['threadId'] = params.threadId;
+      payload.message.threadId = params.threadId;
     }
 
     let response = await gmailAxios.put(`/users/${this.userId}/drafts/${draftId}`, payload, {

@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { ManagementClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ManagementClient } from '../lib/client';
 import type { WebhookNotification } from '../lib/types';
+import { spec } from '../spec';
 
 export let assetEvents = SlateTrigger.create(spec, {
   name: 'Asset Events',

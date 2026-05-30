@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getDocument,
-  listDocuments,
-  createDocument,
-  updateDocument,
-  deleteDocument,
-  submitDocument,
-  cancelDocument,
   amendDocument,
   callMethod,
+  cancelDocument,
+  countDocuments,
+  createDocument,
+  deleteDocument,
+  getDocument,
   getReport,
-  countDocuments
+  listDocuments,
+  submitDocument,
+  updateDocument
 } from './tools';
 import { documentEvent } from './triggers';
 

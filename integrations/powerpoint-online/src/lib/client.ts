@@ -1,10 +1,10 @@
 import { createAxios } from 'slates';
 import type {
   DriveItem,
-  Permission,
   DriveItemVersion,
-  ThumbnailSet,
-  Subscription
+  Permission,
+  Subscription,
+  ThumbnailSet
 } from './types';
 
 export class GraphClient {
@@ -79,8 +79,8 @@ export class GraphClient {
       params.siteId
     );
     let queryParams: Record<string, string> = {};
-    if (params.top) queryParams['$top'] = String(params.top);
-    if (params.skipToken) queryParams['$skiptoken'] = params.skipToken;
+    if (params.top) queryParams.$top = String(params.top);
+    if (params.skipToken) queryParams.$skiptoken = params.skipToken;
 
     let response = await this.axios.get(`${path}/children`, { params: queryParams });
     return {
@@ -210,7 +210,7 @@ export class GraphClient {
     let contentPath = `${path}/content`;
     let queryParams: Record<string, string> = {};
     if (params.format) {
-      queryParams['format'] = params.format;
+      queryParams.format = params.format;
     }
 
     let response = await this.axios.get(contentPath, {
@@ -516,8 +516,8 @@ export class GraphClient {
     }
 
     let queryString: Record<string, string> = { q: params.query };
-    if (params.top) queryString['$top'] = String(params.top);
-    if (params.skipToken) queryString['$skiptoken'] = params.skipToken;
+    if (params.top) queryString.$top = String(params.top);
+    if (params.skipToken) queryString.$skiptoken = params.skipToken;
 
     let response = await this.axios.get(
       `${base}/root/search(q='${encodeURIComponent(params.query)}')`,
@@ -608,7 +608,7 @@ export class GraphClient {
 
     let queryParams: Record<string, string> = {};
     if (params.token) {
-      queryParams['token'] = params.token;
+      queryParams.token = params.token;
     }
 
     let response = await this.axios.get(url, { params: queryParams });

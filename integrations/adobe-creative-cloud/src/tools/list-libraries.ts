@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { LibrariesClient } from '../lib/libraries';
+import { spec } from '../spec';
 
 export let listLibraries = SlateTool.create(spec, {
   name: 'List Libraries',
@@ -61,7 +61,7 @@ export let listLibraries = SlateTool.create(spec, {
         totalCount: result.total_count,
         nextCursor: result._links?.next?.href
       },
-      message: `Found **${libraries.length}** libraries.${libraries.length > 0 ? ' Libraries: ' + libraries.map((l: any) => `"${l.name}"`).join(', ') : ''}`
+      message: `Found **${libraries.length}** libraries.${libraries.length > 0 ? ` Libraries: ${libraries.map((l: any) => `"${l.name}"`).join(', ')}` : ''}`
     };
   })
   .build();

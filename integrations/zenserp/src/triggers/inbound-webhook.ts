@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 /**
  * Generic inbound webhook for providers without a tailored webhook trigger yet.
@@ -32,7 +32,7 @@ export let inboundWebhook = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let contentType = ctx.request.headers.get('content-type') ?? '';
       let text = await ctx.request.text();
-      if (!text || !text.trim()) {
+      if (!text?.trim()) {
         return {
           inputs: [{ payload: {}, contentType }]
         };

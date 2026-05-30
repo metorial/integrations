@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listFeatureFlags,
-  getFeatureFlag,
   createFeatureFlag,
-  updateFeatureFlag,
   deleteFeatureFlag,
+  getFeatureFlag,
   listEnvironments,
-  manageEnvironment,
-  manageSegment,
+  listFeatureFlags,
   listSegments,
+  listTrafficTypes,
   listWorkspaces,
+  manageEnvironment,
   manageFlagSet,
-  manageUsers,
   manageGroups,
-  listTrafficTypes
+  manageSegment,
+  manageUsers,
+  updateFeatureFlag
 } from './tools';
-import { flagChange, adminAudit, impressions, metricAlert } from './triggers';
+import { adminAudit, flagChange, impressions, metricAlert } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let lineItemSchema = z.object({
   itemId: z.string().optional().describe('ID of an existing item from the items catalog'),

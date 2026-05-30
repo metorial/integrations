@@ -206,16 +206,15 @@ export class TablesClient {
       api_key: this.apiKey
     };
 
-    if (params.startDate) queryParams['start_date'] = params.startDate;
-    if (params.endDate) queryParams['end_date'] = params.endDate;
-    if (params.order) queryParams['order'] = params.order;
-    if (params.collapse && params.collapse !== 'none')
-      queryParams['collapse'] = params.collapse;
+    if (params.startDate) queryParams.start_date = params.startDate;
+    if (params.endDate) queryParams.end_date = params.endDate;
+    if (params.order) queryParams.order = params.order;
+    if (params.collapse && params.collapse !== 'none') queryParams.collapse = params.collapse;
     if (params.transform && params.transform !== 'none')
-      queryParams['transform'] = params.transform;
-    if (params.limit) queryParams['limit'] = String(params.limit);
+      queryParams.transform = params.transform;
+    if (params.limit) queryParams.limit = String(params.limit);
     if (params.columnIndex !== undefined)
-      queryParams['column_index'] = String(params.columnIndex);
+      queryParams.column_index = String(params.columnIndex);
 
     let response = await this.http.get(
       `/datasets/${params.databaseCode}/${params.datasetCode}/data.json`,
@@ -242,9 +241,9 @@ export class TablesClient {
       query: params.query
     };
 
-    if (params.databaseCode) queryParams['database_code'] = params.databaseCode;
-    if (params.perPage) queryParams['per_page'] = String(params.perPage);
-    if (params.page) queryParams['page'] = String(params.page);
+    if (params.databaseCode) queryParams.database_code = params.databaseCode;
+    if (params.perPage) queryParams.per_page = String(params.perPage);
+    if (params.page) queryParams.page = String(params.page);
 
     let response = await this.http.get('/datasets.json', {
       params: queryParams
@@ -283,8 +282,8 @@ export class TablesClient {
       api_key: this.apiKey
     };
 
-    if (params?.perPage) queryParams['per_page'] = String(params.perPage);
-    if (params?.page) queryParams['page'] = String(params.page);
+    if (params?.perPage) queryParams.per_page = String(params.perPage);
+    if (params?.page) queryParams.page = String(params.page);
 
     let response = await this.http.get('/databases.json', {
       params: queryParams

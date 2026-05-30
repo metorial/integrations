@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  scrapeWebpage,
   captureScreenshot,
   extractData,
-  startCrawl,
-  getCrawlStatus,
+  getAccountInfo,
   getCrawlResults,
-  getAccountInfo
+  getCrawlStatus,
+  scrapeWebpage,
+  startCrawl
 } from './tools';
 import {
-  scrapeCompleted,
-  screenshotCompleted,
+  crawlerEvent,
   extractionCompleted,
-  crawlerEvent
+  scrapeCompleted,
+  screenshotCompleted
 } from './triggers';
 
 export let provider = Slate.create({

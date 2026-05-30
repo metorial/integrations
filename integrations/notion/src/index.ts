@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createPage,
-  getPage,
-  updatePage,
-  search,
-  queryDatabase,
-  getDatabase,
-  createDatabase,
-  updateDatabase,
-  getBlockChildren,
-  appendBlocks,
-  updateBlock,
-  deleteBlock,
   addComment,
+  appendBlocks,
+  createDatabase,
+  createPage,
+  deleteBlock,
+  getBlockChildren,
+  getDatabase,
+  getPage,
   listComments,
-  listUsers
+  listUsers,
+  queryDatabase,
+  search,
+  updateBlock,
+  updateDatabase,
+  updatePage
 } from './tools';
-import { pageEvents, commentEvents, databaseEvents, pageUpdates } from './triggers';
+import { commentEvents, databaseEvents, pageEvents, pageUpdates } from './triggers';
 
 export let provider = Slate.create({
   spec,

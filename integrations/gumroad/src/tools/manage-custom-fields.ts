@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GumroadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let customFieldSchema = z.object({
   name: z.string().describe('Custom field name'),

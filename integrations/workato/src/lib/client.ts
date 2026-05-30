@@ -491,7 +491,7 @@ export class WorkatoClient {
     name: string;
     description?: string;
     retention?: number;
-    schema?: Array<Record<string, unknown>>;
+    schema?: Record<string, unknown>[];
   }) {
     let response = await this.api.post('/event_streams/topics', params);
     return response.data;

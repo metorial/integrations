@@ -153,21 +153,21 @@ export let formatCustomerPayload = (
 
   if (mapped.customerId !== undefined) {
     mapped.id = mapped.customerId;
-    delete mapped.customerId;
+    mapped.customerId = undefined;
   }
   if (mapped.defaultAddress !== undefined) {
     mapped.default_address = toSnakeCase(mapped.defaultAddress as Record<string, unknown>);
-    delete mapped.defaultAddress;
+    mapped.defaultAddress = undefined;
   }
   if (mapped.groups !== undefined) {
-    mapped.groups = (mapped.groups as Array<Record<string, unknown>>).map(g => ({
+    mapped.groups = (mapped.groups as Record<string, unknown>[]).map(g => ({
       id: g.groupId,
       name: g.name
     }));
   }
   if (mapped.rewardPoints !== undefined) {
     mapped.rewards = { points: mapped.rewardPoints };
-    delete mapped.rewardPoints;
+    mapped.rewardPoints = undefined;
   }
 
   return toSnakeCase(mapped);
@@ -178,37 +178,37 @@ export let formatOrderPayload = (data: Record<string, unknown>): Record<string, 
 
   if (mapped.orderId !== undefined) {
     mapped.id = mapped.orderId;
-    delete mapped.orderId;
+    mapped.orderId = undefined;
   }
   if (mapped.customer !== undefined) {
     mapped.customer = formatCustomerPayload(mapped.customer as Record<string, unknown>);
   }
   if (mapped.lineItems !== undefined) {
-    mapped.line_items = (mapped.lineItems as Array<Record<string, unknown>>).map(item => {
+    mapped.line_items = (mapped.lineItems as Record<string, unknown>[]).map(item => {
       let formatted: Record<string, unknown> = { ...item };
       if (formatted.productId !== undefined) {
         formatted.product_id = formatted.productId;
-        delete formatted.productId;
+        formatted.productId = undefined;
       }
       if (formatted.variantId !== undefined) {
         formatted.variant_id = formatted.variantId;
-        delete formatted.variantId;
+        formatted.variantId = undefined;
       }
       return toSnakeCase(formatted);
     });
-    delete mapped.lineItems;
+    mapped.lineItems = undefined;
   }
   if (mapped.discountCodes !== undefined) {
     mapped.discount_codes = mapped.discountCodes;
-    delete mapped.discountCodes;
+    mapped.discountCodes = undefined;
   }
   if (mapped.billingAddress !== undefined) {
     mapped.billing_address = toSnakeCase(mapped.billingAddress as Record<string, unknown>);
-    delete mapped.billingAddress;
+    mapped.billingAddress = undefined;
   }
   if (mapped.shippingAddress !== undefined) {
     mapped.shipping_address = toSnakeCase(mapped.shippingAddress as Record<string, unknown>);
-    delete mapped.shippingAddress;
+    mapped.shippingAddress = undefined;
   }
 
   return toSnakeCase(mapped);
@@ -219,22 +219,22 @@ export let formatProductPayload = (data: Record<string, unknown>): Record<string
 
   if (mapped.productId !== undefined) {
     mapped.id = mapped.productId;
-    delete mapped.productId;
+    mapped.productId = undefined;
   }
   if (mapped.imageUrl !== undefined) {
     mapped.image = mapped.imageUrl;
-    delete mapped.imageUrl;
+    mapped.imageUrl = undefined;
   }
   if (mapped.variants !== undefined) {
-    mapped.variants = (mapped.variants as Array<Record<string, unknown>>).map(v => {
+    mapped.variants = (mapped.variants as Record<string, unknown>[]).map(v => {
       let formatted: Record<string, unknown> = { ...v };
       if (formatted.variantId !== undefined) {
         formatted.id = formatted.variantId;
-        delete formatted.variantId;
+        formatted.variantId = undefined;
       }
       if (formatted.imageUrl !== undefined) {
         formatted.image = formatted.imageUrl;
-        delete formatted.imageUrl;
+        formatted.imageUrl = undefined;
       }
       return toSnakeCase(formatted);
     });
@@ -248,25 +248,25 @@ export let formatCartPayload = (data: Record<string, unknown>): Record<string, u
 
   if (mapped.cartId !== undefined) {
     mapped.id = mapped.cartId;
-    delete mapped.cartId;
+    mapped.cartId = undefined;
   }
   if (mapped.customer !== undefined) {
     mapped.customer = formatCustomerPayload(mapped.customer as Record<string, unknown>);
   }
   if (mapped.lineItems !== undefined) {
-    mapped.line_items = (mapped.lineItems as Array<Record<string, unknown>>).map(item => {
+    mapped.line_items = (mapped.lineItems as Record<string, unknown>[]).map(item => {
       let formatted: Record<string, unknown> = { ...item };
       if (formatted.productId !== undefined) {
         formatted.product_id = formatted.productId;
-        delete formatted.productId;
+        formatted.productId = undefined;
       }
       if (formatted.variantId !== undefined) {
         formatted.variant_id = formatted.variantId;
-        delete formatted.variantId;
+        formatted.variantId = undefined;
       }
       return toSnakeCase(formatted);
     });
-    delete mapped.lineItems;
+    mapped.lineItems = undefined;
   }
 
   return toSnakeCase(mapped);

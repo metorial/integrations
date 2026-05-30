@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let versionOutputSchema = z.object({
   versionId: z.string().describe('ID of this version'),

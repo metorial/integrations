@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let locationCompletionSchema = z.object({
   fullLocation: z.string().optional().describe('Full location string (AU)'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let lookupDomain = SlateTool.create(spec, {
   name: 'Lookup Domain',
@@ -29,7 +29,7 @@ Supports single domain lookup or bulk lookup of multiple domains at once.`,
     let client = new Client(ctx.auth.token);
     let { domains } = ctx.input;
 
-    let results;
+    let results: any;
     if (domains.length === 1) {
       results = await client.lookupDomain(domains[0]!);
     } else {

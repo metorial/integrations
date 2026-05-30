@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RedisCloudClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let subscriptionSchema = z.object({
   subscriptionId: z.number().describe('Unique subscription identifier'),

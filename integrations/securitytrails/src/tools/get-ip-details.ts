@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getIpDetails = SlateTool.create(spec, {
   name: 'Get IP Details',
@@ -43,9 +43,9 @@ export let getIpDetails = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let whois: any = undefined;
-    let neighbors: any = undefined;
-    let userAgents: any = undefined;
+    let whois: any;
+    let neighbors: any;
+    let userAgents: any;
     let sections: string[] = [];
 
     if (ctx.input.includeWhois) {

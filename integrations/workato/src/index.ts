@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listRecipesTool,
+  deployProjectTool,
+  exportPackageTool,
   getRecipeTool,
-  manageRecipeTool,
-  startStopRecipeTool,
   getRecipeVersionsTool,
+  getWorkspaceInfoTool,
   listConnectionsTool,
-  manageConnectionTool,
+  listDeploymentsTool,
   listJobsTool,
   listProjectsTool,
-  manageFolderTool,
-  deployProjectTool,
-  listDeploymentsTool,
-  exportPackageTool,
-  manageLookupTableTool,
-  manageEventTopicTool,
+  listRecipesTool,
+  manageApiEndpointsTool,
+  manageConnectionTool,
   manageDataTableTool,
   manageEnvironmentPropertiesTool,
-  manageApiEndpointsTool,
-  getWorkspaceInfoTool
+  manageEventTopicTool,
+  manageFolderTool,
+  manageLookupTableTool,
+  manageRecipeTool,
+  startStopRecipeTool
 } from './tools';
 import {
-  recipeChangesTrigger,
-  newJobTrigger,
   eventStreamMessagesTrigger,
-  inboundWebhook
+  inboundWebhook,
+  newJobTrigger,
+  recipeChangesTrigger
 } from './triggers';
 
 export let provider = Slate.create({

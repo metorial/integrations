@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let cartItemSchema = z.object({
   productId: z.string().describe('Product ID.'),
@@ -61,14 +61,14 @@ export let manageCart = SlateTool.create(spec, {
       cart_id: ctx.input.cartId
     };
 
-    if (ctx.input.cartUrl) cart['cart_url'] = ctx.input.cartUrl;
-    if (ctx.input.grandTotal !== undefined) cart['grand_total'] = ctx.input.grandTotal;
+    if (ctx.input.cartUrl) cart.cart_url = ctx.input.cartUrl;
+    if (ctx.input.grandTotal !== undefined) cart.grand_total = ctx.input.grandTotal;
     if (ctx.input.totalDiscounts !== undefined)
-      cart['total_discounts'] = ctx.input.totalDiscounts;
-    if (ctx.input.currencyCode) cart['currency_code'] = ctx.input.currencyCode;
-    if (ctx.input.occurredAt) cart['occurred_at'] = ctx.input.occurredAt;
+      cart.total_discounts = ctx.input.totalDiscounts;
+    if (ctx.input.currencyCode) cart.currency_code = ctx.input.currencyCode;
+    if (ctx.input.occurredAt) cart.occurred_at = ctx.input.occurredAt;
 
-    cart['items'] = ctx.input.items.map(item => ({
+    cart.items = ctx.input.items.map(item => ({
       product_id: item.productId,
       name: item.name,
       price: item.price,

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { buildClientConfig, flattenSingleResource, flattenResourceList } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { buildClientConfig, flattenResourceList, flattenSingleResource } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageCoupons = SlateTool.create(spec, {
   name: 'Manage Coupons',

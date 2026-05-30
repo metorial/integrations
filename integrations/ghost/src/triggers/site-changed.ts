@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { GhostAdminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let siteChanged = SlateTrigger.create(spec, {
   name: 'Site Changed',
@@ -49,7 +49,7 @@ export let siteChanged = SlateTrigger.create(spec, {
       }
     },
 
-    handleRequest: async ctx => {
+    handleRequest: async _ctx => {
       let timestamp = new Date().toISOString();
       return {
         inputs: [

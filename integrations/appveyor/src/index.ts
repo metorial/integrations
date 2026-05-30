@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
-  getProject,
-  manageProject,
-  getProjectSettings,
+  encryptValue,
   getBuildHistory,
-  startBuild,
-  manageBuild,
   getBuildLogAndArtifacts,
-  manageEnvironment,
-  manageDeployment,
-  manageUsers,
+  getProject,
+  getProjectSettings,
+  listProjects,
+  manageBuild,
   manageCollaborators,
+  manageDeployment,
+  manageEnvironment,
+  manageProject,
   manageRoles,
-  encryptValue
+  manageUsers,
+  startBuild
 } from './tools';
 import { buildEvents } from './triggers';
 

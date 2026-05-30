@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
+import { intercomServiceError } from '../lib/errors';
 import { stringOrUndefined } from '../lib/output';
 import { spec } from '../spec';
-import { z } from 'zod';
-import { intercomServiceError } from '../lib/errors';
 
 export let sendMessage = SlateTool.create(spec, {
   name: 'Send Message',

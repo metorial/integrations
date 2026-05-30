@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let splitPdf = SlateTool.create(spec, {
   name: 'Split PDF',
@@ -61,7 +61,7 @@ When splitting by pages, specify comma-separated page ranges. When splitting by 
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let result;
+    let result: any;
 
     if (ctx.input.splitMode === 'pages') {
       if (!ctx.input.pages) {

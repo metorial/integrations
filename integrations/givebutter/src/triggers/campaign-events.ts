@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let campaignEvents = SlateTrigger.create(spec, {
   name: 'Campaign Events',
@@ -62,7 +62,7 @@ export let campaignEvents = SlateTrigger.create(spec, {
       let eventType = body.event as string;
       let data = body.data;
 
-      if (!eventType || !eventType.startsWith('campaign.')) {
+      if (!eventType?.startsWith('campaign.')) {
         return { inputs: [] };
       }
 

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { dealSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let dealEvents = SlateTrigger.create(spec, {
   name: 'Deal Events',

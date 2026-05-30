@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OpenWeatherClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let geocodeResultSchema = z.object({
   name: z.string().describe('Location name'),
@@ -107,7 +107,7 @@ export let geocodeLocation = SlateTool.create(spec, {
     let summary = results
       .map(
         r =>
-          `${r.name}${r.state ? ', ' + r.state : ''}, ${r.country} (${r.latitude}, ${r.longitude})`
+          `${r.name}${r.state ? `, ${r.state}` : ''}, ${r.country} (${r.latitude}, ${r.longitude})`
       )
       .join('; ');
 

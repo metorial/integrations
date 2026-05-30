@@ -780,13 +780,20 @@ export class ShopifyClient {
     metafieldId: string,
     metafield: Record<string, any>
   ) {
-    let response = await this.http.put(this.metafieldsPath(resource, resourceId, metafieldId), {
-      metafield: { id: metafieldId, ...metafield }
-    });
+    let response = await this.http.put(
+      this.metafieldsPath(resource, resourceId, metafieldId),
+      {
+        metafield: { id: metafieldId, ...metafield }
+      }
+    );
     return response.data.metafield;
   }
 
-  async deleteMetafield(resource: string, resourceId: string | undefined, metafieldId: string) {
+  async deleteMetafield(
+    resource: string,
+    resourceId: string | undefined,
+    metafieldId: string
+  ) {
     await this.http.delete(this.metafieldsPath(resource, resourceId, metafieldId));
   }
 

@@ -1,36 +1,34 @@
 // Evernote API Client - communicates via Thrift Binary Protocol over HTTP
 import { axios } from 'slates';
-import { ThriftWriter, ThriftReader, TType, TMessageType } from './thrift';
 import {
-  writeNote,
-  writeNotebook,
-  writeTag,
-  writeNoteFilter,
-  writeNotesMetadataResultSpec,
-  writeNoteResultSpec,
-  writeSavedSearch,
+  readEDAMNotFoundException,
+  readEDAMSystemException,
+  readEDAMUserException,
   readNote,
   readNotebook,
-  readTag,
-  readSavedSearch,
-  readUser,
   readNotesMetadataList,
+  readSavedSearch,
   readSyncState,
-  readEDAMUserException,
-  readEDAMSystemException,
-  readEDAMNotFoundException
+  readTag,
+  readUser,
+  writeNote,
+  writeNotebook,
+  writeNoteFilter,
+  writeNotesMetadataResultSpec,
+  writeSavedSearch,
+  writeTag
 } from './serializers';
+import { ThriftReader, ThriftWriter, TMessageType, TType } from './thrift';
 import type {
   EvernoteNote,
   EvernoteNotebook,
-  EvernoteTag,
   EvernoteNoteFilter,
-  EvernoteNotesMetadataResultSpec,
   EvernoteNotesMetadataList,
+  EvernoteNotesMetadataResultSpec,
   EvernoteSavedSearch,
-  EvernoteUser,
   EvernoteSyncState,
-  EvernoteNoteResultSpec
+  EvernoteTag,
+  EvernoteUser
 } from './types';
 
 // Evernote error codes

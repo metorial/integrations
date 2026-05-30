@@ -37,7 +37,7 @@ export interface Message {
   promptId: number;
   userQuery: string;
   openaiResponse: string;
-  citations: Array<Record<string, unknown>>;
+  citations: Record<string, unknown>[];
   createdAt: string;
   updatedAt: string;
 }
@@ -101,7 +101,7 @@ export class CustomGPTClient {
       perPage: data.per_page,
       total: data.total,
       lastPage: data.last_page,
-      items: (data.data as Array<Record<string, unknown>>).map(p => this.normalizeAgent(p))
+      items: (data.data as Record<string, unknown>[]).map(p => this.normalizeAgent(p))
     };
   }
 
@@ -194,9 +194,7 @@ export class CustomGPTClient {
       perPage: data.per_page,
       total: data.total,
       lastPage: data.last_page,
-      items: (data.data as Array<Record<string, unknown>>).map(c =>
-        this.normalizeConversation(c)
-      )
+      items: (data.data as Record<string, unknown>[]).map(c => this.normalizeConversation(c))
     };
   }
 
@@ -269,7 +267,7 @@ export class CustomGPTClient {
       perPage: data.per_page ?? 20,
       total: data.total ?? 0,
       lastPage: data.last_page ?? 1,
-      items: (data.data as Array<Record<string, unknown>>).map(m => this.normalizeMessage(m))
+      items: (data.data as Record<string, unknown>[]).map(m => this.normalizeMessage(m))
     };
   }
 
@@ -326,7 +324,7 @@ export class CustomGPTClient {
     projectId: number,
     sessionId: string,
     promptId: number
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/projects/${projectId}/conversations/${sessionId}/messages/${promptId}/claims`
     );
@@ -360,7 +358,7 @@ export class CustomGPTClient {
   async listSources(projectId: number): Promise<Source[]> {
     let response = await this.axios.get(`/projects/${projectId}/sources`);
     let items = response.data?.data?.data ?? response.data?.data ?? [];
-    return (items as Array<Record<string, unknown>>).map(s => this.normalizeSource(s));
+    return (items as Record<string, unknown>[]).map(s => this.normalizeSource(s));
   }
 
   async addSource(
@@ -434,7 +432,7 @@ export class CustomGPTClient {
       perPage: data.per_page ?? 20,
       total: data.total ?? 0,
       lastPage: data.last_page ?? 1,
-      items: (data.data as Array<Record<string, unknown>>).map(p => this.normalizePage(p))
+      items: (data.data as Record<string, unknown>[]).map(p => this.normalizePage(p))
     };
   }
 
@@ -463,10 +461,7 @@ export class CustomGPTClient {
     return response.data?.data;
   }
 
-  async getPageLabels(
-    projectId: number,
-    pageId: number
-  ): Promise<Array<Record<string, unknown>>> {
+  async getPageLabels(projectId: number, pageId: number): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/projects/${projectId}/pages/${pageId}/labels`);
     return response.data?.data ?? [];
   }
@@ -492,7 +487,7 @@ export class CustomGPTClient {
     return response.data?.data;
   }
 
-  async listPersonaVersions(projectId: number): Promise<Array<Record<string, unknown>>> {
+  async listPersonaVersions(projectId: number): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/projects/${projectId}/settings/personas`);
     return response.data?.data ?? [];
   }
@@ -525,7 +520,7 @@ export class CustomGPTClient {
 
   // ---- Labels ----
 
-  async listLabels(projectId: number): Promise<Array<Record<string, unknown>>> {
+  async listLabels(projectId: number): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/projects/${projectId}/labels`);
     return response.data?.data ?? [];
   }
@@ -618,7 +613,7 @@ export class CustomGPTClient {
       promptId: (data.id as number) ?? (data.prompt_id as number),
       userQuery: (data.user_query as string) ?? (data.prompt as string) ?? '',
       openaiResponse: (data.openai_response as string) ?? (data.response as string) ?? '',
-      citations: (data.citations as Array<Record<string, unknown>>) ?? [],
+      citations: (data.citations as Record<string, unknown>[]) ?? [],
       createdAt: data.created_at as string,
       updatedAt: (data.updated_at as string) ?? (data.created_at as string)
     };

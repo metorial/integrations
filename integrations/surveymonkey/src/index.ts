@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listSurveys,
-  getSurvey,
-  createSurvey,
-  updateSurvey,
-  deleteSurvey,
   createCollector,
-  updateCollector,
-  listCollectors,
-  deleteCollector,
-  getResponses,
-  getResponse,
-  listContactLists,
-  createContactList,
-  listContacts,
   createContact,
+  createContactList,
   createContactsBulk,
+  createSurvey,
+  deleteCollector,
   deleteContactList,
+  deleteSurvey,
+  getResponse,
+  getResponses,
+  getSurvey,
+  getUser,
+  listCollectors,
+  listContactLists,
+  listContacts,
+  listSurveys,
   sendInvitation,
-  getUser
+  updateCollector,
+  updateSurvey
 } from './tools';
 import { responseEvent } from './triggers';
 

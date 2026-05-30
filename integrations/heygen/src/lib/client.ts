@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class HeyGenClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.heygen.com',
       headers: {
@@ -11,10 +11,6 @@ export class HeyGenClient {
         'Content-Type': 'application/json'
       }
     });
-  }
-
-  private getAuthHeaders(): Record<string, string> {
-    return { 'X-Api-Key': this.config.token };
   }
 
   // ---- Avatars ----

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FlexClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageInteractionChannelTool = SlateTool.create(spec, {
   name: 'Manage Interaction Channel',

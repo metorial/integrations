@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MeetClient } from '../lib/client';
 import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transcriptSchema = z.object({
   transcriptName: z.string().describe('Resource name of the transcript'),
@@ -15,10 +15,7 @@ let transcriptSchema = z.object({
 
 let transcriptEntrySchema = z.object({
   entryName: z.string().describe('Resource name of the entry'),
-  participantName: z
-    .string()
-    .optional()
-    .describe('Resource name of the speaking participant'),
+  participantName: z.string().optional().describe('Resource name of the speaking participant'),
   text: z.string().optional().describe('Transcribed text'),
   languageCode: z.string().optional().describe('Language code (e.g., "en-US")'),
   startTime: z.string().optional().describe('When the entry started'),

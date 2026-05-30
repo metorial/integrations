@@ -1,30 +1,30 @@
 import { createAxios } from 'slates';
 import type {
-  GraphListResponse,
-  Message,
-  MailFolder,
   Attachment,
-  CalendarEvent,
+  Attendee,
   Calendar,
+  CalendarEvent,
+  ChecklistItem,
   Contact,
   ContactFolder,
-  TodoTaskList,
-  TodoTask,
-  ChecklistItem,
-  Subscription,
-  Recipient,
-  ItemBody,
   DateTimeTimeZone,
-  Attendee,
+  GraphListResponse,
+  ItemBody,
   Location,
+  MailFolder,
+  MeetingTimeSuggestion,
+  Message,
   PatternedRecurrence,
-  MeetingTimeSuggestion
+  Recipient,
+  Subscription,
+  TodoTask,
+  TodoTaskList
 } from './types';
 
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://graph.microsoft.com/v1.0',
       headers: {
@@ -50,16 +50,16 @@ export class Client {
       : '/me/messages';
 
     let queryParams: Record<string, string> = {};
-    if (params?.top) queryParams['$top'] = String(params.top);
-    if (params?.skip) queryParams['$skip'] = String(params.skip);
-    if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderby && !params.search) queryParams['$orderby'] = params.orderby;
-    if (params?.search) queryParams['$search'] = `"${params.search}"`;
-    if (params?.select?.length) queryParams['$select'] = params.select.join(',');
+    if (params?.top) queryParams.$top = String(params.top);
+    if (params?.skip) queryParams.$skip = String(params.skip);
+    if (params?.filter) queryParams.$filter = params.filter;
+    if (params?.orderby && !params.search) queryParams.$orderby = params.orderby;
+    if (params?.search) queryParams.$search = `"${params.search}"`;
+    if (params?.select?.length) queryParams.$select = params.select.join(',');
 
     let headers: Record<string, string> = {};
     if (params?.search) {
-      headers['ConsistencyLevel'] = 'eventual';
+      headers.ConsistencyLevel = 'eventual';
     }
 
     let response = await this.axios.get(basePath, { params: queryParams, headers });
@@ -68,7 +68,7 @@ export class Client {
 
   async getMessage(messageId: string, select?: string[]): Promise<Message> {
     let queryParams: Record<string, string> = {};
-    if (select?.length) queryParams['$select'] = select.join(',');
+    if (select?.length) queryParams.$select = select.join(',');
     let response = await this.axios.get(`/me/messages/${messageId}`, { params: queryParams });
     return response.data;
   }
@@ -226,19 +226,19 @@ export class Client {
       basePath = params?.calendarId
         ? `/me/calendars/${params.calendarId}/calendarView`
         : '/me/calendarView';
-      queryParams['startDateTime'] = params.startDateTime;
-      queryParams['endDateTime'] = params.endDateTime;
+      queryParams.startDateTime = params.startDateTime;
+      queryParams.endDateTime = params.endDateTime;
     } else {
       basePath = params?.calendarId
         ? `/me/calendars/${params.calendarId}/events`
         : '/me/events';
     }
 
-    if (params?.top) queryParams['$top'] = String(params.top);
-    if (params?.skip) queryParams['$skip'] = String(params.skip);
-    if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderby) queryParams['$orderby'] = params.orderby;
-    if (params?.select?.length) queryParams['$select'] = params.select.join(',');
+    if (params?.top) queryParams.$top = String(params.top);
+    if (params?.skip) queryParams.$skip = String(params.skip);
+    if (params?.filter) queryParams.$filter = params.filter;
+    if (params?.orderby) queryParams.$orderby = params.orderby;
+    if (params?.select?.length) queryParams.$select = params.select.join(',');
 
     let response = await this.axios.get(basePath, { params: queryParams });
     return response.data;
@@ -246,7 +246,7 @@ export class Client {
 
   async getEvent(eventId: string, select?: string[]): Promise<CalendarEvent> {
     let queryParams: Record<string, string> = {};
-    if (select?.length) queryParams['$select'] = select.join(',');
+    if (select?.length) queryParams.$select = select.join(',');
     let response = await this.axios.get(`/me/events/${eventId}`, { params: queryParams });
     return response.data;
   }
@@ -368,16 +368,16 @@ export class Client {
       : '/me/contacts';
 
     let queryParams: Record<string, string> = {};
-    if (params?.top) queryParams['$top'] = String(params.top);
-    if (params?.skip) queryParams['$skip'] = String(params.skip);
-    if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderby && !params.search) queryParams['$orderby'] = params.orderby;
-    if (params?.select?.length) queryParams['$select'] = params.select.join(',');
-    if (params?.search) queryParams['$search'] = `"${params.search}"`;
+    if (params?.top) queryParams.$top = String(params.top);
+    if (params?.skip) queryParams.$skip = String(params.skip);
+    if (params?.filter) queryParams.$filter = params.filter;
+    if (params?.orderby && !params.search) queryParams.$orderby = params.orderby;
+    if (params?.select?.length) queryParams.$select = params.select.join(',');
+    if (params?.search) queryParams.$search = `"${params.search}"`;
 
     let headers: Record<string, string> = {};
     if (params?.search) {
-      headers['ConsistencyLevel'] = 'eventual';
+      headers.ConsistencyLevel = 'eventual';
     }
 
     let response = await this.axios.get(basePath, { params: queryParams, headers });
@@ -386,7 +386,7 @@ export class Client {
 
   async getContact(contactId: string, select?: string[]): Promise<Contact> {
     let queryParams: Record<string, string> = {};
-    if (select?.length) queryParams['$select'] = select.join(',');
+    if (select?.length) queryParams.$select = select.join(',');
     let response = await this.axios.get(`/me/contacts/${contactId}`, { params: queryParams });
     return response.data;
   }
@@ -519,10 +519,10 @@ export class Client {
     }
   ): Promise<GraphListResponse<TodoTask>> {
     let queryParams: Record<string, string> = {};
-    if (params?.top) queryParams['$top'] = String(params.top);
-    if (params?.skip) queryParams['$skip'] = String(params.skip);
-    if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderby) queryParams['$orderby'] = params.orderby;
+    if (params?.top) queryParams.$top = String(params.top);
+    if (params?.skip) queryParams.$skip = String(params.skip);
+    if (params?.filter) queryParams.$filter = params.filter;
+    if (params?.orderby) queryParams.$orderby = params.orderby;
 
     let response = await this.axios.get(`/me/todo/lists/${listId}/tasks`, {
       params: queryParams

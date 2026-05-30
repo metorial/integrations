@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { pinterestServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTerms = SlateTool.create(spec, {
   name: 'Get Terms',
@@ -20,10 +20,7 @@ export let getTerms = SlateTool.create(spec, {
   .input(
     z.object({
       mode: z.enum(['related', 'suggested']).describe('Term lookup mode'),
-      terms: z
-        .array(z.string())
-        .optional()
-        .describe('Input terms for related term lookup'),
+      terms: z.array(z.string()).optional().describe('Input terms for related term lookup'),
       term: z.string().optional().describe('Input term for suggested term lookup'),
       limit: z
         .number()
@@ -44,9 +41,7 @@ export let getTerms = SlateTool.create(spec, {
     if (ctx.input.mode === 'related') {
       let terms = ctx.input.terms ?? [];
       if (terms.length === 0) {
-        throw pinterestServiceError(
-          'At least one term is required for related term lookup'
-        );
+        throw pinterestServiceError('At least one term is required for related term lookup');
       }
 
       let result = await client.getRelatedTerms(terms);

@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createNote,
-  getNote,
-  updateNote,
-  deleteNote,
-  searchNotes,
   askQuestion,
-  manageNoteLifecycle,
-  updateTile,
-  listNotes,
+  auditKnowledgeBase,
+  createNote,
+  deleteNote,
   findUserOrGroup,
+  getNote,
+  listNotes,
   manageCustomContent,
-  auditKnowledgeBase
+  manageNoteLifecycle,
+  searchNotes,
+  updateNote,
+  updateTile
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

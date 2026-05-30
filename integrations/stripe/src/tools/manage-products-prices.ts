@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { StripeClient } from '../lib/client';
 import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageProductsPrices = SlateTool.create(spec, {
   name: 'Manage Products & Prices',
@@ -130,7 +130,8 @@ export let manageProductsPrices = SlateTool.create(spec, {
       }
 
       if (action === 'get') {
-        if (!ctx.input.productId) throw stripeServiceError('productId is required for get action');
+        if (!ctx.input.productId)
+          throw stripeServiceError('productId is required for get action');
         let product = await client.getProduct(ctx.input.productId);
         return {
           output: {
@@ -144,7 +145,8 @@ export let manageProductsPrices = SlateTool.create(spec, {
       }
 
       if (action === 'update') {
-        if (!ctx.input.productId) throw stripeServiceError('productId is required for update action');
+        if (!ctx.input.productId)
+          throw stripeServiceError('productId is required for update action');
         let params: Record<string, any> = {};
         if (ctx.input.name) params.name = ctx.input.name;
         if (ctx.input.productDescription) params.description = ctx.input.productDescription;
@@ -165,7 +167,8 @@ export let manageProductsPrices = SlateTool.create(spec, {
       }
 
       if (action === 'delete') {
-        if (!ctx.input.productId) throw stripeServiceError('productId is required for delete action');
+        if (!ctx.input.productId)
+          throw stripeServiceError('productId is required for delete action');
         let result = await client.deleteProduct(ctx.input.productId);
         return {
           output: { productId: result.id, deleted: result.deleted },
@@ -196,10 +199,12 @@ export let manageProductsPrices = SlateTool.create(spec, {
 
     // Price operations
     if (action === 'create') {
-      if (!ctx.input.productId) throw stripeServiceError('productId is required for price creation');
+      if (!ctx.input.productId)
+        throw stripeServiceError('productId is required for price creation');
       if (ctx.input.unitAmount === undefined)
         throw stripeServiceError('unitAmount is required for price creation');
-      if (!ctx.input.currency) throw stripeServiceError('currency is required for price creation');
+      if (!ctx.input.currency)
+        throw stripeServiceError('currency is required for price creation');
 
       let params: Record<string, any> = {
         product: ctx.input.productId,
@@ -249,7 +254,8 @@ export let manageProductsPrices = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.priceId) throw stripeServiceError('priceId is required for update action');
+      if (!ctx.input.priceId)
+        throw stripeServiceError('priceId is required for update action');
       let params: Record<string, any> = {};
       if (ctx.input.active !== undefined) params.active = ctx.input.active;
       if (ctx.input.metadata) params.metadata = ctx.input.metadata;

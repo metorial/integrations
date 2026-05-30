@@ -1,10 +1,10 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  enrichCompany,
   generateContent,
   generateInsights,
-  importCampaignContact,
-  enrichCompany
+  importCampaignContact
 } from './tools';
 import { signalEvent } from './triggers';
 

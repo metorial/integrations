@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let memberStatusSchema = z.object({
   memberGuid: z.string().optional(),

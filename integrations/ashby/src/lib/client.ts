@@ -12,7 +12,7 @@ export class AshbyClient {
       baseURL: 'https://api.ashbyhq.com',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Basic ${btoa(this.token + ':')}`
+        Authorization: `Basic ${btoa(`${this.token}:`)}`
       }
     });
   }
@@ -42,11 +42,7 @@ export class AshbyClient {
   }
 
   async listCandidates(
-    params: {
-      cursor?: string;
-      perPage?: number;
-      syncToken?: string;
-    } = {}
+    params: { cursor?: string; perPage?: number; syncToken?: string } = {}
   ) {
     return this.post('/candidate.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
@@ -113,11 +109,7 @@ export class AshbyClient {
   }
 
   async listApplications(
-    params: {
-      cursor?: string;
-      perPage?: number;
-      syncToken?: string;
-    } = {}
+    params: { cursor?: string; perPage?: number; syncToken?: string } = {}
   ) {
     return this.post('/application.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
@@ -197,13 +189,7 @@ export class AshbyClient {
     return this.post('/job.info', { jobId });
   }
 
-  async listJobs(
-    params: {
-      cursor?: string;
-      perPage?: number;
-      syncToken?: string;
-    } = {}
-  ) {
+  async listJobs(params: { cursor?: string; perPage?: number; syncToken?: string } = {}) {
     return this.post('/job.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {}),
@@ -237,12 +223,7 @@ export class AshbyClient {
     return this.post('/offer.info', { offerId });
   }
 
-  async listOffers(
-    params: {
-      cursor?: string;
-      perPage?: number;
-    } = {}
-  ) {
+  async listOffers(params: { cursor?: string; perPage?: number } = {}) {
     return this.post('/offer.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {})
@@ -263,12 +244,7 @@ export class AshbyClient {
 
   // ---- Interviews ----
 
-  async listInterviews(
-    params: {
-      cursor?: string;
-      perPage?: number;
-    } = {}
-  ) {
+  async listInterviews(params: { cursor?: string; perPage?: number } = {}) {
     return this.post('/interview.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {})
@@ -299,12 +275,7 @@ export class AshbyClient {
     return this.post('/interviewSchedule.cancel', { interviewScheduleId });
   }
 
-  async listInterviewSchedules(
-    params: {
-      cursor?: string;
-      perPage?: number;
-    } = {}
-  ) {
+  async listInterviewSchedules(params: { cursor?: string; perPage?: number } = {}) {
     return this.post('/interviewSchedule.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {})
@@ -341,12 +312,7 @@ export class AshbyClient {
 
   // ---- Organization: Users ----
 
-  async listUsers(
-    params: {
-      cursor?: string;
-      perPage?: number;
-    } = {}
-  ) {
+  async listUsers(params: { cursor?: string; perPage?: number } = {}) {
     return this.post('/user.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {})
@@ -368,12 +334,7 @@ export class AshbyClient {
     return this.post('/opening.create', params);
   }
 
-  async listOpenings(
-    params: {
-      cursor?: string;
-      perPage?: number;
-    } = {}
-  ) {
+  async listOpenings(params: { cursor?: string; perPage?: number } = {}) {
     return this.post('/opening.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {})
@@ -404,12 +365,7 @@ export class AshbyClient {
 
   // ---- Interview Stages ----
 
-  async listInterviewStages(
-    params: {
-      cursor?: string;
-      perPage?: number;
-    } = {}
-  ) {
+  async listInterviewStages(params: { cursor?: string; perPage?: number } = {}) {
     return this.post('/interviewStage.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {})
@@ -457,12 +413,7 @@ export class AshbyClient {
 
   // ---- Job Postings ----
 
-  async listJobPostings(
-    params: {
-      cursor?: string;
-      perPage?: number;
-    } = {}
-  ) {
+  async listJobPostings(params: { cursor?: string; perPage?: number } = {}) {
     return this.post('/jobPosting.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {})
@@ -486,12 +437,7 @@ export class AshbyClient {
     return this.post('/surveyRequest.create', params);
   }
 
-  async listSurveySubmissions(
-    params: {
-      cursor?: string;
-      perPage?: number;
-    } = {}
-  ) {
+  async listSurveySubmissions(params: { cursor?: string; perPage?: number } = {}) {
     return this.post('/surveySubmission.list', {
       ...(params.cursor ? { cursor: params.cursor } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {})

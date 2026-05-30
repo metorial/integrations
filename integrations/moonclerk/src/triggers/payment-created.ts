@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { paymentSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let paymentCreatedTrigger = SlateTrigger.create(spec, {
   name: 'Payment Created',

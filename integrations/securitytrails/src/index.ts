@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getDomainInfo,
   discoverSubdomains,
-  getWhois,
-  getDnsHistory,
-  getWhoisHistory,
   getAssociatedDomains,
-  searchDomains,
-  searchIps,
-  getIpDetails,
+  getDnsHistory,
+  getDomainInfo,
   getDomainTags,
-  getSslCertificates
+  getIpDetails,
+  getSslCertificates,
+  getWhois,
+  getWhoisHistory,
+  searchDomains,
+  searchIps
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

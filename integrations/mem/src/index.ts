@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createNote,
-  getNote,
-  listNotes,
-  searchNotes,
-  deleteNote,
   createCollection,
-  getCollection,
-  listCollections,
-  searchCollections,
+  createNote,
   deleteCollection,
-  memIt
+  deleteNote,
+  getCollection,
+  getNote,
+  listCollections,
+  listNotes,
+  memIt,
+  searchCollections,
+  searchNotes
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

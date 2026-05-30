@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BackendlessClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let dataChanges = SlateTrigger.create(spec, {
   name: 'Data Changes',
@@ -97,7 +97,7 @@ export let dataChanges = SlateTrigger.create(spec, {
           }
         }
       } catch (err) {
-        ctx.error('Failed to poll for data changes: ' + String(err));
+        ctx.error(`Failed to poll for data changes: ${String(err)}`);
       }
 
       return {

@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
+import { intercomServiceError } from '../lib/errors';
 import { stringOrUndefined, timestampOrUndefined } from '../lib/output';
 import { spec } from '../spec';
-import { z } from 'zod';
-import { intercomServiceError } from '../lib/errors';
 
 export let manageContacts = SlateTool.create(spec, {
   name: 'Manage Contacts',
@@ -100,8 +100,7 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
     }
 
     if (action === 'update') {
-      if (!ctx.input.contactId)
-        throw intercomServiceError('contactId is required for update');
+      if (!ctx.input.contactId) throw intercomServiceError('contactId is required for update');
       let result = await client.updateContact(ctx.input.contactId, {
         role: ctx.input.role,
         externalId: ctx.input.externalId,
@@ -142,8 +141,7 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
     }
 
     if (action === 'delete') {
-      if (!ctx.input.contactId)
-        throw intercomServiceError('contactId is required for delete');
+      if (!ctx.input.contactId) throw intercomServiceError('contactId is required for delete');
       await client.deleteContact(ctx.input.contactId);
       return {
         output: { contactId: ctx.input.contactId, deleted: true },

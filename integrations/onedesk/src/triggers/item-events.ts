@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let itemEvents = SlateTrigger.create(spec, {
   name: 'Work Item Events',
@@ -58,7 +58,7 @@ export let itemEvents = SlateTrigger.create(spec, {
           limit: 50,
           offset: 0
         });
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Failed to fetch created item activities');
       }
 
@@ -73,7 +73,7 @@ export let itemEvents = SlateTrigger.create(spec, {
           limit: 50,
           offset: 0
         });
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Failed to fetch updated item activities');
       }
 

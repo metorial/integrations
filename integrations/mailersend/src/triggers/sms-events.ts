@@ -1,9 +1,9 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let smsEventTypes = ['sms.sent', 'sms.delivered', 'sms.failed'] as const;
+let _smsEventTypes = ['sms.sent', 'sms.delivered', 'sms.failed'] as const;
 
 export let smsEvents = SlateTrigger.create(spec, {
   name: 'SMS Events',
@@ -31,7 +31,7 @@ export let smsEvents = SlateTrigger.create(spec, {
     })
   )
   .webhook({
-    autoRegisterWebhook: async ctx => {
+    autoRegisterWebhook: async _ctx => {
       // SMS webhooks require a specific sms_number_id, which the user needs to configure.
       // We cannot automatically discover SMS numbers without additional context.
       // This will be set up when the user provides the SMS number ID via configuration.
@@ -52,7 +52,7 @@ export let smsEvents = SlateTrigger.create(spec, {
       for (let webhook of details.smsWebhooks || []) {
         try {
           await client.deleteSmsWebhook(webhook.smsWebhookId);
-        } catch (err) {
+        } catch (_err) {
           // Best effort cleanup
         }
       }

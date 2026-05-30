@@ -1,7 +1,7 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
-import { redditApiError } from './lib/errors';
 import { REDDIT_USER_AGENT } from './lib/client';
+import { redditApiError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -142,7 +142,7 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response;
+      let response: any;
       try {
         response = await http.post(
           'https://www.reddit.com/api/v1/access_token',
@@ -184,7 +184,7 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response;
+      let response: any;
       try {
         response = await http.post(
           'https://www.reddit.com/api/v1/access_token',
@@ -221,7 +221,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response;
+      let response: any;
       try {
         response = await http.get('/api/v1/me');
       } catch (error) {

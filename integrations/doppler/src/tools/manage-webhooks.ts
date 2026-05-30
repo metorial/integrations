@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DopplerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let webhookSchema = z.object({
   webhookSlug: z.string().optional().describe('Webhook unique slug identifier'),

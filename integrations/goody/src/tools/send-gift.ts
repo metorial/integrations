@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoodyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let recipientInputSchema = z.object({
   firstName: z.string().describe('Recipient first name'),

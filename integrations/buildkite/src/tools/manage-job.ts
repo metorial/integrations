@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageJob = SlateTool.create(spec, {
   name: 'Manage Job',
@@ -40,7 +40,7 @@ export let manageJob = SlateTool.create(spec, {
       organizationSlug: ctx.config.organizationSlug
     });
 
-    let j;
+    let j: any;
     if (ctx.input.action === 'retry') {
       j = await client.retryJob(
         ctx.input.pipelineSlug,

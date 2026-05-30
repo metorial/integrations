@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeveloperClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPoolsTool = SlateTool.create(spec, {
   name: 'Get Pools',
@@ -77,7 +77,7 @@ export let getPoolsTool = SlateTool.create(spec, {
       coins: p.coins
     }));
 
-    let filterDesc = [];
+    let filterDesc: any[] = [];
     if (ctx.input.coin) filterDesc.push(`coin: ${ctx.input.coin}`);
     if (ctx.input.poolType) filterDesc.push(`type: ${ctx.input.poolType}`);
     let filterText = filterDesc.length > 0 ? ` (filtered by ${filterDesc.join(', ')})` : '';

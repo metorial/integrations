@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let barcodeRead = SlateTool.create(spec, {
   name: 'Read Barcode or QR Code',
@@ -42,12 +42,10 @@ export let barcodeRead = SlateTool.create(spec, {
       } else {
         result = await client.readBarcodeFromImage(body);
       }
+    } else if (ctx.input.sourceType === 'document') {
+      result = await client.readQrCodeFromDocument(body);
     } else {
-      if (ctx.input.sourceType === 'document') {
-        result = await client.readQrCodeFromDocument(body);
-      } else {
-        result = await client.readQrCodeFromImage(body);
-      }
+      result = await client.readQrCodeFromImage(body);
     }
 
     return {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listKnowledgeBases = SlateTool.create(spec, {
   name: 'List Knowledge Bases',
@@ -80,7 +80,7 @@ export let getKnowledgeBase = SlateTool.create(spec, {
       output: {
         knowledgeBase: kb
       },
-      message: `Retrieved knowledge base **${(kb as Record<string, unknown>)['name'] || ctx.input.knowledgeBaseId}**.`
+      message: `Retrieved knowledge base **${(kb as Record<string, unknown>).name || ctx.input.knowledgeBaseId}**.`
     };
   })
   .build();

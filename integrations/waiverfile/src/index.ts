@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createEvent,
+  deleteEvent,
   getSiteDetails,
   getWaiver,
-  searchWaivers,
   getWaiverForms,
-  listEvents,
-  createEvent,
-  updateEvent,
-  deleteEvent,
-  manageEventCategories,
   getWaiversForEvent,
-  listWaiversByDate
+  listEvents,
+  listWaiversByDate,
+  manageEventCategories,
+  searchWaivers,
+  updateEvent
 } from './tools';
-import { waiverTrigger, eventTrigger } from './triggers';
+import { eventTrigger, waiverTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

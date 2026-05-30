@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProducts,
-  manageProduct,
-  listPlans,
-  managePlan,
-  listMemberships,
-  manageMembership,
-  listPayments,
-  getPayment,
-  refundPayment,
   createCheckout,
-  managePromoCode,
-  listMembers,
+  getPayment,
   getUser,
-  listInvoices
+  listInvoices,
+  listMembers,
+  listMemberships,
+  listPayments,
+  listPlans,
+  listProducts,
+  manageMembership,
+  managePlan,
+  manageProduct,
+  managePromoCode,
+  refundPayment
 } from './tools';
-import { paymentEvents, membershipEvents, setupIntentEvents, entryEvents } from './triggers';
+import { entryEvents, membershipEvents, paymentEvents, setupIntentEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

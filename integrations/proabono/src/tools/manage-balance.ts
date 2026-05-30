@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ProAbonoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let balanceLineSchema = z.object({
   balanceLineId: z.number().optional().describe('Balance line ID'),

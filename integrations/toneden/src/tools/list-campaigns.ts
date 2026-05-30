@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ToneDenClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let campaignSchema = z.object({
   campaignId: z.number().describe('Unique campaign ID'),

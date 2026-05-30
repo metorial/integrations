@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AzureDevOpsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPipelineRunTool = SlateTool.create(spec, {
   name: 'Get Pipeline Run',
@@ -103,7 +103,7 @@ export let getPipelineRunTool = SlateTool.create(spec, {
       if (ctx.input.includeTimeline) {
         let build = await client.getBuild(project, ctx.input.runId);
         let timeline = await client.getBuildTimeline(project, build.id);
-        output['timeline'] = (timeline.records || []).map((r: any) => ({
+        output.timeline = (timeline.records || []).map((r: any) => ({
           recordId: r.id,
           recordType: r.type,
           name: r.name,

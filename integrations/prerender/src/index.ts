@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  recacheUrls,
-  searchCache,
   clearCache,
-  manageSitemaps,
   manageDomains,
-  setRecacheSpeed,
-  renderPage
+  manageSitemaps,
+  recacheUrls,
+  renderPage,
+  searchCache,
+  setRecacheSpeed
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

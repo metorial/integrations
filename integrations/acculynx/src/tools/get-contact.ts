@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getContactTool = SlateTool.create(spec, {
   name: 'Get Contact Details',
@@ -43,7 +43,7 @@ export let getContactTool = SlateTool.create(spec, {
       emailAddresses = Array.isArray(emailResult)
         ? emailResult
         : (emailResult?.items ?? emailResult?.data ?? []);
-    } catch (e) {
+    } catch (_e) {
       emailAddresses = [];
     }
 
@@ -52,7 +52,7 @@ export let getContactTool = SlateTool.create(spec, {
       phoneNumbers = Array.isArray(phoneResult)
         ? phoneResult
         : (phoneResult?.items ?? phoneResult?.data ?? []);
-    } catch (e) {
+    } catch (_e) {
       phoneNumbers = [];
     }
 

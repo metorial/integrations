@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BoloFormsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTemplateRespondents = SlateTool.create(spec, {
   name: 'Get Template Respondents',

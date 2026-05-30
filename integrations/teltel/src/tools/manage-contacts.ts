@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TelTelClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactSchema = z.object({
   phone: z.string().describe('Contact phone number'),

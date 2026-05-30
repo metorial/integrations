@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listIncidents,
   createIncident,
+  createOnCallOverride,
+  getOnCall,
+  getShiftLog,
+  getTeamRotations,
+  listIncidents,
+  manageEscalationPolicy,
   manageIncident,
   manageIncidentNotes,
-  getOnCall,
-  createOnCallOverride,
-  manageUser,
-  manageTeam,
-  manageEscalationPolicy,
-  manageRoutingKeys,
   manageMaintenanceMode,
+  manageRoutingKeys,
+  manageTeam,
+  manageUser,
   searchIncidentHistory,
-  sendChatMessage,
-  getTeamRotations,
-  getShiftLog
+  sendChatMessage
 } from './tools';
 import { incidentEvents, incidentWebhook, onCallChange } from './triggers';
 

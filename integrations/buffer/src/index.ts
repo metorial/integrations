@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getUserTool,
-  getProfilesTool,
   createUpdateTool,
-  editUpdateTool,
   deleteUpdateTool,
-  shareUpdateTool,
-  getUpdatesTool,
-  manageQueueTool,
-  manageScheduleTool,
+  editUpdateTool,
+  getConfigurationTool,
   getInteractionsTool,
   getLinkSharesTool,
-  getConfigurationTool
+  getProfilesTool,
+  getUpdatesTool,
+  getUserTool,
+  manageQueueTool,
+  manageScheduleTool,
+  shareUpdateTool
 } from './tools';
-import { newUpdateSentTrigger, newUpdateQueuedTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, newUpdateQueuedTrigger, newUpdateSentTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

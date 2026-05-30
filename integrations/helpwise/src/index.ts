@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listMailboxes,
-  manageMailbox,
-  listConversations,
-  getConversation,
   deleteConversation,
-  sendEmail,
-  listMessages,
-  manageContact,
+  getConversation,
   listContacts,
-  searchContacts,
-  manageNote,
-  manageTag,
+  listConversations,
+  listMailboxes,
+  listMessages,
   listTeams,
   listUsers,
+  manageContact,
+  manageMailbox,
+  manageNote,
+  manageTag,
   manageTemplate,
-  manageWebhook
+  manageWebhook,
+  searchContacts,
+  sendEmail
 } from './tools';
 import { conversationEvents, messageEvents } from './triggers';
 

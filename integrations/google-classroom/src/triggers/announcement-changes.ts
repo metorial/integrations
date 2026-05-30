@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { ClassroomClient } from '../lib/client';
-import { spec } from '../spec';
-import { googleClassroomActionScopes } from '../scopes';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { ClassroomClient } from '../lib/client';
+import { googleClassroomActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 let announcementOutputSchema = z.object({
   announcementId: z.string().optional().describe('ID of the announcement'),

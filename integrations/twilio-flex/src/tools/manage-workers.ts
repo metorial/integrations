@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TaskRouterClient } from '../lib/taskrouter-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let workerSchema = z.object({
   workerSid: z.string().describe('Worker SID'),
@@ -56,13 +56,13 @@ export let manageWorkersTool = SlateTool.create(spec, {
         PageSize: String(ctx.input.pageSize || 50)
       };
       if (ctx.input.targetWorkersExpression) {
-        params['TargetWorkersExpression'] = ctx.input.targetWorkersExpression;
+        params.TargetWorkersExpression = ctx.input.targetWorkersExpression;
       }
       if (ctx.input.friendlyName) {
-        params['FriendlyName'] = ctx.input.friendlyName;
+        params.FriendlyName = ctx.input.friendlyName;
       }
       if (ctx.input.activitySid) {
-        params['ActivitySid'] = ctx.input.activitySid;
+        params.ActivitySid = ctx.input.activitySid;
       }
       let result = await client.listWorkers(ctx.input.workspaceSid, params);
       let workers = (result.workers || []).map((w: any) => ({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HabiticaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getContent = SlateTool.create(spec, {
   name: 'Get Game Content',

@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { taskOutputSchema, mapTask } from '../lib/schemas';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { mapTask, taskOutputSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let taskChanges = SlateTrigger.create(spec, {
   name: 'Task Changes',

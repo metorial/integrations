@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let commerceChargeEvents = SlateTrigger.create(spec, {
   name: 'Commerce Charge Events',
@@ -52,7 +52,7 @@ export let commerceChargeEvents = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!body || !body.event) {
+      if (!body?.event) {
         return { inputs: [] };
       }
 

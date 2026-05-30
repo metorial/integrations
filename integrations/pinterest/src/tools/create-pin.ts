@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { pinterestServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let mediaSourceSchema = z
   .object({
@@ -26,10 +26,7 @@ let mediaSourceSchema = z
       .enum(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
       .optional()
       .describe('MIME type of Base64 image data'),
-    data: z
-      .string()
-      .optional()
-      .describe('Base64 image data for image_base64 source type'),
+    data: z.string().optional().describe('Base64 image data for image_base64 source type'),
     mediaId: z
       .string()
       .optional()
@@ -41,10 +38,7 @@ let mediaSourceSchema = z
       .number()
       .optional()
       .describe('Video keyframe timestamp in seconds to use as the cover image'),
-    index: z
-      .number()
-      .optional()
-      .describe('Carousel item index to use as the first item'),
+    index: z.number().optional().describe('Carousel item index to use as the first item'),
     isAffiliateLink: z
       .boolean()
       .optional()

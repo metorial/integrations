@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDatasourceInstanceData = SlateTool.create(spec, {
   name: 'Get Data Source Instance Data',

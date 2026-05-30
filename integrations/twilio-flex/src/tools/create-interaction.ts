@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FlexClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createInteractionTool = SlateTool.create(spec, {
   name: 'Create Interaction',
@@ -64,7 +64,7 @@ export let createInteractionTool = SlateTool.create(spec, {
     };
 
     if (ctx.input.interactionContextJson) {
-      params['InteractionContext'] = ctx.input.interactionContextJson;
+      params.InteractionContext = ctx.input.interactionContextJson;
     }
 
     let result = await client.createInteraction(params);

@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listJobs,
-  getJob,
-  createJob,
-  updateJob,
-  deleteJob,
-  listClients,
-  getClient,
-  createClient,
-  updateClient,
-  manageContact,
-  listStaff,
-  scheduleJob,
-  manageJobMaterials,
   addNote,
+  createClient,
+  createJob,
+  deleteJob,
+  getClient,
+  getJob,
+  listClients,
+  listJobActivities,
+  listJobs,
+  listStaff,
+  manageContact,
+  manageJobMaterials,
   recordPayment,
-  listJobActivities
+  scheduleJob,
+  updateClient,
+  updateJob
 } from './tools';
-import { jobEvents, clientEvents, staffEvents } from './triggers';
+import { clientEvents, jobEvents, staffEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

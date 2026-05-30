@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  uploadDocument,
-  getDocument,
-  listDocuments,
+  batchUpdateAnnotations,
+  createWorkspace,
   deleteDocument,
+  deleteWorkspace,
+  getDocument,
+  listAnnotations,
+  listDocuments,
+  listDocumentTypes,
+  listOrganizations,
+  listWorkspaces,
+  matchResumeToJob,
   redactResume,
   searchAndMatch,
-  matchResumeToJob,
-  listWorkspaces,
-  createWorkspace,
-  deleteWorkspace,
-  listAnnotations,
-  batchUpdateAnnotations,
-  listDocumentTypes,
-  listOrganizations
+  uploadDocument
 } from './tools';
 import { documentEvents } from './triggers';
 

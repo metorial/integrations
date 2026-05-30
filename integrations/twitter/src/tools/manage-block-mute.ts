@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwitterClient } from '../lib/client';
 import { twitterServiceError } from '../lib/errors';
-import { userSchema, mapUser } from '../lib/helpers';
+import { mapUser, userSchema } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageBlockMute = SlateTool.create(spec, {
   name: 'Manage Block & Mute',
@@ -44,7 +44,8 @@ export let manageBlockMute = SlateTool.create(spec, {
     let { action, userId, targetUserId, maxResults, paginationToken } = ctx.input;
 
     if (action === 'block') {
-      if (!targetUserId) throw twitterServiceError('targetUserId is required to block a user.');
+      if (!targetUserId)
+        throw twitterServiceError('targetUserId is required to block a user.');
       await client.blockUser(userId, targetUserId);
       return { output: { success: true }, message: `Blocked user ${targetUserId}.` };
     }

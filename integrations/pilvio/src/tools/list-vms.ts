@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PilvioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let vmSchema = z.object({
   vmUuid: z.string().describe('VM unique identifier'),

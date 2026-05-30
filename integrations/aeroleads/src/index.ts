@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { lookupLinkedInProfile, findEmail } from './tools';
+import { findEmail, lookupLinkedInProfile } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

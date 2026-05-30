@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DynamicsClient } from '../lib/client';
 import { resolveDynamicsInstanceUrl } from '../lib/resolve-instance-url';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchRecords = SlateTool.create(spec, {
   name: 'Search Records',
@@ -77,7 +77,8 @@ export let searchRecords = SlateTool.create(spec, {
     return {
       output: {
         results,
-        totalCount: typeof totalCount === 'number' && totalCount >= 0 ? totalCount : results.length
+        totalCount:
+          typeof totalCount === 'number' && totalCount >= 0 ? totalCount : results.length
       },
       message: `Found **${results.length}** results for "${ctx.input.searchTerm}".`
     };

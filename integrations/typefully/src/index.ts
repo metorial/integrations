@@ -2,12 +2,12 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createDraft,
-  listDrafts,
-  getDraft,
-  updateDraft,
   deleteDraft,
+  getDraft,
+  listDrafts,
   listSocialSets,
   manageTags,
+  updateDraft,
   uploadMedia
 } from './tools';
 import { draftEvents } from './triggers';

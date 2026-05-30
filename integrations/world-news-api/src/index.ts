@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchNewsTool,
-  topNewsTool,
-  retrieveArticleTool,
-  extractNewsTool,
   extractNewsLinksTool,
-  searchNewsSourcesTool,
+  extractNewsTool,
+  geoCoordinatesTool,
   newspaperFrontPagesTool,
-  geoCoordinatesTool
+  retrieveArticleTool,
+  searchNewsSourcesTool,
+  searchNewsTool,
+  topNewsTool
 } from './tools';
-import { newArticlesTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, newArticlesTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

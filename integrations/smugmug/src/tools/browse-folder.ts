@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let browseFolderTool = SlateTool.create(spec, {
   name: 'Browse Folder',
@@ -46,7 +46,7 @@ export let browseFolderTool = SlateTool.create(spec, {
       consumerSecret: ctx.auth.consumerSecret
     });
 
-    let folder;
+    let folder: any;
     if (ctx.input.folderPath) {
       folder = await client.getFolder(ctx.input.nickname, ctx.input.folderPath);
     } else {

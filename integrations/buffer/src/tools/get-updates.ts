@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let updateSchema = z.object({
   updateId: z.string().describe('Unique identifier for the update'),
@@ -114,14 +114,14 @@ export let getUpdatesTool = SlateTool.create(spec, {
       utc: ctx.input.utc
     };
 
-    let result;
+    let result: any;
     if (ctx.input.status === 'sent') {
       result = await client.getSentUpdates(ctx.input.profileId, options);
     } else {
       result = await client.getPendingUpdates(ctx.input.profileId, options);
     }
 
-    let updates = (result.updates || []).map(u => ({
+    let updates = (result.updates || []).map((u: any) => ({
       updateId: u.id,
       text: u.text,
       status: u.status,

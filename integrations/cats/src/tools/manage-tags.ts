@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTags = SlateTool.create(spec, {
   name: 'Manage Tags',
@@ -69,15 +69,14 @@ export let manageTags = SlateTool.create(spec, {
       else if (resourceType === 'contacts') await client.attachContactTags(resourceId, names);
       else if (resourceType === 'companies') await client.attachCompanyTags(resourceId, names);
       else await client.attachJobTags(resourceId, names);
+    } else if (resourceType === 'candidates') {
+      await client.replaceCandidateTags(resourceId, names);
+    } else if (resourceType === 'contacts') {
+      await client.attachContactTags(resourceId, names);
+    } else if (resourceType === 'companies') {
+      await client.attachCompanyTags(resourceId, names);
     } else {
-      if (resourceType === 'candidates') await client.replaceCandidateTags(resourceId, names);
-      else {
-        // For other types, replace uses POST
-        if (resourceType === 'contacts') await client.attachContactTags(resourceId, names);
-        else if (resourceType === 'companies')
-          await client.attachCompanyTags(resourceId, names);
-        else await client.attachJobTags(resourceId, names);
-      }
+      await client.attachJobTags(resourceId, names);
     }
 
     return {

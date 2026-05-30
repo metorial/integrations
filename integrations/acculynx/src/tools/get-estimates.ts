@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getEstimatesTool = SlateTool.create(spec, {
   name: 'Get Estimates',
@@ -57,7 +57,7 @@ export let getEstimatesTool = SlateTool.create(spec, {
           sections = Array.isArray(sectionsResult)
             ? sectionsResult
             : (sectionsResult?.items ?? sectionsResult?.data ?? []);
-        } catch (e) {
+        } catch (_e) {
           sections = [];
         }
       }

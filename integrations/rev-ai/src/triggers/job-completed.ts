@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { RevAIClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let jobCompleted = SlateTrigger.create(spec, {
   name: 'Job Completed',

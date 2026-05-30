@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDoc = SlateTool.create(spec, {
   name: 'Get Document',
@@ -46,7 +46,7 @@ export let getDoc = SlateTool.create(spec, {
 
     let doc = await client.getDoc(ctx.input.docId);
 
-    let exportedContent: any = undefined;
+    let exportedContent: any;
     if (ctx.input.exportFormat) {
       exportedContent = await client.exportDoc(ctx.input.docId, ctx.input.exportFormat);
     }

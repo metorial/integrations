@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let emailAddressSchema = z.object({
   email: z.string().describe('Email address'),
@@ -130,7 +130,7 @@ export let sendEmail = SlateTool.create(spec, {
         content.push({ type: 'text/html', value: ctx.input.htmlContent });
     }
 
-    let trackingSettings: any = undefined;
+    let trackingSettings: any;
     if (ctx.input.trackClicks !== undefined || ctx.input.trackOpens !== undefined) {
       trackingSettings = {};
       if (ctx.input.trackClicks !== undefined) {

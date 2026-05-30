@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlaidClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let creditLiabilitySchema = z.object({
   accountId: z.string().describe('Account ID'),

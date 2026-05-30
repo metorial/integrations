@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { GhostAdminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let memberEventTypes = ['member.added', 'member.edited', 'member.deleted'] as const;
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let intlPreviewSchema = z.object({
   previewId: z.string().describe('Unique ID for selecting this suggestion or drilling down'),
@@ -46,7 +46,7 @@ export let autocompleteInternationalAddress = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let previews;
+    let previews: any;
     if (ctx.input.containerId) {
       previews = await client.getIntlAutocompleteDrilldown(ctx.input.containerId, {
         countriesFilter: ctx.input.countriesFilter,
@@ -59,7 +59,7 @@ export let autocompleteInternationalAddress = SlateTool.create(spec, {
       });
     }
 
-    let suggestions = previews.map(p => ({
+    let suggestions = previews.map((p: any) => ({
       previewId: p.id,
       type: p.type,
       text: p.text,

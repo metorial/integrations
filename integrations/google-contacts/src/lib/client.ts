@@ -1,9 +1,9 @@
-import axios from 'axios';
 import {
+  type ContactInput,
   DEFAULT_PERSON_FIELDS,
-  READONLY_PERSON_FIELDS,
-  type ContactInput
+  READONLY_PERSON_FIELDS
 } from '@slates/google-people-recipes';
+import axios from 'axios';
 
 let api = axios.create({
   baseURL: 'https://people.googleapis.com/v1/'
@@ -12,7 +12,7 @@ let api = axios.create({
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.headers = {
       Authorization: `Bearer ${config.token}`
     };

@@ -8,7 +8,7 @@ function escapeODataString(value: string): string {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://graph.microsoft.com/v1.0',
       headers: {
@@ -32,16 +32,16 @@ export class Client {
       : '/me/messages';
 
     let queryParams: Record<string, string> = {};
-    if (params?.top) queryParams['$top'] = String(params.top);
-    if (params?.skip) queryParams['$skip'] = String(params.skip);
-    if (params?.filter) queryParams['$filter'] = params.filter;
-    if (params?.orderby && !params.search) queryParams['$orderby'] = params.orderby;
-    if (params?.search) queryParams['$search'] = `"${params.search}"`;
-    if (params?.select?.length) queryParams['$select'] = params.select.join(',');
+    if (params?.top) queryParams.$top = String(params.top);
+    if (params?.skip) queryParams.$skip = String(params.skip);
+    if (params?.filter) queryParams.$filter = params.filter;
+    if (params?.orderby && !params.search) queryParams.$orderby = params.orderby;
+    if (params?.search) queryParams.$search = `"${params.search}"`;
+    if (params?.select?.length) queryParams.$select = params.select.join(',');
 
     let headers: Record<string, string> = {};
     if (params?.search) {
-      headers['ConsistencyLevel'] = 'eventual';
+      headers.ConsistencyLevel = 'eventual';
     }
 
     let response = await this.axios.get(basePath, { params: queryParams, headers });
@@ -50,7 +50,7 @@ export class Client {
 
   async getMessage(messageId: string, select?: string[]): Promise<Message> {
     let queryParams: Record<string, string> = {};
-    if (select?.length) queryParams['$select'] = select.join(',');
+    if (select?.length) queryParams.$select = select.join(',');
     let response = await this.axios.get(`/me/messages/${messageId}`, { params: queryParams });
     return response.data;
   }

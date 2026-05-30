@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SharePointClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let driveItemChanges = SlateTrigger.create(spec, {
   name: 'Drive Item Changes',
@@ -179,7 +179,7 @@ export let driveItemChanges = SlateTrigger.create(spec, {
     },
 
     handleEvent: async ctx => {
-      let resourceType = ctx.input.isFolder ? 'folder' : 'file';
+      let _resourceType = ctx.input.isFolder ? 'folder' : 'file';
       return {
         type: `drive_item.${ctx.input.changeType}`,
         id: `${ctx.input.driveId}_${ctx.input.itemId}_${ctx.input.lastModifiedDateTime || Date.now()}`,

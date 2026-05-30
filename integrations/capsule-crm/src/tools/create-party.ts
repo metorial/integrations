@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createParty = SlateTool.create(spec, {
   name: 'Create Party',
@@ -109,9 +109,7 @@ export let createParty = SlateTool.create(spec, {
       if (ctx.input.lastName) party.lastName = ctx.input.lastName;
       if (ctx.input.title) party.title = ctx.input.title;
       if (ctx.input.jobTitle) party.jobTitle = ctx.input.jobTitle;
-    } else {
-      if (ctx.input.name) party.name = ctx.input.name;
-    }
+    } else if (ctx.input.name) party.name = ctx.input.name;
 
     if (ctx.input.about) party.about = ctx.input.about;
 

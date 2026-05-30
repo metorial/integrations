@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { QdrantCloudClient } from '../lib/cloud-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let clusterSchema = z.object({
   clusterId: z.string().describe('Cluster ID'),

@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
 import { SlateAuth, SlateConfig, SlateSpecification } from 'slates';
+import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { defineToolRecipe, includeTool } from './index';
 

@@ -26,11 +26,11 @@ export class TavePublicClient {
     since?: string;
   }) {
     let queryParams: Record<string, string> = {};
-    if (params?.contactKind) queryParams['contact_kind'] = params.contactKind;
-    if (params?.brand) queryParams['brand'] = params.brand;
-    if (params?.page) queryParams['page'] = String(params.page);
-    if (params?.perPage) queryParams['per_page'] = String(params.perPage);
-    if (params?.since) queryParams['since'] = params.since;
+    if (params?.contactKind) queryParams.contact_kind = params.contactKind;
+    if (params?.brand) queryParams.brand = params.brand;
+    if (params?.page) queryParams.page = String(params.page);
+    if (params?.perPage) queryParams.per_page = String(params.perPage);
+    if (params?.since) queryParams.since = params.since;
 
     let response = await this.axios.get('/contacts', {
       headers: this.headers,
@@ -63,10 +63,10 @@ export class TavePublicClient {
     }
   ) {
     let queryParams: Record<string, string> = { q: query };
-    if (params?.contactKind) queryParams['contact_kind'] = params.contactKind;
-    if (params?.brand) queryParams['brand'] = params.brand;
-    if (params?.page) queryParams['page'] = String(params.page);
-    if (params?.perPage) queryParams['per_page'] = String(params.perPage);
+    if (params?.contactKind) queryParams.contact_kind = params.contactKind;
+    if (params?.brand) queryParams.brand = params.brand;
+    if (params?.page) queryParams.page = String(params.page);
+    if (params?.perPage) queryParams.per_page = String(params.perPage);
 
     let response = await this.axios.get('/contacts', {
       headers: this.headers,
@@ -83,10 +83,10 @@ export class TavePublicClient {
     perPage?: number;
   }) {
     let queryParams: Record<string, string> = {};
-    if (params?.jobType) queryParams['job_type'] = params.jobType;
-    if (params?.brand) queryParams['brand'] = params.brand;
-    if (params?.page) queryParams['page'] = String(params.page);
-    if (params?.perPage) queryParams['per_page'] = String(params.perPage);
+    if (params?.jobType) queryParams.job_type = params.jobType;
+    if (params?.brand) queryParams.brand = params.brand;
+    if (params?.page) queryParams.page = String(params.page);
+    if (params?.perPage) queryParams.per_page = String(params.perPage);
 
     let response = await this.axios.get('/jobs', {
       headers: this.headers,
@@ -118,11 +118,11 @@ export class TavePublicClient {
     since?: string;
   }) {
     let queryParams: Record<string, string> = {};
-    if (params?.brand) queryParams['brand'] = params.brand;
-    if (params?.jobType) queryParams['job_type'] = params.jobType;
-    if (params?.page) queryParams['page'] = String(params.page);
-    if (params?.perPage) queryParams['per_page'] = String(params.perPage);
-    if (params?.since) queryParams['since'] = params.since;
+    if (params?.brand) queryParams.brand = params.brand;
+    if (params?.jobType) queryParams.job_type = params.jobType;
+    if (params?.page) queryParams.page = String(params.page);
+    if (params?.perPage) queryParams.per_page = String(params.perPage);
+    if (params?.since) queryParams.since = params.since;
 
     let response = await this.axios.get('/orders', {
       headers: this.headers,
@@ -147,11 +147,11 @@ export class TavePublicClient {
     since?: string;
   }) {
     let queryParams: Record<string, string> = {};
-    if (params?.brand) queryParams['brand'] = params.brand;
-    if (params?.jobType) queryParams['job_type'] = params.jobType;
-    if (params?.page) queryParams['page'] = String(params.page);
-    if (params?.perPage) queryParams['per_page'] = String(params.perPage);
-    if (params?.since) queryParams['since'] = params.since;
+    if (params?.brand) queryParams.brand = params.brand;
+    if (params?.jobType) queryParams.job_type = params.jobType;
+    if (params?.page) queryParams.page = String(params.page);
+    if (params?.perPage) queryParams.per_page = String(params.perPage);
+    if (params?.since) queryParams.since = params.since;
 
     let response = await this.axios.get('/payments', {
       headers: this.headers,

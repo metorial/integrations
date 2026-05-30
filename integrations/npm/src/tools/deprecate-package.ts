@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NpmRegistryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deprecatePackage = SlateTool.create(spec, {
   name: 'Deprecate Package Version',

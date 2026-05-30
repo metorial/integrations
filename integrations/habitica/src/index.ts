@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createTask,
-  listTasks,
-  updateTask,
-  deleteTask,
-  scoreTask,
-  getUserProfile,
   castSkill,
-  manageGroup,
-  sendMessage,
+  createTask,
+  deleteTask,
+  getContent,
+  getUserProfile,
+  listTasks,
   manageChallenge,
-  manageTags,
-  manageQuest,
+  manageGroup,
   manageInventory,
-  getContent
+  manageQuest,
+  manageTags,
+  scoreTask,
+  sendMessage,
+  updateTask
 } from './tools';
-import { taskActivity, groupChatReceived, userActivity, questActivity } from './triggers';
+import { groupChatReceived, questActivity, taskActivity, userActivity } from './triggers';
 
 export let provider = Slate.create({
   spec,

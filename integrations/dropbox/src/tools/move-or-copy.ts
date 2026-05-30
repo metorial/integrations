@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DropboxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let moveOrCopy = SlateTool.create(spec, {
   name: 'Move or Copy File/Folder',

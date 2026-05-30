@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IdpClient } from '../lib/idp-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getNearbyRetailers = SlateTool.create(spec, {
   name: 'Get Nearby Retailers',
@@ -46,7 +46,7 @@ Requires **Developer Platform API key** authentication.`,
 
     return {
       output: { retailers },
-      message: `Found **${retailers.length}** retailer(s) near postal code **${ctx.input.postalCode}** (${ctx.input.countryCode}).${retailers.length > 0 ? '\n\n' + retailers.map(r => `- ${r.name}`).join('\n') : ''}`
+      message: `Found **${retailers.length}** retailer(s) near postal code **${ctx.input.postalCode}** (${ctx.input.countryCode}).${retailers.length > 0 ? `\n\n${retailers.map(r => `- ${r.name}`).join('\n')}` : ''}`
     };
   })
   .build();

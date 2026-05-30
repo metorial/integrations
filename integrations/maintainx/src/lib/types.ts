@@ -13,7 +13,7 @@ export interface PaginationParams {
   limit?: number;
 }
 
-export interface PaginatedResponse<T> {
+export interface PaginatedResponse<_T> {
   nextCursor?: string | null;
   [key: string]: any;
 }

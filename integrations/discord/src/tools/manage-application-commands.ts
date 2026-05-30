@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { DiscordClient } from '../lib/client';
 import { discordServiceError } from '../lib/errors';
 import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commandTypeMap: Record<string, number> = {
   CHAT_INPUT: 1,
@@ -51,7 +51,7 @@ let buildCommandPayload = (input: {
   name?: string;
   description?: string;
   commandType?: string;
-  options?: Array<Record<string, any>>;
+  options?: Record<string, any>[];
   defaultMemberPermissions?: string | null;
   nsfw?: boolean;
   integrationTypes?: number[];
@@ -104,10 +104,7 @@ export let manageApplicationCommands = SlateTool.create(spec, {
         .describe('Application command action to perform'),
       scope: z.enum(['global', 'guild']).describe('Command scope'),
       applicationId: z.string().describe('Discord application ID'),
-      guildId: z
-        .string()
-        .optional()
-        .describe('Guild ID, required when scope is guild'),
+      guildId: z.string().optional().describe('Guild ID, required when scope is guild'),
       commandId: z
         .string()
         .optional()
@@ -235,7 +232,9 @@ export let manageApplicationCommands = SlateTool.create(spec, {
         throw discordServiceError('commandId is required for update action');
       }
       if (input.commandType !== undefined) {
-        throw discordServiceError('commandType cannot be updated; delete and recreate the command');
+        throw discordServiceError(
+          'commandType cannot be updated; delete and recreate the command'
+        );
       }
 
       let payload = buildCommandPayload(input);

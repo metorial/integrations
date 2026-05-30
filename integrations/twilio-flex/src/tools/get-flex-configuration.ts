@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FlexClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFlexConfigurationTool = SlateTool.create(spec, {
   name: 'Get Flex Configuration',

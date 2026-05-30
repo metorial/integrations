@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { mapUser } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUserTool = SlateTool.create(spec, {
   name: 'Get User',
@@ -34,7 +34,7 @@ export let getUserTool = SlateTool.create(spec, {
       token: ctx.auth.token,
       onBehalfOf: ctx.config.onBehalfOf
     });
-    let raw = await client.getUser(parseInt(ctx.input.userId));
+    let raw = await client.getUser(Number.parseInt(ctx.input.userId, 10));
     let user = mapUser(raw);
 
     return {

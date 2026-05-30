@@ -2,14 +2,14 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createDiscussion,
-  getDiscussion,
-  listDiscussions,
   createPoll,
+  getDiscussion,
   getPoll,
+  listDiscussions,
   listPolls,
   manageMemberships
 } from './tools';
-import { newDiscussions, newPolls, inboundWebhook } from './triggers';
+import { inboundWebhook, newDiscussions, newPolls } from './triggers';
 
 export let provider = Slate.create({
   spec,

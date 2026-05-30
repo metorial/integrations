@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { BraintreeGraphQLClient } from '../lib/client';
-import { CHARGE_PAYMENT_METHOD, AUTHORIZE_PAYMENT_METHOD } from '../lib/graphql-queries';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { BraintreeGraphQLClient } from '../lib/client';
+import { AUTHORIZE_PAYMENT_METHOD, CHARGE_PAYMENT_METHOD } from '../lib/graphql-queries';
+import { spec } from '../spec';
 
 let transactionOutputSchema = z.object({
   transactionId: z.string().describe('GraphQL ID of the transaction'),

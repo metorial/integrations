@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getGameStats = SlateTool.create(spec, {
   name: 'Get Game Stats',
@@ -41,12 +41,12 @@ export let getGameStats = SlateTool.create(spec, {
 
     let teamStats = await client.getGameTeamStats(ctx.input.gameId);
 
-    let playerStats: any = undefined;
+    let playerStats: any;
     if (ctx.input.includePlayerStats) {
       playerStats = await client.getGamePlayerStats(ctx.input.gameId);
     }
 
-    let advancedBoxScore: any = undefined;
+    let advancedBoxScore: any;
     if (ctx.input.includeAdvancedBoxScore) {
       advancedBoxScore = await client.getAdvancedBoxScore(ctx.input.gameId);
     }

@@ -1,6 +1,6 @@
 import { createClientContext } from '../lib/context';
 import { parseJsonObject, promptForObjectSchema } from '../lib/prompts';
-import { JsonInput, WithProfile } from '../lib/types';
+import type { JsonInput, WithProfile } from '../lib/types';
 
 export let getConfig = async (opts: WithProfile) => {
   let { profile } = await createClientContext(opts);

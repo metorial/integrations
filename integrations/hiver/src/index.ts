@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listInboxes,
+  getConversation,
   getInbox,
   listConversations,
-  getConversation,
-  updateConversation,
+  listInboxes,
+  searchTags,
   searchUsers,
-  searchTags
+  updateConversation
 } from './tools';
 import {
   conversationUpdated,
-  newEmail,
+  csatReceived,
   newConversation,
-  noteCreated,
-  csatReceived
+  newEmail,
+  noteCreated
 } from './triggers';
 
 export let provider = Slate.create({

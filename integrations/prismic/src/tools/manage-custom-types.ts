@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TypesApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let customTypeOutputSchema = z.object({
   typeId: z.string().describe('Custom type ID'),

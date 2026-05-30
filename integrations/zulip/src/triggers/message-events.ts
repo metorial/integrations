@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let messageEvents = SlateTrigger.create(spec, {
   name: 'Message Events',
@@ -62,7 +62,7 @@ export let messageEvents = SlateTrigger.create(spec, {
           });
           queueId = registration.queue_id;
           lastEventId = registration.last_event_id;
-        } catch (err) {
+        } catch (_err) {
           ctx.error('Failed to register event queue');
           return { inputs: [], updatedState: {} };
         }

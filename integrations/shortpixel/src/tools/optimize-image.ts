@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ShortPixelClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let optimizeImage = SlateTool.create(spec, {
   name: 'Optimize Image',
@@ -145,7 +145,7 @@ If optimization is still processing (status code 1), re-invoke this tool with th
       resize: ctx.input.resize,
       resizeWidth: ctx.input.resizeWidth,
       resizeHeight: ctx.input.resizeHeight,
-      upscale: ctx.input.upscale ? parseInt(ctx.input.upscale) : undefined,
+      upscale: ctx.input.upscale ? Number.parseInt(ctx.input.upscale, 10) : undefined,
       keepExif: ctx.input.keepExif,
       cmykToRgb: ctx.input.cmykToRgb,
       backgroundRemove: ctx.input.backgroundRemove,

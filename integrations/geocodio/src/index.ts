@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  geocodeAddress,
-  reverseGeocode,
   batchGeocode,
   calculateDistance,
   createGeocodingList,
+  deleteGeocodingList,
+  downloadGeocodingList,
+  geocodeAddress,
   getListStatus,
   getLists,
-  deleteGeocodingList,
-  downloadGeocodingList
+  reverseGeocode
 } from './tools';
-import { listCompleted, inboundWebhook } from './triggers';
+import { inboundWebhook, listCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,

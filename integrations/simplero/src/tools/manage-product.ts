@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SimpleroClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageProduct = SlateTool.create(spec, {
   name: 'Manage Product',
@@ -114,10 +114,10 @@ export let manageProduct = SlateTool.create(spec, {
       let isArray = Array.isArray(result);
       return {
         output: isArray
-          ? { purchases: result as Array<Record<string, unknown>> }
+          ? { purchases: result as Record<string, unknown>[] }
           : { purchase: result as Record<string, unknown> },
         message: isArray
-          ? `Found **${(result as Array<unknown>).length}** purchase(s).`
+          ? `Found **${(result as unknown[]).length}** purchase(s).`
           : `Found purchase (ID: ${(result as Record<string, unknown>).purchase_id}).`
       };
     }

@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listUsers,
-  getUser,
   createUser,
-  updateUser,
   deleteUser,
-  manageUserAliases,
-  listGroups,
-  manageGroup,
-  manageGroupMembers,
-  manageOrgUnits,
-  manageRoles,
-  manageChromeOsDevices,
-  manageMobileDevices,
-  manageDomains,
   getActivityReports,
+  getCustomerInfo,
   getUsageReports,
+  getUser,
+  listGroups,
+  listUsers,
   manageAlerts,
   manageCalendarResources,
+  manageChromeOsDevices,
+  manageDomains,
+  manageGroup,
+  manageGroupMembers,
   manageLicenses,
+  manageMobileDevices,
+  manageOrgUnits,
+  manageRoles,
+  manageUserAliases,
   transferData,
-  getCustomerInfo
+  updateUser
 } from './tools';
-import { userChanges, activityEvents } from './triggers';
+import { activityEvents, userChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

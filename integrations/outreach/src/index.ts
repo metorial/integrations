@@ -1,33 +1,33 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageProspect,
-  getProspect,
-  listProspects,
-  manageAccount,
-  listAccounts,
-  manageSequence,
-  listSequences,
-  manageSequenceState,
-  listMailings,
-  manageTask,
-  listTasks,
-  manageOpportunity,
-  listOpportunities,
-  manageTemplate,
-  manageSnippet,
   createCall,
-  listUsers
+  getProspect,
+  listAccounts,
+  listMailings,
+  listOpportunities,
+  listProspects,
+  listSequences,
+  listTasks,
+  listUsers,
+  manageAccount,
+  manageOpportunity,
+  manageProspect,
+  manageSequence,
+  manageSequenceState,
+  manageSnippet,
+  manageTask,
+  manageTemplate
 } from './tools';
 import {
-  prospectEvents,
   accountEvents,
+  callEvents,
   mailingEvents,
+  opportunityEvents,
+  prospectEvents,
   sequenceEvents,
   sequenceStateEvents,
-  taskEvents,
-  opportunityEvents,
-  callEvents
+  taskEvents
 } from './triggers';
 
 export let provider = Slate.create({

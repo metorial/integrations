@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MockServiceClient } from '../lib/mock-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageMockTransaction = SlateTool.create(spec, {
   name: 'Manage Mock Transaction',

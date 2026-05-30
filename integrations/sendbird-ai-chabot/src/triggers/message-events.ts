@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let messageEvents = SlateTrigger.create(spec, {
   name: 'Message Events',
@@ -135,9 +135,9 @@ export let messageEvents = SlateTrigger.create(spec, {
       let sender = (data.sender || {}) as Record<string, unknown>;
       let payload = (data.payload || {}) as Record<string, unknown>;
       let channel = (data.channel || {}) as Record<string, unknown>;
-      let mentionedUsers = (
-        (data.mentioned_users || []) as Array<Record<string, unknown>>
-      ).map(u => u.user_id as string);
+      let mentionedUsers = ((data.mentioned_users || []) as Record<string, unknown>[]).map(
+        u => u.user_id as string
+      );
 
       return {
         inputs: [

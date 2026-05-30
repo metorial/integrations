@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let permissionDetailSchema = z.object({
   permissionId: z.string().optional().describe('ID of the permission'),

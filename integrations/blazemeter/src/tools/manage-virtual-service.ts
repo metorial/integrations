@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MockServiceClient } from '../lib/mock-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageVirtualService = SlateTool.create(spec, {
   name: 'Manage Virtual Service',
@@ -124,7 +124,7 @@ export let manageVirtualService = SlateTool.create(spec, {
     if (ctx.input.action === 'deploy') {
       if (!ctx.input.serviceId)
         throw new Error('serviceId is required for deploying a virtual service');
-      let result = await client.deployVirtualService(ctx.input.serviceId);
+      let _result = await client.deployVirtualService(ctx.input.serviceId);
       return {
         output: { serviceId: ctx.input.serviceId, status: 'deployed' },
         message: `Deployed virtual service **${ctx.input.serviceId}**.`
@@ -134,7 +134,7 @@ export let manageVirtualService = SlateTool.create(spec, {
     if (ctx.input.action === 'undeploy') {
       if (!ctx.input.serviceId)
         throw new Error('serviceId is required for undeploying a virtual service');
-      let result = await client.undeployVirtualService(ctx.input.serviceId);
+      let _result = await client.undeployVirtualService(ctx.input.serviceId);
       return {
         output: { serviceId: ctx.input.serviceId, status: 'undeployed' },
         message: `Undeployed virtual service **${ctx.input.serviceId}**.`

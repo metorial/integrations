@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { detectGender, countryOfOrigin, accountStatistics } from './tools';
+import { accountStatistics, countryOfOrigin, detectGender } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

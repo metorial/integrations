@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listUsers,
-  listTeams,
-  listCalls,
-  getCall,
   createCall,
-  getPresignedUrl,
-  listMeetingEvents,
-  getMeetingEvent,
   createMeetingEvent,
   deleteMeetingEvent,
-  launchMeetingAssistant
+  getCall,
+  getMeetingEvent,
+  getPresignedUrl,
+  launchMeetingAssistant,
+  listCalls,
+  listMeetingEvents,
+  listTeams,
+  listUsers
 } from './tools';
 import { callProcessed } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listContacts = SlateTool.create(spec, {
   name: 'List Contacts',
@@ -80,7 +80,7 @@ Returns paginated results with contact details including name, title, emails, an
     }));
 
     let totalResults = result.total_results ?? contacts.length;
-    let limit = ctx.input.limit ?? 100;
+    let _limit = ctx.input.limit ?? 100;
     let skip = ctx.input.skip ?? 0;
     let hasMore = skip + contacts.length < totalResults;
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WaiverFileClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchWaivers = SlateTool.create(spec, {
   name: 'Search Waivers',
@@ -39,7 +39,7 @@ export let searchWaivers = SlateTool.create(spec, {
     let hasRefId =
       ctx.input.refId1 || ctx.input.refId2 || ctx.input.refId3 || ctx.input.refIdAny;
 
-    let waivers;
+    let waivers: any;
     if (hasRefId) {
       waivers = await client.getWaiversByReferenceID({
         refId1: ctx.input.refId1,

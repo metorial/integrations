@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FlowiseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listAssistants = SlateTool.create(spec, {
   name: 'List Assistants',

@@ -1,5 +1,5 @@
 import { SlatesProtocolClient } from './client';
-import { SlatesProtocolClientOptions } from './types';
+import type { SlatesProtocolClientOptions } from './types';
 
 export * from './client';
 export * from './error';

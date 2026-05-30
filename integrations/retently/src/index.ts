@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageCustomers,
-  getCustomers,
-  sendSurvey,
-  getFeedback,
   annotateFeedback,
-  getScore,
   getCampaigns,
   getCompanies,
-  getReports,
-  getTrends,
+  getCustomers,
+  getFeedback,
   getOutbox,
+  getReports,
+  getScore,
+  getTrends,
+  manageCustomers,
   manageSuppressions,
+  sendSurvey,
   unsubscribeCustomers
 } from './tools';
-import { surveyWebhook, newFeedback } from './triggers';
+import { newFeedback, surveyWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

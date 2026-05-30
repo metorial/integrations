@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProducts,
-  listFeatures,
   getFeature,
-  manageFeature,
-  listReleases,
-  manageRelease,
   listEpics,
-  manageEpic,
-  listIdeas,
-  manageIdea,
-  manageGoal,
-  manageInitiative,
+  listFeatures,
   listGoalsAndInitiatives,
+  listIdeas,
+  listProducts,
+  listReleases,
+  listUsers,
   manageComment,
-  manageTodo,
-  listUsers
+  manageEpic,
+  manageFeature,
+  manageGoal,
+  manageIdea,
+  manageInitiative,
+  manageRelease,
+  manageTodo
 } from './tools';
 import { featureChanges, ideaChanges, inboundWebhook } from './triggers';
 

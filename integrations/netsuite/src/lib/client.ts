@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosRequestConfig } from 'axios';
+import { createAxios } from 'slates';
 import { buildOAuth1Header, type OAuth1Credentials } from './oauth1';
 
 export interface NetSuiteAuth {
@@ -80,7 +80,7 @@ export class Client {
     }
 
     let queryString = new URLSearchParams(cleanParams).toString();
-    let fullUrl = `${this.baseUrl}${path}${queryString ? '?' + queryString : ''}`;
+    let fullUrl = `${this.baseUrl}${path}${queryString ? `?${queryString}` : ''}`;
     let authHeaders = this.getAuthHeaders(method, fullUrl);
 
     let config: AxiosRequestConfig = {
@@ -111,10 +111,10 @@ export class Client {
   ): Promise<Record<string, any>> {
     let params: Record<string, string | undefined> = {};
     if (options?.expandSubResources) {
-      params['expandSubResources'] = 'true';
+      params.expandSubResources = 'true';
     }
     if (options?.fields && options.fields.length > 0) {
-      params['fields'] = options.fields.join(',');
+      params.fields = options.fields.join(',');
     }
     return this.request('GET', `/record/v1/${recordType}/${recordId}`, { params });
   }
@@ -137,7 +137,7 @@ export class Client {
 
     // If 204, extract the ID from the Location header
     if (response.status === 204) {
-      let location = response.headers['location'] || '';
+      let location = response.headers.location || '';
       let idMatch = location.match(/\/([^/]+)$/);
       let recordId = idMatch ? idMatch[1] : '';
       return { recordId, location };
@@ -186,7 +186,7 @@ export class Client {
     });
 
     if (response.status === 204) {
-      let location = response.headers['location'] || '';
+      let location = response.headers.location || '';
       let idMatch = location.match(/\/([^/]+)$/);
       let recordId = idMatch ? idMatch[1] : externalId;
       return { recordId, location };
@@ -211,11 +211,11 @@ export class Client {
     }
   ): Promise<RecordListResponse> {
     let params: Record<string, string | number | undefined> = {};
-    if (options?.limit !== undefined) params['limit'] = options.limit;
-    if (options?.offset !== undefined) params['offset'] = options.offset;
-    if (options?.query) params['q'] = options.query;
+    if (options?.limit !== undefined) params.limit = options.limit;
+    if (options?.offset !== undefined) params.offset = options.offset;
+    if (options?.query) params.q = options.query;
     if (options?.fields && options.fields.length > 0) {
-      params['fields'] = options.fields.join(',');
+      params.fields = options.fields.join(',');
     }
     return this.request('GET', `/record/v1/${recordType}`, { params });
   }
@@ -243,7 +243,7 @@ export class Client {
     });
 
     if (response.status === 204) {
-      let location = response.headers['location'] || '';
+      let location = response.headers.location || '';
       let idMatch = location.match(/\/([^/]+)$/);
       let recordId = idMatch ? idMatch[1] : '';
       return { recordId, location, targetType };
@@ -262,8 +262,8 @@ export class Client {
     }
   ): Promise<SuiteQLResponse> {
     let params: Record<string, string | number | undefined> = {};
-    if (options?.limit !== undefined) params['limit'] = options.limit;
-    if (options?.offset !== undefined) params['offset'] = options.offset;
+    if (options?.limit !== undefined) params.limit = options.limit;
+    if (options?.offset !== undefined) params.offset = options.offset;
 
     return this.request('POST', '/query/v1/suiteql', {
       data: { q: query },

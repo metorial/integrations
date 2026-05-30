@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { herokuServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageAddons = SlateTool.create(spec, {
   name: 'Manage Add-ons',
@@ -98,8 +98,7 @@ export let manageAddons = SlateTool.create(spec, {
     if (action === 'create') {
       if (!ctx.input.appIdOrName)
         throw herokuServiceError('appIdOrName is required for "create" action.');
-      if (!ctx.input.plan)
-        throw herokuServiceError('plan is required for "create" action.');
+      if (!ctx.input.plan) throw herokuServiceError('plan is required for "create" action.');
       let addon = await client.createAddon(ctx.input.appIdOrName, {
         plan: ctx.input.plan,
         name: ctx.input.addonName,

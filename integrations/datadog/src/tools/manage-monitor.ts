@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let monitorOptionsSchema = z
   .object({
@@ -86,7 +86,7 @@ Supports metric alerts, log alerts, anomaly detection, forecast, outlier, APM, a
     let client = createClient(ctx.auth, ctx.config);
     let { monitorId, options, ...data } = ctx.input;
 
-    let apiOptions: any = undefined;
+    let apiOptions: any;
     if (options) {
       apiOptions = {} as any;
       if (options.thresholds) {

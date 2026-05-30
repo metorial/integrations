@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  scrapeWebpage,
-  scrapeAsMarkdown,
+  checkUsage,
   extractData,
+  scrapeAsMarkdown,
   scrapeExtended,
-  checkUsage
+  scrapeWebpage
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

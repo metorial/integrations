@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
-import { confluenceServiceError } from '../lib/errors';
 import { z } from 'zod';
+import { confluenceServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let attachmentOutputSchema = z.object({
   attachmentId: z.string(),

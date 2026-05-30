@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NeonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let projectConsumptionSchema = z.object({
   projectId: z.string().describe('ID of the project'),

@@ -1,15 +1,15 @@
 import { createAxios } from 'slates';
 import type {
+  NusiiAccount,
+  NusiiActivity,
   NusiiClient,
+  NusiiLineItem,
   NusiiProposal,
   NusiiSection,
-  NusiiLineItem,
   NusiiTemplate,
-  NusiiActivity,
-  NusiiUser,
   NusiiTheme,
+  NusiiUser,
   NusiiWebhookEndpoint,
-  NusiiAccount,
   PaginatedResult,
   PaginationMeta
 } from './types';
@@ -19,7 +19,7 @@ let BASE_URL = 'https://app.nusii.com/api/v2';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; isOAuth?: boolean }) {
+  constructor(config: { token: string; isOAuth?: boolean }) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

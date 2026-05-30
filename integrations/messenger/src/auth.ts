@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { MESSENGER_DEFAULT_API_VERSION } from './config';
 import { messengerOAuthError, messengerServiceError } from './lib/errors';
@@ -82,7 +82,9 @@ export let auth = SlateAuth.create()
 
       let userAccessToken = tokenResponse.access_token as string | undefined;
       if (!userAccessToken) {
-        throw messengerServiceError('Facebook OAuth token response did not include an access token');
+        throw messengerServiceError(
+          'Facebook OAuth token response did not include an access token'
+        );
       }
 
       // Exchange short-lived token for long-lived token

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createImagesFromPdf = SlateTool.create(spec, {
   name: 'Create Images from PDF',
@@ -41,7 +41,7 @@ export let createImagesFromPdf = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let pageNums = ctx.input.pageNumbers.split(',').map(p => parseInt(p.trim(), 10));
+    let pageNums = ctx.input.pageNumbers.split(',').map(p => Number.parseInt(p.trim(), 10));
 
     let result = await client.createImages({
       docContent: ctx.input.fileContent,

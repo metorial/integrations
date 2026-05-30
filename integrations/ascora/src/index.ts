@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  submitEnquiry,
-  listCustomers,
   getInvoices,
-  markInvoices,
   getPayments,
-  markPayments
+  listCustomers,
+  markInvoices,
+  markPayments,
+  submitEnquiry
 } from './tools';
-import { newInvoices, newPayments, inboundWebhook } from './triggers';
+import { inboundWebhook, newInvoices, newPayments } from './triggers';
 
 export let provider = Slate.create({
   spec,

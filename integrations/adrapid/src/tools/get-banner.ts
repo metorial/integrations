@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let bannerFileSchema = z.object({
   fileId: z.string().describe('Unique identifier of the banner file'),

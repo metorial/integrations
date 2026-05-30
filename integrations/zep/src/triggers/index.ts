@@ -1,2 +1,2 @@
-export * from './graph-event';
 export * from './byom-event';
+export * from './graph-event';

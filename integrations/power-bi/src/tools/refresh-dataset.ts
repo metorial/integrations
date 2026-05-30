@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PowerBIClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let refreshEntrySchema = z.object({
   requestId: z.string().optional().describe('Refresh request ID'),

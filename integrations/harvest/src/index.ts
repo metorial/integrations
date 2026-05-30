@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageTimeEntry,
-  listTimeEntries,
-  startStopTimer,
-  manageProject,
-  listProjects,
-  manageClient,
-  listClients,
-  manageInvoice,
-  listInvoices,
-  sendInvoice,
-  recordInvoicePayment,
-  manageExpense,
-  listExpenses,
-  manageTask,
-  listTasks,
-  manageUser,
-  listUsers,
-  manageEstimate,
-  manageContact,
   generateReport,
-  getCompany
+  getCompany,
+  listClients,
+  listExpenses,
+  listInvoices,
+  listProjects,
+  listTasks,
+  listTimeEntries,
+  listUsers,
+  manageClient,
+  manageContact,
+  manageEstimate,
+  manageExpense,
+  manageInvoice,
+  manageProject,
+  manageTask,
+  manageTimeEntry,
+  manageUser,
+  recordInvoicePayment,
+  sendInvoice,
+  startStopTimer
 } from './tools';
-import { timeEntryChanges, invoiceChanges, projectChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, invoiceChanges, projectChanges, timeEntryChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

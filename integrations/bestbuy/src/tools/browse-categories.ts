@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BestBuyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let browseCategories = SlateTool.create(spec, {
   name: 'Browse Categories',

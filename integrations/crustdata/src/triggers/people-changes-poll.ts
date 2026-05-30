@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CrustdataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let peopleChangesPoll = SlateTrigger.create(spec, {
   name: 'People Who Recently Changed Jobs',

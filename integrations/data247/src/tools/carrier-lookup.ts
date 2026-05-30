@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let carrierResultSchema = z.object({
   phone: z.string().optional().describe('The queried phone number'),
@@ -65,7 +65,7 @@ export let carrierLookup = SlateTool.create(spec, {
     let client = new Client(ctx.auth.token);
     let { phones, lookupType } = ctx.input;
 
-    let results: Array<Record<string, string>>;
+    let results: Record<string, string>[];
 
     if (phones.length === 1) {
       let result: Record<string, string>;
@@ -77,14 +77,12 @@ export let carrierLookup = SlateTool.create(spec, {
         result = await client.carrierLookupUSA(phones[0]!);
       }
       results = [result];
+    } else if (lookupType === 'international') {
+      results = await client.carrierLookupInternationalBatch(phones);
+    } else if (lookupType === 'carrier_type') {
+      results = await client.carrierTypeLookupBatch(phones);
     } else {
-      if (lookupType === 'international') {
-        results = await client.carrierLookupInternationalBatch(phones);
-      } else if (lookupType === 'carrier_type') {
-        results = await client.carrierTypeLookupBatch(phones);
-      } else {
-        results = await client.carrierLookupUSABatch(phones);
-      }
+      results = await client.carrierLookupUSABatch(phones);
     }
 
     let mapped = results.map(mapResult);

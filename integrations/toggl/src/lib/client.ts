@@ -35,11 +35,7 @@ export class TogglClient {
   }
 
   async getMyTimeEntries(
-    params: {
-      startDate?: string;
-      endDate?: string;
-      meta?: boolean;
-    } = {}
+    params: { startDate?: string; endDate?: string; meta?: boolean } = {}
   ) {
     let response = await this.http.get('/me/time_entries', {
       params: {
@@ -81,7 +77,7 @@ export class TogglClient {
       start: data.start,
       duration: data.duration,
       created_with: data.createdWith,
-      workspace_id: parseInt(workspaceId)
+      workspace_id: Number.parseInt(workspaceId, 10)
     };
     if (data.projectId !== undefined) body.project_id = data.projectId;
     if (data.taskId !== undefined) body.task_id = data.taskId;

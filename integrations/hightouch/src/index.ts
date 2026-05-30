@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listSources,
-  getSource,
-  createSource,
-  updateSource,
-  listDestinations,
-  getDestination,
   createDestination,
-  updateDestination,
-  listModels,
-  getModel,
   createModel,
-  updateModel,
-  listSyncs,
-  getSync,
+  createSource,
   createSync,
-  updateSync,
+  getDestination,
+  getModel,
+  getSource,
+  getSync,
+  getSyncSequenceRun,
+  listDestinations,
+  listModels,
+  listSources,
+  listSyncRuns,
+  listSyncs,
   triggerSync,
   triggerSyncSequence,
-  listSyncRuns,
-  getSyncSequenceRun
+  updateDestination,
+  updateModel,
+  updateSource,
+  updateSync
 } from './tools';
-import { syncRunCompleted, inboundWebhook } from './triggers';
+import { inboundWebhook, syncRunCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,

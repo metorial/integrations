@@ -1,17 +1,17 @@
 import { createAxios } from 'slates';
+import { googleMeetApiError } from './errors';
 import type {
-  Space,
-  SpaceConfig,
-  Member,
   ConferenceRecord,
+  Member,
   Participant,
   ParticipantSession,
   Recording,
+  SmartNote,
+  Space,
+  SpaceConfig,
   Transcript,
-  TranscriptEntry,
-  SmartNote
+  TranscriptEntry
 } from './types';
-import { googleMeetApiError } from './errors';
 
 type AxiosResponse<T> = {
   data: T;
@@ -195,13 +195,14 @@ export class MeetClient {
     if (pageToken) params.pageToken = pageToken;
     if (filter) params.filter = filter;
 
-    let response = await this.request<{ participants?: Participant[]; nextPageToken?: string }>(
-      'list participants',
-      () =>
-        meetAxios.get(`/v2/${parent}/participants`, {
-          headers: this.headers,
-          params
-        })
+    let response = await this.request<{
+      participants?: Participant[];
+      nextPageToken?: string;
+    }>('list participants', () =>
+      meetAxios.get(`/v2/${parent}/participants`, {
+        headers: this.headers,
+        params
+      })
     );
     return {
       participants: response.participants || [],

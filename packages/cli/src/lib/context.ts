@@ -1,10 +1,10 @@
 import { select } from '@inquirer/prompts';
-import { SlatesProtocolClient } from '@slates/client';
+import type { SlatesProtocolClient } from '@slates/client';
 import {
   createSlatesClientFromProfile,
   openSlatesCliStore,
-  SlatesProfileRecord,
-  type SlatesCliStore
+  type SlatesCliStore,
+  type SlatesProfileRecord
 } from '@slates/profiles';
 import { resolveIntegration } from './integration';
 import { promptForObjectSchema } from './prompts';

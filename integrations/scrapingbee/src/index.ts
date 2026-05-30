@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  scrapeWebpage,
-  extractData,
   aiExtract,
-  captureScreenshot,
-  runJsScenario,
-  googleSearch,
   amazonSearch,
-  youtubeSearch,
-  youtubeVideo,
+  captureScreenshot,
+  checkUsage,
+  extractData,
+  googleSearch,
+  runJsScenario,
+  scrapeWebpage,
   walmartSearch,
-  checkUsage
+  youtubeSearch,
+  youtubeVideo
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ToneDenClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let conversionUserSchema = z.object({
   email: z.string().optional().describe('User email'),

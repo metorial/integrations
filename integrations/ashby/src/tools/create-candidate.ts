@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AshbyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createCandidateTool = SlateTool.create(spec, {
   name: 'Create Candidate',

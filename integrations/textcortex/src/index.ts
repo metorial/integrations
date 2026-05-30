@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateText,
-  generateBlog,
-  generateProductDescription,
   generateAdCopy,
+  generateBlog,
+  generateCode,
   generateEmail,
+  generateProductDescription,
   generateSocialMediaPost,
+  generateText,
   rewriteText,
   summarizeText,
-  translateText,
-  generateCode
+  translateText
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

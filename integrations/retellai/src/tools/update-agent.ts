@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RetellClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateAgent = SlateTool.create(spec, {
   name: 'Update Voice Agent',

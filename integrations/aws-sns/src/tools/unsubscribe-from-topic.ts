@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SnsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let unsubscribeFromTopic = SlateTool.create(spec, {
   name: 'Unsubscribe from Topic',

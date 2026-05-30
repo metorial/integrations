@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { GoogleDocsClient, DriveChange } from '../lib/client';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
+import { GoogleDocsClient } from '../lib/client';
 import { googleDocsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let documentChanged = SlateTrigger.create(spec, {
   name: 'Document Changed',
@@ -104,7 +104,7 @@ export let documentChanged = SlateTrigger.create(spec, {
         if (change.changeType === 'file') {
           // Check if it's a Google Doc
           if (change.file?.mimeType === 'application/vnd.google-apps.document') {
-            let isNew = change.file && !knownDocuments[change.file.id];
+            let _isNew = change.file && !knownDocuments[change.file.id];
 
             docChanges.push({
               changeType: 'file',
@@ -123,7 +123,7 @@ export let documentChanged = SlateTrigger.create(spec, {
             });
 
             // Update known documents
-            if (change.file && change.file.modifiedTime) {
+            if (change.file?.modifiedTime) {
               knownDocuments[change.file.id] = change.file.modifiedTime;
             }
 

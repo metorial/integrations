@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DatabricksClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taskSchema = z.object({
   taskKey: z.string().describe('Unique key for the task within the job'),

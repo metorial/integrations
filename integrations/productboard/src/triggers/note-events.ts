@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let noteEventsTrigger = SlateTrigger.create(spec, {
   name: 'Note Events',
@@ -78,7 +78,7 @@ export let noteEventsTrigger = SlateTrigger.create(spec, {
     },
 
     handleEvent: async ctx => {
-      let noteData: Record<string, any> | undefined = undefined;
+      let noteData: Record<string, any> | undefined;
 
       if (ctx.input.noteId) {
         try {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let voiceSchema = z.object({
   voiceId: z.string().describe('Unique voice identifier'),
@@ -77,25 +77,25 @@ export let listVoices = SlateTool.create(spec, {
     });
 
     let data = result as Record<string, unknown>;
-    let rawVoices = (data['voices'] || []) as Array<Record<string, unknown>>;
+    let rawVoices = (data.voices || []) as Record<string, unknown>[];
 
     let voices = rawVoices.map(v => ({
-      voiceId: v['voice_id'] as string,
-      name: v['name'] as string,
-      category: v['category'] as string | undefined,
-      description: v['description'] as string | undefined,
-      labels: v['labels'] as Record<string, string> | undefined,
-      previewUrl: v['preview_url'] as string | undefined
+      voiceId: v.voice_id as string,
+      name: v.name as string,
+      category: v.category as string | undefined,
+      description: v.description as string | undefined,
+      labels: v.labels as Record<string, string> | undefined,
+      previewUrl: v.preview_url as string | undefined
     }));
 
     return {
       output: {
         voices,
-        hasMore: data['has_more'] as boolean,
-        totalCount: data['total_count'] as number | undefined,
-        nextPageToken: data['next_page_token'] as string | undefined
+        hasMore: data.has_more as boolean,
+        totalCount: data.total_count as number | undefined,
+        nextPageToken: data.next_page_token as string | undefined
       },
-      message: `Found ${voices.length} voice(s)${data['has_more'] ? ' (more available)' : ''}.${ctx.input.search ? ` Search: "${ctx.input.search}"` : ''}`
+      message: `Found ${voices.length} voice(s)${data.has_more ? ' (more available)' : ''}.${ctx.input.search ? ` Search: "${ctx.input.search}"` : ''}`
     };
   })
   .build();

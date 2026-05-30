@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createSession,
-  listSessions,
-  getSession,
-  getActiveSessions,
-  endSession,
-  manageProfile,
-  performWebTask,
-  checkWebTaskStatus,
-  fetchWebpage,
-  screenshotWebpage,
   browserControl,
-  manageExtension,
-  manageBatch,
-  signalEvent,
-  manageRecording,
+  checkWebTaskStatus,
+  createSession,
+  endSession,
+  fetchWebpage,
+  getActiveSessions,
+  getSession,
+  listSessions,
+  manageAgent,
   manageApplication,
+  manageBatch,
+  manageExtension,
   manageIdentity,
   manageIntegration,
-  manageAgent
+  manageProfile,
+  manageRecording,
+  performWebTask,
+  screenshotWebpage,
+  signalEvent
 } from './tools';
-import { sessionStatusChange, inboundWebhook } from './triggers';
+import { inboundWebhook, sessionStatusChange } from './triggers';
 
 export let provider = Slate.create({
   spec,

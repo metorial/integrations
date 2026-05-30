@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlacidClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transferSchema = z
   .object({
@@ -87,12 +87,12 @@ export let generateImage = SlateTool.create(spec, {
     let client = new PlacidClient({ token: ctx.auth.token });
 
     let modifications: Record<string, unknown> = {};
-    if (ctx.input.width !== undefined) modifications['width'] = ctx.input.width;
-    if (ctx.input.height !== undefined) modifications['height'] = ctx.input.height;
-    if (ctx.input.filename) modifications['filename'] = ctx.input.filename;
-    if (ctx.input.format) modifications['format'] = ctx.input.format;
-    if (ctx.input.dpi !== undefined) modifications['dpi'] = ctx.input.dpi;
-    if (ctx.input.colorMode) modifications['color_mode'] = ctx.input.colorMode;
+    if (ctx.input.width !== undefined) modifications.width = ctx.input.width;
+    if (ctx.input.height !== undefined) modifications.height = ctx.input.height;
+    if (ctx.input.filename) modifications.filename = ctx.input.filename;
+    if (ctx.input.format) modifications.format = ctx.input.format;
+    if (ctx.input.dpi !== undefined) modifications.dpi = ctx.input.dpi;
+    if (ctx.input.colorMode) modifications.color_mode = ctx.input.colorMode;
 
     let result = await client.createImage({
       templateUuid: ctx.input.templateUuid,

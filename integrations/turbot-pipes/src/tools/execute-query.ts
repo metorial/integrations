@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let executeQuery = SlateTool.create(spec, {
   name: 'Execute Query',
@@ -57,7 +57,7 @@ export let executeQuery = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let result;
+    let result: any;
     if (ctx.input.ownerType === 'org') {
       result = await client.executeOrgQuery(
         ownerHandle,

@@ -3,13 +3,13 @@ import { createAxios } from 'slates';
 export class Client {
   private http;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://api.leadiq.com',
       headers: {
         'Content-Type': 'application/json',
 
-        Authorization: `Basic ${Buffer.from(config.token + ':').toString('base64')}`
+        Authorization: `Basic ${Buffer.from(`${config.token}:`).toString('base64')}`
       }
     });
   }

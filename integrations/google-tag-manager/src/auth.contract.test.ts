@@ -52,10 +52,7 @@ describe('google-tag-manager auth contract', () => {
       input: {},
       clientId: 'client-id',
       clientSecret: 'client-secret',
-      scopes: [
-        googleTagManagerScopes.readonly,
-        googleTagManagerScopes.userInfoEmail
-      ]
+      scopes: [googleTagManagerScopes.readonly, googleTagManagerScopes.userInfoEmail]
     });
 
     let url = new URL(result.authorizationUrl);

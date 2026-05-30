@@ -1,34 +1,34 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listSitesTool,
-  getSiteTool,
-  listUnitsTool,
-  getUnitTool,
-  listUsersTool,
-  getUserTool,
-  createUserTool,
-  updateUserTool,
-  listInvoicesTool,
-  getInvoiceTool,
   createInvoiceTool,
-  manageInvoiceTool,
+  createUserTool,
+  getInvoiceTool,
+  getSettingsTool,
+  getSiteTool,
+  getUnitTool,
+  getUserTool,
+  listInvoicesTool,
+  listSitesTool,
   listUnitRentalsTool,
+  listUnitsTool,
+  listUsersTool,
+  manageInvoiceTool,
+  manageLeadTool,
   manageMoveInTool,
   manageMoveOutTool,
   manageValetOrderTool,
-  manageLeadTool,
-  getSettingsTool
+  updateUserTool
 } from './tools';
 import {
-  unitEventsTrigger,
+  invoiceEventsTrigger,
   moveInEventsTrigger,
   moveOutEventsTrigger,
-  invoiceEventsTrigger,
-  userEventsTrigger,
+  siteEventsTrigger,
+  unitEventsTrigger,
   unitRentalEventsTrigger,
-  valetOrderEventsTrigger,
-  siteEventsTrigger
+  userEventsTrigger,
+  valetOrderEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

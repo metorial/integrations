@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listAlbums,
-  getAlbum,
-  createAlbum,
-  updateAlbum,
-  manageAlbumMedia,
   addAlbumEnrichment,
-  getMediaItem,
-  searchMediaItems,
-  updateMediaItem,
-  uploadMedia,
+  createAlbum,
   createPickerSession,
+  deletePickerSession,
+  getAlbum,
+  getMediaItem,
   getPickerSession,
+  listAlbums,
   listPickedMedia,
-  deletePickerSession
+  manageAlbumMedia,
+  searchMediaItems,
+  updateAlbum,
+  updateMediaItem,
+  uploadMedia
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

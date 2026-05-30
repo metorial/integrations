@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProducts,
   getProduct,
-  manageProduct,
-  manageOfferCodes,
-  manageVariants,
-  manageCustomFields,
-  listSales,
   getSale,
-  manageSale,
-  listSubscribers,
   getSubscriber,
+  getUser,
+  listProducts,
+  listSales,
+  listSubscribers,
+  manageCustomFields,
   manageLicense,
-  getUser
+  manageOfferCodes,
+  manageProduct,
+  manageSale,
+  manageVariants
 } from './tools';
 import { saleEvents, subscriptionEvents } from './triggers';
 

@@ -82,7 +82,7 @@ export interface PaginatedResults<T> {
 export class Client {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
@@ -109,10 +109,10 @@ export class Client {
     size?: number;
   }): Promise<TemplateEntry[]> {
     let queryParams: Record<string, string | string[]> = {};
-    if (params?.name) queryParams['name'] = params.name;
-    if (params?.tags && params.tags.length > 0) queryParams['tags'] = params.tags;
-    if (params?.page !== undefined) queryParams['page'] = String(params.page);
-    if (params?.size !== undefined) queryParams['size'] = String(params.size);
+    if (params?.name) queryParams.name = params.name;
+    if (params?.tags && params.tags.length > 0) queryParams.tags = params.tags;
+    if (params?.page !== undefined) queryParams.page = String(params.page);
+    if (params?.size !== undefined) queryParams.size = String(params.size);
 
     let response = await this.axios.get('/api/v2/my-templates', { params: queryParams });
     return response.data;
@@ -133,9 +133,9 @@ export class Client {
     template?: string;
   }): Promise<PaginatedResults<RenderResultItem>> {
     let queryParams: Record<string, string> = {};
-    if (params?.page !== undefined) queryParams['page'] = String(params.page);
-    if (params?.size !== undefined) queryParams['size'] = String(params.size);
-    if (params?.template) queryParams['template'] = params.template;
+    if (params?.page !== undefined) queryParams.page = String(params.page);
+    if (params?.size !== undefined) queryParams.size = String(params.size);
+    if (params?.template) queryParams.template = params.template;
 
     let response = await this.axios.get('/api/v2/results', { params: queryParams });
     return response.data;

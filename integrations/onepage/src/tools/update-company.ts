@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { addressSchema, customFieldValueSchema, companySchema } from '../lib/schemas';
+import { Client } from '../lib/client';
+import { addressSchema, companySchema, customFieldValueSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let updateCompany = SlateTool.create(spec, {
   name: 'Update Company',

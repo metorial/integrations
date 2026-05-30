@@ -56,7 +56,7 @@ export interface AccountInfo {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string }) {
+  constructor(params: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.lmnt.com',
       headers: {

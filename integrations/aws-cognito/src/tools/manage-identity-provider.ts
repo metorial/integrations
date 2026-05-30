@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { createCognitoClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageIdentityProvider = SlateTool.create(spec, {
   name: 'Manage Identity Provider',

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { JiraClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let issueEventsTrigger = SlateTrigger.create(spec, {
   name: 'Issue Events',

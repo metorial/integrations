@@ -37,14 +37,14 @@ export class CoupaClient {
 
     if (!params) return query;
 
-    if (params.offset !== undefined) query['offset'] = String(params.offset);
-    if (params.limit !== undefined) query['limit'] = String(params.limit);
-    if (params.orderBy) query['order_by'] = params.orderBy;
-    if (params.dir) query['dir'] = params.dir;
+    if (params.offset !== undefined) query.offset = String(params.offset);
+    if (params.limit !== undefined) query.limit = String(params.limit);
+    if (params.orderBy) query.order_by = params.orderBy;
+    if (params.dir) query.dir = params.dir;
     if (params.fields && params.fields.length > 0)
-      query['fields'] = JSON.stringify(params.fields);
-    if (params.returnObject) query['return_object'] = params.returnObject;
-    if (params.exportedFlag !== undefined) query['exported'] = String(params.exportedFlag);
+      query.fields = JSON.stringify(params.fields);
+    if (params.returnObject) query.return_object = params.returnObject;
+    if (params.exportedFlag !== undefined) query.exported = String(params.exportedFlag);
 
     if (params.filters) {
       for (let [key, value] of Object.entries(params.filters)) {

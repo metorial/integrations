@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createPostTool,
-  updatePostTool,
-  getPostTool,
-  listPostsTool,
-  deletePostTool,
   addCommentTool,
   addReactionTool,
-  createFeatureRequestTool,
-  updateFeatureRequestTool,
-  listFeatureRequestsTool,
-  deleteFeatureRequestTool,
-  voteFeatureRequestTool,
-  getUnreadCountTool,
   checkNpsTool,
-  listNpsResponsesTool
+  createFeatureRequestTool,
+  createPostTool,
+  deleteFeatureRequestTool,
+  deletePostTool,
+  getPostTool,
+  getUnreadCountTool,
+  listFeatureRequestsTool,
+  listNpsResponsesTool,
+  listPostsTool,
+  updateFeatureRequestTool,
+  updatePostTool,
+  voteFeatureRequestTool
 } from './tools';
 import {
-  newPostTrigger,
   newCommentTrigger,
-  newReactionTrigger,
-  newNpsScoreTrigger
+  newNpsScoreTrigger,
+  newPostTrigger,
+  newReactionTrigger
 } from './triggers';
 
 export let provider = Slate.create({

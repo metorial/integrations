@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let voiceEvents = SlateTrigger.create(spec, {
   name: 'Voice Events',
@@ -82,7 +82,7 @@ export let voiceEvents = SlateTrigger.create(spec, {
 
       let dtmfData = data.dtmf as Record<string, unknown> | undefined;
       let speechData = data.speech as Record<string, unknown> | undefined;
-      let speechResults = speechData?.results as Array<Record<string, unknown>> | undefined;
+      let speechResults = speechData?.results as Record<string, unknown>[] | undefined;
 
       return {
         inputs: [

@@ -298,12 +298,7 @@ export class NasaClient {
   // ── SSD/CNEOS ─────────────────────────────────────────────
 
   async getSsdCloseApproach(
-    opts: {
-      dateMin?: string;
-      dateMax?: string;
-      distMax?: string;
-      body?: string;
-    } = {}
+    opts: { dateMin?: string; dateMax?: string; distMax?: string; body?: string } = {}
   ) {
     let { data } = await createAxios({ baseURL: 'https://ssd-api.jpl.nasa.gov' }).get(
       '/cad.api',
@@ -320,12 +315,7 @@ export class NasaClient {
   }
 
   async getSsdFireballs(
-    opts: {
-      dateMin?: string;
-      dateMax?: string;
-      minEnergy?: number;
-      reqLoc?: boolean;
-    } = {}
+    opts: { dateMin?: string; dateMax?: string; minEnergy?: number; reqLoc?: boolean } = {}
   ) {
     let { data } = await createAxios({ baseURL: 'https://ssd-api.jpl.nasa.gov' }).get(
       '/fireball.api',

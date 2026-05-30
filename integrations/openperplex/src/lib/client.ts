@@ -1,20 +1,20 @@
 import { createAxios } from 'slates';
 import type {
-  SearchParams,
   CustomSearchParams,
-  QueryFromUrlParams,
-  SearchResponse,
   CustomSearchResponse,
+  QueryFromUrlParams,
   QueryFromUrlResponse,
-  WebsiteTextResponse,
+  SearchParams,
+  SearchResponse,
   WebsiteMarkdownResponse,
-  WebsiteScreenshotResponse
+  WebsiteScreenshotResponse,
+  WebsiteTextResponse
 } from './types';
 
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.openperplex.com',
       headers: {

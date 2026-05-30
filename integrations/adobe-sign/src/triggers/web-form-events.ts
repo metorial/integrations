@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let webFormEvents = SlateTrigger.create(spec, {
   name: 'Web Form Events',
@@ -88,7 +88,7 @@ export let webFormEvents = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
       let clientId = ctx.request.headers.get('X-AdobeSign-ClientId') || '';
 
-      if (!data.event || !data.event.startsWith('WIDGET_')) {
+      if (!data.event?.startsWith('WIDGET_')) {
         return {
           inputs: [],
           response: new Response(JSON.stringify({ xAdobeSignClientId: clientId }), {

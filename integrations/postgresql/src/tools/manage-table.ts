@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
-import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
-import { postgresServiceError } from '../lib/errors';
 import { z } from 'zod';
+import { postgresServiceError } from '../lib/errors';
+import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
+import { spec } from '../spec';
 
 let columnDefinitionSchema = z.object({
   columnName: z.string().describe('Name of the column'),

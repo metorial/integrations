@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { PhotoshopClient } from '../lib/photoshop';
+import { spec } from '../spec';
 
 let storageRefSchema = z.object({
   href: z.string().describe('URL or path to the file (pre-signed URL for cloud storage)'),

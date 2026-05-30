@@ -1,18 +1,17 @@
 import { createAxios } from 'slates';
 import type {
-  PagerDutyIncident,
-  PagerDutyService,
-  PagerDutyUser,
-  PagerDutyTeam,
-  PagerDutyEscalationPolicy,
-  PagerDutySchedule,
-  PagerDutyOnCall,
-  PagerDutyMaintenanceWindow,
-  PagerDutyIncidentNote,
-  PagerDutyPriority,
-  PagerDutyWebhookSubscription,
   PagerDutyAnalyticsIncidentData,
-  PagerDutyReference
+  PagerDutyEscalationPolicy,
+  PagerDutyIncident,
+  PagerDutyIncidentNote,
+  PagerDutyMaintenanceWindow,
+  PagerDutyOnCall,
+  PagerDutyPriority,
+  PagerDutySchedule,
+  PagerDutyService,
+  PagerDutyTeam,
+  PagerDutyUser,
+  PagerDutyWebhookSubscription
 } from './types';
 
 export class PagerDutyClient {
@@ -112,7 +111,7 @@ export class PagerDutyClient {
       conferenceNumber?: string;
       conferenceUrl?: string;
     },
-    fromEmail: string
+    _fromEmail: string
   ): Promise<PagerDutyIncident> {
     let incident: Record<string, any> = {
       type: 'incident',
@@ -692,10 +691,7 @@ export class PagerDutyClient {
 
   // ─── Webhook Subscriptions ──────────────────────────────────
 
-  async listWebhookSubscriptions(params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<{
+  async listWebhookSubscriptions(params?: { limit?: number; offset?: number }): Promise<{
     webhook_subscriptions: PagerDutyWebhookSubscription[];
     more: boolean;
     total: number;

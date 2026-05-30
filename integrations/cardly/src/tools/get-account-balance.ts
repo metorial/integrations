@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CardlyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAccountBalance = SlateTool.create(spec, {
   name: 'Get Account Balance',
@@ -72,7 +72,7 @@ export let getAccountBalance = SlateTool.create(spec, {
 
     let balance = await client.getBalance();
 
-    let mapHistory = (records: Array<Record<string, unknown>>) =>
+    let mapHistory = (records: Record<string, unknown>[]) =>
       records.map(r => ({
         recordId: r.id as string,
         orderId: r.orderId as string | undefined,
@@ -90,14 +90,12 @@ export let getAccountBalance = SlateTool.create(spec, {
 
     if (ctx.input.includeCreditHistory) {
       let result = await client.listCreditHistory({ limit: ctx.input.historyLimit });
-      creditHistory = mapHistory(result.records as unknown as Array<Record<string, unknown>>);
+      creditHistory = mapHistory(result.records as unknown as Record<string, unknown>[]);
     }
 
     if (ctx.input.includeGiftCreditHistory) {
       let result = await client.listGiftCreditHistory({ limit: ctx.input.historyLimit });
-      giftCreditHistory = mapHistory(
-        result.records as unknown as Array<Record<string, unknown>>
-      );
+      giftCreditHistory = mapHistory(result.records as unknown as Record<string, unknown>[]);
     }
 
     return {

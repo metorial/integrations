@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let globalQuoteSchema = z.object({
   totalMarketCap: z.number().nullable().describe('Total cryptocurrency market capitalization'),

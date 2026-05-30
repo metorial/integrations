@@ -1,4 +1,4 @@
-import { SplunkClient, SplunkClientConfig } from './client';
+import { SplunkClient } from './client';
 
 export let createSplunkClient = (ctx: {
   config: { host: string; managementPort: string; hecPort: string; scheme: string };

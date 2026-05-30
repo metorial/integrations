@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let projectEventsTrigger = SlateTrigger.create(spec, {
   name: 'Project Events',
@@ -68,7 +68,7 @@ export let projectEventsTrigger = SlateTrigger.create(spec, {
             isActive: true
           });
           registrations.push({ projectId, webhookId: webhook.id });
-        } catch (e) {
+        } catch (_e) {
           // Skip projects where webhook creation fails
         }
       }
@@ -83,7 +83,7 @@ export let projectEventsTrigger = SlateTrigger.create(spec, {
       for (let reg of registrations) {
         try {
           await client.deleteWebhook(reg.projectId, reg.webhookId);
-        } catch (e) {
+        } catch (_e) {
           // Ignore errors during cleanup
         }
       }

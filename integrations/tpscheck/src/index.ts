@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { checkNumber, batchCheck, checkCredits } from './tools';
+import { batchCheck, checkCredits, checkNumber } from './tools';
 import { tpscheckEvents } from './triggers';
 
 export let provider = Slate.create({

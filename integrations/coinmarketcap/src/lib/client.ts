@@ -297,7 +297,7 @@ let transformKeys = (obj: any): any => {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private clientConfig: ClientConfig) {
+  constructor(clientConfig: ClientConfig) {
     let baseURL = BASE_URLS[clientConfig.environment] || BASE_URLS.production;
     this.axios = createAxios({
       baseURL,

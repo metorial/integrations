@@ -111,8 +111,8 @@ export class LinkedInClient {
       author: authorUrn,
       q: 'author'
     };
-    if (options?.count) params['count'] = String(options.count);
-    if (options?.start) params['start'] = String(options.start);
+    if (options?.count) params.count = String(options.count);
+    if (options?.start) params.start = String(options.start);
 
     let response = await this.restApi.get('/posts', {
       params,
@@ -147,8 +147,8 @@ export class LinkedInClient {
     options?: PaginationOptions
   ): Promise<PaginatedResponse<LinkedInComment>> {
     let params: Record<string, string> = {};
-    if (options?.count) params['count'] = String(options.count);
-    if (options?.start) params['start'] = String(options.start);
+    if (options?.count) params.count = String(options.count);
+    if (options?.start) params.start = String(options.start);
 
     let response = await this.restApi.get(
       `/socialActions/${encodeURIComponent(postUrn)}/comments`,
@@ -192,8 +192,8 @@ export class LinkedInClient {
       q: 'entity',
       sort: '(value:REVERSE_CHRONOLOGICAL)'
     };
-    if (options?.count) params['count'] = String(options.count);
-    if (options?.start) params['start'] = String(options.start);
+    if (options?.count) params.count = String(options.count);
+    if (options?.start) params.start = String(options.start);
 
     let response = await this.restApi.get(
       `/reactions/(entity:${encodeURIComponent(postUrn)})`,
@@ -234,7 +234,7 @@ export class LinkedInClient {
     return elements[0];
   }
 
-  async getAdministeredOrganizations(memberUrn: string): Promise<LinkedInOrganizationRole[]> {
+  async getAdministeredOrganizations(_memberUrn: string): Promise<LinkedInOrganizationRole[]> {
     let response = await this.restApi.get('/organizationAcls', {
       params: {
         q: 'roleAssignee',

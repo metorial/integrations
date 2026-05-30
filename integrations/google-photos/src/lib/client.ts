@@ -232,18 +232,14 @@ export class GooglePhotosLibraryClient {
     fileContent: string | Uint8Array | ArrayBuffer,
     mimeType: string
   ): Promise<string> {
-    let response = await this.axios.post(
-      PHOTOS_UPLOAD_URL,
-      fileContent,
-      {
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'X-Goog-Upload-Content-Type': mimeType,
-          'X-Goog-Upload-Protocol': 'raw'
-        },
-        baseURL: ''
-      }
-    );
+    let response = await this.axios.post(PHOTOS_UPLOAD_URL, fileContent, {
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        'X-Goog-Upload-Content-Type': mimeType,
+        'X-Goog-Upload-Protocol': 'raw'
+      },
+      baseURL: ''
+    });
     if (typeof response.data === 'string') {
       return response.data.trim();
     }

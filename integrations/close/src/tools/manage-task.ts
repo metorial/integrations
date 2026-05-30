@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTask = SlateTool.create(spec, {
   name: 'Manage Task',
@@ -56,16 +56,16 @@ When updating: provide the taskId along with any fields to change.`,
     let task: any;
 
     let apiData: Record<string, any> = {};
-    if (fields.leadId) apiData['lead_id'] = fields.leadId;
-    if (fields.text !== undefined) apiData['text'] = fields.text;
-    if (fields.assignedTo) apiData['assigned_to'] = fields.assignedTo;
-    if (fields.isComplete !== undefined) apiData['is_complete'] = fields.isComplete;
-    if (fields.dueDate !== undefined) apiData['due_date'] = fields.dueDate;
-    if (fields.type) apiData['_type'] = fields.type;
+    if (fields.leadId) apiData.lead_id = fields.leadId;
+    if (fields.text !== undefined) apiData.text = fields.text;
+    if (fields.assignedTo) apiData.assigned_to = fields.assignedTo;
+    if (fields.isComplete !== undefined) apiData.is_complete = fields.isComplete;
+    if (fields.dueDate !== undefined) apiData.due_date = fields.dueDate;
+    if (fields.type) apiData._type = fields.type;
 
     if (taskId) {
       // Remove type from updates — it can only be set on creation
-      delete apiData['_type'];
+      apiData._type = undefined;
       task = await client.updateTask(taskId, apiData);
     } else {
       if (!fields.leadId) {

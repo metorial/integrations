@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TwoChatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let checkWhatsAppNumber = SlateTool.create(spec, {
   name: 'Check WhatsApp Number',

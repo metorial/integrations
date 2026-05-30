@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AzureDevOpsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let managePullRequestTool = SlateTool.create(spec, {
   name: 'Manage Pull Requests',
@@ -182,12 +182,11 @@ export let managePullRequestTool = SlateTool.create(spec, {
     if (ctx.input.action === 'update') {
       if (!ctx.input.pullRequestId) throw new Error('pullRequestId is required for "update"');
       let updateData: Record<string, any> = {};
-      if (ctx.input.title) updateData['title'] = ctx.input.title;
-      if (ctx.input.description !== undefined)
-        updateData['description'] = ctx.input.description;
-      if (ctx.input.status) updateData['status'] = ctx.input.status;
+      if (ctx.input.title) updateData.title = ctx.input.title;
+      if (ctx.input.description !== undefined) updateData.description = ctx.input.description;
+      if (ctx.input.status) updateData.status = ctx.input.status;
       if (ctx.input.autoComplete && ctx.input.autoCompleteUserId) {
-        updateData['autoCompleteSetBy'] = { id: ctx.input.autoCompleteUserId };
+        updateData.autoCompleteSetBy = { id: ctx.input.autoCompleteUserId };
       }
       let pr = await client.updatePullRequest(
         project,

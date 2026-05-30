@@ -139,7 +139,7 @@ export class AttioClient {
     let response = await this.axios.post('/v2/objects/records/search', {
       query,
       ...params,
-      request_as: { type: 'workspace' },
+      request_as: { type: 'workspace' }
     });
     return response.data.data ?? [];
   }

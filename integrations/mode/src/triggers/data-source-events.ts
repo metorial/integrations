@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ModeClient } from '../lib/client';
 import { normalizeDataSource } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let dataSourceEvents = SlateTrigger.create(spec, {
   name: 'Data Source Events',

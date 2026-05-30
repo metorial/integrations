@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let userObjectSchema = z.object({
   userId: z.string().describe('Internal Userlist user ID.'),

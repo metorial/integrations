@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwilioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let availableNumberSchema = z.object({
   phoneNumber: z.string().describe('Phone number in E.164 format'),

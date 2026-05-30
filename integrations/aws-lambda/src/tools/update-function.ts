@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { createClient } from '../lib/helpers';
-import { lambdaServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { lambdaServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let updateFunction = SlateTool.create(spec, {
   name: 'Update Function',
@@ -92,15 +92,15 @@ export let updateFunction = SlateTool.create(spec, {
 
     if (ctx.input.code) {
       let codeParams: Record<string, any> = {};
-      if (ctx.input.code.s3Bucket) codeParams['S3Bucket'] = ctx.input.code.s3Bucket;
-      if (ctx.input.code.s3Key) codeParams['S3Key'] = ctx.input.code.s3Key;
+      if (ctx.input.code.s3Bucket) codeParams.S3Bucket = ctx.input.code.s3Bucket;
+      if (ctx.input.code.s3Key) codeParams.S3Key = ctx.input.code.s3Key;
       if (ctx.input.code.s3ObjectVersion)
-        codeParams['S3ObjectVersion'] = ctx.input.code.s3ObjectVersion;
-      if (ctx.input.code.imageUri) codeParams['ImageUri'] = ctx.input.code.imageUri;
-      if (ctx.input.code.zipFile) codeParams['ZipFile'] = ctx.input.code.zipFile;
-      if (ctx.input.code.publish !== undefined) codeParams['Publish'] = ctx.input.code.publish;
+        codeParams.S3ObjectVersion = ctx.input.code.s3ObjectVersion;
+      if (ctx.input.code.imageUri) codeParams.ImageUri = ctx.input.code.imageUri;
+      if (ctx.input.code.zipFile) codeParams.ZipFile = ctx.input.code.zipFile;
+      if (ctx.input.code.publish !== undefined) codeParams.Publish = ctx.input.code.publish;
       if (ctx.input.code.architectures)
-        codeParams['Architectures'] = ctx.input.code.architectures;
+        codeParams.Architectures = ctx.input.code.architectures;
 
       lastResult = await client.updateFunctionCode(ctx.input.functionName, codeParams);
       codeUpdated = true;
@@ -110,19 +110,19 @@ export let updateFunction = SlateTool.create(spec, {
       let configParams: Record<string, any> = {};
       let cfg = ctx.input.configuration;
 
-      if (cfg.role) configParams['Role'] = cfg.role;
-      if (cfg.runtime) configParams['Runtime'] = cfg.runtime;
-      if (cfg.handler) configParams['Handler'] = cfg.handler;
-      if (cfg.description !== undefined) configParams['Description'] = cfg.description;
-      if (cfg.timeout) configParams['Timeout'] = cfg.timeout;
-      if (cfg.memorySize) configParams['MemorySize'] = cfg.memorySize;
-      if (cfg.environment) configParams['Environment'] = { Variables: cfg.environment };
-      if (cfg.layers) configParams['Layers'] = cfg.layers;
+      if (cfg.role) configParams.Role = cfg.role;
+      if (cfg.runtime) configParams.Runtime = cfg.runtime;
+      if (cfg.handler) configParams.Handler = cfg.handler;
+      if (cfg.description !== undefined) configParams.Description = cfg.description;
+      if (cfg.timeout) configParams.Timeout = cfg.timeout;
+      if (cfg.memorySize) configParams.MemorySize = cfg.memorySize;
+      if (cfg.environment) configParams.Environment = { Variables: cfg.environment };
+      if (cfg.layers) configParams.Layers = cfg.layers;
       if (cfg.ephemeralStorageSize)
-        configParams['EphemeralStorage'] = { Size: cfg.ephemeralStorageSize };
-      if (cfg.tracingMode) configParams['TracingConfig'] = { Mode: cfg.tracingMode };
+        configParams.EphemeralStorage = { Size: cfg.ephemeralStorageSize };
+      if (cfg.tracingMode) configParams.TracingConfig = { Mode: cfg.tracingMode };
       if (cfg.vpcSubnetIds || cfg.vpcSecurityGroupIds) {
-        configParams['VpcConfig'] = {
+        configParams.VpcConfig = {
           SubnetIds: cfg.vpcSubnetIds || [],
           SecurityGroupIds: cfg.vpcSecurityGroupIds || []
         };

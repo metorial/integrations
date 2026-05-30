@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { KaleidoClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let listConsortia = SlateTool.create(spec, {
   name: 'List Consortia',
@@ -57,7 +57,7 @@ Use this to discover available consortia, their current state, and associated me
         consortia: mapped,
         count: mapped.length
       },
-      message: `Found **${mapped.length}** consortium/consortia.${mapped.length > 0 ? ' ' + mapped.map(c => `**${c.name}** (${c.state || 'unknown'})`).join(', ') : ''}`
+      message: `Found **${mapped.length}** consortium/consortia.${mapped.length > 0 ? ` ${mapped.map(c => `**${c.name}** (${c.state || 'unknown'})`).join(', ')}` : ''}`
     };
   })
   .build();

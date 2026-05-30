@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwitterClient } from '../lib/client';
 import { twitterServiceError } from '../lib/errors';
 import { dmEventSchema, mapDmEvent } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDirectMessages = SlateTool.create(spec, {
   name: 'Get Direct Messages',
@@ -39,10 +39,12 @@ export let getDirectMessages = SlateTool.create(spec, {
     let { conversationId, participantUserId, maxResults, paginationToken } = ctx.input;
 
     if (conversationId && participantUserId) {
-      throw twitterServiceError('Provide either conversationId or participantUserId, not both.');
+      throw twitterServiceError(
+        'Provide either conversationId or participantUserId, not both.'
+      );
     }
 
-    let result;
+    let result: any;
     if (conversationId) {
       result = await client.getDmConversationEvents(conversationId, {
         maxResults,

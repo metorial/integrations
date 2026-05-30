@@ -5,7 +5,7 @@ let BASE_URL = 'https://api2.hiverhq.com/v1';
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
@@ -64,10 +64,10 @@ export class Client {
     }
   ): Promise<{ results: HiverConversation[]; nextPage?: string }> {
     let params: Record<string, string | number> = {};
-    if (options?.limit) params['limit'] = options.limit;
-    if (options?.sortBy) params['sort_by'] = options.sortBy;
-    if (options?.sortOrder) params['sort_order'] = options.sortOrder;
-    if (options?.nextPage) params['next_page'] = options.nextPage;
+    if (options?.limit) params.limit = options.limit;
+    if (options?.sortBy) params.sort_by = options.sortBy;
+    if (options?.sortOrder) params.sort_order = options.sortOrder;
+    if (options?.nextPage) params.next_page = options.nextPage;
 
     let response = await this.axios.get(`/inboxes/${inboxId}/conversations`, { params });
     let data = response.data?.data;
@@ -93,9 +93,9 @@ export class Client {
     }
   ): Promise<HiverConversation> {
     let body: Record<string, unknown> = {};
-    if (updates.status !== undefined) body['status'] = updates.status;
-    if (updates.assigneeId !== undefined) body['assignee_id'] = updates.assigneeId;
-    if (updates.tags !== undefined) body['tags'] = updates.tags;
+    if (updates.status !== undefined) body.status = updates.status;
+    if (updates.assigneeId !== undefined) body.assignee_id = updates.assigneeId;
+    if (updates.tags !== undefined) body.tags = updates.tags;
 
     let response = await this.axios.patch(
       `/inboxes/${inboxId}/conversations/${conversationId}`,
@@ -151,10 +151,10 @@ export interface HiverConversation {
   status?: string;
   assignee?: Record<string, unknown>;
   assigneeId?: string;
-  tags?: Array<Record<string, unknown>>;
+  tags?: Record<string, unknown>[];
   inboxId?: string;
   from?: Record<string, unknown>;
-  to?: Array<Record<string, unknown>>;
+  to?: Record<string, unknown>[];
   createdAt?: string;
   updatedAt?: string;
   [key: string]: unknown;

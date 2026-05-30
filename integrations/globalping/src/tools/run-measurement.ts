@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let locationSchema = z
   .object({
@@ -155,7 +155,7 @@ let httpOptionsSchema = z
   .optional()
   .describe('HTTP-specific measurement options');
 
-let probeLocationSchema = z
+let _probeLocationSchema = z
   .object({
     continent: z.string().describe('Continent code'),
     region: z.string().describe('Geographic region'),
@@ -305,7 +305,7 @@ Use location filters to target specific geographic regions, networks, or cloud p
       body as {
         type: string;
         target: string;
-        locations?: Array<Record<string, unknown>>;
+        locations?: Record<string, unknown>[];
         limit?: number;
         measurementOptions?: Record<string, unknown>;
       }
@@ -326,7 +326,7 @@ Use location filters to target specific geographic regions, networks, or cloud p
 
     let result = await client.pollMeasurement(measurementId);
 
-    let results = (result.results as Array<Record<string, unknown>> | undefined) ?? [];
+    let results = (result.results as Record<string, unknown>[] | undefined) ?? [];
 
     return {
       output: {

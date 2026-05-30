@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NangoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let triggerAction = SlateTool.create(spec, {
   name: 'Trigger Action',

@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 let axios = createAxios({
@@ -29,7 +29,7 @@ export let auth = SlateAuth.create()
       output: { token: string };
       input: { apiSecretKey: string };
     }) => {
-      let response = await axios.get('/v1/partner/list', {
+      let _response = await axios.get('/v1/partner/list', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`
         },

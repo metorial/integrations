@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getEndpointTransformation = SlateTool.create(spec, {
   name: 'Get Endpoint Transformation',
@@ -21,7 +21,11 @@ export let getEndpointTransformation = SlateTool.create(spec, {
     z.object({
       code: z.string().nullable().optional().describe('Transformation JavaScript code'),
       enabled: z.boolean().describe('Whether the transformation is enabled'),
-      updatedAt: z.string().nullable().optional().describe('When the transformation was updated')
+      updatedAt: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('When the transformation was updated')
     })
   )
   .handleInvocation(async ctx => {
@@ -71,7 +75,11 @@ export let updateEndpointTransformation = SlateTool.create(spec, {
     z.object({
       code: z.string().nullable().optional().describe('Current transformation code'),
       enabled: z.boolean().describe('Whether the transformation is enabled'),
-      updatedAt: z.string().nullable().optional().describe('When the transformation was updated')
+      updatedAt: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('When the transformation was updated')
     })
   )
   .handleInvocation(async ctx => {

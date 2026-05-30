@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { PandaDocClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let documentWebhookEvents = [
   'document_state_changed',

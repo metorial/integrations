@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ShippoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressInput = z.union([
   z.string().describe('Existing address object ID'),

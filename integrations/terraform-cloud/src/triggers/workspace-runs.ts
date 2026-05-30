@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { mapRun } from '../lib/mappers';
-import { z } from 'zod';
+import { spec } from '../spec';
 
 export let workspaceRunsTrigger = SlateTrigger.create(spec, {
   name: 'New Workspace Runs',
@@ -77,7 +77,7 @@ export let workspaceRunsTrigger = SlateTrigger.create(spec, {
       }
 
       let lastSeenRunId = state?.lastSeenRunId;
-      let newRuns = [];
+      let newRuns: any[] = [];
 
       if (!lastSeenRunId) {
         // First poll — only report the most recent run

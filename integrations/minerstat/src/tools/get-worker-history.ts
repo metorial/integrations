@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MonitoringClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getWorkerHistoryTool = SlateTool.create(spec, {
   name: 'Get Worker History',

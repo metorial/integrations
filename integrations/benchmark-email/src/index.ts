@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCampaigns,
-  getCampaign,
   createCampaign,
-  updateCampaign,
   deleteCampaign,
-  sendCampaign,
+  getCampaign,
   getCampaignReport,
+  listCampaigns,
   listContactLists,
-  manageContactList,
   listContacts,
-  manageContact
+  manageContact,
+  manageContactList,
+  sendCampaign,
+  updateCampaign
 } from './tools';
 import { contactListEvents } from './triggers';
 

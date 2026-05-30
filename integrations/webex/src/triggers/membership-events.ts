@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { WebexClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let membershipEvents = SlateTrigger.create(spec, {
   name: 'Membership Events',

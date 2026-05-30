@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TldvClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let downloadRecording = SlateTool.create(spec, {
   name: 'Download Recording',

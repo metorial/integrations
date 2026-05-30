@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { HabiticaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let taskActivity = SlateTrigger.create(spec, {
   name: 'Task Activity',
@@ -86,7 +86,7 @@ export let taskActivity = SlateTrigger.create(spec, {
       let task = body.task || {};
       let direction = body.direction;
       let delta = body.delta;
-      let user = body.user || {};
+      let _user = body.user || {};
       let checklistItem = body.item;
 
       let eventId = `task-${webhookType}-${task.id || task._id || 'unknown'}-${Date.now()}`;

@@ -13,7 +13,7 @@ export interface ListParams {
 export class BookingmoodClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

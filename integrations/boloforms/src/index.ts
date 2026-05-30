@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listDocuments,
-  sendTemplate,
+  getFormResponses,
   getTemplateRespondents,
-  getFormResponses
+  listDocuments,
+  sendTemplate
 } from './tools';
 import {
   documentSignatureTrigger,
-  templateResponseTrigger,
-  formResponseTrigger
+  formResponseTrigger,
+  templateResponseTrigger
 } from './triggers';
 
 export let provider = Slate.create({

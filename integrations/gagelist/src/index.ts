@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createGage,
-  getGage,
-  updateGage,
-  deleteGage,
-  listGages,
   createCalibration,
-  getCalibration,
-  updateCalibration,
-  deleteCalibration,
-  listCalibrations,
-  generateCalibrationCertificate,
-  listManufacturers,
+  createGage,
   createManufacturer,
-  updateManufacturer,
+  deleteCalibration,
+  deleteGage,
   deleteManufacturer,
-  getAccountStatus,
+  generateCalibrationCertificate,
   getAccountSettings,
-  updateAccountSettings,
+  getAccountStatus,
+  getCalibration,
   getCustomFields,
   getCustomFieldValues,
-  updateCustomFieldValues
+  getGage,
+  listCalibrations,
+  listGages,
+  listManufacturers,
+  updateAccountSettings,
+  updateCalibration,
+  updateCustomFieldValues,
+  updateGage,
+  updateManufacturer
 } from './tools';
-import { newGage, newCalibration, newManufacturer, inboundWebhook } from './triggers';
+import { inboundWebhook, newCalibration, newGage, newManufacturer } from './triggers';
 
 export let provider = Slate.create({
   spec,

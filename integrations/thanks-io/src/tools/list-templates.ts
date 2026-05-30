@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ThanksIoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listTemplates = SlateTool.create(spec, {
   name: 'List Templates',
@@ -40,21 +40,23 @@ Templates are managed through the Thanks.io dashboard and referenced by ID when 
     let client = new ThanksIoClient({ token: ctx.auth.token });
     let { templateType } = ctx.input;
 
-    let imageTemplates: Array<Record<string, unknown>> | undefined;
-    let messageTemplates: Array<Record<string, unknown>> | undefined;
+    let imageTemplates: Record<string, unknown>[] | undefined;
+    let messageTemplates: Record<string, unknown>[] | undefined;
 
     if (templateType === 'image' || templateType === 'both') {
       let result = await client.listImageTemplates();
-      imageTemplates = (Array.isArray(result) ? result : result.data || []) as Array<
-        Record<string, unknown>
-      >;
+      imageTemplates = (Array.isArray(result) ? result : result.data || []) as Record<
+        string,
+        unknown
+      >[];
     }
 
     if (templateType === 'message' || templateType === 'both') {
       let result = await client.listMessageTemplates();
-      messageTemplates = (Array.isArray(result) ? result : result.data || []) as Array<
-        Record<string, unknown>
-      >;
+      messageTemplates = (Array.isArray(result) ? result : result.data || []) as Record<
+        string,
+        unknown
+      >[];
     }
 
     let parts: string[] = [];

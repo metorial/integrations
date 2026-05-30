@@ -26,7 +26,7 @@ export interface IpEnrichCompany {
 export class IpEnrichClient {
   private http;
 
-  constructor(private apiKey: string) {
+  constructor(apiKey: string) {
     this.http = createAxios({
       baseURL: 'https://api.lf-discover.com',
       headers: {

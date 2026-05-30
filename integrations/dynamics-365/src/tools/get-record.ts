@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DynamicsClient } from '../lib/client';
 import { resolveDynamicsInstanceUrl } from '../lib/resolve-instance-url';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRecord = SlateTool.create(spec, {
   name: 'Get Record',

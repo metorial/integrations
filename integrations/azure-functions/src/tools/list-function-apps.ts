@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ArmClient } from '../lib/client';
 import { getFunctionAppVersion } from '../lib/function-app-metadata';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let LIST_APPS_CONFIG_CONCURRENCY = 5;
 
@@ -61,7 +61,7 @@ export let listFunctionApps = SlateTool.create(spec, {
       resourceGroupName: ctx.config.resourceGroupName
     });
 
-    ctx.info('Listing function apps in resource group: ' + ctx.config.resourceGroupName);
+    ctx.info(`Listing function apps in resource group: ${ctx.config.resourceGroupName}`);
 
     let apps = await client.listFunctionApps();
     let functionApps = await mapWithConcurrency(
@@ -90,7 +90,7 @@ export let listFunctionApps = SlateTool.create(spec, {
         functionApps,
         count: functionApps.length
       },
-      message: `Found **${functionApps.length}** function app(s) in resource group **${ctx.config.resourceGroupName}**.${functionApps.length > 0 ? '\n\nApps: ' + functionApps.map((a: any) => `\`${a.appName}\` (${a.state || 'unknown'})`).join(', ') : ''}`
+      message: `Found **${functionApps.length}** function app(s) in resource group **${ctx.config.resourceGroupName}**.${functionApps.length > 0 ? `\n\nApps: ${functionApps.map((a: any) => `\`${a.appName}\` (${a.state || 'unknown'})`).join(', ')}` : ''}`
     };
   })
   .build();

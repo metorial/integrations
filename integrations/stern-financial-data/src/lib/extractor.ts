@@ -3,14 +3,14 @@ import * as XLSX from 'xlsx';
 import { sternFinancialDataServiceError } from './errors';
 import {
   BETA_FIELDS,
-  BetaField,
-  BetaRow,
+  type BetaField,
+  type BetaRow,
   ERP_FIELDS,
-  ErpField,
-  ErpRow,
+  type ErpField,
+  type ErpRow,
   SOURCES,
-  SourceId,
-  SternRow
+  type SourceId,
+  type SternRow
 } from './sources';
 
 type Cell = {
@@ -305,7 +305,7 @@ let makeCell = (text: unknown, value?: unknown): Cell => ({
 });
 
 let sheetRows = (sheet: XLSX.WorkSheet | undefined) => {
-  if (!sheet || !sheet['!ref']) {
+  if (!sheet?.['!ref']) {
     return [];
   }
 

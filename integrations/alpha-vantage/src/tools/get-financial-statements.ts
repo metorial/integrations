@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let financialEntrySchema = z.object({
   fiscalDateEnding: z.string().describe('End date of the fiscal period'),

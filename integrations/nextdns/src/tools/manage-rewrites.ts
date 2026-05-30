@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NextDnsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let rewriteSchema = z.object({
   rewriteId: z.string().describe('Unique ID of the rewrite rule'),

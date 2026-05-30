@@ -43,7 +43,7 @@ let parseValue = (value: string): unknown => {
   if (value === 'false') return false;
 
   let num = Number(value);
-  if (!isNaN(num) && value !== '') {
+  if (!Number.isNaN(num) && value !== '') {
     return num;
   }
   return value;

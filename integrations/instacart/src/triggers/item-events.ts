@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let itemEventInputSchema = z.object({
   eventType: z.string().describe('The item event type'),
@@ -48,7 +48,7 @@ export let itemEvents = SlateTrigger.create(spec, {
       let replacementName = data.replacement_name as string | undefined;
       let timestamp = (data.timestamp || data.created_at) as string | undefined;
 
-      let events = data.events as Array<Record<string, unknown>> | undefined;
+      let events = data.events as Record<string, unknown>[] | undefined;
       if (events && Array.isArray(events)) {
         return {
           inputs: events.map(evt => ({

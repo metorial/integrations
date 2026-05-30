@@ -94,7 +94,7 @@ export class HelpScoutClient {
     if (data.assignTo) body.assignTo = data.assignTo;
 
     let response = await this.http.post('/conversations', body);
-    let location = response.headers?.['resource-id'] ?? response.headers?.['location'];
+    let location = response.headers?.['resource-id'] ?? response.headers?.location;
     return { conversationId: location };
   }
 
@@ -255,7 +255,7 @@ export class HelpScoutClient {
     background?: string;
   }) {
     let response = await this.http.post('/customers', data);
-    let location = response.headers?.['resource-id'] ?? response.headers?.['location'];
+    let location = response.headers?.['resource-id'] ?? response.headers?.location;
     return { customerId: location };
   }
 
@@ -306,7 +306,7 @@ export class HelpScoutClient {
 
   async createOrganization(data: { name: string }) {
     let response = await this.http.post('/organizations', data);
-    let location = response.headers?.['resource-id'] ?? response.headers?.['location'];
+    let location = response.headers?.['resource-id'] ?? response.headers?.location;
     return { organizationId: location };
   }
 
@@ -431,7 +431,7 @@ export class HelpScoutClient {
       secret: data.secret,
       payloadVersion: data.payloadVersion ?? 'V2'
     });
-    let location = response.headers?.['resource-id'] ?? response.headers?.['location'];
+    let location = response.headers?.['resource-id'] ?? response.headers?.location;
     return { webhookId: location };
   }
 

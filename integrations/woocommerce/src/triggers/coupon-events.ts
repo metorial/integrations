@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let couponEvents = SlateTrigger.create(spec, {
   name: 'Coupon Events',
@@ -74,9 +74,9 @@ export let couponEvents = SlateTrigger.create(spec, {
       let body = (await ctx.request.json()) as any;
 
       let topic = ctx.request.headers.get('x-wc-webhook-topic') || '';
-      let webhookId = parseInt(ctx.request.headers.get('x-wc-webhook-id') || '0', 10);
+      let webhookId = Number.parseInt(ctx.request.headers.get('x-wc-webhook-id') || '0', 10);
 
-      if (!body || !body.id) {
+      if (!body?.id) {
         return { inputs: [] };
       }
 

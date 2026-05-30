@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MondayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createSubitemTool = SlateTool.create(spec, {
   name: 'Create Sub-item',

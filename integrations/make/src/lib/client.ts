@@ -459,7 +459,7 @@ export class MakeClient {
   async createDataStructure(data: {
     name: string;
     teamId: number;
-    spec: Array<Record<string, any>>;
+    spec: Record<string, any>[];
     strict?: boolean;
   }) {
     let response = await this.http.post('/data-structures', data);
@@ -470,7 +470,7 @@ export class MakeClient {
     dataStructureId: number,
     data: {
       name?: string;
-      spec?: Array<Record<string, any>>;
+      spec?: Record<string, any>[];
       strict?: boolean;
     }
   ) {

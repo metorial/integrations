@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPlayerStats = SlateTool.create(spec, {
   name: 'Get Player Stats',
@@ -63,7 +63,7 @@ export let getPlayerStats = SlateTool.create(spec, {
       seasonType: ctx.input.seasonType
     });
 
-    let usage: any = undefined;
+    let usage: any;
     if (ctx.input.includeUsage) {
       usage = await client.getPlayerUsage({
         year: ctx.input.year,
@@ -72,7 +72,7 @@ export let getPlayerStats = SlateTool.create(spec, {
       });
     }
 
-    let returningProduction: any = undefined;
+    let returningProduction: any;
     if (ctx.input.includeReturningProduction) {
       returningProduction = await client.getReturningProduction({
         year: ctx.input.year,

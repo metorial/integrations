@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { UnisenderClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let importContacts = SlateTool.create(spec, {
   name: 'Import Contacts',

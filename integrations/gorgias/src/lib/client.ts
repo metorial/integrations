@@ -17,7 +17,7 @@ export interface PaginatedResponse<T> {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: GorgiasClientConfig) {
+  constructor(config: GorgiasClientConfig) {
     let authHeader =
       config.authType === 'basic' ? `Basic ${config.token}` : `Bearer ${config.token}`;
 

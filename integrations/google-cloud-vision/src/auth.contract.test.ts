@@ -42,7 +42,9 @@ describe('google-cloud-vision auth contract', () => {
     });
 
     let url = new URL(result.authorizationUrl);
-    expect(`${url.origin}${url.pathname}`).toBe('https://accounts.google.com/o/oauth2/v2/auth');
+    expect(`${url.origin}${url.pathname}`).toBe(
+      'https://accounts.google.com/o/oauth2/v2/auth'
+    );
     expect(url.searchParams.get('scope')).toBe(
       `${googleCloudVisionScopes.cloudVision} ${googleCloudVisionScopes.cloudPlatform}`
     );

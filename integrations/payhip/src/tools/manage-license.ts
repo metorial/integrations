@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LicenseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageLicense = SlateTool.create(spec, {
   name: 'Manage License Key',

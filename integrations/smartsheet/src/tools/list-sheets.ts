@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SmartsheetClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let sheetSchema = z.object({
   sheetId: z.number().describe('Unique sheet identifier'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConnectClient } from '../lib/connect-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createUser = SlateTool.create(spec, {
   name: 'Create Connect User',
@@ -50,7 +50,7 @@ Requires **Connect OAuth** authentication with the \`connect:fulfillment\` scope
 
     return {
       output: result,
-      message: `Connect user created: **${ctx.input.firstName}${ctx.input.lastName ? ' ' + ctx.input.lastName : ''}** (ID: ${result.userId}) at ${ctx.input.addressLine1}, ${ctx.input.postalCode}.`
+      message: `Connect user created: **${ctx.input.firstName}${ctx.input.lastName ? ` ${ctx.input.lastName}` : ''}** (ID: ${result.userId}) at ${ctx.input.addressLine1}, ${ctx.input.postalCode}.`
     };
   })
   .build();

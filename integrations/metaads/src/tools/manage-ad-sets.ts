@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MetaAdsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let adSetSchema = z.object({
   adSetId: z.string().describe('Ad set ID'),

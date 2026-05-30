@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { PayPalClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createOrder = SlateTool.create(spec, {
   name: 'Create Order',
@@ -120,7 +120,8 @@ export let createOrder = SlateTool.create(spec, {
         });
         // When items are present, we need an item_total in the breakdown
         let itemTotal = pu.items.reduce(
-          (sum, item) => sum + parseFloat(item.unitAmount) * parseInt(item.quantity),
+          (sum, item) =>
+            sum + Number.parseFloat(item.unitAmount) * Number.parseInt(item.quantity, 10),
           0
         );
         unit.amount.breakdown = {

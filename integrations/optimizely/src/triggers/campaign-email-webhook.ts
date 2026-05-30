@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { CampaignClient } from '../lib/campaign-client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let campaignEmailWebhook = SlateTrigger.create(spec, {
   name: 'Campaign Email Webhook',
@@ -40,7 +39,7 @@ export let campaignEmailWebhook = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let data = (await ctx.request.json()) as any;
 
-      let events: Array<any> = Array.isArray(data) ? data : [data];
+      let events: any[] = Array.isArray(data) ? data : [data];
 
       let inputs = events.map((event: any) => {
         let eventType = (

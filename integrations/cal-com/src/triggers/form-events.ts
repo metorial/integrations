@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let FORM_TRIGGERS = ['FORM_SUBMITTED', 'FORM_SUBMITTED_NO_EVENT'] as const;
 
@@ -71,7 +71,7 @@ export let formEvents = SlateTrigger.create(spec, {
         data.payload?.formId ||
         data.payload?.uid ||
         data.uid ||
-        triggerEvent + '-' + Date.now();
+        `${triggerEvent}-${Date.now()}`;
 
       return {
         inputs: [

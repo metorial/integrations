@@ -1,2 +1,2 @@
-export * from './watcher-alert';
 export * from './inbound-webhook';
+export * from './watcher-alert';

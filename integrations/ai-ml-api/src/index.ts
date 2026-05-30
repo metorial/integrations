@@ -2,13 +2,13 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   chatCompletion,
-  generateImage,
-  textToSpeech,
-  speechToText,
   generateEmbeddings,
-  moderateContent,
+  generateImage,
   generateVideo,
-  listModels
+  listModels,
+  moderateContent,
+  speechToText,
+  textToSpeech
 } from './tools';
 import { responseEvent } from './triggers';
 

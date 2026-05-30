@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PerigonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let storySchema = z.object({
   storyId: z.string().describe('Unique story cluster ID'),

@@ -36,7 +36,7 @@ export class NerdGraphClient {
   private http: ReturnType<typeof createAxios>;
   private accountId: string;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     this.accountId = config.accountId;
     this.http = createAxios({
       baseURL: getGraphqlUrl(config.region),
@@ -78,7 +78,7 @@ export class NerdGraphClient {
           }
         }
       }`,
-      { accountId: parseInt(this.accountId), nrql, timeout: timeoutValue }
+      { accountId: Number.parseInt(this.accountId, 10), nrql, timeout: timeoutValue }
     );
 
     return data?.actor?.account?.nrql;
@@ -280,7 +280,7 @@ export class NerdGraphClient {
         }`;
 
     let data = await this.query(mutation, {
-      accountId: parseInt(this.accountId),
+      accountId: Number.parseInt(this.accountId, 10),
       policyId,
       condition: conditionInput
     });
@@ -337,7 +337,7 @@ export class NerdGraphClient {
         }`;
 
     let data = await this.query(mutation, {
-      accountId: parseInt(this.accountId),
+      accountId: Number.parseInt(this.accountId, 10),
       id: conditionId,
       condition: conditionInput
     });
@@ -354,7 +354,7 @@ export class NerdGraphClient {
           id
         }
       }`,
-      { accountId: parseInt(this.accountId), id: conditionId }
+      { accountId: Number.parseInt(this.accountId, 10), id: conditionId }
     );
 
     return data?.alertsConditionDelete;
@@ -401,7 +401,7 @@ export class NerdGraphClient {
           errors { description type }
         }
       }`,
-      { accountId: parseInt(this.accountId), dashboard: dashboardInput }
+      { accountId: Number.parseInt(this.accountId, 10), dashboard: dashboardInput }
     );
 
     let result = data?.dashboardCreate;
@@ -536,7 +536,7 @@ export class NerdGraphClient {
           }
         }`,
         {
-          accountId: parseInt(this.accountId),
+          accountId: Number.parseInt(this.accountId, 10),
           monitor: {
             name: params.name,
             uri: params.uri,
@@ -573,7 +573,7 @@ export class NerdGraphClient {
           }
         }`,
         {
-          accountId: parseInt(this.accountId),
+          accountId: Number.parseInt(this.accountId, 10),
           monitor: {
             name: params.name,
             period: params.period,
@@ -602,7 +602,7 @@ export class NerdGraphClient {
         }
       }`,
       {
-        accountId: parseInt(this.accountId),
+        accountId: Number.parseInt(this.accountId, 10),
         monitor: {
           name: params.name,
           uri: params.uri,
@@ -707,7 +707,7 @@ export class NerdGraphClient {
         }
       }`,
       {
-        accountId: parseInt(this.accountId),
+        accountId: Number.parseInt(this.accountId, 10),
         cursor: params?.cursor,
         filter: Object.keys(filterInput).length > 0 ? filterInput : undefined
       }
@@ -761,7 +761,7 @@ export class IngestClient {
     return response.data;
   }
 
-  async ingestEvents(events: Array<Record<string, any>>): Promise<any> {
+  async ingestEvents(events: Record<string, any>[]): Promise<any> {
     let http = createAxios({
       baseURL: getEventIngestUrl(this.region, this.accountId),
       headers: {

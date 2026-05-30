@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DialpadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageBlockedNumberTool = SlateTool.create(spec, {
   name: 'Manage Blocked Number',

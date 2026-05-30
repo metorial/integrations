@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class AppVeyorClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; accountName?: string }) {
+  constructor(config: { token: string; accountName?: string }) {
     this.axios = createAxios({
       baseURL: 'https://ci.appveyor.com/api',
       headers: {

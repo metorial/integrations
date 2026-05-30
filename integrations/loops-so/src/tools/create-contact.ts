@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createContact = SlateTool.create(spec, {
   name: 'Create Contact',
@@ -60,7 +60,7 @@ export let createContact = SlateTool.create(spec, {
         contactId: result.id,
         success: result.success
       },
-      message: `Created contact **${ctx.input.email}**${ctx.input.firstName ? ` (${ctx.input.firstName}${ctx.input.lastName ? ' ' + ctx.input.lastName : ''})` : ''} with ID \`${result.id}\`.`
+      message: `Created contact **${ctx.input.email}**${ctx.input.firstName ? ` (${ctx.input.firstName}${ctx.input.lastName ? ` ${ctx.input.lastName}` : ''})` : ''} with ID \`${result.id}\`.`
     };
   })
   .build();

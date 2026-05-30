@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let smsEventTypes = ['sms_sent', 'sms_reply', 'sms_unsub'] as const;
 
@@ -69,7 +69,7 @@ export let smsEvents = SlateTrigger.create(spec, {
         data = Object.fromEntries(params.entries());
       }
 
-      let eventType = data.type || data['type'] || 'unknown';
+      let eventType = data.type || data.type || 'unknown';
 
       return {
         inputs: [
@@ -84,12 +84,12 @@ export let smsEvents = SlateTrigger.create(spec, {
     handleEvent: async ctx => {
       let p = ctx.input.payload as Record<string, any>;
 
-      let contactId = String(p['contact[id]'] || p['contactId'] || '');
-      let contactEmail = String(p['contact[email]'] || p['email'] || '');
-      let contactPhone = String(p['contact[phone]'] || p['phone'] || '');
-      let messageContent = String(p['sms[text]'] || p['message'] || p['smsText'] || '');
-      let initiatedBy = String(p['initiated_by'] || p['source'] || '');
-      let occurredAt = String(p['date_time'] || p['dateTime'] || '');
+      let contactId = String(p['contact[id]'] || p.contactId || '');
+      let contactEmail = String(p['contact[email]'] || p.email || '');
+      let contactPhone = String(p['contact[phone]'] || p.phone || '');
+      let messageContent = String(p['sms[text]'] || p.message || p.smsText || '');
+      let initiatedBy = String(p.initiated_by || p.source || '');
+      let occurredAt = String(p.date_time || p.dateTime || '');
 
       let uniqueId = `${ctx.input.eventType}-${contactId || contactPhone}-${occurredAt || Date.now()}`;
 

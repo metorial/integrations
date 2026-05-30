@@ -178,7 +178,7 @@ let buildCustomFields = (fields?: any[]) => {
 export class Client {
   private axios;
 
-  constructor(private auth: { userId: string; token: string }) {
+  constructor(auth: { userId: string; token: string }) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       auth: {
@@ -858,12 +858,7 @@ export class Client {
 
   // ---------- Action Stream ----------
 
-  async getActionStream(
-    params: {
-      page?: number;
-      perPage?: number;
-    } = {}
-  ) {
+  async getActionStream(params: { page?: number; perPage?: number } = {}) {
     let response = await this.axios.get('/action_stream.json', {
       params: {
         page: params.page ?? 1,

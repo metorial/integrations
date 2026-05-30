@@ -55,7 +55,7 @@ export interface SourceControlPullOptions {
 export class Client {
   private axios;
 
-  constructor(private params: { baseUrl: string; token: string }) {
+  constructor(params: { baseUrl: string; token: string }) {
     this.axios = createAxios({
       baseURL: params.baseUrl.replace(/\/+$/, ''),
       headers: {

@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBoardsTool,
-  getBoardTool,
-  listCardsTool,
-  getCardTool,
-  createCardTool,
-  updateCardTool,
-  deleteCardTool,
   archiveCardTool,
-  manageCommentsTool,
-  manageSubtasksTool,
-  manageCardLinksTool,
-  manageCustomFieldsTool,
+  blockCardTool,
+  createCardTool,
+  deleteCardTool,
+  getBoardTool,
+  getCardTool,
+  listBoardsTool,
+  listCardsTool,
   listUsersTool,
   listWorkspacesTool,
   logTimeTool,
-  blockCardTool
+  manageCardLinksTool,
+  manageCommentsTool,
+  manageCustomFieldsTool,
+  manageSubtasksTool,
+  updateCardTool
 } from './tools';
 import {
+  boardEventsTrigger,
   cardEventsTrigger,
-  subtaskEventsTrigger,
   commentEventsTrigger,
-  boardEventsTrigger
+  subtaskEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

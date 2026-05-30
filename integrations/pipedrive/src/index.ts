@@ -1,38 +1,38 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  manageDeals,
-  getDeals,
-  manageLeads,
-  getLeads,
-  managePersons,
-  getPersons,
-  manageOrganizations,
-  getOrganizations,
-  manageActivities,
+  convertLeadToDeal,
   getActivities,
-  manageProducts,
-  getProducts,
-  manageNotes,
-  getNotes,
-  managePipelines,
-  getPipelines,
-  searchPipedrive,
-  manageDealProducts,
-  getUsers,
-  getFields,
   getActivityTypes,
-  convertLeadToDeal
+  getDeals,
+  getFields,
+  getLeads,
+  getNotes,
+  getOrganizations,
+  getPersons,
+  getPipelines,
+  getProducts,
+  getUsers,
+  manageActivities,
+  manageDealProducts,
+  manageDeals,
+  manageLeads,
+  manageNotes,
+  manageOrganizations,
+  managePersons,
+  managePipelines,
+  manageProducts,
+  searchPipedrive
 } from './tools';
 import {
+  activityEvents,
   dealEvents,
   leadEvents,
-  personEvents,
-  organizationEvents,
-  activityEvents,
-  productEvents,
   noteEvents,
-  pipelineEvents
+  organizationEvents,
+  personEvents,
+  pipelineEvents,
+  productEvents
 } from './triggers';
 
 export let provider = Slate.create({

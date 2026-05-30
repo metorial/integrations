@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BlocknativeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let chainSchema = z.object({
   arch: z.string().describe('Blockchain architecture (e.g., "evm")'),

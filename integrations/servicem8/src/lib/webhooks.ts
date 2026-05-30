@@ -7,7 +7,7 @@ export interface WebhookClientConfig {
 export class WebhookClient {
   private http;
 
-  constructor(private config: WebhookClientConfig) {
+  constructor(config: WebhookClientConfig) {
     this.http = createAxios({
       baseURL: 'https://api.servicem8.com',
       headers: {

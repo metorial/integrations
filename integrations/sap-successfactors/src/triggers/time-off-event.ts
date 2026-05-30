@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let timeOffEvent = SlateTrigger.create(spec, {
   name: 'Time Off Event',
@@ -78,14 +78,12 @@ export let timeOffEvent = SlateTrigger.create(spec, {
 
       let quantityInDays: number | undefined;
       let daysValue =
-        rawPayload['quantityInDays'] ??
-        rawPayload['quantity_in_days'] ??
-        rawPayload['duration'];
+        rawPayload.quantityInDays ?? rawPayload.quantity_in_days ?? rawPayload.duration;
       if (typeof daysValue === 'number') {
         quantityInDays = daysValue;
       } else if (typeof daysValue === 'string') {
-        let parsed = parseFloat(daysValue);
-        if (!isNaN(parsed)) quantityInDays = parsed;
+        let parsed = Number.parseFloat(daysValue);
+        if (!Number.isNaN(parsed)) quantityInDays = parsed;
       }
 
       return {

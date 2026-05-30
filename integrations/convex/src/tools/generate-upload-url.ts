@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConvexClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generateUploadUrl = SlateTool.create(spec, {
   name: 'Generate Upload URL',

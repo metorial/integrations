@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
+import { spec } from '../spec';
 
 let columnDefinitionSchema = z.object({
   columnName: z.string().describe('Name of the column'),
@@ -201,7 +201,7 @@ For altering tables, supports adding columns, dropping columns, renaming columns
 
       if (ctx.input.modifyColumns) {
         for (let modify of ctx.input.modifyColumns) {
-          let parts: string[] = [];
+          let _parts: string[] = [];
           if (modify.newDataType) {
             let def = `${escapeIdentifier(modify.columnName)} ${modify.newDataType}`;
             if (modify.nullable === false) def += ' NOT NULL';

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TwoCaptchaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTaskResult = SlateTool.create(spec, {
   name: 'Get Task Result',

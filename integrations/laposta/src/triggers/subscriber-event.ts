@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let subscriberEvent = SlateTrigger.create(spec, {
   name: 'Subscriber Event',
@@ -93,7 +93,7 @@ export let subscriberEvent = SlateTrigger.create(spec, {
       let body = (await ctx.request.json()) as any;
 
       // Laposta bundles events in an array under the "data" key
-      let events: Array<any> = Array.isArray(body.data)
+      let events: any[] = Array.isArray(body.data)
         ? body.data
         : body.data
           ? [body.data]

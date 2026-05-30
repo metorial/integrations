@@ -1,23 +1,23 @@
+export { askQuestion } from './ask-question';
+export { listAccessGroups } from './list-access-groups';
 export { listConnections } from './list-connections';
 export { listInteractions } from './list-interactions';
-export { listProductLines } from './list-product-lines';
 export { listKnowledgeBaseQuestions } from './list-knowledge-base-questions';
+export { listProductLines } from './list-product-lines';
 export {
-  listAuthorizationRequests,
   getAuthorizationRequest,
-  ignoreAuthorizationRequest
+  ignoreAuthorizationRequest,
+  listAuthorizationRequests
 } from './manage-authorization-requests';
 export {
-  listAuthorizations,
   grantAuthorization,
+  listAuthorizations,
   updateAuthorization
 } from './manage-authorizations';
-export { listAccessGroups } from './list-access-groups';
-export { listFolders, createFolder, deleteFolder } from './manage-folders';
-export { listDocuments, updateDocument, deleteDocument } from './manage-documents';
-export { listQuestionnaires, submitQuestionnaire } from './manage-questionnaires';
+export { deleteDocument, listDocuments, updateDocument } from './manage-documents';
+export { createFolder, deleteFolder, listFolders } from './manage-folders';
 export {
   createQuestionnaireRequest,
   updateQuestionnaireRequest
 } from './manage-questionnaire-requests';
-export { askQuestion } from './ask-question';
+export { listQuestionnaires, submitQuestionnaire } from './manage-questionnaires';

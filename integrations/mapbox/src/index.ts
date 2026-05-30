@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  geocodeTool,
   directionsTool,
-  manageStylesTool,
-  manageDatasetsTool,
-  manageDatasetFeaturesTool,
-  staticImageTool,
+  geocodeTool,
   isochroneTool,
-  matrixTool,
-  mapMatchingTool,
-  optimizeRouteTool,
-  tilequeryTool,
-  manageTokensTool,
+  listFontsTool,
+  manageDatasetFeaturesTool,
+  manageDatasetsTool,
+  manageStylesTool,
   manageTilesetsTool,
+  manageTokensTool,
   manageUploadsTool,
-  listFontsTool
+  mapMatchingTool,
+  matrixTool,
+  optimizeRouteTool,
+  staticImageTool,
+  tilequeryTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  takeScreenshot,
-  generatePdf,
+  analyzeWithVision,
   extractMetadata,
+  generatePdf,
   getUsage,
-  analyzeWithVision
+  takeScreenshot
 } from './tools';
 import { screenshotCompleted } from './triggers';
 

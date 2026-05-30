@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let packageLineSchema = z.object({
   lineItemId: z.string().describe('Sales order line item ID'),
@@ -72,8 +72,8 @@ export let managePackageShipment = SlateTool.create(spec, {
       };
     }
 
-    let packageResult: any = undefined;
-    let shipmentResult: any = undefined;
+    let packageResult: any;
+    let shipmentResult: any;
 
     if (ctx.input.salesOrderId && ctx.input.packageLineItems) {
       let packageBody: Record<string, any> = {

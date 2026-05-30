@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client, type ExtractedRecord } from '../lib/client';
+import { spec } from '../spec';
 
 export let getExtractedData = SlateTool.create(spec, {
   name: 'Get Extracted Data',
@@ -74,7 +74,7 @@ export let getExtractedData = SlateTool.create(spec, {
 
     let { documentId, extractorId, folderId, limit, date } = ctx.input;
 
-    let rawRecords;
+    let rawRecords: ExtractedRecord[];
 
     if (documentId) {
       ctx.info(`Fetching extracted data for document ${documentId}`);

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let leadEventsTrigger = SlateTrigger.create(spec, {
   name: 'Lead Events',
@@ -70,7 +70,7 @@ export let leadEventsTrigger = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let data = (await ctx.request.json()) as any;
 
-      if (!data || !data.event) {
+      if (!data?.event) {
         return { inputs: [] };
       }
 

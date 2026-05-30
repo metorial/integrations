@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GeoapifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let postcodeResultSchema = z.object({
   postcode: z.string().optional().describe('Postal code'),
@@ -62,7 +62,7 @@ export let lookupPostcodes = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new GeoapifyClient({ token: ctx.auth.token });
 
-    let data;
+    let data: any;
     if (ctx.input.mode === 'search') {
       data = await client.searchPostcodes({
         postcode: ctx.input.postcode,

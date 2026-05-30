@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleMapsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let waypointSchema = z.object({
   latitude: z.number().optional().describe('Latitude of the waypoint'),
@@ -88,9 +88,7 @@ export let computeRouteMatrixTool = SlateTool.create(spec, {
       routingPreference: ctx.input.routingPreference
     });
 
-    let elements: Array<Record<string, unknown>> = Array.isArray(response)
-      ? response
-      : [response];
+    let elements: Record<string, unknown>[] = Array.isArray(response) ? response : [response];
 
     let mappedElements = elements.map(el => ({
       originIndex: el.originIndex as number,

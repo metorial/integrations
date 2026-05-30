@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { baseDocumentInputSchema } from '../lib/schemas';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { baseDocumentInputSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let createHostedDocument = SlateTool.create(spec, {
   name: 'Create Hosted Document',

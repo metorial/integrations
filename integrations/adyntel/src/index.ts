@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  lookupMetaAds,
-  searchMetaAds,
-  lookupLinkedInAds,
+  analyzeKeywords,
+  getTikTokAdDetails,
   lookupGoogleAds,
   lookupGoogleShoppingAds,
-  searchTikTokAds,
-  getTikTokAdDetails,
-  analyzeKeywords
+  lookupLinkedInAds,
+  lookupMetaAds,
+  searchMetaAds,
+  searchTikTokAds
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

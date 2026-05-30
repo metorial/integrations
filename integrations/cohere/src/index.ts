@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  cancelEmbedJobTool,
   chatTool,
-  embedTool,
-  rerankTool,
-  tokenizeTool,
-  detokenizeTool,
-  listModelsTool,
-  listDatasetsTool,
-  getDatasetTool,
-  deleteDatasetTool,
   createEmbedJobTool,
-  listEmbedJobsTool,
+  deleteDatasetTool,
+  detokenizeTool,
+  embedTool,
+  getDatasetTool,
   getEmbedJobTool,
-  cancelEmbedJobTool
+  listDatasetsTool,
+  listEmbedJobsTool,
+  listModelsTool,
+  rerankTool,
+  tokenizeTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

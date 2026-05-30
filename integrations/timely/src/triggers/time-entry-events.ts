@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { TimelyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let timeEntryEventTypes = ['hours:created', 'hours:updated', 'hours:deleted'] as const;
 

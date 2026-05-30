@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FeatheryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let fillDocument = SlateTool.create(spec, {
   name: 'Fill Document Template',

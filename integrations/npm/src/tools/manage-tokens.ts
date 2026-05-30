@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NpmRegistryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let tokenInfoSchema = z
   .object({

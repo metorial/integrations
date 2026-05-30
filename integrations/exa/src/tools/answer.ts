@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ExaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let answerTool = SlateTool.create(spec, {
   name: 'Answer Question',

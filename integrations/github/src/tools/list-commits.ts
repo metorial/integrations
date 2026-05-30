@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCommits = SlateTool.create(spec, {
   name: 'List Commits',
@@ -41,7 +41,10 @@ export let listCommits = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let commits = await client.listCommits(ctx.input.owner, ctx.input.repo, {
       sha: ctx.input.sha,
       path: ctx.input.path,

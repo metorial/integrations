@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { airtableServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import { baseIdInput } from './base-id';
-import { z } from 'zod';
 
 export let manageTableTool = SlateTool.create(spec, {
   name: 'Manage Table',

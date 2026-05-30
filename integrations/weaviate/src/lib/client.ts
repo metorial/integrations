@@ -8,7 +8,7 @@ export class WeaviateClient {
       'Content-Type': 'application/json'
     };
     if (config.token) {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     }
     this.axios = createAxios({
       baseURL: config.instanceUrl.replace(/\/+$/, ''),
@@ -243,7 +243,7 @@ export class WeaviateClient {
   async graphql(query: string, variables?: Record<string, any>): Promise<any> {
     let body: Record<string, any> = { query };
     if (variables) {
-      body['variables'] = variables;
+      body.variables = variables;
     }
     let res = await this.axios.post('/v1/graphql', body);
     return res.data;

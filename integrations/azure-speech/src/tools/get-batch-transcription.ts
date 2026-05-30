@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SpeechToTextClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getBatchTranscription = SlateTool.create(spec, {
   name: 'Get Batch Transcription',

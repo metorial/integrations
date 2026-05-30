@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let bookingChanges = SlateTrigger.create(spec, {
   name: 'Booking Changes',
@@ -133,7 +133,7 @@ export let bookingChanges = SlateTrigger.create(spec, {
           source: booking.source as string | undefined,
           currencyCode: booking.currency_code as string | undefined,
           notes: booking.notes as string | undefined,
-          roomTypes: booking.room_types as Array<Record<string, unknown>> | undefined,
+          roomTypes: booking.room_types as Record<string, unknown>[] | undefined,
           createdAt: booking.date_created as string | undefined
         }
       };

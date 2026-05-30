@@ -1,8 +1,10 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
-import { SlateTool, type SlateActionScopes } from 'slates';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
+import { type SlateActionScopes, SlateTool } from 'slates';
 import { z } from 'zod';
 
-type SlackClientCtor = new (token: string) => {
+type SlackClientCtor = new (
+  token: string
+) => {
   getConversationInfo(channelId: string): Promise<any>;
   deleteScheduledMessage(params: {
     channel: string;

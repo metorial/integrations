@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { requireHookdeckInput } from '../lib/errors';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { requireHookdeckInput } from '../lib/errors';
+import { spec } from '../spec';
 
 let destinationSchema = z.object({
   destinationId: z.string().describe('Unique destination ID'),

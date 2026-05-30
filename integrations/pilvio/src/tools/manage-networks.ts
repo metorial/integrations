@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PilvioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let networkSchema = z.object({
   networkUuid: z.string().describe('Network UUID'),

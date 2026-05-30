@@ -12,7 +12,7 @@ export interface ClientConfig {
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     this.headers = {
       Authorization: `Bearer ${config.token}`,
       'Content-Type': 'application/json'

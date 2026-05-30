@@ -38,7 +38,7 @@ export class MixpanelClient {
 
     let basicAuth =
       config.serviceAccountUsername && config.serviceAccountSecret
-        ? 'Basic ' + btoa(`${config.serviceAccountUsername}:${config.serviceAccountSecret}`)
+        ? `Basic ${btoa(`${config.serviceAccountUsername}:${config.serviceAccountSecret}`)}`
         : undefined;
 
     this.ingestionAxios = createAxios({
@@ -470,14 +470,14 @@ export class MixpanelClient {
     results: Array<{ distinctId: string; properties: Record<string, unknown> }>;
   }> {
     let bodyParams: Record<string, string> = {};
-    if (params.where) bodyParams['where'] = params.where;
-    if (params.distinctId) bodyParams['distinct_id'] = params.distinctId;
+    if (params.where) bodyParams.where = params.where;
+    if (params.distinctId) bodyParams.distinct_id = params.distinctId;
     if (params.outputProperties)
-      bodyParams['output_properties'] = JSON.stringify(params.outputProperties);
-    if (params.sessionId) bodyParams['session_id'] = params.sessionId;
-    if (params.page !== undefined) bodyParams['page'] = String(params.page);
+      bodyParams.output_properties = JSON.stringify(params.outputProperties);
+    if (params.sessionId) bodyParams.session_id = params.sessionId;
+    if (params.page !== undefined) bodyParams.page = String(params.page);
     if (params.filterByCohort !== undefined)
-      bodyParams['filter_by_cohort'] = JSON.stringify({ id: params.filterByCohort });
+      bodyParams.filter_by_cohort = JSON.stringify({ id: params.filterByCohort });
 
     let response = await this.queryAxios.post(
       '/query/engage',
@@ -599,10 +599,7 @@ export class MixpanelClient {
   // =====================
   // Annotations
   // =====================
-  async listAnnotations(params?: {
-    fromDate?: string;
-    toDate?: string;
-  }): Promise<
+  async listAnnotations(params?: { fromDate?: string; toDate?: string }): Promise<
     Array<{
       annotationId: number;
       date: string;

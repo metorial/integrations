@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private http;
 
-  constructor(private params: { token: string; baseUrl: string }) {
+  constructor(params: { token: string; baseUrl: string }) {
     this.http = createAxios({
       baseURL: params.baseUrl,
       headers: {
@@ -19,7 +19,7 @@ export class Client {
     from: string,
     to: string[],
     text: string,
-    attachments?: { fileName: string; contentType: string; content: string }[]
+    _attachments?: { fileName: string; contentType: string; content: string }[]
   ) {
     let body: any = {
       from: { phoneNumber: from },
@@ -56,7 +56,7 @@ export class Client {
     attachmentContentType?: string,
     attachmentBase64?: string
   ) {
-    let boundary = '---RingCentralFaxBoundary' + Date.now();
+    let boundary = `---RingCentralFaxBoundary${Date.now()}`;
     let parts: string[] = [];
 
     let jsonBody: any = {
@@ -66,7 +66,7 @@ export class Client {
     if (coverPageText) jsonBody.coverPageText = coverPageText;
 
     parts.push(
-      `--${boundary}\r\n` + `Content-Type: application/json\r\n\r\n` + JSON.stringify(jsonBody)
+      `--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(jsonBody)}`
     );
 
     if (attachmentBase64 && attachmentContentType) {
@@ -401,7 +401,7 @@ export class Client {
     return response.data;
   }
 
-  async createContact(extensionId: string = '~', contact: any) {
+  async createContact(extensionId: string, contact: any) {
     let response = await this.http.post(
       `/restapi/v1.0/account/~/extension/${extensionId}/address-book/contact`,
       contact

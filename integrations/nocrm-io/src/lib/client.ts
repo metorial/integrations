@@ -62,7 +62,7 @@ export class Client {
     return {
       leads: response.data as any[],
       totalCount: response.headers['x-total-count']
-        ? parseInt(response.headers['x-total-count'], 10)
+        ? Number.parseInt(response.headers['x-total-count'], 10)
         : undefined
     };
   }

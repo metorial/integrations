@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let paymentEvents = SlateTrigger.create(spec, {
   name: 'Payment Events',
@@ -55,7 +55,7 @@ export let paymentEvents = SlateTrigger.create(spec, {
       let body = (await ctx.request.json()) as any;
       let eventType = body.type;
 
-      if (!eventType || !eventType.startsWith('payment.')) {
+      if (!eventType?.startsWith('payment.')) {
         return { inputs: [] };
       }
 

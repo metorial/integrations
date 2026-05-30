@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let businessResultSchema = z.object({
   enigmaId: z.string().optional().describe('Enigma ID of the business'),
@@ -176,7 +176,7 @@ Returns a list of matching business profiles including names, addresses, website
     let searchResult = result.data?.search;
     let resultsData = searchResult?.results;
 
-    let businesses: Array<Record<string, unknown>> = [];
+    let businesses: Record<string, unknown>[] = [];
     let totalCount = resultsData?.totalCount;
     let hasNextPage = resultsData?.pageInfo?.hasNextPage ?? false;
     let endCursor = resultsData?.pageInfo?.endCursor;
@@ -191,7 +191,7 @@ Returns a list of matching business profiles including names, addresses, website
             ?.map((e: Record<string, { name?: string }>) => e.node?.name)
             .filter(Boolean) || [];
 
-        let addresses: Array<Record<string, unknown>> = [];
+        let addresses: Record<string, unknown>[] = [];
         if (node.addresses?.edges) {
           addresses = node.addresses.edges.map(
             (e: Record<string, Record<string, unknown>>) => ({

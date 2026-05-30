@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FluxguardClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let categorySchema = z.object({
   categoryId: z.string().describe('ID of the category'),

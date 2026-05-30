@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OktaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let appSchema = z.object({
   appId: z.string().describe('Unique Okta application ID'),

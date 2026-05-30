@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTemplateDetails = SlateTool.create(spec, {
   name: 'Get Template Details',
@@ -39,7 +39,7 @@ export let getTemplateDetails = SlateTool.create(spec, {
     let details = result.templateDetails;
 
     let message = result.succeeded
-      ? `Template \`${details?.name || ctx.input.templateName}\`: **${details?.sizeBytes ? Math.round(details.sizeBytes / 1024) + ' KB' : 'unknown size'}**.`
+      ? `Template \`${details?.name || ctx.input.templateName}\`: **${details?.sizeBytes ? `${Math.round(details.sizeBytes / 1024)} KB` : 'unknown size'}**.`
       : `Failed to get template details: ${result.shortMsg || 'Unknown error'}`;
 
     return {

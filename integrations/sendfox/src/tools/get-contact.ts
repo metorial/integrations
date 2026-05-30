@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getContact = SlateTool.create(spec, {
   name: 'Get Contact',
@@ -58,7 +58,7 @@ export let getContact = SlateTool.create(spec, {
       throw new Error('Either contactId or email must be provided.');
     }
 
-    let contact;
+    let contact: any;
     if (ctx.input.contactId) {
       contact = await client.getContact(ctx.input.contactId);
     } else {
@@ -81,7 +81,7 @@ export let getContact = SlateTool.create(spec, {
         lastClickedAt: contact.last_clicked_at,
         createdAt: contact.created_at,
         contactFields: contact.contact_fields || [],
-        lists: contact.lists?.map(l => ({ listId: l.id, name: l.name }))
+        lists: contact.lists?.map((l: any) => ({ listId: l.id, name: l.name }))
       },
       message: `Retrieved contact **${contact.email}** (ID: ${contact.id}).`
     };

@@ -79,14 +79,14 @@ export interface CreateTemplateParams {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let headers: Record<string, string> = {};
 
     if (config.authMethod === 'oauth') {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     } else {
       let encoded = btoa(`${config.token}:`);
-      headers['Authorization'] = `Basic ${encoded}`;
+      headers.Authorization = `Basic ${encoded}`;
     }
 
     this.axios = createAxios({
@@ -173,7 +173,7 @@ export class Client {
       body[`template_ids[${i}]`] = id;
     });
 
-    params.signers.forEach((signer, i) => {
+    params.signers.forEach((signer, _i) => {
       body[`signers[${signer.role}][email_address]`] = signer.emailAddress;
       body[`signers[${signer.role}][name]`] = signer.name;
       if (signer.pin) body[`signers[${signer.role}][pin]`] = signer.pin;

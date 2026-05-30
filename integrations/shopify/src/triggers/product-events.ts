@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let productWebhookTopics = ['products/create', 'products/update', 'products/delete'] as const;
 
@@ -73,7 +73,7 @@ export let productEvents = SlateTrigger.create(spec, {
       for (let webhookId of webhookIds) {
         try {
           await client.deleteWebhook(webhookId);
-        } catch (e) {
+        } catch (_e) {
           // Webhook may already be deleted
         }
       }

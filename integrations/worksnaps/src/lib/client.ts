@@ -1,10 +1,10 @@
 import { createAxios } from 'slates';
 import {
-  parseXml,
-  parseXmlList,
   buildXml,
   camelizeKeys,
   hyphenateKeys,
+  parseXml,
+  parseXmlList,
   type XmlObject
 } from './xml';
 
@@ -100,7 +100,7 @@ export class Client {
 
   async listProjects(includeUserAssignment?: boolean): Promise<Record<string, unknown>[]> {
     let params: Record<string, string> = {};
-    if (includeUserAssignment) params['include_user_assignment'] = '1';
+    if (includeUserAssignment) params.include_user_assignment = '1';
     let response = await this.http.get('/projects.xml', { params });
     let items = parseXmlList(response.data as string, 'project');
     return items.map(item => camelizeKeys(item) as Record<string, unknown>);
@@ -111,10 +111,10 @@ export class Client {
     includeUserAssignment?: boolean
   ): Promise<Record<string, unknown>> {
     let params: Record<string, string> = {};
-    if (includeUserAssignment) params['include_user_assignment'] = '1';
+    if (includeUserAssignment) params.include_user_assignment = '1';
     let response = await this.http.get(`/projects/${projectId}.xml`, { params });
     let parsed = parseXml(response.data as string);
-    let project = parsed['project'] || parsed;
+    let project = parsed.project || parsed;
     return camelizeKeys(project) as Record<string, unknown>;
   }
 
@@ -122,7 +122,7 @@ export class Client {
     let body = buildXml('project', hyphenateKeys(data) as XmlObject);
     let response = await this.http.post('/projects.xml', body);
     let parsed = parseXml(response.data as string);
-    let project = parsed['project'] || parsed;
+    let project = parsed.project || parsed;
     return camelizeKeys(project) as Record<string, unknown>;
   }
 
@@ -130,7 +130,7 @@ export class Client {
     let body = buildXml('project', hyphenateKeys(data) as XmlObject);
     let response = await this.http.put(`/projects/${projectId}.xml`, body);
     let parsed = parseXml(response.data as string);
-    let project = parsed['project'] || parsed;
+    let project = parsed.project || parsed;
     return camelizeKeys(project) as Record<string, unknown>;
   }
 
@@ -147,7 +147,7 @@ export class Client {
     includeTaskAssignment?: boolean
   ): Promise<Record<string, unknown>[]> {
     let params: Record<string, string> = {};
-    if (includeTaskAssignment) params['include_task_assignment'] = '1';
+    if (includeTaskAssignment) params.include_task_assignment = '1';
     let response = await this.http.get(`/projects/${projectId}/tasks.xml`, { params });
     let items = parseXmlList(response.data as string, 'task');
     return items.map(item => camelizeKeys(item) as Record<string, unknown>);
@@ -159,12 +159,12 @@ export class Client {
     includeTaskAssignment?: boolean
   ): Promise<Record<string, unknown>> {
     let params: Record<string, string> = {};
-    if (includeTaskAssignment) params['include_task_assignment'] = '1';
+    if (includeTaskAssignment) params.include_task_assignment = '1';
     let response = await this.http.get(`/projects/${projectId}/tasks/${taskId}.xml`, {
       params
     });
     let parsed = parseXml(response.data as string);
-    let task = parsed['task'] || parsed;
+    let task = parsed.task || parsed;
     return camelizeKeys(task) as Record<string, unknown>;
   }
 
@@ -172,7 +172,7 @@ export class Client {
     let body = buildXml('task', hyphenateKeys(data) as XmlObject);
     let response = await this.http.post(`/projects/${projectId}/tasks.xml`, body);
     let parsed = parseXml(response.data as string);
-    let task = parsed['task'] || parsed;
+    let task = parsed.task || parsed;
     return camelizeKeys(task) as Record<string, unknown>;
   }
 
@@ -184,7 +184,7 @@ export class Client {
     let body = buildXml('task', hyphenateKeys(data) as XmlObject);
     let response = await this.http.put(`/projects/${projectId}/tasks/${taskId}.xml`, body);
     let parsed = parseXml(response.data as string);
-    let task = parsed['task'] || parsed;
+    let task = parsed.task || parsed;
     return camelizeKeys(task) as Record<string, unknown>;
   }
 
@@ -205,8 +205,8 @@ export class Client {
       from_timestamp: filter.fromTimestamp,
       to_timestamp: filter.toTimestamp
     };
-    if (filter.taskIds) params['task_ids'] = filter.taskIds;
-    if (filter.timeEntryType) params['time_entry_type'] = filter.timeEntryType;
+    if (filter.taskIds) params.task_ids = filter.taskIds;
+    if (filter.timeEntryType) params.time_entry_type = filter.timeEntryType;
     let response = await this.http.get(`/projects/${projectId}/time_entries.xml`, { params });
     let items = parseXmlList(response.data as string, 'time-entry');
     return items.map(item => camelizeKeys(item) as Record<string, unknown>);
@@ -221,7 +221,7 @@ export class Client {
       from_timestamp: filter.fromTimestamp,
       to_timestamp: filter.toTimestamp
     };
-    if (filter.timeEntryType) params['time_entry_type'] = filter.timeEntryType;
+    if (filter.timeEntryType) params.time_entry_type = filter.timeEntryType;
     let response = await this.http.get(
       `/projects/${projectId}/users/${userId}/time_entries.xml`,
       { params }
@@ -236,7 +236,7 @@ export class Client {
     fullResolutionUrl?: boolean
   ): Promise<Record<string, unknown>> {
     let params: Record<string, string> = {};
-    if (fullResolutionUrl) params['full_resolution_url'] = '1';
+    if (fullResolutionUrl) params.full_resolution_url = '1';
     let response = await this.http.get(
       `/projects/${projectId}/time_entries/${timeEntryId}.xml`,
       { params }
@@ -312,7 +312,7 @@ export class Client {
   ): Promise<Record<string, unknown>> {
     let xmlData: XmlObject = {};
     if (data.userId !== undefined) xmlData['user-id'] = data.userId;
-    if (data.role !== undefined) xmlData['role'] = data.role;
+    if (data.role !== undefined) xmlData.role = data.role;
     if (data.hourlyRate !== undefined) xmlData['hourly-rate'] = data.hourlyRate;
     if (data.flagAllowLoggingTime !== undefined)
       xmlData['flag-allow-logging-time'] = data.flagAllowLoggingTime;
@@ -412,7 +412,7 @@ export class Client {
   async getCurrentUser(): Promise<Record<string, unknown>> {
     let response = await this.http.get('/me.xml');
     let parsed = parseXml(response.data as string);
-    let user = parsed['user'] || parsed;
+    let user = parsed.user || parsed;
     return camelizeKeys(user) as Record<string, unknown>;
   }
 
@@ -425,7 +425,7 @@ export class Client {
   async getUser(userId: string): Promise<Record<string, unknown>> {
     let response = await this.http.get(`/users/${userId}.xml`);
     let parsed = parseXml(response.data as string);
-    let user = parsed['user'] || parsed;
+    let user = parsed.user || parsed;
     return camelizeKeys(user) as Record<string, unknown>;
   }
 
@@ -436,7 +436,7 @@ export class Client {
     let body = buildXml('user', hyphenateKeys(data) as XmlObject);
     let response = await this.http.put(`/users/${userId}.xml`, body);
     let parsed = parseXml(response.data as string);
-    let user = parsed['user'] || parsed;
+    let user = parsed.user || parsed;
     return camelizeKeys(user) as Record<string, unknown>;
   }
 
@@ -453,9 +453,9 @@ export class Client {
       from_timestamp: filter.fromTimestamp,
       to_timestamp: filter.toTimestamp
     };
-    if (filter.userIds) params['user_ids'] = filter.userIds;
-    if (filter.taskIds) params['task_ids'] = filter.taskIds;
-    if (filter.timeEntryType) params['time_entry_type'] = filter.timeEntryType;
+    if (filter.userIds) params.user_ids = filter.userIds;
+    if (filter.taskIds) params.task_ids = filter.taskIds;
+    if (filter.timeEntryType) params.time_entry_type = filter.timeEntryType;
     let response = await this.http.get(`/projects/${projectId}/reports`, { params });
     let parsed = parseXml(response.data as string);
     return camelizeKeys(parsed) as Record<string, unknown>;
@@ -467,9 +467,9 @@ export class Client {
       from_date: filter.fromDate,
       to_date: filter.toDate
     };
-    if (filter.timezoneOffset) params['timezone_offset'] = filter.timezoneOffset;
-    if (filter.projectIds) params['project_ids'] = filter.projectIds;
-    if (filter.userIds) params['user_ids'] = filter.userIds;
+    if (filter.timezoneOffset) params.timezone_offset = filter.timezoneOffset;
+    if (filter.projectIds) params.project_ids = filter.projectIds;
+    if (filter.userIds) params.user_ids = filter.userIds;
     let response = await this.http.get('/summary_reports', { params });
     let parsed = parseXml(response.data as string);
     return camelizeKeys(parsed) as Record<string, unknown>;

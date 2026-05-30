@@ -72,43 +72,43 @@ export interface AccountInfo {
 let toSnakeCase = (params: ProcessImageParams): Record<string, unknown> => {
   let body: Record<string, unknown> = {};
 
-  if (params.url !== undefined) body['url'] = params.url;
-  if (params.width !== undefined) body['width'] = params.width;
-  if (params.height !== undefined) body['height'] = params.height;
-  if (params.minLength !== undefined) body['min_length'] = params.minLength;
-  if (params.outputFormat !== undefined) body['output_format'] = params.outputFormat;
-  if (params.outputQuality !== undefined) body['output_quality'] = params.outputQuality;
-  if (params.maxFileSize !== undefined) body['max_file_size'] = params.maxFileSize;
-  if (params.enhancements !== undefined) body['enhancements'] = params.enhancements;
+  if (params.url !== undefined) body.url = params.url;
+  if (params.width !== undefined) body.width = params.width;
+  if (params.height !== undefined) body.height = params.height;
+  if (params.minLength !== undefined) body.min_length = params.minLength;
+  if (params.outputFormat !== undefined) body.output_format = params.outputFormat;
+  if (params.outputQuality !== undefined) body.output_quality = params.outputQuality;
+  if (params.maxFileSize !== undefined) body.max_file_size = params.maxFileSize;
+  if (params.enhancements !== undefined) body.enhancements = params.enhancements;
   if (params.generativeUpscale !== undefined)
-    body['generative_upscale'] = params.generativeUpscale;
-  if (params.preset !== undefined) body['preset'] = params.preset;
+    body.generative_upscale = params.generativeUpscale;
+  if (params.preset !== undefined) body.preset = params.preset;
 
   if (params.denoiseParameters) {
-    body['denoise_parameters'] = { type: params.denoiseParameters.type };
+    body.denoise_parameters = { type: params.denoiseParameters.type };
   }
   if (params.deblurParameters) {
-    body['deblur_parameters'] = { type: params.deblurParameters.type };
+    body.deblur_parameters = { type: params.deblurParameters.type };
   }
   if (params.lightParameters) {
-    body['light_parameters'] = {
+    body.light_parameters = {
       type: params.lightParameters.type,
       level: params.lightParameters.level
     };
   }
   if (params.colorParameters) {
-    body['color_parameters'] = {
+    body.color_parameters = {
       type: params.colorParameters.type,
       level: params.colorParameters.level
     };
   }
   if (params.whiteBalanceParameters) {
-    body['white_balance_parameters'] = {
+    body.white_balance_parameters = {
       level: params.whiteBalanceParameters.level
     };
   }
   if (params.faceEnhanceParameters) {
-    body['face_enhance_parameters'] = {
+    body.face_enhance_parameters = {
       type: params.faceEnhanceParameters.type,
       level: params.faceEnhanceParameters.level,
       smoothing_level: params.faceEnhanceParameters.smoothingLevel
@@ -116,62 +116,61 @@ let toSnakeCase = (params: ProcessImageParams): Record<string, unknown> => {
   }
 
   if (params.upscaleParameters) {
-    body['upscale_parameters'] = { type: params.upscaleParameters.type };
+    body.upscale_parameters = { type: params.upscaleParameters.type };
   }
 
   if (params.fit) {
     if (typeof params.fit === 'string') {
-      body['fit'] = params.fit;
+      body.fit = params.fit;
     } else {
       let fitObj: Record<string, string> = {};
-      if (params.fit.canvas) fitObj['canvas'] = params.fit.canvas;
-      if (params.fit.crop) fitObj['crop'] = params.fit.crop;
-      body['fit'] = fitObj;
+      if (params.fit.canvas) fitObj.canvas = params.fit.canvas;
+      if (params.fit.crop) fitObj.crop = params.fit.crop;
+      body.fit = fitObj;
     }
   }
 
-  if (params.padding !== undefined) body['padding'] = params.padding;
+  if (params.padding !== undefined) body.padding = params.padding;
 
   if (params.background) {
     let bg: Record<string, unknown> = {};
-    if (params.background.remove) bg['remove'] = params.background.remove;
-    if (params.background.color) bg['color'] = params.background.color;
-    if (params.background.replace) bg['replace'] = params.background.replace;
+    if (params.background.remove) bg.remove = params.background.remove;
+    if (params.background.color) bg.color = params.background.color;
+    if (params.background.replace) bg.replace = params.background.replace;
     if (params.background.generate) {
       let gen: Record<string, unknown> = {};
       let g = params.background.generate;
-      if (g.description !== undefined) gen['description'] = g.description;
-      if (g.modelType !== undefined) gen['model_type'] = g.modelType;
-      if (g.sampleNum !== undefined) gen['sample_num'] = g.sampleNum;
-      if (g.adapterType !== undefined) gen['adapter_type'] = g.adapterType;
-      if (g.faceId !== undefined) gen['face_id'] = g.faceId;
+      if (g.description !== undefined) gen.description = g.description;
+      if (g.modelType !== undefined) gen.model_type = g.modelType;
+      if (g.sampleNum !== undefined) gen.sample_num = g.sampleNum;
+      if (g.adapterType !== undefined) gen.adapter_type = g.adapterType;
+      if (g.faceId !== undefined) gen.face_id = g.faceId;
       if (g.controlnetConditioningScale !== undefined)
-        gen['controlnet_conditioning_scale'] = g.controlnetConditioningScale;
-      if (g.ipImage2 !== undefined) gen['ip_image2'] = g.ipImage2;
-      if (g.strength !== undefined) gen['strength'] = g.strength;
+        gen.controlnet_conditioning_scale = g.controlnetConditioningScale;
+      if (g.ipImage2 !== undefined) gen.ip_image2 = g.ipImage2;
+      if (g.strength !== undefined) gen.strength = g.strength;
       if (g.avatarGenerationType !== undefined)
-        gen['avatar_generation_type'] = g.avatarGenerationType;
-      if (g.itemAreaPercentage !== undefined)
-        gen['item_area_percentage'] = g.itemAreaPercentage;
-      if (g.backgroundUrl !== undefined) gen['background_url'] = g.backgroundUrl;
-      if (g.color !== undefined) gen['color'] = g.color;
-      bg['generate'] = gen;
+        gen.avatar_generation_type = g.avatarGenerationType;
+      if (g.itemAreaPercentage !== undefined) gen.item_area_percentage = g.itemAreaPercentage;
+      if (g.backgroundUrl !== undefined) gen.background_url = g.backgroundUrl;
+      if (g.color !== undefined) gen.color = g.color;
+      bg.generate = gen;
     }
-    body['background'] = bg;
+    body.background = bg;
   }
 
   if (params.caption) {
     let cap: Record<string, unknown> = { url: params.caption.url };
-    if (params.caption.position) cap['position'] = params.caption.position;
+    if (params.caption.position) cap.position = params.caption.position;
     if (params.caption.targetWidthPercentage !== undefined)
-      cap['target_width_percentage'] = params.caption.targetWidthPercentage;
-    if (params.caption.padding !== undefined) cap['padding'] = params.caption.padding;
-    if (params.caption.opacity !== undefined) cap['opacity'] = params.caption.opacity;
-    body['caption'] = cap;
+      cap.target_width_percentage = params.caption.targetWidthPercentage;
+    if (params.caption.padding !== undefined) cap.padding = params.caption.padding;
+    if (params.caption.opacity !== undefined) cap.opacity = params.caption.opacity;
+    body.caption = cap;
   }
 
   if (params.webhooks) {
-    body['webhooks'] = params.webhooks;
+    body.webhooks = params.webhooks;
   }
 
   return body;

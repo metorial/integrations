@@ -1,35 +1,35 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  getAppointmentSlots,
+  getMessages,
+  listLocations,
+  manageAppointment,
+  manageBroadcast,
+  manageClass,
+  manageClassParticipants,
   manageClient,
-  searchClients,
   manageClientTags,
   manageContact,
-  searchContacts,
   manageContactTags,
-  sendMessage,
-  getMessages,
   manageSegment,
-  manageBroadcast,
-  manageAppointment,
-  searchAppointments,
-  getAppointmentSlots,
-  manageClass,
-  searchClasses,
-  manageClassParticipants,
   manageService,
   manageServiceCategory,
   manageStaff,
-  listLocations
+  searchAppointments,
+  searchClasses,
+  searchClients,
+  searchContacts,
+  sendMessage
 } from './tools';
 import {
-  messageReceived,
-  messageSent,
-  clientEvent,
-  contactEvent,
   appointmentUpdate,
   classParticipantUpdate,
-  invoiceUpdate
+  clientEvent,
+  contactEvent,
+  invoiceUpdate,
+  messageReceived,
+  messageSent
 } from './triggers';
 
 export let provider = Slate.create({

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let analogSensorReading = SlateTrigger.create(spec, {
   name: 'Analog Sensor Reading',
@@ -45,7 +45,7 @@ export let analogSensorReading = SlateTrigger.create(spec, {
         };
       }
 
-      let analogValue = parseInt(response.value, 10);
+      let analogValue = Number.parseInt(response.value, 10);
 
       return {
         inputs: [

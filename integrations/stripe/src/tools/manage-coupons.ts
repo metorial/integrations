@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { StripeClient } from '../lib/client';
 import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCoupons = SlateTool.create(spec, {
   name: 'Manage Coupons',
@@ -132,7 +132,8 @@ export let manageCoupons = SlateTool.create(spec, {
       }
 
       if (action === 'get') {
-        if (!ctx.input.couponId) throw stripeServiceError('couponId is required for get action');
+        if (!ctx.input.couponId)
+          throw stripeServiceError('couponId is required for get action');
         let coupon = await client.getCoupon(ctx.input.couponId);
         return {
           output: {
@@ -149,7 +150,8 @@ export let manageCoupons = SlateTool.create(spec, {
       }
 
       if (action === 'update') {
-        if (!ctx.input.couponId) throw stripeServiceError('couponId is required for update action');
+        if (!ctx.input.couponId)
+          throw stripeServiceError('couponId is required for update action');
         let params: Record<string, any> = {};
         if (ctx.input.name) params.name = ctx.input.name;
         if (ctx.input.metadata) params.metadata = ctx.input.metadata;
@@ -166,7 +168,8 @@ export let manageCoupons = SlateTool.create(spec, {
       }
 
       if (action === 'delete') {
-        if (!ctx.input.couponId) throw stripeServiceError('couponId is required for delete action');
+        if (!ctx.input.couponId)
+          throw stripeServiceError('couponId is required for delete action');
         let result = await client.deleteCoupon(ctx.input.couponId);
         return {
           output: { couponId: result.id, deleted: result.deleted },

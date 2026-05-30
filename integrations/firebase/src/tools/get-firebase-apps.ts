@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { FirebaseManagementClient } from '../lib/client';
 import { firebaseServiceError, missingRequiredFieldError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let appPlatformSchema = z.enum(['android', 'ios', 'web']);
 
@@ -119,7 +119,7 @@ export let getFirebaseApps = SlateTool.create(spec, {
       }
 
       let selectedPlatforms = platform && platform !== 'all' ? [platform] : [...platforms];
-      let apps = [];
+      let apps: any[] = [];
       let nextPageTokens: Record<string, string> = {};
 
       for (let selectedPlatform of selectedPlatforms) {

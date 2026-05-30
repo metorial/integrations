@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { StripeClient } from '../lib/client';
 import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let mapTaxRate = (taxRate: any) => ({
   taxRateId: taxRate.id,
@@ -118,7 +118,8 @@ export let manageTaxRates = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.taxRateId) throw stripeServiceError('taxRateId is required for get action');
+      if (!ctx.input.taxRateId)
+        throw stripeServiceError('taxRateId is required for get action');
       let taxRate = await client.getTaxRate(ctx.input.taxRateId);
       return {
         output: mapTaxRate(taxRate),

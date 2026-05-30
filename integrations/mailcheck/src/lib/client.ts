@@ -58,7 +58,7 @@ export interface ListOperationsResponse {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.mailcheck.co/v1',
       headers: {

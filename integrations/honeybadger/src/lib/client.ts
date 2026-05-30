@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class HoneybadgerClient {
   private http;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://app.honeybadger.io/v2',
       auth: {

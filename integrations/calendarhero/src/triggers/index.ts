@@ -1,2 +1,2 @@
-export * from './meeting-events';
 export * from './contact-events';
+export * from './meeting-events';

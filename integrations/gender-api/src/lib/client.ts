@@ -183,7 +183,7 @@ let mapStatisticResult = (data: any): StatisticResult => ({
 export class Client {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://gender-api.com/v2',
       headers: {

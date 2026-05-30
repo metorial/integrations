@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TwitchClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUserInfo = SlateTool.create(spec, {
   name: 'Get User Info',
@@ -46,7 +46,7 @@ export let getUserInfo = SlateTool.create(spec, {
     let hasFilters =
       (ctx.input.userIds && ctx.input.userIds.length > 0) ||
       (ctx.input.logins && ctx.input.logins.length > 0);
-    let users;
+    let users: any;
 
     if (hasFilters) {
       users = await client.getUsers({ ids: ctx.input.userIds, logins: ctx.input.logins });
@@ -55,7 +55,7 @@ export let getUserInfo = SlateTool.create(spec, {
       users = [user];
     }
 
-    let mapped = users.map(u => ({
+    let mapped = users.map((u: any) => ({
       userId: u.id,
       login: u.login,
       displayName: u.display_name,

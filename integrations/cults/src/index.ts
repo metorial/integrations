@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchCreations,
-  browseCreations,
-  getCreation,
-  getMyProfile,
-  getUser,
-  getMySales,
-  getMyOrders,
-  getMyCreations,
-  createCreation,
-  updateCreation,
-  getCategories,
-  getMyPrintlists,
-  createPrintlist,
-  updatePrintlist,
-  deletePrintlist,
   addCreationToPrintlist,
-  removeCreationFromPrintlist,
+  browseCreations,
+  createCreation,
   createDiscount,
-  notifyDownloaders
+  createPrintlist,
+  deletePrintlist,
+  getCategories,
+  getCreation,
+  getMyCreations,
+  getMyOrders,
+  getMyPrintlists,
+  getMyProfile,
+  getMySales,
+  getUser,
+  notifyDownloaders,
+  removeCreationFromPrintlist,
+  searchCreations,
+  updateCreation,
+  updatePrintlist
 } from './tools';
-import { newSaleTrigger, newOrderTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, newOrderTrigger, newSaleTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

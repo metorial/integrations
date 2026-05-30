@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  search,
-  manageRecords,
-  manageIndices,
-  indexSettings,
-  manageSynonyms,
-  manageRules,
-  searchAnalytics,
-  sendEvents,
-  manageApiKeys,
-  manageAbTests,
   getRecommendations,
-  monitoring
+  indexSettings,
+  manageAbTests,
+  manageApiKeys,
+  manageIndices,
+  manageRecords,
+  manageRules,
+  manageSynonyms,
+  monitoring,
+  search,
+  searchAnalytics,
+  sendEvents
 } from './tools';
-import { indexUpdated, inboundWebhook } from './triggers';
+import { inboundWebhook, indexUpdated } from './triggers';
 
 export let provider = Slate.create({
   spec,

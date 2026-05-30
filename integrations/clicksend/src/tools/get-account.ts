@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickSendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAccountTool = SlateTool.create(spec, {
   name: 'Get Account Info',
@@ -39,11 +39,11 @@ export let getAccountTool = SlateTool.create(spec, {
         firstName: account.first_name || undefined,
         lastName: account.last_name || undefined,
         email: account.user_email || undefined,
-        balance: parseFloat(account.balance) || 0,
+        balance: Number.parseFloat(account.balance) || 0,
         country: account.country || undefined,
         phoneNumber: account.phone_number || undefined
       },
-      message: `Account **${account.username}** — balance: **$${parseFloat(account.balance || 0).toFixed(2)}**`
+      message: `Account **${account.username}** — balance: **$${Number.parseFloat(account.balance || 0).toFixed(2)}**`
     };
   })
   .build();

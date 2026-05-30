@@ -2,10 +2,10 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   fullResultsQuery,
-  shortAnswer,
-  spokenResult,
-  simpleImage,
   llmQuery,
+  shortAnswer,
+  simpleImage,
+  spokenResult,
   validateQuery
 } from './tools';
 

@@ -4,5 +4,5 @@ let BASE_URLS: Record<string, string> = {
 };
 
 export let getBaseUrl = (environment?: string): string => {
-  return BASE_URLS[environment || 'production'] || BASE_URLS['production']!;
+  return BASE_URLS[environment || 'production'] || BASE_URLS.production!;
 };

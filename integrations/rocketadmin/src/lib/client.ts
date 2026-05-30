@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class RocketadminClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; baseUrl: string; masterPassword?: string }) {
+  constructor(config: { token: string; baseUrl: string; masterPassword?: string }) {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
@@ -16,7 +16,7 @@ export class RocketadminClient {
 
   // ---- Connections ----
 
-  async listConnections(): Promise<Array<Record<string, unknown>>> {
+  async listConnections(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/connections');
     return response.data;
   }
@@ -51,7 +51,7 @@ export class RocketadminClient {
 
   // ---- Tables ----
 
-  async listTables(connectionId: string): Promise<Array<Record<string, unknown>>> {
+  async listTables(connectionId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/connection/tables/${connectionId}`);
     return response.data;
   }
@@ -179,7 +179,7 @@ export class RocketadminClient {
   async bulkUpdateRows(
     connectionId: string,
     tableName: string,
-    primaryKeys: Array<Record<string, unknown>>,
+    primaryKeys: Record<string, unknown>[],
     row: Record<string, unknown>
   ): Promise<Record<string, unknown>> {
     let response = await this.axios.put(
@@ -198,7 +198,7 @@ export class RocketadminClient {
   async bulkDeleteRows(
     connectionId: string,
     tableName: string,
-    primaryKeys: Array<Record<string, unknown>>
+    primaryKeys: Record<string, unknown>[]
   ): Promise<Record<string, unknown>> {
     let response = await this.axios.put(
       `/table/rows/delete/${connectionId}`,
@@ -227,7 +227,7 @@ export class RocketadminClient {
 
   // ---- Groups & Permissions ----
 
-  async listGroups(connectionId: string): Promise<Array<Record<string, unknown>>> {
+  async listGroups(connectionId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/connection/groups/${connectionId}`);
     return response.data;
   }
@@ -266,7 +266,7 @@ export class RocketadminClient {
     return response.data;
   }
 
-  async getUsersInGroup(groupId: string): Promise<Array<Record<string, unknown>>> {
+  async getUsersInGroup(groupId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/group/users/${groupId}`);
     return response.data;
   }
@@ -291,7 +291,7 @@ export class RocketadminClient {
     return response.data;
   }
 
-  async getUsersInCompany(companyId: string): Promise<Array<Record<string, unknown>>> {
+  async getUsersInCompany(companyId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/company/users/${companyId}`);
     return response.data;
   }
@@ -333,7 +333,7 @@ export class RocketadminClient {
   async listActionRules(
     connectionId: string,
     tableName: string
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/table/rules/${connectionId}`, {
       params: { tableName }
     });
@@ -369,7 +369,7 @@ export class RocketadminClient {
 
   // ---- Dashboards ----
 
-  async listDashboards(connectionId: string): Promise<Array<Record<string, unknown>>> {
+  async listDashboards(connectionId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/dashboards/${connectionId}`);
     return response.data;
   }
@@ -399,7 +399,7 @@ export class RocketadminClient {
 
   // ---- Saved Queries ----
 
-  async listSavedQueries(connectionId: string): Promise<Array<Record<string, unknown>>> {
+  async listSavedQueries(connectionId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/saved-queries/${connectionId}`);
     return response.data;
   }
@@ -462,7 +462,7 @@ export class RocketadminClient {
     return response.data;
   }
 
-  async getSignInAuditLogs(): Promise<Array<Record<string, unknown>>> {
+  async getSignInAuditLogs(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/logs/audit/signin');
     return response.data;
   }
@@ -516,7 +516,7 @@ export class RocketadminClient {
   async getCustomFields(
     connectionId: string,
     tableName: string
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/custom-fields/${connectionId}`, {
       params: { tableName }
     });
@@ -549,7 +549,7 @@ export class RocketadminClient {
 
   // ---- Secrets ----
 
-  async listSecrets(companyId: string): Promise<Array<Record<string, unknown>>> {
+  async listSecrets(companyId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/secrets/${companyId}`);
     return response.data;
   }
@@ -585,7 +585,7 @@ export class RocketadminClient {
   async listTableFilters(
     connectionId: string,
     tableName: string
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/table/filters/${connectionId}`, {
       params: { tableName }
     });
@@ -644,7 +644,7 @@ export class RocketadminClient {
 
   // ---- Connection Users ----
 
-  async getUsersInConnection(connectionId: string): Promise<Array<Record<string, unknown>>> {
+  async getUsersInConnection(connectionId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/connection/users/${connectionId}`);
     return response.data;
   }

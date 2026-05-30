@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCampaigns,
-  getCampaign,
-  createCampaign,
-  updateCampaign,
-  getCampaignStats,
   addLeadToCampaign,
-  getLead,
-  listCampaignLeads,
-  updateLead,
+  createCampaign,
   deleteLead,
   getActivities,
+  getCampaign,
+  getCampaignStats,
+  getLead,
+  getTeamInfo,
+  listCampaignLeads,
+  listCampaigns,
   manageUnsubscribes,
   searchPeopleDatabase,
-  getTeamInfo
+  updateCampaign,
+  updateLead
 } from './tools';
 import { activityEvent } from './triggers';
 

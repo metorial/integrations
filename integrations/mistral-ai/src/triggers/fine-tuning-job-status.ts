@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { MistralClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let fineTuningJobStatusTrigger = SlateTrigger.create(spec, {
   name: 'Fine-Tuning Job Status Change',
@@ -52,7 +52,7 @@ export let fineTuningJobStatusTrigger = SlateTrigger.create(spec, {
 
       let previousStatuses: Record<string, string> = ctx.state?.jobStatuses || {};
       let currentStatuses: Record<string, string> = {};
-      let inputs: Array<any> = [];
+      let inputs: any[] = [];
 
       for (let job of jobs) {
         currentStatuses[job.id] = job.status;

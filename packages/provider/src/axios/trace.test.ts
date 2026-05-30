@@ -174,7 +174,7 @@ describe('sanitizeFreeText', () => {
   });
 
   it('redacts GitHub tokens', () => {
-    let token = 'ghp_' + 'a'.repeat(40);
+    let token = `ghp_${'a'.repeat(40)}`;
     expect(sanitizeFreeText(token)).toBe('[redacted]');
   });
 
@@ -184,22 +184,22 @@ describe('sanitizeFreeText', () => {
   });
 
   it('redacts Stripe secret keys', () => {
-    let key = 'sk_live_' + 'a'.repeat(24);
+    let key = `sk_live_${'a'.repeat(24)}`;
     expect(sanitizeFreeText(`{"key":"${key}"}`)).not.toContain(key);
   });
 
   it('redacts OpenAI API keys', () => {
-    let key = 'sk-proj-' + 'a'.repeat(40);
+    let key = `sk-proj-${'a'.repeat(40)}`;
     expect(sanitizeFreeText(key)).toBe('[redacted]');
   });
 
   it('redacts Anthropic API keys', () => {
-    let key = 'sk-ant-' + 'a'.repeat(40);
+    let key = `sk-ant-${'a'.repeat(40)}`;
     expect(sanitizeFreeText(key)).toBe('[redacted]');
   });
 
   it('redacts Google API keys', () => {
-    let key = 'AIza' + 'a'.repeat(35);
+    let key = `AIza${'a'.repeat(35)}`;
     expect(sanitizeFreeText(key)).toBe('[redacted]');
   });
 
@@ -265,8 +265,7 @@ describe('sanitizeUrl', () => {
   });
 
   it('redacts secrets embedded in URL fragment (OAuth implicit flow)', () => {
-    let input =
-      'https://example.com/cb#access_token=xyz&token_type=bearer&expires_in=3600';
+    let input = 'https://example.com/cb#access_token=xyz&token_type=bearer&expires_in=3600';
     let out = sanitizeUrl(input);
     expect(out).toContain('access_token=[redacted]');
     expect(out).toContain('token_type=bearer');

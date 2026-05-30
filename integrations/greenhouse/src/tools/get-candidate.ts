@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { mapCandidate } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCandidateTool = SlateTool.create(spec, {
   name: 'Get Candidate',
@@ -44,7 +44,7 @@ export let getCandidateTool = SlateTool.create(spec, {
       token: ctx.auth.token,
       onBehalfOf: ctx.config.onBehalfOf
     });
-    let raw = await client.getCandidate(parseInt(ctx.input.candidateId));
+    let raw = await client.getCandidate(Number.parseInt(ctx.input.candidateId, 10));
     let candidate = mapCandidate(raw);
 
     return {

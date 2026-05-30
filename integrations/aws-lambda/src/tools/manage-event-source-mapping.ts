@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { createClient } from '../lib/helpers';
-import { lambdaServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { lambdaServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageEventSourceMapping = SlateTool.create(spec, {
   name: 'Manage Event Source Mapping',
@@ -143,33 +143,33 @@ export let manageEventSourceMapping = SlateTool.create(spec, {
 
     let buildParams = (): Record<string, any> => {
       let params: Record<string, any> = {};
-      if (ctx.input.functionName) params['FunctionName'] = ctx.input.functionName;
-      if (ctx.input.eventSourceArn) params['EventSourceArn'] = ctx.input.eventSourceArn;
-      if (ctx.input.enabled !== undefined) params['Enabled'] = ctx.input.enabled;
-      if (ctx.input.batchSize) params['BatchSize'] = ctx.input.batchSize;
-      if (ctx.input.startingPosition) params['StartingPosition'] = ctx.input.startingPosition;
+      if (ctx.input.functionName) params.FunctionName = ctx.input.functionName;
+      if (ctx.input.eventSourceArn) params.EventSourceArn = ctx.input.eventSourceArn;
+      if (ctx.input.enabled !== undefined) params.Enabled = ctx.input.enabled;
+      if (ctx.input.batchSize) params.BatchSize = ctx.input.batchSize;
+      if (ctx.input.startingPosition) params.StartingPosition = ctx.input.startingPosition;
       if (ctx.input.startingPositionTimestamp)
-        params['StartingPositionTimestamp'] = ctx.input.startingPositionTimestamp;
+        params.StartingPositionTimestamp = ctx.input.startingPositionTimestamp;
       if (ctx.input.maximumBatchingWindowInSeconds !== undefined)
-        params['MaximumBatchingWindowInSeconds'] = ctx.input.maximumBatchingWindowInSeconds;
+        params.MaximumBatchingWindowInSeconds = ctx.input.maximumBatchingWindowInSeconds;
       if (ctx.input.maximumRetryAttempts !== undefined)
-        params['MaximumRetryAttempts'] = ctx.input.maximumRetryAttempts;
+        params.MaximumRetryAttempts = ctx.input.maximumRetryAttempts;
       if (ctx.input.parallelizationFactor)
-        params['ParallelizationFactor'] = ctx.input.parallelizationFactor;
+        params.ParallelizationFactor = ctx.input.parallelizationFactor;
       if (ctx.input.filterPatterns)
-        params['FilterCriteria'] = {
+        params.FilterCriteria = {
           Filters: ctx.input.filterPatterns.map(p => ({ Pattern: p }))
         };
       if (ctx.input.onFailureDestinationArn)
-        params['DestinationConfig'] = {
+        params.DestinationConfig = {
           OnFailure: { Destination: ctx.input.onFailureDestinationArn }
         };
       if (ctx.input.bisectBatchOnFunctionError !== undefined)
-        params['BisectBatchOnFunctionError'] = ctx.input.bisectBatchOnFunctionError;
-      if (ctx.input.topics) params['Topics'] = ctx.input.topics;
-      if (ctx.input.queues) params['Queues'] = ctx.input.queues;
+        params.BisectBatchOnFunctionError = ctx.input.bisectBatchOnFunctionError;
+      if (ctx.input.topics) params.Topics = ctx.input.topics;
+      if (ctx.input.queues) params.Queues = ctx.input.queues;
       if (ctx.input.maximumConcurrency)
-        params['ScalingConfig'] = { MaximumConcurrency: ctx.input.maximumConcurrency };
+        params.ScalingConfig = { MaximumConcurrency: ctx.input.maximumConcurrency };
       return params;
     };
 
@@ -182,8 +182,7 @@ export let manageEventSourceMapping = SlateTool.create(spec, {
     }
 
     // update
-    if (!ctx.input.mappingUuid)
-      throw lambdaServiceError('mappingUuid is required for update');
+    if (!ctx.input.mappingUuid) throw lambdaServiceError('mappingUuid is required for update');
     let result = await client.updateEventSourceMapping(ctx.input.mappingUuid, buildParams());
     return {
       output: mapResult(result),

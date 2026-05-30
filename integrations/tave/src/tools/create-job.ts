@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TavePublicClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createJob = SlateTool.create(spec, {
   name: 'Create Job',
@@ -53,21 +53,21 @@ export let createJob = SlateTool.create(spec, {
       job_type: ctx.input.jobType
     };
 
-    if (ctx.input.brand) data['brand'] = ctx.input.brand;
-    if (ctx.input.jobStage) data['job_stage'] = ctx.input.jobStage;
-    if (ctx.input.contactId) data['contact_id'] = ctx.input.contactId;
-    if (ctx.input.jobRole) data['job_role'] = ctx.input.jobRole;
-    if (ctx.input.eventType) data['event_type'] = ctx.input.eventType;
-    if (ctx.input.eventDate) data['event_date'] = ctx.input.eventDate;
-    if (ctx.input.eventTime) data['event_time'] = ctx.input.eventTime;
-    if (ctx.input.eventEndDate) data['event_end_date'] = ctx.input.eventEndDate;
-    if (ctx.input.eventEndTime) data['event_end_time'] = ctx.input.eventEndTime;
-    if (ctx.input.timezone) data['timezone'] = ctx.input.timezone;
-    if (ctx.input.source) data['source'] = ctx.input.source;
-    if (ctx.input.notes) data['notes'] = ctx.input.notes;
+    if (ctx.input.brand) data.brand = ctx.input.brand;
+    if (ctx.input.jobStage) data.job_stage = ctx.input.jobStage;
+    if (ctx.input.contactId) data.contact_id = ctx.input.contactId;
+    if (ctx.input.jobRole) data.job_role = ctx.input.jobRole;
+    if (ctx.input.eventType) data.event_type = ctx.input.eventType;
+    if (ctx.input.eventDate) data.event_date = ctx.input.eventDate;
+    if (ctx.input.eventTime) data.event_time = ctx.input.eventTime;
+    if (ctx.input.eventEndDate) data.event_end_date = ctx.input.eventEndDate;
+    if (ctx.input.eventEndTime) data.event_end_time = ctx.input.eventEndTime;
+    if (ctx.input.timezone) data.timezone = ctx.input.timezone;
+    if (ctx.input.source) data.source = ctx.input.source;
+    if (ctx.input.notes) data.notes = ctx.input.notes;
 
     if (ctx.input.customFields) {
-      data['custom_fields'] = ctx.input.customFields;
+      data.custom_fields = ctx.input.customFields;
     }
 
     ctx.info({ message: 'Creating job in Tave', jobType: ctx.input.jobType });
@@ -80,7 +80,7 @@ export let createJob = SlateTool.create(spec, {
         jobType: result.job_type ?? ctx.input.jobType,
         raw: result
       },
-      message: `Successfully created **${ctx.input.jobType}** job${ctx.input.eventDate ? ' for ' + ctx.input.eventDate : ''}.`
+      message: `Successfully created **${ctx.input.jobType}** job${ctx.input.eventDate ? ` for ${ctx.input.eventDate}` : ''}.`
     };
   })
   .build();

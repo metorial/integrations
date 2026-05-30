@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ClassroomClient } from '../lib/client';
-import { spec } from '../spec';
-import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
+import { ClassroomClient } from '../lib/client';
+import { googleClassroomActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 let classroomApiErrorMessage = (error: unknown, fallback: string) => {
   let message = (error as { response?: { data?: { error?: { message?: string } } } })?.response

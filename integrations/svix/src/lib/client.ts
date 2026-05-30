@@ -242,7 +242,7 @@ export class Client {
   private http;
 
   constructor(config: { token: string; region: string }) {
-    let baseURL = BASE_URLS[config.region] || BASE_URLS['us'];
+    let baseURL = BASE_URLS[config.region] || BASE_URLS.us;
     this.http = createAxios({
       baseURL: `${baseURL}/api/v1`,
       headers: {
@@ -263,15 +263,14 @@ export class Client {
     options?: ApplicationListOptions
   ): Promise<ListResponse<ApplicationOut>> {
     let params: Record<string, string | number | boolean> = {};
-    if (options?.limit) params['limit'] = options.limit;
-    if (options?.iterator) params['iterator'] = options.iterator;
-    if (options?.order) params['order'] = options.order;
-    if (options?.excludeAppsWithNoEndpoints)
-      params['exclude_apps_with_no_endpoints'] = true;
+    if (options?.limit) params.limit = options.limit;
+    if (options?.iterator) params.iterator = options.iterator;
+    if (options?.order) params.order = options.order;
+    if (options?.excludeAppsWithNoEndpoints) params.exclude_apps_with_no_endpoints = true;
     if (options?.excludeAppsWithDisabledEndpoints)
-      params['exclude_apps_with_disabled_endpoints'] = true;
+      params.exclude_apps_with_disabled_endpoints = true;
     if (options?.excludeAppsWithSvixPlayEndpoints)
-      params['exclude_apps_with_svix_play_endpoints'] = true;
+      params.exclude_apps_with_svix_play_endpoints = true;
     let res = await this.http.get('/app/', { params });
     return res.data;
   }
@@ -307,15 +306,15 @@ export class Client {
     options?: MessageListOptions
   ): Promise<ListResponse<MessageOut>> {
     let params: Record<string, string | number | boolean> = {};
-    if (options?.limit) params['limit'] = options.limit;
-    if (options?.iterator) params['iterator'] = options.iterator;
-    if (options?.order) params['order'] = options.order;
-    if (options?.channel) params['channel'] = options.channel;
-    if (options?.before) params['before'] = options.before;
-    if (options?.after) params['after'] = options.after;
-    if (options?.tag) params['tag'] = options.tag;
-    if (options?.withContent !== undefined) params['with_content'] = options.withContent;
-    if (options?.eventTypes) params['event_types'] = options.eventTypes.join(',');
+    if (options?.limit) params.limit = options.limit;
+    if (options?.iterator) params.iterator = options.iterator;
+    if (options?.order) params.order = options.order;
+    if (options?.channel) params.channel = options.channel;
+    if (options?.before) params.before = options.before;
+    if (options?.after) params.after = options.after;
+    if (options?.tag) params.tag = options.tag;
+    if (options?.withContent !== undefined) params.with_content = options.withContent;
+    if (options?.eventTypes) params.event_types = options.eventTypes.join(',');
     let res = await this.http.get(`/app/${appId}/msg/`, { params });
     return res.data;
   }
@@ -326,7 +325,7 @@ export class Client {
     options?: { withContent?: boolean }
   ): Promise<MessageOut> {
     let params: Record<string, boolean> = {};
-    if (options?.withContent !== undefined) params['with_content'] = options.withContent;
+    if (options?.withContent !== undefined) params.with_content = options.withContent;
     let res = await this.http.get(`/app/${appId}/msg/${msgId}/`, { params });
     return res.data;
   }
@@ -350,9 +349,9 @@ export class Client {
     options?: ListOptions
   ): Promise<ListResponse<EndpointOut>> {
     let params: Record<string, string | number> = {};
-    if (options?.limit) params['limit'] = options.limit;
-    if (options?.iterator) params['iterator'] = options.iterator;
-    if (options?.order) params['order'] = options.order;
+    if (options?.limit) params.limit = options.limit;
+    if (options?.iterator) params.iterator = options.iterator;
+    if (options?.order) params.order = options.order;
     let res = await this.http.get(`/app/${appId}/endpoint/`, { params });
     return res.data;
   }
@@ -385,11 +384,7 @@ export class Client {
     return res.data;
   }
 
-  async rotateEndpointSecret(
-    appId: string,
-    endpointId: string,
-    key?: string
-  ): Promise<void> {
+  async rotateEndpointSecret(appId: string, endpointId: string, key?: string): Promise<void> {
     await this.http.post(`/app/${appId}/endpoint/${endpointId}/secret/rotate/`, { key });
   }
 
@@ -399,8 +394,8 @@ export class Client {
     options?: { since?: string; until?: string }
   ): Promise<EndpointStats> {
     let params: Record<string, string> = {};
-    if (options?.since) params['since'] = options.since;
-    if (options?.until) params['until'] = options.until;
+    if (options?.since) params.since = options.since;
+    if (options?.until) params.until = options.until;
     let res = await this.http.get(`/app/${appId}/endpoint/${endpointId}/stats/`, {
       params
     });
@@ -454,11 +449,11 @@ export class Client {
     options?: ListOptions & { withContent?: boolean; includeArchived?: boolean }
   ): Promise<ListResponse<EventTypeOut>> {
     let params: Record<string, string | number | boolean> = {};
-    if (options?.limit) params['limit'] = options.limit;
-    if (options?.iterator) params['iterator'] = options.iterator;
-    if (options?.order) params['order'] = options.order;
-    if (options?.withContent) params['with_content'] = true;
-    if (options?.includeArchived) params['include_archived'] = true;
+    if (options?.limit) params.limit = options.limit;
+    if (options?.iterator) params.iterator = options.iterator;
+    if (options?.order) params.order = options.order;
+    if (options?.withContent) params.with_content = true;
+    if (options?.includeArchived) params.include_archived = true;
     let res = await this.http.get('/event-type/', { params });
     return res.data;
   }
@@ -500,19 +495,19 @@ export class Client {
     options?: AttemptListOptions
   ): Promise<ListResponse<MessageAttemptOut>> {
     let params: Record<string, string | number | boolean> = {};
-    if (options?.limit) params['limit'] = options.limit;
-    if (options?.iterator) params['iterator'] = options.iterator;
-    if (options?.order) params['order'] = options.order;
-    if (options?.status !== undefined) params['status'] = options.status;
+    if (options?.limit) params.limit = options.limit;
+    if (options?.iterator) params.iterator = options.iterator;
+    if (options?.order) params.order = options.order;
+    if (options?.status !== undefined) params.status = options.status;
     if (options?.statusCodeClass !== undefined)
-      params['status_code_class'] = options.statusCodeClass;
-    if (options?.channel) params['channel'] = options.channel;
-    if (options?.tag) params['tag'] = options.tag;
-    if (options?.before) params['before'] = options.before;
-    if (options?.after) params['after'] = options.after;
+      params.status_code_class = options.statusCodeClass;
+    if (options?.channel) params.channel = options.channel;
+    if (options?.tag) params.tag = options.tag;
+    if (options?.before) params.before = options.before;
+    if (options?.after) params.after = options.after;
     if (options?.expandedStatuses !== undefined)
-      params['expanded_statuses'] = options.expandedStatuses;
-    if (options?.eventTypes) params['event_types'] = options.eventTypes.join(',');
+      params.expanded_statuses = options.expandedStatuses;
+    if (options?.eventTypes) params.event_types = options.eventTypes.join(',');
     let res = await this.http.get(`/app/${appId}/attempt/msg/${msgId}/`, { params });
     return res.data;
   }
@@ -523,19 +518,19 @@ export class Client {
     options?: AttemptListOptions
   ): Promise<ListResponse<MessageAttemptOut>> {
     let params: Record<string, string | number | boolean> = {};
-    if (options?.limit) params['limit'] = options.limit;
-    if (options?.iterator) params['iterator'] = options.iterator;
-    if (options?.order) params['order'] = options.order;
-    if (options?.status !== undefined) params['status'] = options.status;
+    if (options?.limit) params.limit = options.limit;
+    if (options?.iterator) params.iterator = options.iterator;
+    if (options?.order) params.order = options.order;
+    if (options?.status !== undefined) params.status = options.status;
     if (options?.statusCodeClass !== undefined)
-      params['status_code_class'] = options.statusCodeClass;
-    if (options?.channel) params['channel'] = options.channel;
-    if (options?.tag) params['tag'] = options.tag;
-    if (options?.before) params['before'] = options.before;
-    if (options?.after) params['after'] = options.after;
+      params.status_code_class = options.statusCodeClass;
+    if (options?.channel) params.channel = options.channel;
+    if (options?.tag) params.tag = options.tag;
+    if (options?.before) params.before = options.before;
+    if (options?.after) params.after = options.after;
     if (options?.expandedStatuses !== undefined)
-      params['expanded_statuses'] = options.expandedStatuses;
-    if (options?.eventTypes) params['event_types'] = options.eventTypes.join(',');
+      params.expanded_statuses = options.expandedStatuses;
+    if (options?.eventTypes) params.event_types = options.eventTypes.join(',');
     let res = await this.http.get(`/app/${appId}/attempt/endpoint/${endpointId}/`, { params });
     return res.data;
   }
@@ -560,8 +555,8 @@ export class Client {
     options?: ListOptions
   ): Promise<ListResponse<EndpointOut>> {
     let params: Record<string, string | number> = {};
-    if (options?.limit) params['limit'] = options.limit;
-    if (options?.iterator) params['iterator'] = options.iterator;
+    if (options?.limit) params.limit = options.limit;
+    if (options?.iterator) params.iterator = options.iterator;
     let res = await this.http.get('/operational-webhook/endpoint/', { params });
     return res.data;
   }

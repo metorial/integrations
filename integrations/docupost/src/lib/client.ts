@@ -72,22 +72,21 @@ export class Client {
       from_zip: params.fromZip
     };
 
-    if (params.toCompany) queryParams['to_company'] = params.toCompany;
-    if (params.toAddress2) queryParams['to_address2'] = params.toAddress2;
-    if (params.fromAddress2) queryParams['from_address2'] = params.fromAddress2;
-    if (params.pdfUrl) queryParams['pdf'] = params.pdfUrl;
-    if (params.color !== undefined) queryParams['color'] = String(params.color);
-    if (params.doubleSided !== undefined)
-      queryParams['doublesided'] = String(params.doubleSided);
-    if (params.mailClass) queryParams['class'] = params.mailClass;
-    if (params.serviceLevel) queryParams['servicelevel'] = params.serviceLevel;
+    if (params.toCompany) queryParams.to_company = params.toCompany;
+    if (params.toAddress2) queryParams.to_address2 = params.toAddress2;
+    if (params.fromAddress2) queryParams.from_address2 = params.fromAddress2;
+    if (params.pdfUrl) queryParams.pdf = params.pdfUrl;
+    if (params.color !== undefined) queryParams.color = String(params.color);
+    if (params.doubleSided !== undefined) queryParams.doublesided = String(params.doubleSided);
+    if (params.mailClass) queryParams.class = params.mailClass;
+    if (params.serviceLevel) queryParams.servicelevel = params.serviceLevel;
     if (params.returnEnvelope !== undefined)
-      queryParams['return_envelope'] = String(params.returnEnvelope);
+      queryParams.return_envelope = String(params.returnEnvelope);
     if (params.prepaidReturnEnvelope !== undefined)
-      queryParams['prepaid_return_envelope'] = String(params.prepaidReturnEnvelope);
-    if (params.description) queryParams['description'] = params.description;
+      queryParams.prepaid_return_envelope = String(params.prepaidReturnEnvelope);
+    if (params.description) queryParams.description = params.description;
 
-    let body: Record<string, string> | undefined = undefined;
+    let body: Record<string, string> | undefined;
     if (params.html) {
       body = { html: params.html };
     }
@@ -116,10 +115,10 @@ export class Client {
       from_zip: params.fromZip
     };
 
-    if (params.toAddress2) queryParams['to_address2'] = params.toAddress2;
-    if (params.fromAddress2) queryParams['from_address2'] = params.fromAddress2;
-    if (params.size) queryParams['size'] = params.size;
-    if (params.description) queryParams['description'] = params.description;
+    if (params.toAddress2) queryParams.to_address2 = params.toAddress2;
+    if (params.fromAddress2) queryParams.from_address2 = params.fromAddress2;
+    if (params.size) queryParams.size = params.size;
+    if (params.description) queryParams.description = params.description;
 
     let response = await this.http.post(
       '/sendpostcard',

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let userEvents = SlateTrigger.create(spec, {
   name: 'User Events',
@@ -77,7 +77,7 @@ export let userEvents = SlateTrigger.create(spec, {
       let user = body.user as Record<string, unknown> | undefined;
       let data = user || (body.data as Record<string, unknown>);
 
-      if (!data || !topic || !topic.startsWith('user.')) {
+      if (!data || !topic?.startsWith('user.')) {
         return { inputs: [] };
       }
 

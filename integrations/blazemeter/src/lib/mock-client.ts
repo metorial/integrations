@@ -21,7 +21,7 @@ export class MockServiceClient {
   // ─── Virtual Services ────────────────────────────────────────
 
   async listVirtualServices(workspaceId: number): Promise<any[]> {
-    let response = await this.axios.get('/workspaces/' + workspaceId + '/service-mocks');
+    let response = await this.axios.get(`/workspaces/${workspaceId}/service-mocks`);
     return response.data?.result || [];
   }
 

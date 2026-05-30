@@ -1,8 +1,14 @@
-import { isServiceError } from '@lowerdeck/error';
 import type { ErrorData, ErrorRecord, ServiceError } from '@lowerdeck/error';
+import { isServiceError } from '@lowerdeck/error';
 import { DEFAULT_CODE, SERVICE_ERROR_CODE_MAP } from './defaults';
 import type { SlateErrorInput, SlateErrorIssue, SlateServiceErrorData } from './types';
-import { cleanRecord, isRecord, normalizeKind, normalizeRetryable, sanitizeForBaggage } from './utils';
+import {
+  cleanRecord,
+  isRecord,
+  normalizeKind,
+  normalizeRetryable,
+  sanitizeForBaggage
+} from './utils';
 
 let SERVICE_ERROR_DATA_RESERVED_KEYS = new Set([
   'status',
@@ -46,9 +52,7 @@ let normalizeServiceErrorIssues = (errors: unknown): SlateErrorIssue[] | undefin
       };
     }
 
-    let path = Array.isArray(error.path)
-      ? error.path.map(entry => String(entry))
-      : undefined;
+    let path = Array.isArray(error.path) ? error.path.map(entry => String(entry)) : undefined;
 
     return {
       ...error,
@@ -67,7 +71,9 @@ let normalizeServiceErrorIssues = (errors: unknown): SlateErrorIssue[] | undefin
 };
 
 let getServiceErrorBaggage = (data: SlateServiceErrorData) => {
-  let extraEntries = Object.entries(data).filter(([key]) => !SERVICE_ERROR_DATA_RESERVED_KEYS.has(key));
+  let extraEntries = Object.entries(data).filter(
+    ([key]) => !SERVICE_ERROR_DATA_RESERVED_KEYS.has(key)
+  );
 
   return cleanRecord({
     serviceError: {
@@ -111,7 +117,11 @@ export let getServiceErrorData = (error: unknown): SlateServiceErrorData | null 
     return error.data;
   }
 
-  if (isStructuredValue(error) && 'toResponse' in error && typeof error.toResponse === 'function') {
+  if (
+    isStructuredValue(error) &&
+    'toResponse' in error &&
+    typeof error.toResponse === 'function'
+  ) {
     let response = error.toResponse();
     return isServiceErrorData(response) ? response : null;
   }

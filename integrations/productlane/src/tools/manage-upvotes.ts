@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createUpvote = SlateTool.create(spec, {
   name: 'Create Upvote',
@@ -41,7 +41,7 @@ export let createUpvote = SlateTool.create(spec, {
         issueId: result.issueId ?? null,
         createdAt: result.createdAt
       },
-      message: `Created upvote for ${ctx.input.projectId ? 'project ' + ctx.input.projectId : 'issue ' + ctx.input.issueId} by ${ctx.input.email}.`
+      message: `Created upvote for ${ctx.input.projectId ? `project ${ctx.input.projectId}` : `issue ${ctx.input.issueId}`} by ${ctx.input.email}.`
     };
   })
   .build();

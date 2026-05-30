@@ -2,11 +2,11 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchArticles,
-  searchStories,
-  searchPeople,
   searchCompanies,
   searchJournalists,
+  searchPeople,
   searchSources,
+  searchStories,
   searchTopics,
   searchWikipedia
 } from './tools';

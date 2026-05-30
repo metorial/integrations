@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SearchClient } from '../lib/search-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commentSchema: z.ZodTypeAny = z.lazy(() =>
   z.object({
@@ -74,7 +74,7 @@ Unlike the Firebase API which requires recursive fetching of each comment, this 
         comments,
         totalComments
       },
-      message: `Retrieved comment tree for **${item.title || 'story ' + item.id}** with **${totalComments}** comments.`
+      message: `Retrieved comment tree for **${item.title || `story ${item.id}`}** with **${totalComments}** comments.`
     };
   })
   .build();

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listPipelines = SlateTool.create(spec, {
   name: 'List Pipelines',
@@ -47,7 +47,7 @@ export let listPipelines = SlateTool.create(spec, {
 
     let pipelines = await client.listPipelines();
 
-    let results = [];
+    let results: any[] = [];
     for (let pipeline of pipelines) {
       if (ctx.input.pipelineId && pipeline.id !== ctx.input.pipelineId) continue;
 

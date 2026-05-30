@@ -1,4 +1,4 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
 
 type ErrorResponse = {
   status?: number;
@@ -17,7 +17,13 @@ let collectMetaErrorMessages = (value: unknown, messages: string[]) => {
     collectMetaErrorMessages(metaError, messages);
   }
 
-  for (let key of ['message', 'error_user_msg', 'error_user_title', 'error_description', 'error']) {
+  for (let key of [
+    'message',
+    'error_user_msg',
+    'error_user_title',
+    'error_description',
+    'error'
+  ]) {
     let detail = value[key];
     if (typeof detail === 'string' && detail.trim()) {
       messages.push(detail.trim());

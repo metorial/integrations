@@ -2,17 +2,17 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createOrUpdateUser,
-  getUser,
-  listUsers,
   deleteUser,
-  mergeUsers,
-  trackEvent,
-  manageList,
+  getUser,
   listLists,
+  listUsers,
+  manageAccount,
+  manageList,
   manageSubscription,
+  mergeUsers,
   sendEmail,
   sendSms,
-  manageAccount
+  trackEvent
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

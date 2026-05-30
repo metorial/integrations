@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DictionaryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let definitionSchema = z.object({
   definition: z.string().describe('The definition text'),

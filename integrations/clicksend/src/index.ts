@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendSmsTool,
-  getSmsHistoryTool,
   cancelScheduledSmsTool,
-  sendMmsTool,
-  sendVoiceTool,
+  createContactListTool,
+  createContactTool,
+  deleteContactListTool,
+  deleteContactTool,
+  getAccountTool,
+  getSmsHistoryTool,
+  listContactListsTool,
+  listContactsTool,
+  listDedicatedNumbersTool,
   sendEmailTool,
   sendLetterTool,
-  createContactTool,
-  updateContactTool,
-  deleteContactTool,
-  listContactsTool,
-  listContactListsTool,
-  createContactListTool,
-  deleteContactListTool,
-  getAccountTool,
-  listDedicatedNumbersTool
+  sendMmsTool,
+  sendSmsTool,
+  sendVoiceTool,
+  updateContactTool
 } from './tools';
 import { inboundSmsTrigger, smsDeliveryReceiptTrigger } from './triggers';
 

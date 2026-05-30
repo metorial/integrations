@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listParsers,
-  listModelLayouts,
-  importDocument,
   getDocumentStatus,
   getParsedData,
-  reparseDocuments,
-  reintegrateDocuments
+  importDocument,
+  listModelLayouts,
+  listParsers,
+  reintegrateDocuments,
+  reparseDocuments
 } from './tools';
 import { documentParsed, inboundWebhook } from './triggers';
 

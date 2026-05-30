@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { customFieldValueSchema, dealSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let createDeal = SlateTool.create(spec, {
   name: 'Create Deal',

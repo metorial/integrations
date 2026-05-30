@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let BOOKING_EVENT_TYPES = ['booking.created', 'booking.updated'];
 
@@ -52,7 +52,7 @@ export let bookingEvents = SlateTrigger.create(spec, {
 
     handleRequest: async ctx => {
       let body = (await ctx.request.json()) as any;
-      if (!body || !body.type) return { inputs: [] };
+      if (!body?.type) return { inputs: [] };
 
       let booking = body.data?.object?.booking || body.data?.object || {};
 

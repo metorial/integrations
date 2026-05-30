@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let channelEvents = SlateTrigger.create(spec, {
   name: 'Channel Events',
@@ -146,7 +146,7 @@ export let channelEvents = SlateTrigger.create(spec, {
       }
 
       let channel = (data.channel || {}) as Record<string, unknown>;
-      let members = (data.members || data.users || []) as Array<Record<string, unknown>>;
+      let members = (data.members || data.users || []) as Record<string, unknown>[];
       let inviter = (data.inviter || {}) as Record<string, unknown>;
 
       let users = members.map(m => ({

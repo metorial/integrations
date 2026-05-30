@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  queryDocuments,
+  createCustomType,
+  createMigrationDocument,
+  createSharedSlice,
+  deleteAsset,
+  deleteCustomType,
+  deleteSharedSlice,
+  getCustomType,
   getDocument,
   getRepositoryInfo,
-  listCustomTypes,
-  getCustomType,
-  createCustomType,
-  updateCustomType,
-  deleteCustomType,
-  listSharedSlices,
-  createSharedSlice,
-  updateSharedSlice,
-  deleteSharedSlice,
   listAssets,
-  uploadAsset,
+  listCustomTypes,
+  listSharedSlices,
+  queryDocuments,
   updateAsset,
-  deleteAsset,
-  createMigrationDocument,
-  updateMigrationDocument
+  updateCustomType,
+  updateMigrationDocument,
+  updateSharedSlice,
+  uploadAsset
 } from './tools';
 import { documentChanges, releaseChanges, tagChanges } from './triggers';
 

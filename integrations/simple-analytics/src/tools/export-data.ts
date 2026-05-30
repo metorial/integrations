@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { exportDataPoints } from '../lib/export';
 import { z } from 'zod';
+import { exportDataPoints } from '../lib/export';
+import { spec } from '../spec';
 
 export let exportDataTool = SlateTool.create(spec, {
   name: 'Export Raw Data',
@@ -102,7 +102,7 @@ export let exportDataTool = SlateTool.create(spec, {
       }
     );
 
-    let dataPoints: Array<Record<string, unknown>> = [];
+    let dataPoints: Record<string, unknown>[] = [];
     if (Array.isArray(data)) {
       dataPoints = data;
     } else if (data && typeof data === 'object' && Array.isArray(data.data)) {

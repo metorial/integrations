@@ -1,16 +1,16 @@
 import { createAxios } from 'slates';
 import type {
   PaginationResponse,
-  SimlaCustomer,
   SimlaCorporateCustomer,
-  SimlaOrder,
-  SimlaProduct,
+  SimlaCustomer,
   SimlaHistoryEntry,
   SimlaNote,
+  SimlaOrder,
+  SimlaPayment,
+  SimlaProduct,
   SimlaSegment,
-  SimlaUser,
   SimlaTask,
-  SimlaPayment
+  SimlaUser
 } from './types';
 
 export class Client {
@@ -571,7 +571,7 @@ export class Client {
     page?: number,
     limit?: number
   ): Promise<{
-    customFields: Array<Record<string, any>>;
+    customFields: Record<string, any>[];
     pagination: PaginationResponse;
   }> {
     let params: Record<string, any> = {};
@@ -621,7 +621,7 @@ export class Client {
     page?: number,
     limit?: number
   ): Promise<{
-    customDictionaries: Array<Record<string, any>>;
+    customDictionaries: Record<string, any>[];
     pagination: PaginationResponse;
   }> {
     let params: Record<string, any> = {};

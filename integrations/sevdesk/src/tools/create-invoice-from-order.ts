@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createInvoiceFromOrder = SlateTool.create(spec, {
   name: 'Create Invoice from Order',

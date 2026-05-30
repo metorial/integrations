@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { gifSchema, ratingEnum } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let translateToGif = SlateTool.create(spec, {
   name: 'Translate to GIF',

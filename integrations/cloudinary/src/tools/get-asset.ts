@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAsset = SlateTool.create(spec, {
   name: 'Get Asset Details',
@@ -60,7 +60,7 @@ export let getAsset = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
-    let resource;
+    let resource: any;
     if (ctx.input.assetId) {
       resource = await client.getResourceByAssetId(ctx.input.assetId);
     } else if (ctx.input.publicId) {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDeployment = SlateTool.create(spec, {
   name: 'Get Deployment',
@@ -62,7 +62,7 @@ export let getDeployment = SlateTool.create(spec, {
           ctx.input.deploymentId
         );
         logs = logResult?.lines || logResult?.logs || [];
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Failed to fetch deployment logs');
       }
     }

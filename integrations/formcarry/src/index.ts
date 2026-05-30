@@ -1,7 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import { createForm, deleteForm, listSubmissions } from './tools';
-import { newSubmission, inboundWebhook } from './triggers';
+import { inboundWebhook, newSubmission } from './triggers';
 
 export let provider = Slate.create({
   spec,

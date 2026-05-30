@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { SsbClient } from '../lib/client';
+import { ssbServiceError } from '../lib/errors';
 import {
   summarizeCodelist,
   summarizeMetadata,
   summarizeTable,
   summarizeTablesResponse
 } from '../lib/metadata';
-import { ssbServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let languageSchema = z.enum(['en', 'no']);
@@ -69,7 +69,13 @@ export let getTables = SlateTool.create(spec, {
         .optional()
         .default(false)
         .describe('Whether discontinued tables should be included in table search.'),
-      pageNumber: z.number().int().min(1).optional().default(1).describe('Search page number.'),
+      pageNumber: z
+        .number()
+        .int()
+        .min(1)
+        .optional()
+        .default(1)
+        .describe('Search page number.'),
       pageSize: z
         .number()
         .int()

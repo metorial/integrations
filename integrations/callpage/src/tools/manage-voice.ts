@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CallPageClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let voiceMessageIdEnum = z.enum(['manager_greeting', 'visitor_greeting']);
 

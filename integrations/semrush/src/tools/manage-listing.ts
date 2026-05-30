@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SemrushV4Client } from '../lib/v4-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageListing = SlateTool.create(spec, {
   name: 'Manage Business Listing',

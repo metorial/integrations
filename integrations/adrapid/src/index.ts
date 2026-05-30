@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { createBanner, getBanner, getAccount, getUserAccess } from './tools';
+import { createBanner, getAccount, getBanner, getUserAccess } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

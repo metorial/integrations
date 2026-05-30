@@ -3,14 +3,14 @@ import { spec } from './spec';
 import {
   executeQuery,
   getDexTrades,
-  getTokenTransfers,
-  getTokenBalance,
-  getTokenPrice,
   getSmartContractEvents,
-  getTransactions,
-  getTokenHolders
+  getTokenBalance,
+  getTokenHolders,
+  getTokenPrice,
+  getTokenTransfers,
+  getTransactions
 } from './tools';
-import { newDexTrades, newTokenTransfers, inboundWebhook } from './triggers';
+import { inboundWebhook, newDexTrades, newTokenTransfers } from './triggers';
 
 export let provider = Slate.create({
   spec,

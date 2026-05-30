@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
+import { createClient } from '../lib/helpers';
 import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
-import { z } from 'zod';
 
 let campaignStatusEnum = z.enum(['ENABLED', 'PAUSED', 'REMOVED']).describe('Campaign status');
 

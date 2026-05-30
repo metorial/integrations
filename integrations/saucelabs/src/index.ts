@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listJobs,
-  getJob,
-  updateJob,
-  stopJob,
   deleteJob,
-  listBuilds,
   getBuild,
-  listDevices,
   getDeviceStatus,
-  listTunnels,
-  stopTunnel,
+  getJob,
   getPlatformStatus,
-  listSupportedPlatforms,
-  listUsers,
-  listTeams,
   getUserConcurrency,
-  listStorageFiles
+  listBuilds,
+  listDevices,
+  listJobs,
+  listStorageFiles,
+  listSupportedPlatforms,
+  listTeams,
+  listTunnels,
+  listUsers,
+  stopJob,
+  stopTunnel,
+  updateJob
 } from './tools';
-import { testJobEvents, visualTestingEvents, jobMonitor } from './triggers';
+import { jobMonitor, testJobEvents, visualTestingEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient, extractPaginationCursor } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getProfiles = SlateTool.create(spec, {
   name: 'Get Profiles',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let templateBodySchema = z
   .object({
@@ -85,27 +85,25 @@ To update an existing template, provide its **templateId**. To create a new temp
     });
 
     let template: Record<string, unknown> = {};
-    if (ctx.input.templateId) template['id'] = ctx.input.templateId;
-    if (ctx.input.name) template['name'] = ctx.input.name;
-    if (ctx.input.subject) template['subject'] = ctx.input.subject;
-    if (ctx.input.fromEmail) template['from_email'] = ctx.input.fromEmail;
-    if (ctx.input.fromName) template['from_name'] = ctx.input.fromName;
-    if (ctx.input.replyTo) template['reply_to'] = ctx.input.replyTo;
-    if (ctx.input.replyToName) template['reply_to_name'] = ctx.input.replyToName;
-    if (ctx.input.body) template['body'] = ctx.input.body;
-    if (ctx.input.templateEngine) template['template_engine'] = ctx.input.templateEngine;
-    if (ctx.input.editorType) template['editor_type'] = ctx.input.editorType;
+    if (ctx.input.templateId) template.id = ctx.input.templateId;
+    if (ctx.input.name) template.name = ctx.input.name;
+    if (ctx.input.subject) template.subject = ctx.input.subject;
+    if (ctx.input.fromEmail) template.from_email = ctx.input.fromEmail;
+    if (ctx.input.fromName) template.from_name = ctx.input.fromName;
+    if (ctx.input.replyTo) template.reply_to = ctx.input.replyTo;
+    if (ctx.input.replyToName) template.reply_to_name = ctx.input.replyToName;
+    if (ctx.input.body) template.body = ctx.input.body;
+    if (ctx.input.templateEngine) template.template_engine = ctx.input.templateEngine;
+    if (ctx.input.editorType) template.editor_type = ctx.input.editorType;
     if (ctx.input.globalSubstitutions)
-      template['global_substitutions'] = ctx.input.globalSubstitutions;
-    if (ctx.input.globalMetadata) template['global_metadata'] = ctx.input.globalMetadata;
+      template.global_substitutions = ctx.input.globalSubstitutions;
+    if (ctx.input.globalMetadata) template.global_metadata = ctx.input.globalMetadata;
     if (ctx.input.trackLinks !== undefined)
-      template['track_links'] = ctx.input.trackLinks ? 1 : 0;
-    if (ctx.input.trackRead !== undefined)
-      template['track_read'] = ctx.input.trackRead ? 1 : 0;
-    if (ctx.input.headers) template['headers'] = ctx.input.headers;
-    if (ctx.input.attachments) template['attachments'] = ctx.input.attachments;
-    if (ctx.input.inlineAttachments)
-      template['inline_attachments'] = ctx.input.inlineAttachments;
+      template.track_links = ctx.input.trackLinks ? 1 : 0;
+    if (ctx.input.trackRead !== undefined) template.track_read = ctx.input.trackRead ? 1 : 0;
+    if (ctx.input.headers) template.headers = ctx.input.headers;
+    if (ctx.input.attachments) template.attachments = ctx.input.attachments;
+    if (ctx.input.inlineAttachments) template.inline_attachments = ctx.input.inlineAttachments;
 
     let result = await client.setTemplate(template as any);
     let t = result.template;

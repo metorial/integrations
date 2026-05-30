@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTransactions,
-  verifyTransaction,
-  createTransfer,
-  listTransfers,
-  getTransferRate,
-  getTransactionFee,
-  managePaymentPlans,
-  manageSubscriptions,
-  createVirtualAccount,
-  payBill,
-  listBillCategories,
   createRefund,
+  createTransfer,
+  createVirtualAccount,
+  getTransactionFee,
+  getTransferRate,
+  listBillCategories,
   listRefunds,
   listSettlements,
+  listTransactions,
+  listTransfers,
+  manageBeneficiaries,
+  managePaymentPlans,
+  manageSubscriptions,
+  payBill,
   resolveBankAccount,
-  manageBeneficiaries
+  verifyTransaction
 } from './tools';
-import { chargeCompleted, transferCompleted, subscriptionEvent } from './triggers';
+import { chargeCompleted, subscriptionEvent, transferCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listEnvelopes = SlateTool.create(spec, {
   name: 'List eSign Envelopes',
@@ -121,7 +121,7 @@ export let getEnvelopeDetails = SlateTool.create(spec, {
 
     let details = await client.getEnvelopeDetails(ctx.input.envelopeId);
 
-    let history;
+    let history: any;
     if (ctx.input.includeHistory) {
       let rawHistory = await client.getEnvelopeHistory(ctx.input.envelopeId);
       history = rawHistory as Record<string, unknown>[];

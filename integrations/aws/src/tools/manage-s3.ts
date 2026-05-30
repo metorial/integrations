@@ -9,9 +9,9 @@ import {
 } from '@aws-sdk/client-s3';
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { clientFromContext } from '../lib/helpers';
 import { awsServiceError } from '../lib/errors';
+import { clientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 let bucketSchema = z.object({
   name: z.string().describe('Bucket name'),
@@ -380,6 +380,6 @@ let formatBytes = (bytes: number): string => {
   if (bytes === 0) return '0 B';
   let units = ['B', 'KB', 'MB', 'GB', 'TB'];
   let i = Math.floor(Math.log(bytes) / Math.log(1024));
-  let value = bytes / Math.pow(1024, i);
+  let value = bytes / 1024 ** i;
   return `${value.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 };

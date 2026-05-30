@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IpEnrichClient } from '../lib/ip-enrich-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let enrichIp = SlateTool.create(spec, {
   name: 'Enrich IP Address',

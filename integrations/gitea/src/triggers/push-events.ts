@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let pushEvents = SlateTrigger.create(spec, {
   name: 'Push Events',
@@ -69,7 +69,7 @@ export let pushEvents = SlateTrigger.create(spec, {
 
       let data = (await ctx.request.json()) as Record<string, any>;
 
-      let commits = ((data.commits || []) as Array<Record<string, any>>).map(
+      let commits = ((data.commits || []) as Record<string, any>[]).map(
         (c: Record<string, any>) => ({
           sha: String(c.id || ''),
           message: String(c.message || ''),

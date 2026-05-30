@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KaggleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getKernelDetails = SlateTool.create(spec, {
   name: 'Get Notebook Details',
@@ -39,9 +39,9 @@ export let getKernelDetails = SlateTool.create(spec, {
 
     let source = await client.pullKernel(ctx.input.userName, ctx.input.kernelSlug);
 
-    let output;
-    let status;
-    let failureMessage;
+    let output: any;
+    let status: any;
+    let failureMessage: any;
 
     if (ctx.input.includeOutput) {
       output = await client

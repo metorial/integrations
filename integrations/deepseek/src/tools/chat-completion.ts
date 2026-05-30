@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeepSeekClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let messageSchema = z.discriminatedUnion('role', [
   z.object({
@@ -296,7 +296,7 @@ Enables function calling with tool definitions, structured JSON output via respo
     if (output.content) {
       let preview =
         output.content.length > 200
-          ? output.content.substring(0, 200) + '...'
+          ? `${output.content.substring(0, 200)}...`
           : output.content;
       messageParts.push(`**Response:** ${preview}`);
     }

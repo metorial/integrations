@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KaggleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createDataset = SlateTool.create(spec, {
   name: 'Create Dataset',
@@ -74,7 +74,7 @@ export let createDataset = SlateTool.create(spec, {
 
     let isNewVersion = ctx.input.ownerSlug && ctx.input.datasetSlug && ctx.input.versionNotes;
 
-    let result;
+    let result: any;
     if (isNewVersion) {
       result = await client.createDatasetVersion(
         ctx.input.ownerSlug!,

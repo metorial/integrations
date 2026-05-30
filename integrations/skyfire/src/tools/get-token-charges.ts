@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SkyfireClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTokenCharges = SlateTool.create(spec, {
   name: 'Get Token Charges',
@@ -43,7 +43,7 @@ export let getTokenCharges = SlateTool.create(spec, {
 
     let result = await client.getTokenCharges(ctx.input.tokenId);
 
-    let totalCharged = result.charges.reduce((sum, c) => sum + parseFloat(c.value), 0);
+    let totalCharged = result.charges.reduce((sum, c) => sum + Number.parseFloat(c.value), 0);
 
     return {
       output: result,

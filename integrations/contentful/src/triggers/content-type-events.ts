@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let contentTypeEvents = SlateTrigger.create(spec, {
   name: 'Content Type Events',

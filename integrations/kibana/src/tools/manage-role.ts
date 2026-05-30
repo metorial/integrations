@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let kibanaPrivilegeSchema = z.object({
   base: z.array(z.string()).optional().describe('Base privileges (e.g., ["all"], ["read"])'),

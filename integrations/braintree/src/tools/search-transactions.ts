@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BraintreeGraphQLClient } from '../lib/client';
 import { SEARCH_TRANSACTION } from '../lib/graphql-queries';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchTransactions = SlateTool.create(spec, {
   name: 'Search Transactions',

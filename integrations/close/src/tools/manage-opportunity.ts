@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageOpportunity = SlateTool.create(spec, {
   name: 'Manage Opportunity',
@@ -74,14 +74,14 @@ When updating: provide the opportunityId along with any fields to change.`,
     let opportunity: any;
 
     let apiData: Record<string, any> = {};
-    if (fields.leadId) apiData['lead_id'] = fields.leadId;
-    if (fields.statusId) apiData['status_id'] = fields.statusId;
-    if (fields.confidence !== undefined) apiData['confidence'] = fields.confidence;
-    if (fields.value !== undefined) apiData['value'] = fields.value;
-    if (fields.valuePeriod) apiData['value_period'] = fields.valuePeriod;
-    if (fields.pipelineId) apiData['pipeline_id'] = fields.pipelineId;
-    if (fields.note !== undefined) apiData['note'] = fields.note;
-    if (fields.dateWon !== undefined) apiData['date_won'] = fields.dateWon;
+    if (fields.leadId) apiData.lead_id = fields.leadId;
+    if (fields.statusId) apiData.status_id = fields.statusId;
+    if (fields.confidence !== undefined) apiData.confidence = fields.confidence;
+    if (fields.value !== undefined) apiData.value = fields.value;
+    if (fields.valuePeriod) apiData.value_period = fields.valuePeriod;
+    if (fields.pipelineId) apiData.pipeline_id = fields.pipelineId;
+    if (fields.note !== undefined) apiData.note = fields.note;
+    if (fields.dateWon !== undefined) apiData.date_won = fields.dateWon;
     if (fields.customFields) {
       for (let [key, value] of Object.entries(fields.customFields)) {
         apiData[key] = value;

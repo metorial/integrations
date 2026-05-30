@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let snapshotSchema = z.object({
   snapshotId: z.string().describe('Unique snapshot identifier'),
@@ -60,7 +60,7 @@ export let listSnapshots = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let result;
+    let result: any;
     if (ctx.input.ownerType === 'org') {
       result = await client.listOrgSnapshots(ownerHandle, ctx.input.workspaceHandle, {
         limit: ctx.input.limit,

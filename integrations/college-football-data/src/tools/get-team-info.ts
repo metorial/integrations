@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTeamInfo = SlateTool.create(spec, {
   name: 'Get Team Info',
@@ -66,12 +66,12 @@ export let getTeamInfo = SlateTool.create(spec, {
         : teams;
     }
 
-    let roster: any = undefined;
+    let roster: any;
     if (ctx.input.includeRoster) {
       roster = await client.getRoster({ team: ctx.input.team, year: ctx.input.year });
     }
 
-    let talent: any = undefined;
+    let talent: any;
     if (ctx.input.includeTalent && ctx.input.year) {
       talent = await client.getTalent({ year: ctx.input.year });
       if (ctx.input.team) {
@@ -83,7 +83,7 @@ export let getTeamInfo = SlateTool.create(spec, {
       }
     }
 
-    let records: any = undefined;
+    let records: any;
     if (ctx.input.includeRecords && ctx.input.year) {
       records = await client.getRecords({
         year: ctx.input.year,
@@ -92,7 +92,7 @@ export let getTeamInfo = SlateTool.create(spec, {
       });
     }
 
-    let atsRecords: any = undefined;
+    let atsRecords: any;
     if (ctx.input.includeATS && ctx.input.year) {
       atsRecords = await client.getTeamATS({
         year: ctx.input.year,

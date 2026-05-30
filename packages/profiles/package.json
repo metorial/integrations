@@ -26,9 +26,9 @@
   "unpkg": "./dist/index.module.js",
   "scripts": {
     "test": "vitest run --passWithNoTests",
-    "lint": "prettier src/**/*.ts --check",
     "build": "tsup --config ../../tsup.packages.config.ts --external async_hooks",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "biome:check": "biome check --write src"
   },
   "dependencies": {
     "@slates/client": "1.0.0-rc.8",

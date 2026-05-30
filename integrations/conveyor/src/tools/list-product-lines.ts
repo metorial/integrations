@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConveyorClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let productLineSchema = z.object({
   productLineId: z.string().describe('Unique ID of the product line'),

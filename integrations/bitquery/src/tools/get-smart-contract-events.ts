@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventOutputSchema = z.object({
   blockTime: z.string().describe('Block timestamp'),

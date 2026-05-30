@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphClient } from '../lib/client';
 import { driveItemLocationSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deletePresentation = SlateTool.create(spec, {
   name: 'Delete File',

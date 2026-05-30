@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageSequences = SlateTool.create(spec, {
   name: 'Manage Sequences',
@@ -70,7 +70,7 @@ export let manageSequences = SlateTool.create(spec, {
         throw new Error('Provide either subscriberId or emailAddress');
       }
 
-      let data;
+      let data: any;
       if (ctx.input.subscriberId) {
         data = await client.addSubscriberToSequence(
           ctx.input.sequenceId,

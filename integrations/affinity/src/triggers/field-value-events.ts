@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { AffinityClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let fieldValueEvents = SlateTrigger.create(spec, {
   name: 'Field Value Events',
@@ -53,7 +53,7 @@ export let fieldValueEvents = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
 
       let type = data.type as string;
-      if (!type || !type.startsWith('field_value.')) {
+      if (!type?.startsWith('field_value.')) {
         return { inputs: [] };
       }
 

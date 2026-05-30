@@ -1,20 +1,20 @@
 import { createAxios } from 'slates';
 import { getBaseUrl } from './regions';
 import type {
-  StoryblokStory,
-  StoryblokComponent,
+  StoryblokActivity,
   StoryblokAsset,
+  StoryblokCollaborator,
+  StoryblokComponent,
   StoryblokDatasource,
   StoryblokDatasourceEntry,
-  StoryblokCollaborator,
-  StoryblokSpaceRole,
-  StoryblokWorkflow,
-  StoryblokWorkflowStage,
   StoryblokRelease,
   StoryblokSpace,
+  StoryblokSpaceRole,
+  StoryblokStory,
   StoryblokTag,
-  StoryblokActivity,
-  StoryblokWebhook
+  StoryblokWebhook,
+  StoryblokWorkflow,
+  StoryblokWorkflowStage
 } from './types';
 
 export class StoryblokClient {
@@ -70,7 +70,7 @@ export class StoryblokClient {
     if (params?.language) query.language = params.language;
 
     let response = await this.axios.get(this.spacePath('/stories'), { params: query });
-    let total = parseInt(response.headers?.['total'] || '0', 10);
+    let total = Number.parseInt(response.headers?.total || '0', 10);
     let data = response.data as { stories: StoryblokStory[] };
     return { stories: data.stories, total };
   }

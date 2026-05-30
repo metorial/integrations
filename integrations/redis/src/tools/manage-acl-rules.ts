@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RedisCloudClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let aclRuleSchema = z.object({
   ruleId: z.number().describe('ACL rule ID'),

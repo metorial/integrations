@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTranscripts,
-  getTranscript,
-  updateTranscript,
-  deleteTranscript,
-  uploadAudio,
-  getUser,
-  listUsers,
-  setUserRole,
   addToLiveMeeting,
-  listActiveMeetings,
-  createSoundbite,
-  listChannels,
   askFred,
   continueAskFredThread,
-  shareMeeting,
+  createSoundbite,
+  deleteTranscript,
+  getAiApps,
+  getTranscript,
+  getUser,
+  listActiveMeetings,
+  listChannels,
+  listTranscripts,
+  listUsers,
   revokeMeetingAccess,
-  getAiApps
+  setUserRole,
+  shareMeeting,
+  updateTranscript,
+  uploadAudio
 } from './tools';
 import { transcriptionCompleted } from './triggers';
 

@@ -64,7 +64,7 @@ let uriEncode = (str: string, encodeSlash: boolean = true): string => {
     } else {
       let bytes = new TextEncoder().encode(ch);
       for (let b of bytes) {
-        encoded += '%' + b.toString(16).toUpperCase().padStart(2, '0');
+        encoded += `%${b.toString(16).toUpperCase().padStart(2, '0')}`;
       }
     }
   }
@@ -77,10 +77,10 @@ export let signRequest = (params: SignRequestParams): Record<string, string> => 
   let parsedUrl = new URL(url);
   let now = new Date();
   let dateStamp = now.toISOString().replace(/[-:]/g, '').slice(0, 8);
-  let amzDate = dateStamp + 'T' + now.toISOString().replace(/[-:]/g, '').slice(9, 15) + 'Z';
+  let amzDate = `${dateStamp}T${now.toISOString().replace(/[-:]/g, '').slice(9, 15)}Z`;
 
   let signedHeaders: Record<string, string> = { ...headers };
-  signedHeaders['host'] = parsedUrl.host;
+  signedHeaders.host = parsedUrl.host;
   signedHeaders['x-amz-date'] = amzDate;
 
   if (credentials.sessionToken) {
@@ -136,7 +136,7 @@ export let signRequest = (params: SignRequestParams): Record<string, string> => 
     sha256Hex(canonicalRequest)
   ].join('\n');
 
-  let dateKey = hmacSha256('AWS4' + credentials.secretAccessKey, dateStamp);
+  let dateKey = hmacSha256(`AWS4${credentials.secretAccessKey}`, dateStamp);
   let dateRegionKey = hmacSha256(dateKey, region);
   let dateRegionServiceKey = hmacSha256(dateRegionKey, service);
   let signingKey = hmacSha256(dateRegionServiceKey, 'aws4_request');

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { RemarketyClient, toSnakeCase } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageNewsletterTool = SlateTool.create(spec, {
   name: 'Manage Newsletter Subscription',

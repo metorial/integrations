@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DatabaseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let recordSchema = z.object({
   recordId: z.string().describe('Unique record identifier'),

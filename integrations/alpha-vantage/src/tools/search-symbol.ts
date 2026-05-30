@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchSymbol = SlateTool.create(spec, {
   name: 'Search Symbol',
@@ -40,7 +40,7 @@ export let searchSymbol = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let data = await client.symbolSearch({ keywords: ctx.input.keywords });
-    let bestMatches = data['bestMatches'] || [];
+    let bestMatches = data.bestMatches || [];
 
     let matches = bestMatches.map((m: any) => ({
       symbol: m['1. symbol'] || '',

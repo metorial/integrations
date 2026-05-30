@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  queryCmsItems,
   countCmsItems,
   createCmsItem,
-  updateCmsItem,
   deleteCmsItem,
-  publishCmsItem,
-  renderComponent,
   getProjectModel,
+  publishCmsItem,
+  queryCmsItems,
+  renderComponent,
+  updateCmsItem,
   updateProject
 } from './tools';
-import { projectPublish, cmsPublish } from './triggers';
+import { cmsPublish, projectPublish } from './triggers';
 
 export let provider = Slate.create({
   spec,

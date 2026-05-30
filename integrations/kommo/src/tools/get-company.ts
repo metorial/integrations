@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { KommoClient } from '../lib/client';
-import { spec } from '../spec';
-import { companyOutputSchema, mapCompany } from '../lib/schemas';
 import { z } from 'zod';
+import { KommoClient } from '../lib/client';
+import { companyOutputSchema, mapCompany } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let getCompanyTool = SlateTool.create(spec, {
   name: 'Get Company',

@@ -1,25 +1,25 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  searchContent,
-  listVideos,
-  getVideo,
-  updateVideo,
   deleteVideo,
-  rateVideo,
   getChannel,
-  updateChannel,
-  managePlaylist,
-  listPlaylists,
-  listMetadata,
-  managePlaylistItems,
-  manageComments,
-  listComments,
-  manageSubscriptions,
+  getVideo,
+  listActivities,
   listCaptions,
-  listActivities
+  listComments,
+  listMetadata,
+  listPlaylists,
+  listVideos,
+  manageComments,
+  managePlaylist,
+  managePlaylistItems,
+  manageSubscriptions,
+  rateVideo,
+  searchContent,
+  updateChannel,
+  updateVideo
 } from './tools';
-import { channelActivity, newVideo, inboundWebhook } from './triggers';
+import { channelActivity, inboundWebhook, newVideo } from './triggers';
 
 export let provider = Slate.create({
   spec,

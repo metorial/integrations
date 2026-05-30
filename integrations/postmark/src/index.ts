@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendEmail,
-  sendTemplateEmail,
-  searchMessages,
   getBounces,
-  manageSuppressions,
-  getStatistics,
-  manageTemplates,
-  manageMessageStreams,
   getServer,
-  manageWebhooks
+  getStatistics,
+  manageMessageStreams,
+  manageSuppressions,
+  manageTemplates,
+  manageWebhooks,
+  searchMessages,
+  sendEmail,
+  sendTemplateEmail
 } from './tools';
-import { outboundEvents, inboundEmail } from './triggers';
+import { inboundEmail, outboundEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

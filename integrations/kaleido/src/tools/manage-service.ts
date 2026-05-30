@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { KaleidoClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageService = SlateTool.create(spec, {
   name: 'Manage Service',
@@ -80,7 +80,7 @@ Each service is bound to a membership and runs alongside the blockchain nodes.`,
 
       return {
         output: { services: mapped },
-        message: `Found **${mapped.length}** service(s).${mapped.length > 0 ? ' ' + mapped.map(s => `**${s.name}** (${s.serviceType || 'unknown'}, ${s.state || 'unknown'})`).join(', ') : ''}`
+        message: `Found **${mapped.length}** service(s).${mapped.length > 0 ? ` ${mapped.map(s => `**${s.name}** (${s.serviceType || 'unknown'}, ${s.state || 'unknown'})`).join(', ')}` : ''}`
       };
     }
 

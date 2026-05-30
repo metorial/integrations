@@ -1,2 +1,2 @@
-export * from './submit-form';
 export * from './get-submissions';
+export * from './submit-form';

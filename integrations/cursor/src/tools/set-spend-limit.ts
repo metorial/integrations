@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AdminClient } from '../lib/admin-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let setSpendLimit = SlateTool.create(spec, {
   name: 'Set User Spend Limit',

@@ -1,2 +1,2 @@
-export { newTinyUrl } from './new-tinyurl';
 export * from './inbound-webhook';
+export { newTinyUrl } from './new-tinyurl';

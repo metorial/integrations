@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { submitDocument, listPrintJobs } from './tools';
+import { listPrintJobs, submitDocument } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BlocknativeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let oracleSchema = z.object({
   chainId: z.number().describe('Network chain identifier'),

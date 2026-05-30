@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listEntries,
-  getEntry,
   createEntry,
-  updateEntry,
   deleteEntry,
-  getSingleType,
-  updateSingleType,
-  listMedia,
+  deleteMedia,
+  getEntry,
   getMedia,
-  uploadMedia,
+  getSingleType,
+  listEntries,
+  listMedia,
+  updateEntry,
   updateMedia,
-  deleteMedia
+  updateSingleType,
+  uploadMedia
 } from './tools';
 import { entryEvents, mediaEvents } from './triggers';
 

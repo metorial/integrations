@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let ALL_THRESHOLD_EVENTS = ['threshold.warning', 'threshold.exceeded', 'threshold.eu.100k'];
 

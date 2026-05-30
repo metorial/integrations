@@ -1,6 +1,6 @@
-import { createAxios } from 'slates';
-// @ts-ignore -- Buffer import required for Function Bay ncc build environment
+// @ts-expect-error -- Buffer import required for Function Bay ncc build environment
 import { Buffer } from 'buffer';
+import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   global: 'https://api.affinda.com/v3',
@@ -17,7 +17,7 @@ export class Client {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(config: ClientConfig) {
-    let baseURL = BASE_URLS[config.region ?? 'global'] ?? BASE_URLS['global']!;
+    let baseURL = BASE_URLS[config.region ?? 'global'] ?? BASE_URLS.global!;
     this.axios = createAxios({
       baseURL,
       headers: {
@@ -252,17 +252,17 @@ export class Client {
     return response.data;
   }
 
-  async batchUpdateAnnotations(data: Array<Record<string, any>>): Promise<any> {
+  async batchUpdateAnnotations(data: Record<string, any>[]): Promise<any> {
     let response = await this.axios.post('/annotations/batch_update', data);
     return response.data;
   }
 
-  async batchCreateAnnotations(data: Array<Record<string, any>>): Promise<any> {
+  async batchCreateAnnotations(data: Record<string, any>[]): Promise<any> {
     let response = await this.axios.post('/annotations/batch_create', data);
     return response.data;
   }
 
-  async batchDeleteAnnotations(data: Array<number>): Promise<any> {
+  async batchDeleteAnnotations(data: number[]): Promise<any> {
     let response = await this.axios.post('/annotations/batch_delete', data);
     return response.data;
   }

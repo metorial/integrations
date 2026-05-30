@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listItems,
-  getItem,
-  updateItem,
-  listOccurrences,
-  getOccurrence,
   createDeploy,
+  getItem,
+  getMetrics,
+  getOccurrence,
+  getVersion,
   listDeploys,
+  listEnvironments,
+  listItems,
+  listOccurrences,
+  listUsers,
+  manageAccessTokens,
+  manageNotificationRules,
   manageProject,
+  manageServiceLinks,
   manageTeam,
   manageTeamMembers,
   manageTeamProjects,
   runRqlQuery,
-  getMetrics,
-  manageNotificationRules,
-  listEnvironments,
-  manageAccessTokens,
-  manageServiceLinks,
-  listUsers,
-  getVersion
+  updateItem
 } from './tools';
-import { itemEvent, deployEvent } from './triggers';
+import { deployEvent, itemEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,

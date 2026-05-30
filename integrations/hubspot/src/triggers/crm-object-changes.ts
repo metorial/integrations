@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { HubSpotClient } from '../lib/client';
 import { hubSpotActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let crmObjectChanges = SlateTrigger.create(spec, {
   name: 'CRM Object Changes',
@@ -86,7 +86,7 @@ export let crmObjectChanges = SlateTrigger.create(spec, {
               newLastPollTime = modifiedAt;
             }
           }
-        } catch (e) {
+        } catch (_e) {
           // Skip object types that fail (e.g., insufficient permissions)
         }
       }

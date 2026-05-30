@@ -1,4 +1,4 @@
-import { ServiceError, badRequestError, createError, isServiceError } from '@lowerdeck/error';
+import { badRequestError, createError, isServiceError, ServiceError } from '@lowerdeck/error';
 
 let addMessage = (messages: string[], value: unknown) => {
   if (typeof value === 'string' && value.trim() && !messages.includes(value.trim())) {

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { AppDragClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newOrder = SlateTrigger.create(spec, {
   name: 'New Order',
@@ -47,7 +47,7 @@ export let newOrder = SlateTrigger.create(spec, {
       let rows: any[] = Array.isArray(result) ? result : result?.Table || [];
 
       let inputs = rows.map((row: any) => {
-        let { id, createdAt, status, ...rest } = row;
+        let { id, createdAt, status } = row;
         return {
           orderId: String(id || row.ID || ''),
           createdAt: String(createdAt || ''),

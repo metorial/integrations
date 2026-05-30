@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let purchaseOrderSchema = z.object({
   purchaseOrderId: z.number().describe('Coupa internal purchase order ID'),
@@ -92,7 +92,7 @@ export let searchPurchaseOrders = SlateTool.create(spec, {
         filters[key] = value;
       }
     }
-    if (ctx.input.status) filters['status'] = ctx.input.status;
+    if (ctx.input.status) filters.status = ctx.input.status;
     if (ctx.input.supplierId) filters['supplier[id]'] = String(ctx.input.supplierId);
     if (ctx.input.poNumber) filters['po-number'] = ctx.input.poNumber;
     if (ctx.input.createdAfter) filters['created-at[gt]'] = ctx.input.createdAfter;
@@ -117,11 +117,11 @@ export let searchPurchaseOrders = SlateTool.create(spec, {
       currency: po.currency ?? null,
       paymentTerms: po['payment-term'] ?? po.payment_term ?? null,
       orderLines: po['order-lines'] ?? po.order_lines ?? null,
-      totalAmount: po['total'] ?? po.total ?? null,
+      totalAmount: po.total ?? po.total ?? null,
       createdAt: po['created-at'] ?? po.created_at ?? null,
       updatedAt: po['updated-at'] ?? po.updated_at ?? null,
       createdBy: po['created-by'] ?? po.created_by ?? null,
-      exportedFlag: po['exported'] ?? null,
+      exportedFlag: po.exported ?? null,
       rawData: po
     }));
 

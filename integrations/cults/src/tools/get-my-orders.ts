@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CultsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orderLineSchema = z.object({
   downloadUrl: z.string().nullable().describe('Download URL for the purchased file'),

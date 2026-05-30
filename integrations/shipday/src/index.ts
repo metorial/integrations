@@ -2,13 +2,13 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createDeliveryOrder,
-  getDeliveryOrders,
-  updateDeliveryOrder,
   deleteDeliveryOrder,
-  managePickupOrder,
+  getDeliveryOrders,
   manageCarriers,
+  managePickupOrder,
+  onDemandDelivery,
   trackDelivery,
-  onDemandDelivery
+  updateDeliveryOrder
 } from './tools';
 import { orderStatusUpdate } from './triggers';
 

@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listIndexesTool,
-  createIndexTool,
+  chatWithAssistantTool,
   configureIndexTool,
-  upsertVectorsTool,
-  queryVectorsTool,
-  fetchVectorsTool,
-  updateVectorTool,
+  createIndexTool,
   deleteVectorsTool,
   describeIndexStatsTool,
-  listVectorIdsTool,
+  fetchVectorsTool,
   generateEmbeddingsTool,
+  listIndexesTool,
+  listVectorIdsTool,
+  manageAssistantTool,
+  queryVectorsTool,
   rerankTool,
-  chatWithAssistantTool,
-  manageAssistantTool
+  updateVectorTool,
+  upsertVectorsTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

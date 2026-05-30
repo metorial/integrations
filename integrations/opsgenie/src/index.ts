@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createAlert,
-  getAlert,
-  listAlerts,
-  updateAlert,
   alertAction,
+  createAlert,
   createIncident,
+  getAlert,
   getIncident,
-  listIncidents,
-  incidentAction,
-  manageSchedule,
-  listSchedules,
   getOnCall,
-  manageEscalation,
-  listEscalations,
-  manageTeam,
-  listTeams,
   getTeam,
-  manageUser,
-  listUsers,
   getUser,
+  incidentAction,
+  listAlerts,
+  listEscalations,
+  listIncidents,
+  listSchedules,
+  listServices,
+  listTeams,
+  listUsers,
+  manageEscalation,
+  manageSchedule,
   manageService,
-  listServices
+  manageTeam,
+  manageUser,
+  updateAlert
 } from './tools';
 import { alertActivityTrigger } from './triggers';
 

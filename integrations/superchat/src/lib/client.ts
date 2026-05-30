@@ -59,7 +59,7 @@ export class SuperchatClient {
     firstName?: string;
     lastName?: string;
     gender?: string;
-    customAttributes?: Array<Record<string, any>>;
+    customAttributes?: Record<string, any>[];
   }) {
     let body: Record<string, any> = {
       handles: params.handles
@@ -95,7 +95,7 @@ export class SuperchatClient {
       firstName?: string;
       lastName?: string;
       gender?: string;
-      customAttributes?: Array<Record<string, any>>;
+      customAttributes?: Record<string, any>[];
     }
   ) {
     let body: Record<string, any> = {};
@@ -472,7 +472,7 @@ export class SuperchatClient {
 
   async createWebhook(
     targetUrl: string,
-    events: Array<{ type: string; filters?: Array<Record<string, any>> }>
+    events: Array<{ type: string; filters?: Record<string, any>[] }>
   ) {
     let response = await this.axios.post('/webhooks', {
       target_url: targetUrl,
@@ -501,7 +501,7 @@ export class SuperchatClient {
     webhookId: string,
     params: {
       targetUrl?: string;
-      events?: Array<{ type: string; filters?: Array<Record<string, any>> }>;
+      events?: Array<{ type: string; filters?: Record<string, any>[] }>;
     }
   ) {
     let body: Record<string, any> = {};

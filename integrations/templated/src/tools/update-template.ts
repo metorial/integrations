@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateTemplate = SlateTool.create(spec, {
   name: 'Update Template',
@@ -63,7 +63,7 @@ Also supports adding or removing tags from the template.`,
       await Promise.all(tagPromises);
     }
 
-    let parts = [];
+    let parts: any[] = [];
     if (ctx.input.name) parts.push(`name to "${ctx.input.name}"`);
     if (ctx.input.width || ctx.input.height) parts.push('dimensions');
     if (ctx.input.layers) parts.push('layers');

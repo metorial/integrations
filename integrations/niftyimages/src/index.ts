@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getDataStoreFields,
-  manageDataStoreRecord,
-  updateTimer,
-  listMaps,
-  manageMapLocation,
-  listImages,
-  getImageStats,
   deleteImage,
-  managePhotoshopImage,
+  getDataStoreFields,
+  getImageStats,
   getWidgetStats,
-  suspendWidgetUser
+  listImages,
+  listMaps,
+  manageDataStoreRecord,
+  manageMapLocation,
+  managePhotoshopImage,
+  suspendWidgetUser,
+  updateTimer
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

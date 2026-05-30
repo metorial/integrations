@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendEmail,
-  searchMessages,
+  getAttachment,
+  getGoogleContact,
   getMessage,
-  modifyMessage,
+  listGoogleContacts,
   manageDraft,
   manageLabels,
-  manageThread,
   manageSettings,
-  getAttachment,
-  listGoogleContacts,
+  manageThread,
+  modifyMessage,
   searchGoogleContacts,
-  getGoogleContact
+  searchMessages,
+  sendEmail
 } from './tools';
-import { mailboxChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, mailboxChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

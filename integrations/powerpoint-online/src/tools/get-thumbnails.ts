@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphClient } from '../lib/client';
 import { driveItemLocationSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let thumbnailSchema = z.object({
   setId: z
@@ -81,7 +81,7 @@ export let getThumbnails = SlateTool.create(spec, {
         });
         previewGetUrl = preview.getUrl || undefined;
         previewPostUrl = preview.postUrl || undefined;
-      } catch (e) {
+      } catch (_e) {
         ctx.warn(
           'Preview URL generation failed — this feature is only available for SharePoint and OneDrive for Business.'
         );

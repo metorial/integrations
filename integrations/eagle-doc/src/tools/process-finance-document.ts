@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EagleDocClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let extractedFieldSchema = z
   .object({
@@ -189,7 +189,7 @@ You can target a specific document type (invoice or receipt) or let the API auto
     if (itemCount > 0) messageParts.push(`${itemCount} line item(s) extracted.`);
     if (totalPrice)
       messageParts.push(
-        `Total: ${totalPrice}${result.general?.Currency?.value ? ' ' + result.general.Currency.value : ''}.`
+        `Total: ${totalPrice}${result.general?.Currency?.value ? ` ${result.general.Currency.value}` : ''}.`
       );
     if (result.mainLanguage) messageParts.push(`Language: ${result.mainLanguage}.`);
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MoneybirdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createSalesInvoice = SlateTool.create(spec, {
   name: 'Create Sales Invoice',

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { pageOutputSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listPages = SlateTool.create(spec, {
   name: 'List Pages',
@@ -59,7 +59,7 @@ export let listPages = SlateTool.create(spec, {
         hasNextPage: !!result.nextPage,
         hasPrevPage: !!result.prevPage
       },
-      message: `Found **${result.items.length}** page(s) (page ${result.currentPage}).${result.items.length > 0 ? '\n' + result.items.map(p => `- **${p.url}** (${p.reportCount} reports, monitored: ${p.monitored})`).join('\n') : ''}`
+      message: `Found **${result.items.length}** page(s) (page ${result.currentPage}).${result.items.length > 0 ? `\n${result.items.map(p => `- **${p.url}** (${p.reportCount} reports, monitored: ${p.monitored})`).join('\n')}` : ''}`
     };
   })
   .build();

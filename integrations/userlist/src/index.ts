@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createOrUpdateUser,
-  deleteUser,
   createOrUpdateCompany,
+  createOrUpdateUser,
   deleteCompany,
+  deleteUser,
   manageRelationship,
-  trackEvent,
-  sendMessage
+  sendMessage,
+  trackEvent
 } from './tools';
 import {
-  userEvents,
   companyEvents,
-  relationshipEvents,
+  formEvents,
   messageEvents,
-  formEvents
+  relationshipEvents,
+  userEvents
 } from './triggers';
 
 export let provider = Slate.create({

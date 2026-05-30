@@ -2,30 +2,30 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createTimeEntry,
-  getTimeEntry,
-  updateTimeEntry,
-  stopTimeEntry,
   deleteTimeEntry,
-  listTimeEntries,
-  manageProject,
-  listProjects,
-  manageClient,
-  listClients,
-  manageTag,
-  listTags,
-  manageTask,
-  listTasks,
-  getWorkspace,
-  listWorkspaceUsers,
   getMe,
-  getReport
+  getReport,
+  getTimeEntry,
+  getWorkspace,
+  listClients,
+  listProjects,
+  listTags,
+  listTasks,
+  listTimeEntries,
+  listWorkspaceUsers,
+  manageClient,
+  manageProject,
+  manageTag,
+  manageTask,
+  stopTimeEntry,
+  updateTimeEntry
 } from './tools';
 import {
-  timeEntryEventsTrigger,
-  projectEventsTrigger,
   clientEventsTrigger,
+  projectEventsTrigger,
   tagEventsTrigger,
   taskEventsTrigger,
+  timeEntryEventsTrigger,
   workspaceUserEventsTrigger
 } from './triggers';
 

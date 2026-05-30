@@ -1,5 +1,5 @@
 import { createAxios } from 'slates';
-import { signRequest, AwsCredentials } from './signing';
+import { type AwsCredentials, signRequest } from './signing';
 
 export interface SqsClientConfig {
   region: string;

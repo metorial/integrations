@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BaseLinkerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getExternalStorages = SlateTool.create(spec, {
   name: 'Get External Storages',
@@ -39,10 +39,10 @@ export let getExternalStorages = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new BaseLinkerClient({ token: ctx.auth.token });
-    let storages: any = undefined;
-    let products: any = undefined;
-    let stock: any = undefined;
-    let prices: any = undefined;
+    let storages: any;
+    let products: any;
+    let stock: any;
+    let prices: any;
 
     if (!ctx.input.storageId) {
       let result = await client.getExternalStoragesList();

@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createRepositoryTool = SlateTool.create(spec, {
   name: 'Create Repository',
@@ -45,7 +45,7 @@ export let createRepositoryTool = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token, workspace: ctx.config.workspace });
 
     let slug = ctx.input.repoSlug.trim();
-    let displayName = (ctx.input.name && ctx.input.name.trim()) || slug;
+    let displayName = ctx.input.name?.trim() || slug;
 
     let body: Record<string, any> = {
       scm: 'git',

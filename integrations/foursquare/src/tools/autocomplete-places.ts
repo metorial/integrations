@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let autocompleteResultSchema = z.object({
   type: z.string().optional().describe('Result type: place, address, search, or geo'),

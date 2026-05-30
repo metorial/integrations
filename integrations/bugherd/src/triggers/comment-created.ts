@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BugherdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let commentCreated = SlateTrigger.create(spec, {
   name: 'Comment Created',

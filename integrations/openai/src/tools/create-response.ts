@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { createClient } from '../lib/helpers';
-import { openAIServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { openAIServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let responseOutputSchema = z.object({
   responseId: z.string().describe('Response identifier'),
@@ -31,7 +31,9 @@ let buildTextConfig = (responseFormatType?: string, jsonSchema?: any) => {
   }
 
   if (!jsonSchema) {
-    throw openAIServiceError('jsonSchema is required when responseFormatType is "json_schema".');
+    throw openAIServiceError(
+      'jsonSchema is required when responseFormatType is "json_schema".'
+    );
   }
 
   let hasFullConfig =
@@ -55,7 +57,8 @@ let buildTextConfig = (responseFormatType?: string, jsonSchema?: any) => {
 };
 
 let mapResponseOutput = (result: any) => {
-  let outputText: string | null = typeof result.output_text === 'string' ? result.output_text : null;
+  let outputText: string | null =
+    typeof result.output_text === 'string' ? result.output_text : null;
   if (!outputText && result.output) {
     for (let item of result.output) {
       if (item.type === 'message' && item.content) {
@@ -78,7 +81,9 @@ let mapResponseOutput = (result: any) => {
     outputItems: result.output ?? [],
     inputTokens: result.usage?.input_tokens ?? 0,
     outputTokens: result.usage?.output_tokens ?? 0,
-    totalTokens: result.usage?.total_tokens ?? (result.usage?.input_tokens ?? 0) + (result.usage?.output_tokens ?? 0)
+    totalTokens:
+      result.usage?.total_tokens ??
+      (result.usage?.input_tokens ?? 0) + (result.usage?.output_tokens ?? 0)
   };
 };
 
@@ -161,7 +166,7 @@ export let createResponse = SlateTool.create(spec, {
     let client = createClient(ctx);
     let text = buildTextConfig(ctx.input.responseFormatType, ctx.input.jsonSchema);
 
-    let reasoning: any = undefined;
+    let reasoning: any;
     if (ctx.input.reasoningEffort) {
       reasoning = { effort: ctx.input.reasoningEffort };
     }
@@ -196,7 +201,8 @@ export let createResponse = SlateTool.create(spec, {
 export let getResponse = SlateTool.create(spec, {
   name: 'Get Response',
   key: 'get_response',
-  description: 'Retrieve a stored OpenAI response by ID, including status, model output items, and token usage.',
+  description:
+    'Retrieve a stored OpenAI response by ID, including status, model output items, and token usage.',
   tags: {
     readOnly: true,
     destructive: false

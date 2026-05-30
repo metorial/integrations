@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { buildClientConfig, flattenResourceList } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listLocations = SlateTool.create(spec, {
   name: 'List Locations',
@@ -30,7 +30,7 @@ export let listLocations = SlateTool.create(spec, {
 
     let filters: Record<string, string> = {};
     if (ctx.input.filterArchived !== undefined)
-      filters['archived'] = String(ctx.input.filterArchived);
+      filters.archived = String(ctx.input.filterArchived);
 
     let response = await client.listLocations({
       pagination: {

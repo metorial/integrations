@@ -218,11 +218,7 @@ export class Client {
   // ==================== Alert Contacts ====================
 
   async getAlertContacts(
-    params: {
-      alertContacts?: string;
-      offset?: number;
-      limit?: number;
-    } = {}
+    params: { alertContacts?: string; offset?: number; limit?: number } = {}
   ) {
     let data = await this.post('/getAlertContacts', {
       ...(params.alertContacts && { alert_contacts: params.alertContacts }),
@@ -269,13 +265,7 @@ export class Client {
 
   // ==================== Public Status Pages ====================
 
-  async getPSPs(
-    params: {
-      psps?: string;
-      offset?: number;
-      limit?: number;
-    } = {}
-  ) {
+  async getPSPs(params: { psps?: string; offset?: number; limit?: number } = {}) {
     let data = await this.post('/getPSPs', {
       ...(params.psps && { psps: params.psps }),
       ...(params.offset !== undefined && { offset: params.offset }),
@@ -343,13 +333,7 @@ export class Client {
 
   // ==================== Maintenance Windows ====================
 
-  async getMWindows(
-    params: {
-      mwindows?: string;
-      offset?: number;
-      limit?: number;
-    } = {}
-  ) {
+  async getMWindows(params: { mwindows?: string; offset?: number; limit?: number } = {}) {
     let data = await this.post('/getMWindows', {
       ...(params.mwindows && { mwindows: params.mwindows }),
       ...(params.offset !== undefined && { offset: params.offset }),

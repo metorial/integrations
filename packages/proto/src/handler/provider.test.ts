@@ -1,7 +1,10 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
 import { describe, expect, it } from 'vitest';
 import { SlateError } from '../../../provider/src/error/base';
-import { createSlatesProviderProtoHandler, SlatesProviderProtoHandlerManager } from './provider';
+import {
+  createSlatesProviderProtoHandler,
+  SlatesProviderProtoHandlerManager
+} from './provider';
 
 describe('SlatesProviderProtoHandlerManager', () => {
   it('serializes SlateError instances directly into JSON-RPC errors', async () => {

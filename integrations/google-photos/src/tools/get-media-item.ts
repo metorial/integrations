@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { GooglePhotosLibraryClient } from '../lib/client';
-import { spec } from '../spec';
-import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
+import { GooglePhotosLibraryClient, type MediaItemResponse } from '../lib/client';
+import { googlePhotosActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 let mediaMetadataSchema = z
   .object({
@@ -76,7 +76,7 @@ export let getMediaItem = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new GooglePhotosLibraryClient(ctx.auth.token);
 
-    let mediaItems;
+    let mediaItems: MediaItemResponse[];
 
     if (ctx.input.mediaItemIds.length === 1) {
       let item = await client.getMediaItem(ctx.input.mediaItemIds[0]!);

@@ -56,8 +56,8 @@ export interface GenerateDocumentParams {
 export class DocuGenerateClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; region: string }) {
-    let baseURL = regionBaseUrls[config.region] || regionBaseUrls['us'];
+  constructor(config: { token: string; region: string }) {
+    let baseURL = regionBaseUrls[config.region] || regionBaseUrls.us;
     this.axios = createAxios({
       baseURL,
       headers: {
@@ -87,10 +87,10 @@ export class DocuGenerateClient {
     }
   ): Promise<TemplateResponse> {
     let body: Record<string, unknown> = {};
-    if (params.name !== undefined) body['name'] = params.name;
-    if (params.enhancedSyntax !== undefined) body['enhanced_syntax'] = params.enhancedSyntax;
+    if (params.name !== undefined) body.name = params.name;
+    if (params.enhancedSyntax !== undefined) body.enhanced_syntax = params.enhancedSyntax;
     if (params.versioningEnabled !== undefined)
-      body['versioning_enabled'] = params.versioningEnabled;
+      body.versioning_enabled = params.versioningEnabled;
 
     let response = await this.axios.put<TemplateResponse>(`/template/${templateId}`, body, {
       headers: { 'Content-Type': 'application/json' }
@@ -110,13 +110,13 @@ export class DocuGenerateClient {
       data: params.data
     };
 
-    if (params.name !== undefined) body['name'] = params.name;
-    if (params.outputFormat !== undefined) body['output_format'] = params.outputFormat;
-    if (params.outputQuality !== undefined) body['output_quality'] = params.outputQuality;
-    if (params.singleFile !== undefined) body['single_file'] = params.singleFile;
-    if (params.pageBreak !== undefined) body['page_break'] = params.pageBreak;
-    if (params.attach !== undefined) body['attach'] = params.attach;
-    if (params.mergeWith !== undefined) body['merge_with'] = params.mergeWith;
+    if (params.name !== undefined) body.name = params.name;
+    if (params.outputFormat !== undefined) body.output_format = params.outputFormat;
+    if (params.outputQuality !== undefined) body.output_quality = params.outputQuality;
+    if (params.singleFile !== undefined) body.single_file = params.singleFile;
+    if (params.pageBreak !== undefined) body.page_break = params.pageBreak;
+    if (params.attach !== undefined) body.attach = params.attach;
+    if (params.mergeWith !== undefined) body.merge_with = params.mergeWith;
 
     let response = await this.axios.post<DocumentResponse | DocumentResponse[]>(
       '/document',
@@ -148,7 +148,7 @@ export class DocuGenerateClient {
     params: { name?: string }
   ): Promise<DocumentResponse> {
     let body: Record<string, unknown> = {};
-    if (params.name !== undefined) body['name'] = params.name;
+    if (params.name !== undefined) body.name = params.name;
 
     let response = await this.axios.put<DocumentResponse>(`/document/${documentId}`, body, {
       headers: { 'Content-Type': 'application/json' }

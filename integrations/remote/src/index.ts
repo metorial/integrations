@@ -1,30 +1,30 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCompanies,
-  listEmployments,
-  getEmployment,
   createEmployment,
-  updateEmployment,
-  manageTimeOff,
+  estimateEmploymentCost,
+  getCountryFormSchema,
+  getEmployment,
+  listCompanies,
+  listContractAmendments,
+  listCountries,
+  listEmployments,
+  listPayslips,
   manageExpenses,
   manageIncentives,
   manageOffboarding,
+  manageTimeOff,
   manageTimesheets,
-  listCountries,
-  getCountryFormSchema,
-  estimateEmploymentCost,
-  listPayslips,
-  listContractAmendments
+  updateEmployment
 } from './tools';
 import {
+  companyEvents,
   employmentEvents,
-  timeoffEvents,
   expenseEvents,
+  incentiveEvents,
   offboardingEvents,
   payslipEvents,
-  incentiveEvents,
-  companyEvents
+  timeoffEvents
 } from './triggers';
 
 export let provider = Slate.create({

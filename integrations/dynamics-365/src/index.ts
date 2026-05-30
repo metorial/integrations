@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createRecord,
-  getRecord,
-  updateRecord,
-  deleteRecord,
-  listRecords,
-  fetchXmlQuery,
-  searchRecords,
   associateRecords,
+  createRecord,
+  deleteRecord,
   disassociateRecords,
-  getRelatedRecords,
-  listEntities,
+  fetchXmlQuery,
   getEntityAttributes,
-  invokeFunction,
+  getRecord,
+  getRelatedRecords,
   invokeAction,
+  invokeFunction,
+  listEntities,
+  listRecords,
+  searchRecords,
+  updateRecord,
   whoAmI
 } from './tools';
-import { recordChanged, inboundWebhook } from './triggers';
+import { inboundWebhook, recordChanged } from './triggers';
 
 export let provider = Slate.create({
   spec,

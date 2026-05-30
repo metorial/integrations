@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contractOutputSchema = z.object({
   contractId: z.number().describe('Coupa internal contract ID'),
@@ -75,9 +75,9 @@ export let searchContracts = SlateTool.create(spec, {
         filters[key] = value;
       }
     }
-    if (ctx.input.status) filters['status'] = ctx.input.status;
+    if (ctx.input.status) filters.status = ctx.input.status;
     if (ctx.input.supplierId) filters['supplier[id]'] = String(ctx.input.supplierId);
-    if (ctx.input.type) filters['type'] = ctx.input.type;
+    if (ctx.input.type) filters.type = ctx.input.type;
     if (ctx.input.createdAfter) filters['created-at[gt]'] = ctx.input.createdAfter;
     if (ctx.input.updatedAfter) filters['updated-at[gt]'] = ctx.input.updatedAfter;
 

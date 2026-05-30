@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  triggerPipeline,
-  getPipeline,
-  listPipelines,
-  getWorkflow,
-  manageWorkflow,
-  getJob,
   cancelJob,
-  getProject,
-  manageProjectEnvVars,
-  manageContexts,
-  manageContextEnvVars,
-  getInsights,
   getFlakyTests,
+  getInsights,
+  getJob,
+  getPipeline,
+  getProject,
+  getUser,
+  getWorkflow,
+  listPipelines,
+  manageContextEnvVars,
+  manageContexts,
+  manageProjectEnvVars,
   manageSchedules,
   manageWebhooks,
-  getUser
+  manageWorkflow,
+  triggerPipeline
 } from './tools';
 import { buildEvent } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PerigonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let personSchema = z.object({
   wikidataId: z.string().describe('Wikidata entity ID (e.g. Q312556)'),

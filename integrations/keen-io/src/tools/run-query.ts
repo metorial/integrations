@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let filterSchema = z
   .object({
@@ -156,7 +156,7 @@ export let runQuery = SlateTool.create(spec, {
     let resultSummary =
       typeof response.result === 'number'
         ? `Result: **${response.result}**`
-        : `Returned ${Array.isArray(response.result) ? response.result.length + ' result(s)' : 'results'}`;
+        : `Returned ${Array.isArray(response.result) ? `${response.result.length} result(s)` : 'results'}`;
 
     return {
       output: {

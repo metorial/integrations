@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AnthropicClient } from '../lib/client';
 import { anthropicServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageOrganizationMembers = SlateTool.create(spec, {
   name: 'Manage Organization Members',

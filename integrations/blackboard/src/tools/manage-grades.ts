@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let gradeColumnOutputSchema = z.object({
   columnId: z.string().describe('Grade column ID'),
@@ -284,7 +284,7 @@ export let listGrades = SlateTool.create(spec, {
       throw new Error('Either columnId or userId must be provided.');
     }
 
-    let result;
+    let result: any;
     if (ctx.input.columnId) {
       result = await client.listColumnGrades(ctx.input.courseId, ctx.input.columnId, {
         offset: ctx.input.offset,

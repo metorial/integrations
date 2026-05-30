@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactSchema = z.object({
   firstName: z.string().describe('First name of the contact'),
@@ -86,7 +86,7 @@ Returns a request ID to retrieve results later using the **Get Enrichment Result
       processFlow: ctx.input.processFlow
     });
 
-    let enrichTypes = [];
+    let enrichTypes: any[] = [];
     if (ctx.input.enrichEmailAddress) enrichTypes.push('emails');
     if (ctx.input.enrichPhoneNumber) enrichTypes.push('phone numbers');
 

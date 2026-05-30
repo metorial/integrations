@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newScans = SlateTrigger.create(spec, {
   name: 'New Scans',
@@ -82,8 +82,8 @@ export let newScans = SlateTrigger.create(spec, {
 
       // Filter to only new scans
       if (lastScanId) {
-        let lastId = parseInt(lastScanId, 10);
-        scans = scans.filter(s => parseInt(s.scanId, 10) > lastId);
+        let lastId = Number.parseInt(lastScanId, 10);
+        scans = scans.filter(s => Number.parseInt(s.scanId, 10) > lastId);
       }
 
       let newLastScanId = lastScanId;

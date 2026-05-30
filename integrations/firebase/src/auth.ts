@@ -1,8 +1,8 @@
 import { ServiceError } from '@lowerdeck/error';
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
-import { getAccessTokenFromServiceAccount } from './lib/jwt';
 import { firebaseOAuthError, firebaseServiceError } from './lib/errors';
+import { getAccessTokenFromServiceAccount } from './lib/jwt';
 import { firebaseScopes } from './scopes';
 
 let googleOAuthAxios = createAxios({
@@ -67,7 +67,7 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response;
+      let response: any;
       try {
         response = await googleOAuthAxios.post(
           '/token',
@@ -110,7 +110,7 @@ export let auth = SlateAuth.create()
         throw firebaseServiceError('No refresh token available');
       }
 
-      let response;
+      let response: any;
       try {
         response = await googleOAuthAxios.post(
           '/token',
@@ -145,7 +145,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
-      let response;
+      let response: any;
       try {
         response = await googleUserInfoAxios.get('/oauth2/v2/userinfo', {
           headers: {
@@ -197,7 +197,7 @@ export let auth = SlateAuth.create()
         firebaseScopes.userInfoEmail
       ];
 
-      let result;
+      let result: any;
       try {
         result = await getAccessTokenFromServiceAccount({
           clientEmail: serviceAccount.client_email,
@@ -226,7 +226,7 @@ export let auth = SlateAuth.create()
       output: { token: string };
       input: { serviceAccountJson: string };
     }) => {
-      let response;
+      let response: any;
       try {
         response = await googleUserInfoAxios.get('/oauth2/v2/userinfo', {
           headers: {

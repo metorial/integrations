@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageSubscriptionTool = SlateTool.create(spec, {
   name: 'Manage Subscription',
@@ -96,7 +96,8 @@ export let manageSubscriptionTool = SlateTool.create(spec, {
       response = await client.updateSubscription(subscriptionId, { pause: null });
     } else {
       let attributes: Record<string, unknown> = {};
-      if (ctx.input.variantId) attributes.variant_id = parseInt(ctx.input.variantId);
+      if (ctx.input.variantId)
+        attributes.variant_id = Number.parseInt(ctx.input.variantId, 10);
       if (ctx.input.billingAnchor !== undefined)
         attributes.billing_anchor = ctx.input.billingAnchor;
       if (ctx.input.trialEndsAt) attributes.trial_ends_at = ctx.input.trialEndsAt;

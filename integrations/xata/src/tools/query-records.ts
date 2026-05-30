@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { XataWorkspaceClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let queryRecords = SlateTool.create(spec, {
   name: 'Query Records',
@@ -73,7 +73,7 @@ export let queryRecords = SlateTool.create(spec, {
     let branch = ctx.input.branch || ctx.config.branch;
     let dbName = ctx.input.databaseName;
 
-    let page: any = undefined;
+    let page: any;
     if (ctx.input.pageSize || ctx.input.cursor) {
       page = {};
       if (ctx.input.pageSize) page.size = ctx.input.pageSize;

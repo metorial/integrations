@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  checkQueueStatus,
   generateImage,
-  generateVideo,
-  transcribeAudio,
   generateSpeech,
+  generateVideo,
+  runModel,
   searchModels,
   submitQueueRequest,
-  checkQueueStatus,
-  uploadFile,
-  runModel
+  transcribeAudio,
+  uploadFile
 } from './tools';
 import { queueCompleted } from './triggers';
 

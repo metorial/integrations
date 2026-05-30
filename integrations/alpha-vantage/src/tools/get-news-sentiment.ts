@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let tickerSentimentSchema = z.object({
   ticker: z.string().describe('Ticker symbol mentioned in the article'),
@@ -82,28 +82,28 @@ export let getNewsSentiment = SlateTool.create(spec, {
       limit: ctx.input.limit
     });
 
-    let feed: any[] = data['feed'] || [];
+    let feed: any[] = data.feed || [];
 
     let articles = feed.map((item: any) => ({
-      title: item['title'] || '',
-      url: item['url'] || '',
-      timePublished: item['time_published'] || '',
-      source: item['source'] || '',
-      summary: item['summary'] || '',
-      overallSentimentScore: String(item['overall_sentiment_score'] ?? ''),
-      overallSentimentLabel: item['overall_sentiment_label'] || '',
-      tickerSentiment: (item['ticker_sentiment'] || []).map((ts: any) => ({
-        ticker: ts['ticker'] || '',
-        relevanceScore: ts['relevance_score'] || '',
-        sentimentScore: String(ts['ticker_sentiment_score'] ?? ''),
-        sentimentLabel: ts['ticker_sentiment_label'] || ''
+      title: item.title || '',
+      url: item.url || '',
+      timePublished: item.time_published || '',
+      source: item.source || '',
+      summary: item.summary || '',
+      overallSentimentScore: String(item.overall_sentiment_score ?? ''),
+      overallSentimentLabel: item.overall_sentiment_label || '',
+      tickerSentiment: (item.ticker_sentiment || []).map((ts: any) => ({
+        ticker: ts.ticker || '',
+        relevanceScore: ts.relevance_score || '',
+        sentimentScore: String(ts.ticker_sentiment_score ?? ''),
+        sentimentLabel: ts.ticker_sentiment_label || ''
       }))
     }));
 
     return {
       output: {
-        totalResults: data['items'] ? Number(data['items']) : articles.length,
-        sentimentScoreDefinition: data['sentiment_score_definition'] || '',
+        totalResults: data.items ? Number(data.items) : articles.length,
+        sentimentScoreDefinition: data.sentiment_score_definition || '',
         articles
       },
       message: `Retrieved ${articles.length} news article(s) with sentiment data.`

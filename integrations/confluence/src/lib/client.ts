@@ -205,7 +205,7 @@ let firstAttachmentFromContentArray = (data: any): ConfluenceAttachment => {
 export class ConfluenceClient {
   private ax: ReturnType<typeof createAxios>;
 
-  constructor(private clientConfig: ConfluenceClientConfig) {
+  constructor(clientConfig: ConfluenceClientConfig) {
     let baseURL: string;
     if (clientConfig.baseUrl) {
       baseURL = clientConfig.baseUrl.replace(/\/$/, '');
@@ -219,11 +219,11 @@ export class ConfluenceClient {
 
     let headers: Record<string, string> = {};
     if (clientConfig.authType === 'oauth') {
-      headers['Authorization'] = `Bearer ${clientConfig.token}`;
+      headers.Authorization = `Bearer ${clientConfig.token}`;
     } else if (clientConfig.authType === 'basic') {
-      headers['Authorization'] = `Basic ${clientConfig.token}`;
+      headers.Authorization = `Basic ${clientConfig.token}`;
     } else if (clientConfig.authType === 'bearer') {
-      headers['Authorization'] = `Bearer ${clientConfig.token}`;
+      headers.Authorization = `Bearer ${clientConfig.token}`;
     }
 
     this.ax = createAxios({
@@ -251,11 +251,11 @@ export class ConfluenceClient {
   ): Promise<V2PaginatedResponse<ConfluencePage>> {
     let queryParams: Record<string, string> = {};
     if (params.spaceId) queryParams['space-id'] = params.spaceId;
-    if (params.title) queryParams['title'] = params.title;
-    if (params.status) queryParams['status'] = params.status;
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.cursor) queryParams['cursor'] = params.cursor;
-    if (params.sort) queryParams['sort'] = params.sort;
+    if (params.title) queryParams.title = params.title;
+    if (params.status) queryParams.status = params.status;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.cursor) queryParams.cursor = params.cursor;
+    if (params.sort) queryParams.sort = params.sort;
 
     let response = await this.ax.get(v2Path('/pages'), { params: queryParams });
     return response.data;
@@ -348,8 +348,8 @@ export class ConfluenceClient {
     } = {}
   ): Promise<V2PaginatedResponse<ConfluencePage>> {
     let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.cursor) queryParams['cursor'] = params.cursor;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.cursor) queryParams.cursor = params.cursor;
 
     let response = await this.ax.get(v2Path(`/pages/${pageId}/children`), {
       params: queryParams
@@ -371,11 +371,11 @@ export class ConfluenceClient {
   ): Promise<V2PaginatedResponse<ConfluenceBlogPost>> {
     let queryParams: Record<string, string> = {};
     if (params.spaceId) queryParams['space-id'] = params.spaceId;
-    if (params.title) queryParams['title'] = params.title;
-    if (params.status) queryParams['status'] = params.status;
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.cursor) queryParams['cursor'] = params.cursor;
-    if (params.sort) queryParams['sort'] = params.sort;
+    if (params.title) queryParams.title = params.title;
+    if (params.status) queryParams.status = params.status;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.cursor) queryParams.cursor = params.cursor;
+    if (params.sort) queryParams.sort = params.sort;
 
     let response = await this.ax.get(v2Path('/blogposts'), { params: queryParams });
     return response.data;
@@ -471,12 +471,12 @@ export class ConfluenceClient {
     } = {}
   ): Promise<V2PaginatedResponse<ConfluenceSpace>> {
     let queryParams: Record<string, string> = {};
-    if (params.keys && params.keys.length > 0) queryParams['keys'] = params.keys.join(',');
-    if (params.type) queryParams['type'] = params.type;
-    if (params.status) queryParams['status'] = params.status;
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.cursor) queryParams['cursor'] = params.cursor;
-    if (params.sort) queryParams['sort'] = params.sort;
+    if (params.keys && params.keys.length > 0) queryParams.keys = params.keys.join(',');
+    if (params.type) queryParams.type = params.type;
+    if (params.status) queryParams.status = params.status;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.cursor) queryParams.cursor = params.cursor;
+    if (params.sort) queryParams.sort = params.sort;
 
     let response = await this.ax.get(v2Path('/spaces'), { params: queryParams });
     return response.data;
@@ -497,8 +497,8 @@ export class ConfluenceClient {
     } = {}
   ): Promise<V2PaginatedResponse<ConfluenceComment>> {
     let queryParams: Record<string, string> = { 'body-format': 'storage' };
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.cursor) queryParams['cursor'] = params.cursor;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.cursor) queryParams.cursor = params.cursor;
 
     let response = await this.ax.get(v2Path(`/pages/${pageId}/footer-comments`), {
       params: queryParams
@@ -580,13 +580,13 @@ export class ConfluenceClient {
     let queryParams: Record<string, string> = {
       cql: params.cql
     };
-    if (params.cqlContext) queryParams['cqlcontext'] = params.cqlContext;
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.start) queryParams['start'] = String(params.start);
+    if (params.cqlContext) queryParams.cqlcontext = params.cqlContext;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.start) queryParams.start = String(params.start);
     if (params.includeArchivedSpaces !== undefined) {
-      queryParams['includeArchivedSpaces'] = String(params.includeArchivedSpaces);
+      queryParams.includeArchivedSpaces = String(params.includeArchivedSpaces);
     }
-    if (params.excerpt) queryParams['excerpt'] = params.excerpt;
+    if (params.excerpt) queryParams.excerpt = params.excerpt;
 
     let response = await this.ax.get('/wiki/rest/api/search', { params: queryParams });
     return response.data;
@@ -614,14 +614,11 @@ export class ConfluenceClient {
     value: any,
     version: number
   ): Promise<ContentProperty> {
-    let response = await this.ax.put(
-      v2Path(`/pages/${pageId}/properties/${propertyId}`),
-      {
-        key,
-        value,
-        version: { number: version }
-      }
-    );
+    let response = await this.ax.put(v2Path(`/pages/${pageId}/properties/${propertyId}`), {
+      key,
+      value,
+      version: { number: version }
+    });
     return response.data;
   }
 
@@ -640,8 +637,8 @@ export class ConfluenceClient {
     } = {}
   ): Promise<V2PaginatedResponse<ConfluenceAttachment>> {
     let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.cursor) queryParams['cursor'] = params.cursor;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.cursor) queryParams.cursor = params.cursor;
 
     let response = await this.ax.get(
       v2Path(attachmentContainerPath(params.contentType || 'page', contentId)),
@@ -757,14 +754,11 @@ export class ConfluenceClient {
   }
 
   async getGroups(
-    params: {
-      limit?: number;
-      start?: number;
-    } = {}
+    params: { limit?: number; start?: number } = {}
   ): Promise<V1PaginatedResponse<ConfluenceGroup>> {
     let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.start) queryParams['start'] = String(params.start);
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.start) queryParams.start = String(params.start);
 
     let response = await this.ax.get('/wiki/rest/api/group', { params: queryParams });
     return response.data;
@@ -781,8 +775,8 @@ export class ConfluenceClient {
     } = {}
   ): Promise<V1PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.cursor) queryParams['cursor'] = params.cursor;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.cursor) queryParams.cursor = params.cursor;
 
     let response = await this.ax.get(
       v2Path(versionsPath(params.contentType || 'page', contentId)),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DocsBotChatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let recordEscalation = SlateTool.create(spec, {
   name: 'Record Escalation',

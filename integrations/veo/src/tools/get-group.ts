@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getGroup = SlateTool.create(spec, {
   name: 'Get Group',
@@ -39,7 +39,7 @@ export let getGroup = SlateTool.create(spec, {
     if (ctx.input.includeMembers) {
       try {
         members = await client.getGroupMembers(ctx.input.groupId);
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Could not retrieve group members.');
       }
     }

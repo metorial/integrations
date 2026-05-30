@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateImage,
-  createVariations,
-  upscaleImage,
   blendImages,
+  createVariations,
   describeImage,
-  fetchTask
+  fetchTask,
+  generateImage,
+  upscaleImage
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

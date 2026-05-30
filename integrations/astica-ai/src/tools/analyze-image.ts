@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AsticaVisionClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let analyzeImageTool = SlateTool.create(spec, {
   name: 'Analyze Image',

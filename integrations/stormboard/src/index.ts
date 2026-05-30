@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listStorms,
-  createStorm,
-  getStorm,
-  manageStormStatus,
-  listIdeas,
   createIdea,
+  createStorm,
   getIdea,
+  getStorm,
   getStormTemplate,
-  updateStormSection,
-  manageConnectors,
-  manageTags,
+  getUserProfile,
+  listIdeas,
+  listStorms,
   manageChat,
+  manageConnectors,
   manageParticipants,
-  getUserProfile
+  manageStormStatus,
+  manageTags,
+  updateStormSection
 } from './tools';
-import { ideaEvents, commentEvents, legendEvents } from './triggers';
+import { commentEvents, ideaEvents, legendEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

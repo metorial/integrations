@@ -2,11 +2,11 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createSignatureRequest,
+  getDocumentDetails,
   listDocuments,
-  listTemplates,
-  getDocumentDetails
+  listTemplates
 } from './tools';
-import { documentSentTrigger, documentCompletedTrigger, inboundWebhook } from './triggers';
+import { documentCompletedTrigger, documentSentTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FingertipClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pageOutputSchema = z.object({
   pageId: z.string(),

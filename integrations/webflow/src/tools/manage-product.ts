@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageProduct = SlateTool.create(spec, {
   name: 'Manage Product',
@@ -66,7 +66,7 @@ export let manageProduct = SlateTool.create(spec, {
       if (product.categories) productPayload.fieldData.categories = product.categories;
     }
 
-    let skuPayload: any = undefined;
+    let skuPayload: any;
     if (sku) {
       skuPayload = { fieldData: {} as any };
       if (sku.name) skuPayload.fieldData.name = sku.name;

@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { createClient } from '../lib/helpers';
-import { pipedriveServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { pipedriveServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

@@ -12,7 +12,7 @@ export class StitchConnectClient {
   constructor(params: { token: string; region: string; clientId?: string }) {
     this.clientId = params.clientId;
     this.axios = createAxios({
-      baseURL: BASE_URLS[params.region] || BASE_URLS['us'],
+      baseURL: BASE_URLS[params.region] || BASE_URLS.us,
       headers: {
         Authorization: `Bearer ${params.token}`,
         'Content-Type': 'application/json'
@@ -224,7 +224,7 @@ export class StitchImportClient {
   constructor(params: { token: string; region: string; clientId: string }) {
     this.clientId = params.clientId;
     this.axios = createAxios({
-      baseURL: BASE_URLS[params.region] || BASE_URLS['us'],
+      baseURL: BASE_URLS[params.region] || BASE_URLS.us,
       headers: {
         Authorization: `Bearer ${params.token}`,
         'Content-Type': 'application/json'

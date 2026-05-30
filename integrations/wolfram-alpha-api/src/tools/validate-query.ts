@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let validateQuery = SlateTool.create(spec, {
   name: 'Validate Query',
@@ -62,7 +62,7 @@ Useful for pre-screening queries to avoid unnecessary API calls.`,
       let rawConfidence = recognizerResult?.confidence ?? recognizerResult?.query?.confidence;
       if (rawConfidence != null) {
         confidence =
-          typeof rawConfidence === 'string' ? parseFloat(rawConfidence) : rawConfidence;
+          typeof rawConfidence === 'string' ? Number.parseFloat(rawConfidence) : rawConfidence;
       }
     }
 

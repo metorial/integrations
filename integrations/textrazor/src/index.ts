@@ -3,9 +3,9 @@ import { spec } from './spec';
 import {
   analyzeText,
   getAccount,
+  manageClassifier,
   manageDictionary,
-  manageDictionaryEntries,
-  manageClassifier
+  manageDictionaryEntries
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

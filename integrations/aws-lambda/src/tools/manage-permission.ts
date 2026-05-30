@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { createClient } from '../lib/helpers';
-import { lambdaServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { lambdaServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let managePermission = SlateTool.create(spec, {
   name: 'Manage Permission',
@@ -79,9 +79,9 @@ export let managePermission = SlateTool.create(spec, {
       Action: ctx.input.permissionAction,
       Principal: ctx.input.principal
     };
-    if (ctx.input.sourceArn) params['SourceArn'] = ctx.input.sourceArn;
-    if (ctx.input.sourceAccount) params['SourceAccount'] = ctx.input.sourceAccount;
-    if (ctx.input.principalOrgId) params['PrincipalOrgID'] = ctx.input.principalOrgId;
+    if (ctx.input.sourceArn) params.SourceArn = ctx.input.sourceArn;
+    if (ctx.input.sourceAccount) params.SourceAccount = ctx.input.sourceAccount;
+    if (ctx.input.principalOrgId) params.PrincipalOrgID = ctx.input.principalOrgId;
 
     let result = await client.addPermission(functionName, params, qualifier);
     return {

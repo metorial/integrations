@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { KommoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let TASK_WEBHOOK_SETTINGS = ['add_task', 'update_task', 'delete_task', 'responsible_task'];
 
@@ -80,7 +80,7 @@ export let taskEventsTrigger = SlateTrigger.create(spec, {
         }
       }
 
-      let inputs: Array<any> = [];
+      let inputs: any[] = [];
 
       let eventTypes: Record<string, string> = {
         add_task: 'task.added',

@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getGames,
+  getAdjustedMetrics,
+  getBettingLines,
+  getCoaches,
+  getConferencesVenues,
+  getDraftPicks,
   getGameStats,
-  getTeamInfo,
+  getGames,
+  getLiveScoreboard,
   getMatchupHistory,
-  searchPlayers,
-  getTeamStats,
   getPlayerStats,
+  getPlays,
   getRankingsRatings,
   getRecruiting,
-  getBettingLines,
-  getPlays,
-  getWinProbability,
-  getCoaches,
-  getDraftPicks,
-  getConferencesVenues,
+  getTeamInfo,
+  getTeamStats,
   getTransferPortal,
-  getLiveScoreboard,
-  getAdjustedMetrics
+  getWinProbability,
+  searchPlayers
 } from './tools';
-import { gameScoreUpdates, bettingLineUpdates, inboundWebhook } from './triggers';
+import { bettingLineUpdates, gameScoreUpdates, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,33 +1,33 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  uploadDocument,
-  configureForm,
-  sendNotification,
-  getDocumentMetadata,
+  calculateSignerId,
   checkDocument,
-  removeDocument,
+  configureForm,
+  createBriefcase,
+  createEditorExpress,
+  createSignExpress,
+  getAccountInfo,
+  getAuditTrail,
+  getBriefcase,
+  getDocumentMetadata,
+  getEditorExpress,
   getFormDescriptor,
   getLinkedDocuments,
-  listContacts,
-  upsertContacts,
-  removeContact,
-  createBriefcase,
-  getBriefcase,
-  removeBriefcase,
-  createSignExpress,
   getSignExpress,
-  removeSignExpress,
-  createEditorExpress,
-  getEditorExpress,
-  removeEditorExpress,
-  getAccountInfo,
   listActiveDocuments,
-  calculateSignerId,
+  listContacts,
+  removeBriefcase,
+  removeContact,
+  removeDocument,
+  removeEditorExpress,
+  removeSignExpress,
+  sendNotification,
   updateTokenConfig,
-  getAuditTrail
+  uploadDocument,
+  upsertContacts
 } from './tools';
-import { documentSigned, notificationError, inboundWebhook } from './triggers';
+import { documentSigned, inboundWebhook, notificationError } from './triggers';
 
 export let provider = Slate.create({
   spec,

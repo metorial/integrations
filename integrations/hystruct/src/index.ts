@@ -1,8 +1,8 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getWorkflowData,
   createJob,
+  getWorkflowData,
   listWebhooks,
   subscribeWebhook,
   unsubscribeWebhook

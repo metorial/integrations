@@ -2,12 +2,12 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   editImage,
-  generateImage,
   generateBackground,
   generateFashionModel,
+  generateImage,
   generateVideo,
-  manageStorage,
-  getJobStatus
+  getJobStatus,
+  manageStorage
 } from './tools';
 import { asyncJobCompleted } from './triggers';
 

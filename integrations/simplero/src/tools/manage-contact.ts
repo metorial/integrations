@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SimpleroClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageContact = SlateTool.create(spec, {
   name: 'Manage Contact',
@@ -90,7 +90,7 @@ Use **override** to replace existing values rather than merging. Tags added here
         contactId: ctx.input.contactId,
         contactToken: ctx.input.contactToken
       });
-      let name = (contact.first_name || '') + ' ' + (contact.last_name || '');
+      let name = `${contact.first_name || ''} ${contact.last_name || ''}`;
       return {
         output: { contact },
         message: `Found contact **${name.trim() || contact.email}** (ID: ${contact.id}).`
@@ -118,7 +118,7 @@ Use **override** to replace existing values rather than merging. Tags added here
       landingPageId: ctx.input.landingPageId
     });
 
-    let name = (contact.first_name || '') + ' ' + (contact.last_name || '');
+    let name = `${contact.first_name || ''} ${contact.last_name || ''}`;
     return {
       output: { contact },
       message: `Contact **${name.trim() || contact.email}** (ID: ${contact.id}) created/updated successfully.`

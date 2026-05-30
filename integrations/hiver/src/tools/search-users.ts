@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchUsers = SlateTool.create(spec, {
   name: 'Search Inbox Users',
@@ -40,14 +40,14 @@ export let searchUsers = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let users;
+    let users: any;
     if (ctx.input.query) {
       users = await client.searchInboxUsers(ctx.input.inboxId, ctx.input.query);
     } else {
       users = await client.getInboxUsers(ctx.input.inboxId);
     }
 
-    let mapped = users.map(u => ({
+    let mapped = users.map((u: any) => ({
       userId: String(u.id),
       name: u.name,
       email: u.email,

@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { webSearch, customSearch, queryUrl, extractContent, screenshot } from './tools';
+import { customSearch, extractContent, queryUrl, screenshot, webSearch } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

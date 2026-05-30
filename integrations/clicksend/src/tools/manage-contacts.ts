@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickSendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let contactFieldsSchema = z.object({
+let _contactFieldsSchema = z.object({
   phoneNumber: z.string().optional().describe('Phone number in E.164 format'),
   email: z.string().optional().describe('Email address'),
   firstName: z.string().optional().describe('First name'),

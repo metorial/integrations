@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { Client, ListParams } from '../lib/client';
-import { spec } from '../spec';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { Client, type ListParams } from '../lib/client';
+import { spec } from '../spec';
 
 export let newProjectTrigger = SlateTrigger.create(spec, {
   name: 'New Project',

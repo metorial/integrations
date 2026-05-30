@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let batchWebhookTrigger = SlateTrigger.create(spec, {
   name: 'Batch Processing Webhook',

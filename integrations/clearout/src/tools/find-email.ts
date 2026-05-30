@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClearoutClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let emailResultSchema = z.object({
   emailAddress: z.string().describe('Discovered email address'),
@@ -63,7 +63,7 @@ Use this for sales prospecting, lead enrichment, or finding contact information 
     });
 
     let data = (result.data ?? result) as Record<string, unknown>;
-    let emailsRaw = (data.emails ?? []) as Array<Record<string, unknown>>;
+    let emailsRaw = (data.emails ?? []) as Record<string, unknown>[];
     let company = data.company as Record<string, unknown> | undefined;
 
     let emails = emailsRaw.map(e => ({

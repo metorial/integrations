@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MoosendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let subscriberOutputSchema = z.object({
   subscriberId: z.string().describe('Subscriber ID'),
@@ -138,7 +138,7 @@ export let manageSubscriber = SlateTool.create(spec, {
           if (s.customFields) sub.CustomFields = s.customFields;
           return sub;
         });
-        let result = await client.addMultipleSubscribers(mailingListId, subs);
+        let _result = await client.addMultipleSubscribers(mailingListId, subs);
         return {
           output: {
             action,

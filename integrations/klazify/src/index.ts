@@ -2,13 +2,13 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   categorizeDomain,
+  checkParkedDomain,
+  findSimilarDomains,
   getCompanyData,
   getDomainLogo,
+  getDomainRegistration,
   getSocialMediaLinks,
-  getTechStack,
-  findSimilarDomains,
-  checkParkedDomain,
-  getDomainRegistration
+  getTechStack
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

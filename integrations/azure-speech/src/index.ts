@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  synthesizeSpeech,
-  listVoices,
-  recognizeSpeech,
   createBatchTranscription,
-  getBatchTranscription,
-  listBatchTranscriptions,
   deleteBatchTranscription,
+  getBatchTranscription,
+  identifySpeaker,
+  listBatchTranscriptions,
   listSpeechModels,
+  listVoices,
   manageSpeakerProfile,
-  verifySpeaker,
-  identifySpeaker
+  recognizeSpeech,
+  synthesizeSpeech,
+  verifySpeaker
 } from './tools';
 import { batchTranscriptionCompleted, inboundWebhook } from './triggers';
 

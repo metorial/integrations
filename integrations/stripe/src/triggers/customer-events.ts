@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { StripeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let customerEvents = SlateTrigger.create(spec, {
   name: 'Customer Events',
@@ -68,7 +68,7 @@ export let customerEvents = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let body: any = await ctx.request.json();
 
-      if (!body || !body.type || !body.data?.object) {
+      if (!body?.type || !body.data?.object) {
         return { inputs: [] };
       }
 

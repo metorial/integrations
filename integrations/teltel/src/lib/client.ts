@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class TelTelClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.teltel.io/v2',
       headers: {

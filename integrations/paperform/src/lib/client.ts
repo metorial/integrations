@@ -570,10 +570,10 @@ export class Client {
     }
   ): Promise<PaginatedResponse<PapersignDocument>> {
     let queryParams: Record<string, unknown> = this.buildPaginationParams(params);
-    if (params?.folderId) queryParams['folder_id'] = params.folderId;
-    if (params?.search) queryParams['search'] = params.search;
-    if (params?.spaceId) queryParams['space_id'] = params.spaceId;
-    if (params?.status) queryParams['status'] = params.status;
+    if (params?.folderId) queryParams.folder_id = params.folderId;
+    if (params?.search) queryParams.search = params.search;
+    if (params?.spaceId) queryParams.space_id = params.spaceId;
+    if (params?.status) queryParams.status = params.status;
     let response = await this.axios.get('/papersign/documents', { params: queryParams });
     return response.data;
   }
@@ -606,19 +606,19 @@ export class Client {
     }
   ): Promise<PapersignDocument> {
     let body: Record<string, unknown> = {};
-    if (data.expiration !== undefined) body['expiration'] = data.expiration;
-    if (data.inviteMessage !== undefined) body['invite_message'] = data.inviteMessage;
-    if (data.fromUserEmail !== undefined) body['from_user_email'] = data.fromUserEmail;
+    if (data.expiration !== undefined) body.expiration = data.expiration;
+    if (data.inviteMessage !== undefined) body.invite_message = data.inviteMessage;
+    if (data.fromUserEmail !== undefined) body.from_user_email = data.fromUserEmail;
     if (data.documentRecipientEmails !== undefined)
-      body['document_recipient_emails'] = data.documentRecipientEmails;
+      body.document_recipient_emails = data.documentRecipientEmails;
     if (data.automaticReminders !== undefined) {
-      body['automatic_reminders'] = {
+      body.automatic_reminders = {
         first_after_days: data.automaticReminders.firstAfterDays,
         follow_up_every_days: data.automaticReminders.followUpEveryDays
       };
     }
     if (data.signers !== undefined) {
-      body['signers'] = data.signers.map(s => ({
+      body.signers = data.signers.map(s => ({
         key: s.key,
         name: s.name,
         email: s.email,
@@ -627,12 +627,12 @@ export class Client {
         company: s.company
       }));
     }
-    if (data.variables !== undefined) body['variables'] = data.variables;
+    if (data.variables !== undefined) body.variables = data.variables;
     if (data.copy !== undefined) {
       if (typeof data.copy === 'boolean') {
-        body['copy'] = data.copy;
+        body.copy = data.copy;
       } else {
-        body['copy'] = {
+        body.copy = {
           name: data.copy.name,
           space_id: data.copy.spaceId,
           path: data.copy.path,
@@ -765,10 +765,10 @@ export class Client {
     }
   ): Promise<PapersignWebhook> {
     let body: Record<string, unknown> = {};
-    if (data.name !== undefined) body['name'] = data.name;
-    if (data.targetUrl !== undefined) body['target_url'] = data.targetUrl;
-    if (data.scope !== undefined) body['scope'] = data.scope;
-    if (data.triggers !== undefined) body['triggers'] = data.triggers;
+    if (data.name !== undefined) body.name = data.name;
+    if (data.targetUrl !== undefined) body.target_url = data.targetUrl;
+    if (data.scope !== undefined) body.scope = data.scope;
+    if (data.triggers !== undefined) body.triggers = data.triggers;
     let response = await this.axios.put(
       `/papersign/webhooks/${encodeURIComponent(webhookId)}`,
       body
@@ -787,14 +787,14 @@ export class Client {
   ): Record<string, unknown> {
     let query: Record<string, unknown> = {};
     if (!params) return query;
-    if (params.skip !== undefined) query['skip'] = params.skip;
-    if (params.limit !== undefined) query['limit'] = params.limit;
-    if (params.sort !== undefined) query['sort'] = params.sort;
-    if (params.beforeDate !== undefined) query['before_date'] = params.beforeDate;
-    if (params.afterDate !== undefined) query['after_date'] = params.afterDate;
-    if (params.beforeId !== undefined) query['before_id'] = params.beforeId;
-    if (params.afterId !== undefined) query['after_id'] = params.afterId;
-    if (params.search !== undefined) query['search'] = params.search;
+    if (params.skip !== undefined) query.skip = params.skip;
+    if (params.limit !== undefined) query.limit = params.limit;
+    if (params.sort !== undefined) query.sort = params.sort;
+    if (params.beforeDate !== undefined) query.before_date = params.beforeDate;
+    if (params.afterDate !== undefined) query.after_date = params.afterDate;
+    if (params.beforeId !== undefined) query.before_id = params.beforeId;
+    if (params.afterId !== undefined) query.after_id = params.afterId;
+    if (params.search !== undefined) query.search = params.search;
     return query;
   }
 }

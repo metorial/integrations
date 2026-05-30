@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { chatQuery, checkPermission, botQuery } from './tools';
+import { botQuery, chatQuery, checkPermission } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

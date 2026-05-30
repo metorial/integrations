@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchConversations,
   getConversationContext,
-  triageConversation,
   manageReplyDraft,
-  sendReply
+  searchConversations,
+  sendReply,
+  triageConversation
 } from './tools';
 import { conversationChanges, inboundWebhook } from './triggers';
 

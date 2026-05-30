@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { docSchema } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateDoc = SlateTool.create(spec, {
   name: 'Update Document',

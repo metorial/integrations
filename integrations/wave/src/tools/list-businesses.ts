@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WaveClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let businessSchema = z.object({
   businessId: z.string().describe('Unique identifier of the business'),

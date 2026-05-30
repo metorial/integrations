@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AhaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listReleases = SlateTool.create(spec, {
   name: 'List Releases',

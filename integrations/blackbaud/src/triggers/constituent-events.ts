@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let CONSTITUENT_EVENT_TYPES = [
   'com.blackbaud.constituent.add.v1',
@@ -86,7 +86,7 @@ export let constituentEvents = SlateTrigger.create(spec, {
           if (result?.id) {
             subscriptionIds.push(result.id);
           }
-        } catch (e) {
+        } catch (_e) {
           // Some event types may not be available; continue with the rest
         }
       }
@@ -106,7 +106,7 @@ export let constituentEvents = SlateTrigger.create(spec, {
       for (let id of ids) {
         try {
           await client.deleteWebhookSubscription(id);
-        } catch (e) {
+        } catch (_e) {
           // Best effort cleanup
         }
       }

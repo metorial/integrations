@@ -42,11 +42,11 @@ export class TravisCIClient {
   }): Promise<any> {
     let url = params?.ownerLogin ? `/owner/${params.ownerLogin}/repos` : '/repos';
     let query: Record<string, any> = {};
-    if (params?.active !== undefined) query['active'] = params.active;
-    if (params?.starred !== undefined) query['starred'] = params.starred;
-    if (params?.limit !== undefined) query['limit'] = params.limit;
-    if (params?.offset !== undefined) query['offset'] = params.offset;
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
+    if (params?.active !== undefined) query.active = params.active;
+    if (params?.starred !== undefined) query.starred = params.starred;
+    if (params?.limit !== undefined) query.limit = params.limit;
+    if (params?.offset !== undefined) query.offset = params.offset;
+    if (params?.sortBy) query.sort_by = params.sortBy;
     let response = await this.axios.get(url, { params: query });
     return response.data;
   }
@@ -94,9 +94,9 @@ export class TravisCIClient {
     if (params?.branchName) query['branch.name'] = params.branchName;
     if (params?.state) query['build.state'] = params.state;
     if (params?.eventType) query['build.event_type'] = params.eventType;
-    if (params?.limit !== undefined) query['limit'] = params.limit;
-    if (params?.offset !== undefined) query['offset'] = params.offset;
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
+    if (params?.limit !== undefined) query.limit = params.limit;
+    if (params?.offset !== undefined) query.offset = params.offset;
+    if (params?.sortBy) query.sort_by = params.sortBy;
     let response = await this.axios.get(url, { params: query });
     return response.data;
   }
@@ -139,8 +139,8 @@ export class TravisCIClient {
     }
   ): Promise<any> {
     let query: Record<string, any> = {};
-    if (params?.limit !== undefined) query['limit'] = params.limit;
-    if (params?.offset !== undefined) query['offset'] = params.offset;
+    if (params?.limit !== undefined) query.limit = params.limit;
+    if (params?.offset !== undefined) query.offset = params.offset;
     let response = await this.axios.get(`${this.repoPath(repoSlugOrId)}/requests`, {
       params: query
     });
@@ -254,8 +254,8 @@ export class TravisCIClient {
     }
   ): Promise<any> {
     let query: Record<string, any> = {};
-    if (params?.limit !== undefined) query['limit'] = params.limit;
-    if (params?.offset !== undefined) query['offset'] = params.offset;
+    if (params?.limit !== undefined) query.limit = params.limit;
+    if (params?.offset !== undefined) query.offset = params.offset;
     let response = await this.axios.get(`${this.repoPath(repoSlugOrId)}/crons`, {
       params: query
     });
@@ -302,8 +302,8 @@ export class TravisCIClient {
     }
   ): Promise<any> {
     let query: Record<string, any> = {};
-    if (params?.branch) query['branch'] = params.branch;
-    if (params?.match) query['match'] = params.match;
+    if (params?.branch) query.branch = params.branch;
+    if (params?.match) query.match = params.match;
     let response = await this.axios.get(`${this.repoPath(repoSlugOrId)}/caches`, {
       params: query
     });
@@ -318,8 +318,8 @@ export class TravisCIClient {
     }
   ): Promise<void> {
     let query: Record<string, any> = {};
-    if (params?.branch) query['branch'] = params.branch;
-    if (params?.match) query['match'] = params.match;
+    if (params?.branch) query.branch = params.branch;
+    if (params?.match) query.match = params.match;
     await this.axios.delete(`${this.repoPath(repoSlugOrId)}/caches`, { params: query });
   }
 
@@ -342,11 +342,10 @@ export class TravisCIClient {
     }
   ): Promise<any> {
     let query: Record<string, any> = {};
-    if (params?.existsOnGithub !== undefined)
-      query['exists_on_github'] = params.existsOnGithub;
-    if (params?.limit !== undefined) query['limit'] = params.limit;
-    if (params?.offset !== undefined) query['offset'] = params.offset;
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
+    if (params?.existsOnGithub !== undefined) query.exists_on_github = params.existsOnGithub;
+    if (params?.limit !== undefined) query.limit = params.limit;
+    if (params?.offset !== undefined) query.offset = params.offset;
+    if (params?.sortBy) query.sort_by = params.sortBy;
     let response = await this.axios.get(`${this.repoPath(repoSlugOrId)}/branches`, {
       params: query
     });

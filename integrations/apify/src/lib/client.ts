@@ -28,7 +28,7 @@ export class ApifyClient {
     desc?: boolean;
     my?: boolean;
   }): Promise<{
-    items: Array<Record<string, any>>;
+    items: Record<string, any>[];
     total: number;
     offset: number;
     limit: number;
@@ -82,7 +82,7 @@ export class ApifyClient {
       timeout?: number;
       memory?: number;
       build?: string;
-      webhooks?: Array<Record<string, any>>;
+      webhooks?: Record<string, any>[];
     }
   ): Promise<Record<string, any>> {
     let queryParams: Record<string, string> = {};
@@ -136,7 +136,7 @@ export class ApifyClient {
       status?: string;
     }
   ): Promise<{
-    items: Array<Record<string, any>>;
+    items: Record<string, any>[];
     total: number;
     offset: number;
     limit: number;
@@ -171,12 +171,8 @@ export class ApifyClient {
 
   // ---- Actor Tasks ----
 
-  async listTasks(params?: {
-    offset?: number;
-    limit?: number;
-    desc?: boolean;
-  }): Promise<{
-    items: Array<Record<string, any>>;
+  async listTasks(params?: { offset?: number; limit?: number; desc?: boolean }): Promise<{
+    items: Record<string, any>[];
     total: number;
     offset: number;
     limit: number;
@@ -227,7 +223,7 @@ export class ApifyClient {
       timeout?: number;
       memory?: number;
       build?: string;
-      webhooks?: Array<Record<string, any>>;
+      webhooks?: Record<string, any>[];
     }
   ): Promise<Record<string, any>> {
     let queryParams: Record<string, string> = {};
@@ -251,7 +247,7 @@ export class ApifyClient {
     desc?: boolean;
     unnamed?: boolean;
   }): Promise<{
-    items: Array<Record<string, any>>;
+    items: Record<string, any>[];
     total: number;
     offset: number;
     limit: number;
@@ -289,7 +285,7 @@ export class ApifyClient {
       desc?: boolean;
       clean?: boolean;
     }
-  ): Promise<Array<Record<string, any>>> {
+  ): Promise<Record<string, any>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -305,7 +301,7 @@ export class ApifyClient {
     return response.data || [];
   }
 
-  async pushDatasetItems(datasetId: string, items: Array<Record<string, any>>): Promise<void> {
+  async pushDatasetItems(datasetId: string, items: Record<string, any>[]): Promise<void> {
     await this.axios.post(`/datasets/${datasetId}/items`, items);
   }
 
@@ -317,7 +313,7 @@ export class ApifyClient {
     desc?: boolean;
     unnamed?: boolean;
   }): Promise<{
-    items: Array<Record<string, any>>;
+    items: Record<string, any>[];
     total: number;
     offset: number;
     limit: number;
@@ -391,12 +387,8 @@ export class ApifyClient {
 
   // ---- Schedules ----
 
-  async listSchedules(params?: {
-    offset?: number;
-    limit?: number;
-    desc?: boolean;
-  }): Promise<{
-    items: Array<Record<string, any>>;
+  async listSchedules(params?: { offset?: number; limit?: number; desc?: boolean }): Promise<{
+    items: Record<string, any>[];
     total: number;
     offset: number;
     limit: number;
@@ -442,12 +434,8 @@ export class ApifyClient {
 
   // ---- Webhooks ----
 
-  async listWebhooks(params?: {
-    offset?: number;
-    limit?: number;
-    desc?: boolean;
-  }): Promise<{
-    items: Array<Record<string, any>>;
+  async listWebhooks(params?: { offset?: number; limit?: number; desc?: boolean }): Promise<{
+    items: Record<string, any>[];
     total: number;
     offset: number;
     limit: number;
@@ -565,7 +553,7 @@ export class ApifyClient {
       desc?: boolean;
     }
   ): Promise<{
-    items: Array<Record<string, any>>;
+    items: Record<string, any>[];
     total: number;
     offset: number;
     limit: number;
@@ -595,7 +583,7 @@ export class ApifyClient {
     desc?: boolean;
     unnamed?: boolean;
   }): Promise<{
-    items: Array<Record<string, any>>;
+    items: Record<string, any>[];
     total: number;
     offset: number;
     limit: number;
@@ -629,7 +617,7 @@ export class ApifyClient {
       omit?: string[];
       clean?: boolean;
     }
-  ): Promise<Array<Record<string, any>>> {
+  ): Promise<Record<string, any>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);

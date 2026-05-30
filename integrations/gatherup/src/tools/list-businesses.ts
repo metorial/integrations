@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listBusinesses = SlateTool.create(spec, {
   name: 'List Businesses',
@@ -56,8 +56,9 @@ Returns business names, addresses, types, and metadata. Supports filtering delet
       includeDeletedBusinesses: ctx.input.includeDeleted === false ? 0 : 1
     });
 
-    let count = typeof data.count === 'number' ? data.count : parseInt(data.count || '0', 10);
-    let businesses: Array<Record<string, unknown>> = [];
+    let count =
+      typeof data.count === 'number' ? data.count : Number.parseInt(data.count || '0', 10);
+    let businesses: Record<string, unknown>[] = [];
 
     for (let i = 1; i <= count; i++) {
       businesses.push({

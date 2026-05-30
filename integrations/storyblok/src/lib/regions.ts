@@ -7,5 +7,5 @@ let regionBaseUrls: Record<string, string> = {
 };
 
 export let getBaseUrl = (region: string): string => {
-  return regionBaseUrls[region] || regionBaseUrls['eu']!;
+  return regionBaseUrls[region] || regionBaseUrls.eu!;
 };

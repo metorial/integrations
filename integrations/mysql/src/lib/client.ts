@@ -17,7 +17,9 @@ import {
   CLIENT_PROTOCOL_41,
   CLIENT_SECURE_CONNECTION,
   CLIENT_SSL,
+  type ColumnDefinition,
   getFullAuthPluginData,
+  type HandshakeV10,
   isEofPacket,
   isErrPacket,
   isOkPacket,
@@ -29,9 +31,7 @@ import {
   parsePackets,
   parseTextResultRow,
   readLenencInt,
-  UTF8MB4_GENERAL_CI,
-  type ColumnDefinition,
-  type HandshakeV10
+  UTF8MB4_GENERAL_CI
 } from './protocol';
 
 export interface ConnectionConfig {
@@ -131,7 +131,7 @@ export class MySQLClient {
   private performHandshake(socket: net.Socket, timeoutMs: number): Promise<void> {
     return new Promise((resolve, reject) => {
       let buffer: Uint8Array = new Uint8Array(0);
-      let handshakeDone = false;
+      let _handshakeDone = false;
 
       let timer = setTimeout(() => {
         cleanup();
@@ -293,7 +293,7 @@ export class MySQLClient {
           ) {
             if (isOkPacket(packet.payload)) {
               // Authentication successful
-              handshakeDone = true;
+              _handshakeDone = true;
               cleanup();
               resolve();
               return;
@@ -354,7 +354,6 @@ export class MySQLClient {
                 socket.write(buildPacket(sequenceId, payload));
                 sequenceId++;
                 phase = 'auth_more_data';
-                continue;
               }
             }
           }
@@ -672,12 +671,12 @@ let castValue = (value: string | null, typeId: number): any => {
     case 0x08: // LONGLONG
     case 0x09: // INT24
     case 0x0d: // YEAR
-      return parseInt(value, 10);
+      return Number.parseInt(value, 10);
     case 0x04: // FLOAT
     case 0x05: // DOUBLE
     case 0x00: // DECIMAL
     case 0xf6: // NEWDECIMAL
-      return parseFloat(value);
+      return Number.parseFloat(value);
     case 0xf5: // JSON
       try {
         return JSON.parse(value);

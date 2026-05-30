@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { actionSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let updateAction = SlateTool.create(spec, {
   name: 'Update Action',
@@ -38,7 +38,7 @@ export let updateAction = SlateTool.create(spec, {
     });
 
     let { actionId, done, ...updateData } = ctx.input;
-    let action;
+    let action: any;
 
     if (done === true) {
       action = await client.completeAction(actionId);

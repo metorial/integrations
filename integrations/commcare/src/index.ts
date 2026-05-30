@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCases,
-  getCase,
-  createCase,
-  updateCase,
   bulkCases,
-  listForms,
+  createCase,
+  getCase,
   getForm,
-  listMobileWorkers,
-  manageMobileWorker,
-  listWebUsers,
-  listGroups,
-  manageGroup,
   listApplications,
+  listCases,
+  listForms,
+  listGroups,
   listLookupTables,
-  sendSms
+  listMobileWorkers,
+  listWebUsers,
+  manageGroup,
+  manageMobileWorker,
+  sendSms,
+  updateCase
 } from './tools';
-import { newFormSubmission, caseUpdated, inboundWebhook } from './triggers';
+import { caseUpdated, inboundWebhook, newFormSubmission } from './triggers';
 
 export let provider = Slate.create({
   spec,

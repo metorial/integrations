@@ -11,7 +11,7 @@ export let createClient = (ctx: {
   });
 };
 
-export let searchQuerySchema = (moduleName: string) => ({
+export let searchQuerySchema = (_moduleName: string) => ({
   group: {
     operator: 'AND' as const,
     rules: [] as Array<{

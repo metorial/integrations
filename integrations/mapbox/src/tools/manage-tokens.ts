@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MapboxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let tokenSchema = z.object({
   tokenId: z.string().optional().describe('Token ID'),

@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getPackage,
-  searchPackages,
+  deprecatePackage,
   getDownloads,
+  getPackage,
+  getUserProfile,
   manageDistTags,
   manageTokens,
-  deprecatePackage,
   manageTrustedPublishers,
-  getUserProfile
+  searchPackages
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

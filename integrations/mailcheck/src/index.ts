@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { verifyEmail, createBatchCheck, getBatchOperation, listOperations } from './tools';
+import { createBatchCheck, getBatchOperation, listOperations, verifyEmail } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

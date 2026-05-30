@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private http;
 
-  constructor(private config: { token: string; accessUrl?: string }) {
+  constructor(config: { token: string; accessUrl?: string }) {
     let baseURL = config.accessUrl || 'https://api.surveymonkey.com';
     this.http = createAxios({
       baseURL,
@@ -28,15 +28,15 @@ export class Client {
     include?: string;
   }) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
-    if (params?.sortOrder) query['sort_order'] = params.sortOrder;
-    if (params?.title) query['title'] = params.title;
-    if (params?.startModifiedAt) query['start_modified_at'] = params.startModifiedAt;
-    if (params?.endModifiedAt) query['end_modified_at'] = params.endModifiedAt;
-    if (params?.folderId) query['folder_id'] = params.folderId;
-    if (params?.include) query['include'] = params.include;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.sortBy) query.sort_by = params.sortBy;
+    if (params?.sortOrder) query.sort_order = params.sortOrder;
+    if (params?.title) query.title = params.title;
+    if (params?.startModifiedAt) query.start_modified_at = params.startModifiedAt;
+    if (params?.endModifiedAt) query.end_modified_at = params.endModifiedAt;
+    if (params?.folderId) query.folder_id = params.folderId;
+    if (params?.include) query.include = params.include;
 
     let response = await this.http.get('/v3/surveys', { params: query });
     return response.data;
@@ -61,12 +61,12 @@ export class Client {
     folderId?: string;
   }) {
     let body: Record<string, unknown> = {};
-    if (data.title) body['title'] = data.title;
-    if (data.fromTemplateId) body['from_template_id'] = data.fromTemplateId;
-    if (data.fromSurveyId) body['from_survey_id'] = data.fromSurveyId;
-    if (data.nickname) body['nickname'] = data.nickname;
-    if (data.language) body['language'] = data.language;
-    if (data.folderId) body['folder_id'] = data.folderId;
+    if (data.title) body.title = data.title;
+    if (data.fromTemplateId) body.from_template_id = data.fromTemplateId;
+    if (data.fromSurveyId) body.from_survey_id = data.fromSurveyId;
+    if (data.nickname) body.nickname = data.nickname;
+    if (data.language) body.language = data.language;
+    if (data.folderId) body.folder_id = data.folderId;
 
     let response = await this.http.post('/v3/surveys', body);
     return response.data;
@@ -82,10 +82,10 @@ export class Client {
     }
   ) {
     let body: Record<string, unknown> = {};
-    if (data.title !== undefined) body['title'] = data.title;
-    if (data.nickname !== undefined) body['nickname'] = data.nickname;
-    if (data.language !== undefined) body['language'] = data.language;
-    if (data.folderId !== undefined) body['folder_id'] = data.folderId;
+    if (data.title !== undefined) body.title = data.title;
+    if (data.nickname !== undefined) body.nickname = data.nickname;
+    if (data.language !== undefined) body.language = data.language;
+    if (data.folderId !== undefined) body.folder_id = data.folderId;
 
     let response = await this.http.patch(`/v3/surveys/${surveyId}`, body);
     return response.data;
@@ -108,11 +108,11 @@ export class Client {
     }
   ) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
-    if (params?.sortOrder) query['sort_order'] = params.sortOrder;
-    if (params?.include) query['include'] = params.include;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.sortBy) query.sort_by = params.sortBy;
+    if (params?.sortOrder) query.sort_order = params.sortOrder;
+    if (params?.include) query.include = params.include;
 
     let response = await this.http.get(`/v3/surveys/${surveyId}/collectors`, {
       params: query
@@ -141,16 +141,16 @@ export class Client {
     }
   ) {
     let body: Record<string, unknown> = { type: data.type };
-    if (data.name) body['name'] = data.name;
-    if (data.thankYouMessage) body['thank_you_message'] = data.thankYouMessage;
-    if (data.closeDate) body['close_date'] = data.closeDate;
-    if (data.redirectUrl) body['redirect_url'] = data.redirectUrl;
+    if (data.name) body.name = data.name;
+    if (data.thankYouMessage) body.thank_you_message = data.thankYouMessage;
+    if (data.closeDate) body.close_date = data.closeDate;
+    if (data.redirectUrl) body.redirect_url = data.redirectUrl;
     if (data.allowMultipleResponses !== undefined)
-      body['allow_multiple_responses'] = data.allowMultipleResponses;
-    if (data.anonymous) body['anonymous_type'] = data.anonymous;
-    if (data.password) body['password'] = data.password;
-    if (data.responseLimit) body['response_limit'] = data.responseLimit;
-    if (data.senderEmail) body['sender_email'] = data.senderEmail;
+      body.allow_multiple_responses = data.allowMultipleResponses;
+    if (data.anonymous) body.anonymous_type = data.anonymous;
+    if (data.password) body.password = data.password;
+    if (data.responseLimit) body.response_limit = data.responseLimit;
+    if (data.senderEmail) body.sender_email = data.senderEmail;
 
     let response = await this.http.post(`/v3/surveys/${surveyId}/collectors`, body);
     return response.data;
@@ -171,16 +171,16 @@ export class Client {
     }
   ) {
     let body: Record<string, unknown> = {};
-    if (data.name !== undefined) body['name'] = data.name;
-    if (data.thankYouMessage !== undefined) body['thank_you_message'] = data.thankYouMessage;
-    if (data.closeDate !== undefined) body['close_date'] = data.closeDate;
-    if (data.redirectUrl !== undefined) body['redirect_url'] = data.redirectUrl;
+    if (data.name !== undefined) body.name = data.name;
+    if (data.thankYouMessage !== undefined) body.thank_you_message = data.thankYouMessage;
+    if (data.closeDate !== undefined) body.close_date = data.closeDate;
+    if (data.redirectUrl !== undefined) body.redirect_url = data.redirectUrl;
     if (data.allowMultipleResponses !== undefined)
-      body['allow_multiple_responses'] = data.allowMultipleResponses;
-    if (data.anonymous !== undefined) body['anonymous_type'] = data.anonymous;
-    if (data.password !== undefined) body['password'] = data.password;
-    if (data.responseLimit !== undefined) body['response_limit'] = data.responseLimit;
-    if (data.status !== undefined) body['status'] = data.status;
+      body.allow_multiple_responses = data.allowMultipleResponses;
+    if (data.anonymous !== undefined) body.anonymous_type = data.anonymous;
+    if (data.password !== undefined) body.password = data.password;
+    if (data.responseLimit !== undefined) body.response_limit = data.responseLimit;
+    if (data.status !== undefined) body.status = data.status;
 
     let response = await this.http.patch(`/v3/collectors/${collectorId}`, body);
     return response.data;
@@ -207,15 +207,15 @@ export class Client {
     }
   ) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.startCreatedAt) query['start_created_at'] = params.startCreatedAt;
-    if (params?.endCreatedAt) query['end_created_at'] = params.endCreatedAt;
-    if (params?.startModifiedAt) query['start_modified_at'] = params.startModifiedAt;
-    if (params?.endModifiedAt) query['end_modified_at'] = params.endModifiedAt;
-    if (params?.status) query['status'] = params.status;
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
-    if (params?.sortOrder) query['sort_order'] = params.sortOrder;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.startCreatedAt) query.start_created_at = params.startCreatedAt;
+    if (params?.endCreatedAt) query.end_created_at = params.endCreatedAt;
+    if (params?.startModifiedAt) query.start_modified_at = params.startModifiedAt;
+    if (params?.endModifiedAt) query.end_modified_at = params.endModifiedAt;
+    if (params?.status) query.status = params.status;
+    if (params?.sortBy) query.sort_by = params.sortBy;
+    if (params?.sortOrder) query.sort_order = params.sortOrder;
 
     let response = await this.http.get(`/v3/surveys/${surveyId}/responses`, { params: query });
     return response.data;
@@ -238,17 +238,17 @@ export class Client {
     }
   ) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.startCreatedAt) query['start_created_at'] = params.startCreatedAt;
-    if (params?.endCreatedAt) query['end_created_at'] = params.endCreatedAt;
-    if (params?.startModifiedAt) query['start_modified_at'] = params.startModifiedAt;
-    if (params?.endModifiedAt) query['end_modified_at'] = params.endModifiedAt;
-    if (params?.status) query['status'] = params.status;
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
-    if (params?.sortOrder) query['sort_order'] = params.sortOrder;
-    if (params?.simple) query['simple'] = 'true';
-    if (params?.collectorIds?.length) query['collector_ids'] = params.collectorIds.join(',');
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.startCreatedAt) query.start_created_at = params.startCreatedAt;
+    if (params?.endCreatedAt) query.end_created_at = params.endCreatedAt;
+    if (params?.startModifiedAt) query.start_modified_at = params.startModifiedAt;
+    if (params?.endModifiedAt) query.end_modified_at = params.endModifiedAt;
+    if (params?.status) query.status = params.status;
+    if (params?.sortBy) query.sort_by = params.sortBy;
+    if (params?.sortOrder) query.sort_order = params.sortOrder;
+    if (params?.simple) query.simple = 'true';
+    if (params?.collectorIds?.length) query.collector_ids = params.collectorIds.join(',');
 
     let response = await this.http.get(`/v3/surveys/${surveyId}/responses/bulk`, {
       params: query
@@ -265,8 +265,8 @@ export class Client {
 
   async listContactLists(params?: { page?: number; perPage?: number }) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
 
     let response = await this.http.get('/v3/contact_lists', { params: query });
     return response.data;
@@ -304,13 +304,13 @@ export class Client {
     }
   ) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.status) query['status'] = params.status;
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
-    if (params?.sortOrder) query['sort_order'] = params.sortOrder;
-    if (params?.search) query['search'] = params.search;
-    if (params?.searchBy) query['search_by'] = params.searchBy;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.status) query.status = params.status;
+    if (params?.sortBy) query.sort_by = params.sortBy;
+    if (params?.sortOrder) query.sort_order = params.sortOrder;
+    if (params?.search) query.search = params.search;
+    if (params?.searchBy) query.search_by = params.searchBy;
 
     let response = await this.http.get(`/v3/contact_lists/${contactListId}/contacts`, {
       params: query
@@ -332,9 +332,9 @@ export class Client {
       first_name: data.firstName,
       last_name: data.lastName
     };
-    if (data.email) body['email'] = data.email;
-    if (data.phoneNumber) body['phone_number'] = data.phoneNumber;
-    if (data.customFields) body['custom_fields'] = data.customFields;
+    if (data.email) body.email = data.email;
+    if (data.phoneNumber) body.phone_number = data.phoneNumber;
+    if (data.customFields) body.custom_fields = data.customFields;
 
     let response = await this.http.post(`/v3/contact_lists/${contactListId}/contacts`, body);
     return response.data;
@@ -357,13 +357,13 @@ export class Client {
           first_name: c.firstName,
           last_name: c.lastName
         };
-        if (c.email) contact['email'] = c.email;
-        if (c.phoneNumber) contact['phone_number'] = c.phoneNumber;
-        if (c.customFields) contact['custom_fields'] = c.customFields;
+        if (c.email) contact.email = c.email;
+        if (c.phoneNumber) contact.phone_number = c.phoneNumber;
+        if (c.customFields) contact.custom_fields = c.customFields;
         return contact;
       })
     };
-    if (updateExisting !== undefined) body['update_existing'] = updateExisting;
+    if (updateExisting !== undefined) body.update_existing = updateExisting;
 
     let response = await this.http.post(
       `/v3/contact_lists/${contactListId}/contacts/bulk`,
@@ -386,12 +386,12 @@ export class Client {
     }
   ) {
     let body: Record<string, unknown> = { type: data.type };
-    if (data.subject) body['subject'] = data.subject;
-    if (data.bodyHtml) body['body_html'] = data.bodyHtml;
-    if (data.bodyText) body['body_text'] = data.bodyText;
-    if (data.recipientStatus) body['recipient_status'] = data.recipientStatus;
+    if (data.subject) body.subject = data.subject;
+    if (data.bodyHtml) body.body_html = data.bodyHtml;
+    if (data.bodyText) body.body_text = data.bodyText;
+    if (data.recipientStatus) body.recipient_status = data.recipientStatus;
     if (data.isBrandingEnabled !== undefined)
-      body['is_branding_enabled'] = data.isBrandingEnabled;
+      body.is_branding_enabled = data.isBrandingEnabled;
 
     let response = await this.http.post(`/v3/collectors/${collectorId}/messages`, body);
     return response.data;
@@ -422,8 +422,8 @@ export class Client {
 
   async listWebhooks(params?: { page?: number; perPage?: number }) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
 
     let response = await this.http.get('/v3/webhooks', { params: query });
     return response.data;
@@ -464,11 +464,11 @@ export class Client {
     }
   ) {
     let body: Record<string, unknown> = {};
-    if (data.name !== undefined) body['name'] = data.name;
-    if (data.eventType !== undefined) body['event_type'] = data.eventType;
-    if (data.objectType !== undefined) body['object_type'] = data.objectType;
-    if (data.objectIds !== undefined) body['object_ids'] = data.objectIds;
-    if (data.subscriptionUrl !== undefined) body['subscription_url'] = data.subscriptionUrl;
+    if (data.name !== undefined) body.name = data.name;
+    if (data.eventType !== undefined) body.event_type = data.eventType;
+    if (data.objectType !== undefined) body.object_type = data.objectType;
+    if (data.objectIds !== undefined) body.object_ids = data.objectIds;
+    if (data.subscriptionUrl !== undefined) body.subscription_url = data.subscriptionUrl;
 
     let response = await this.http.patch(`/v3/webhooks/${webhookId}`, body);
     return response.data;
@@ -494,10 +494,10 @@ export class Client {
     category?: string;
   }) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.language) query['language'] = params.language;
-    if (params?.category) query['category'] = params.category;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.language) query.language = params.language;
+    if (params?.category) query.category = params.category;
 
     let response = await this.http.get('/v3/survey_templates', { params: query });
     return response.data;
@@ -507,9 +507,9 @@ export class Client {
 
   async listSurveyCategories(params?: { page?: number; perPage?: number; language?: string }) {
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.language) query['language'] = params.language;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.language) query.language = params.language;
 
     let response = await this.http.get('/v3/survey_categories', { params: query });
     return response.data;

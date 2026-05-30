@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { LookerClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let searchLooks = SlateTool.create(spec, {
   name: 'Search Looks',

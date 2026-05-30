@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { ZendeskClient } from '../lib/client';
+import { spec } from '../spec';
 
 let orgOutputSchema = z.object({
   organizationId: z.string().describe('The organization ID'),

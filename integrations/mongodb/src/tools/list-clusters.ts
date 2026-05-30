@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AtlasClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let clusterSummarySchema = z.object({
   clusterName: z.string().describe('Name of the cluster'),

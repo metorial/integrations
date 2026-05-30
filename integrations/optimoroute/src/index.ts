@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createOrder,
   bulkCreateUpdateOrders,
-  getOrders,
+  createOrder,
   deleteOrders,
-  searchOrders,
-  optimizeRoutes,
+  getCompletionDetails,
+  getOrders,
   getPlanningStatus,
   getRoutes,
   getSchedulingInfo,
+  optimizeRoutes,
+  searchOrders,
+  updateCompletionDetails,
   updateDriverParameters,
-  updateDriverPositions,
-  getCompletionDetails,
-  updateCompletionDetails
+  updateDriverPositions
 } from './tools';
-import { mobileEvents, inboundWebhook } from './triggers';
+import { inboundWebhook, mobileEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

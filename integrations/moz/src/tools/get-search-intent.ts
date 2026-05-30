@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MozClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSearchIntentTool = SlateTool.create(spec, {
   name: 'Get Search Intent',

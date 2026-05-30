@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendCard,
   browseCards,
   getCardDetails,
   listCardCategories,
-  listHandwritingStyles,
-  manageAddressBook,
-  manageTemplates,
-  manageBasket,
-  listOrders,
   listGiftCards,
+  listHandwritingStyles,
   listInserts,
-  listReturnAddresses
+  listOrders,
+  listReturnAddresses,
+  manageAddressBook,
+  manageBasket,
+  manageTemplates,
+  sendCard
 } from './tools';
-import { orderStatusChanged, inboundWebhook } from './triggers';
+import { inboundWebhook, orderStatusChanged } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let pullRequestEvents = SlateTrigger.create(spec, {
   name: 'Pull Request Events',
@@ -91,10 +91,10 @@ export let pullRequestEvents = SlateTrigger.create(spec, {
       }
 
       let action = String(data.action || 'opened');
-      let labels = ((pr.labels || []) as Array<Record<string, any>>).map(
-        (l: Record<string, any>) => String(l.name || '')
+      let labels = ((pr.labels || []) as Record<string, any>[]).map((l: Record<string, any>) =>
+        String(l.name || '')
       );
-      let assignees = ((pr.assignees || []) as Array<Record<string, any>>).map(
+      let assignees = ((pr.assignees || []) as Record<string, any>[]).map(
         (a: Record<string, any>) => String(a.login || '')
       );
 

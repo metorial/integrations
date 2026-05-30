@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MapboxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let staticImageTool = SlateTool.create(spec, {
   name: 'Static Map Image',

@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 import { airtableApiError, airtableServiceError } from './errors';
 import type {
-  AirtableRecord,
-  AirtableListRecordsResponse,
-  AirtableListCommentsResponse,
   AirtableBaseSchema,
   AirtableComment,
+  AirtableListCommentsResponse,
+  AirtableListRecordsResponse,
+  AirtableRecord,
   AirtableWebhook,
   CreateWebhookResponse,
   WebhookPayloadsResponse
@@ -42,10 +42,7 @@ export class Client {
     return this.baseId;
   }
 
-  private async request<T>(
-    operation: string,
-    run: () => Promise<{ data: T }>
-  ): Promise<T> {
+  private async request<T>(operation: string, run: () => Promise<{ data: T }>): Promise<T> {
     try {
       let response = await run();
       return response.data;
@@ -80,22 +77,22 @@ export class Client {
         params[`fields[${index}]`] = field;
       });
     }
-    if (options?.filterByFormula) params['filterByFormula'] = options.filterByFormula;
-    if (options?.maxRecords) params['maxRecords'] = options.maxRecords;
-    if (options?.pageSize) params['pageSize'] = options.pageSize;
+    if (options?.filterByFormula) params.filterByFormula = options.filterByFormula;
+    if (options?.maxRecords) params.maxRecords = options.maxRecords;
+    if (options?.pageSize) params.pageSize = options.pageSize;
     if (options?.sort) {
       options.sort.forEach((s, index) => {
         params[`sort[${index}][field]`] = s.field;
         if (s.direction) params[`sort[${index}][direction]`] = s.direction;
       });
     }
-    if (options?.view) params['view'] = options.view;
-    if (options?.offset) params['offset'] = options.offset;
-    if (options?.cellFormat) params['cellFormat'] = options.cellFormat;
-    if (options?.timeZone) params['timeZone'] = options.timeZone;
-    if (options?.userLocale) params['userLocale'] = options.userLocale;
+    if (options?.view) params.view = options.view;
+    if (options?.offset) params.offset = options.offset;
+    if (options?.cellFormat) params.cellFormat = options.cellFormat;
+    if (options?.timeZone) params.timeZone = options.timeZone;
+    if (options?.userLocale) params.userLocale = options.userLocale;
     if (options?.returnFieldsByFieldId)
-      params['returnFieldsByFieldId'] = options.returnFieldsByFieldId;
+      params.returnFieldsByFieldId = options.returnFieldsByFieldId;
 
     return await this.request('list records', () =>
       this.api.get(`/${baseId}/${encodeURIComponent(tableIdOrName)}`, {
@@ -112,7 +109,7 @@ export class Client {
     let baseId = this.requireBaseId();
     let params: Record<string, any> = {};
     if (options?.returnFieldsByFieldId)
-      params['returnFieldsByFieldId'] = options.returnFieldsByFieldId;
+      params.returnFieldsByFieldId = options.returnFieldsByFieldId;
 
     return await this.request('get record', () =>
       this.api.get(`/${baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}`, {
@@ -130,8 +127,8 @@ export class Client {
     let body: Record<string, any> = {
       records
     };
-    if (options?.typecast) body['typecast'] = true;
-    if (options?.returnFieldsByFieldId) body['returnFieldsByFieldId'] = true;
+    if (options?.typecast) body.typecast = true;
+    if (options?.returnFieldsByFieldId) body.returnFieldsByFieldId = true;
 
     return await this.request('create records', () =>
       this.api.post(`/${baseId}/${encodeURIComponent(tableIdOrName)}`, body)
@@ -147,8 +144,8 @@ export class Client {
     let body: Record<string, any> = {
       records
     };
-    if (options?.typecast) body['typecast'] = true;
-    if (options?.returnFieldsByFieldId) body['returnFieldsByFieldId'] = true;
+    if (options?.typecast) body.typecast = true;
+    if (options?.returnFieldsByFieldId) body.returnFieldsByFieldId = true;
 
     let method = options?.method || 'PATCH';
     return await this.request('update records', () =>
@@ -175,8 +172,8 @@ export class Client {
       },
       records
     };
-    if (options?.typecast) body['typecast'] = true;
-    if (options?.returnFieldsByFieldId) body['returnFieldsByFieldId'] = true;
+    if (options?.typecast) body.typecast = true;
+    if (options?.returnFieldsByFieldId) body.returnFieldsByFieldId = true;
 
     return await this.request('upsert records', () =>
       this.api.patch(`/${baseId}/${encodeURIComponent(tableIdOrName)}`, body)
@@ -237,7 +234,7 @@ export class Client {
   ): Promise<any> {
     let baseId = this.requireBaseId();
     let body: Record<string, any> = { name, fields };
-    if (description) body['description'] = description;
+    if (description) body.description = description;
 
     return await this.request('create table', () =>
       this.api.post(`/meta/bases/${baseId}/tables`, body)
@@ -293,8 +290,8 @@ export class Client {
   ): Promise<AirtableListCommentsResponse> {
     let baseId = this.requireBaseId();
     let params: Record<string, any> = {};
-    if (options?.offset) params['offset'] = options.offset;
-    if (options?.pageSize) params['pageSize'] = options.pageSize;
+    if (options?.offset) params.offset = options.offset;
+    if (options?.pageSize) params.pageSize = options.pageSize;
 
     return await this.request('list comments', () =>
       this.api.get(`/${baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}/comments`, {
@@ -393,7 +390,7 @@ export class Client {
   ): Promise<WebhookPayloadsResponse> {
     let baseId = this.requireBaseId();
     let params: Record<string, any> = {};
-    if (cursor !== undefined) params['cursor'] = cursor;
+    if (cursor !== undefined) params.cursor = cursor;
 
     return await this.request('get webhook payloads', () =>
       this.api.get(`/bases/${baseId}/webhooks/${webhookId}/payloads`, {
@@ -436,7 +433,7 @@ export class Client {
     offset?: string;
   }> {
     let params: Record<string, any> = {};
-    if (options?.offset) params['offset'] = options.offset;
+    if (options?.offset) params.offset = options.offset;
 
     return await this.request('list bases', () => this.api.get('/meta/bases', { params }));
   }

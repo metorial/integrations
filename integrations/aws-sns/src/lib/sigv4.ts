@@ -1,4 +1,4 @@
-import { createHmac, createHash } from 'crypto';
+import { createHash, createHmac } from 'crypto';
 
 export interface SigningOptions {
   method: string;
@@ -47,7 +47,7 @@ let uriEncode = (str: string, encodeSlash: boolean = true): string => {
     } else {
       let bytes = new TextEncoder().encode(ch);
       for (let b of bytes) {
-        encoded += '%' + b.toString(16).toUpperCase().padStart(2, '0');
+        encoded += `%${b.toString(16).toUpperCase().padStart(2, '0')}`;
       }
     }
   }
@@ -56,11 +56,10 @@ let uriEncode = (str: string, encodeSlash: boolean = true): string => {
 
 let getAmzDate = (): { amzDate: string; dateStamp: string } => {
   let now = new Date();
-  let amzDate =
-    now
-      .toISOString()
-      .replace(/[:\-]|\.\d{3}/g, '')
-      .slice(0, 15) + 'Z';
+  let amzDate = `${now
+    .toISOString()
+    .replace(/[:-]|\.\d{3}/g, '')
+    .slice(0, 15)}Z`;
   let dateStamp = amzDate.slice(0, 8);
   return { amzDate, dateStamp };
 };
@@ -83,7 +82,7 @@ let buildCanonicalHeaders = (
     .map(([k, v]) => [k.toLowerCase().trim(), v.trim()] as [string, string])
     .sort(([a], [b]) => a.localeCompare(b));
 
-  let canonicalHeaders = entries.map(([k, v]) => `${k}:${v}`).join('\n') + '\n';
+  let canonicalHeaders = `${entries.map(([k, v]) => `${k}:${v}`).join('\n')}\n`;
   let signedHeaders = entries.map(([k]) => k).join(';');
   return { canonicalHeaders, signedHeaders };
 };

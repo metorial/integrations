@@ -1,15 +1,15 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { VimeoClient } from '../lib/client';
 import {
   channelSchema,
-  videoSchema,
+  mapChannel,
+  mapVideo,
   paginationInputSchema,
   paginationOutputSchema,
-  mapChannel,
-  mapVideo
+  videoSchema
 } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listChannelsTool = SlateTool.create(spec, {
   name: 'List My Channels',

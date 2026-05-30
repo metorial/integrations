@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let permissionSchema = z.object({
+let _permissionSchema = z.object({
   action: z.enum(['read', 'write']).describe('Permission action'),
   resource: z
     .object({

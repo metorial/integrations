@@ -53,7 +53,7 @@ export class NeutrinoClient {
       'output-case': 'camel'
     };
     if (params.countryCode) body['country-code'] = params.countryCode;
-    if (params.ip) body['ip'] = params.ip;
+    if (params.ip) body.ip = params.ip;
 
     let response = await api.post('/phone-validate', body, { headers: this.headers });
     return response.data;
@@ -103,7 +103,7 @@ export class NeutrinoClient {
       'output-case': 'camel'
     };
     if (params.listRating !== undefined) body['list-rating'] = params.listRating;
-    if (params.zones) body['zones'] = params.zones;
+    if (params.zones) body.zones = params.zones;
 
     let response = await api.post('/host-reputation', body, { headers: this.headers });
     return response.data;
@@ -138,17 +138,17 @@ export class NeutrinoClient {
     let body: Record<string, string | number | boolean> = {
       'output-case': 'camel'
     };
-    if (params.address) body['address'] = params.address;
+    if (params.address) body.address = params.address;
     if (params.houseNumber) body['house-number'] = params.houseNumber;
-    if (params.street) body['street'] = params.street;
-    if (params.city) body['city'] = params.city;
-    if (params.county) body['county'] = params.county;
-    if (params.state) body['state'] = params.state;
+    if (params.street) body.street = params.street;
+    if (params.city) body.city = params.city;
+    if (params.county) body.county = params.county;
+    if (params.state) body.state = params.state;
     if (params.postalCode) body['postal-code'] = params.postalCode;
     if (params.countryCode) body['country-code'] = params.countryCode;
     if (params.languageCode) body['language-code'] = params.languageCode;
     if (params.fuzzySearch !== undefined) body['fuzzy-search'] = params.fuzzySearch;
-    if (params.limit !== undefined) body['limit'] = params.limit;
+    if (params.limit !== undefined) body.limit = params.limit;
 
     let response = await api.post('/geocode-address', body, { headers: this.headers });
     return response.data;
@@ -164,11 +164,11 @@ export class NeutrinoClient {
     let body: Record<string, string> = {
       'output-case': 'camel'
     };
-    if (params.latitude) body['latitude'] = params.latitude;
-    if (params.longitude) body['longitude'] = params.longitude;
-    if (params.geohash) body['geohash'] = params.geohash;
+    if (params.latitude) body.latitude = params.latitude;
+    if (params.longitude) body.longitude = params.longitude;
+    if (params.geohash) body.geohash = params.geohash;
     if (params.languageCode) body['language-code'] = params.languageCode;
-    if (params.zoom) body['zoom'] = params.zoom;
+    if (params.zoom) body.zoom = params.zoom;
 
     let response = await api.post('/geocode-reverse', body, { headers: this.headers });
     return response.data;
@@ -213,7 +213,7 @@ export class NeutrinoClient {
       'output-case': 'camel'
     };
     if (params.censorCharacter) body['censor-character'] = params.censorCharacter;
-    if (params.catalog) body['catalog'] = params.catalog;
+    if (params.catalog) body.catalog = params.catalog;
 
     let response = await api.post('/bad-word-filter', body, { headers: this.headers });
     return response.data;
@@ -238,7 +238,7 @@ export class NeutrinoClient {
     if (params.brandName) body['brand-name'] = params.brandName;
     if (params.countryCode) body['country-code'] = params.countryCode;
     if (params.languageCode) body['language-code'] = params.languageCode;
-    if (params.limit !== undefined) body['limit'] = params.limit;
+    if (params.limit !== undefined) body.limit = params.limit;
     if (params.limitTtl !== undefined) body['limit-ttl'] = params.limitTtl;
 
     let response = await api.post('/sms-verify', body, { headers: this.headers });
@@ -269,7 +269,7 @@ export class NeutrinoClient {
     if (params.fetchContent !== undefined) body['fetch-content'] = params.fetchContent;
     if (params.ignoreCertificateErrors !== undefined)
       body['ignore-certificate-errors'] = params.ignoreCertificateErrors;
-    if (params.timeout !== undefined) body['timeout'] = params.timeout;
+    if (params.timeout !== undefined) body.timeout = params.timeout;
 
     let response = await api.post('/url-info', body, { headers: this.headers });
     return response.data;

@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchPipedrive = SlateTool.create(spec, {
   name: 'Search',
@@ -72,7 +72,8 @@ Supports filtering by item type and exact matching.`,
     let results = items.map((item: any) => {
       let resultItem = item.item;
       return {
-        resultType: item.result_type ?? item.type ?? resultItem?.type ?? resultItem?.item_type ?? '',
+        resultType:
+          item.result_type ?? item.type ?? resultItem?.type ?? resultItem?.item_type ?? '',
         resultId: resultItem?.id,
         title: resultItem?.title || resultItem?.name || '',
         resultScore: item.result_score,

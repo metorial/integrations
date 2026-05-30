@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Auth0Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageActionsTool = SlateTool.create(spec, {
   name: 'Manage Actions',
@@ -152,7 +152,7 @@ export let manageActionsTool = SlateTool.create(spec, {
 
     if (ctx.input.action === 'deploy') {
       if (!ctx.input.actionId) throw new Error('actionId is required for deploy action');
-      let a = await client.deployAction(ctx.input.actionId);
+      let _a = await client.deployAction(ctx.input.actionId);
       return {
         output: { deployed: true },
         message: `Deployed action successfully.`

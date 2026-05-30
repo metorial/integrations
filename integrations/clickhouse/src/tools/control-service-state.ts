@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickHouseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let controlServiceState = SlateTool.create(spec, {
   name: 'Control Service State',

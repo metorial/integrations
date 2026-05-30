@@ -59,17 +59,17 @@ export class Client {
       q: params.q
     };
 
-    if (params.searchEngine) queryParams['search_engine'] = params.searchEngine;
-    if (params.location) queryParams['location'] = params.location;
-    if (params.hl) queryParams['hl'] = params.hl;
-    if (params.gl) queryParams['gl'] = params.gl;
-    if (params.num !== undefined) queryParams['num'] = params.num;
-    if (params.start !== undefined) queryParams['start'] = params.start;
-    if (params.tbm) queryParams['tbm'] = params.tbm;
-    if (params.tbs) queryParams['tbs'] = params.tbs;
-    if (params.lat) queryParams['lat'] = params.lat;
-    if (params.lng) queryParams['lng'] = params.lng;
-    if (params.device) queryParams['device'] = params.device;
+    if (params.searchEngine) queryParams.search_engine = params.searchEngine;
+    if (params.location) queryParams.location = params.location;
+    if (params.hl) queryParams.hl = params.hl;
+    if (params.gl) queryParams.gl = params.gl;
+    if (params.num !== undefined) queryParams.num = params.num;
+    if (params.start !== undefined) queryParams.start = params.start;
+    if (params.tbm) queryParams.tbm = params.tbm;
+    if (params.tbs) queryParams.tbs = params.tbs;
+    if (params.lat) queryParams.lat = params.lat;
+    if (params.lng) queryParams.lng = params.lng;
+    if (params.device) queryParams.device = params.device;
 
     let response = await this.searchApi.get('/search', {
       params: queryParams
@@ -83,8 +83,8 @@ export class Client {
       image_url: params.imageUrl
     };
 
-    if (params.num !== undefined) queryParams['num'] = params.num;
-    if (params.start !== undefined) queryParams['start'] = params.start;
+    if (params.num !== undefined) queryParams.num = params.num;
+    if (params.start !== undefined) queryParams.start = params.start;
 
     let response = await this.searchApi.get('/search', {
       params: queryParams
@@ -98,11 +98,11 @@ export class Client {
 
     queryParams['keyword[]'] = params.keywords;
 
-    if (params.timeframe) queryParams['timeframe'] = params.timeframe;
-    if (params.category) queryParams['cat'] = params.category;
-    if (params.type) queryParams['type'] = params.type;
-    if (params.hl) queryParams['hl'] = params.hl;
-    if (params.gl) queryParams['gl'] = params.gl;
+    if (params.timeframe) queryParams.timeframe = params.timeframe;
+    if (params.category) queryParams.cat = params.category;
+    if (params.type) queryParams.type = params.type;
+    if (params.hl) queryParams.hl = params.hl;
+    if (params.gl) queryParams.gl = params.gl;
 
     let response = await this.v1Api.get('/trends', {
       params: queryParams
@@ -117,9 +117,9 @@ export class Client {
       tbm: 'shop'
     };
 
-    if (params.location) queryParams['location'] = params.location;
-    if (params.hl) queryParams['hl'] = params.hl;
-    if (params.gl) queryParams['gl'] = params.gl;
+    if (params.location) queryParams.location = params.location;
+    if (params.hl) queryParams.hl = params.hl;
+    if (params.gl) queryParams.gl = params.gl;
 
     let response = await this.v1Api.get('/shopping', {
       params: queryParams

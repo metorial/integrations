@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { DuoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let adminActionEvents = SlateTrigger.create(spec, {
   name: 'Admin Action Events',
@@ -66,7 +66,7 @@ export let adminActionEvents = SlateTrigger.create(spec, {
       let latestTimestamp =
         logs.length > 0
           ? Math.max(...logs.map((l: any) => l.timestamp || 0))
-          : parseInt(mintime);
+          : Number.parseInt(mintime, 10);
 
       return {
         inputs,

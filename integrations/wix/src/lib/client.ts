@@ -9,7 +9,7 @@ export interface WixClientConfig {
 export class WixClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: WixClientConfig) {
+  constructor(config: WixClientConfig) {
     let headers: Record<string, string> = {
       Authorization: config.token
     };
@@ -282,7 +282,7 @@ export class WixClient {
     return response.data;
   }
 
-  async updateInventoryVariants(inventoryId: string, variants: Array<Record<string, any>>) {
+  async updateInventoryVariants(inventoryId: string, variants: Record<string, any>[]) {
     let response = await this.axios.patch(`/stores/v1/inventoryItems/${inventoryId}`, {
       inventoryItem: { trackQuantity: true, variants }
     });

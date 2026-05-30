@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let contactEvents = SlateTrigger.create(spec, {
   name: 'Contact & Member Events',
@@ -34,7 +34,7 @@ export let contactEvents = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let data = (await ctx.request.json()) as Record<string, any>;
       let eventType = data.eventType || data.type || 'unknown';
-      let eventId = data.eventId || data.instanceId + '-' + Date.now();
+      let eventId = data.eventId || `${data.instanceId}-${Date.now()}`;
       let payload = data.data || data;
 
       let resourceId =

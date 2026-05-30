@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let configureAsyncInvocation = SlateTool.create(spec, {
   name: 'Configure Async Invocation',
@@ -108,16 +108,16 @@ export let configureAsyncInvocation = SlateTool.create(spec, {
 
     let params: Record<string, any> = {};
     if (ctx.input.maximumRetryAttempts !== undefined)
-      params['MaximumRetryAttempts'] = ctx.input.maximumRetryAttempts;
+      params.MaximumRetryAttempts = ctx.input.maximumRetryAttempts;
     if (ctx.input.maximumEventAgeInSeconds !== undefined)
-      params['MaximumEventAgeInSeconds'] = ctx.input.maximumEventAgeInSeconds;
+      params.MaximumEventAgeInSeconds = ctx.input.maximumEventAgeInSeconds;
 
     let destConfig: Record<string, any> = {};
     if (ctx.input.onSuccessDestinationArn)
-      destConfig['OnSuccess'] = { Destination: ctx.input.onSuccessDestinationArn };
+      destConfig.OnSuccess = { Destination: ctx.input.onSuccessDestinationArn };
     if (ctx.input.onFailureDestinationArn)
-      destConfig['OnFailure'] = { Destination: ctx.input.onFailureDestinationArn };
-    if (Object.keys(destConfig).length > 0) params['DestinationConfig'] = destConfig;
+      destConfig.OnFailure = { Destination: ctx.input.onFailureDestinationArn };
+    if (Object.keys(destConfig).length > 0) params.DestinationConfig = destConfig;
 
     let result =
       action === 'update'

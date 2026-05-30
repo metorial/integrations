@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WorkflowClient } from '../lib/workflow-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let triggerWorkflow = SlateTool.create(spec, {
   name: 'Trigger Workflow',

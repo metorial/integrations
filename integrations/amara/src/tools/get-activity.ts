@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getActivity = SlateTool.create(spec, {
   name: 'Get Activity',
@@ -54,7 +54,7 @@ export let getActivity = SlateTool.create(spec, {
       username: ctx.auth.username
     });
 
-    let result;
+    let result: any;
 
     if (ctx.input.videoId) {
       result = await client.getVideoActivity(ctx.input.videoId, {
@@ -87,7 +87,7 @@ export let getActivity = SlateTool.create(spec, {
       throw new Error('Provide exactly one of videoId, teamSlug, or userIdentifier');
     }
 
-    let activities = result.objects.map(a => ({
+    let activities = result.objects.map((a: any) => ({
       activityType: a.type,
       date: a.date,
       username: a.user?.username ?? null,

@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageContacts,
-  listContacts,
   bulkContactAction,
-  sendMessage,
-  sendBroadcast,
-  listMessages,
-  listFlows,
-  startFlow,
-  listRuns,
-  manageCampaigns,
-  listCampaigns,
-  manageCampaignEvents,
-  manageGroups,
-  listGroups,
-  manageLabels,
-  manageFields,
-  listTickets,
-  manageTickets,
-  manageGlobals,
   getWorkspace,
-  listChannels
+  listCampaigns,
+  listChannels,
+  listContacts,
+  listFlows,
+  listGroups,
+  listMessages,
+  listRuns,
+  listTickets,
+  manageCampaignEvents,
+  manageCampaigns,
+  manageContacts,
+  manageFields,
+  manageGlobals,
+  manageGroups,
+  manageLabels,
+  manageTickets,
+  sendBroadcast,
+  sendMessage,
+  startFlow
 } from './tools';
-import { resthookEvent, newMessage, newFlowRun } from './triggers';
+import { newFlowRun, newMessage, resthookEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,

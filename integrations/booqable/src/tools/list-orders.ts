@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { buildClientConfig, flattenResourceList } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listOrders = SlateTool.create(spec, {
   name: 'List Orders',
@@ -57,8 +57,8 @@ export let listOrders = SlateTool.create(spec, {
     let client = new Client(buildClientConfig(ctx));
 
     let filters: Record<string, string> = {};
-    if (ctx.input.filterStatus) filters['status'] = ctx.input.filterStatus;
-    if (ctx.input.filterCustomerId) filters['customer_id'] = ctx.input.filterCustomerId;
+    if (ctx.input.filterStatus) filters.status = ctx.input.filterStatus;
+    if (ctx.input.filterCustomerId) filters.customer_id = ctx.input.filterCustomerId;
     if (ctx.input.filterStartsAtGte) filters['starts_at[gte]'] = ctx.input.filterStartsAtGte;
     if (ctx.input.filterStartsAtLte) filters['starts_at[lte]'] = ctx.input.filterStartsAtLte;
     if (ctx.input.filterStopsAtGte) filters['stops_at[gte]'] = ctx.input.filterStopsAtGte;

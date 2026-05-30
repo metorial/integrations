@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ProjectClient } from '../lib/project-client';
-import { ManagementClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ManagementClient } from '../lib/client';
+import { ProjectClient } from '../lib/project-client';
+import { spec } from '../spec';
 
 export let manageTableRows = SlateTool.create(spec, {
   name: 'Manage Table Rows',

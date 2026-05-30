@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CrowTerminalClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deletePost = SlateTool.create(spec, {
   name: 'Delete Post',

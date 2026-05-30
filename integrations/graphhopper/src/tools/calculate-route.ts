@@ -1,11 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphHopperClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let normalizePoints = (
-  points: Array<[number?, number?, ...unknown[]]>
-): Array<[number, number]> => {
+let normalizePoints = (points: [number?, number?, ...unknown[]][]): [number, number][] => {
   return points
     .map(point => [point[0], point[1]] as const)
     .filter(
@@ -190,7 +188,7 @@ Points use **[longitude, latitude]** order (GeoJSON convention).`,
       bbox: p.bbox,
       points: p.points,
       instructions: p.instructions
-        ? (p.instructions as Array<Record<string, unknown>>).map(inst => ({
+        ? (p.instructions as Record<string, unknown>[]).map(inst => ({
             text: inst.text,
             streetName: inst.street_name,
             distance: inst.distance,

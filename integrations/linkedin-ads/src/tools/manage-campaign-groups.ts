@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCampaignGroups = SlateTool.create(spec, {
   name: 'List Campaign Groups',
@@ -111,14 +111,13 @@ export let createCampaignGroup = SlateTool.create(spec, {
     };
 
     if (ctx.input.totalBudget) {
-      data['totalBudget'] = ctx.input.totalBudget;
+      data.totalBudget = ctx.input.totalBudget;
     }
 
     if (ctx.input.runScheduleStart || ctx.input.runScheduleEnd) {
-      data['runSchedule'] = {};
-      if (ctx.input.runScheduleStart)
-        data['runSchedule']['start'] = ctx.input.runScheduleStart;
-      if (ctx.input.runScheduleEnd) data['runSchedule']['end'] = ctx.input.runScheduleEnd;
+      data.runSchedule = {};
+      if (ctx.input.runScheduleStart) data.runSchedule.start = ctx.input.runScheduleStart;
+      if (ctx.input.runScheduleEnd) data.runSchedule.end = ctx.input.runScheduleEnd;
     }
 
     let campaignGroupId = await client.createCampaignGroup(data as any);
@@ -167,15 +166,15 @@ export let updateCampaignGroup = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
 
     let updates: Record<string, any> = {};
-    if (ctx.input.name) updates['patch'] = { ...updates['patch'], name: ctx.input.name };
-    if (ctx.input.status) updates['patch'] = { ...updates['patch'], status: ctx.input.status };
+    if (ctx.input.name) updates.patch = { ...updates.patch, name: ctx.input.name };
+    if (ctx.input.status) updates.patch = { ...updates.patch, status: ctx.input.status };
     if (ctx.input.totalBudget)
-      updates['patch'] = { ...updates['patch'], totalBudget: ctx.input.totalBudget };
+      updates.patch = { ...updates.patch, totalBudget: ctx.input.totalBudget };
     if (ctx.input.runScheduleStart || ctx.input.runScheduleEnd) {
       let runSchedule: Record<string, any> = {};
-      if (ctx.input.runScheduleStart) runSchedule['start'] = ctx.input.runScheduleStart;
-      if (ctx.input.runScheduleEnd) runSchedule['end'] = ctx.input.runScheduleEnd;
-      updates['patch'] = { ...updates['patch'], runSchedule };
+      if (ctx.input.runScheduleStart) runSchedule.start = ctx.input.runScheduleStart;
+      if (ctx.input.runScheduleEnd) runSchedule.end = ctx.input.runScheduleEnd;
+      updates.patch = { ...updates.patch, runSchedule };
     }
 
     await client.updateCampaignGroup(ctx.input.campaignGroupId, updates);

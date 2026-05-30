@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HereClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let placeResultSchema = z.object({
   title: z.string().optional().describe('Place name or title'),

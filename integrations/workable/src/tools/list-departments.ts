@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WorkableClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listDepartmentsTool = SlateTool.create(spec, {
   name: 'List Departments',

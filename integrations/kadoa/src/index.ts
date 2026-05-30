@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listWorkflows,
-  getWorkflowDetails,
-  getWorkflowData,
-  runWorkflow,
-  manageWorkflow,
-  startCrawl,
-  getCrawlResults,
   adhocExtraction,
-  getDataChanges
+  getCrawlResults,
+  getDataChanges,
+  getWorkflowData,
+  getWorkflowDetails,
+  listWorkflows,
+  manageWorkflow,
+  runWorkflow,
+  startCrawl
 } from './tools';
 import { kadoaEvents } from './triggers';
 

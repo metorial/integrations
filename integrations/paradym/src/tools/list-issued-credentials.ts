@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listIssuedCredentials = SlateTool.create(spec, {
   name: 'List Issued Credentials',
@@ -55,10 +55,10 @@ export let listIssuedCredentials = SlateTool.create(spec, {
     });
 
     let filter: Record<string, string> = {};
-    if (ctx.input.filterStatus) filter['status'] = ctx.input.filterStatus;
-    if (ctx.input.filterFormat) filter['format'] = ctx.input.filterFormat;
+    if (ctx.input.filterStatus) filter.status = ctx.input.filterStatus;
+    if (ctx.input.filterFormat) filter.format = ctx.input.filterFormat;
     if (ctx.input.filterCredentialTemplateId)
-      filter['credentialTemplateId'] = ctx.input.filterCredentialTemplateId;
+      filter.credentialTemplateId = ctx.input.filterCredentialTemplateId;
 
     let result = await client.listIssuedCredentials({
       pageSize: ctx.input.pageSize,

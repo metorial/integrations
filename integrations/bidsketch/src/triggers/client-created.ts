@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BidsketchClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let clientCreated = SlateTrigger.create(spec, {
   name: 'Client Created',

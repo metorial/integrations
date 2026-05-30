@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let bookmarkSchema = z.object({
   bookmarkId: z.string().describe('Bookmark ID'),

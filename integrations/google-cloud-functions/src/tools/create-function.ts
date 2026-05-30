@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { googleCloudFunctionsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventFilterInputSchema = z.object({
   attribute: z.string().describe('CloudEvent attribute name (e.g. "type", "bucket")'),
@@ -146,14 +146,14 @@ export let createFunction = SlateTool.create(spec, {
 
     let source: Record<string, any> = {};
     if (ctx.input.sourceUploadUrl) {
-      source['storageSource'] = { sourceUploadUrl: ctx.input.sourceUploadUrl };
+      source.storageSource = { sourceUploadUrl: ctx.input.sourceUploadUrl };
     } else if (ctx.input.sourceStorageBucket && ctx.input.sourceStorageObject) {
-      source['storageSource'] = {
+      source.storageSource = {
         bucket: ctx.input.sourceStorageBucket,
         object: ctx.input.sourceStorageObject
       };
     } else if (ctx.input.sourceRepoUrl) {
-      source['repoSource'] = {
+      source.repoSource = {
         url: ctx.input.sourceRepoUrl,
         branchName: ctx.input.sourceRepoBranch
       };
@@ -165,40 +165,38 @@ export let createFunction = SlateTool.create(spec, {
       source
     };
     if (ctx.input.buildEnvironmentVariables) {
-      buildConfig['environmentVariables'] = ctx.input.buildEnvironmentVariables;
+      buildConfig.environmentVariables = ctx.input.buildEnvironmentVariables;
     }
 
     let serviceConfig: Record<string, any> = {};
     if (ctx.input.timeoutSeconds !== undefined)
-      serviceConfig['timeoutSeconds'] = ctx.input.timeoutSeconds;
-    if (ctx.input.availableMemory)
-      serviceConfig['availableMemory'] = ctx.input.availableMemory;
-    if (ctx.input.availableCpu) serviceConfig['availableCpu'] = ctx.input.availableCpu;
+      serviceConfig.timeoutSeconds = ctx.input.timeoutSeconds;
+    if (ctx.input.availableMemory) serviceConfig.availableMemory = ctx.input.availableMemory;
+    if (ctx.input.availableCpu) serviceConfig.availableCpu = ctx.input.availableCpu;
     if (ctx.input.maxInstanceCount !== undefined)
-      serviceConfig['maxInstanceCount'] = ctx.input.maxInstanceCount;
+      serviceConfig.maxInstanceCount = ctx.input.maxInstanceCount;
     if (ctx.input.minInstanceCount !== undefined)
-      serviceConfig['minInstanceCount'] = ctx.input.minInstanceCount;
+      serviceConfig.minInstanceCount = ctx.input.minInstanceCount;
     if (ctx.input.environmentVariables)
-      serviceConfig['environmentVariables'] = ctx.input.environmentVariables;
+      serviceConfig.environmentVariables = ctx.input.environmentVariables;
     if (ctx.input.serviceAccountEmail)
-      serviceConfig['serviceAccountEmail'] = ctx.input.serviceAccountEmail;
-    if (ctx.input.ingressSettings)
-      serviceConfig['ingressSettings'] = ctx.input.ingressSettings;
-    if (ctx.input.vpcConnector) serviceConfig['vpcConnector'] = ctx.input.vpcConnector;
+      serviceConfig.serviceAccountEmail = ctx.input.serviceAccountEmail;
+    if (ctx.input.ingressSettings) serviceConfig.ingressSettings = ctx.input.ingressSettings;
+    if (ctx.input.vpcConnector) serviceConfig.vpcConnector = ctx.input.vpcConnector;
     if (ctx.input.vpcConnectorEgressSettings)
-      serviceConfig['vpcConnectorEgressSettings'] = ctx.input.vpcConnectorEgressSettings;
+      serviceConfig.vpcConnectorEgressSettings = ctx.input.vpcConnectorEgressSettings;
     if (ctx.input.allTrafficOnLatestRevision !== undefined)
-      serviceConfig['allTrafficOnLatestRevision'] = ctx.input.allTrafficOnLatestRevision;
+      serviceConfig.allTrafficOnLatestRevision = ctx.input.allTrafficOnLatestRevision;
 
     let body: Record<string, any> = {
       name: functionName,
       buildConfig,
       serviceConfig
     };
-    if (ctx.input.description) body['description'] = ctx.input.description;
-    if (ctx.input.labels) body['labels'] = ctx.input.labels;
-    if (ctx.input.environment) body['environment'] = ctx.input.environment;
-    if (ctx.input.eventTrigger) body['eventTrigger'] = ctx.input.eventTrigger;
+    if (ctx.input.description) body.description = ctx.input.description;
+    if (ctx.input.labels) body.labels = ctx.input.labels;
+    if (ctx.input.environment) body.environment = ctx.input.environment;
+    if (ctx.input.eventTrigger) body.eventTrigger = ctx.input.eventTrigger;
 
     ctx.progress(`Creating function **${ctx.input.functionId}**...`);
 

@@ -12,10 +12,7 @@ describe('action scope helpers', () => {
     });
 
     expect(allOf(['scope:calendar'], ['scope:sharing', 'scope:sharing:admin'])).toEqual({
-      AND: [
-        { OR: ['scope:calendar'] },
-        { OR: ['scope:sharing', 'scope:sharing:admin'] }
-      ]
+      AND: [{ OR: ['scope:calendar'] }, { OR: ['scope:sharing', 'scope:sharing:admin'] }]
     });
   });
 
@@ -68,7 +65,9 @@ describe('action scope helpers', () => {
   });
 
   it('throws helpful errors for invalid scope definitions', () => {
-    expect(() => scopeClause()).toThrow('Each action scope clause must include at least one OR scope');
+    expect(() => scopeClause()).toThrow(
+      'Each action scope clause must include at least one OR scope'
+    );
     expect(() => scopeClause('')).toThrow('Action scopes must be non-empty strings');
     expect(() => validateScopes({ AND: [] })).toThrow(
       'Action scopes must include at least one AND clause'

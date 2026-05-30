@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphHopperClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let matchedInstructionSchema = z.object({
   text: z.string().describe('Human-readable instruction text'),
@@ -101,7 +101,7 @@ Useful for cleaning noisy GPS data, reconstructing traveled routes, or attaching
       gpsAccuracy: ctx.input.gpsAccuracy
     });
 
-    let paths = ((result.paths || []) as Array<Record<string, unknown>>).map(p => ({
+    let paths = ((result.paths || []) as Record<string, unknown>[]).map(p => ({
       distance: p.distance as number,
       time: p.time as number,
       ascend: p.ascend as number | undefined,
@@ -109,7 +109,7 @@ Useful for cleaning noisy GPS data, reconstructing traveled routes, or attaching
       bbox: p.bbox as number[] | undefined,
       points: p.points,
       instructions: p.instructions
-        ? (p.instructions as Array<Record<string, unknown>>).map(inst => ({
+        ? (p.instructions as Record<string, unknown>[]).map(inst => ({
             text: inst.text as string,
             streetName: inst.street_name as string,
             distance: inst.distance as number,

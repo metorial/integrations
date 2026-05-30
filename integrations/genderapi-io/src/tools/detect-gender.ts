@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let detectGender = SlateTool.create(spec, {
   name: 'Detect Gender',
@@ -76,7 +76,7 @@ Specify exactly one of **name**, **email**, or **username** as the input source.
       throw new Error('Provide only one of name, email, or username per request.');
     }
 
-    let result;
+    let result: any;
     let sourceType: string;
 
     if (ctx.input.name) {

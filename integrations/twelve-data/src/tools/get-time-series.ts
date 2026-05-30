@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TwelveDataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ohlcvSchema = z.object({
   datetime: z.string().describe('Date/time of the data point'),

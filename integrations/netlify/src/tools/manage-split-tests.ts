@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let splitTestOutputSchema = z.object({
   splitTestId: z.string().describe('Unique split test identifier'),
@@ -34,9 +34,7 @@ let mapSplitTest = (test: any) => {
       if (branch && typeof branch === 'object') {
         let branchRecord = branch as Record<string, unknown>;
         let name = String(branchRecord.branch ?? branchRecord.name ?? '');
-        let percentage = Number(
-          branchRecord.percentage ?? branchRecord.split ?? 0
-        );
+        let percentage = Number(branchRecord.percentage ?? branchRecord.split ?? 0);
         if (name) {
           branches.push({ branch: name, percentage });
         }

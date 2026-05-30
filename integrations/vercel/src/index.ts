@@ -1,29 +1,29 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  listProjectsTool,
-  getProjectTool,
-  createProjectTool,
-  updateProjectTool,
-  deleteProjectTool,
-  listDeploymentsTool,
-  getDeploymentTool,
-  getDeploymentEventsTool,
-  createDeploymentTool,
   cancelDeploymentTool,
+  createDeploymentTool,
+  createProjectTool,
+  deleteProjectTool,
+  getDeploymentEventsTool,
+  getDeploymentTool,
+  getProjectTool,
+  listDeploymentsTool,
+  listProjectsTool,
   manageAliasesTool,
-  manageDomainsTool,
-  manageEnvVarsTool,
-  manageDnsTool,
-  manageTeamsTool,
-  manageEdgeConfigTool,
   manageDeployHooksTool,
-  promoteDeploymentTool
+  manageDnsTool,
+  manageDomainsTool,
+  manageEdgeConfigTool,
+  manageEnvVarsTool,
+  manageTeamsTool,
+  promoteDeploymentTool,
+  updateProjectTool
 } from './tools';
 import {
   deploymentEventsTrigger,
-  projectEventsTrigger,
-  domainEventsTrigger
+  domainEventsTrigger,
+  projectEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

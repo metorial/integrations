@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CanvasClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let enrollmentChangesTrigger = SlateTrigger.create(spec, {
   name: 'Enrollment Changes',
@@ -105,7 +105,7 @@ export let enrollmentChangesTrigger = SlateTrigger.create(spec, {
       if (lastPollTime) {
         for (let enrollmentId of Object.keys(knownEnrollments)) {
           if (!newKnownEnrollments[enrollmentId]) {
-            let parts = (knownEnrollments[enrollmentId] || '').split('|');
+            let _parts = (knownEnrollments[enrollmentId] || '').split('|');
             inputs.push({
               enrollmentId,
               courseId: '',

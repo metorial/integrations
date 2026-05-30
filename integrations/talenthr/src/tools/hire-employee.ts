@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let hireEmployee = SlateTool.create(spec, {
   name: 'Hire Employee',
@@ -87,7 +87,7 @@ Use this to onboard new hires into the organization with their department, divis
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let hirePacket: any = undefined;
+    let hirePacket: any;
     if (
       ctx.input.hirePacketWhoId ||
       ctx.input.hirePacketAddress ||
@@ -102,7 +102,7 @@ Use this to onboard new hires into the organization with their department, divis
       };
     }
 
-    let compensationRecord: any = undefined;
+    let compensationRecord: any;
     if (
       ctx.input.payRate !== undefined ||
       ctx.input.payRatePeriod ||
@@ -117,7 +117,7 @@ Use this to onboard new hires into the organization with their department, divis
       };
     }
 
-    let jobRecord: any = undefined;
+    let jobRecord: any;
     if (
       ctx.input.jobTitleId ||
       ctx.input.locationId ||

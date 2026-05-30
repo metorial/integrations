@@ -1,4 +1,4 @@
-import { ConfluenceClient, ConfluenceClientConfig } from './client';
+import { ConfluenceClient, type ConfluenceClientConfig } from './client';
 import { confluenceServiceError } from './errors';
 
 export interface AuthOutput {

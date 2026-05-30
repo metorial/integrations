@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let signerSchema = z.object({
   name: z.string().describe('Full name of the signer'),
@@ -164,55 +164,55 @@ export let sendDocument = SlateTool.create(spec, {
 
     let body: Record<string, any> = {};
 
-    if (ctx.input.title) body['title'] = ctx.input.title;
-    if (ctx.input.message) body['message'] = ctx.input.message;
-    if (ctx.input.isDraft) body['is_draft'] = 1;
-    if (ctx.input.useSignerOrder) body['use_signer_order'] = 1;
-    if (ctx.input.reminders) body['reminders'] = 1;
-    if (ctx.input.requireAllSigners) body['require_all_signers'] = 1;
-    if (ctx.input.embeddedSigningEnabled) body['embedded_signing_enabled'] = 1;
-    if (ctx.input.flexibleSigning) body['flexible_signing'] = 1;
-    if (ctx.input.redirect) body['redirect'] = ctx.input.redirect;
-    if (ctx.input.redirectDecline) body['redirect_decline'] = ctx.input.redirectDecline;
-    if (ctx.input.expires) body['expires'] = ctx.input.expires;
+    if (ctx.input.title) body.title = ctx.input.title;
+    if (ctx.input.message) body.message = ctx.input.message;
+    if (ctx.input.isDraft) body.is_draft = 1;
+    if (ctx.input.useSignerOrder) body.use_signer_order = 1;
+    if (ctx.input.reminders) body.reminders = 1;
+    if (ctx.input.requireAllSigners) body.require_all_signers = 1;
+    if (ctx.input.embeddedSigningEnabled) body.embedded_signing_enabled = 1;
+    if (ctx.input.flexibleSigning) body.flexible_signing = 1;
+    if (ctx.input.redirect) body.redirect = ctx.input.redirect;
+    if (ctx.input.redirectDecline) body.redirect_decline = ctx.input.redirectDecline;
+    if (ctx.input.expires) body.expires = ctx.input.expires;
     if (ctx.input.customRequesterName)
-      body['custom_requester_name'] = ctx.input.customRequesterName;
+      body.custom_requester_name = ctx.input.customRequesterName;
     if (ctx.input.customRequesterEmail)
-      body['custom_requester_email'] = ctx.input.customRequesterEmail;
-    if (ctx.input.meta) body['meta'] = ctx.input.meta;
+      body.custom_requester_email = ctx.input.customRequesterEmail;
+    if (ctx.input.meta) body.meta = ctx.input.meta;
 
-    body['files'] = ctx.input.files.map(f => {
+    body.files = ctx.input.files.map(f => {
       let file: Record<string, string> = { name: f.name };
-      if (f.fileUrl) file['file_url'] = f.fileUrl;
-      if (f.fileId) file['file_id'] = f.fileId;
-      if (f.fileBase64) file['file_base64'] = f.fileBase64;
+      if (f.fileUrl) file.file_url = f.fileUrl;
+      if (f.fileId) file.file_id = f.fileId;
+      if (f.fileBase64) file.file_base64 = f.fileBase64;
       return file;
     });
 
-    body['signers'] = ctx.input.signers.map((s, i) => {
+    body.signers = ctx.input.signers.map((s, i) => {
       let signer: Record<string, any> = {
         id: i + 1,
         name: s.name,
         email: s.email
       };
-      if (s.order !== undefined) signer['order'] = s.order;
-      if (s.pin) signer['pin'] = s.pin;
-      if (s.message) signer['message'] = s.message;
-      if (s.deliverEmail !== undefined) signer['deliver_email'] = s.deliverEmail ? 1 : 0;
-      if (s.language) signer['language'] = s.language;
+      if (s.order !== undefined) signer.order = s.order;
+      if (s.pin) signer.pin = s.pin;
+      if (s.message) signer.message = s.message;
+      if (s.deliverEmail !== undefined) signer.deliver_email = s.deliverEmail ? 1 : 0;
+      if (s.language) signer.language = s.language;
       return signer;
     });
 
     if (ctx.input.recipients) {
-      body['recipients'] = ctx.input.recipients.map(r => {
+      body.recipients = ctx.input.recipients.map(r => {
         let recipient: Record<string, any> = { name: r.name, email: r.email };
-        if (r.language) recipient['language'] = r.language;
+        if (r.language) recipient.language = r.language;
         return recipient;
       });
     }
 
     if (ctx.input.fields) {
-      body['fields'] = ctx.input.fields.map(fieldGroup =>
+      body.fields = ctx.input.fields.map(fieldGroup =>
         fieldGroup.map(f => {
           let field: Record<string, any> = {
             type: f.type,
@@ -223,18 +223,18 @@ export let sendDocument = SlateTool.create(spec, {
             page: f.page,
             signer: f.signer
           };
-          if (f.identifier) field['identifier'] = f.identifier;
-          if (f.required !== undefined) field['required'] = f.required ? 1 : 0;
-          if (f.readonly !== undefined) field['readonly'] = f.readonly ? 1 : 0;
-          if (f.name) field['name'] = f.name;
-          if (f.value) field['value'] = f.value;
-          if (f.validationType) field['validation_type'] = f.validationType;
-          if (f.textSize) field['text_size'] = f.textSize;
-          if (f.textColor) field['text_color'] = f.textColor;
-          if (f.textFont) field['text_font'] = f.textFont;
-          if (f.textStyle) field['text_style'] = f.textStyle;
-          if (f.options) field['options'] = f.options;
-          if (f.group) field['group'] = f.group;
+          if (f.identifier) field.identifier = f.identifier;
+          if (f.required !== undefined) field.required = f.required ? 1 : 0;
+          if (f.readonly !== undefined) field.readonly = f.readonly ? 1 : 0;
+          if (f.name) field.name = f.name;
+          if (f.value) field.value = f.value;
+          if (f.validationType) field.validation_type = f.validationType;
+          if (f.textSize) field.text_size = f.textSize;
+          if (f.textColor) field.text_color = f.textColor;
+          if (f.textFont) field.text_font = f.textFont;
+          if (f.textStyle) field.text_style = f.textStyle;
+          if (f.options) field.options = f.options;
+          if (f.group) field.group = f.group;
           return field;
         })
       );

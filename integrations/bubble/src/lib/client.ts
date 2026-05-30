@@ -44,7 +44,7 @@ export class Client {
       'Content-Type': 'application/json'
     };
     if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+      headers.Authorization = `Bearer ${this.token}`;
     }
     return createAxios({
       baseURL: this.baseUrl,
@@ -65,19 +65,19 @@ export class Client {
     let queryParams: Record<string, string> = {};
 
     if (params?.constraints && params.constraints.length > 0) {
-      queryParams['constraints'] = JSON.stringify(params.constraints);
+      queryParams.constraints = JSON.stringify(params.constraints);
     }
     if (params?.sortField) {
-      queryParams['sort_field'] = params.sortField;
+      queryParams.sort_field = params.sortField;
       if (params.descending !== undefined) {
-        queryParams['descending'] = String(params.descending);
+        queryParams.descending = String(params.descending);
       }
     }
     if (params?.limit !== undefined) {
-      queryParams['limit'] = String(params.limit);
+      queryParams.limit = String(params.limit);
     }
     if (params?.cursor !== undefined) {
-      queryParams['cursor'] = String(params.cursor);
+      queryParams.cursor = String(params.cursor);
     }
 
     let response = await http.get(`/obj/${encodeURIComponent(dataType)}`, {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDubbing = SlateTool.create(spec, {
   name: 'Get Dubbing',
@@ -33,21 +33,21 @@ export let getDubbing = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new ElevenLabsClient(ctx.auth.token);
     let data = (await client.getDubbing(ctx.input.dubbingId)) as Record<string, unknown>;
-    let media = data['media_metadata'] as Record<string, unknown> | undefined;
+    let media = data.media_metadata as Record<string, unknown> | undefined;
 
     return {
       output: {
-        dubbingId: data['dubbing_id'] as string,
-        name: data['name'] as string,
-        status: data['status'] as string,
-        sourceLanguage: data['source_language'] as string | undefined,
-        targetLanguages: data['target_languages'] as string[],
-        createdAt: data['created_at'] as string,
-        error: data['error'] as string | undefined,
-        contentType: media?.['content_type'] as string | undefined,
-        durationSeconds: media?.['duration'] as number | undefined
+        dubbingId: data.dubbing_id as string,
+        name: data.name as string,
+        status: data.status as string,
+        sourceLanguage: data.source_language as string | undefined,
+        targetLanguages: data.target_languages as string[],
+        createdAt: data.created_at as string,
+        error: data.error as string | undefined,
+        contentType: media?.content_type as string | undefined,
+        durationSeconds: media?.duration as number | undefined
       },
-      message: `Dubbing project \`${data['dubbing_id']}\`: status **${data['status']}**, target languages: ${(data['target_languages'] as string[]).join(', ')}.`
+      message: `Dubbing project \`${data.dubbing_id}\`: status **${data.status}**, target languages: ${(data.target_languages as string[]).join(', ')}.`
     };
   })
   .build();

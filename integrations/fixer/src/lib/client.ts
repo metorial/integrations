@@ -67,7 +67,7 @@ export interface FixerErrorResponse {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.apilayer.com/fixer',
       headers: {

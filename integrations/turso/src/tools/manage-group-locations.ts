@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageGroupLocations = SlateTool.create(spec, {
   name: 'Manage Group Locations',
@@ -35,7 +35,7 @@ export let manageGroupLocations = SlateTool.create(spec, {
       organizationSlug: ctx.config.organizationSlug
     });
 
-    let result;
+    let result: any;
     if (ctx.input.action === 'add') {
       result = await client.addGroupLocation(ctx.input.groupName, ctx.input.location);
     } else {

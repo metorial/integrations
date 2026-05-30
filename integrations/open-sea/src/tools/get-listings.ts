@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let listingSchema = z.object({
   orderHash: z.string().nullable().describe('Unique hash of the listing order'),

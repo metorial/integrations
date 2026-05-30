@@ -1,14 +1,14 @@
 import { createAxios } from 'slates';
 import type {
+  AuthResponse,
+  ConfigResponse,
+  FileInfo,
   TaskCreateResponse,
-  TaskStatus,
+  TaskDeleteResponse,
   TaskDetail,
   TaskListResponse,
   TaskRetentionResponse,
-  TaskDeleteResponse,
-  ConfigResponse,
-  AuthResponse,
-  FileInfo
+  TaskStatus
 } from './types';
 
 let BASE_URL = 'https://api.conversiontools.io/v1';
@@ -16,7 +16,7 @@ let BASE_URL = 'https://api.conversiontools.io/v1';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  geocodeTool,
-  validateAddressTool,
-  searchPlacesTool,
-  getPlaceDetailsTool,
-  getDirectionsTool,
   computeRouteMatrixTool,
-  getElevationTool,
-  getTimezoneTool,
-  getAirQualityTool,
-  snapToRoadsTool,
   generateStaticMapTool,
-  geolocateTool
+  geocodeTool,
+  geolocateTool,
+  getAirQualityTool,
+  getDirectionsTool,
+  getElevationTool,
+  getPlaceDetailsTool,
+  getTimezoneTool,
+  searchPlacesTool,
+  snapToRoadsTool,
+  validateAddressTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

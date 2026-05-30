@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TrackingClient } from '../lib/tracking';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let pageScreen = SlateTool.create(spec, {
   name: 'Record Page or Screen View',

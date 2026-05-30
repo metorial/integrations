@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CardlyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let permissionOptions = [
   'administrator',
@@ -183,12 +183,10 @@ export let manageInvitation = SlateTool.create(spec, {
       } else if (ctx.input.email) {
         await client.resendInvitationByEmail(ctx.input.email);
       }
-    } else {
-      if (ctx.input.invitationId) {
-        await client.deleteInvitation(ctx.input.invitationId);
-      } else if (ctx.input.email) {
-        await client.deleteInvitationByEmail(ctx.input.email);
-      }
+    } else if (ctx.input.invitationId) {
+      await client.deleteInvitation(ctx.input.invitationId);
+    } else if (ctx.input.email) {
+      await client.deleteInvitationByEmail(ctx.input.email);
     }
 
     let target = ctx.input.invitationId || ctx.input.email || 'unknown';

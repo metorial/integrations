@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AbstractClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let exchangeRates = SlateTool.create(spec, {
   name: 'Exchange Rates',

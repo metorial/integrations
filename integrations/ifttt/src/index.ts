@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getConnectionTool,
-  updateConnectionTool,
-  runActionTool,
-  performQueryTool,
-  testTriggerTool,
   fireWebhookTool,
+  getConnectionTool,
+  getFieldOptionsTool,
+  performQueryTool,
+  runActionTool,
   sendRealtimeNotificationTool,
-  getFieldOptionsTool
+  testTriggerTool,
+  updateConnectionTool
 } from './tools';
 import { connectionEventTrigger, triggerFiredTrigger } from './triggers';
 

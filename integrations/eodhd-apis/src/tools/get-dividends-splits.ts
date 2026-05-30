@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EodhdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let dividendSchema = z.object({
   date: z.string().describe('Ex-dividend date'),

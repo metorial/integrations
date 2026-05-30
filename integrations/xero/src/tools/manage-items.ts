@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
-import { createClientFromContext } from '../lib/helpers';
-import { xeroServiceError } from '../lib/errors';
 import { z } from 'zod';
+import { xeroServiceError } from '../lib/errors';
+import { createClientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 let itemOutputSchema = z.object({
   itemId: z.string().optional().describe('Unique Xero item ID'),

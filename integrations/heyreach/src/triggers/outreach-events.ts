@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventTypes = [
   'CONNECTION_REQUEST_SENT',
@@ -85,7 +85,7 @@ export let outreachEvents = SlateTrigger.create(spec, {
           if (webhookId) {
             registeredWebhooks.push({ webhookId, eventType });
           }
-        } catch (err) {
+        } catch (_err) {
           // Some event types may not be available; continue registering others
         }
       }
@@ -105,7 +105,7 @@ export let outreachEvents = SlateTrigger.create(spec, {
         for (let webhook of details.webhooks) {
           try {
             await client.deleteWebhook(webhook.webhookId);
-          } catch (err) {
+          } catch (_err) {
             // Best effort cleanup
           }
         }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import * as functions from '../lib/functions';
+import { spec } from '../spec';
 
 export let listFunctions = SlateTool.create(spec, {
   name: 'List Functions',

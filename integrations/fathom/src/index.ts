@@ -1,10 +1,10 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listMeetings,
   getMeetingDetails,
-  getTranscript,
   getSummary,
+  getTranscript,
+  listMeetings,
   listTeams
 } from './tools';
 import { meetingContentReady } from './triggers';

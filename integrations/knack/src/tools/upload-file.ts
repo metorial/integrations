@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KnackClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let uploadFile = SlateTool.create(spec, {
   name: 'Upload File',
@@ -71,7 +71,7 @@ export let uploadFile = SlateTool.create(spec, {
       [ctx.input.fieldKey]: assetId
     };
 
-    let record;
+    let record: any;
     if (ctx.input.recordId) {
       record = await client.updateObjectRecord(
         ctx.input.objectKey,

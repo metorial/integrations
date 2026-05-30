@@ -1,4 +1,4 @@
-import { AdobeAuthConfig, createAdobeAxios } from './client';
+import { type AdobeAuthConfig, createAdobeAxios } from './client';
 
 let STOCK_BASE_URL = 'https://stock.adobe.io';
 
@@ -49,11 +49,11 @@ export class StockClient {
           audio: 7
         };
         searchParams[
-          'search_parameters[filters][content_type:' + params.filters.contentType + ']'
+          `search_parameters[filters][content_type:${params.filters.contentType}]`
         ] = 1;
         if (typeMap[params.filters.contentType]) {
           searchParams[
-            'search_parameters[filters][content_type:' + params.filters.contentType + ']'
+            `search_parameters[filters][content_type:${params.filters.contentType}]`
           ] = 1;
         }
       }

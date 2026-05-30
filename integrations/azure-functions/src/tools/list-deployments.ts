@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ArmClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let deploymentSchema = z.object({
   deploymentId: z.string().describe('Deployment ID'),
@@ -41,7 +41,7 @@ export let listDeployments = SlateTool.create(spec, {
       resourceGroupName: ctx.config.resourceGroupName
     });
 
-    ctx.info('Listing deployments for: ' + ctx.input.appName);
+    ctx.info(`Listing deployments for: ${ctx.input.appName}`);
 
     let deployments = await client.listDeployments(ctx.input.appName);
 
@@ -62,7 +62,7 @@ export let listDeployments = SlateTool.create(spec, {
         deployments: mapped,
         count: mapped.length
       },
-      message: `Found **${mapped.length}** deployment(s) for **${ctx.input.appName}**.${mapped.length > 0 ? '\n\nMost recent: ' + (mapped[0]?.message || mapped[0]?.deploymentId || 'N/A') : ''}`
+      message: `Found **${mapped.length}** deployment(s) for **${ctx.input.appName}**.${mapped.length > 0 ? `\n\nMost recent: ${mapped[0]?.message || mapped[0]?.deploymentId || 'N/A'}` : ''}`
     };
   })
   .build();

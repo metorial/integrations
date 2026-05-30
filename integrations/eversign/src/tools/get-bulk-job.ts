@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getBulkJob = SlateTool.create(spec, {
   name: 'Get Bulk Job',
@@ -61,18 +61,18 @@ export let getBulkJob = SlateTool.create(spec, {
 
     if (ctx.input.templateHash) {
       let csv = await client.getBulkCsvTemplate(ctx.input.templateHash);
-      output['csvTemplate'] = csv;
+      output.csvTemplate = csv;
     }
 
     if (ctx.input.bulkJobId) {
       let status = await client.getBulkJobStatus(ctx.input.bulkJobId);
-      output['bulkJobId'] = ctx.input.bulkJobId;
-      output['status'] = status.status || undefined;
-      output['documentCount'] = status.document_count ?? undefined;
-      output['completedDocuments'] = status.completed_documents ?? undefined;
-      output['cancelledDocuments'] = status.cancelled_documents ?? undefined;
-      output['inProgressDocuments'] = status.in_progress_documents ?? undefined;
-      output['createdAt'] = status.bulk_job_created_at ?? undefined;
+      output.bulkJobId = ctx.input.bulkJobId;
+      output.status = status.status || undefined;
+      output.documentCount = status.document_count ?? undefined;
+      output.completedDocuments = status.completed_documents ?? undefined;
+      output.cancelledDocuments = status.cancelled_documents ?? undefined;
+      output.inProgressDocuments = status.in_progress_documents ?? undefined;
+      output.createdAt = status.bulk_job_created_at ?? undefined;
 
       if (ctx.input.includeDocuments) {
         let docsResult = await client.getBulkJobDocuments(
@@ -81,7 +81,7 @@ export let getBulkJob = SlateTool.create(spec, {
           ctx.input.documentOffset
         );
         let docs = docsResult.data || docsResult || [];
-        output['documents'] = (Array.isArray(docs) ? docs : []).map((d: any) => ({
+        output.documents = (Array.isArray(docs) ? docs : []).map((d: any) => ({
           documentHash: d.document_hash,
           title: d.title || undefined,
           isCompleted: d.is_completed === 1 || d.is_completed === true
@@ -90,7 +90,7 @@ export let getBulkJob = SlateTool.create(spec, {
     }
 
     let message = ctx.input.bulkJobId
-      ? `Bulk job "${ctx.input.bulkJobId}" — ${output['completedDocuments'] ?? 0}/${output['documentCount'] ?? 0} completed.`
+      ? `Bulk job "${ctx.input.bulkJobId}" — ${output.completedDocuments ?? 0}/${output.documentCount ?? 0} completed.`
       : `Retrieved CSV template for template "${ctx.input.templateHash}".`;
 
     return { output: output as any, message };

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let prospectFieldsSchema = z.object({
   businessName: z.string().optional().describe('Company or business name (max 255 chars)'),

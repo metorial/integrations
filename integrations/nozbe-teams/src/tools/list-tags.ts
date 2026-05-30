@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { Client, ListParams } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client, type ListParams } from '../lib/client';
+import { spec } from '../spec';
 
 let tagSchema = z.object({
   tagId: z.string().describe('Unique tag identifier'),

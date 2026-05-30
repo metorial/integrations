@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let runInferenceTool = SlateTool.create(spec, {
   name: 'Run Inference',

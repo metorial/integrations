@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateContact = SlateTool.create(spec, {
   name: 'Update Contact',
@@ -47,19 +47,19 @@ export let updateContact = SlateTool.create(spec, {
     });
 
     let updateData: Record<string, any> = {};
-    if (ctx.input.name !== undefined) updateData['name'] = ctx.input.name;
-    if (ctx.input.email !== undefined) updateData['email'] = ctx.input.email;
-    if (ctx.input.phone !== undefined) updateData['phone'] = ctx.input.phone;
-    if (ctx.input.mobile !== undefined) updateData['mobile'] = ctx.input.mobile;
-    if (ctx.input.address !== undefined) updateData['address'] = ctx.input.address;
-    if (ctx.input.jobTitle !== undefined) updateData['job_title'] = ctx.input.jobTitle;
-    if (ctx.input.companyId !== undefined) updateData['company_id'] = ctx.input.companyId;
-    if (ctx.input.description !== undefined) updateData['description'] = ctx.input.description;
-    if (ctx.input.language !== undefined) updateData['language'] = ctx.input.language;
-    if (ctx.input.timezone !== undefined) updateData['time_zone'] = ctx.input.timezone;
-    if (ctx.input.tags !== undefined) updateData['tags'] = ctx.input.tags;
+    if (ctx.input.name !== undefined) updateData.name = ctx.input.name;
+    if (ctx.input.email !== undefined) updateData.email = ctx.input.email;
+    if (ctx.input.phone !== undefined) updateData.phone = ctx.input.phone;
+    if (ctx.input.mobile !== undefined) updateData.mobile = ctx.input.mobile;
+    if (ctx.input.address !== undefined) updateData.address = ctx.input.address;
+    if (ctx.input.jobTitle !== undefined) updateData.job_title = ctx.input.jobTitle;
+    if (ctx.input.companyId !== undefined) updateData.company_id = ctx.input.companyId;
+    if (ctx.input.description !== undefined) updateData.description = ctx.input.description;
+    if (ctx.input.language !== undefined) updateData.language = ctx.input.language;
+    if (ctx.input.timezone !== undefined) updateData.time_zone = ctx.input.timezone;
+    if (ctx.input.tags !== undefined) updateData.tags = ctx.input.tags;
     if (ctx.input.customFields !== undefined)
-      updateData['custom_fields'] = ctx.input.customFields;
+      updateData.custom_fields = ctx.input.customFields;
 
     let contact = await client.updateContact(ctx.input.contactId, updateData);
 

@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBoardsTool,
   createBoardTool,
-  updateBoardTool,
-  listItemsTool,
-  createItemTool,
-  updateItemTool,
-  createSubitemTool,
-  listGroupsTool,
-  createGroupTool,
-  updateGroupTool,
-  listColumnsTool,
   createColumnTool,
-  listUpdatesTool,
+  createGroupTool,
+  createItemTool,
+  createSubitemTool,
   createUpdateTool,
-  deleteUpdateTool,
-  listUsersTool,
-  listTeamsTool,
-  listWorkspacesTool,
   createWorkspaceTool,
-  updateWorkspaceTool,
-  sendNotificationTool,
+  deleteUpdateTool,
+  getActivityLogsTool,
+  listBoardsTool,
+  listColumnsTool,
+  listGroupsTool,
+  listItemsTool,
   listTagsTool,
-  getActivityLogsTool
+  listTeamsTool,
+  listUpdatesTool,
+  listUsersTool,
+  listWorkspacesTool,
+  sendNotificationTool,
+  updateBoardTool,
+  updateGroupTool,
+  updateItemTool,
+  updateWorkspaceTool
 } from './tools';
-import { itemEventsTrigger, columnValueChangesTrigger, updateEventsTrigger } from './triggers';
+import { columnValueChangesTrigger, itemEventsTrigger, updateEventsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

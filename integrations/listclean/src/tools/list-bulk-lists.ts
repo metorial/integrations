@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ListcleanClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listBulkLists = SlateTool.create(spec, {
   name: 'List Bulk Lists',

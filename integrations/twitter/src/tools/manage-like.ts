@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwitterClient } from '../lib/client';
 import { twitterServiceError } from '../lib/errors';
-import { postSchema, userSchema, mapPost, mapUser } from '../lib/helpers';
+import { mapPost, mapUser, postSchema, userSchema } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageLike = SlateTool.create(spec, {
   name: 'Manage Like',

@@ -1,30 +1,30 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createDeal,
-  getDeal,
-  listDeals,
-  updateDeal,
-  deleteDeal,
-  createPerson,
-  getPerson,
-  listPeople,
-  updatePerson,
-  deletePerson,
-  createCompany,
-  getCompany,
-  listCompanies,
-  updateCompany,
-  deleteCompany,
-  createNote,
-  listNotes,
   createCalendarEntry,
+  createCompany,
+  createDeal,
+  createNote,
+  createPerson,
+  deleteCompany,
+  deleteDeal,
+  deletePerson,
+  getCompany,
+  getDeal,
+  getPerson,
   listCalendarEntries,
-  listUsers,
+  listCompanies,
+  listCustomFieldLabels,
   listDealStages,
-  listCustomFieldLabels
+  listDeals,
+  listNotes,
+  listPeople,
+  listUsers,
+  updateCompany,
+  updateDeal,
+  updatePerson
 } from './tools';
-import { dealChanges, personChanges, companyChanges, inboundWebhook } from './triggers';
+import { companyChanges, dealChanges, inboundWebhook, personChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

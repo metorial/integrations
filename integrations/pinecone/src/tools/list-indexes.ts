@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PineconeControlPlaneClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listIndexesTool = SlateTool.create(spec, {
   name: 'List Indexes',
@@ -59,7 +59,7 @@ export let listIndexesTool = SlateTool.create(spec, {
 
     return {
       output: { indexes },
-      message: `Found **${indexes.length}** index${indexes.length === 1 ? '' : 'es'}${indexes.length > 0 ? ': ' + indexes.map(i => `\`${i.indexName}\``).join(', ') : ''}.`
+      message: `Found **${indexes.length}** index${indexes.length === 1 ? '' : 'es'}${indexes.length > 0 ? `: ${indexes.map(i => `\`${i.indexName}\``).join(', ')}` : ''}.`
     };
   })
   .build();

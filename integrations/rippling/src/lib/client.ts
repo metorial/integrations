@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class RipplingClient {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.rippling.com/platform/api',
       headers: {

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { DatabricksClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let modelRegistryTrigger = SlateTrigger.create(spec, {
   name: 'Model Registry Events',
@@ -86,7 +86,7 @@ export let modelRegistryTrigger = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!body || !body.event) {
+      if (!body?.event) {
         return { inputs: [] };
       }
 

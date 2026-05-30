@@ -24,13 +24,11 @@ export interface SearchParams {
 export class Client {
   private axios;
 
-  constructor(
-    private params: {
-      token: string;
-      linkname: string;
-      domain: string;
-    }
-  ) {
+  constructor(params: {
+    token: string;
+    linkname: string;
+    domain: string;
+  }) {
     this.axios = createAxios({
       baseURL: `https://${params.domain}.salesmate.io/apis/core/v4`,
       headers: {

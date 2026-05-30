@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  enhanceImage,
-  removeBackground,
-  generateImage,
-  faceSwap,
-  inpaintOutpaint,
-  resizeImage,
-  getJobResult,
   deleteJobResult,
-  getAccountInfo
+  enhanceImage,
+  faceSwap,
+  generateImage,
+  getAccountInfo,
+  getJobResult,
+  inpaintOutpaint,
+  removeBackground,
+  resizeImage
 } from './tools';
 import { jobCompleted } from './triggers';
 

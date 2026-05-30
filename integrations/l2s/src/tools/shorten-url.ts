@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { L2sClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let shortenUrl = SlateTool.create(spec, {
   name: 'Shorten URL',

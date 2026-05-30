@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MondayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let columnValueSchema = z.object({
   columnId: z.string().describe('Column ID'),

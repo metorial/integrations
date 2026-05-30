@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  findEmail,
-  verifyEmail,
-  reverseEmailLookup,
-  findPhone,
   enrichCompany,
-  searchEmployees,
-  intellimatchSearch,
+  findEmail,
+  findPhone,
   getContactLists,
-  getCredits
+  getCredits,
+  intellimatchSearch,
+  reverseEmailLookup,
+  searchEmployees,
+  verifyEmail
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

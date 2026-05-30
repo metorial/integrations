@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  submitTranscriptionJob,
-  getTranscriptionJob,
-  getTranscript,
-  listTranscriptionJobs,
-  deleteJob,
   analyzeSentiment,
+  deleteJob,
   extractTopics,
-  identifyLanguage,
-  manageCustomVocabulary,
+  getAccount,
   getCaptions,
-  getAccount
+  getTranscript,
+  getTranscriptionJob,
+  identifyLanguage,
+  listTranscriptionJobs,
+  manageCustomVocabulary,
+  submitTranscriptionJob
 } from './tools';
 import { jobCompleted } from './triggers';
 

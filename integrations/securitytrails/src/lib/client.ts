@@ -7,7 +7,7 @@ let http = createAxios({
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.headers = {
       APIKEY: config.token,
       'Content-Type': 'application/json'

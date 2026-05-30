@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { BeeminderClient } from '../lib/client';
-import { userSchema, mapUser } from '../lib/schemas';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { BeeminderClient } from '../lib/client';
+import { mapUser, userSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let getUser = SlateTool.create(spec, {
   name: 'Get User',

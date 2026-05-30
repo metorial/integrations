@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BrightDataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSnapshotHistory = SlateTool.create(spec, {
   name: 'Get Snapshot History',

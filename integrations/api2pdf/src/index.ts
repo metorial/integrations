@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generatePdf,
   captureScreenshot,
+  checkBalance,
   convertDocument,
-  mergePdfs,
-  extractPdfPages,
-  protectPdf,
-  watermarkPdf,
-  generateBarcode,
-  generateThumbnail,
-  extractPdfData,
-  createZip,
   convertToMarkdown,
+  createZip,
   deleteFile,
-  checkBalance
+  extractPdfData,
+  extractPdfPages,
+  generateBarcode,
+  generatePdf,
+  generateThumbnail,
+  mergePdfs,
+  protectPdf,
+  watermarkPdf
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

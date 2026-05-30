@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import * as compute from '../lib/compute';
+import { spec } from '../spec';
 
 export let listDisks = SlateTool.create(spec, {
   name: 'List Disks',

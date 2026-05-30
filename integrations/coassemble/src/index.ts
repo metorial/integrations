@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCourses,
+  deleteClient,
+  deleteTracking,
+  deleteUser,
+  duplicateCourse,
+  exportScorm,
+  generateCourse,
   getCourse,
   getSignedUrl,
-  duplicateCourse,
-  manageCourseLifecycle,
-  generateCourse,
-  exportScorm,
   getTracking,
-  deleteTracking,
   listClients,
-  updateClient,
-  deleteClient,
+  listCourses,
   listUsers,
-  updateUser,
-  deleteUser
+  manageCourseLifecycle,
+  updateClient,
+  updateUser
 } from './tools';
 import { courseProgress, inboundWebhook } from './triggers';
 

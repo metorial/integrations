@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBibles,
+  getAudioChapter,
   getBible,
   getBooks,
   getChapter,
-  getVerse,
   getPassage,
-  searchBible,
   getSections,
+  getVerse,
   listAudioBibles,
-  getAudioChapter
+  listBibles,
+  searchBible
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

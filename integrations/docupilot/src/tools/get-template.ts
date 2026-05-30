@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTemplate = SlateTool.create(spec, {
   name: 'Get Template',
@@ -63,7 +63,7 @@ export let getTemplate = SlateTool.create(spec, {
 
     let template = await client.getTemplate(ctx.input.templateId);
 
-    let schema;
+    let schema: any;
     if (ctx.input.includeSchema) {
       schema = await client.getTemplateSchema(ctx.input.templateId);
     }

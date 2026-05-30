@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KlazifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let findSimilarDomains = SlateTool.create(spec, {
   name: 'Find Similar Domains',

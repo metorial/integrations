@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let memberChanges = SlateTrigger.create(spec, {
   name: 'New Member',
@@ -54,13 +54,13 @@ export let memberChanges = SlateTrigger.create(spec, {
 
       let newMembers = members.filter((m: any) => {
         let memberId = String(m.user_id || m.id || '0');
-        return parseInt(memberId, 10) > parseInt(lastCheckedId, 10);
+        return Number.parseInt(memberId, 10) > Number.parseInt(lastCheckedId, 10);
       });
 
       let highestId = lastCheckedId;
       for (let m of newMembers) {
         let mId = String(m.user_id || m.id || '0');
-        if (parseInt(mId, 10) > parseInt(highestId, 10)) {
+        if (Number.parseInt(mId, 10) > Number.parseInt(highestId, 10)) {
           highestId = mId;
         }
       }

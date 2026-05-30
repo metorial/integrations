@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
 import { KlaviyoClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let newEvents = SlateTrigger.create(spec, {
   name: 'New Events',

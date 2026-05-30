@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getContainerProperties = SlateTool.create(spec, {
   name: 'Get Container Properties',
@@ -42,13 +42,13 @@ export let getContainerProperties = SlateTool.create(spec, {
     return {
       output: {
         containerName: ctx.input.containerName,
-        lastModified: result.properties['lastModified'] ?? '',
-        eTag: result.properties['eTag'] ?? '',
-        leaseStatus: result.properties['leaseStatus'] ?? '',
-        leaseState: result.properties['leaseState'] ?? '',
-        publicAccess: result.properties['publicAccess'] ?? 'private',
-        hasImmutabilityPolicy: result.properties['hasImmutabilityPolicy'] ?? 'false',
-        hasLegalHold: result.properties['hasLegalHold'] ?? 'false',
+        lastModified: result.properties.lastModified ?? '',
+        eTag: result.properties.eTag ?? '',
+        leaseStatus: result.properties.leaseStatus ?? '',
+        leaseState: result.properties.leaseState ?? '',
+        publicAccess: result.properties.publicAccess ?? 'private',
+        hasImmutabilityPolicy: result.properties.hasImmutabilityPolicy ?? 'false',
+        hasLegalHold: result.properties.hasLegalHold ?? 'false',
         metadata: result.metadata
       },
       message: `Retrieved properties for container **${ctx.input.containerName}**.`

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WhoisFreaksClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sslCertificateLookup = SlateTool.create(spec, {
   name: 'SSL Certificate Lookup',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BrightDataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchSerp = SlateTool.create(spec, {
   name: 'Search SERP',
@@ -56,7 +56,7 @@ export let searchSerp = SlateTool.create(spec, {
     });
 
     let contentPreview =
-      result.content.length > 300 ? result.content.substring(0, 300) + '...' : result.content;
+      result.content.length > 300 ? `${result.content.substring(0, 300)}...` : result.content;
 
     return {
       output: result,

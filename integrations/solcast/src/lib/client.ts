@@ -1,21 +1,21 @@
 import { createAxios } from 'slates';
 import type {
-  RadiationWeatherParams,
-  HistoricParams,
-  RooftopPvParams,
-  HistoricRooftopPvParams,
   AdvancedPvParams,
-  HistoricAdvancedPvParams,
-  TmyRadiationWeatherParams,
-  TmyRooftopPvParams,
-  TmyAdvancedPvParams,
   AggregationParams,
+  HistoricAdvancedPvParams,
+  HistoricForecastRadiationParams,
+  HistoricForecastRooftopPvParams,
+  HistoricParams,
+  HistoricRooftopPvParams,
   HorizonAngleParams,
   PvPowerSiteCreateParams,
-  PvPowerSiteUpdateParams,
   PvPowerSitesListParams,
-  HistoricForecastRadiationParams,
-  HistoricForecastRooftopPvParams
+  PvPowerSiteUpdateParams,
+  RadiationWeatherParams,
+  RooftopPvParams,
+  TmyAdvancedPvParams,
+  TmyRadiationWeatherParams,
+  TmyRooftopPvParams
 } from './types';
 
 let toSnakeCase = (str: string): string => {

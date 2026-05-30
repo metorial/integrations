@@ -1,4 +1,4 @@
-import { AdobeAuthConfig, createAdobeAxios } from './client';
+import { type AdobeAuthConfig, createAdobeAxios } from './client';
 
 let USERMANAGEMENT_BASE_URL = 'https://usermanagement.adobe.io';
 

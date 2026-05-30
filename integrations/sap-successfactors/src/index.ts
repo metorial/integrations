@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  getCompensation,
   getEmployee,
-  searchEmployees,
-  manageEmployee,
+  getGoals,
+  getJobApplication,
   getJobInfo,
   getOrgStructure,
-  searchJobRequisitions,
-  getJobApplication,
-  manageTimeOff,
-  getTimeAccounts,
   getPerformanceReviews,
-  getGoals,
-  getCompensation,
   getSuccessionPlanning,
-  queryOdataEntity
+  getTimeAccounts,
+  manageEmployee,
+  manageTimeOff,
+  queryOdataEntity,
+  searchEmployees,
+  searchJobRequisitions
 } from './tools';
 import { employeeLifecycle, recruitingEvent, timeOffEvent } from './triggers';
 

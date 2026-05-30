@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchProfiles,
-  getProfile,
-  deleteProfile,
-  listCompanies,
   deleteCompany,
-  listTours,
-  updateTour,
-  listMicrosurveys,
-  updateMicrosurvey,
-  listSurveyResponses,
-  listSegments,
-  listTourInteractions,
-  manageDeliveries,
+  deleteProfile,
+  getProfile,
+  listCompanies,
   listExperiences,
-  updateExperience,
+  listMicrosurveys,
+  listSegments,
+  listSurveyResponses,
+  listTags,
+  listTourInteractions,
+  listTours,
+  manageDeliveries,
   manageDomains,
   manageEnvironments,
   manageWebhooks,
-  listTags
+  searchProfiles,
+  updateExperience,
+  updateMicrosurvey,
+  updateTour
 } from './tools';
-import { tourEvents, microsurveyEvents, helpbarEvents } from './triggers';
+import { helpbarEvents, microsurveyEvents, tourEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listDashboards,
-  getDashboard,
   createDashboard,
-  updateDashboard,
   deleteDashboard,
-  listKlips,
-  getKlip,
-  manageKlip,
-  listDatasources,
+  getDashboard,
   getDatasource,
-  manageDatasource,
-  refreshDatasource,
   getDatasourceInstanceData,
-  listUsers,
-  manageUser,
-  listRoles,
-  manageRole,
+  getKlip,
+  getProfile,
   listClients,
-  manageClient,
-  manageGroup,
+  listDashboards,
+  listDatasources,
+  listKlips,
   listPublishedLinks,
+  listRoles,
+  listUsers,
+  manageClient,
+  manageDatasource,
+  manageGroup,
+  manageKlip,
   managePublishedLink,
-  getProfile
+  manageRole,
+  manageUser,
+  refreshDatasource,
+  updateDashboard
 } from './tools';
-import { dashboardChanges, userChanges, datasourceChanges, inboundWebhook } from './triggers';
+import { dashboardChanges, datasourceChanges, inboundWebhook, userChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

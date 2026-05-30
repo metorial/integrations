@@ -3,13 +3,11 @@ import { createAxios } from 'slates';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(
-    private params: {
-      token: string;
-      email: string;
-      accountName: string;
-    }
-  ) {
+  constructor(params: {
+    token: string;
+    email: string;
+    accountName: string;
+  }) {
     this.axios = createAxios({
       baseURL: `https://${params.accountName}.deployhq.com`,
       auth: {

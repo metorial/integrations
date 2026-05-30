@@ -27,9 +27,9 @@ export class AzureDevOpsClient {
     stateFilter?: string;
   }): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
-    if (params?.top) query['$top'] = String(params.top);
-    if (params?.skip) query['$skip'] = String(params.skip);
-    if (params?.stateFilter) query['stateFilter'] = params.stateFilter;
+    if (params?.top) query.$top = String(params.top);
+    if (params?.skip) query.$skip = String(params.skip);
+    if (params?.stateFilter) query.stateFilter = params.stateFilter;
 
     let response = await this.axios.get('/_apis/projects', { params: query });
     return response.data;
@@ -50,8 +50,8 @@ export class AzureDevOpsClient {
     params?: { expand?: string; fields?: string[] }
   ): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
-    if (params?.expand) query['$expand'] = params.expand;
-    if (params?.fields) query['fields'] = params.fields.join(',');
+    if (params?.expand) query.$expand = params.expand;
+    if (params?.fields) query.fields = params.fields.join(',');
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/wit/workitems/${workItemId}`,
@@ -62,7 +62,7 @@ export class AzureDevOpsClient {
 
   async getWorkItemsBatch(project: string, ids: number[], fields?: string[]): Promise<any> {
     let body: Record<string, any> = { ids };
-    if (fields && fields.length > 0) body['fields'] = fields;
+    if (fields && fields.length > 0) body.fields = fields;
 
     let response = await this.axios.post(
       `/${encodeURIComponent(project)}/_apis/wit/workitemsbatch?api-version=7.1`,
@@ -113,7 +113,7 @@ export class AzureDevOpsClient {
 
   async queryWorkItems(project: string, wiql: string, top?: number): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
-    if (top) query['$top'] = String(top);
+    if (top) query.$top = String(top);
 
     let response = await this.axios.post(
       `/${encodeURIComponent(project)}/_apis/wit/wiql`,
@@ -161,7 +161,7 @@ export class AzureDevOpsClient {
 
   async listBranches(project: string, repositoryId: string, filter?: string): Promise<any> {
     let params: Record<string, string> = { 'api-version': '7.1' };
-    if (filter) params['filter'] = filter;
+    if (filter) params.filter = filter;
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/refs`,
@@ -191,8 +191,8 @@ export class AzureDevOpsClient {
     if (params?.reviewerId) query['searchCriteria.reviewerId'] = params.reviewerId;
     if (params?.sourceRefName) query['searchCriteria.sourceRefName'] = params.sourceRefName;
     if (params?.targetRefName) query['searchCriteria.targetRefName'] = params.targetRefName;
-    if (params?.top) query['$top'] = String(params.top);
-    if (params?.skip) query['$skip'] = String(params.skip);
+    if (params?.top) query.$top = String(params.top);
+    if (params?.skip) query.$skip = String(params.skip);
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/pullrequests`,
@@ -234,7 +234,7 @@ export class AzureDevOpsClient {
     };
 
     if (data.reviewerIds && data.reviewerIds.length > 0) {
-      body['reviewers'] = data.reviewerIds.map(id => ({ id }));
+      body.reviewers = data.reviewerIds.map(id => ({ id }));
     }
 
     let response = await this.axios.post(
@@ -304,8 +304,8 @@ export class AzureDevOpsClient {
     params?: { top?: number; continuationToken?: string }
   ): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
-    if (params?.top) query['$top'] = String(params.top);
-    if (params?.continuationToken) query['continuationToken'] = params.continuationToken;
+    if (params?.top) query.$top = String(params.top);
+    if (params?.continuationToken) query.continuationToken = params.continuationToken;
 
     let response = await this.axios.get(`/${encodeURIComponent(project)}/_apis/pipelines`, {
       params: query
@@ -324,7 +324,7 @@ export class AzureDevOpsClient {
   ): Promise<any> {
     let body: Record<string, any> = {};
     if (params?.branch) {
-      body['resources'] = {
+      body.resources = {
         repositories: {
           self: {
             refName: params.branch.startsWith('refs/')
@@ -334,8 +334,8 @@ export class AzureDevOpsClient {
         }
       };
     }
-    if (params?.variables) body['variables'] = params.variables;
-    if (params?.templateParameters) body['templateParameters'] = params.templateParameters;
+    if (params?.variables) body.variables = params.variables;
+    if (params?.templateParameters) body.templateParameters = params.templateParameters;
 
     let response = await this.axios.post(
       `/${encodeURIComponent(project)}/_apis/pipelines/${pipelineId}/runs?api-version=7.1`,
@@ -354,7 +354,7 @@ export class AzureDevOpsClient {
 
   async listPipelineRuns(project: string, pipelineId: number, top?: number): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
-    if (top) query['$top'] = String(top);
+    if (top) query.$top = String(top);
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/pipelines/${pipelineId}/runs`,
@@ -378,13 +378,13 @@ export class AzureDevOpsClient {
     }
   ): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
-    if (params?.definitions) query['definitions'] = params.definitions.join(',');
-    if (params?.statusFilter) query['statusFilter'] = params.statusFilter;
-    if (params?.resultFilter) query['resultFilter'] = params.resultFilter;
-    if (params?.top) query['$top'] = String(params.top);
-    if (params?.branchName) query['branchName'] = params.branchName;
-    if (params?.requestedFor) query['requestedFor'] = params.requestedFor;
-    if (params?.minTime) query['minTime'] = params.minTime;
+    if (params?.definitions) query.definitions = params.definitions.join(',');
+    if (params?.statusFilter) query.statusFilter = params.statusFilter;
+    if (params?.resultFilter) query.resultFilter = params.resultFilter;
+    if (params?.top) query.$top = String(params.top);
+    if (params?.branchName) query.branchName = params.branchName;
+    if (params?.requestedFor) query.requestedFor = params.requestedFor;
+    if (params?.minTime) query.minTime = params.minTime;
 
     let response = await this.axios.get(`/${encodeURIComponent(project)}/_apis/build/builds`, {
       params: query
@@ -428,14 +428,7 @@ export class AzureDevOpsClient {
       };
     }
 
-    let {
-      id,
-      path,
-      content,
-      gitItemPath,
-      subPages,
-      ...rest
-    } = responseData;
+    let { id, path, content, gitItemPath, subPages, ...rest } = responseData;
 
     return {
       ...rest,
@@ -483,8 +476,8 @@ export class AzureDevOpsClient {
       'api-version': '7.1',
       path
     };
-    if (params?.includeContent) query['includeContent'] = 'true';
-    if (params?.recursionLevel) query['recursionLevel'] = params.recursionLevel;
+    if (params?.includeContent) query.includeContent = 'true';
+    if (params?.recursionLevel) query.recursionLevel = params.recursionLevel;
     let version = await this.getCodeWikiVersion(project, wikiIdentifier);
     if (version) {
       query['versionDescriptor.version'] = version;
@@ -618,8 +611,8 @@ export class AzureDevOpsClient {
     }
   ): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
-    if (params?.top) query['$top'] = String(params.top);
-    if (params?.skip) query['$skip'] = String(params.skip);
+    if (params?.top) query.$top = String(params.top);
+    if (params?.skip) query.$skip = String(params.skip);
     if (params?.branch) query['searchCriteria.itemVersion.version'] = params.branch;
     if (params?.fromDate) query['searchCriteria.fromDate'] = params.fromDate;
     if (params?.toDate) query['searchCriteria.toDate'] = params.toDate;

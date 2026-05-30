@@ -5,13 +5,13 @@ let BASE_URL = 'https://api.globalping.io/v1';
 export class Client {
   private http;
 
-  constructor(private config: { token?: string }) {
+  constructor(config: { token?: string }) {
     let headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
 
     if (config.token) {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     }
 
     this.http = createAxios({
@@ -23,7 +23,7 @@ export class Client {
   async createMeasurement(body: {
     type: string;
     target: string;
-    locations?: Array<Record<string, unknown>>;
+    locations?: Record<string, unknown>[];
     limit?: number;
     measurementOptions?: Record<string, unknown>;
     inProgressUpdates?: boolean;
@@ -40,7 +40,7 @@ export class Client {
     return response.data;
   }
 
-  async listProbes(): Promise<Array<Record<string, unknown>>> {
+  async listProbes(): Promise<Record<string, unknown>[]> {
     let response = await this.http.get('/probes');
     return response.data;
   }

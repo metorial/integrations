@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ShippoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let batchEvents = SlateTrigger.create(spec, {
   name: 'Batch Events',

@@ -1,7 +1,7 @@
 import { createBase64Attachment, SlateTool } from 'slates';
+import { z } from 'zod';
 import { FormdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFile = SlateTool.create(spec, {
   name: 'Get File',

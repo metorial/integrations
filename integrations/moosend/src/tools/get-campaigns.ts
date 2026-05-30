@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MoosendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let campaignSchema = z.object({
   campaignId: z.string().describe('Campaign ID'),

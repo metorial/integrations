@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageSubscriber = SlateTool.create(spec, {
   name: 'Manage Subscriber',
@@ -96,32 +96,31 @@ export let manageSubscriber = SlateTool.create(spec, {
       email: ctx.input.email
     };
 
-    if (ctx.input.newEmail) subscriber['new_email'] = ctx.input.newEmail;
-    if (ctx.input.firstName) subscriber['first_name'] = ctx.input.firstName;
-    if (ctx.input.lastName) subscriber['last_name'] = ctx.input.lastName;
-    if (ctx.input.address1) subscriber['address1'] = ctx.input.address1;
-    if (ctx.input.address2) subscriber['address2'] = ctx.input.address2;
-    if (ctx.input.city) subscriber['city'] = ctx.input.city;
-    if (ctx.input.state) subscriber['state'] = ctx.input.state;
-    if (ctx.input.zip) subscriber['zip'] = ctx.input.zip;
-    if (ctx.input.country) subscriber['country'] = ctx.input.country;
-    if (ctx.input.phone) subscriber['phone'] = ctx.input.phone;
-    if (ctx.input.smsNumber) subscriber['sms_number'] = ctx.input.smsNumber;
-    if (ctx.input.smsConsent !== undefined) subscriber['sms_consent'] = ctx.input.smsConsent;
-    if (ctx.input.timeZone) subscriber['time_zone'] = ctx.input.timeZone;
-    if (ctx.input.ipAddress) subscriber['ip_address'] = ctx.input.ipAddress;
-    if (ctx.input.userId) subscriber['user_id'] = ctx.input.userId;
-    if (ctx.input.customFields) subscriber['custom_fields'] = ctx.input.customFields;
-    if (ctx.input.tags) subscriber['tags'] = ctx.input.tags;
-    if (ctx.input.removeTags) subscriber['remove_tags'] = ctx.input.removeTags;
-    if (ctx.input.euConsent) subscriber['eu_consent'] = ctx.input.euConsent;
-    if (ctx.input.euConsentMessage)
-      subscriber['eu_consent_message'] = ctx.input.euConsentMessage;
-    if (ctx.input.status) subscriber['status'] = ctx.input.status;
-    if (ctx.input.initialStatus) subscriber['initial_status'] = ctx.input.initialStatus;
-    if (ctx.input.prospect !== undefined) subscriber['prospect'] = ctx.input.prospect;
+    if (ctx.input.newEmail) subscriber.new_email = ctx.input.newEmail;
+    if (ctx.input.firstName) subscriber.first_name = ctx.input.firstName;
+    if (ctx.input.lastName) subscriber.last_name = ctx.input.lastName;
+    if (ctx.input.address1) subscriber.address1 = ctx.input.address1;
+    if (ctx.input.address2) subscriber.address2 = ctx.input.address2;
+    if (ctx.input.city) subscriber.city = ctx.input.city;
+    if (ctx.input.state) subscriber.state = ctx.input.state;
+    if (ctx.input.zip) subscriber.zip = ctx.input.zip;
+    if (ctx.input.country) subscriber.country = ctx.input.country;
+    if (ctx.input.phone) subscriber.phone = ctx.input.phone;
+    if (ctx.input.smsNumber) subscriber.sms_number = ctx.input.smsNumber;
+    if (ctx.input.smsConsent !== undefined) subscriber.sms_consent = ctx.input.smsConsent;
+    if (ctx.input.timeZone) subscriber.time_zone = ctx.input.timeZone;
+    if (ctx.input.ipAddress) subscriber.ip_address = ctx.input.ipAddress;
+    if (ctx.input.userId) subscriber.user_id = ctx.input.userId;
+    if (ctx.input.customFields) subscriber.custom_fields = ctx.input.customFields;
+    if (ctx.input.tags) subscriber.tags = ctx.input.tags;
+    if (ctx.input.removeTags) subscriber.remove_tags = ctx.input.removeTags;
+    if (ctx.input.euConsent) subscriber.eu_consent = ctx.input.euConsent;
+    if (ctx.input.euConsentMessage) subscriber.eu_consent_message = ctx.input.euConsentMessage;
+    if (ctx.input.status) subscriber.status = ctx.input.status;
+    if (ctx.input.initialStatus) subscriber.initial_status = ctx.input.initialStatus;
+    if (ctx.input.prospect !== undefined) subscriber.prospect = ctx.input.prospect;
     if (ctx.input.baseLeadScore !== undefined)
-      subscriber['base_lead_score'] = ctx.input.baseLeadScore;
+      subscriber.base_lead_score = ctx.input.baseLeadScore;
 
     let result = await client.createOrUpdateSubscriber(subscriber);
     let sub = result.subscribers?.[0] ?? {};

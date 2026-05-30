@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SlidesClient } from '../lib/client';
 import { googleSlidesActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let editText = SlateTool.create(spec, {
   name: 'Edit Text',
@@ -132,9 +132,9 @@ export let editText = SlateTool.create(spec, {
         }
         if (ctx.input.foregroundColorHex) {
           let hex = ctx.input.foregroundColorHex.replace('#', '');
-          let r = parseInt(hex.substring(0, 2), 16) / 255;
-          let g = parseInt(hex.substring(2, 4), 16) / 255;
-          let b = parseInt(hex.substring(4, 6), 16) / 255;
+          let r = Number.parseInt(hex.substring(0, 2), 16) / 255;
+          let g = Number.parseInt(hex.substring(2, 4), 16) / 255;
+          let b = Number.parseInt(hex.substring(4, 6), 16) / 255;
           style.foregroundColor = {
             opaqueColor: {
               rgbColor: { red: r, green: g, blue: b }

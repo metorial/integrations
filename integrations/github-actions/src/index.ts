@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listWorkflows,
-  triggerWorkflow,
-  manageWorkflowState,
-  listWorkflowRuns,
-  getWorkflowRun,
   controlWorkflowRun,
+  getWorkflowRun,
   getWorkflowRunLogs,
   listArtifacts,
+  listWorkflowRuns,
+  listWorkflows,
   manageArtifact,
+  manageCaches,
+  managePermissions,
+  manageRunners,
   manageSecrets,
   manageVariables,
-  manageCaches,
-  manageRunners,
-  managePermissions
+  manageWorkflowState,
+  triggerWorkflow
 } from './tools';
 import {
-  workflowRunTrigger,
-  workflowJobTrigger,
   checkRunTrigger,
-  deploymentStatusTrigger
+  deploymentStatusTrigger,
+  workflowJobTrigger,
+  workflowRunTrigger
 } from './triggers';
 
 export let provider = Slate.create({

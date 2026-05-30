@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  upsertContact,
-  searchContacts,
-  getContact,
-  deleteContact,
-  bulkUpsertContacts,
-  listSegments,
-  getSegmentContacts,
-  updateSegmentMembership,
-  sendEmail,
-  sendSms,
-  sendPreparedMessage,
-  getMessageStatus,
-  generateEvent,
   addOrders,
+  bulkUpsertContacts,
+  deleteContact,
   deleteOrders,
+  generateEvent,
   getAccountInfo,
-  manageUnsubscribes
+  getContact,
+  getMessageStatus,
+  getSegmentContacts,
+  listSegments,
+  manageUnsubscribes,
+  searchContacts,
+  sendEmail,
+  sendPreparedMessage,
+  sendSms,
+  updateSegmentMembership,
+  upsertContact
 } from './tools';
 import { messageActivity } from './triggers';
 

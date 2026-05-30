@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { taskSchema } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTask = SlateTool.create(spec, {
   name: 'Get Task',

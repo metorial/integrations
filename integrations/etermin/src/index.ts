@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listAppointments,
-  getAppointment,
   createAppointment,
-  updateAppointment,
-  deleteAppointment,
-  listContacts,
   createContact,
-  updateContact,
-  deleteContact,
-  listCalendars,
-  getAvailableTimeSlots,
-  getWorkingTimes,
-  listServices,
   createService,
-  updateService,
-  deleteService,
-  listServiceGroups,
   createVoucher,
+  deleteAppointment,
+  deleteContact,
+  deleteService,
+  getAppointment,
+  getAvailableTimeSlots,
+  getCompanyInfo,
+  getWorkingTimes,
+  listAppointments,
+  listCalendars,
+  listContacts,
+  listServiceGroups,
+  listServices,
   listVouchers,
-  getCompanyInfo
+  updateAppointment,
+  updateContact,
+  updateService
 } from './tools';
 import { appointmentEvent } from './triggers';
 

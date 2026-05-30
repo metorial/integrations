@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TrayRestClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getConnectorOperations = SlateTool.create(spec, {
   name: 'Get Connector Operations',

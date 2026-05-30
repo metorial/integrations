@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AbstractClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let geolocateIp = SlateTool.create(spec, {
   name: 'Geolocate IP',

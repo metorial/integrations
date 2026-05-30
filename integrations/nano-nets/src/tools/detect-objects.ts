@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NanonetsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let detectedObjectSchema = z.object({
   label: z.string().describe('Object category label'),

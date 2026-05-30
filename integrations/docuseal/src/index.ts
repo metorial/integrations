@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTemplates,
-  getTemplate,
-  createTemplate,
-  updateTemplate,
-  cloneTemplate,
-  mergeTemplates,
+  archiveSubmission,
   archiveTemplate,
+  cloneTemplate,
   createSubmission,
   createSubmissionFromPdf,
-  listSubmissions,
+  createTemplate,
   getSubmission,
-  archiveSubmission,
-  listSubmitters,
   getSubmitter,
-  updateSubmitter
+  getTemplate,
+  listSubmissions,
+  listSubmitters,
+  listTemplates,
+  mergeTemplates,
+  updateSubmitter,
+  updateTemplate
 } from './tools';
 import { formEvent, submissionEvent, templateEvent } from './triggers';
 

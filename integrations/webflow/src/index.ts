@@ -1,33 +1,33 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listSites,
-  getSite,
-  publishSite,
-  listCollections,
   getCollection,
+  getSite,
+  listAssets,
   listCollectionItems,
-  manageCollectionItem,
-  publishCollectionItems,
-  listPages,
-  updatePageSettings,
+  listCollections,
   listFormSubmissions,
-  listProducts,
-  manageProduct,
   listOrders,
-  updateOrder,
-  manageInventory,
+  listPages,
+  listProducts,
+  listSites,
   listUsers,
+  manageCollectionItem,
+  manageInventory,
+  manageProduct,
   manageUser,
-  listAssets
+  publishCollectionItems,
+  publishSite,
+  updateOrder,
+  updatePageSettings
 } from './tools';
 import {
-  formSubmissionTrigger,
-  sitePublishTrigger,
-  pageEventsTrigger,
+  collectionItemEventsTrigger,
   ecommerceEventsTrigger,
-  userAccountEventsTrigger,
-  collectionItemEventsTrigger
+  formSubmissionTrigger,
+  pageEventsTrigger,
+  sitePublishTrigger,
+  userAccountEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

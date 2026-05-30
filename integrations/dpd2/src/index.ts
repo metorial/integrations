@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listStorefronts,
-  getStorefront,
-  listProducts,
-  getProduct,
-  listPurchases,
-  getPurchase,
-  reactivatePurchase,
-  listCustomers,
   getCustomer,
-  listSubscribers,
+  getProduct,
+  getPurchase,
+  getStorefront,
   getSubscriber,
-  verifySubscriber,
-  verifyNotification
+  listCustomers,
+  listProducts,
+  listPurchases,
+  listStorefronts,
+  listSubscribers,
+  reactivatePurchase,
+  verifyNotification,
+  verifySubscriber
 } from './tools';
 import { purchaseNotification } from './triggers';
 

@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let taskEvents = SlateTrigger.create(spec, {
   name: 'Task Events',

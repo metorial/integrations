@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getInbox = SlateTool.create(spec, {
   name: 'Get Inbox',
@@ -60,7 +60,7 @@ export let getInbox = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
     let inbox = await client.getInbox(ctx.input.inboxId);
 
-    let users;
+    let users: any;
     if (ctx.input.includeUsers) {
       let rawUsers = await client.getInboxUsers(ctx.input.inboxId);
       users = rawUsers.map(u => ({
@@ -71,7 +71,7 @@ export let getInbox = SlateTool.create(spec, {
       }));
     }
 
-    let tags;
+    let tags: any;
     if (ctx.input.includeTags) {
       let rawTags = await client.getInboxTags(ctx.input.inboxId);
       tags = rawTags.map(t => ({

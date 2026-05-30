@@ -94,9 +94,9 @@ export interface DetectPlagiarismResponse {
     homoglyph_attack: boolean;
   };
   text: string;
-  similarWords: Array<unknown>;
+  similarWords: unknown[];
   citations: string[];
-  indexes: Array<unknown>;
+  indexes: unknown[];
   credits_used: number;
   credits_remaining: number;
 }
@@ -161,7 +161,7 @@ export interface TextCompareResponse {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.gowinston.ai',
       headers: {

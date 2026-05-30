@@ -18,7 +18,10 @@ export let googleContactsActionScopes = {
   createContactGroup: anyOf(googleContactsScopes.contacts),
   updateContactGroup: anyOf(googleContactsScopes.contacts),
   deleteContactGroup: anyOf(googleContactsScopes.contacts),
-  listContactGroups: anyOf(googleContactsScopes.contacts, googleContactsScopes.contactsReadonly),
+  listContactGroups: anyOf(
+    googleContactsScopes.contacts,
+    googleContactsScopes.contactsReadonly
+  ),
   getContactGroup: anyOf(googleContactsScopes.contacts, googleContactsScopes.contactsReadonly),
   modifyGroupMembers: anyOf(googleContactsScopes.contacts),
   listOtherContacts: anyOf(
@@ -36,9 +39,6 @@ export let googleContactsActionScopes = {
     googleContactsScopes.contactsOtherReadonly
   ),
   searchDirectory: anyOf(googleContactsScopes.directoryReadonly),
-  inboundWebhook: anyOf(
-    googleContactsScopes.contactsReadonly,
-    googleContactsScopes.contacts
-  ),
+  inboundWebhook: anyOf(googleContactsScopes.contactsReadonly, googleContactsScopes.contacts),
   contactChanged: anyOf(googleContactsScopes.contacts, googleContactsScopes.contactsReadonly)
 } as const;

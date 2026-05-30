@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjectsTool,
-  getProjectTool,
-  manageProjectTool,
-  listFilesTool,
-  manageSourceFileTool,
-  downloadFileTool,
-  manageStringsTool,
-  translationStatusTool,
   buildTranslationsTool,
-  manageTranslationsTool,
-  manageTMTool,
+  downloadFileTool,
+  getProjectTool,
+  listFilesTool,
+  listMembersTool,
+  listProjectsTool,
   manageGlossaryTool,
+  manageProjectTool,
+  manageSourceFileTool,
+  manageStringsTool,
   manageTasksTool,
-  listMembersTool
+  manageTMTool,
+  manageTranslationsTool,
+  translationStatusTool
 } from './tools';
 import {
+  commentEventsTrigger,
   fileEventsTrigger,
   projectEventsTrigger,
   stringEventsTrigger,
   suggestionEventsTrigger,
-  taskEventsTrigger,
-  commentEventsTrigger
+  taskEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

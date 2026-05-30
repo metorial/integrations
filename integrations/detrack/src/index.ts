@@ -2,15 +2,15 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createJobTool,
-  updateJobTool,
+  deleteJobTool,
+  downloadPodTool,
   getJobTool,
   listJobsTool,
-  searchJobsTool,
-  deleteJobTool,
-  reattemptJobTool,
-  downloadPodTool,
   listVehiclesTool,
-  manageVehicleTool
+  manageVehicleTool,
+  reattemptJobTool,
+  searchJobsTool,
+  updateJobTool
 } from './tools';
 import { jobStatusWebhookTrigger, jobUpdatesPollingTrigger } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let commentOnPullRequest = SlateTool.create(spec, {
   name: 'Comment on Pull Request',

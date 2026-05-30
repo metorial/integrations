@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MistralClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let codeCompletionTool = SlateTool.create(spec, {
   name: 'Code Completion (FIM)',

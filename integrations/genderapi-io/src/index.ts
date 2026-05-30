@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { detectGender, detectGenderBulk, validatePhone, checkUsage } from './tools';
+import { checkUsage, detectGender, detectGenderBulk, validatePhone } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

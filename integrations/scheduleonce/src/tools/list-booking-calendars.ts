@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let bookingCalendarSchema = z.object({
   calendarId: z.string().describe('Unique booking calendar identifier'),

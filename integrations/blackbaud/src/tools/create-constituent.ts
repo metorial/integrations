@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressSchema = z
   .object({
@@ -80,14 +80,12 @@ export let createConstituent = SlateTool.create(spec, {
       if (ctx.input.birthdate) {
         let parts = ctx.input.birthdate.split('-');
         constituentData.birthdate = {
-          y: parseInt(parts[0] ?? '0'),
-          m: parseInt(parts[1] ?? '0'),
-          d: parseInt(parts[2] ?? '0')
+          y: Number.parseInt(parts[0] ?? '0', 10),
+          m: Number.parseInt(parts[1] ?? '0', 10),
+          d: Number.parseInt(parts[2] ?? '0', 10)
         };
       }
-    } else {
-      if (ctx.input.name) constituentData.name = ctx.input.name;
-    }
+    } else if (ctx.input.name) constituentData.name = ctx.input.name;
 
     if (ctx.input.emailAddresses?.length) {
       constituentData.email = ctx.input.emailAddresses[0];

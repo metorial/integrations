@@ -1,18 +1,18 @@
 import { createAxios } from 'slates';
 import type {
-  UserflowListResponse,
-  UserflowUser,
-  UserflowGroup,
+  UserflowAccount,
+  UserflowContent,
+  UserflowContentSession,
+  UserflowContentVersion,
+  UserflowDeleteResponse,
   UserflowEvent,
   UserflowEventDefinition,
-  UserflowContent,
-  UserflowContentVersion,
-  UserflowContentSession,
-  UserflowWebhookSubscription,
-  UserflowDeleteResponse,
-  UserflowAccount,
+  UserflowGroup,
+  UserflowInvite,
+  UserflowListResponse,
   UserflowMember,
-  UserflowInvite
+  UserflowUser,
+  UserflowWebhookSubscription
 } from './types';
 
 export interface ClientConfig {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let youtubeVideo = SlateTool.create(spec, {
   name: 'YouTube Video Details',
@@ -48,7 +48,7 @@ export let youtubeVideo = SlateTool.create(spec, {
       videoId: ctx.input.videoId
     });
 
-    let transcript: any = undefined;
+    let transcript: any;
     if (ctx.input.includeTranscript) {
       transcript = await client.youtubeTranscript({
         videoId: ctx.input.videoId,
@@ -56,7 +56,7 @@ export let youtubeVideo = SlateTool.create(spec, {
       });
     }
 
-    let trainability: any = undefined;
+    let trainability: any;
     if (ctx.input.includeTrainability) {
       trainability = await client.youtubeTrainability({
         videoId: ctx.input.videoId

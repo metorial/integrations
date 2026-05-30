@@ -1,4 +1,4 @@
-import { Client, ClientConfig } from './client';
+import { Client, type ClientConfig } from './client';
 
 export let createClient = (ctx: {
   auth: { token: string; authMethod?: string };

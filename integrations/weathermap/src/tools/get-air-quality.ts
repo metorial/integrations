@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OpenWeatherClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let pollutantComponentsSchema = z.object({
   co: z.number().optional().describe('Carbon monoxide (CO) in ug/m3'),

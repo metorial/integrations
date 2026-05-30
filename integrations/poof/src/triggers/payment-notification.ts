@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { PoofClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let paymentNotification = SlateTrigger.create(spec, {
   name: 'Payment Notification',
@@ -81,7 +81,7 @@ export let paymentNotification = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let body = (await ctx.input.request.json()) as Record<string, unknown>;
 
-      let statusMap: Record<string, string> = {
+      let _statusMap: Record<string, string> = {
         yes: 'payment.completed',
         payout: 'payment.payout',
         paid_partial: 'payment.partial',

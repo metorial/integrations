@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let fieldInfoSchema = z.object({
   fieldName: z.string().describe('Technical name of the field'),
@@ -77,7 +77,7 @@ export let listModelFields = SlateTool.create(spec, {
     });
 
     return {
-      output: { fields: fields as Array<z.infer<typeof fieldInfoSchema>> },
+      output: { fields: fields as z.infer<typeof fieldInfoSchema>[] },
       message: `Found **${fields.length}** fields on model \`${ctx.input.model}\`.`
     };
   })

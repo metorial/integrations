@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NgrokClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let credentialOutputSchema = z.object({
   credentialId: z.string().describe('Credential ID'),

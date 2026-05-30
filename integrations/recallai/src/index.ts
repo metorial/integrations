@@ -2,22 +2,22 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createBotTool,
-  listBotsTool,
-  getBotTool,
-  updateBotTool,
   deleteBotTool,
-  removeBotFromCallTool,
+  getBotTool,
   getTranscriptTool,
-  sendChatMessageTool,
-  outputMediaTool,
-  listCalendarsTool,
+  listBotsTool,
   listCalendarEventsTool,
-  scheduleBotForEventTool
+  listCalendarsTool,
+  outputMediaTool,
+  removeBotFromCallTool,
+  scheduleBotForEventTool,
+  sendChatMessageTool,
+  updateBotTool
 } from './tools';
 import {
   botStatusChangeTrigger,
-  recordingStatusChangeTrigger,
-  calendarEventChangeTrigger
+  calendarEventChangeTrigger,
+  recordingStatusChangeTrigger
 } from './triggers';
 
 export let provider = Slate.create({

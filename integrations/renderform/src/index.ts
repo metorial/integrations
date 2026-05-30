@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { renderImage, takeScreenshot, listTemplates, getTemplate, listResults } from './tools';
+import { getTemplate, listResults, listTemplates, renderImage, takeScreenshot } from './tools';
 import { renderformEvents } from './triggers';
 
 export let provider = Slate.create({

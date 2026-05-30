@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HNClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getItem = SlateTool.create(spec, {
   name: 'Get Item',

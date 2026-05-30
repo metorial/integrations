@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getConversation = SlateTool.create(spec, {
   name: 'Get Conversation',
@@ -70,7 +70,7 @@ export let getConversation = SlateTool.create(spec, {
 
     let conversation = await client.getConversation(ctx.input.conversationId);
 
-    let messages;
+    let messages: any;
     if (ctx.input.includeMessages) {
       let msgResult = await client.listConversationMessages(ctx.input.conversationId);
       messages = msgResult._results.map(m => ({

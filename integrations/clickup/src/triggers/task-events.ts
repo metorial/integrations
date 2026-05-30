@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ClickUpClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let TASK_WEBHOOK_EVENTS = [
   'taskCreated',

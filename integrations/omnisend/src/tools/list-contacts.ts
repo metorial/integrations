@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OmnisendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactSummarySchema = z.object({
   contactId: z.string().describe('Omnisend contact ID'),

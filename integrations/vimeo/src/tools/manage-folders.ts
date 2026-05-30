@@ -1,15 +1,15 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { VimeoClient } from '../lib/client';
 import {
   folderSchema,
-  videoSchema,
+  mapFolder,
+  mapVideo,
   paginationInputSchema,
   paginationOutputSchema,
-  mapFolder,
-  mapVideo
+  videoSchema
 } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listFoldersTool = SlateTool.create(spec, {
   name: 'List Folders',

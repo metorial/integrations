@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listIncidents,
-  getIncident,
-  createIncident,
-  updateIncident,
-  listAlerts,
+  createActionItem,
   createAlert,
-  manageAlert,
+  createHeartbeat,
+  createIncident,
+  getIncident,
+  listActionItems,
+  listAlerts,
+  listEnvironments,
+  listEscalationPolicies,
+  listHeartbeats,
+  listIncidents,
   listOnCall,
   listSchedules,
-  listEscalationPolicies,
   listServices,
+  listSeverities,
   listTeams,
   listUsers,
-  listActionItems,
-  createActionItem,
-  updateActionItem,
-  listHeartbeats,
-  createHeartbeat,
   listWorkflows,
-  listSeverities,
-  listEnvironments
+  manageAlert,
+  updateActionItem,
+  updateIncident
 } from './tools';
 import {
-  incidentEvents,
   alertEvents,
+  incidentEvents,
   retrospectiveEvents,
   scheduledIncidentEvents
 } from './triggers';

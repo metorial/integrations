@@ -1,6 +1,6 @@
-import { SlateAuth, axios } from 'slates';
+import { axios, SlateAuth } from 'slates';
 import { z } from 'zod';
-import { getAccountsUrl, getApiDomain, ZohoRegion } from './lib/regions';
+import { getAccountsUrl, getApiDomain, type ZohoRegion } from './lib/regions';
 
 let scopes = [
   {

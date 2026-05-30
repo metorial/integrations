@@ -92,7 +92,7 @@ export class AlgoliaClient {
   ): Promise<any> {
     let params: Record<string, string> = {};
     if (attributesToRetrieve && attributesToRetrieve.length > 0) {
-      params['attributesToRetrieve'] = attributesToRetrieve.join(',');
+      params.attributesToRetrieve = attributesToRetrieve.join(',');
     }
     let res = await this.searchClient.get(
       `/1/indexes/${encodeURIComponent(indexName)}/${encodeURIComponent(objectId)}`,
@@ -186,8 +186,8 @@ export class AlgoliaClient {
 
   async listIndices(page?: number, hitsPerPage?: number): Promise<any> {
     let params: Record<string, any> = {};
-    if (page !== undefined) params['page'] = page;
-    if (hitsPerPage !== undefined) params['hitsPerPage'] = hitsPerPage;
+    if (page !== undefined) params.page = page;
+    if (hitsPerPage !== undefined) params.hitsPerPage = hitsPerPage;
     let res = await this.searchClient.get('/1/indexes', { params });
     return res.data;
   }
@@ -203,7 +203,7 @@ export class AlgoliaClient {
     scope?: string[]
   ): Promise<any> {
     let body: Record<string, any> = { operation: 'copy', destination: destIndexName };
-    if (scope) body['scope'] = scope;
+    if (scope) body.scope = scope;
     let res = await this.searchClient.post(
       `/1/indexes/${encodeURIComponent(srcIndexName)}/operation`,
       body
@@ -237,7 +237,7 @@ export class AlgoliaClient {
     forwardToReplicas?: boolean
   ): Promise<any> {
     let params: Record<string, any> = {};
-    if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
+    if (forwardToReplicas !== undefined) params.forwardToReplicas = forwardToReplicas;
     let res = await this.searchClient.put(
       `/1/indexes/${encodeURIComponent(indexName)}/settings`,
       settings,
@@ -270,7 +270,7 @@ export class AlgoliaClient {
     forwardToReplicas?: boolean
   ): Promise<any> {
     let params: Record<string, any> = {};
-    if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
+    if (forwardToReplicas !== undefined) params.forwardToReplicas = forwardToReplicas;
     let res = await this.searchClient.put(
       `/1/indexes/${encodeURIComponent(indexName)}/synonyms/${encodeURIComponent(objectId)}`,
       synonym,
@@ -281,14 +281,14 @@ export class AlgoliaClient {
 
   async saveSynonyms(
     indexName: string,
-    synonyms: Array<Record<string, any>>,
+    synonyms: Record<string, any>[],
     forwardToReplicas?: boolean,
     replaceExistingSynonyms?: boolean
   ): Promise<any> {
     let params: Record<string, any> = {};
-    if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
+    if (forwardToReplicas !== undefined) params.forwardToReplicas = forwardToReplicas;
     if (replaceExistingSynonyms !== undefined)
-      params['replaceExistingSynonyms'] = replaceExistingSynonyms;
+      params.replaceExistingSynonyms = replaceExistingSynonyms;
     let res = await this.searchClient.post(
       `/1/indexes/${encodeURIComponent(indexName)}/synonyms/batch`,
       synonyms,
@@ -303,7 +303,7 @@ export class AlgoliaClient {
     forwardToReplicas?: boolean
   ): Promise<any> {
     let params: Record<string, any> = {};
-    if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
+    if (forwardToReplicas !== undefined) params.forwardToReplicas = forwardToReplicas;
     let res = await this.searchClient.delete(
       `/1/indexes/${encodeURIComponent(indexName)}/synonyms/${encodeURIComponent(objectId)}`,
       { params }
@@ -313,7 +313,7 @@ export class AlgoliaClient {
 
   async clearSynonyms(indexName: string, forwardToReplicas?: boolean): Promise<any> {
     let params: Record<string, any> = {};
-    if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
+    if (forwardToReplicas !== undefined) params.forwardToReplicas = forwardToReplicas;
     let res = await this.searchClient.post(
       `/1/indexes/${encodeURIComponent(indexName)}/synonyms/clear`,
       {},
@@ -346,7 +346,7 @@ export class AlgoliaClient {
     forwardToReplicas?: boolean
   ): Promise<any> {
     let params: Record<string, any> = {};
-    if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
+    if (forwardToReplicas !== undefined) params.forwardToReplicas = forwardToReplicas;
     let res = await this.searchClient.put(
       `/1/indexes/${encodeURIComponent(indexName)}/rules/${encodeURIComponent(objectId)}`,
       rule,
@@ -357,13 +357,13 @@ export class AlgoliaClient {
 
   async saveRules(
     indexName: string,
-    rules: Array<Record<string, any>>,
+    rules: Record<string, any>[],
     forwardToReplicas?: boolean,
     clearExistingRules?: boolean
   ): Promise<any> {
     let params: Record<string, any> = {};
-    if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
-    if (clearExistingRules !== undefined) params['clearExistingRules'] = clearExistingRules;
+    if (forwardToReplicas !== undefined) params.forwardToReplicas = forwardToReplicas;
+    if (clearExistingRules !== undefined) params.clearExistingRules = clearExistingRules;
     let res = await this.searchClient.post(
       `/1/indexes/${encodeURIComponent(indexName)}/rules/batch`,
       rules,
@@ -378,7 +378,7 @@ export class AlgoliaClient {
     forwardToReplicas?: boolean
   ): Promise<any> {
     let params: Record<string, any> = {};
-    if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
+    if (forwardToReplicas !== undefined) params.forwardToReplicas = forwardToReplicas;
     let res = await this.searchClient.delete(
       `/1/indexes/${encodeURIComponent(indexName)}/rules/${encodeURIComponent(objectId)}`,
       { params }
@@ -388,7 +388,7 @@ export class AlgoliaClient {
 
   async clearRules(indexName: string, forwardToReplicas?: boolean): Promise<any> {
     let params: Record<string, any> = {};
-    if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
+    if (forwardToReplicas !== undefined) params.forwardToReplicas = forwardToReplicas;
     let res = await this.searchClient.post(
       `/1/indexes/${encodeURIComponent(indexName)}/rules/clear`,
       {},
@@ -477,7 +477,7 @@ export class AlgoliaClient {
 
   // ============ Insights (Events) ============
 
-  async sendEvents(events: Array<Record<string, any>>): Promise<any> {
+  async sendEvents(events: Record<string, any>[]): Promise<any> {
     let res = await this.insightsClient.post('/1/events', { events });
     return res.data;
   }
@@ -511,7 +511,7 @@ export class AlgoliaClient {
 
   // ============ Recommend ============
 
-  async getRecommendations(requests: Array<Record<string, any>>): Promise<any> {
+  async getRecommendations(requests: Record<string, any>[]): Promise<any> {
     let res = await this.searchClient.post('/1/indexes/*/recommendations', { requests });
     return res.data;
   }

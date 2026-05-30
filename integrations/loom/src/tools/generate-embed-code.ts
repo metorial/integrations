@@ -1,12 +1,12 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import {
-  extractVideoId,
-  isValidLoomUrl,
+  buildEmbedIframe,
   buildEmbedUrl,
-  buildEmbedIframe
+  extractVideoId,
+  isValidLoomUrl
 } from '../lib/client';
+import { spec } from '../spec';
 
 export let generateEmbedCode = SlateTool.create(spec, {
   name: 'Generate Embed Code',

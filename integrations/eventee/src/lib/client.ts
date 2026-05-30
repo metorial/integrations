@@ -89,7 +89,7 @@ export interface InviteAttendeeUser {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.eventee.com/public/v1',
       headers: {
@@ -116,7 +116,7 @@ export class Client {
 
   async inviteAttendees(
     users: InviteAttendeeUser[]
-  ): Promise<{ invited: number; users: Array<Record<string, unknown>> }> {
+  ): Promise<{ invited: number; users: Record<string, unknown>[] }> {
     let payload = {
       users: users.map(user => ({
         email: user.email,

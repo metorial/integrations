@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SmsAlertClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSmsReport = SlateTool.create(spec, {
   name: 'Get SMS Report',

@@ -71,7 +71,7 @@ export class Client {
   private toUnixTimestamp(dateStr: string | undefined): number | undefined {
     if (!dateStr) return undefined;
     let d = new Date(dateStr);
-    if (isNaN(d.getTime())) return undefined;
+    if (Number.isNaN(d.getTime())) return undefined;
     return Math.floor(d.getTime() / 1000);
   }
 

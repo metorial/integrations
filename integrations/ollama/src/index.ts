@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateText,
   chat,
+  copyModel,
+  createModel,
+  deleteModel,
   generateEmbeddings,
+  generateText,
   listModels,
-  showModel,
   pullModel,
   pushModel,
-  createModel,
-  copyModel,
-  deleteModel
+  showModel
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -86,7 +86,7 @@ export type SketchLayer = {
   attributedString?: {
     _class: 'attributedString';
     string: string;
-    attributes?: Array<unknown>;
+    attributes?: unknown[];
   };
   [key: string]: unknown;
 };
@@ -117,18 +117,18 @@ export type SketchDocumentJson = {
       name?: string;
       color: SketchColor;
     }>;
-    gradientAssets?: Array<unknown>;
+    gradientAssets?: unknown[];
     imageCollection?: {
       _class: 'imageCollection';
       images: Record<string, unknown>;
     };
     colors?: SketchColor[];
-    gradients?: Array<unknown>;
-    images?: Array<unknown>;
+    gradients?: unknown[];
+    images?: unknown[];
   };
-  foreignLayerStyles?: Array<unknown>;
-  foreignSymbols?: Array<unknown>;
-  foreignTextStyles?: Array<unknown>;
+  foreignLayerStyles?: unknown[];
+  foreignSymbols?: unknown[];
+  foreignTextStyles?: unknown[];
   layerStyles?: {
     _class: 'sharedStyleContainer';
     do_objectID?: string;
@@ -142,7 +142,7 @@ export type SketchDocumentJson = {
   layerSymbols?: {
     _class: 'symbolContainer';
     do_objectID?: string;
-    objects?: Array<unknown>;
+    objects?: unknown[];
   };
   pages?: Array<{
     _class: 'MSJSONFileReference';
@@ -210,7 +210,7 @@ export let colorToRgba = (color: SketchColor): string => {
   let r = Math.round(color.red * 255);
   let g = Math.round(color.green * 255);
   let b = Math.round(color.blue * 255);
-  return `rgba(${r}, ${g}, ${b}, ${parseFloat(color.alpha.toFixed(2))})`;
+  return `rgba(${r}, ${g}, ${b}, ${Number.parseFloat(color.alpha.toFixed(2))})`;
 };
 
 export let extractColorsFromStyle = (style: SketchStyle | undefined): SketchColor[] => {
@@ -358,10 +358,10 @@ export let createColor = (
 
 export let hexToColor = (hex: string): SketchColor => {
   let clean = hex.replace('#', '');
-  let r = parseInt(clean.substring(0, 2), 16) / 255;
-  let g = parseInt(clean.substring(2, 4), 16) / 255;
-  let b = parseInt(clean.substring(4, 6), 16) / 255;
-  let a = clean.length >= 8 ? parseInt(clean.substring(6, 8), 16) / 255 : 1;
+  let r = Number.parseInt(clean.substring(0, 2), 16) / 255;
+  let g = Number.parseInt(clean.substring(2, 4), 16) / 255;
+  let b = Number.parseInt(clean.substring(4, 6), 16) / 255;
+  let a = clean.length >= 8 ? Number.parseInt(clean.substring(6, 8), 16) / 255 : 1;
   return createColor(r, g, b, a);
 };
 

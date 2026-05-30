@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listConversations = SlateTool.create(spec, {
   name: 'List Conversations',
@@ -44,7 +44,7 @@ export let listConversations = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let result;
+    let result: any;
     if (ctx.input.query) {
       result = await client.searchConversations(ctx.input.query, {
         page_token: ctx.input.pageToken,
@@ -60,14 +60,14 @@ export let listConversations = SlateTool.create(spec, {
       });
     }
 
-    let conversations = result._results.map(c => ({
+    let conversations = result._results.map((c: any) => ({
       conversationId: c.id,
       subject: c.subject,
       status: c.status,
       assigneeEmail: c.assignee?.email,
       isPrivate: c.is_private,
       createdAt: c.created_at,
-      tags: c.tags.map(t => ({
+      tags: c.tags.map((t: any) => ({
         tagId: t.id,
         name: t.name
       }))

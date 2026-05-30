@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AscoraAccountingClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let markPayments = SlateTool.create(spec, {
   name: 'Mark Payments as Sent',

@@ -362,11 +362,7 @@ export class Client {
   }
 
   async getAgencies(
-    params: {
-      agencyKey?: number;
-      pageNumber?: number;
-      pageSize?: number;
-    } = {}
+    params: { agencyKey?: number; pageNumber?: number; pageSize?: number } = {}
   ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/agency/', {
       params: this.buildParams({
@@ -417,11 +413,7 @@ export class Client {
   }
 
   async getPscCodes(
-    params: {
-      pscCode?: string;
-      pageNumber?: number;
-      pageSize?: number;
-    } = {}
+    params: { pscCode?: string; pageNumber?: number; pageSize?: number } = {}
   ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/psc/', {
       params: this.buildParams({

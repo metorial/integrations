@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CountdownClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCollectionResults = SlateTool.create(spec, {
   name: 'Get Collection Results',

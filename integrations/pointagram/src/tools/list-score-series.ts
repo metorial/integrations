@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PointagramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listScoreSeries = SlateTool.create(spec, {
   name: 'List Score Series',

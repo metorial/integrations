@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { XForceClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let vulnerabilitySchema = z.object({
   xfid: z.number().optional().describe('X-Force Database ID'),

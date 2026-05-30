@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ALL_LICENSE_KEY_EVENTS = ['license_key_created', 'license_key_updated'];
 

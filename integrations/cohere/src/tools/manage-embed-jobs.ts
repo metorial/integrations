@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CohereClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let embedJobOutputSchema = z.object({
   jobId: z.string().describe('Unique identifier for the embed job'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let rejectApplicationTool = SlateTool.create(spec, {
   name: 'Reject Application',
@@ -42,14 +42,14 @@ export let rejectApplicationTool = SlateTool.create(spec, {
       ? {
           sendEmailAt: ctx.input.sendEmailAt,
           emailTemplateId: ctx.input.emailTemplateId
-            ? parseInt(ctx.input.emailTemplateId)
+            ? Number.parseInt(ctx.input.emailTemplateId, 10)
             : undefined
         }
       : undefined;
 
-    await client.rejectApplication(parseInt(ctx.input.applicationId), {
+    await client.rejectApplication(Number.parseInt(ctx.input.applicationId, 10), {
       rejectionReasonId: ctx.input.rejectionReasonId
-        ? parseInt(ctx.input.rejectionReasonId)
+        ? Number.parseInt(ctx.input.rejectionReasonId, 10)
         : undefined,
       notes: ctx.input.notes,
       rejectionEmail

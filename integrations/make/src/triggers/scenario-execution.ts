@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { MakeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let scenarioExecution = SlateTrigger.create(spec, {
   name: 'Scenario Execution',
@@ -118,10 +118,7 @@ export let scenarioExecution = SlateTrigger.create(spec, {
           if (newestId) {
             updatedLastSeenIds[String(scenarioId)] = newestId;
           }
-        } catch {
-          // Skip scenarios that fail to load logs
-          continue;
-        }
+        } catch {}
       }
 
       return {

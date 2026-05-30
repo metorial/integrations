@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendDocument,
-  listDocuments,
-  getDocument,
-  manageDocument,
-  sendFromTemplate,
-  listTemplates,
-  getTemplate,
   downloadDocument,
+  getDocument,
   getEmbeddedSignLink,
+  getTemplate,
+  listBrands,
+  listDocuments,
+  listTemplates,
   listUsers,
-  listBrands
+  manageDocument,
+  sendDocument,
+  sendFromTemplate
 } from './tools';
-import { documentEvents, templateEvents, senderIdentityEvents } from './triggers';
+import { documentEvents, senderIdentityEvents, templateEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

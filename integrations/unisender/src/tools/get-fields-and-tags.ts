@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { UnisenderClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFieldsAndTags = SlateTool.create(spec, {
   name: 'Get Fields and Tags',

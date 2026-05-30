@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EditClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let mergeFieldSchema = z.object({
   find: z.string().describe('The placeholder string to find in the edit (e.g. "NAME")'),

@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCollections,
-  getCollection,
+  addFilesToCollection,
   createCollection,
   deleteCollection,
-  searchCollection,
-  listCollectionFiles,
-  addFilesToCollection,
   deleteFilesFromCollection,
-  getFileUploadUrl,
+  getCollection,
   getFileDownloadUrl,
-  listConnectors
+  getFileUploadUrl,
+  listCollectionFiles,
+  listCollections,
+  listConnectors,
+  searchCollection
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

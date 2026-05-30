@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CultsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let subCategorySchema = z.object({
   categoryId: z.string().describe('Category ID (used in create/update mutations)'),

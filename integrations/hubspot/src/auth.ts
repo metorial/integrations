@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 import { hubSpotApiError, hubSpotOAuthError, hubSpotServiceError } from './lib/errors';
 import {
@@ -56,7 +56,9 @@ let normalizeLoopbackRedirectUri = (redirectUri: string) => {
 };
 
 let getRedirectUri = (variant: OAuthVariant, redirectUri: string) =>
-  variant.normalizeLoopbackRedirectUri ? normalizeLoopbackRedirectUri(redirectUri) : redirectUri;
+  variant.normalizeLoopbackRedirectUri
+    ? normalizeLoopbackRedirectUri(redirectUri)
+    : redirectUri;
 
 let postOAuthForm = async <T>(
   path: string,
@@ -192,7 +194,10 @@ let buildAuthorizationUrl = async (ctx: {
   let additionalRequiredScopes = ctx.scopes.filter(
     scope => !requiredScopeSet.has(scope) && !optionalScopeSet.has(scope)
   );
-  let requiredScopes = uniqueScopes([...hubSpotRequiredScopeValues, ...additionalRequiredScopes]);
+  let requiredScopes = uniqueScopes([
+    ...hubSpotRequiredScopeValues,
+    ...additionalRequiredScopes
+  ]);
   let params = new URLSearchParams({
     client_id: ctx.clientId,
     redirect_uri: ctx.redirectUri,

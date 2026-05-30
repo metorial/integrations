@@ -1,5 +1,5 @@
 import { createAxios } from 'slates';
-import { parseDigestChallenge, buildDigestHeader } from './digest';
+import { buildDigestHeader, parseDigestChallenge } from './digest';
 
 let BASE_URL = 'https://cloud.mongodb.com/api/atlas/v2';
 let ACCEPT_HEADER = 'application/vnd.atlas.2025-03-12+json';
@@ -37,7 +37,7 @@ export class Client {
     }
 
     if (this.config.authMethod === 'oauth') {
-      headers['Authorization'] = `Bearer ${this.config.token}`;
+      headers.Authorization = `Bearer ${this.config.token}`;
       let response = await this.axios.request<T>({
         method,
         url: path,
@@ -97,7 +97,7 @@ export class Client {
         privateKey,
         challenge
       );
-      headers['Authorization'] = digestHeader;
+      headers.Authorization = digestHeader;
 
       let response = await this.axios.request<T>({
         method,
@@ -488,11 +488,11 @@ export class Client {
     let queryParams: Record<string, any> = {
       granularity: params.granularity
     };
-    if (params.period) queryParams['period'] = params.period;
-    if (params.start) queryParams['start'] = params.start;
-    if (params.end) queryParams['end'] = params.end;
+    if (params.period) queryParams.period = params.period;
+    if (params.start) queryParams.start = params.start;
+    if (params.end) queryParams.end = params.end;
     if (params.m && params.m.length > 0) {
-      queryParams['m'] = params.m.join(',');
+      queryParams.m = params.m.join(',');
     }
     return this.request(
       'GET',
@@ -517,11 +517,11 @@ export class Client {
     let queryParams: Record<string, any> = {
       granularity: params.granularity
     };
-    if (params.period) queryParams['period'] = params.period;
-    if (params.start) queryParams['start'] = params.start;
-    if (params.end) queryParams['end'] = params.end;
+    if (params.period) queryParams.period = params.period;
+    if (params.start) queryParams.start = params.start;
+    if (params.end) queryParams.end = params.end;
     if (params.m && params.m.length > 0) {
-      queryParams['m'] = params.m.join(',');
+      queryParams.m = params.m.join(',');
     }
     return this.request(
       'GET',
@@ -654,12 +654,12 @@ export class Client {
     }
   ): Promise<any> {
     let queryParams: Record<string, any> = {};
-    if (params?.itemsPerPage) queryParams['itemsPerPage'] = params.itemsPerPage;
-    if (params?.pageNum) queryParams['pageNum'] = params.pageNum;
-    if (params?.minDate) queryParams['minDate'] = params.minDate;
-    if (params?.maxDate) queryParams['maxDate'] = params.maxDate;
+    if (params?.itemsPerPage) queryParams.itemsPerPage = params.itemsPerPage;
+    if (params?.pageNum) queryParams.pageNum = params.pageNum;
+    if (params?.minDate) queryParams.minDate = params.minDate;
+    if (params?.maxDate) queryParams.maxDate = params.maxDate;
     if (params?.eventType && params.eventType.length > 0) {
-      queryParams['eventType'] = params.eventType.join(',');
+      queryParams.eventType = params.eventType.join(',');
     }
     return this.request('GET', `/groups/${projectId}/events`, undefined, queryParams);
   }
@@ -675,12 +675,12 @@ export class Client {
     }
   ): Promise<any> {
     let queryParams: Record<string, any> = {};
-    if (params?.itemsPerPage) queryParams['itemsPerPage'] = params.itemsPerPage;
-    if (params?.pageNum) queryParams['pageNum'] = params.pageNum;
-    if (params?.minDate) queryParams['minDate'] = params.minDate;
-    if (params?.maxDate) queryParams['maxDate'] = params.maxDate;
+    if (params?.itemsPerPage) queryParams.itemsPerPage = params.itemsPerPage;
+    if (params?.pageNum) queryParams.pageNum = params.pageNum;
+    if (params?.minDate) queryParams.minDate = params.minDate;
+    if (params?.maxDate) queryParams.maxDate = params.maxDate;
     if (params?.eventType && params.eventType.length > 0) {
-      queryParams['eventType'] = params.eventType.join(',');
+      queryParams.eventType = params.eventType.join(',');
     }
     return this.request('GET', `/orgs/${orgId}/events`, undefined, queryParams);
   }

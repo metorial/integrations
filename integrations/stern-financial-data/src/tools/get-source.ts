@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { SternFinancialDataClient } from '../lib/client';
-import { applySourceFilters, BetaFilters, ErpFilters } from '../lib/filters';
 import { sternFinancialDataServiceError } from '../lib/errors';
+import { applySourceFilters, type BetaFilters, type ErpFilters } from '../lib/filters';
 import { spec } from '../spec';
 
 let commonControls = {

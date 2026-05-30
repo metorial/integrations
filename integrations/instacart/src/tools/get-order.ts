@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConnectClient } from '../lib/connect-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getOrder = SlateTool.create(spec, {
   name: 'Get Order',
@@ -76,7 +76,7 @@ Requires **Connect OAuth** authentication with the \`connect:fulfillment\` scope
       environment: ctx.config.environment
     });
 
-    let orders;
+    let orders: any;
     if (ctx.input.orderId) {
       let order = await client.getOrder(ctx.input.userId, ctx.input.orderId);
       orders = [order];

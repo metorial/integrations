@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getGoogleQA = SlateTool.create(spec, {
   name: 'Get Google Q&A',
@@ -51,7 +51,7 @@ export let getGoogleQA = SlateTool.create(spec, {
       output: {
         questions: data.questions ?? {},
         totalCount:
-          typeof data.total === 'string' ? parseInt(data.total, 10) : (data.total ?? 0),
+          typeof data.total === 'string' ? Number.parseInt(data.total, 10) : (data.total ?? 0),
         page: data.page ?? 1,
         pages: data.pages ?? 1
       },

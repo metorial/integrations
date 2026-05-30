@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { createClient } from '../lib/helpers';
-import { geminiServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { geminiServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let isImagenModel = (model: string) => /(^|\/)imagen-/i.test(model);
 
@@ -133,7 +133,7 @@ export let generateImage = SlateTool.create(spec, {
       };
     }
 
-    let parts: Array<any> = [{ text: ctx.input.prompt }];
+    let parts: any[] = [{ text: ctx.input.prompt }];
 
     if (ctx.input.referenceImageBase64 && ctx.input.referenceImageMimeType) {
       parts.unshift({

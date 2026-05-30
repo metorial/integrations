@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRepository = SlateTool.create(spec, {
   name: 'Get Repository',
@@ -43,7 +43,10 @@ Use this to inspect a repository's configuration, check its visibility, default 
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let repo = await client.getRepository(ctx.input.owner, ctx.input.repo);
 
     return {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WebhooksClient } from '../lib/webhooks-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let fireWebhookTool = SlateTool.create(spec, {
   name: 'Fire Webhook',

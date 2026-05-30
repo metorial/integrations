@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let normalizeResponseMsg = (msg: string | Record<string, never>): string => {
   if (typeof msg === 'string') return msg;

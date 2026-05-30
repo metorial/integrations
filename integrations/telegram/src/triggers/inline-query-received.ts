@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { TelegramClient } from '../lib/client';
 import { generateSecretToken, verifySecretToken } from '../lib/webhook-utils';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let inlineQueryReceivedTrigger = SlateTrigger.create(spec, {
   name: 'Inline Query Received',

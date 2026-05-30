@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { xeroApiError, xeroServiceError } from './lib/errors';
 
@@ -305,7 +305,7 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let tokenResponse;
+      let tokenResponse: any;
       try {
         tokenResponse = await tokenClient.post(
           '/connect/token',
@@ -343,7 +343,7 @@ export let auth = SlateAuth.create()
 
       // Fetch tenant ID from connections endpoint
       let connectionsClient = createAxios({ baseURL: 'https://api.xero.com' });
-      let connectionsResponse;
+      let connectionsResponse: any;
       try {
         connectionsResponse = await connectionsClient.get('/connections', {
           headers: {
@@ -382,7 +382,7 @@ export let auth = SlateAuth.create()
       let tokenClient = createAxios({ baseURL: 'https://identity.xero.com' });
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let tokenResponse;
+      let tokenResponse: any;
       try {
         tokenResponse = await tokenClient.post(
           '/connect/token',
@@ -418,7 +418,7 @@ export let auth = SlateAuth.create()
 
       // Re-fetch tenant ID to keep it current
       let connectionsClient = createAxios({ baseURL: 'https://api.xero.com' });
-      let connectionsResponse;
+      let connectionsResponse: any;
       try {
         connectionsResponse = await connectionsClient.get('/connections', {
           headers: {
@@ -456,7 +456,7 @@ export let auth = SlateAuth.create()
       let client = createAxios({ baseURL: 'https://api.xero.com' });
 
       // Get connections to show organisation details
-      let connectionsResponse;
+      let connectionsResponse: any;
       try {
         connectionsResponse = await client.get('/connections', {
           headers: {
@@ -532,8 +532,8 @@ export let auth = SlateAuth.create()
       let tokenClient = createAxios({ baseURL: 'https://identity.xero.com' });
       let credentials = btoa(`${ctx.input.clientId}:${ctx.input.clientSecret}`);
 
-      let tokenResponse;
-      let tokenError;
+      let tokenResponse: any;
+      let tokenError: any;
       for (let scope of [LEGACY_CUSTOM_CONNECTION_SCOPES, GRANULAR_CUSTOM_CONNECTION_SCOPES]) {
         try {
           tokenResponse = await tokenClient.post(

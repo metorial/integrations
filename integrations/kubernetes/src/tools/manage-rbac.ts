@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createKubeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ruleSchema = z.object({
   apiGroups: z.array(z.string()).describe('API groups (use "" for core group)'),

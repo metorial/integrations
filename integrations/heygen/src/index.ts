@@ -2,24 +2,24 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createAvatarVideo,
-  getVideoStatus,
-  listAvatars,
-  listVoices,
-  listVideos,
-  deleteVideo,
-  createVideoFromPrompt,
-  generateFromTemplate,
-  listTemplates,
-  getTemplate,
-  translateVideo,
-  getTranslationStatus,
-  generateSpeech,
   createStreamingToken,
-  listAssets,
-  uploadAsset,
+  createVideoFromPrompt,
   deleteAsset,
+  deleteVideo,
+  generateFromTemplate,
+  generateSpeech,
   getRemainingQuota,
-  listTalkingPhotos
+  getTemplate,
+  getTranslationStatus,
+  getVideoStatus,
+  listAssets,
+  listAvatars,
+  listTalkingPhotos,
+  listTemplates,
+  listVideos,
+  listVoices,
+  translateVideo,
+  uploadAsset
 } from './tools';
 import { videoEvents } from './triggers';
 

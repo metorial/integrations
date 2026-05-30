@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let localizationSchema = z.object({
   country: z
@@ -120,7 +120,7 @@ export let detectGender = SlateTool.create(spec, {
           lastName: result.lastName,
           details: result.details
         },
-        message: `**${result.firstName}${result.lastName ? ' ' + result.lastName : ''}** is predicted as **${result.gender}** with ${Math.round(result.probability * 100)}% probability (${result.details.samples} samples).`
+        message: `**${result.firstName}${result.lastName ? ` ${result.lastName}` : ''}** is predicted as **${result.gender}** with ${Math.round(result.probability * 100)}% probability (${result.details.samples} samples).`
       };
     }
 
@@ -141,7 +141,7 @@ export let detectGender = SlateTool.create(spec, {
           lastName: result.lastName,
           details: result.details
         },
-        message: `Email **${ctx.input.email}** resolved to **${result.firstName}${result.lastName ? ' ' + result.lastName : ''}**, predicted as **${result.gender}** with ${Math.round(result.probability * 100)}% probability.`
+        message: `Email **${ctx.input.email}** resolved to **${result.firstName}${result.lastName ? ` ${result.lastName}` : ''}**, predicted as **${result.gender}** with ${Math.round(result.probability * 100)}% probability.`
       };
     }
 

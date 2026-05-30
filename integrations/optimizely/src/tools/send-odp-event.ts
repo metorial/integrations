@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OdpClient } from '../lib/odp-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendOdpEvent = SlateTool.create(spec, {
   name: 'Send ODP Event',

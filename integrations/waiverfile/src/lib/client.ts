@@ -68,10 +68,10 @@ export class WaiverFileClient {
     refIdAny?: string;
   }) {
     let params: Record<string, string> = { ...this.authParams() };
-    if (opts.refId1) params['refID1'] = opts.refId1;
-    if (opts.refId2) params['refID2'] = opts.refId2;
-    if (opts.refId3) params['refID3'] = opts.refId3;
-    if (opts.refIdAny) params['refIDAny'] = opts.refIdAny;
+    if (opts.refId1) params.refID1 = opts.refId1;
+    if (opts.refId2) params.refID2 = opts.refId2;
+    if (opts.refId3) params.refID3 = opts.refId3;
+    if (opts.refIdAny) params.refIDAny = opts.refIdAny;
 
     let { data } = await this.http.get('/GetWaiversByReferenceID', { params });
     return data;

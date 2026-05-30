@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { customerOutputSchema } from '../lib/schemas';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { customerOutputSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let listCustomers = SlateTool.create(spec, {
   name: 'List Customers',

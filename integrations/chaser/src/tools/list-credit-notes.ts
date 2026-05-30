@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { creditNoteOutputSchema } from '../lib/schemas';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { creditNoteOutputSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let listCreditNotes = SlateTool.create(spec, {
   name: 'List Credit Notes',

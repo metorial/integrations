@@ -31,8 +31,8 @@ export interface RecordField {
 export interface RecordSimilarityRequest {
   fields: Record<string, RecordField>;
   records: {
-    left: Array<Record<string, unknown>>;
-    right: Array<Record<string, unknown>>;
+    left: Record<string, unknown>[];
+    right: Record<string, unknown>[];
   };
   properties?: Record<string, unknown>;
 }
@@ -40,7 +40,7 @@ export interface RecordSimilarityRequest {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: RosetteClientConfig) {
+  constructor(config: RosetteClientConfig) {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {

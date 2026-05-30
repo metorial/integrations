@@ -1,5 +1,5 @@
 import { createAxios } from 'slates';
-import type { Ticket, Reply, Comment, User, Team, Label, Snippet, Email } from './types';
+import type { Comment, Email, Label, Reply, Snippet, Team, Ticket, User } from './types';
 
 export class Client {
   private token: string;
@@ -363,11 +363,7 @@ export class Client {
   // ─── Users ──────────────────────────────────────────────
 
   async listUsers(
-    options: {
-      withInvited?: boolean;
-      withRoles?: string;
-      type?: string;
-    } = {}
+    options: { withInvited?: boolean; withRoles?: string; type?: string } = {}
   ): Promise<User[]> {
     let response = await this.http.get('/users', {
       params: this.params({
@@ -478,12 +474,7 @@ export class Client {
   // ─── Reports ────────────────────────────────────────────
 
   async getAvgFirstResponseTime(
-    options: {
-      user?: string;
-      team?: string;
-      label?: string;
-      since?: string;
-    } = {}
+    options: { user?: string; team?: string; label?: string; since?: string } = {}
   ): Promise<any> {
     let response = await this.http.get('/reports/avg_first_response_time', {
       params: this.params({
@@ -497,12 +488,7 @@ export class Client {
   }
 
   async getTicketsCount(
-    options: {
-      user?: string;
-      team?: string;
-      label?: string;
-      since?: string;
-    } = {}
+    options: { user?: string; team?: string; label?: string; since?: string } = {}
   ): Promise<any> {
     let response = await this.http.get('/reports/tickets_count', {
       params: this.params({
@@ -516,12 +502,7 @@ export class Client {
   }
 
   async getRepliesCount(
-    options: {
-      user?: string;
-      team?: string;
-      label?: string;
-      since?: string;
-    } = {}
+    options: { user?: string; team?: string; label?: string; since?: string } = {}
   ): Promise<any> {
     let response = await this.http.get('/reports/replies_count', {
       params: this.params({

@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { GitLabClient } from '../lib/client';
 import { gitLabServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let commentEvents = SlateTrigger.create(spec, {
   name: 'Comment Events',

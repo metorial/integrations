@@ -1,2 +1,2 @@
-export * from './order-events';
 export * from './extension-events';
+export * from './order-events';

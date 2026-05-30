@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
-import { createClientFromContext } from '../lib/helpers';
 import { z } from 'zod';
+import { createClientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 let lineItemSchema = z.object({
   description: z.string().optional().describe('Description of the line item'),

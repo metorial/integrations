@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getProject = SlateTool.create(spec, {
   name: 'Get Project',
@@ -35,7 +35,7 @@ export let getProject = SlateTool.create(spec, {
 
     return {
       output: { project },
-      message: `Retrieved project **${project['name'] || ctx.input.projectId}**.`
+      message: `Retrieved project **${project.name || ctx.input.projectId}**.`
     };
   })
   .build();

@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  trackEventsTool,
+  deleteUserDataTool,
+  getChartResultsTool,
+  getUserProfileTool,
   identifyUserTool,
+  manageAnnotationsTool,
+  manageCohortsTool,
+  manageTaxonomyTool,
   queryActiveUsersTool,
   queryEventSegmentationTool,
   queryFunnelTool,
   queryRetentionTool,
   querySessionsTool,
   queryUserCompositionTool,
-  getUserProfileTool,
-  getChartResultsTool,
-  manageCohortsTool,
-  manageTaxonomyTool,
-  manageAnnotationsTool,
-  deleteUserDataTool
+  trackEventsTool
 } from './tools';
 import { eventWebhookTrigger } from './triggers';
 

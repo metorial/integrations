@@ -1,30 +1,30 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  trackUsers,
-  sendMessage,
-  triggerCampaign,
-  triggerCanvas,
-  exportUsers,
   deleteUsers,
-  mergeUsers,
-  listCampaigns,
-  getCampaignDetails,
+  exportUsers,
   getCampaignAnalytics,
-  listCanvases,
+  getCampaignDetails,
   getCanvasDetails,
-  listSegments,
+  getCustomEventAnalytics,
+  getKpiAnalytics,
   getSegmentDetails,
-  updateSubscriptionStatus,
   getSubscriptionStatus,
+  listCampaigns,
+  listCanvases,
   listCatalogs,
+  listSegments,
   manageCatalogItems,
+  manageContentBlocks,
   manageEmailList,
   manageEmailTemplates,
-  manageContentBlocks,
-  getKpiAnalytics,
-  getCustomEventAnalytics,
-  scheduleMessage
+  mergeUsers,
+  scheduleMessage,
+  sendMessage,
+  trackUsers,
+  triggerCampaign,
+  triggerCanvas,
+  updateSubscriptionStatus
 } from './tools';
 import { campaignActivity, emailBlocklistActivity, inboundWebhook } from './triggers';
 

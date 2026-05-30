@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getEmployee = SlateTool.create(spec, {
   name: 'Get Employee',
@@ -49,7 +49,7 @@ export let getEmployee = SlateTool.create(spec, {
         employeeId: data.id || ctx.input.employeeId,
         fields: data
       },
-      message: `Retrieved employee **${data.displayName || data.firstName + ' ' + data.lastName || ctx.input.employeeId}** with ${ctx.input.fields.length} fields.`
+      message: `Retrieved employee **${data.displayName || `${data.firstName} ${data.lastName}` || ctx.input.employeeId}** with ${ctx.input.fields.length} fields.`
     };
   })
   .build();

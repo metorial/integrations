@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  queryChatbot,
+  createUpdatedAnswer,
+  deleteUpdatedAnswer,
+  getAccount,
   getChatbotSettings,
   getConversations,
   getLeads,
-  listUpdatedAnswers,
-  createUpdatedAnswer,
-  deleteUpdatedAnswer,
-  getSuggestedMessages,
   getSources,
+  getSuggestedMessages,
   listChatbots,
-  getAccount
+  listUpdatedAnswers,
+  queryChatbot
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { noteSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let listNotes = SlateTool.create(spec, {
   name: 'List Notes',

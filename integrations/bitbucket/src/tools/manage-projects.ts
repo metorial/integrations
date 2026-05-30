@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { bitbucketServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageProjectsTool = SlateTool.create(spec, {
   name: 'Manage Projects',
@@ -82,9 +82,7 @@ Projects organize repositories into logical groups. Use action "list" to browse,
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.projectKey || !ctx.input.name) {
-        throw bitbucketServiceError(
-          'projectKey and name are required to create a project'
-        );
+        throw bitbucketServiceError('projectKey and name are required to create a project');
       }
 
       let body: Record<string, any> = {

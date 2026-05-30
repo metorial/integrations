@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SlackClient } from '../lib/client';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileMatchSchema = z.object({
   fileId: z.string().describe('Slack file ID'),

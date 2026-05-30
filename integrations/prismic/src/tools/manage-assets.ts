@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AssetApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let assetOutputSchema = z.object({
   assetId: z.string().describe('Unique asset ID'),

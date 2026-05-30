@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let customAttributePropertySchema = z.object({
   type: z
@@ -114,7 +114,7 @@ Supports custom attributes via natural language descriptions to extract addition
       device: ctx.input.device
     });
 
-    let productName = (response.product as Record<string, unknown> | undefined)?.['name'] as
+    let productName = (response.product as Record<string, unknown> | undefined)?.name as
       | string
       | undefined;
 

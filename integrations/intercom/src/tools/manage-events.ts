@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { intercomServiceError } from '../lib/errors';
 import { objectOrUndefined, stringOrUndefined } from '../lib/output';
+import { spec } from '../spec';
 
 export let manageEvents = SlateTool.create(spec, {
   name: 'Manage Data Events',
@@ -66,8 +66,7 @@ Use "submit" to track a new event, or "list" to retrieve events for a contact.`,
     let { action } = ctx.input;
 
     if (action === 'submit') {
-      if (!ctx.input.eventName)
-        throw intercomServiceError('eventName is required for submit');
+      if (!ctx.input.eventName) throw intercomServiceError('eventName is required for submit');
       if (!ctx.input.userId && !ctx.input.email && !ctx.input.intercomUserId) {
         throw intercomServiceError(
           'At least one of userId, email, or intercomUserId is required'

@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  getAdvancedPvPower,
+  getGridAggregations,
+  getHorizonAngle,
   getRadiationAndWeather,
   getRooftopPvPower,
-  getAdvancedPvPower,
   getTmyData,
-  getGridAggregations,
-  managePvPowerSite,
   listPvPowerSites,
-  getHorizonAngle
+  managePvPowerSite
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

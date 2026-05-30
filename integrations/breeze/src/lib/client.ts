@@ -3,13 +3,11 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(
-    private params: {
-      token: string;
-      subdomain: string;
-      teamId?: string;
-    }
-  ) {
+  constructor(params: {
+    token: string;
+    subdomain: string;
+    teamId?: string;
+  }) {
     this.axios = createAxios({
       baseURL: `https://${params.subdomain}.breezechms.com/api`,
       headers: {

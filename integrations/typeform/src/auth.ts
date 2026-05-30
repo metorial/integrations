@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { typeformApiError, typeformServiceError } from './lib/errors';
 
@@ -116,7 +116,7 @@ export let auth = SlateAuth.create()
         redirect_uri: ctx.redirectUri
       });
 
-      let response;
+      let response: any;
       try {
         response = await client.post('/oauth/token', body.toString(), {
           headers: {
@@ -170,7 +170,7 @@ export let auth = SlateAuth.create()
         client_secret: ctx.clientSecret
       });
 
-      let response;
+      let response: any;
       try {
         response = await client.post('/oauth/token', body.toString(), {
           headers: {
@@ -214,7 +214,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response;
+      let response: any;
       try {
         response = await client.get('/me');
       } catch (error) {
@@ -263,7 +263,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response;
+      let response: any;
       try {
         response = await client.get('/me');
       } catch (error) {

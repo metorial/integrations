@@ -1,2 +1,2 @@
-export * from './new-insights';
 export * from './inbound-webhook';
+export * from './new-insights';

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { createKubeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let resourceEvents = SlateTrigger.create(spec, {
   name: 'Resource Events',

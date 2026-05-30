@@ -25,7 +25,7 @@ export class EosGameServicesClient {
       identityProviderId
     };
     if (environment) {
-      params['environment'] = environment;
+      params.environment = environment;
     }
     let response = await this.http.get('/user/v1/accounts', { params });
     return response.data;
@@ -43,7 +43,7 @@ export class EosGameServicesClient {
   async getActiveSanctionsForPlayer(productUserId: string, actions?: string[]) {
     let params: Record<string, string | string[]> = {};
     if (actions && actions.length > 0) {
-      params['action'] = actions;
+      params.action = actions;
     }
     let response = await this.http.get(`/sanctions/v1/productUser/${productUserId}/active`, {
       params
@@ -54,7 +54,7 @@ export class EosGameServicesClient {
   async syncSanctions(lastLogId?: string) {
     let params: Record<string, string> = {};
     if (lastLogId) {
-      params['lastLogId'] = lastLogId;
+      params.lastLogId = lastLogId;
     }
     let response = await this.http.get('/sanctions/v1/sync', { params });
     return response.data;
@@ -218,7 +218,7 @@ export class EosGameServicesClient {
 export class EosAccountServicesClient {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string; accountId?: string }) {
+  constructor(params: { token: string; accountId?: string }) {
     this.http = createAxios({
       baseURL: 'https://api.epicgames.dev',
       headers: {
@@ -259,10 +259,10 @@ export class EosAccountServicesClient {
   async checkOwnership(accountId: string, nsCatalogItemIds?: string[], sandboxId?: string) {
     let params: Record<string, string | string[]> = {};
     if (nsCatalogItemIds && nsCatalogItemIds.length > 0) {
-      params['nsCatalogItemId'] = nsCatalogItemIds;
+      params.nsCatalogItemId = nsCatalogItemIds;
     }
     if (sandboxId) {
-      params['sandboxId'] = sandboxId;
+      params.sandboxId = sandboxId;
     }
     let response = await this.http.get(
       `/epic/ecom/v3/platforms/EPIC/identities/${accountId}/ownership`,
@@ -279,10 +279,10 @@ export class EosAccountServicesClient {
   ) {
     let params: Record<string, string | string[] | boolean> = { sandboxId };
     if (entitlementNames && entitlementNames.length > 0) {
-      params['entitlementName'] = entitlementNames;
+      params.entitlementName = entitlementNames;
     }
     if (includeRedeemed !== undefined) {
-      params['includeRedeemed'] = includeRedeemed;
+      params.includeRedeemed = includeRedeemed;
     }
     let response = await this.http.get(`/epic/ecom/v4/identities/${accountId}/entitlements`, {
       params

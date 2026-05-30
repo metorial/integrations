@@ -62,11 +62,11 @@ export interface IndividualRevealResponse {
     enrichment_level?: string;
     headline?: string;
     bio?: string;
-    work_history?: Array<Record<string, unknown>>;
-    skills?: Array<string>;
-    languages?: Array<string>;
-    certifications?: Array<Record<string, unknown>>;
-    education?: Array<Record<string, unknown>>;
+    work_history?: Record<string, unknown>[];
+    skills?: string[];
+    languages?: string[];
+    certifications?: Record<string, unknown>[];
+    education?: Record<string, unknown>[];
     is_premium?: boolean;
     is_open_to_work?: boolean;
     tenure_at_company?: string;
@@ -140,7 +140,7 @@ export interface CreditsResponse {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://wiza.co/api',
       headers: {

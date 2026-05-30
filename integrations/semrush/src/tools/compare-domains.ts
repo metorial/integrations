@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SemrushAnalyticsClient } from '../lib/client';
 import { transformResults } from '../lib/csv-parser';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let compareDomains = SlateTool.create(spec, {
   name: 'Compare Domains',

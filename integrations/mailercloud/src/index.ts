@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createCampaign,
   createContact,
-  updateContact,
-  searchContacts,
   createList,
-  searchLists,
+  getAccountPlan,
   listProperties,
   manageProperty,
-  createCampaign,
-  getAccountPlan,
-  manageWebhook
+  manageWebhook,
+  searchContacts,
+  searchLists,
+  updateContact
 } from './tools';
 import { emailEvent } from './triggers';
 

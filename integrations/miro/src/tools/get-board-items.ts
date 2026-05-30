@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MiroClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getBoardItems = SlateTool.create(spec, {
   name: 'Get Board Items',

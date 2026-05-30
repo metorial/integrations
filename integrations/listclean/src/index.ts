@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  verifyEmail,
+  downloadBulkResults,
   getAccount,
-  uploadBulkList,
   getBulkListStatus,
   listBulkLists,
-  downloadBulkResults
+  uploadBulkList,
+  verifyEmail
 } from './tools';
 import { emailDeliveryEvents } from './triggers';
 

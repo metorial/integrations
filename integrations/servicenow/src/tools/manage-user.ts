@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageUser = SlateTool.create(spec, {
   name: 'Manage User',
@@ -49,7 +49,7 @@ export let manageUser = SlateTool.create(spec, {
     if (ctx.input.active !== undefined) fields.active = ctx.input.active.toString();
     if (ctx.input.locked !== undefined) fields.locked_out = ctx.input.locked.toString();
 
-    let record;
+    let record: any;
     let action: string;
 
     if (ctx.input.userId) {

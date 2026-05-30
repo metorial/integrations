@@ -1,33 +1,33 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listPrograms,
-  listMembers,
   createMember,
-  updateMember,
-  removeMember,
-  listReferrals,
   createReferral,
-  updateReferral,
-  removeReferral,
   createReferralAction,
-  listRewards,
   createReward,
-  issueReward,
-  removeReward,
-  getRewardRules,
+  getMemberAccessUrls,
   getPayouts,
-  processPayout,
+  getRewardRules,
+  issueReward,
+  listMembers,
+  listPrograms,
+  listReferrals,
+  listRewards,
   manageEmailSubscriptions,
+  processPayout,
+  removeMember,
+  removeReferral,
+  removeReward,
   sendInviteFeed,
-  getMemberAccessUrls
+  updateMember,
+  updateReferral
 } from './tools';
 import {
-  programEvents,
+  emailEvents,
   memberEvents,
+  programEvents,
   referralEvents,
-  rewardEvents,
-  emailEvents
+  rewardEvents
 } from './triggers';
 
 export let provider = Slate.create({

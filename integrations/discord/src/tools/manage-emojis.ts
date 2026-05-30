@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { DiscordClient } from '../lib/client';
 import { discordServiceError } from '../lib/errors';
 import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let emojiOutputSchema = z.object({
   emojiId: z.string().nullable().describe('Emoji ID, null for standard emoji objects'),
@@ -35,8 +35,7 @@ let formatEmoji = (emoji: any) => {
 export let manageEmojis = SlateTool.create(spec, {
   name: 'Manage Emojis',
   key: 'manage_emojis',
-  description:
-    'List, get, create, update, or delete custom guild emojis in Discord.',
+  description: 'List, get, create, update, or delete custom guild emojis in Discord.',
   instructions: [
     'Use action "list" to retrieve custom emojis in a guild.',
     'Use action "get" with emojiId to retrieve one custom emoji.',
@@ -65,10 +64,7 @@ export let manageEmojis = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Image data URI for create, such as data:image/png;base64,...'),
-      roles: z
-        .array(z.string())
-        .optional()
-        .describe('Role IDs allowed to use the emoji')
+      roles: z.array(z.string()).optional().describe('Role IDs allowed to use the emoji')
     })
   )
   .output(

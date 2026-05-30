@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { apolloServiceError } from '../lib/errors';
 import type { ApolloTask } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taskTypeSchema = z.enum([
   'call',
@@ -180,9 +180,7 @@ export let createTask = SlateTool.create(spec, {
       let tasks: TaskOutput[] = Array.isArray(result.tasks)
         ? result.tasks.map((task: ApolloTask) => formatTask(task))
         : [];
-      let taskIds = tasks
-        .map(task => task.taskId)
-        .filter((id): id is string => Boolean(id));
+      let taskIds = tasks.map(task => task.taskId).filter((id): id is string => Boolean(id));
 
       return {
         output: {
@@ -206,9 +204,7 @@ export let createTask = SlateTool.create(spec, {
       status: ctx.input.status
     });
     let tasks: TaskOutput[] = result.task ? [formatTask(result.task)] : [];
-    let taskIds = tasks
-      .map(task => task.taskId)
-      .filter((id): id is string => Boolean(id));
+    let taskIds = tasks.map(task => task.taskId).filter((id): id is string => Boolean(id));
 
     return {
       output: {

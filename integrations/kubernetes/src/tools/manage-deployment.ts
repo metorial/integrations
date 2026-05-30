@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createKubeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageDeployment = SlateTool.create(spec, {
   name: 'Manage Deployment',
@@ -121,7 +121,7 @@ Also supports StatefulSets and DaemonSets for similar workload management.`,
       if (ctx.input.replicas === undefined) {
         throw new Error('replicas is required for scale action');
       }
-      let scaleResult = await client.setResourceScale(
+      let _scaleResult = await client.setResourceScale(
         workloadType,
         deploymentName,
         ctx.input.replicas,

@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createDeposit,
   createInvoice,
-  withdraw,
-  listOperations,
-  getOperation,
+  estimateFee,
   getBalance,
   getCurrencies,
-  estimateFee,
   getFeePlans,
-  createDeposit
+  getOperation,
+  listOperations,
+  withdraw
 } from './tools';
 import { invoiceStatus } from './triggers';
 

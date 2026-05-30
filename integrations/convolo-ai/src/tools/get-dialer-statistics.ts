@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DialerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let durationMetricsSchema = z
   .object({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 // ── Suppression Groups ──
 
@@ -115,7 +115,7 @@ export let addSuppressedEmails = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, region: ctx.config.region });
 
-    let result;
+    let result: any;
     if (ctx.input.groupId) {
       result = await client.addSuppressedEmails(ctx.input.groupId, ctx.input.emails);
     } else {

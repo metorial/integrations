@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listArticles = SlateTool.create(spec, {
   name: 'List Help Center Articles',
@@ -31,7 +31,7 @@ export let listArticles = SlateTool.create(spec, {
       projectId: ctx.auth.projectId
     });
 
-    let articles;
+    let articles: any;
     if (ctx.input.searchTerm) {
       let result = await client.searchArticles({ searchTerm: ctx.input.searchTerm });
       articles = Array.isArray(result) ? result : result.articles || result.data || [];

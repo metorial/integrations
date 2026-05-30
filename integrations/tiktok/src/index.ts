@@ -1,22 +1,22 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  getUserProfile,
-  listVideos,
-  queryVideos,
-  getCreatorInfo,
-  postVideo,
-  postPhoto,
-  getPublishStatus,
-  listAdvertisers,
-  getCampaigns,
-  manageCampaign,
-  getAdGroups,
   createAdGroup,
+  getAdGroups,
+  getAdReport,
   getAds,
-  getAdReport
+  getCampaigns,
+  getCreatorInfo,
+  getPublishStatus,
+  getUserProfile,
+  listAdvertisers,
+  listVideos,
+  manageCampaign,
+  postPhoto,
+  postVideo,
+  queryVideos
 } from './tools';
-import { consumerWebhook, businessWebhook } from './triggers';
+import { businessWebhook, consumerWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

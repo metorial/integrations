@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GammaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listFoldersTool = SlateTool.create(spec, {
   name: 'List Folders',
@@ -62,7 +62,7 @@ You must be a member of a folder to add content to it.`,
     if (result.hasMore) {
       message += ` (more available)`;
     }
-    message += ':\n' + folders.map(f => `- **${f.name}** - ID: \`${f.folderId}\``).join('\n');
+    message += `:\n${folders.map(f => `- **${f.name}** - ID: \`${f.folderId}\``).join('\n')}`;
 
     return {
       output: {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getVoice = SlateTool.create(spec, {
   name: 'Get Voice',
@@ -39,26 +39,26 @@ export let getVoice = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new ElevenLabsClient(ctx.auth.token);
     let data = (await client.getVoice(ctx.input.voiceId)) as Record<string, unknown>;
-    let settingsData = data['settings'] as Record<string, unknown> | undefined;
+    let settingsData = data.settings as Record<string, unknown> | undefined;
 
     return {
       output: {
-        voiceId: data['voice_id'] as string,
-        name: data['name'] as string,
-        category: data['category'] as string | undefined,
-        description: data['description'] as string | undefined,
-        labels: data['labels'] as Record<string, string> | undefined,
-        previewUrl: data['preview_url'] as string | undefined,
+        voiceId: data.voice_id as string,
+        name: data.name as string,
+        category: data.category as string | undefined,
+        description: data.description as string | undefined,
+        labels: data.labels as Record<string, string> | undefined,
+        previewUrl: data.preview_url as string | undefined,
         settings: settingsData
           ? {
-              stability: settingsData['stability'] as number | undefined,
-              similarityBoost: settingsData['similarity_boost'] as number | undefined,
-              style: settingsData['style'] as number | undefined,
-              useSpeakerBoost: settingsData['use_speaker_boost'] as boolean | undefined
+              stability: settingsData.stability as number | undefined,
+              similarityBoost: settingsData.similarity_boost as number | undefined,
+              style: settingsData.style as number | undefined,
+              useSpeakerBoost: settingsData.use_speaker_boost as boolean | undefined
             }
           : undefined
       },
-      message: `Retrieved voice **${data['name']}** (\`${data['voice_id']}\`), category: ${data['category'] || 'N/A'}.`
+      message: `Retrieved voice **${data.name}** (\`${data.voice_id}\`), category: ${data.category || 'N/A'}.`
     };
   })
   .build();

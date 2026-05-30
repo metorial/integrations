@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MailgunClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDomainTracking = SlateTool.create(spec, {
   name: 'Get Domain Tracking',

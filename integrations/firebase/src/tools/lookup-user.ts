@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { AuthClient } from '../lib/client';
 import { firebaseServiceError } from '../lib/errors';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let lookupUser = SlateTool.create(spec, {
   name: 'Lookup User',
@@ -43,7 +43,7 @@ export let lookupUser = SlateTool.create(spec, {
       throw firebaseServiceError('Either email or phoneNumber must be provided');
     }
 
-    let user;
+    let user: any;
     if (ctx.input.email) {
       user = await client.getUserByEmail(ctx.input.email);
     } else {

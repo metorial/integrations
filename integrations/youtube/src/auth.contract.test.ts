@@ -11,9 +11,7 @@ let loadProviderClient = async () => {
   profileGet.mockReset();
 
   vi.doMock('@slates/provider', async () => {
-    let actual = await vi.importActual<typeof import('@slates/provider')>(
-      '@slates/provider'
-    );
+    let actual = await vi.importActual<typeof import('@slates/provider')>('@slates/provider');
 
     return {
       ...actual,

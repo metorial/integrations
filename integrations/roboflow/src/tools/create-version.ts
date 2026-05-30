@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let createVersionTool = SlateTool.create(spec, {
   name: 'Create Version',
@@ -53,7 +53,7 @@ Preprocessing options include auto-orient, resize, grayscale, static crop, and t
         versionNumber:
           typeof versionNumber === 'number'
             ? versionNumber
-            : parseInt(versionNumber) || undefined,
+            : Number.parseInt(versionNumber, 10) || undefined,
         status: result.status || 'generating'
       },
       message: versionNumber

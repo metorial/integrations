@@ -320,12 +320,7 @@ export class Client {
     return response.data;
   }
 
-  async getNotes(
-    params: {
-      page?: number;
-      perPage?: number;
-    } = {}
-  ) {
+  async getNotes(params: { page?: number; perPage?: number } = {}) {
     let response = await this.axios.get('/note', {
       params: {
         page: params.page,
@@ -365,12 +360,7 @@ export class Client {
     return response.data;
   }
 
-  async getDomains(
-    params: {
-      page?: number;
-      perPage?: number;
-    } = {}
-  ) {
+  async getDomains(params: { page?: number; perPage?: number } = {}) {
     let response = await this.axios.get('/domain', {
       params: {
         page: params.page,

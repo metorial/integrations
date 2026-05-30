@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { verifyEmail, verifyBatch, getBatchStatus, getAccount } from './tools';
+import { getAccount, getBatchStatus, verifyBatch, verifyEmail } from './tools';
 import { batchCompleted } from './triggers';
 
 export let provider = Slate.create({

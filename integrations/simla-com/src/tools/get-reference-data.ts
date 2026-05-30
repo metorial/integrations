@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getReferenceData = SlateTool.create(spec, {
   name: 'Get Reference Data',
@@ -47,7 +47,7 @@ export let getReferenceData = SlateTool.create(spec, {
       site: ctx.config.site
     });
 
-    let entries: Array<Record<string, any>> = [];
+    let entries: Record<string, any>[] = [];
     let type = ctx.input.referenceType;
 
     if (type === 'statuses') {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HoneybadgerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageError = SlateTool.create(spec, {
   name: 'Manage Error',
@@ -125,13 +125,14 @@ export let manageError = SlateTool.create(spec, {
         await client.deleteFault(projectId, faultId);
         return { output: { success: true }, message: `Deleted error **${faultId}**.` };
 
-      case 'comment':
+      case 'comment': {
         if (!commentBody) throw new Error('commentBody is required for comment action');
         let result = await client.createComment(projectId, faultId, commentBody);
         return {
           output: { success: true, commentId: result.id },
           message: `Added comment to error **${faultId}**.`
         };
+      }
 
       default:
         throw new Error(`Unknown action: ${action}`);

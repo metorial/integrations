@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HoneybadgerReportingClient } from '../lib/reporting-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendEvents = SlateTool.create(spec, {
   name: 'Send Events',

@@ -4,7 +4,7 @@ import { netlifyApiError } from './errors';
 export class Client {
   private api: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.api = createAxios({
       baseURL: 'https://api.netlify.com/api/v1',
       headers: {

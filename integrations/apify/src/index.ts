@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  runActor,
+  abortRun,
+  buildActor,
+  getDatasetItems,
   getRun,
   listActors,
-  manageActor,
   listRuns,
-  abortRun,
-  manageTask,
-  getDatasetItems,
-  pushDatasetItems,
+  manageActor,
   manageKeyValueStore,
   manageSchedule,
-  buildActor,
-  manageWebhook
+  manageTask,
+  manageWebhook,
+  pushDatasetItems,
+  runActor
 } from './tools';
-import { actorRunEvent, actorBuildEvent } from './triggers';
+import { actorBuildEvent, actorRunEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,

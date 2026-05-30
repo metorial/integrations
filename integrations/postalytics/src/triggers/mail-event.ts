@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let EVENT_TYPE_MAP: Record<number, string> = {
   0: 'created',
@@ -102,8 +102,9 @@ export let mailEvent = SlateTrigger.create(spec, {
             eventType: eventTypeName,
             eventTypeId,
             eventDate: (data.eventDate || data.event_date || '') as string,
-            expectedDeliveryDate: (data.expectedDeliveryDate ||
-              data.expected_delivery_date) as string | undefined,
+            expectedDeliveryDate: (data.expectedDeliveryDate || data.expected_delivery_date) as
+              | string
+              | undefined,
             mailId: (data.mailId || data.mail_id) as string | undefined,
             contactDataId: (meta.dataId || meta.data_id) as string | undefined,
             dropId: (meta.dropId || meta.drop_id) as string | undefined,

@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  upsertCustomer,
-  getCustomer,
-  listCustomers,
   bulkUpsertCustomers,
-  upsertContactPerson,
-  listContactPersons,
-  deleteContactPerson,
-  upsertInvoice,
-  getInvoice,
-  listInvoices,
   bulkUpsertInvoices,
-  upsertCreditNote,
-  listCreditNotes,
-  upsertOverpayment,
-  listOverpayments,
+  deleteContactPerson,
+  getCustomer,
+  getInvoice,
   getOrganisation,
-  syncOrganisation
+  listContactPersons,
+  listCreditNotes,
+  listCustomers,
+  listInvoices,
+  listOverpayments,
+  syncOrganisation,
+  upsertContactPerson,
+  upsertCreditNote,
+  upsertCustomer,
+  upsertInvoice,
+  upsertOverpayment
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

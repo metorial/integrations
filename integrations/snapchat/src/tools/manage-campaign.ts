@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { SnapchatClient } from '../lib/client';
 import { snapchatServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let campaignOutputSchema = z.object({
   campaignId: z.string().describe('Unique ID of the campaign'),

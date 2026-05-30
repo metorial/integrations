@@ -52,10 +52,7 @@ describe('google-admin auth contract', () => {
       input: {},
       clientId: 'client-id',
       clientSecret: 'client-secret',
-      scopes: [
-        googleAdminScopes.adminDirectoryUserReadonly,
-        googleAdminScopes.userInfoEmail
-      ]
+      scopes: [googleAdminScopes.adminDirectoryUserReadonly, googleAdminScopes.userInfoEmail]
     });
 
     let url = new URL(result.authorizationUrl);

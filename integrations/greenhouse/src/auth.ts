@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
@@ -28,7 +28,7 @@ export let auth = SlateAuth.create()
       let client = createAxios({
         baseURL: 'https://harvest.greenhouse.io/v1',
         headers: {
-          Authorization: `Basic ${btoa(ctx.output.token + ':')}`
+          Authorization: `Basic ${btoa(`${ctx.output.token}:`)}`
         }
       });
 

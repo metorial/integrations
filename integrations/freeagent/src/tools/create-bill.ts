@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreeAgentClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let billItemSchema = z.object({
   category: z.string().describe('Category URL for this line item'),

@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let whatsappEvents = SlateTrigger.create(spec, {
   name: 'WhatsApp Events',
@@ -61,7 +61,7 @@ export let whatsappEvents = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!body || !body.event_type) {
+      if (!body?.event_type) {
         return { inputs: [] };
       }
 

@@ -1,35 +1,35 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  createTicket,
-  getTicket,
-  updateTicket,
-  listTickets,
-  deleteTicket,
-  search,
-  listUsers,
-  getUser,
-  createUser,
-  updateUser,
-  deleteUser,
-  listOrganizations,
-  getOrganization,
-  createOrganization,
-  updateOrganization,
-  deleteOrganization,
-  listArticles,
-  getArticle,
   createArticle,
-  updateArticle,
+  createOrganization,
+  createTicket,
+  createUser,
   deleteArticle,
-  listViews,
+  deleteOrganization,
+  deleteTicket,
+  deleteUser,
+  getArticle,
+  getOrganization,
+  getTicket,
+  getUser,
+  listArticles,
   listGroups,
   listHelpCenterCategories,
+  listMacros,
+  listOrganizations,
   listTicketComments,
   listTicketFields,
-  listMacros
+  listTickets,
+  listUsers,
+  listViews,
+  search,
+  updateArticle,
+  updateOrganization,
+  updateTicket,
+  updateUser
 } from './tools';
-import { ticketEvents, userEvents, organizationEvents, articleEvents } from './triggers';
+import { articleEvents, organizationEvents, ticketEvents, userEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

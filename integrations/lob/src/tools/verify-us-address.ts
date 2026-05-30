@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let verifyUSAddress = SlateTool.create(spec, {
   name: 'Verify US Address',
@@ -82,7 +82,7 @@ export let verifyUSAddress = SlateTool.create(spec, {
         lobConfidenceScore: result.lob_confidence_score ?? null,
         object: result.object ?? null
       },
-      message: `Address deliverability: **${result.deliverability}**${result.lob_confidence_score != null ? ` (confidence: ${result.lob_confidence_score}/100)` : ''}${result.primary_line ? `\nStandardized: ${result.primary_line}${result.last_line ? ', ' + result.last_line : ''}` : ''}`
+      message: `Address deliverability: **${result.deliverability}**${result.lob_confidence_score != null ? ` (confidence: ${result.lob_confidence_score}/100)` : ''}${result.primary_line ? `\nStandardized: ${result.primary_line}${result.last_line ? `, ${result.last_line}` : ''}` : ''}`
     };
   });
 

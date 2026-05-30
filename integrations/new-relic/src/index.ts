@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  runNrqlQuery,
-  searchEntities,
+  createChangeTrackingMarker,
+  ingestData,
   manageAlertCondition,
   manageDashboard,
-  manageSyntheticMonitor,
-  createChangeTrackingMarker,
   manageEntityTags,
-  ingestData
+  manageSyntheticMonitor,
+  runNrqlQuery,
+  searchEntities
 } from './tools';
 import { alertIssues, inboundWebhook } from './triggers';
 

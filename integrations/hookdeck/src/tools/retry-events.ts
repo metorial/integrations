@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { requireHookdeckInput, requireNonEmptyHookdeckRecord } from '../lib/errors';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { requireHookdeckInput, requireNonEmptyHookdeckRecord } from '../lib/errors';
+import { spec } from '../spec';
 
 export let retryEvents = SlateTool.create(spec, {
   name: 'Retry Events',

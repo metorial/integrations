@@ -197,7 +197,7 @@ let COMMON_FRAGMENTS = [
 export class Client {
   private http;
 
-  constructor(private opts: { token: string }) {
+  constructor(opts: { token: string }) {
     this.http = createAxios({
       baseURL: API_BASE,
       headers: {
@@ -208,7 +208,7 @@ export class Client {
   }
 
   private async graphql<T = any>(query: string, variables?: Record<string, any>): Promise<T> {
-    let fullQuery = query + '\n' + COMMON_FRAGMENTS;
+    let fullQuery = `${query}\n${COMMON_FRAGMENTS}`;
     let res = await this.http.post('', {
       query: fullQuery,
       variables

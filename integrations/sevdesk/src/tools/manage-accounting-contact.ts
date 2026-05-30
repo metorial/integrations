@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageAccountingContact = SlateTool.create(spec, {
   name: 'Manage Accounting Contact',
@@ -40,7 +40,7 @@ export let manageAccountingContact = SlateTool.create(spec, {
     if (ctx.input.debitorNumber !== undefined) data.debitorNumber = ctx.input.debitorNumber;
     if (ctx.input.creditorNumber !== undefined) data.creditorNumber = ctx.input.creditorNumber;
 
-    let result;
+    let result: any;
     if (ctx.input.accountingContactId) {
       result = await client.updateAccountingContact(ctx.input.accountingContactId, data);
     } else {

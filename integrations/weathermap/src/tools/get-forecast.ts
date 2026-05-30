@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OpenWeatherClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let forecastEntrySchema = z.object({
   timestamp: z.string().describe('Forecast time (ISO 8601)'),

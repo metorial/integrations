@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let memberSchema = z.object({
   guid: z.string().optional().describe('MX-assigned unique identifier for the member'),

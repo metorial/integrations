@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
-import { spec } from '../spec';
-import { createClientFromContext } from '../lib/helpers';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from '@slates/provider';
 import { z } from 'zod';
+import { createClientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 let CDC_ENTITIES = [
   'Customer',

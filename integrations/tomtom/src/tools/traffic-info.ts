@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TomTomClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let trafficFlow = SlateTool.create(spec, {
   name: 'Traffic Flow',

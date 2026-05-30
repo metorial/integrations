@@ -5,14 +5,14 @@ let API_VERSION = '202501';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.linkedin.com'
     });
 
     this.axios.interceptors.request.use((reqConfig: any) => {
       reqConfig.headers = reqConfig.headers || {};
-      reqConfig.headers['Authorization'] = `Bearer ${config.token}`;
+      reqConfig.headers.Authorization = `Bearer ${config.token}`;
       reqConfig.headers['LinkedIn-Version'] = API_VERSION;
       reqConfig.headers['X-Restli-Protocol-Version'] = '2.0.0';
       return reqConfig;
@@ -33,10 +33,10 @@ export class Client {
       queryParams['search.name.values[0]'] = params.search;
     }
     if (params?.pageSize) {
-      queryParams['pageSize'] = String(params.pageSize);
+      queryParams.pageSize = String(params.pageSize);
     }
     if (params?.pageToken) {
-      queryParams['pageToken'] = params.pageToken;
+      queryParams.pageToken = params.pageToken;
     }
 
     let response = await this.axios.get('/rest/adAccounts', { params: queryParams });
@@ -67,8 +67,8 @@ export class Client {
       q: 'search',
       'search.account.values[0]': `urn:li:sponsoredAccount:${accountId}`
     };
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageToken) queryParams.pageToken = params.pageToken;
 
     let response = await this.axios.get('/rest/adCampaignGroups', { params: queryParams });
     return response.data as LinkedInPagedResponse<CampaignGroup>;
@@ -124,8 +124,8 @@ export class Client {
         queryParams[`search.status.values[${i}]`] = s;
       });
     }
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageToken) queryParams.pageToken = params.pageToken;
 
     let response = await this.axios.get('/rest/adCampaigns', { params: queryParams });
     return response.data as LinkedInPagedResponse<Campaign>;
@@ -161,8 +161,8 @@ export class Client {
       q: 'search',
       'search.campaign.values[0]': `urn:li:sponsoredCampaign:${campaignId}`
     };
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageToken) queryParams.pageToken = params.pageToken;
 
     let response = await this.axios.get('/rest/creatives', { params: queryParams });
     return response.data as LinkedInPagedResponse<Creative>;
@@ -214,7 +214,7 @@ export class Client {
     };
 
     if (params.fields && params.fields.length > 0) {
-      queryParams['fields'] = params.fields.join(',');
+      queryParams.fields = params.fields.join(',');
     }
 
     if (params.accounts) {
@@ -261,8 +261,8 @@ export class Client {
       q: 'account',
       account: `urn:li:sponsoredAccount:${accountId}`
     };
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageToken) queryParams.pageToken = params.pageToken;
 
     let response = await this.axios.get('/rest/conversions', { params: queryParams });
     return response.data as LinkedInPagedResponse<ConversionRule>;
@@ -318,8 +318,8 @@ export class Client {
       q: 'owner',
       owner: `urn:li:sponsoredAccount:${accountId}`
     };
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageToken) queryParams.pageToken = params.pageToken;
 
     let response = await this.axios.get('/rest/leadForms', { params: queryParams });
     return response.data as LinkedInPagedResponse<LeadForm>;
@@ -336,19 +336,19 @@ export class Client {
     let queryParams: Record<string, string> = {};
 
     if (params.leadFormId) {
-      queryParams['q'] = 'owner';
-      queryParams['owner'] = params.leadFormId.startsWith('urn:')
+      queryParams.q = 'owner';
+      queryParams.owner = params.leadFormId.startsWith('urn:')
         ? params.leadFormId
         : `urn:li:leadGenForm:${params.leadFormId}`;
     } else if (params.accountId) {
-      queryParams['q'] = 'account';
-      queryParams['account'] = `urn:li:sponsoredAccount:${params.accountId}`;
+      queryParams.q = 'account';
+      queryParams.account = `urn:li:sponsoredAccount:${params.accountId}`;
     }
 
-    if (params.startTime) queryParams['submittedAtStart'] = String(params.startTime);
-    if (params.endTime) queryParams['submittedAtEnd'] = String(params.endTime);
-    if (params.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params.pageToken) queryParams['pageToken'] = params.pageToken;
+    if (params.startTime) queryParams.submittedAtStart = String(params.startTime);
+    if (params.endTime) queryParams.submittedAtEnd = String(params.endTime);
+    if (params.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params.pageToken) queryParams.pageToken = params.pageToken;
 
     let response = await this.axios.get('/rest/leadFormResponses', { params: queryParams });
     return response.data as LinkedInPagedResponse<LeadFormResponse>;

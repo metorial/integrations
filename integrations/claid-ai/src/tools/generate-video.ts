@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generateVideo = SlateTool.create(spec, {
   name: 'Generate Video',
@@ -71,7 +71,7 @@ This is an async operation — a task ID is returned immediately for status poll
     }
 
     if (ctx.input.negativePrompt) options.negative_prompt = ctx.input.negativePrompt;
-    if (ctx.input.duration) options.duration = parseInt(ctx.input.duration, 10);
+    if (ctx.input.duration) options.duration = Number.parseInt(ctx.input.duration, 10);
     if (ctx.input.guidanceScale !== undefined)
       options.guidance_scale = ctx.input.guidanceScale;
 

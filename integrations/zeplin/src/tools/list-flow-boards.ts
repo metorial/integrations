@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ZeplinClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listFlowBoards = SlateTool.create(spec, {
   name: 'List Flow Boards',

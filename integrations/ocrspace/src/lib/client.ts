@@ -139,7 +139,7 @@ let normalizeResponse = (raw: RawOcrResponse): OcrResponse => {
 export class Client {
   private axios;
 
-  constructor(private opts: { token: string }) {
+  constructor(opts: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.ocr.space',
       headers: {

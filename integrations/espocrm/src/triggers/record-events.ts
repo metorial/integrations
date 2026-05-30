@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let recordEvents = SlateTrigger.create(spec, {
   name: 'Record Events',
@@ -54,7 +54,7 @@ export let recordEvents = SlateTrigger.create(spec, {
           try {
             let result = await client.createWebhook(event, url);
             webhookIds[event] = result.id;
-          } catch (e) {
+          } catch (_e) {
             // Some entity types may not be available; skip them
           }
         }
@@ -74,7 +74,7 @@ export let recordEvents = SlateTrigger.create(spec, {
       for (let webhookId of Object.values(webhookIds)) {
         try {
           await client.deleteWebhook(webhookId);
-        } catch (e) {
+        } catch (_e) {
           // Webhook may already be deleted
         }
       }

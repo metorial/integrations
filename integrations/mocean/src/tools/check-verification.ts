@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MoceanClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let checkVerification = SlateTool.create(spec, {
   name: 'Check Verification Code',

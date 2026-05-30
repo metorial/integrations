@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addSubscriberToForm = SlateTool.create(spec, {
   name: 'Add Subscriber to Form',
@@ -35,7 +35,7 @@ export let addSubscriberToForm = SlateTool.create(spec, {
       throw new Error('Provide either subscriberId or emailAddress');
     }
 
-    let data;
+    let data: any;
     if (ctx.input.subscriberId) {
       data = await client.addSubscriberToForm(ctx.input.formId, ctx.input.subscriberId);
     } else {

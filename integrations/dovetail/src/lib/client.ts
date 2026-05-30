@@ -1,19 +1,19 @@
 import { createAxios } from 'slates';
 import type {
-  PaginationParams,
-  PaginationResponse,
-  DovetailProject,
-  DovetailNote,
-  DovetailData,
-  DovetailInsight,
-  DovetailHighlight,
-  DovetailTag,
-  DovetailContact,
-  DovetailDoc,
   DovetailChannel,
-  DovetailTopic,
+  DovetailContact,
+  DovetailData,
+  DovetailDoc,
   DovetailFolder,
   DovetailFolderContent,
+  DovetailHighlight,
+  DovetailInsight,
+  DovetailNote,
+  DovetailProject,
+  DovetailTag,
+  DovetailTopic,
+  PaginationParams,
+  PaginationResponse,
   SearchResults,
   SummarizeResult
 } from './types';
@@ -60,7 +60,7 @@ export class Client {
     if (params?.folderId) queryParams['filter[folder_id]'] = params.folderId;
     if (params?.titleContains) queryParams['filter[title][contains]'] = params.titleContains;
     if (params?.titleEqualTo) queryParams['filter[title][equal_to]'] = params.titleEqualTo;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.axios.get('/projects', { params: queryParams });
     return response.data;
@@ -100,7 +100,7 @@ export class Client {
       queryParams['filter[created_at][greater_than]'] = params.createdAfter;
     if (params?.createdBefore)
       queryParams['filter[created_at][less_than]'] = params.createdBefore;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.axios.get('/notes', { params: queryParams });
     return response.data;
@@ -173,7 +173,7 @@ export class Client {
     if (params?.titleEqualTo) queryParams['filter[title][equal_to]'] = params.titleEqualTo;
     if (params?.createdAfter) queryParams['filter[created_at][gt]'] = params.createdAfter;
     if (params?.createdBefore) queryParams['filter[created_at][lt]'] = params.createdBefore;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.axios.get('/data', { params: queryParams });
     return response.data;
@@ -238,7 +238,7 @@ export class Client {
     let queryParams: Record<string, string> = {
       ...buildPaginationParams(params)
     };
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.axios.get('/insights', { params: queryParams });
     return response.data;
@@ -371,7 +371,7 @@ export class Client {
     if (params?.folderId) queryParams['filter[folder_id]'] = params.folderId;
     if (params?.titleContains) queryParams['filter[title][contains]'] = params.titleContains;
     if (params?.titleEqualTo) queryParams['filter[title][equal_to]'] = params.titleEqualTo;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.axios.get('/docs', { params: queryParams });
     return response.data;
@@ -438,7 +438,7 @@ export class Client {
       ...buildPaginationParams(params)
     };
     if (params?.folderId) queryParams['filter[folder_id]'] = params.folderId;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.axios.get('/channels', { params: queryParams });
     return response.data;
@@ -553,7 +553,7 @@ export class Client {
       queryParams['filter[parent_folder_id]'] =
         params.parentFolderId === null ? 'null' : params.parentFolderId;
     }
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.axios.get('/folders', { params: queryParams });
     return response.data;
@@ -573,7 +573,7 @@ export class Client {
     let queryParams: Record<string, string> = {
       ...buildPaginationParams(params)
     };
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.axios.get(`/folders/${folderId}/contents`, {
       params: queryParams

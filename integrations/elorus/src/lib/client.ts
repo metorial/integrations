@@ -48,20 +48,20 @@ export class Client {
   private buildListParams(params: ListParams): Record<string, string> {
     let queryParams: Record<string, string> = {};
 
-    if (params.page) queryParams['page'] = String(params.page);
-    if (params.pageSize) queryParams['page_size'] = String(params.pageSize);
-    if (params.search) queryParams['search'] = params.search;
-    if (params.searchFields) queryParams['search_fields'] = params.searchFields;
-    if (params.ordering) queryParams['ordering'] = params.ordering;
-    if (params.periodFrom) queryParams['period_from'] = params.periodFrom;
-    if (params.periodTo) queryParams['period_to'] = params.periodTo;
-    if (params.period) queryParams['period'] = params.period;
-    if (params.createdAfter) queryParams['created_after'] = params.createdAfter;
-    if (params.createdBefore) queryParams['created_before'] = params.createdBefore;
-    if (params.modifiedAfter) queryParams['modified_after'] = params.modifiedAfter;
-    if (params.modifiedBefore) queryParams['modified_before'] = params.modifiedBefore;
-    if (params.currencyCode) queryParams['currency_code'] = params.currencyCode;
-    if (params.customId) queryParams['custom_id'] = params.customId;
+    if (params.page) queryParams.page = String(params.page);
+    if (params.pageSize) queryParams.page_size = String(params.pageSize);
+    if (params.search) queryParams.search = params.search;
+    if (params.searchFields) queryParams.search_fields = params.searchFields;
+    if (params.ordering) queryParams.ordering = params.ordering;
+    if (params.periodFrom) queryParams.period_from = params.periodFrom;
+    if (params.periodTo) queryParams.period_to = params.periodTo;
+    if (params.period) queryParams.period = params.period;
+    if (params.createdAfter) queryParams.created_after = params.createdAfter;
+    if (params.createdBefore) queryParams.created_before = params.createdBefore;
+    if (params.modifiedAfter) queryParams.modified_after = params.modifiedAfter;
+    if (params.modifiedBefore) queryParams.modified_before = params.modifiedBefore;
+    if (params.currencyCode) queryParams.currency_code = params.currencyCode;
+    if (params.customId) queryParams.custom_id = params.customId;
 
     // Pass through any extra params (e.g., status, draft, client, supplier, etc.)
     for (let [key, value] of Object.entries(params)) {
@@ -102,9 +102,9 @@ export class Client {
   ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
-    if (params.isClient !== undefined) queryParams['is_client'] = params.isClient ? '1' : '0';
+    if (params.isClient !== undefined) queryParams.is_client = params.isClient ? '1' : '0';
     if (params.isSupplier !== undefined)
-      queryParams['is_supplier'] = params.isSupplier ? '1' : '0';
+      queryParams.is_supplier = params.isSupplier ? '1' : '0';
     let response = await axios.get('/contacts/', { params: queryParams });
     return response.data;
   }
@@ -149,13 +149,13 @@ export class Client {
   ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
-    if (params.status) queryParams['status'] = params.status;
-    if (params.draft) queryParams['draft'] = params.draft;
-    if (params.client) queryParams['client'] = params.client;
-    if (params.documenttype) queryParams['documenttype'] = params.documenttype;
-    if (params.fpaid) queryParams['fpaid'] = params.fpaid;
-    if (params.isVoid) queryParams['is_void'] = params.isVoid;
-    if (params.overdue) queryParams['overdue'] = params.overdue;
+    if (params.status) queryParams.status = params.status;
+    if (params.draft) queryParams.draft = params.draft;
+    if (params.client) queryParams.client = params.client;
+    if (params.documenttype) queryParams.documenttype = params.documenttype;
+    if (params.fpaid) queryParams.fpaid = params.fpaid;
+    if (params.isVoid) queryParams.is_void = params.isVoid;
+    if (params.overdue) queryParams.overdue = params.overdue;
     let response = await axios.get('/invoices/', { params: queryParams });
     return response.data;
   }
@@ -215,10 +215,10 @@ export class Client {
   ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
-    if (params.status) queryParams['status'] = params.status;
-    if (params.draft) queryParams['draft'] = params.draft;
-    if (params.client) queryParams['client'] = params.client;
-    if (params.documenttype) queryParams['documenttype'] = params.documenttype;
+    if (params.status) queryParams.status = params.status;
+    if (params.draft) queryParams.draft = params.draft;
+    if (params.client) queryParams.client = params.client;
+    if (params.documenttype) queryParams.documenttype = params.documenttype;
     let response = await axios.get('/creditnotes/', { params: queryParams });
     return response.data;
   }
@@ -263,9 +263,9 @@ export class Client {
   ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
-    if (params.status) queryParams['status'] = params.status;
-    if (params.client) queryParams['client'] = params.client;
-    if (params.documenttype) queryParams['documenttype'] = params.documenttype;
+    if (params.status) queryParams.status = params.status;
+    if (params.client) queryParams.client = params.client;
+    if (params.documenttype) queryParams.documenttype = params.documenttype;
     let response = await axios.get('/estimates/', { params: queryParams });
     return response.data;
   }
@@ -314,11 +314,11 @@ export class Client {
   ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
-    if (params.status) queryParams['status'] = params.status;
-    if (params.draft) queryParams['draft'] = params.draft;
-    if (params.supplier) queryParams['supplier'] = params.supplier;
-    if (params.documenttype) queryParams['documenttype'] = params.documenttype;
-    if (params.selfBilled) queryParams['self_billed'] = params.selfBilled;
+    if (params.status) queryParams.status = params.status;
+    if (params.draft) queryParams.draft = params.draft;
+    if (params.supplier) queryParams.supplier = params.supplier;
+    if (params.documenttype) queryParams.documenttype = params.documenttype;
+    if (params.selfBilled) queryParams.self_billed = params.selfBilled;
     let response = await axios.get('/bills/', { params: queryParams });
     return response.data;
   }
@@ -390,8 +390,8 @@ export class Client {
   ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
-    if (params.transactionType) queryParams['transaction_type'] = params.transactionType;
-    if (params.contact) queryParams['contact'] = params.contact;
+    if (params.transactionType) queryParams.transaction_type = params.transactionType;
+    if (params.contact) queryParams.contact = params.contact;
     let response = await axios.get('/cashreceipts/', { params: queryParams });
     return response.data;
   }
@@ -429,8 +429,8 @@ export class Client {
   ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
-    if (params.transactionType) queryParams['transaction_type'] = params.transactionType;
-    if (params.contact) queryParams['contact'] = params.contact;
+    if (params.transactionType) queryParams.transaction_type = params.transactionType;
+    if (params.contact) queryParams.contact = params.contact;
     let response = await axios.get('/cashpayments/', { params: queryParams });
     return response.data;
   }
@@ -536,10 +536,10 @@ export class Client {
   ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
-    if (params.project) queryParams['project'] = params.project;
-    if (params.task) queryParams['task'] = params.task;
-    if (params.billable) queryParams['billable'] = params.billable;
-    if (params.billed) queryParams['billed'] = params.billed;
+    if (params.project) queryParams.project = params.project;
+    if (params.task) queryParams.task = params.task;
+    if (params.billable) queryParams.billable = params.billable;
+    if (params.billed) queryParams.billed = params.billed;
     let response = await axios.get('/timeentries/', { params: queryParams });
     return response.data;
   }

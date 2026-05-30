@@ -1,18 +1,18 @@
 import { createAxios } from 'slates';
 import type {
-  KitSubscriber,
-  KitTag,
-  KitCustomField,
-  KitForm,
+  KitAccount,
   KitBroadcast,
   KitBroadcastStats,
-  KitSequence,
-  KitSegment,
-  KitPurchase,
-  KitAccount,
+  KitCustomField,
   KitEmailTemplate,
-  KitWebhook,
-  KitPaginatedResponse
+  KitForm,
+  KitPaginatedResponse,
+  KitPurchase,
+  KitSegment,
+  KitSequence,
+  KitSubscriber,
+  KitTag,
+  KitWebhook
 } from './types';
 
 export class Client {
@@ -32,7 +32,7 @@ export class Client {
       // We try Bearer first; if the token looks like an API key, also set that header.
       // Kit accepts both simultaneously without issue.
       let headers = (reqConfig.headers ?? {}) as Record<string, string>;
-      headers['Authorization'] = `Bearer ${this.config.token}`;
+      headers.Authorization = `Bearer ${this.config.token}`;
       headers['X-Kit-Api-Key'] = this.config.token;
       reqConfig.headers = headers as any;
       return reqConfig;
@@ -331,7 +331,7 @@ export class Client {
     thumbnailAlt?: string;
     thumbnailUrl?: string;
     previewText?: string;
-    subscriberFilter?: Array<Record<string, any>>;
+    subscriberFilter?: Record<string, any>[];
   }): Promise<{ broadcast: KitBroadcast }> {
     let body: Record<string, any> = {};
     if (data.subject !== undefined) body.subject = data.subject;
@@ -368,7 +368,7 @@ export class Client {
       thumbnailAlt?: string;
       thumbnailUrl?: string;
       previewText?: string;
-      subscriberFilter?: Array<Record<string, any>>;
+      subscriberFilter?: Record<string, any>[];
     }
   ): Promise<{ broadcast: KitBroadcast }> {
     let body: Record<string, any> = {};

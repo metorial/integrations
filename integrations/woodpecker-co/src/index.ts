@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCampaigns,
-  getCampaign,
-  createCampaign,
-  updateCampaign,
-  changeCampaignStatus,
-  deleteCampaign,
-  searchProspects,
   addProspects,
-  updateProspectStatus,
+  changeCampaignStatus,
+  createCampaign,
+  deleteCampaign,
   deleteProspects,
+  generateReport,
+  getCampaign,
   getProspectResponses,
+  getReport,
+  listCampaigns,
   listInboxMessages,
-  replyToMessage,
-  listMailboxes,
   listLinkedInAccounts,
+  listMailboxes,
+  listUsers,
   manageBlacklist,
   manageManualTasks,
-  generateReport,
-  getReport,
-  listUsers
+  replyToMessage,
+  searchProspects,
+  updateCampaign,
+  updateProspectStatus
 } from './tools';
-import { prospectEvents, campaignEvents, taskEvents, linkedinEvents } from './triggers';
+import { campaignEvents, linkedinEvents, prospectEvents, taskEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

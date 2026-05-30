@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class RecruiteeClient {
   private axios;
 
-  constructor(private params: { token: string; companyId: string }) {
+  constructor(params: { token: string; companyId: string }) {
     this.axios = createAxios({
       baseURL: `https://api.recruitee.com/c/${params.companyId}`,
       headers: {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/utils';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTimesheets = SlateTool.create(spec, {
   name: 'Manage Timesheets',

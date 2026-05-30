@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ImportClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let tagSchema = z.union([
   z.string().describe('Tag name or tag ID.'),

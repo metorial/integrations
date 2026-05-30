@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { KommoClient } from '../lib/client';
-import { spec } from '../spec';
-import { leadOutputSchema, mapLead, paginationSchema } from '../lib/schemas';
 import { z } from 'zod';
+import { KommoClient } from '../lib/client';
+import { leadOutputSchema, mapLead } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let listLeadsTool = SlateTool.create(spec, {
   name: 'List Leads',

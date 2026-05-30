@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { StripeClient } from '../lib/client';
 import { stripeServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageSubscriptions = SlateTool.create(spec, {
   name: 'Manage Subscriptions',
@@ -113,7 +113,8 @@ export let manageSubscriptions = SlateTool.create(spec, {
     let { action } = ctx.input;
 
     if (action === 'create') {
-      if (!ctx.input.customerId) throw stripeServiceError('customerId is required for create action');
+      if (!ctx.input.customerId)
+        throw stripeServiceError('customerId is required for create action');
       let params: Record<string, any> = { customer: ctx.input.customerId };
 
       if (ctx.input.items) {

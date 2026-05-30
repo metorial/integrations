@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { getBrand, searchBrands, enrichTransaction, getLogoUrl } from './tools';
+import { enrichTransaction, getBrand, getLogoUrl, searchBrands } from './tools';
 import { brandUpdated } from './triggers';
 
 export let provider = Slate.create({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LeadBoxerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let sessionSchema = z.object({
   sessionId: z.string().optional().describe('Session ID'),
@@ -110,7 +110,7 @@ export let getLeadDetails = SlateTool.create(spec, {
               city: s.city || s.last_city
             }))
           : [];
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Could not fetch sessions for this lead.');
         sessions = [];
       }

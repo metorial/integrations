@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CrustdataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSocialPosts = SlateTool.create(spec, {
   name: 'Get Social Posts',

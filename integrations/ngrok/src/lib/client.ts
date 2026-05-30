@@ -29,8 +29,8 @@ export class NgrokClient {
 
   private paginationQuery(params?: PaginationParams): Record<string, string> {
     let query: Record<string, string> = {};
-    if (params?.beforeId) query['before_id'] = params.beforeId;
-    if (params?.limit) query['limit'] = String(params.limit);
+    if (params?.beforeId) query.before_id = params.beforeId;
+    if (params?.limit) query.limit = String(params.limit);
     return query;
   }
 
@@ -44,11 +44,11 @@ export class NgrokClient {
     certificateManagementPolicy?: { authority: string; privateKeyType?: string };
   }) {
     let body: Record<string, any> = { domain: data.domain };
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
-    if (data.certificateId) body['certificate_id'] = data.certificateId;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
+    if (data.certificateId) body.certificate_id = data.certificateId;
     if (data.certificateManagementPolicy) {
-      body['certificate_management_policy'] = {
+      body.certificate_management_policy = {
         authority: data.certificateManagementPolicy.authority,
         private_key_type: data.certificateManagementPolicy.privateKeyType
       };
@@ -80,14 +80,14 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    if (data.certificateId !== undefined) body['certificate_id'] = data.certificateId;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
+    if (data.certificateId !== undefined) body.certificate_id = data.certificateId;
     if (data.certificateManagementPolicy !== undefined) {
       if (data.certificateManagementPolicy === null) {
-        body['certificate_management_policy'] = null;
+        body.certificate_management_policy = null;
       } else {
-        body['certificate_management_policy'] = {
+        body.certificate_management_policy = {
           authority: data.certificateManagementPolicy.authority,
           private_key_type: data.certificateManagementPolicy.privateKeyType
         };
@@ -107,9 +107,9 @@ export class NgrokClient {
 
   async createAddress(data: { description?: string; metadata?: string; region?: string }) {
     let body: Record<string, any> = {};
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
-    if (data.region) body['region'] = data.region;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
+    if (data.region) body.region = data.region;
     let res = await this.axios.post('/reserved_addrs', body, { headers: this.headers });
     return res.data;
   }
@@ -135,8 +135,8 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/reserved_addrs/${addressId}`, body, {
       headers: this.headers
     });
@@ -158,11 +158,11 @@ export class NgrokClient {
     bindings?: string[];
   }) {
     let body: Record<string, any> = { url: data.url };
-    if (data.type) body['type'] = data.type;
-    if (data.trafficPolicy) body['traffic_policy'] = data.trafficPolicy;
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
-    if (data.bindings) body['bindings'] = data.bindings;
+    if (data.type) body.type = data.type;
+    if (data.trafficPolicy) body.traffic_policy = data.trafficPolicy;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
+    if (data.bindings) body.bindings = data.bindings;
     let res = await this.axios.post('/endpoints', body, { headers: this.headers });
     return res.data;
   }
@@ -191,11 +191,11 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.url !== undefined) body['url'] = data.url;
-    if (data.trafficPolicy !== undefined) body['traffic_policy'] = data.trafficPolicy;
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    if (data.bindings !== undefined) body['bindings'] = data.bindings;
+    if (data.url !== undefined) body.url = data.url;
+    if (data.trafficPolicy !== undefined) body.traffic_policy = data.trafficPolicy;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
+    if (data.bindings !== undefined) body.bindings = data.bindings;
     let res = await this.axios.patch(`/endpoints/${endpointId}`, body, {
       headers: this.headers
     });
@@ -252,9 +252,9 @@ export class NgrokClient {
 
   async createApiKey(data: { description?: string; metadata?: string; ownerId?: string }) {
     let body: Record<string, any> = {};
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
-    if (data.ownerId) body['owner_id'] = data.ownerId;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
+    if (data.ownerId) body.owner_id = data.ownerId;
     let res = await this.axios.post('/api_keys', body, { headers: this.headers });
     return res.data;
   }
@@ -280,8 +280,8 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/api_keys/${keyId}`, body, { headers: this.headers });
     return res.data;
   }
@@ -299,10 +299,10 @@ export class NgrokClient {
     ownerId?: string;
   }) {
     let body: Record<string, any> = {};
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
-    if (data.acl) body['acl'] = data.acl;
-    if (data.ownerId) body['owner_id'] = data.ownerId;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
+    if (data.acl) body.acl = data.acl;
+    if (data.ownerId) body.owner_id = data.ownerId;
     let res = await this.axios.post('/credentials', body, { headers: this.headers });
     return res.data;
   }
@@ -329,9 +329,9 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    if (data.acl !== undefined) body['acl'] = data.acl;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
+    if (data.acl !== undefined) body.acl = data.acl;
     let res = await this.axios.patch(`/credentials/${credentialId}`, body, {
       headers: this.headers
     });
@@ -346,8 +346,8 @@ export class NgrokClient {
 
   async createIpPolicy(data: { description?: string; metadata?: string }) {
     let body: Record<string, any> = {};
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
     let res = await this.axios.post('/ip_policies', body, { headers: this.headers });
     return res.data;
   }
@@ -373,8 +373,8 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/ip_policies/${policyId}`, body, {
       headers: this.headers
     });
@@ -399,8 +399,8 @@ export class NgrokClient {
       ip_policy_id: data.ipPolicyId,
       action: data.action
     };
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
     let res = await this.axios.post('/ip_policy_rules', body, { headers: this.headers });
     return res.data;
   }
@@ -427,9 +427,9 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.cidr !== undefined) body['cidr'] = data.cidr;
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.cidr !== undefined) body.cidr = data.cidr;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/ip_policy_rules/${ruleId}`, body, {
       headers: this.headers
     });
@@ -452,8 +452,8 @@ export class NgrokClient {
       certificate_pem: data.certificatePem,
       private_key_pem: data.privateKeyPem
     };
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
     let res = await this.axios.post('/tls_certificates', body, { headers: this.headers });
     return res.data;
   }
@@ -479,8 +479,8 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/tls_certificates/${certId}`, body, {
       headers: this.headers
     });
@@ -499,8 +499,8 @@ export class NgrokClient {
     metadata?: string;
   }) {
     let body: Record<string, any> = { ca_pem: data.caPem };
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
     let res = await this.axios.post('/certificate_authorities', body, {
       headers: this.headers
     });
@@ -530,8 +530,8 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/certificate_authorities/${caId}`, body, {
       headers: this.headers
     });
@@ -554,8 +554,8 @@ export class NgrokClient {
       sources: data.sources,
       destination_ids: data.destinationIds
     };
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
     let res = await this.axios.post('/event_subscriptions', body, { headers: this.headers });
     return res.data;
   }
@@ -585,10 +585,10 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    if (data.sources !== undefined) body['sources'] = data.sources;
-    if (data.destinationIds !== undefined) body['destination_ids'] = data.destinationIds;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
+    if (data.sources !== undefined) body.sources = data.sources;
+    if (data.destinationIds !== undefined) body.destination_ids = data.destinationIds;
     let res = await this.axios.patch(`/event_subscriptions/${subscriptionId}`, body, {
       headers: this.headers
     });
@@ -610,9 +610,9 @@ export class NgrokClient {
     target: Record<string, any>;
   }) {
     let body: Record<string, any> = { target: data.target };
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
-    if (data.format) body['format'] = data.format;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
+    if (data.format) body.format = data.format;
     let res = await this.axios.post('/event_destinations', body, { headers: this.headers });
     return res.data;
   }
@@ -642,10 +642,10 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    if (data.format !== undefined) body['format'] = data.format;
-    if (data.target !== undefined) body['target'] = data.target;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
+    if (data.format !== undefined) body.format = data.format;
+    if (data.target !== undefined) body.target = data.target;
     let res = await this.axios.patch(`/event_destinations/${destinationId}`, body, {
       headers: this.headers
     });
@@ -660,7 +660,7 @@ export class NgrokClient {
 
   async createBotUser(data: { name: string; active?: boolean }) {
     let body: Record<string, any> = { name: data.name };
-    if (data.active !== undefined) body['active'] = data.active;
+    if (data.active !== undefined) body.active = data.active;
     let res = await this.axios.post('/bot_users', body, { headers: this.headers });
     return res.data;
   }
@@ -686,8 +686,8 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.name !== undefined) body['name'] = data.name;
-    if (data.active !== undefined) body['active'] = data.active;
+    if (data.name !== undefined) body.name = data.name;
+    if (data.active !== undefined) body.active = data.active;
     let res = await this.axios.patch(`/bot_users/${botUserId}`, body, {
       headers: this.headers
     });
@@ -708,10 +708,10 @@ export class NgrokClient {
     ownerId?: string;
   }) {
     let body: Record<string, any> = { public_key: data.publicKey };
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
-    if (data.acl) body['acl'] = data.acl;
-    if (data.ownerId) body['owner_id'] = data.ownerId;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
+    if (data.acl) body.acl = data.acl;
+    if (data.ownerId) body.owner_id = data.ownerId;
     let res = await this.axios.post('/ssh_credentials', body, { headers: this.headers });
     return res.data;
   }
@@ -740,9 +740,9 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    if (data.acl !== undefined) body['acl'] = data.acl;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
+    if (data.acl !== undefined) body.acl = data.acl;
     let res = await this.axios.patch(`/ssh_credentials/${credentialId}`, body, {
       headers: this.headers
     });
@@ -763,11 +763,11 @@ export class NgrokClient {
     keySize?: number;
   }) {
     let body: Record<string, any> = {};
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
-    if (data.privateKeyType) body['private_key_type'] = data.privateKeyType;
-    if (data.ellipticCurve) body['elliptic_curve'] = data.ellipticCurve;
-    if (data.keySize) body['key_size'] = data.keySize;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
+    if (data.privateKeyType) body.private_key_type = data.privateKeyType;
+    if (data.ellipticCurve) body.elliptic_curve = data.ellipticCurve;
+    if (data.keySize) body.key_size = data.keySize;
     let res = await this.axios.post('/ssh_certificate_authorities', body, {
       headers: this.headers
     });
@@ -797,8 +797,8 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/ssh_certificate_authorities/${caId}`, body, {
       headers: this.headers
     });
@@ -824,11 +824,11 @@ export class NgrokClient {
       ssh_certificate_authority_id: data.sshCertificateAuthorityId,
       public_key: data.publicKey
     };
-    if (data.principals) body['principals'] = data.principals;
-    if (data.validAfter) body['valid_after'] = data.validAfter;
-    if (data.validUntil) body['valid_until'] = data.validUntil;
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
+    if (data.principals) body.principals = data.principals;
+    if (data.validAfter) body.valid_after = data.validAfter;
+    if (data.validUntil) body.valid_until = data.validUntil;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
     let res = await this.axios.post('/ssh_host_certificates', body, { headers: this.headers });
     return res.data;
   }
@@ -856,8 +856,8 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/ssh_host_certificates/${certId}`, body, {
       headers: this.headers
     });
@@ -885,13 +885,13 @@ export class NgrokClient {
       ssh_certificate_authority_id: data.sshCertificateAuthorityId,
       public_key: data.publicKey
     };
-    if (data.principals) body['principals'] = data.principals;
-    if (data.criticalOptions) body['critical_options'] = data.criticalOptions;
-    if (data.extensions) body['extensions'] = data.extensions;
-    if (data.validAfter) body['valid_after'] = data.validAfter;
-    if (data.validUntil) body['valid_until'] = data.validUntil;
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
+    if (data.principals) body.principals = data.principals;
+    if (data.criticalOptions) body.critical_options = data.criticalOptions;
+    if (data.extensions) body.extensions = data.extensions;
+    if (data.validAfter) body.valid_after = data.validAfter;
+    if (data.validUntil) body.valid_until = data.validUntil;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
     let res = await this.axios.post('/ssh_user_certificates', body, { headers: this.headers });
     return res.data;
   }
@@ -919,8 +919,8 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/ssh_user_certificates/${certId}`, body, {
       headers: this.headers
     });
@@ -944,9 +944,9 @@ export class NgrokClient {
       type: data.type,
       ip_policy_ids: data.ipPolicyIds
     };
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
-    if (data.enforced !== undefined) body['enforced'] = data.enforced;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
+    if (data.enforced !== undefined) body.enforced = data.enforced;
     let res = await this.axios.post('/ip_restrictions', body, { headers: this.headers });
     return res.data;
   }
@@ -983,9 +983,9 @@ export class NgrokClient {
       name: data.name,
       value: data.value
     };
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
-    if (data.vaultId) body['vault_id'] = data.vaultId;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
+    if (data.vaultId) body.vault_id = data.vaultId;
     let res = await this.axios.post('/vault_secrets', body, { headers: this.headers });
     return res.data;
   }
@@ -1013,10 +1013,10 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.name !== undefined) body['name'] = data.name;
-    if (data.value !== undefined) body['value'] = data.value;
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.name !== undefined) body.name = data.name;
+    if (data.value !== undefined) body.value = data.value;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/vault_secrets/${secretId}`, body, {
       headers: this.headers
     });
@@ -1031,8 +1031,8 @@ export class NgrokClient {
 
   async createVault(data: { name: string; description?: string; metadata?: string }) {
     let body: Record<string, any> = { name: data.name };
-    if (data.description) body['description'] = data.description;
-    if (data.metadata) body['metadata'] = data.metadata;
+    if (data.description) body.description = data.description;
+    if (data.metadata) body.metadata = data.metadata;
     let res = await this.axios.post('/vaults', body, { headers: this.headers });
     return res.data;
   }
@@ -1059,9 +1059,9 @@ export class NgrokClient {
     }
   ) {
     let body: Record<string, any> = {};
-    if (data.name !== undefined) body['name'] = data.name;
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.metadata !== undefined) body['metadata'] = data.metadata;
+    if (data.name !== undefined) body.name = data.name;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.metadata !== undefined) body.metadata = data.metadata;
     let res = await this.axios.patch(`/vaults/${vaultId}`, body, { headers: this.headers });
     return res.data;
   }

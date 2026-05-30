@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let resourceSchema = z.object({
   workspaceId: z.string().nullable().describe('Workspace ID'),
@@ -73,7 +73,7 @@ export let projectWebhookTrigger = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.type) {
+      if (!data?.type) {
         return { inputs: [] };
       }
 

@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  cancelOrder,
+  createOrder,
   createRecipePage,
   createShoppingListPage,
-  getNearbyRetailers,
-  findStores,
-  previewServiceOptions,
-  listCartServiceOptions,
-  reserveServiceOption,
   createUser,
-  createOrder,
+  findStores,
+  getNearbyRetailers,
   getOrder,
-  cancelOrder,
+  listCartServiceOptions,
+  previewServiceOptions,
+  reserveServiceOption,
   sandboxAdvanceOrder
 } from './tools';
-import { orderEvents, itemEvents, deliveryEvents } from './triggers';
+import { deliveryEvents, itemEvents, orderEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

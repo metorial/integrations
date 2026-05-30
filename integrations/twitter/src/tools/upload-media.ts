@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { SIMPLE_MEDIA_CATEGORIES, SIMPLE_MEDIA_TYPES, TwitterClient } from '../lib/client';
 import { twitterServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let mediaUploadSchema = z.object({
   mediaId: z.string().describe('Media ID for attaching to posts or direct messages'),

@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { searchCharacters, getCharacter, sendMessage } from './tools';
+import { getCharacter, searchCharacters, sendMessage } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

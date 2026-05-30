@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TelegramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let priceSchema = z.object({
   label: z.string().describe('Price label (e.g. "Product", "Tax", "Shipping")'),

@@ -127,12 +127,7 @@ export class DuoClient {
   // ========================
 
   async listUsers(
-    params: {
-      limit?: number;
-      offset?: number;
-      username?: string;
-      email?: string;
-    } = {}
+    params: { limit?: number; offset?: number; username?: string; email?: string } = {}
   ): Promise<DuoResponse<any[]>> {
     return this.get('/admin/v1/users', {
       limit: params.limit ?? 100,
@@ -231,10 +226,7 @@ export class DuoClient {
   // ========================
 
   async listGroups(
-    params: {
-      limit?: number;
-      offset?: number;
-    } = {}
+    params: { limit?: number; offset?: number } = {}
   ): Promise<DuoResponse<any[]>> {
     return this.get('/admin/v1/groups', {
       limit: params.limit ?? 100,
@@ -263,10 +255,7 @@ export class DuoClient {
   // ========================
 
   async listPhones(
-    params: {
-      limit?: number;
-      offset?: number;
-    } = {}
+    params: { limit?: number; offset?: number } = {}
   ): Promise<DuoResponse<any[]>> {
     return this.get('/admin/v1/phones', {
       limit: params.limit ?? 100,
@@ -308,10 +297,7 @@ export class DuoClient {
   // ========================
 
   async listAdmins(
-    params: {
-      limit?: number;
-      offset?: number;
-    } = {}
+    params: { limit?: number; offset?: number } = {}
   ): Promise<DuoResponse<any[]>> {
     return this.get('/admin/v1/admins', {
       limit: params.limit ?? 100,
@@ -352,10 +338,7 @@ export class DuoClient {
   // ========================
 
   async listIntegrations(
-    params: {
-      limit?: number;
-      offset?: number;
-    } = {}
+    params: { limit?: number; offset?: number } = {}
   ): Promise<DuoResponse<any[]>> {
     return this.get('/admin/v1/integrations', {
       limit: params.limit ?? 100,
@@ -399,7 +382,7 @@ export class DuoClient {
     // next_offset is passed as two separate parameters with the same key
     // We handle this by appending them to the query string manually
     if (params.nextOffset && params.nextOffset.length === 2) {
-      queryParams['next_offset'] = params.nextOffset;
+      queryParams.next_offset = params.nextOffset;
     }
 
     return this.get('/admin/v2/logs/authentication', queryParams);
@@ -451,19 +434,19 @@ export class DuoClient {
   }): Promise<DuoResponse<any>> {
     let postParams: Record<string, any> = {};
     if (params.lockoutThreshold !== undefined)
-      postParams['lockout_threshold'] = params.lockoutThreshold;
+      postParams.lockout_threshold = params.lockoutThreshold;
     if (params.lockoutExpireDurationSecs !== undefined)
-      postParams['lockout_expire_duration_secs'] = params.lockoutExpireDurationSecs;
+      postParams.lockout_expire_duration_secs = params.lockoutExpireDurationSecs;
     if (params.inactiveUserExpiration !== undefined)
-      postParams['inactive_user_expiration'] = params.inactiveUserExpiration;
-    if (params.callerID !== undefined) postParams['caller_id'] = params.callerID;
-    if (params.fraudEmail !== undefined) postParams['fraud_email'] = params.fraudEmail;
+      postParams.inactive_user_expiration = params.inactiveUserExpiration;
+    if (params.callerID !== undefined) postParams.caller_id = params.callerID;
+    if (params.fraudEmail !== undefined) postParams.fraud_email = params.fraudEmail;
     if (params.fraudEmailEnabled !== undefined)
-      postParams['fraud_email_enabled'] = params.fraudEmailEnabled ? '1' : '0';
+      postParams.fraud_email_enabled = params.fraudEmailEnabled ? '1' : '0';
     if (params.keystrokesEnabled !== undefined)
-      postParams['keystrokes_enabled'] = params.keystrokesEnabled ? '1' : '0';
+      postParams.keystrokes_enabled = params.keystrokesEnabled ? '1' : '0';
     if (params.userTelephonyCostMax !== undefined)
-      postParams['user_telephony_cost_max'] = params.userTelephonyCostMax;
+      postParams.user_telephony_cost_max = params.userTelephonyCostMax;
     return this.post('/admin/v1/settings', postParams);
   }
 

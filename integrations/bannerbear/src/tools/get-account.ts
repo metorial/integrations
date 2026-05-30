@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BannerbearClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAccount = SlateTool.create(spec, {
   name: 'Get Account',

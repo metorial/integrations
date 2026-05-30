@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userOutputSchema = z.object({
   userId: z.number().describe('Coupa internal user ID'),
@@ -66,9 +66,9 @@ export let searchUsers = SlateTool.create(spec, {
         filters[key] = value;
       }
     }
-    if (ctx.input.login) filters['login'] = ctx.input.login;
-    if (ctx.input.email) filters['email'] = ctx.input.email;
-    if (ctx.input.active !== undefined) filters['active'] = String(ctx.input.active);
+    if (ctx.input.login) filters.login = ctx.input.login;
+    if (ctx.input.email) filters.email = ctx.input.email;
+    if (ctx.input.active !== undefined) filters.active = String(ctx.input.active);
     if (ctx.input.employeeNumber) filters['employee-number'] = ctx.input.employeeNumber;
     if (ctx.input.updatedAfter) filters['updated-at[gt]'] = ctx.input.updatedAfter;
 
@@ -84,9 +84,9 @@ export let searchUsers = SlateTool.create(spec, {
       userId: u.id,
       login: u.login ?? null,
       email: u.email ?? null,
-      firstName: u['firstname'] ?? u.firstname ?? null,
-      lastName: u['lastname'] ?? u.lastname ?? null,
-      fullName: u['fullname'] ?? u.fullname ?? null,
+      firstName: u.firstname ?? u.firstname ?? null,
+      lastName: u.lastname ?? u.lastname ?? null,
+      fullName: u.fullname ?? u.fullname ?? null,
       employeeNumber: u['employee-number'] ?? u.employee_number ?? null,
       active: u.active ?? null,
       department: u.department ?? null,
@@ -171,9 +171,9 @@ export let createUser = SlateTool.create(spec, {
         userId: result.id,
         login: result.login ?? null,
         email: result.email ?? null,
-        firstName: result['firstname'] ?? result.firstname ?? null,
-        lastName: result['lastname'] ?? result.lastname ?? null,
-        fullName: result['fullname'] ?? result.fullname ?? null,
+        firstName: result.firstname ?? result.firstname ?? null,
+        lastName: result.lastname ?? result.lastname ?? null,
+        fullName: result.fullname ?? result.fullname ?? null,
         employeeNumber: result['employee-number'] ?? result.employee_number ?? null,
         active: result.active ?? null,
         department: result.department ?? null,
@@ -245,9 +245,9 @@ export let updateUser = SlateTool.create(spec, {
         userId: result.id,
         login: result.login ?? null,
         email: result.email ?? null,
-        firstName: result['firstname'] ?? result.firstname ?? null,
-        lastName: result['lastname'] ?? result.lastname ?? null,
-        fullName: result['fullname'] ?? result.fullname ?? null,
+        firstName: result.firstname ?? result.firstname ?? null,
+        lastName: result.lastname ?? result.lastname ?? null,
+        fullName: result.fullname ?? result.fullname ?? null,
         employeeNumber: result['employee-number'] ?? result.employee_number ?? null,
         active: result.active ?? null,
         department: result.department ?? null,

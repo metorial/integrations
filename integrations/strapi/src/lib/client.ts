@@ -67,7 +67,7 @@ export class Client {
 
     if (params.populate) {
       if (typeof params.populate === 'string') {
-        query['populate'] = params.populate;
+        query.populate = params.populate;
       } else {
         let flatPopulate = this.flattenObject(params.populate, 'populate');
         Object.assign(query, flatPopulate);
@@ -81,7 +81,7 @@ export class Client {
 
     if (params.sort) {
       if (typeof params.sort === 'string') {
-        query['sort'] = params.sort;
+        query.sort = params.sort;
       } else {
         params.sort.forEach((s, i) => {
           query[`sort[${i}]`] = s;
@@ -108,11 +108,11 @@ export class Client {
     }
 
     if (params.status) {
-      query['status'] = params.status;
+      query.status = params.status;
     }
 
     if (params.locale) {
-      query['locale'] = params.locale;
+      query.locale = params.locale;
     }
 
     return query;
@@ -247,7 +247,7 @@ export class Client {
     let fileResponse = await this.axios.get(fileUrl, { responseType: 'arraybuffer' });
     let fileData = fileResponse.data;
 
-    let boundary = '----SlatesBoundary' + Date.now().toString(36);
+    let boundary = `----SlatesBoundary${Date.now().toString(36)}`;
     let parts: string[] = [];
 
     let binaryStr = '';
@@ -288,7 +288,7 @@ export class Client {
     fileId: number,
     fileInfo: { name?: string; alternativeText?: string; caption?: string }
   ): Promise<any> {
-    let boundary = '----SlatesBoundary' + Date.now().toString(36);
+    let boundary = `----SlatesBoundary${Date.now().toString(36)}`;
     let parts: string[] = [];
 
     parts.push(`--${boundary}\r\n`);

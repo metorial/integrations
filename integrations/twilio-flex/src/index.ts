@@ -2,26 +2,26 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createInteractionTool,
+  getFlexConfigurationTool,
+  getWorkspaceStatisticsTool,
+  listConversationMessagesTool,
+  manageActivitiesTool,
+  manageConversationParticipantsTool,
+  manageConversationsTool,
+  manageFlexFlowsTool,
   manageInteractionChannelTool,
   manageInteractionParticipantsTool,
-  manageWorkersTool,
+  manageStudioFlowsTool,
   manageTaskQueuesTool,
   manageTasksTool,
+  manageWorkersTool,
   manageWorkflowsTool,
-  manageActivitiesTool,
-  getFlexConfigurationTool,
-  manageFlexFlowsTool,
-  manageConversationsTool,
-  manageConversationParticipantsTool,
-  sendConversationMessageTool,
-  listConversationMessagesTool,
-  manageStudioFlowsTool,
-  getWorkspaceStatisticsTool
+  sendConversationMessageTool
 } from './tools';
 import {
+  interactionWebhookTrigger,
   taskEventsTrigger,
-  taskRouterWebhookTrigger,
-  interactionWebhookTrigger
+  taskRouterWebhookTrigger
 } from './triggers';
 
 export let provider = Slate.create({

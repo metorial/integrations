@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getLists,
+  addRevenue,
+  addSessionNote,
+  executeTrigger,
   getListRows,
-  manageListRow,
+  getLists,
   getSession,
   getSessions,
-  updateSessionMetadata,
-  addRevenue,
+  manageListRow,
   updateSalesStatus,
-  executeTrigger,
-  addSessionNote
+  updateSessionMetadata
 } from './tools';
 import { listRowCreated, listRowUpdated } from './triggers';
 

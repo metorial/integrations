@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ExecutionClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let executePython = SlateTool.create(spec, {
   name: 'Execute Python',

@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  upsertCustomer,
-  getCustomer,
-  listCustomers,
-  deleteCustomer,
-  updateCustomerCompany,
-  createThread,
-  getThread,
-  listThreads,
-  updateThreadStatus,
   assignThread,
   changeThreadPriority,
-  replyToThread,
-  manageThreadLabels,
-  listLabelTypes,
-  sendEmail,
+  createThread,
   createTimelineEvent,
-  upsertTenant,
-  manageCustomerTenants,
+  deleteCustomer,
+  getCustomer,
+  getThread,
+  listCustomerGroups,
+  listCustomers,
+  listLabelTypes,
+  listThreads,
   manageCustomerGroups,
-  listCustomerGroups
+  manageCustomerTenants,
+  manageThreadLabels,
+  replyToThread,
+  sendEmail,
+  updateCustomerCompany,
+  updateThreadStatus,
+  upsertCustomer,
+  upsertTenant
 } from './tools';
-import { threadEvents, messageEvents, customerEvents } from './triggers';
+import { customerEvents, messageEvents, threadEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

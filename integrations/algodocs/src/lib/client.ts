@@ -67,7 +67,7 @@ export class Client {
     return response.data;
   }
 
-  async getExtractedDataByDocument(documentId: string): Promise<Array<ExtractedRecord>> {
+  async getExtractedDataByDocument(documentId: string): Promise<ExtractedRecord[]> {
     let response = await this.axios.get(`/extracted_data/${documentId}`, {
       headers: this.getAuthHeaders()
     });
@@ -77,11 +77,11 @@ export class Client {
   async getExtractedDataByExtractor(
     extractorId: string,
     options?: { folderId?: string; limit?: number; date?: string }
-  ): Promise<Array<ExtractedRecord>> {
+  ): Promise<ExtractedRecord[]> {
     let params: Record<string, string | number> = {};
-    if (options?.folderId) params['folder_id'] = options.folderId;
-    if (options?.limit) params['limit'] = options.limit;
-    if (options?.date) params['date'] = options.date;
+    if (options?.folderId) params.folder_id = options.folderId;
+    if (options?.limit) params.limit = options.limit;
+    if (options?.date) params.date = options.date;
 
     let response = await this.axios.get(`/extracted_data/${extractorId}`, {
       headers: this.getAuthHeaders(),

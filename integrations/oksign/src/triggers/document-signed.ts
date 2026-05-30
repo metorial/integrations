@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let POLL_INTERVAL_SECONDS = 300; // 5 minutes (API rate limit: 1 request per 3 minutes)
 

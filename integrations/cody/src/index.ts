@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBots,
-  listFolders,
-  createFolder,
-  updateFolder,
-  getFolder,
-  listDocuments,
-  getDocument,
-  createDocumentFromContent,
-  createDocumentFromWebpage,
-  getUploadUrl,
-  createDocumentFromFile,
-  deleteDocument,
-  listConversations,
-  getConversation,
   createConversation,
-  updateConversation,
+  createDocumentFromContent,
+  createDocumentFromFile,
+  createDocumentFromWebpage,
+  createFolder,
   deleteConversation,
+  deleteDocument,
+  getConversation,
+  getDocument,
+  getFolder,
+  getMessage,
+  getUploadUrl,
+  listBots,
+  listConversations,
+  listDocuments,
+  listFolders,
+  listMessages,
   sendMessage,
   sendMessageForStream,
-  listMessages,
-  getMessage
+  updateConversation,
+  updateFolder
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

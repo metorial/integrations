@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateResponse,
-  listBots,
-  getBot,
   createBot,
-  deleteBot,
-  uploadTrainingData,
-  listTrainingData,
-  deleteTrainingData,
   createFaq,
-  listFaqs,
-  deleteFaq,
   createStarterQuestion,
-  updateStarterQuestion,
-  listStarterQuestions,
+  deleteBot,
+  deleteFaq,
   deleteStarterQuestion,
-  listConversations,
+  deleteTrainingData,
+  endChat,
+  generateResponse,
+  getBot,
   getConversation,
-  endChat
+  listBots,
+  listConversations,
+  listFaqs,
+  listStarterQuestions,
+  listTrainingData,
+  updateStarterQuestion,
+  uploadTrainingData
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

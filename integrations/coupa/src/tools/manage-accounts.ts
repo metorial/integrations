@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let accountOutputSchema = z.object({
   accountId: z.number().describe('Coupa internal account ID'),
@@ -62,9 +62,9 @@ export let searchAccounts = SlateTool.create(spec, {
         filters[key] = value;
       }
     }
-    if (ctx.input.code) filters['code'] = ctx.input.code;
-    if (ctx.input.name) filters['name'] = ctx.input.name;
-    if (ctx.input.active !== undefined) filters['active'] = String(ctx.input.active);
+    if (ctx.input.code) filters.code = ctx.input.code;
+    if (ctx.input.name) filters.name = ctx.input.name;
+    if (ctx.input.active !== undefined) filters.active = String(ctx.input.active);
     if (ctx.input.updatedAfter) filters['updated-at[gt]'] = ctx.input.updatedAfter;
 
     let results = await client.listAccounts({

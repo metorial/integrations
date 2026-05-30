@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { buildClientConfig, flattenResourceList } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listDocuments = SlateTool.create(spec, {
   name: 'List Documents',
@@ -36,11 +36,11 @@ export let listDocuments = SlateTool.create(spec, {
     let client = new Client(buildClientConfig(ctx));
 
     let filters: Record<string, string> = {};
-    if (ctx.input.filterDocumentType) filters['document_type'] = ctx.input.filterDocumentType;
-    if (ctx.input.filterOrderId) filters['order_id'] = ctx.input.filterOrderId;
-    if (ctx.input.filterStatus) filters['status'] = ctx.input.filterStatus;
+    if (ctx.input.filterDocumentType) filters.document_type = ctx.input.filterDocumentType;
+    if (ctx.input.filterOrderId) filters.order_id = ctx.input.filterOrderId;
+    if (ctx.input.filterStatus) filters.status = ctx.input.filterStatus;
     if (ctx.input.filterArchived !== undefined)
-      filters['archived'] = String(ctx.input.filterArchived);
+      filters.archived = String(ctx.input.filterArchived);
 
     let response = await client.listDocuments({
       pagination: {

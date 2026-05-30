@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FigmaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFileVersions = SlateTool.create(spec, {
   name: 'Get File Versions',

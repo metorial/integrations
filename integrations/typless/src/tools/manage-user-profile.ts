@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageUserProfile = SlateTool.create(spec, {
   name: 'Manage User Profile',
@@ -43,7 +43,7 @@ export let manageUserProfile = SlateTool.create(spec, {
       ctx.input.lastName !== undefined ||
       ctx.input.email !== undefined;
 
-    let profile;
+    let profile: any;
     if (hasUpdates) {
       profile = await client.updateUserProfile({
         firstName: ctx.input.firstName,

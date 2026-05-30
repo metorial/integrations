@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { mapEnrichedContact } from '../lib/client';
+import { spec } from '../spec';
 
 let enrichedContactSchema = z.object({
   enriched: z.boolean().describe('Whether enrichment found data for this contact'),

@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { MailchimpClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let audienceWebhookTrigger = SlateTrigger.create(spec, {
   name: 'Audience Changes',
@@ -131,7 +131,7 @@ export let audienceWebhookTrigger = SlateTrigger.create(spec, {
       let mergeFields: Record<string, any> = {};
       for (let [key, value] of params.entries()) {
         let match = key.match(/^data\[merges\]\[(.+)\]$/);
-        if (match && match[1] && match[1] !== 'EMAIL') {
+        if (match?.[1] && match[1] !== 'EMAIL') {
           mergeFields[match[1]] = value;
         }
       }

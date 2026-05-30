@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let alertWebhookTrigger = SlateTrigger.create(spec, {
   name: 'Alert Notification',
@@ -80,7 +80,7 @@ export let alertWebhookTrigger = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.id) {
+      if (!data?.id) {
         return { inputs: [] };
       }
 

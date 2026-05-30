@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugsnagClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let savedSearchSchema = z.object({
   searchId: z.string().describe('Saved search ID'),

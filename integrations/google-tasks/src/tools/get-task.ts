@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleTasksClient } from '../lib/client';
 import { googleTasksActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTask = SlateTool.create(spec, {
   name: 'Get Task',

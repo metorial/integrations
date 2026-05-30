@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let projectEventTypes = ['project.created', 'project.updated', 'project.deleted'] as const;
 
@@ -68,7 +68,7 @@ export let projectEvents = SlateTrigger.create(spec, {
       for (let reg of details.registrations) {
         try {
           await client.unsubscribeWebhook(reg.webhookId);
-        } catch (err) {
+        } catch (_err) {
           // Ignore errors during cleanup — webhook may already be removed
         }
       }

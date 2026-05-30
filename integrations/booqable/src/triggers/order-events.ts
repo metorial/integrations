@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { buildClientConfig } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orderEventTypes = [
   'order.saved_as_draft',
@@ -74,7 +74,7 @@ export let orderEvents = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
 
       let eventType = data?.event || data?.type || 'order.updated';
-      let orderData = data?.data?.attributes || data?.data || data?.order || data;
+      let _orderData = data?.data?.attributes || data?.data || data?.order || data;
       let orderId = data?.data?.id || data?.order_id || data?.id || '';
       let webhookId = data?.webhook_id || data?.id || `${orderId}-${Date.now()}`;
 

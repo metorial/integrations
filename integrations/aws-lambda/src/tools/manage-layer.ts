@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { createClient } from '../lib/helpers';
-import { lambdaServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { lambdaServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageLayer = SlateTool.create(spec, {
   name: 'Manage Layer',
@@ -155,19 +155,18 @@ export let manageLayer = SlateTool.create(spec, {
     if (!ctx.input.content)
       throw lambdaServiceError('content is required for publishing a layer');
     let contentObj: Record<string, any> = {};
-    if (ctx.input.content.s3Bucket) contentObj['S3Bucket'] = ctx.input.content.s3Bucket;
-    if (ctx.input.content.s3Key) contentObj['S3Key'] = ctx.input.content.s3Key;
+    if (ctx.input.content.s3Bucket) contentObj.S3Bucket = ctx.input.content.s3Bucket;
+    if (ctx.input.content.s3Key) contentObj.S3Key = ctx.input.content.s3Key;
     if (ctx.input.content.s3ObjectVersion)
-      contentObj['S3ObjectVersion'] = ctx.input.content.s3ObjectVersion;
-    if (ctx.input.content.zipFile) contentObj['ZipFile'] = ctx.input.content.zipFile;
+      contentObj.S3ObjectVersion = ctx.input.content.s3ObjectVersion;
+    if (ctx.input.content.zipFile) contentObj.ZipFile = ctx.input.content.zipFile;
 
     let params: Record<string, any> = { Content: contentObj };
-    if (ctx.input.compatibleRuntimes)
-      params['CompatibleRuntimes'] = ctx.input.compatibleRuntimes;
+    if (ctx.input.compatibleRuntimes) params.CompatibleRuntimes = ctx.input.compatibleRuntimes;
     if (ctx.input.compatibleArchitectures)
-      params['CompatibleArchitectures'] = ctx.input.compatibleArchitectures;
-    if (ctx.input.description) params['Description'] = ctx.input.description;
-    if (ctx.input.licenseInfo) params['LicenseInfo'] = ctx.input.licenseInfo;
+      params.CompatibleArchitectures = ctx.input.compatibleArchitectures;
+    if (ctx.input.description) params.Description = ctx.input.description;
+    if (ctx.input.licenseInfo) params.LicenseInfo = ctx.input.licenseInfo;
 
     let result = await client.publishLayerVersion(layerName, params);
     return {

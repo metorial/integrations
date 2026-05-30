@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getUsers,
-  provisionUsers,
   deprovisionUser,
-  manageUser,
-  manageGroupMembership,
+  getEventReport,
   getSharedFolders,
-  getEventReport
+  getUsers,
+  manageGroupMembership,
+  manageUser,
+  provisionUsers
 } from './tools';
 import { accountEvents, inboundWebhook } from './triggers';
 

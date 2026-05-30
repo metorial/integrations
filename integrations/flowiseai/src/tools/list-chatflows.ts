@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FlowiseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let chatflowSchema = z.object({
   chatflowId: z.string().describe('Unique identifier of the chatflow'),

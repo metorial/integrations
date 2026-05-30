@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DopplerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let environmentSchema = z.object({
   environmentId: z.string().optional().describe('Environment identifier (slug)'),

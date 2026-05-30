@@ -386,12 +386,7 @@ export class Client {
   }
 
   async getFacebookRecommendations(
-    params: {
-      businessId?: string;
-      from?: string;
-      to?: string;
-      page?: number;
-    } = {}
+    params: { businessId?: string; from?: string; to?: string; page?: number } = {}
   ): Promise<any> {
     let res = await http.post('/facebook-recommendations/get', this.buildBody(params), {
       headers: this.headers

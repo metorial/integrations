@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RadarClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let tripSchema = z.object({
   tripId: z.string().describe('Radar internal trip ID'),

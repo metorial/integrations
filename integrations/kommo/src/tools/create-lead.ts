@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
-import { KommoClient } from '../lib/client';
-import { spec } from '../spec';
-import {
-  customFieldValueSchema,
-  tagSchema,
-  buildCustomFieldsPayload,
-  buildTagsPayload
-} from '../lib/schemas';
 import { z } from 'zod';
+import { KommoClient } from '../lib/client';
+import {
+  buildCustomFieldsPayload,
+  buildTagsPayload,
+  customFieldValueSchema,
+  tagSchema
+} from '../lib/schemas';
+import { spec } from '../spec';
 
 export let createLeadTool = SlateTool.create(spec, {
   name: 'Create Lead',
@@ -49,28 +49,27 @@ export let createLeadTool = SlateTool.create(spec, {
       name: ctx.input.name
     };
 
-    if (ctx.input.price !== undefined) payload['price'] = ctx.input.price;
-    if (ctx.input.statusId) payload['status_id'] = ctx.input.statusId;
-    if (ctx.input.pipelineId) payload['pipeline_id'] = ctx.input.pipelineId;
-    if (ctx.input.responsibleUserId)
-      payload['responsible_user_id'] = ctx.input.responsibleUserId;
+    if (ctx.input.price !== undefined) payload.price = ctx.input.price;
+    if (ctx.input.statusId) payload.status_id = ctx.input.statusId;
+    if (ctx.input.pipelineId) payload.pipeline_id = ctx.input.pipelineId;
+    if (ctx.input.responsibleUserId) payload.responsible_user_id = ctx.input.responsibleUserId;
 
     if (ctx.input.customFieldsValues?.length) {
-      payload['custom_fields_values'] = buildCustomFieldsPayload(ctx.input.customFieldsValues);
+      payload.custom_fields_values = buildCustomFieldsPayload(ctx.input.customFieldsValues);
     }
 
     let embedded: Record<string, any> = {};
     if (ctx.input.tags?.length) {
-      embedded['tags'] = buildTagsPayload(ctx.input.tags);
+      embedded.tags = buildTagsPayload(ctx.input.tags);
     }
     if (ctx.input.contactId) {
-      embedded['contacts'] = [{ id: ctx.input.contactId, is_main: true }];
+      embedded.contacts = [{ id: ctx.input.contactId, is_main: true }];
     }
     if (ctx.input.companyId) {
-      embedded['companies'] = [{ id: ctx.input.companyId }];
+      embedded.companies = [{ id: ctx.input.companyId }];
     }
     if (Object.keys(embedded).length > 0) {
-      payload['_embedded'] = embedded;
+      payload._embedded = embedded;
     }
 
     let result = await client.createLead(payload);

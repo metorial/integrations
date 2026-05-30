@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let tradeInputSchema = z.object({
   blockTime: z.string(),
@@ -78,7 +78,7 @@ export let newDexTrades = SlateTrigger.create(spec, {
         ctx.state?.lastPollTime || new Date(Date.now() - 5 * 60 * 1000).toISOString();
       let now = new Date().toISOString();
 
-      let trades: Array<z.infer<typeof tradeInputSchema>> = [];
+      let trades: z.infer<typeof tradeInputSchema>[] = [];
 
       try {
         if (blockchain === 'solana') {
@@ -172,7 +172,7 @@ export let newDexTrades = SlateTrigger.create(spec, {
             }));
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // Return empty on error, will retry next poll
       }
 

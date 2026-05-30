@@ -1,32 +1,32 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createTicket,
-  getTicket,
-  updateTicket,
-  listTickets,
-  searchTickets,
-  deleteTicket,
   addTicketReply,
-  listConversations,
-  createContact,
-  getContact,
-  updateContact,
-  listContacts,
-  searchContacts,
+  createArticle,
   createCompany,
+  createContact,
+  createTicket,
+  createTimeEntry,
+  deleteTicket,
+  getArticle,
   getCompany,
-  updateCompany,
-  listCompanies,
+  getContact,
+  getTicket,
   listAgents,
+  listCompanies,
+  listContacts,
+  listConversations,
   listGroups,
   listKnowledgeBase,
-  getArticle,
-  createArticle,
+  listTickets,
   listTimeEntries,
-  createTimeEntry
+  searchContacts,
+  searchTickets,
+  updateCompany,
+  updateContact,
+  updateTicket
 } from './tools';
-import { ticketEvents, contactEvents, ticketEventsWebhook } from './triggers';
+import { contactEvents, ticketEvents, ticketEventsWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ZeplinClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let colorSchema = z.object({
   colorId: z.string().optional().describe('Color identifier'),

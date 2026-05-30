@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { baseIdInput } from './base-id';
-import { z } from 'zod';
 
 export let listRecordsTool = SlateTool.create(spec, {
   name: 'List Records',

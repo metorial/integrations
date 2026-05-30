@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
-let releaseSchema = z.object({
+let _releaseSchema = z.object({
   releaseId: z.string().describe('Release ID'),
   ref: z.string().describe('Release ref'),
   label: z.string().describe('Release label/name'),

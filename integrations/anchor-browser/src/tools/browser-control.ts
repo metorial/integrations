@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let browserControl = SlateTool.create(spec, {
   name: 'Browser Control',
@@ -70,11 +70,11 @@ export let browserControl = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let input = ctx.input;
-    let result: unknown;
+    let _result: unknown;
 
     switch (input.action) {
       case 'click':
-        result = await client.mouseClick(input.sessionId, {
+        _result = await client.mouseClick(input.sessionId, {
           x: input.x,
           y: input.y,
           button: input.button,
@@ -85,7 +85,7 @@ export let browserControl = SlateTool.create(spec, {
         break;
 
       case 'double_click':
-        result = await client.mouseDoubleClick(input.sessionId, {
+        _result = await client.mouseDoubleClick(input.sessionId, {
           x: input.x,
           y: input.y,
           button: input.button
@@ -101,7 +101,7 @@ export let browserControl = SlateTool.create(spec, {
         ) {
           throw new Error('startX, startY, endX, endY are required for drag_drop.');
         }
-        result = await client.dragDrop(input.sessionId, {
+        _result = await client.dragDrop(input.sessionId, {
           startX: input.startX,
           startY: input.startY,
           endX: input.endX,
@@ -111,7 +111,7 @@ export let browserControl = SlateTool.create(spec, {
         break;
 
       case 'scroll':
-        result = await client.scroll(input.sessionId, {
+        _result = await client.scroll(input.sessionId, {
           x: input.x,
           y: input.y,
           deltaX: input.deltaX,
@@ -122,7 +122,7 @@ export let browserControl = SlateTool.create(spec, {
 
       case 'type_text':
         if (!input.text) throw new Error('text is required for type_text.');
-        result = await client.typeText(input.sessionId, {
+        _result = await client.typeText(input.sessionId, {
           text: input.text,
           delay: input.typingDelay
         });
@@ -131,7 +131,7 @@ export let browserControl = SlateTool.create(spec, {
       case 'keyboard_shortcut':
         if (!input.keys || input.keys.length === 0)
           throw new Error('keys is required for keyboard_shortcut.');
-        result = await client.keyboardShortcut(input.sessionId, {
+        _result = await client.keyboardShortcut(input.sessionId, {
           keys: input.keys,
           holdTime: input.holdTime
         });
@@ -139,12 +139,12 @@ export let browserControl = SlateTool.create(spec, {
 
       case 'navigate':
         if (!input.url) throw new Error('url is required for navigate.');
-        result = await client.navigate(input.sessionId, { url: input.url });
+        _result = await client.navigate(input.sessionId, { url: input.url });
         break;
 
       case 'set_clipboard':
         if (!input.text) throw new Error('text is required for set_clipboard.');
-        result = await client.setClipboard(input.sessionId, { text: input.text });
+        _result = await client.setClipboard(input.sessionId, { text: input.text });
         break;
 
       case 'get_clipboard': {

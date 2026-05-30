@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { UploadClient } from '../lib/upload-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let groupSummarySchema = z.object({
   groupId: z.string().describe('Group ID (UUID~N format)'),

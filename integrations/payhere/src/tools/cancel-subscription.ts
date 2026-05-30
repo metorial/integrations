@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PayhereClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let cancelSubscription = SlateTool.create(spec, {
   name: 'Cancel Subscription',

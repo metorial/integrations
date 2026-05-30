@@ -23,7 +23,7 @@ export class BitqueryClient {
     if (config.apiVersion === 'v1') {
       headers['X-API-KEY'] = config.token;
     } else {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     }
 
     this.axios = createAxios({

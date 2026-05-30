@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ZeplinClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let screenSummarySchema = z.object({
   screenId: z.string().describe('Unique screen identifier'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDocument = SlateTool.create(spec, {
   name: 'Get Document',
@@ -94,7 +94,7 @@ Use this to inspect a document's processing state, read its content, or access i
           typeof contentData === 'string'
             ? contentData
             : contentData.content || JSON.stringify(contentData);
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Failed to fetch document content');
         output.content = null;
       }
@@ -107,7 +107,7 @@ Use this to inspect a document's processing state, read its content, or access i
           typeof summaryData === 'string'
             ? summaryData
             : summaryData.summary || JSON.stringify(summaryData);
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Failed to fetch document summary');
         output.summary = null;
       }
@@ -121,7 +121,7 @@ Use this to inspect a document's processing state, read its content, or access i
           chunkIndex: c.index,
           text: c.text
         }));
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Failed to fetch document chunks');
         output.chunks = [];
       }

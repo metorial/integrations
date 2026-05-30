@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { mapJob } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getJobTool = SlateTool.create(spec, {
   name: 'Get Job',
@@ -66,12 +66,12 @@ export let getJobTool = SlateTool.create(spec, {
       token: ctx.auth.token,
       onBehalfOf: ctx.config.onBehalfOf
     });
-    let raw = await client.getJob(parseInt(ctx.input.jobId));
+    let raw = await client.getJob(Number.parseInt(ctx.input.jobId, 10));
     let job = mapJob(raw);
 
     let stages: Array<{ stageId: string; name: string; priority: number | null }> | undefined;
     if (ctx.input.includeStages) {
-      let rawStages = await client.getJobStages(parseInt(ctx.input.jobId));
+      let rawStages = await client.getJobStages(Number.parseInt(ctx.input.jobId, 10));
       stages = rawStages.map((s: any) => ({
         stageId: s.id?.toString(),
         name: s.name ?? '',

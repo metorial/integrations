@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { modelOptionsSchema, chatMessageSchema, toolDefinitionSchema } from '../lib/schemas';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { chatMessageSchema, modelOptionsSchema, toolDefinitionSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let chat = SlateTool.create(spec, {
   name: 'Chat',
@@ -101,7 +101,7 @@ export let chat = SlateTool.create(spec, {
       : '';
     let contentPreview =
       result.message.content.length > 100
-        ? result.message.content.substring(0, 100) + '...'
+        ? `${result.message.content.substring(0, 100)}...`
         : result.message.content;
 
     return {

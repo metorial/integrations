@@ -601,7 +601,7 @@ export class Client {
 
   async reportSyncResults(data: {
     idempotencyKey: string;
-    syncResults: Array<Record<string, any>>;
+    syncResults: Record<string, any>[];
   }): Promise<any> {
     let response = await this.axios.post('/accounting/syncs', {
       idempotency_key: data.idempotencyKey,

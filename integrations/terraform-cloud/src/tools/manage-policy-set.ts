@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
-import { mapPolicySet, mapPagination } from '../lib/mappers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { mapPagination, mapPolicySet } from '../lib/mappers';
+import { spec } from '../spec';
 
 let policySetSchema = z.object({
   policySetId: z.string(),

@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchCompetitions,
-  getCompetitionDetails,
-  searchDatasets,
-  getDatasetDetails,
   createDataset,
-  searchKernels,
+  getCompetitionDetails,
+  getDatasetDetails,
   getKernelDetails,
-  pushKernel,
-  searchModels,
   getModelDetails,
   manageModel,
-  manageModelVariation
+  manageModelVariation,
+  pushKernel,
+  searchCompetitions,
+  searchDatasets,
+  searchKernels,
+  searchModels
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

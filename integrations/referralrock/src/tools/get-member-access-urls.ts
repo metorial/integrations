@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getMemberAccessUrls = SlateTool.create(spec, {
   name: 'Get Member Access URLs',

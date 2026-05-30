@@ -1,12 +1,12 @@
 import { createAxios } from 'slates';
 import type {
   LastPassApiResponse,
-  LastPassUserDataResponse,
-  LastPassSharedFolder,
+  LastPassBatchAddUser,
+  LastPassDeleteResponse,
   LastPassEvent,
   LastPassEventReportResponse,
-  LastPassBatchAddUser,
-  LastPassDeleteResponse
+  LastPassSharedFolder,
+  LastPassUserDataResponse
 } from './types';
 
 export class LastPassClient {

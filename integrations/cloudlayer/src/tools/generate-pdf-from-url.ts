@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import {
-  pdfOptionsSchema,
-  jobResponseSchema,
   authenticationSchema,
-  cookieSchema
+  cookieSchema,
+  jobResponseSchema,
+  pdfOptionsSchema
 } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let generatePdfFromUrl = SlateTool.create(spec, {
   name: 'Generate PDF from URL',

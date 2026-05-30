@@ -420,12 +420,12 @@ export class ContentfulClient {
   async sync(params: { initial?: boolean; syncToken?: string; type?: string }) {
     let queryParams: Record<string, string> = {};
     if (params.initial) {
-      queryParams['initial'] = 'true';
+      queryParams.initial = 'true';
       if (params.type) {
-        queryParams['type'] = params.type;
+        queryParams.type = params.type;
       }
     } else if (params.syncToken) {
-      queryParams['sync_token'] = params.syncToken;
+      queryParams.sync_token = params.syncToken;
     }
     let response = await this.cda.get(this.envPath('/sync'), { params: queryParams });
     return response.data;

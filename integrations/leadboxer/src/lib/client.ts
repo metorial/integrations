@@ -62,13 +62,13 @@ export class LeadBoxerClient {
       noShortenEmail: 'true'
     };
 
-    if (filters.search) params['search'] = filters.search;
-    else params['search'] = '*';
+    if (filters.search) params.search = filters.search;
+    else params.search = '*';
 
-    if (filters.limit) params['limit'] = String(filters.limit);
-    if (filters.period) params['period'] = filters.period;
-    if (filters.sortBy) params['sortBy'] = filters.sortBy;
-    if (filters.email) params['email'] = filters.email;
+    if (filters.limit) params.limit = String(filters.limit);
+    if (filters.period) params.period = filters.period;
+    if (filters.sortBy) params.sortBy = filters.sortBy;
+    if (filters.email) params.email = filters.email;
 
     let response = await this.legacyApi.get('/api/views/c_view_leads', { params });
     return response.data;
@@ -124,14 +124,14 @@ export class LeadBoxerClient {
       json: 'true'
     };
 
-    if (params.email) queryParams['email'] = params.email;
-    if (params.userId) queryParams['userId'] = params.userId;
-    if (params.sessionId) queryParams['sid'] = params.sessionId;
-    if (params.leadboxerUserId) queryParams['uid'] = params.leadboxerUserId;
-    if (params.url) queryParams['lc'] = params.url;
-    if (params.referrer) queryParams['ref'] = params.referrer;
-    if (params.ip) queryParams['ip'] = params.ip;
-    if (params.proxy) queryParams['proxy'] = 'true';
+    if (params.email) queryParams.email = params.email;
+    if (params.userId) queryParams.userId = params.userId;
+    if (params.sessionId) queryParams.sid = params.sessionId;
+    if (params.leadboxerUserId) queryParams.uid = params.leadboxerUserId;
+    if (params.url) queryParams.lc = params.url;
+    if (params.referrer) queryParams.ref = params.referrer;
+    if (params.ip) queryParams.ip = params.ip;
+    if (params.proxy) queryParams.proxy = 'true';
 
     if (params.customProperties) {
       for (let [key, value] of Object.entries(params.customProperties)) {
@@ -149,7 +149,7 @@ export class LeadBoxerClient {
       leadTags: params.tags
     };
 
-    if (params.action) queryParams['action'] = params.action;
+    if (params.action) queryParams.action = params.action;
 
     let response = await this.legacyApi.get('/api/management/update_lead_tags', {
       params: queryParams

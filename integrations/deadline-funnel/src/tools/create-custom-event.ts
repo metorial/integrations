@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeadlineFunnelClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createCustomEvent = SlateTool.create(spec, {
   name: 'Create Custom Event',

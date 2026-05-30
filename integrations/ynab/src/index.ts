@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBudgets,
-  getBudget,
-  listAccounts,
   createAccount,
-  listTransactions,
-  getTransaction,
   createTransaction,
-  updateTransaction,
   deleteTransaction,
+  getBudget,
+  getMonth,
+  getTransaction,
   importTransactions,
-  listScheduledTransactions,
-  manageScheduledTransaction,
+  listAccounts,
+  listBudgets,
   listCategories,
+  listMonths,
+  listPayees,
+  listScheduledTransactions,
+  listTransactions,
   manageCategory,
   manageCategoryGroup,
-  listPayees,
+  manageScheduledTransaction,
   updatePayee,
-  listMonths,
-  getMonth
+  updateTransaction
 } from './tools';
-import { transactionChanges, accountChanges, inboundWebhook } from './triggers';
+import { accountChanges, inboundWebhook, transactionChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

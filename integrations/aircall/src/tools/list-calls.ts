@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCalls = SlateTool.create(spec, {
   name: 'List Calls',
@@ -76,7 +76,7 @@ export let listCalls = SlateTool.create(spec, {
       ctx.input.direction ||
       ctx.input.tags;
 
-    let result;
+    let result: any;
     if (hasSearchFilters) {
       result = await client.searchCalls({
         userId: ctx.input.userId,

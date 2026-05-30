@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRates = SlateTool.create(spec, {
   name: 'Get Rates',
@@ -39,7 +39,7 @@ export let getRates = SlateTool.create(spec, {
       endDate: ctx.input.endDate
     });
 
-    let rateSettings;
+    let rateSettings: any;
     if (ctx.input.includeSettings) {
       rateSettings = await client.getRateSettings(ctx.input.propertyId);
     }

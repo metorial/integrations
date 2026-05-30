@@ -2,15 +2,15 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listProjects,
-  manageProject,
-  listServices,
-  manageService,
-  manageJob,
-  manageAddon,
-  manageSecret,
   listResources,
-  runTemplate,
-  manageNotificationIntegration
+  listServices,
+  manageAddon,
+  manageJob,
+  manageNotificationIntegration,
+  manageProject,
+  manageSecret,
+  manageService,
+  runTemplate
 } from './tools';
 import { platformEvents } from './triggers';
 

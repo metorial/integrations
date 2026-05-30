@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CardlyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactListOutputSchema = z.object({
   listId: z.string().describe('Unique contact list ID'),

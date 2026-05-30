@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { addWebsite } from '../lib/admin';
 import { z } from 'zod';
+import { addWebsite } from '../lib/admin';
+import { spec } from '../spec';
 
 export let addWebsiteTool = SlateTool.create(spec, {
   name: 'Add Website',

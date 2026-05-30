@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RocketadminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateRow = SlateTool.create(spec, {
   name: 'Update Row',
@@ -48,7 +48,7 @@ export let updateRow = SlateTool.create(spec, {
     });
 
     if (ctx.input.bulkPrimaryKeys && ctx.input.bulkPrimaryKeys.length > 0) {
-      let result = await client.bulkUpdateRows(
+      let _result = await client.bulkUpdateRows(
         ctx.input.connectionId,
         ctx.input.tableName,
         ctx.input.bulkPrimaryKeys,

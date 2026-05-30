@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MetaAdsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchAdLibrary = SlateTool.create(spec, {
   name: 'Search Ad Library',

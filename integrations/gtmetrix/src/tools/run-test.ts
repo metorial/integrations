@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { testOutputSchema, reportOutputSchema } from '../lib/schemas';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { reportOutputSchema, testOutputSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let runTest = SlateTool.create(spec, {
   name: 'Run Page Speed Test',

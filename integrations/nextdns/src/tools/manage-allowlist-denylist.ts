@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NextDnsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let listEntrySchema = z.object({
   domain: z.string().describe('Domain name (e.g., "example.com")'),

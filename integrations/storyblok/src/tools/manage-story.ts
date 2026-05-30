@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StoryblokClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let storyOutputSchema = z.object({
   storyId: z.number().optional().describe('Numeric ID of the story'),
@@ -107,7 +107,7 @@ export let manageStory = SlateTool.create(spec, {
     if (action === 'delete') {
       await client.deleteStory(storyId);
       return {
-        output: { storyId: parseInt(storyId, 10) },
+        output: { storyId: Number.parseInt(storyId, 10) },
         message: `Deleted story \`${storyId}\`.`
       };
     }

@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  serpSearch,
-  keywordResearch,
-  keywordsForSite,
-  keywordSuggestions,
   backlinksAnalysis,
+  contentAnalysis,
   domainAnalytics,
   domainCompetitors,
   domainIntersection,
-  onPageAudit,
-  contentAnalysis,
+  getTaskResult,
   googleShoppingSearch,
-  getTaskResult
+  keywordResearch,
+  keywordSuggestions,
+  keywordsForSite,
+  onPageAudit,
+  serpSearch
 } from './tools';
 import { taskCompleted } from './triggers';
 

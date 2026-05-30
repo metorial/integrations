@@ -335,7 +335,10 @@ export class SlidesClient {
     );
     let existingText =
       notesElement?.shape?.text?.textElements
-        ?.map((textElement: { textRun?: { content?: string } }) => textElement.textRun?.content ?? '')
+        ?.map(
+          (textElement: { textRun?: { content?: string } }) =>
+            textElement.textRun?.content ?? ''
+        )
         .join('') ?? '';
 
     let requests: any[] = [];

@@ -11,7 +11,7 @@ export class PowerBIClient {
     this.http = createAxios({
       baseURL: 'https://api.powerbi.com/v1.0/myorg'
     });
-    this.http.defaults.headers.common['Authorization'] = `Bearer ${config.token}`;
+    this.http.defaults.headers.common.Authorization = `Bearer ${config.token}`;
   }
 
   // ─── Workspaces (Groups) ───────────────────────────────────────
@@ -502,8 +502,8 @@ export class PowerBIClient {
 
   async adminGetGroups(top?: number, filter?: string): Promise<any> {
     let params: any = {};
-    if (top) params['$top'] = top;
-    if (filter) params['$filter'] = filter;
+    if (top) params.$top = top;
+    if (filter) params.$filter = filter;
     let response = await this.http.get('/admin/groups', { params });
     return response.data;
   }

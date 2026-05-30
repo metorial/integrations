@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { MeetClient } from '../lib/client';
 import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let conferenceEventsTrigger = SlateTrigger.create(spec, {
   name: 'Conference Events',
@@ -69,26 +69,24 @@ export let conferenceEventsTrigger = SlateTrigger.create(spec, {
               endTime: record.endTime
             });
           }
+        } else if (knownActiveConferences.includes(name)) {
+          inputs.push({
+            eventType: 'ended',
+            conferenceRecordName: name,
+            spaceName: record.space,
+            startTime: record.startTime,
+            endTime: record.endTime
+          });
+        } else if (!lastPollTime) {
+          // On first poll, report recently ended conferences
         } else {
-          if (knownActiveConferences.includes(name)) {
-            inputs.push({
-              eventType: 'ended',
-              conferenceRecordName: name,
-              spaceName: record.space,
-              startTime: record.startTime,
-              endTime: record.endTime
-            });
-          } else if (!lastPollTime) {
-            // On first poll, report recently ended conferences
-          } else {
-            inputs.push({
-              eventType: 'ended',
-              conferenceRecordName: name,
-              spaceName: record.space,
-              startTime: record.startTime,
-              endTime: record.endTime
-            });
-          }
+          inputs.push({
+            eventType: 'ended',
+            conferenceRecordName: name,
+            spaceName: record.space,
+            startTime: record.startTime,
+            endTime: record.endTime
+          });
         }
       }
 

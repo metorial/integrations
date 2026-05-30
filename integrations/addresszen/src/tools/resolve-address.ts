@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AddressZenClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressSchema = z.object({
   line1: z.string().optional().describe('First line of the address'),

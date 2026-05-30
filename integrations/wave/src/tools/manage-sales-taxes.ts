@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WaveClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let salesTaxOutputSchema = z.object({
   salesTaxId: z.string().describe('Unique identifier of the sales tax'),

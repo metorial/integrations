@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  chatCompletion,
-  textCompletion,
-  createKnowledgeGraph,
-  listKnowledgeGraphs,
-  getKnowledgeGraph,
-  updateKnowledgeGraph,
-  deleteKnowledgeGraph,
-  queryKnowledgeGraph,
-  listFiles,
-  getFile,
-  deleteFile,
-  downloadFile,
   addFileToGraph,
-  removeFileFromGraph,
+  chatCompletion,
+  createKnowledgeGraph,
+  deleteFile,
+  deleteKnowledgeGraph,
+  downloadFile,
+  getAgentDetails,
+  getFile,
+  getKnowledgeGraph,
   invokeAgent,
   listAgents,
-  getAgentDetails,
-  listModels
+  listFiles,
+  listKnowledgeGraphs,
+  listModels,
+  queryKnowledgeGraph,
+  removeFileFromGraph,
+  textCompletion,
+  updateKnowledgeGraph
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

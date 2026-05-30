@@ -1,10 +1,7 @@
 {
   "name": "@metorial/integrations-root",
   "scripts": {
-    "lint": "biome lint .",
-    "lint:fix": "biome lint --write .",
-    "format": "prettier --write .",
-    "integrations:format": "prettier --write \"integrations/**/*\" \"test-integrations/**/*\" --ignore-unknown",
+    "biome:check": "biome check --write .",
     "integrations:cli": "bun packages/cli/src/cli.ts",
     "integrations:validate-pr": "bun scripts/validate-pr-integrations.ts",
     "package-local": "bun scripts/package-local.ts",
@@ -14,8 +11,7 @@
     "integrations:build": "bun run packages:build && bun run integrations:build:inner"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
-    "prettier": "^3.7.4",
+    "@biomejs/biome": "2.4.15",
     "tsup": "^8.5.1",
     "turbo": "^2.5.5",
     "typescript": "5.8.2"

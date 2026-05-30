@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import { Buffer } from 'node:buffer';
+import { createAxios } from 'slates';
 import { anthropicApiError } from './errors';
 
 let FILES_API_BETA = 'files-api-2025-04-14';
@@ -60,7 +60,7 @@ export interface AnthropicFileContent {
 }
 
 export interface AnthropicReportResult {
-  data: Array<Record<string, unknown>>;
+  data: Record<string, unknown>[];
   hasMore: boolean;
   nextPage?: string | null;
 }
@@ -68,7 +68,7 @@ export interface AnthropicReportResult {
 export class AnthropicClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; apiVersion: string }) {
+  constructor(config: { token: string; apiVersion: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.anthropic.com',
       headers: {
@@ -91,18 +91,18 @@ export class AnthropicClient {
     maxTokens: number;
     messages: Array<{
       role: 'user' | 'assistant';
-      content: string | Array<Record<string, unknown>>;
+      content: string | Record<string, unknown>[];
     }>;
     system?: string;
     temperature?: number;
     topK?: number;
     topP?: number;
     stopSequences?: string[];
-    tools?: Array<Record<string, unknown>>;
+    tools?: Record<string, unknown>[];
     toolChoice?: Record<string, unknown>;
     thinking?: Record<string, unknown>;
     metadata?: Record<string, unknown>;
-    mcpServers?: Array<Record<string, unknown>>;
+    mcpServers?: Record<string, unknown>[];
     serviceTier?: string;
     betaHeaders?: string[];
   }): Promise<Record<string, unknown>> {
@@ -136,10 +136,10 @@ export class AnthropicClient {
     model: string;
     messages: Array<{
       role: 'user' | 'assistant';
-      content: string | Array<Record<string, unknown>>;
+      content: string | Record<string, unknown>[];
     }>;
     system?: string;
-    tools?: Array<Record<string, unknown>>;
+    tools?: Record<string, unknown>[];
     thinking?: Record<string, unknown>;
     betaHeaders?: string[];
   }): Promise<{ inputTokens: number }> {
@@ -161,7 +161,7 @@ export class AnthropicClient {
   // ---- Models API ----
 
   async listModels(params?: { limit?: number; afterId?: string; beforeId?: string }): Promise<{
-    models: Array<Record<string, unknown>>;
+    models: Record<string, unknown>[];
     hasMore: boolean;
     firstId?: string;
     lastId?: string;
@@ -209,7 +209,7 @@ export class AnthropicClient {
   }
 
   async listFiles(params?: { limit?: number; afterId?: string; beforeId?: string }): Promise<{
-    files: Array<AnthropicFileResult>;
+    files: AnthropicFileResult[];
     hasMore: boolean;
     firstId?: string;
     lastId?: string;
@@ -224,7 +224,7 @@ export class AnthropicClient {
       headers: { 'anthropic-beta': FILES_API_BETA }
     });
     return {
-      files: (response.data.data as Array<Record<string, unknown>>).map(file =>
+      files: (response.data.data as Record<string, unknown>[]).map(file =>
         this.normalizeFile(file)
       ),
       hasMore: response.data.has_more,
@@ -296,7 +296,7 @@ export class AnthropicClient {
     limit?: number;
     afterId?: string;
     beforeId?: string;
-  }): Promise<{ batches: Array<BatchResult>; hasMore: boolean }> {
+  }): Promise<{ batches: BatchResult[]; hasMore: boolean }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
@@ -304,7 +304,7 @@ export class AnthropicClient {
 
     let response = await this.axios.get('/v1/messages/batches', { params: queryParams });
     return {
-      batches: (response.data.data as Array<Record<string, unknown>>).map(
+      batches: (response.data.data as Record<string, unknown>[]).map(
         (b: Record<string, unknown>) => this.normalizeBatch(b)
       ),
       hasMore: response.data.has_more
@@ -362,7 +362,7 @@ export class AnthropicClient {
   async listMembers(params?: {
     limit?: number;
     afterId?: string;
-  }): Promise<{ members: Array<Record<string, unknown>>; hasMore: boolean }> {
+  }): Promise<{ members: Record<string, unknown>[]; hasMore: boolean }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
@@ -393,7 +393,7 @@ export class AnthropicClient {
   async listInvites(params?: {
     limit?: number;
     afterId?: string;
-  }): Promise<{ invites: Array<Record<string, unknown>>; hasMore: boolean }> {
+  }): Promise<{ invites: Record<string, unknown>[]; hasMore: boolean }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
@@ -428,7 +428,7 @@ export class AnthropicClient {
     limit?: number;
     afterId?: string;
     includeArchived?: boolean;
-  }): Promise<{ workspaces: Array<Record<string, unknown>>; hasMore: boolean }> {
+  }): Promise<{ workspaces: Record<string, unknown>[]; hasMore: boolean }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
@@ -490,7 +490,7 @@ export class AnthropicClient {
       limit?: number;
       afterId?: string;
     }
-  ): Promise<{ members: Array<Record<string, unknown>>; hasMore: boolean }> {
+  ): Promise<{ members: Record<string, unknown>[]; hasMore: boolean }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
@@ -540,7 +540,7 @@ export class AnthropicClient {
     afterId?: string;
     status?: string;
     workspaceId?: string;
-  }): Promise<{ apiKeys: Array<Record<string, unknown>>; hasMore: boolean }> {
+  }): Promise<{ apiKeys: Record<string, unknown>[]; hasMore: boolean }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;

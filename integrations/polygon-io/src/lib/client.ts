@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://api.polygon.io',
       headers: {

@@ -79,35 +79,35 @@ export class Client {
     };
 
     if (options.browser !== undefined) {
-      params['browser'] = String(options.browser);
+      params.browser = String(options.browser);
     }
 
     if (options.timeout !== undefined) {
-      params['timeout'] = String(options.timeout);
+      params.timeout = String(options.timeout);
     }
 
     if (options.returnPageSource !== undefined) {
-      params['return_page_source'] = String(options.returnPageSource);
+      params.return_page_source = String(options.returnPageSource);
     }
 
     if (options.cookies) {
-      params['cookies'] = options.cookies;
+      params.cookies = options.cookies;
     }
 
     if (options.jsSnippet) {
-      params['js_snippet'] = options.jsSnippet;
+      params.js_snippet = options.jsSnippet;
     }
 
     if (options.proxyType) {
-      params['proxy_type'] = options.proxyType;
+      params.proxy_type = options.proxyType;
     }
 
     if (options.proxyCountry) {
-      params['proxy_country'] = options.proxyCountry;
+      params.proxy_country = options.proxyCountry;
     }
 
     if (options.waitForSelector) {
-      params['wait_for_selector'] = options.waitForSelector;
+      params.wait_for_selector = options.waitForSelector;
     }
 
     return params;
@@ -214,7 +214,7 @@ export class Client {
     options: ScrapeOptions & { extractProperties: string }
   ): Promise<Record<string, unknown>> {
     let params = this.buildParams(options);
-    params['extract_properties'] = options.extractProperties;
+    params.extract_properties = options.extractProperties;
     let blockResourceQuery = this.buildBlockResourceParams(options.blockResources);
     let headers = this.buildCustomHeaders(options.customHeaders);
 

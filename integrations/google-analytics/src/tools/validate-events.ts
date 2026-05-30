@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MeasurementProtocolClient } from '../lib/client';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let validateEvents = SlateTool.create(spec, {
   name: 'Validate Events',

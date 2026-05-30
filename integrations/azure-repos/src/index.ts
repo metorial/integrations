@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listRepositories,
-  createRepository,
-  updateRepository,
-  deleteRepository,
-  listBranches,
-  createBranch,
-  deleteBranch,
-  listPullRequests,
-  getPullRequest,
-  createPullRequest,
-  updatePullRequest,
   commentOnPullRequest,
-  listCommits,
+  createBranch,
+  createPullRequest,
+  createRepository,
+  deleteBranch,
+  deleteRepository,
   getFileContent,
-  searchCode
+  getPullRequest,
+  listBranches,
+  listCommits,
+  listPullRequests,
+  listRepositories,
+  searchCode,
+  updatePullRequest,
+  updateRepository
 } from './tools';
 import { codePush, pullRequestEvent, repositoryEvent } from './triggers';
 

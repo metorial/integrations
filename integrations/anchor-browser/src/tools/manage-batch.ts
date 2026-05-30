@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageBatch = SlateTool.create(spec, {
   name: 'Manage Batch Sessions',
@@ -156,7 +156,7 @@ export let manageBatch = SlateTool.create(spec, {
 
     if (input.action === 'cancel') {
       if (!input.batchId) throw new Error('batchId is required for cancel.');
-      let result = await client.cancelBatch(input.batchId);
+      let _result = await client.cancelBatch(input.batchId);
       return {
         output: {
           batchId: input.batchId,

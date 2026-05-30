@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SlackClient } from '../lib/client';
 import { missingRequiredAlternativeError } from '../lib/errors';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userOutputSchema = z.object({
   userId: z.string().describe('Slack user ID'),

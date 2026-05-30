@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { serverUrl: string; email: string; token: string }) {
+  constructor(config: { serverUrl: string; email: string; token: string }) {
     this.axios = createAxios({
       baseURL: config.serverUrl,
       auth: {
@@ -401,7 +401,7 @@ export class Client {
 
   async registerEventQueue(params: {
     eventTypes?: string[];
-    narrow?: Array<string[]>;
+    narrow?: string[][];
     allPublicStreams?: boolean;
   }) {
     let payload: Record<string, any> = {};

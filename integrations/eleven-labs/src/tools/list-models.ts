@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let modelSchema = z.object({
   modelId: z.string().describe('Unique model identifier'),
@@ -53,22 +53,22 @@ export let listModels = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new ElevenLabsClient(ctx.auth.token);
     let result = await client.listModels();
-    let rawModels = (Array.isArray(result) ? result : []) as Array<Record<string, unknown>>;
+    let rawModels = (Array.isArray(result) ? result : []) as Record<string, unknown>[];
 
     let models = rawModels.map(m => {
-      let langs = (m['languages'] || []) as Array<Record<string, unknown>>;
+      let langs = (m.languages || []) as Record<string, unknown>[];
       return {
-        modelId: m['model_id'] as string,
-        name: (m['name'] as string | null) ?? undefined,
-        description: m['description'] as string | undefined,
-        canDoTextToSpeech: (m['can_do_text_to_speech'] as boolean | null) ?? undefined,
-        canDoVoiceConversion: (m['can_do_voice_conversion'] as boolean | null) ?? undefined,
-        canUseStyle: (m['can_use_style'] as boolean | null) ?? undefined,
-        canUseSpeakerBoost: (m['can_use_speaker_boost'] as boolean | null) ?? undefined,
-        tokenCostFactor: m['token_cost_factor'] as number | undefined,
+        modelId: m.model_id as string,
+        name: (m.name as string | null) ?? undefined,
+        description: m.description as string | undefined,
+        canDoTextToSpeech: (m.can_do_text_to_speech as boolean | null) ?? undefined,
+        canDoVoiceConversion: (m.can_do_voice_conversion as boolean | null) ?? undefined,
+        canUseStyle: (m.can_use_style as boolean | null) ?? undefined,
+        canUseSpeakerBoost: (m.can_use_speaker_boost as boolean | null) ?? undefined,
+        tokenCostFactor: m.token_cost_factor as number | undefined,
         languages: langs.map(l => ({
-          languageId: l['language_id'] as string | undefined,
-          name: l['name'] as string | undefined
+          languageId: l.language_id as string | undefined,
+          name: l.name as string | undefined
         }))
       };
     });

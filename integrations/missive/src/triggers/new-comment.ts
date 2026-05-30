@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newComment = SlateTrigger.create(spec, {
   name: 'New Comment',
@@ -59,7 +59,7 @@ export let newComment = SlateTrigger.create(spec, {
       if (hookId) {
         try {
           await client.deleteHook(hookId);
-        } catch (e: any) {
+        } catch (_e: any) {
           // Hook may already be deleted
         }
       }

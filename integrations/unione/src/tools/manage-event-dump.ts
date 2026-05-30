@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 // ── Create Event Dump ──
 
@@ -44,14 +44,14 @@ export let createEventDump = SlateTool.create(spec, {
     });
 
     let filter: Record<string, string> = {};
-    if (ctx.input.filterJobId) filter['job_id'] = ctx.input.filterJobId;
-    if (ctx.input.filterStatus) filter['status'] = ctx.input.filterStatus;
+    if (ctx.input.filterJobId) filter.job_id = ctx.input.filterJobId;
+    if (ctx.input.filterStatus) filter.status = ctx.input.filterStatus;
     if (ctx.input.filterDeliveryStatus)
-      filter['delivery_status'] = ctx.input.filterDeliveryStatus;
-    if (ctx.input.filterEmail) filter['email'] = ctx.input.filterEmail;
-    if (ctx.input.filterSender) filter['sender'] = ctx.input.filterSender;
-    if (ctx.input.filterDomain) filter['domain'] = ctx.input.filterDomain;
-    if (ctx.input.filterCampaignId) filter['campaign_id'] = ctx.input.filterCampaignId;
+      filter.delivery_status = ctx.input.filterDeliveryStatus;
+    if (ctx.input.filterEmail) filter.email = ctx.input.filterEmail;
+    if (ctx.input.filterSender) filter.sender = ctx.input.filterSender;
+    if (ctx.input.filterDomain) filter.domain = ctx.input.filterDomain;
+    if (ctx.input.filterCampaignId) filter.campaign_id = ctx.input.filterCampaignId;
 
     let result = await client.createEventDump({
       startTime: ctx.input.startTime,

@@ -99,13 +99,13 @@ export class TldvClient {
   async listMeetings(params?: ListMeetingsParams): Promise<ListMeetingsResponse> {
     let queryParams: Record<string, string | number | boolean> = {};
 
-    if (params?.query) queryParams['query'] = params.query;
-    if (params?.happenedAfter) queryParams['happenedAfter'] = params.happenedAfter;
-    if (params?.happenedBefore) queryParams['happenedBefore'] = params.happenedBefore;
-    if (params?.participated !== undefined) queryParams['participated'] = params.participated;
-    if (params?.meetingType) queryParams['meetingType'] = params.meetingType;
-    if (params?.page !== undefined) queryParams['page'] = params.page;
-    if (params?.limit !== undefined) queryParams['limit'] = params.limit;
+    if (params?.query) queryParams.query = params.query;
+    if (params?.happenedAfter) queryParams.happenedAfter = params.happenedAfter;
+    if (params?.happenedBefore) queryParams.happenedBefore = params.happenedBefore;
+    if (params?.participated !== undefined) queryParams.participated = params.participated;
+    if (params?.meetingType) queryParams.meetingType = params.meetingType;
+    if (params?.page !== undefined) queryParams.page = params.page;
+    if (params?.limit !== undefined) queryParams.limit = params.limit;
 
     let response = await this.axios.get('/meetings', { params: queryParams });
     return response.data;
@@ -133,7 +133,7 @@ export class TldvClient {
     });
 
     if (response.status === 302 || response.status === 301) {
-      let location = response.headers['location'] as string;
+      let location = response.headers.location as string;
       return { url: location };
     }
 

@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { InstagramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let mediaItemSchema = z.object({
   mediaId: z.string().describe('Media ID'),
@@ -17,7 +17,10 @@ let mediaItemSchema = z.object({
   likeCount: z.number().optional().describe('Number of likes'),
   commentsCount: z.number().optional().describe('Number of comments'),
   isCommentEnabled: z.boolean().optional().describe('Whether comments are enabled'),
-  mediaProductType: z.string().optional().describe('Product surface such as FEED, REELS, or STORY'),
+  mediaProductType: z
+    .string()
+    .optional()
+    .describe('Product surface such as FEED, REELS, or STORY'),
   altText: z.string().optional().describe('Accessibility alt text when available'),
   username: z.string().optional().describe('Username of the media owner'),
   children: z

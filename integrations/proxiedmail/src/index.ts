@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createProxyEmail,
-  listProxyEmails,
-  updateProxyEmail,
   browseReceivedEmails,
-  getReceivedEmail,
+  createProxyEmail,
   createWebhookReceiver,
-  pollWebhookReceiver
+  getReceivedEmail,
+  listProxyEmails,
+  pollWebhookReceiver,
+  updateProxyEmail
 } from './tools';
 import { incomingEmail } from './triggers';
 

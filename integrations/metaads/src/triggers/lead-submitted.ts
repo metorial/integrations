@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { MetaAdsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let leadSubmitted = SlateTrigger.create(spec, {
   name: 'Lead Submitted',
@@ -112,7 +112,7 @@ export let leadSubmitted = SlateTrigger.create(spec, {
         leadData = await client.getLead(ctx.input.leadgenId);
       } catch (e) {
         ctx.warn(
-          'Could not fetch full lead data, returning partial data from webhook: ' + String(e)
+          `Could not fetch full lead data, returning partial data from webhook: ${String(e)}`
         );
       }
 

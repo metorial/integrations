@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SearchApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let locationSchema = z.object({
   name: z.string().optional().describe('Canonical location name'),

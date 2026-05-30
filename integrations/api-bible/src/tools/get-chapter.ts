@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let chapterSummarySchema = z.object({
   chapterId: z.string().describe('Unique chapter identifier (e.g., "GEN.1")'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { AlgoliaClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageRecords = SlateTool.create(spec, {
   name: 'Manage Records',

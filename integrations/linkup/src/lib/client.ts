@@ -60,7 +60,7 @@ export interface CreditBalance {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.linkup.so/v1',
       headers: {

@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private api;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.api = createAxios({
       baseURL: 'https://api.piggy.eu',
       headers: {

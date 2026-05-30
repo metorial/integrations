@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StartonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTransactions = SlateTool.create(spec, {
   name: 'Get Transactions',

@@ -85,13 +85,13 @@ export class CertSpotterClient {
     };
 
     if (query.includeSubdomains) {
-      params['include_subdomains'] = 'true';
+      params.include_subdomains = 'true';
     }
     if (query.matchWildcards) {
-      params['match_wildcards'] = 'true';
+      params.match_wildcards = 'true';
     }
     if (query.after) {
-      params['after'] = query.after;
+      params.after = query.after;
     }
 
     let expandParams = '';

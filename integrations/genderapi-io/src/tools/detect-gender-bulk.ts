@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let nameEntrySchema = z.object({
   name: z.string().describe('First name or full name to analyze'),
@@ -100,7 +100,7 @@ Provide exactly one of **names**, **emails**, or **usernames** as the input sour
       throw new Error('Provide only one of names, emails, or usernames per request.');
     }
 
-    let response;
+    let response: any;
     let sourceType: string;
 
     if (ctx.input.names) {
@@ -132,7 +132,7 @@ Provide exactly one of **names**, **emails**, or **usernames** as the input sour
       });
     }
 
-    let results = response.names.map(n => ({
+    let results = response.names.map((n: any) => ({
       query: n.q,
       extractedName: n.name,
       gender: n.gender,
@@ -142,9 +142,9 @@ Provide exactly one of **names**, **emails**, or **usernames** as the input sour
       referenceId: n.id
     }));
 
-    let maleCount = results.filter(r => r.gender === 'male').length;
-    let femaleCount = results.filter(r => r.gender === 'female').length;
-    let unknownCount = results.filter(r => !r.gender).length;
+    let maleCount = results.filter((r: any) => r.gender === 'male').length;
+    let femaleCount = results.filter((r: any) => r.gender === 'female').length;
+    let unknownCount = results.filter((r: any) => !r.gender).length;
 
     return {
       output: {

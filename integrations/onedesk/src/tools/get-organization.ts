@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getOrganization = SlateTool.create(spec, {
   name: 'Get Organization Info',
@@ -68,21 +68,21 @@ Useful for discovering type identifiers needed when creating items, projects, or
       if (ctx.input.includeItemTypes) {
         try {
           itemTypes = await client.getItemTypes();
-        } catch (e) {
+        } catch (_e) {
           ctx.warn('Could not fetch item types');
         }
       }
       if (ctx.input.includeContainerTypes) {
         try {
           containerTypes = await client.getContainerTypes();
-        } catch (e) {
+        } catch (_e) {
           ctx.warn('Could not fetch container types');
         }
       }
       if (ctx.input.includeUserTypes) {
         try {
           userTypes = await client.getUserTypes();
-        } catch (e) {
+        } catch (_e) {
           ctx.warn('Could not fetch user types');
         }
       }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import * as storage from '../lib/storage';
+import { spec } from '../spec';
 
 export let listBuckets = SlateTool.create(spec, {
   name: 'List Buckets',

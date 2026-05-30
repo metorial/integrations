@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileOutputSchema = z.object({
   fileId: z.string().describe('File identifier'),
@@ -32,10 +32,7 @@ export let uploadFile = SlateTool.create(spec, {
         .enum(['assistants', 'batch', 'fine-tune', 'vision', 'user_data', 'evals'])
         .describe('OpenAI file purpose'),
       content: z.string().optional().describe('Text file content to upload'),
-      contentBase64: z
-        .string()
-        .optional()
-        .describe('Base64-encoded file bytes to upload'),
+      contentBase64: z.string().optional().describe('Base64-encoded file bytes to upload'),
       mimeType: z
         .string()
         .optional()
@@ -94,11 +91,7 @@ export let listFiles = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      files: z
-        .array(
-          fileOutputSchema
-        )
-        .describe('List of files')
+      files: z.array(fileOutputSchema).describe('List of files')
     })
   )
   .handleInvocation(async ctx => {
@@ -162,7 +155,8 @@ export let getFile = SlateTool.create(spec, {
 export let getFileContent = SlateTool.create(spec, {
   name: 'Get File Content',
   key: 'get_file_content',
-  description: 'Retrieve the raw content of an uploaded OpenAI file, such as JSONL batch output, fine-tuning data, or uploaded text.',
+  description:
+    'Retrieve the raw content of an uploaded OpenAI file, such as JSONL batch output, fine-tuning data, or uploaded text.',
   tags: {
     readOnly: true,
     destructive: false

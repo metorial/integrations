@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createDocument,
   addRecipient,
-  sendDocument,
+  createDocument,
   getDocument,
-  listDocuments
+  listDocuments,
+  sendDocument
 } from './tools';
 import {
+  documentCompleted,
   documentCreated,
   documentSigned,
-  documentCompleted,
   inboundWebhook
 } from './triggers';
 

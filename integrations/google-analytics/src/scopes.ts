@@ -4,7 +4,8 @@ export let googleAnalyticsScopes = {
   analyticsReadonly: 'https://www.googleapis.com/auth/analytics.readonly',
   analyticsEdit: 'https://www.googleapis.com/auth/analytics.edit',
   analyticsManageUsers: 'https://www.googleapis.com/auth/analytics.manage.users',
-  analyticsManageUsersReadonly: 'https://www.googleapis.com/auth/analytics.manage.users.readonly',
+  analyticsManageUsersReadonly:
+    'https://www.googleapis.com/auth/analytics.manage.users.readonly',
   openIdEmailProfile: 'openid email profile'
 } as const;
 

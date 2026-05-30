@@ -6,15 +6,18 @@ export let googleCalendarScopes = {
   calendarEvents: 'https://www.googleapis.com/auth/calendar.events',
   calendarEventsReadonly: 'https://www.googleapis.com/auth/calendar.events.readonly',
   calendarEventsOwned: 'https://www.googleapis.com/auth/calendar.events.owned',
-  calendarEventsOwnedReadonly: 'https://www.googleapis.com/auth/calendar.events.owned.readonly',
+  calendarEventsOwnedReadonly:
+    'https://www.googleapis.com/auth/calendar.events.owned.readonly',
   calendarEventsFreebusy: 'https://www.googleapis.com/auth/calendar.events.freebusy',
-  calendarEventsPublicReadonly: 'https://www.googleapis.com/auth/calendar.events.public.readonly',
+  calendarEventsPublicReadonly:
+    'https://www.googleapis.com/auth/calendar.events.public.readonly',
   calendarFreebusy: 'https://www.googleapis.com/auth/calendar.freebusy',
   calendarSettingsReadonly: 'https://www.googleapis.com/auth/calendar.settings.readonly',
   calendarCalendars: 'https://www.googleapis.com/auth/calendar.calendars',
   calendarCalendarsReadonly: 'https://www.googleapis.com/auth/calendar.calendars.readonly',
   calendarCalendarList: 'https://www.googleapis.com/auth/calendar.calendarlist',
-  calendarCalendarListReadonly: 'https://www.googleapis.com/auth/calendar.calendarlist.readonly',
+  calendarCalendarListReadonly:
+    'https://www.googleapis.com/auth/calendar.calendarlist.readonly',
   calendarAcls: 'https://www.googleapis.com/auth/calendar.acls',
   calendarAclsReadonly: 'https://www.googleapis.com/auth/calendar.acls.readonly',
   calendarAppCreated: 'https://www.googleapis.com/auth/calendar.app.created',

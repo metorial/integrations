@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WrikeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listFolders = SlateTool.create(spec, {
   name: 'List Folders & Projects',
@@ -62,7 +62,7 @@ export let listFolders = SlateTool.create(spec, {
       host: ctx.auth.host
     });
 
-    let result;
+    let result: any;
     if (ctx.input.spaceId) {
       result = await client.getFolderTree({ spaceId: ctx.input.spaceId });
     } else {
@@ -74,7 +74,7 @@ export let listFolders = SlateTool.create(spec, {
       });
     }
 
-    let folders = result.data.map(f => ({
+    let folders = result.data.map((f: any) => ({
       folderId: f.id,
       title: f.title,
       scope: f.scope,

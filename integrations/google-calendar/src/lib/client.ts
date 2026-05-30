@@ -177,9 +177,9 @@ export class GoogleCalendarClient {
     options?: { sendUpdates?: string; conferenceDataVersion?: number }
   ): Promise<CalendarEvent> {
     let params: Record<string, string | number> = {};
-    if (options?.sendUpdates) params['sendUpdates'] = options.sendUpdates;
+    if (options?.sendUpdates) params.sendUpdates = options.sendUpdates;
     if (options?.conferenceDataVersion !== undefined)
-      params['conferenceDataVersion'] = options.conferenceDataVersion;
+      params.conferenceDataVersion = options.conferenceDataVersion;
 
     let response = await this.api.post(
       `/calendars/${encodeURIComponent(calendarId)}/events`,
@@ -196,9 +196,9 @@ export class GoogleCalendarClient {
     options?: { sendUpdates?: string; conferenceDataVersion?: number }
   ): Promise<CalendarEvent> {
     let params: Record<string, string | number> = {};
-    if (options?.sendUpdates) params['sendUpdates'] = options.sendUpdates;
+    if (options?.sendUpdates) params.sendUpdates = options.sendUpdates;
     if (options?.conferenceDataVersion !== undefined)
-      params['conferenceDataVersion'] = options.conferenceDataVersion;
+      params.conferenceDataVersion = options.conferenceDataVersion;
 
     let response = await this.api.patch(
       `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
@@ -214,7 +214,7 @@ export class GoogleCalendarClient {
     options?: { sendUpdates?: string }
   ): Promise<void> {
     let params: Record<string, string> = {};
-    if (options?.sendUpdates) params['sendUpdates'] = options.sendUpdates;
+    if (options?.sendUpdates) params.sendUpdates = options.sendUpdates;
 
     await this.api.delete(
       `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
@@ -231,7 +231,7 @@ export class GoogleCalendarClient {
     let params: Record<string, string> = {
       destination: destinationCalendarId
     };
-    if (options?.sendUpdates) params['sendUpdates'] = options.sendUpdates;
+    if (options?.sendUpdates) params.sendUpdates = options.sendUpdates;
 
     let response = await this.api.post(
       `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}/move`,
@@ -247,7 +247,7 @@ export class GoogleCalendarClient {
     options?: { sendUpdates?: string }
   ): Promise<CalendarEvent> {
     let params: Record<string, string> = { text };
-    if (options?.sendUpdates) params['sendUpdates'] = options.sendUpdates;
+    if (options?.sendUpdates) params.sendUpdates = options.sendUpdates;
 
     let response = await this.api.post(
       `/calendars/${encodeURIComponent(calendarId)}/events/quickAdd`,

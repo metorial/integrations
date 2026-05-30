@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { createCognitoClient, formatAttributes } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let userChanges = SlateTrigger.create(spec, {
   name: 'User Changes',
@@ -131,8 +131,8 @@ export let userChanges = SlateTrigger.create(spec, {
         output: {
           username: ctx.input.username,
           userPoolId: ctx.input.userPoolId,
-          email: attrs['email'] || undefined,
-          phoneNumber: attrs['phone_number'] || undefined,
+          email: attrs.email || undefined,
+          phoneNumber: attrs.phone_number || undefined,
           enabled: ctx.input.enabled,
           userStatus: ctx.input.userStatus,
           attributes: ctx.input.attributes as Record<string, string>,

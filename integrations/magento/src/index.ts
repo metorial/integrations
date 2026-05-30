@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageProduct,
-  searchProducts,
-  manageOrder,
-  searchOrders,
   fulfillOrder,
-  manageCustomer,
-  searchCustomers,
-  manageInventory,
+  getStoreInfo,
   manageCart,
   manageCategory,
   manageCms,
-  getStoreInfo
+  manageCustomer,
+  manageInventory,
+  manageOrder,
+  manageProduct,
+  searchCustomers,
+  searchOrders,
+  searchProducts
 } from './tools';
-import { newOrder, productChange, customerChange, inboundWebhook } from './triggers';
+import { customerChange, inboundWebhook, newOrder, productChange } from './triggers';
 
 export let provider = Slate.create({
   spec,

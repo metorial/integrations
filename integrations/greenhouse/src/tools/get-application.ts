@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { mapApplication } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getApplicationTool = SlateTool.create(spec, {
   name: 'Get Application',
@@ -41,7 +41,7 @@ export let getApplicationTool = SlateTool.create(spec, {
       token: ctx.auth.token,
       onBehalfOf: ctx.config.onBehalfOf
     });
-    let raw = await client.getApplication(parseInt(ctx.input.applicationId));
+    let raw = await client.getApplication(Number.parseInt(ctx.input.applicationId, 10));
     let application = mapApplication(raw);
 
     return {

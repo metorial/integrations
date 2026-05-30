@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let removeReferral = SlateTool.create(spec, {
   name: 'Remove Referral',
@@ -58,7 +58,7 @@ export let removeReferral = SlateTool.create(spec, {
 
     let result = await client.removeReferrals([{ query }]);
 
-    let results = result as unknown as Array<Record<string, unknown>>;
+    let results = result as unknown as Record<string, unknown>[];
     let first = Array.isArray(results) ? results[0] : result;
     let resultInfo = (first?.resultInfo || {}) as Record<string, unknown>;
 

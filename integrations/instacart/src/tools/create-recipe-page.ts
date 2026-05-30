@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IdpClient } from '../lib/idp-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let lineItemMeasurementSchema = z.object({
   quantity: z.number().optional().describe('The quantity for this measurement'),

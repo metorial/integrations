@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let brandShareSchema = z.object({
   brandName: z.string().describe('Name of the brand'),
@@ -79,7 +79,7 @@ export let shareOfVoiceTool = SlateTool.create(spec, {
     let searchVolume30Day: number | null = null;
     let medianPpcBid: number | null = null;
     let productCount: number | null = null;
-    let brands: Array<any> = [];
+    let brands: any[] = [];
 
     for (let item of items) {
       let attrs = item.attributes || {};

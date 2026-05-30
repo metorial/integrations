@@ -1,10 +1,10 @@
 import { createAxios } from 'slates';
 import type {
-  LineItem,
-  OrderPlacedParams,
   CheckoutStartedParams,
+  CustomEventParams,
+  LineItem,
   OrderFulfilledParams,
-  CustomEventParams
+  OrderPlacedParams
 } from './client';
 
 export class SendlaneEcommerceClient {

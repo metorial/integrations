@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { MiroClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let boardItemChanges = SlateTrigger.create(spec, {
   name: 'Board Item Changes',
@@ -72,7 +72,7 @@ export let boardItemChanges = SlateTrigger.create(spec, {
 
       // Fetch all items with pagination
       let allItems: any[] = [];
-      let cursor: string | undefined = undefined;
+      let cursor: string | undefined;
 
       do {
         let result = await client.getItems(boardId!, { limit: 50, cursor });

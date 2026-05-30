@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { GristClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let rowChanges = SlateTrigger.create(spec, {
   name: 'Row Changes',
@@ -41,7 +41,7 @@ export let rowChanges = SlateTrigger.create(spec, {
   )
   .webhook({
     autoRegisterWebhook: async ctx => {
-      let client = new GristClient({
+      let _client = new GristClient({
         token: ctx.auth.token,
         serverUrl: ctx.auth.serverUrl
       });

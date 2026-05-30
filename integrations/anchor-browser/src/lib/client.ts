@@ -71,7 +71,7 @@ export class Client {
 
   async getSessionDownloads(sessionId: string) {
     let response = await this.axios.get(`/v1/sessions/${sessionId}/downloads`);
-    return response.data?.data as { count: number; items: Array<Record<string, unknown>> };
+    return response.data?.data as { count: number; items: Record<string, unknown>[] };
   }
 
   // =====================
@@ -402,7 +402,7 @@ export class Client {
       description?: string;
       isRecommended?: boolean;
       methods?: string[];
-      customFields?: Array<Record<string, unknown>>;
+      customFields?: Record<string, unknown>[];
     }
   ) {
     let response = await this.axios.post(`/v1/applications/${applicationId}/auth-flows`, {
@@ -446,7 +446,7 @@ export class Client {
     params: {
       name?: string;
       metadata?: Record<string, unknown>;
-      credentials?: Array<Record<string, unknown>>;
+      credentials?: Record<string, unknown>[];
     }
   ) {
     let response = await this.axios.patch(`/v1/identities/${identityId}`, params);
@@ -532,7 +532,7 @@ export interface SessionCreateParams {
     extra_stealth?: { active?: boolean };
     disable_web_security?: { active?: boolean };
   };
-  integrations?: Array<Record<string, unknown>>;
+  integrations?: Record<string, unknown>[];
   identities?: Array<{ id: string }>;
 }
 
@@ -745,7 +745,7 @@ export interface ApplicationResponse {
 export interface IdentityCreateParams {
   name?: string;
   source: string;
-  credentials?: Array<Record<string, unknown>>;
+  credentials?: Record<string, unknown>[];
   metadata?: Record<string, unknown>;
   applicationName?: string;
   applicationDescription?: string;

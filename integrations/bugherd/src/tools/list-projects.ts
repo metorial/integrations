@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugherdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let projectSchema = z.object({
   projectId: z.number().describe('Project ID'),
@@ -38,7 +38,7 @@ export let listProjects = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new BugherdClient(ctx.auth.token);
 
-    let rawProjects;
+    let rawProjects: any;
     if (ctx.input.userId) {
       rawProjects = await client.getUserProjects(ctx.input.userId, {
         isActive: ctx.input.activeOnly ? true : undefined
@@ -49,7 +49,7 @@ export let listProjects = SlateTool.create(spec, {
       rawProjects = await client.listProjects();
     }
 
-    let projects = rawProjects.map(p => ({
+    let projects = rawProjects.map((p: any) => ({
       projectId: p.id,
       name: p.name,
       devurl: p.devurl,

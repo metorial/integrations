@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createApplication = SlateTool.create(spec, {
   name: 'Create Application',
@@ -20,10 +20,7 @@ export let createApplication = SlateTool.create(spec, {
         .describe(
           'Custom unique identifier (e.g., your internal customer ID). Can be used interchangeably with the Svix ID.'
         ),
-      rateLimit: z
-        .number()
-        .optional()
-        .describe('Deprecated. Use throttleRate instead.'),
+      rateLimit: z.number().optional().describe('Deprecated. Use throttleRate instead.'),
       throttleRate: z
         .number()
         .optional()

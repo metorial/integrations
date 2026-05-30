@@ -13,7 +13,7 @@ export class KaleidoClient {
   private api: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; region: string }) {
-    let baseURL = regionBaseUrls[config.region] || regionBaseUrls['us'];
+    let baseURL = regionBaseUrls[config.region] || regionBaseUrls.us;
 
     this.api = createAxios({
       baseURL,

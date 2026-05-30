@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GongClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transcriptEntrySchema = z.object({
   speakerId: z.string().optional().describe('Identifier of the speaker'),

@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { SHOPIFY_DEFAULT_API_VERSION } from './config';
 import { shopifyApiError, shopifyServiceError } from './lib/errors';
@@ -149,7 +149,7 @@ export let auth = SlateAuth.create()
         baseURL: `https://${shopDomain}.myshopify.com`
       });
 
-      let response;
+      let response: any;
       try {
         response = await http.post('/admin/oauth/access_token', {
           client_id: ctx.clientId,
@@ -161,7 +161,9 @@ export let auth = SlateAuth.create()
       }
 
       if (!response.data.access_token) {
-        throw shopifyServiceError('Shopify OAuth token response did not include an access token.');
+        throw shopifyServiceError(
+          'Shopify OAuth token response did not include an access token.'
+        );
       }
 
       return {
@@ -189,7 +191,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response;
+      let response: any;
       try {
         response = await http.get(`/admin/api/${SHOPIFY_DEFAULT_API_VERSION}/shop.json`);
       } catch (error) {
@@ -229,7 +231,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: {
+    getProfile: async (_ctx: {
       output: { token: string; shopDomain?: string };
       input: { token: string };
     }) => {

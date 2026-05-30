@@ -14,7 +14,13 @@ export let listPokemon = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      limit: z.number().int().min(1).max(200).default(20).describe('How many names to return.'),
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(200)
+        .default(20)
+        .describe('How many names to return.'),
       offset: z.number().int().min(0).default(0).describe('Offset into the list.')
     })
   )

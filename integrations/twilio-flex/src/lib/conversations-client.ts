@@ -4,7 +4,7 @@ import { encodeFormBody } from './client';
 export class ConversationsClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://conversations.twilio.com/v1',
       headers: {

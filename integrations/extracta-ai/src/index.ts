@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createExtractionTool,
-  viewExtractionTool,
-  updateExtractionTool,
-  deleteExtractionTool,
-  uploadExtractionFilesTool,
-  getExtractionResultsTool,
   createClassificationTool,
-  viewClassificationTool,
-  updateClassificationTool,
+  createExtractionTool,
   deleteClassificationTool,
-  uploadClassificationFilesTool,
+  deleteExtractionTool,
   getClassificationResultsTool,
-  getCreditsTool
+  getCreditsTool,
+  getExtractionResultsTool,
+  updateClassificationTool,
+  updateExtractionTool,
+  uploadClassificationFilesTool,
+  uploadExtractionFilesTool,
+  viewClassificationTool,
+  viewExtractionTool
 } from './tools';
 import { extractionEventsTrigger } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ScrapeDoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let amazonSearch = SlateTool.create(spec, {
   name: 'Amazon Search',
@@ -62,15 +62,15 @@ export let amazonSearch = SlateTool.create(spec, {
       super: input.super
     });
 
-    let products = results['products'] as unknown[] | undefined;
-    let totalResults = results['totalResults'] as string | undefined;
+    let products = results.products as unknown[] | undefined;
+    let totalResults = results.totalResults as string | undefined;
 
     return {
       output: {
-        keyword: (results['keyword'] as string) || input.keyword,
-        page: (results['page'] as number) || input.page || 1,
+        keyword: (results.keyword as string) || input.keyword,
+        page: (results.page as number) || input.page || 1,
         totalResults: totalResults,
-        products: (products as Array<unknown>) || [],
+        products: (products as unknown[]) || [],
         rawResponse: results
       },
       message: `Amazon search for **"${input.keyword}"** on **${input.geocode}** returned **${products?.length || 0}** products${totalResults ? ` (${totalResults} total)` : ''}.`

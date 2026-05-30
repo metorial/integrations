@@ -54,16 +54,12 @@ export class ReferralRockClient {
     return response.data;
   }
 
-  async updateMembers(
-    members: Array<Record<string, unknown>>
-  ): Promise<Record<string, unknown>> {
+  async updateMembers(members: Record<string, unknown>[]): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/members/update', members);
     return response.data;
   }
 
-  async removeMembers(
-    members: Array<Record<string, unknown>>
-  ): Promise<Record<string, unknown>> {
+  async removeMembers(members: Record<string, unknown>[]): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/members/remove', members);
     return response.data;
   }
@@ -107,14 +103,14 @@ export class ReferralRockClient {
   }
 
   async updateReferrals(
-    referrals: Array<Record<string, unknown>>
+    referrals: Record<string, unknown>[]
   ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/referral/update', referrals);
     return response.data;
   }
 
   async removeReferrals(
-    referrals: Array<Record<string, unknown>>
+    referrals: Record<string, unknown>[]
   ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/referral/remove', referrals);
     return response.data;
@@ -146,16 +142,12 @@ export class ReferralRockClient {
     return response.data;
   }
 
-  async createRewards(
-    rewards: Array<Record<string, unknown>>
-  ): Promise<Record<string, unknown>> {
+  async createRewards(rewards: Record<string, unknown>[]): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/rewards', rewards);
     return response.data;
   }
 
-  async updateRewards(
-    rewards: Array<Record<string, unknown>>
-  ): Promise<Record<string, unknown>> {
+  async updateRewards(rewards: Record<string, unknown>[]): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/rewards/update', rewards);
     return response.data;
   }

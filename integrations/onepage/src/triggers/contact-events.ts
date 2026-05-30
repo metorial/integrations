@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { contactSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let contactEvents = SlateTrigger.create(spec, {
   name: 'Contact Events',

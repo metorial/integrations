@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listConversations,
-  getConversation,
+  batchConversationActions,
   createConversation,
-  updateConversation,
-  removeConversation,
-  sendMessage,
-  getMessages,
-  listPeople,
-  getPerson,
   createPerson,
-  updatePerson,
-  removePerson,
-  manageHelpdeskArticle,
+  getConversation,
+  getMessages,
+  getPerson,
+  getWebsiteAvailability,
+  listConversations,
   listHelpdeskArticles,
   listOperators,
-  getWebsiteAvailability,
-  batchConversationActions,
-  manageWebsiteSettings
+  listPeople,
+  manageHelpdeskArticle,
+  manageWebsiteSettings,
+  removeConversation,
+  removePerson,
+  sendMessage,
+  updateConversation,
+  updatePerson
 } from './tools';
 import {
-  newConversation,
   conversationStateChanged,
+  inboundWebhook,
+  newConversation,
   newMessage,
-  peopleProfileChanged,
-  inboundWebhook
+  peopleProfileChanged
 } from './triggers';
 
 export let provider = Slate.create({

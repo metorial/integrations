@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCryptocurrencies,
-  getCryptocurrencyQuotes,
-  getCryptocurrencyInfo,
   convertPrice,
-  getGlobalMetrics,
-  searchCryptocurrencies,
-  getMarketPairs,
-  listExchanges,
+  getCryptocurrencyInfo,
+  getCryptocurrencyQuotes,
   getExchangeInfo,
-  listFiatCurrencies
+  getGlobalMetrics,
+  getMarketPairs,
+  listCryptocurrencies,
+  listExchanges,
+  listFiatCurrencies,
+  searchCryptocurrencies
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProfiles,
-  manageProfile,
-  manageFilters,
-  manageServices,
-  manageCustomRules,
-  manageRuleFolders,
-  manageProfileOptions,
-  manageDefaultRule,
-  listDevices,
-  manageDevice,
-  manageIpAccess,
-  listProxies,
-  manageOrganization,
+  getAccountInfo,
   getAnalyticsConfig,
-  getAccountInfo
+  listDevices,
+  listProfiles,
+  listProxies,
+  manageCustomRules,
+  manageDefaultRule,
+  manageDevice,
+  manageFilters,
+  manageIpAccess,
+  manageOrganization,
+  manageProfile,
+  manageProfileOptions,
+  manageRuleFolders,
+  manageServices
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

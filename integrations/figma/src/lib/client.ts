@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class FigmaClient {
   private api: ReturnType<typeof createAxios>;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.api = createAxios({
       baseURL: 'https://api.figma.com',
       headers: {

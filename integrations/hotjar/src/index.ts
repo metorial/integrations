@@ -1,7 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { listSurveys, getSurveyResponses, userLookup } from './tools';
-import { surveyResponseTrigger, recordingTrigger } from './triggers';
+import { getSurveyResponses, listSurveys, userLookup } from './tools';
+import { recordingTrigger, surveyResponseTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

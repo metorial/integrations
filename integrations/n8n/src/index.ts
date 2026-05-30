@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listWorkflows,
-  getWorkflow,
-  createWorkflow,
-  updateWorkflow,
-  deleteWorkflow,
   activateWorkflow,
-  manageWorkflowTags,
-  listExecutions,
-  getExecution,
-  retryExecution,
-  stopExecution,
-  deleteExecution,
-  listCredentials,
   createCredential,
+  createWorkflow,
   deleteCredential,
+  deleteExecution,
+  deleteWorkflow,
+  generateAudit,
   getCredentialSchema,
+  getExecution,
+  getWorkflow,
+  listCredentials,
+  listExecutions,
   listUsers,
+  listWorkflows,
+  manageProjects,
   manageTags,
   manageVariables,
-  manageProjects,
-  transferResource,
+  manageWorkflowTags,
+  retryExecution,
   sourceControlPull,
-  generateAudit
+  stopExecution,
+  transferResource,
+  updateWorkflow
 } from './tools';
-import { workflowChanges, executionCompleted, inboundWebhook } from './triggers';
+import { executionCompleted, inboundWebhook, workflowChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

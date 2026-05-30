@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ContentApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDocument = SlateTool.create(spec, {
   name: 'Get Document',
@@ -68,7 +68,7 @@ export let getDocument = SlateTool.create(spec, {
       accessToken: ctx.auth.token
     });
 
-    let doc;
+    let doc: any;
     if (ctx.input.documentId) {
       doc = await client.getDocumentById(ctx.input.documentId, {
         ref: ctx.input.ref,
@@ -102,7 +102,7 @@ export let getDocument = SlateTool.create(spec, {
       url: doc.url,
       href: doc.href,
       slugs: doc.slugs,
-      alternateLanguages: doc.alternate_languages.map(al => ({
+      alternateLanguages: doc.alternate_languages.map((al: any) => ({
         documentId: al.id,
         uid: al.uid,
         type: al.type,

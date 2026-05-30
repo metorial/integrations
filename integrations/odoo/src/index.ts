@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchRecords,
-  readRecords,
   createRecord,
-  updateRecords,
   deleteRecords,
+  executeMethod,
   listModelFields,
   listModels,
-  executeMethod
+  readRecords,
+  searchRecords,
+  updateRecords
 } from './tools';
-import { recordChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, recordChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

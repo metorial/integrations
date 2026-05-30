@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { TelemetryClient } from '../lib/telemetry-client';
+import { spec } from '../spec';
 
 let alertSchema = z.object({
   alertId: z.string().describe('Alert ID'),

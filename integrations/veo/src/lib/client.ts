@@ -20,7 +20,7 @@ export interface PaginatedResponse<T> {
 export class Client {
   private http;
 
-  constructor(private opts: { token: string; environment: string }) {
+  constructor(opts: { token: string; environment: string }) {
     this.http = createAxios({
       baseURL: getBaseUrl(opts.environment),
       headers: {

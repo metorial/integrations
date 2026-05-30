@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TelegramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let inlineResultSchema = z.object({
   type: z.string().describe('Type of result (e.g. "article", "photo", "video", "document")'),
@@ -31,8 +31,8 @@ let inlineQueryButtonSchema = z
   })
   .refine(
     button =>
-      [button.startParameter, button.webAppUrl].filter(value => value !== undefined)
-        .length === 1,
+      [button.startParameter, button.webAppUrl].filter(value => value !== undefined).length ===
+      1,
     {
       message: 'Provide exactly one of startParameter or webAppUrl'
     }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { AlchemyClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let simulateTransaction = SlateTool.create(spec, {
   name: 'Simulate Transaction',

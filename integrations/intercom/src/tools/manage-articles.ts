@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
+import { intercomServiceError } from '../lib/errors';
 import { stringOrUndefined, timestampOrUndefined } from '../lib/output';
 import { spec } from '../spec';
-import { z } from 'zod';
-import { intercomServiceError } from '../lib/errors';
 
 export let manageArticles = SlateTool.create(spec, {
   name: 'Manage Articles',
@@ -79,8 +79,7 @@ Supports multilingual content through translated content fields.`,
     }
 
     if (action === 'update') {
-      if (!ctx.input.articleId)
-        throw intercomServiceError('articleId is required for update');
+      if (!ctx.input.articleId) throw intercomServiceError('articleId is required for update');
       let result = await client.updateArticle(ctx.input.articleId, {
         title: ctx.input.title,
         authorId: ctx.input.authorId,
@@ -98,8 +97,7 @@ Supports multilingual content through translated content fields.`,
     }
 
     if (action === 'delete') {
-      if (!ctx.input.articleId)
-        throw intercomServiceError('articleId is required for delete');
+      if (!ctx.input.articleId) throw intercomServiceError('articleId is required for delete');
       await client.deleteArticle(ctx.input.articleId);
       return {
         output: { articleId: ctx.input.articleId, deleted: true },

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let envelopeSummarySchema = z.object({
   envelopeId: z.string().describe('Unique identifier of the envelope'),
@@ -63,9 +63,10 @@ export let findEnvelopesTool = SlateTool.create(spec, {
       orderByDirection: ctx.input.orderByDirection
     });
 
-    let envelopes = (result.data ?? result.envelopes ?? result ?? []) as Array<
-      Record<string, unknown>
-    >;
+    let envelopes = (result.data ?? result.envelopes ?? result ?? []) as Record<
+      string,
+      unknown
+    >[];
     let items = Array.isArray(envelopes) ? envelopes : [];
 
     return {

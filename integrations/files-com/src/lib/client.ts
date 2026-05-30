@@ -35,7 +35,7 @@ export class FilesComClient {
     let response = await this.axios.get(`/files/${encodedPath}`, {
       params: { action: 'redirect' }
     });
-    return { downloadUri: response.data.download_uri ?? response.headers?.['location'] ?? '' };
+    return { downloadUri: response.data.download_uri ?? response.headers?.location ?? '' };
   }
 
   async deleteFile(path: string, params?: { recursive?: boolean }): Promise<void> {

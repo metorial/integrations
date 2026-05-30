@@ -12,7 +12,7 @@ export interface ListOptions {
 export class Client {
   private http;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     this.http = createAxios({
       baseURL: 'https://api.servicem8.com/api_1.0',
       headers: {
@@ -28,7 +28,7 @@ export class Client {
   async list(resource: string, options?: ListOptions): Promise<any[]> {
     let params: Record<string, string> = {};
     if (options?.filter) {
-      params['$filter'] = options.filter;
+      params.$filter = options.filter;
     }
     if (options?.pageStart) {
       params['%next_page_start%'] = options.pageStart;

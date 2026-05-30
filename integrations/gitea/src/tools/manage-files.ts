@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GiteaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFileContent = SlateTool.create(spec, {
   name: 'Get File Content',
@@ -106,7 +106,7 @@ export let createOrUpdateFile = SlateTool.create(spec, {
         ? { name: ctx.input.authorName, email: ctx.input.authorEmail }
         : undefined;
 
-    let result;
+    let result: any;
     if (ctx.input.fileSha) {
       result = await client.updateFile(ctx.input.owner, ctx.input.repo, ctx.input.path, {
         content: ctx.input.content,

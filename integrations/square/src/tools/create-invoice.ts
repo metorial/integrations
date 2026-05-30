@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, generateIdempotencyKey } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, generateIdempotencyKey } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let createInvoice = SlateTool.create(spec, {
   name: 'Create Invoice',

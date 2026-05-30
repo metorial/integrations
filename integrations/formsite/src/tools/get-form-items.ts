@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FormsiteClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let itemSchema: z.ZodType<any> = z.object({
   itemId: z.string().describe('Unique item/field identifier used to match with result values'),

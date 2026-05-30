@@ -303,10 +303,7 @@ let slackConversationHistoryScopes = allOf(
   'mpim:history'
 );
 let slackPublicPrivateConversationReadScopes = allOf('channels:read', 'groups:read');
-let slackPublicPrivateConversationHistoryScopes = allOf(
-  'channels:history',
-  'groups:history'
-);
+let slackPublicPrivateConversationHistoryScopes = allOf('channels:history', 'groups:history');
 let slackUserInfoScopes = allOf('users:read', 'users:read.email');
 
 export let slackActionScopes = {

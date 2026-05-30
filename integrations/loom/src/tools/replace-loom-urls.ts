@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { findLoomUrls, fetchOEmbed } from '../lib/client';
+import { fetchOEmbed, findLoomUrls } from '../lib/client';
+import { spec } from '../spec';
 
 export let replaceLoomUrls = SlateTool.create(spec, {
   name: 'Replace Loom URLs',
@@ -67,7 +67,7 @@ export let replaceLoomUrls = SlateTool.create(spec, {
           videoTitle: metadata.title
         });
         urlsReplaced++;
-      } catch (err) {
+      } catch (_err) {
         ctx.warn(`Failed to fetch oEmbed for URL: ${url}`);
       }
     }

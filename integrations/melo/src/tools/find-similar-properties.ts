@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
-import { propertyOutputSchema, mapPropertyOutput } from './search-properties';
+import { mapPropertyOutput, propertyOutputSchema } from './search-properties';
 
 export let findSimilarProperties = SlateTool.create(spec, {
   name: 'Find Similar Properties',

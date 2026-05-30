@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let spaceSchema = z.object({
   spaceId: z.string().describe('Full space ID (e.g. "username/space-name")'),

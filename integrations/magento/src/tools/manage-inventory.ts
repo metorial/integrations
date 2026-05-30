@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MagentoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let sourceItemSchema = z.object({
   sku: z.string().describe('Product SKU'),

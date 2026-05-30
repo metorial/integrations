@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SnsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let subscribeToTopic = SlateTool.create(spec, {
   name: 'Subscribe to Topic',
@@ -77,14 +77,14 @@ export let subscribeToTopic = SlateTool.create(spec, {
     });
 
     let attributes: Record<string, string> = {};
-    if (ctx.input.filterPolicy) attributes['FilterPolicy'] = ctx.input.filterPolicy;
+    if (ctx.input.filterPolicy) attributes.FilterPolicy = ctx.input.filterPolicy;
     if (ctx.input.filterPolicyScope)
-      attributes['FilterPolicyScope'] = ctx.input.filterPolicyScope;
+      attributes.FilterPolicyScope = ctx.input.filterPolicyScope;
     if (ctx.input.rawMessageDelivery !== undefined)
-      attributes['RawMessageDelivery'] = String(ctx.input.rawMessageDelivery);
-    if (ctx.input.redrivePolicy) attributes['RedrivePolicy'] = ctx.input.redrivePolicy;
+      attributes.RawMessageDelivery = String(ctx.input.rawMessageDelivery);
+    if (ctx.input.redrivePolicy) attributes.RedrivePolicy = ctx.input.redrivePolicy;
     if (ctx.input.subscriptionRoleArn)
-      attributes['SubscriptionRoleArn'] = ctx.input.subscriptionRoleArn;
+      attributes.SubscriptionRoleArn = ctx.input.subscriptionRoleArn;
 
     let result = await client.subscribe({
       topicArn: ctx.input.topicArn,

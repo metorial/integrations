@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let verificationResultSchema = z.object({
   email: z.string().describe('The email address that was verified'),

@@ -1,32 +1,32 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listClients,
-  getClient,
-  createClient,
-  updateClient,
-  deleteClient,
-  listProposals,
-  getProposal,
-  createProposal,
-  updateProposal,
-  deleteProposal,
-  sendProposal,
   archiveProposal,
-  listSections,
-  getSection,
-  createSection,
-  updateSection,
-  deleteSection,
-  listLineItems,
+  createClient,
   createLineItem,
-  updateLineItem,
+  createProposal,
+  createSection,
+  deleteClient,
   deleteLineItem,
-  listTemplates,
+  deleteProposal,
+  deleteSection,
+  getAccount,
+  getClient,
+  getProposal,
+  getSection,
   listActivities,
-  getAccount
+  listClients,
+  listLineItems,
+  listProposals,
+  listSections,
+  listTemplates,
+  sendProposal,
+  updateClient,
+  updateLineItem,
+  updateProposal,
+  updateSection
 } from './tools';
-import { proposalEvents, clientEvents } from './triggers';
+import { clientEvents, proposalEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

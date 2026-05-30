@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { VonageRestClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageNumbers = SlateTool.create(spec, {
   name: 'Manage Numbers',

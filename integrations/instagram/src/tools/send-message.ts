@@ -1,10 +1,10 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { InstagramClient } from '../lib/client';
 import { instagramServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let countProvidedMessageParts = (values: Array<unknown>) =>
+let countProvidedMessageParts = (values: unknown[]) =>
   values.filter(value => typeof value === 'string' && value.length > 0).length;
 
 export let sendMessageTool = SlateTool.create(spec, {
@@ -38,7 +38,9 @@ export let sendMessageTool = SlateTool.create(spec, {
       mediaId: z
         .string()
         .optional()
-        .describe("ID of one of the authenticated user's Instagram posts to send as a media share"),
+        .describe(
+          "ID of one of the authenticated user's Instagram posts to send as a media share"
+        ),
       commentId: z
         .string()
         .optional()

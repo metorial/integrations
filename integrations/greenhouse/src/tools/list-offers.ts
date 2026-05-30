@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { mapOffer } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listOffersTool = SlateTool.create(spec, {
   name: 'List Offers',
@@ -72,7 +72,9 @@ export let listOffersTool = SlateTool.create(spec, {
 
     let results: any[];
     if (ctx.input.applicationId) {
-      results = await client.listOffersForApplication(parseInt(ctx.input.applicationId));
+      results = await client.listOffersForApplication(
+        Number.parseInt(ctx.input.applicationId, 10)
+      );
     } else {
       results = await client.listOffers({
         page: ctx.input.page,

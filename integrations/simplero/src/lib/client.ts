@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class SimpleroClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string; userAgent: string }) {
+  constructor(params: { token: string; userAgent: string }) {
     this.axios = createAxios({
       baseURL: 'https://simplero.com/api/v1',
       auth: {
@@ -27,7 +27,7 @@ export class SimpleroClient {
     updatedFrom?: string;
     updatedTo?: string;
     tagId?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let query: Record<string, string> = {};
     if (params?.page !== undefined) query.page = String(params.page);
     if (params?.perPage !== undefined) query.per_page = String(params.perPage);
@@ -184,7 +184,7 @@ export class SimpleroClient {
   async listTags(params?: {
     page?: number;
     perPage?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let query: Record<string, string> = {};
     if (params?.page !== undefined) query.page = String(params.page);
     if (params?.perPage !== undefined) query.per_page = String(params.perPage);
@@ -223,7 +223,7 @@ export class SimpleroClient {
 
   // ---- Lists ----
 
-  async getLists(): Promise<Array<Record<string, unknown>>> {
+  async getLists(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/lists.json');
     return response.data;
   }
@@ -289,10 +289,7 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async findSubscription(
-    listId: string,
-    email: string
-  ): Promise<Array<Record<string, unknown>>> {
+  async findSubscription(listId: string, email: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.post(`/lists/${listId}/subscriptions/find.json`, {
       email
     });
@@ -306,7 +303,7 @@ export class SimpleroClient {
     status?: string;
     from?: string;
     to?: string;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let query: Record<string, string> = {};
     if (params?.page !== undefined) query.page = String(params.page);
     if (params?.perPage !== undefined) query.per_page = String(params.perPage);
@@ -323,7 +320,7 @@ export class SimpleroClient {
   async listProducts(params?: {
     page?: number;
     perPage?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let query: Record<string, string> = {};
     if (params?.page !== undefined) query.page = String(params.page);
     if (params?.perPage !== undefined) query.per_page = String(params.perPage);
@@ -380,7 +377,7 @@ export class SimpleroClient {
     createdEndAt?: string;
     firstSuccessfulChargeStartAt?: string;
     firstSuccessfulChargeEndAt?: string;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let query: Record<string, string> = {};
     if (params?.page !== undefined) query.page = String(params.page);
     if (params?.perPage !== undefined) query.per_page = String(params.perPage);
@@ -408,7 +405,7 @@ export class SimpleroClient {
     invoiceNumberTo?: string;
     dir?: string;
     page?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let query: Record<string, string> = {};
     if (params?.createdAtFrom) query.created_at_from = params.createdAtFrom;
     if (params?.createdAtTo) query.created_at_to = params.createdAtTo;
@@ -424,7 +421,7 @@ export class SimpleroClient {
 
   // ---- Administrators ----
 
-  async listAdministrators(): Promise<Array<Record<string, unknown>>> {
+  async listAdministrators(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/administratorships.json');
     return response.data;
   }
@@ -467,7 +464,7 @@ export class SimpleroClient {
     await this.axios.delete(`/administratorships/${adminId}.json`);
   }
 
-  async listAdminRoles(): Promise<Array<Record<string, unknown>>> {
+  async listAdminRoles(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/admin_roles.json');
     return response.data;
   }
@@ -479,7 +476,7 @@ export class SimpleroClient {
     perPage?: number;
     from?: string;
     to?: string;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let query: Record<string, string> = {};
     if (params?.page !== undefined) query.page = String(params.page);
     if (params?.perPage !== undefined) query.per_page = String(params.perPage);
@@ -537,7 +534,7 @@ export class SimpleroClient {
 
   // ---- Automations ----
 
-  async listAutomations(params?: { page?: number }): Promise<Array<Record<string, unknown>>> {
+  async listAutomations(params?: { page?: number }): Promise<Record<string, unknown>[]> {
     let query: Record<string, string> = {};
     if (params?.page !== undefined) query.page = String(params.page);
     let response = await this.axios.get('/automations.json', { params: query });
@@ -554,14 +551,14 @@ export class SimpleroClient {
 
   // ---- Segments ----
 
-  async listSegments(): Promise<Array<Record<string, unknown>>> {
+  async listSegments(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/segments.json');
     return response.data;
   }
 
   // ---- Account ----
 
-  async getAccountFields(): Promise<Array<Record<string, unknown>>> {
+  async getAccountFields(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/account/fields.json');
     return response.data;
   }

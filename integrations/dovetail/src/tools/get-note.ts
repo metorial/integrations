@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getNote = SlateTool.create(spec, {
   name: 'Get Note',
@@ -47,7 +47,7 @@ export let getNote = SlateTool.create(spec, {
 
     let note = await client.getNote(ctx.input.noteId);
 
-    let exportedContent: any = undefined;
+    let exportedContent: any;
     if (ctx.input.exportFormat) {
       exportedContent = await client.exportNote(ctx.input.noteId, ctx.input.exportFormat);
     }

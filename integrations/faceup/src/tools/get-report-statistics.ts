@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FaceUpClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getReportStatistics = SlateTool.create(spec, {
   name: 'Get Report Statistics',

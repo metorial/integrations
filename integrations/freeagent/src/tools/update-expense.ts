@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreeAgentClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateExpense = SlateTool.create(spec, {
   name: 'Update Expense',

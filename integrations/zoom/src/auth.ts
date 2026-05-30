@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { zoomApiError, zoomOAuthError, zoomServiceError } from './lib/errors';
 
@@ -369,7 +369,7 @@ export let auth = SlateAuth.create()
     handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response;
+      let response: any;
       try {
         response = await authAxios.post(
           '/oauth/token',
@@ -408,7 +408,7 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response;
+      let response: any;
       try {
         response = await authAxios.post(
           '/oauth/token',
@@ -444,7 +444,7 @@ export let auth = SlateAuth.create()
       input: Record<string, never>;
       scopes: string[];
     }) => {
-      let response;
+      let response: any;
       try {
         response = await apiAxios.get('/users/me', {
           headers: {
@@ -485,7 +485,7 @@ export let auth = SlateAuth.create()
     }) => {
       let credentials = btoa(`${ctx.input.clientId}:${ctx.input.clientSecret}`);
 
-      let response;
+      let response: any;
       try {
         response = await authAxios.post(
           '/oauth/token',
@@ -520,7 +520,7 @@ export let auth = SlateAuth.create()
       output: { token: string; refreshToken?: string; expiresAt?: string; accountId?: string };
       input: { accountId: string; clientId: string; clientSecret: string };
     }) => {
-      let response;
+      let response: any;
       try {
         response = await apiAxios.get('/users/me', {
           headers: {

@@ -1,4 +1,4 @@
-import { allOf, anyOf } from 'slates';
+import { anyOf } from 'slates';
 
 export let googleAdminScopes = {
   adminDirectoryUser: 'https://www.googleapis.com/auth/admin.directory.user',
@@ -8,7 +8,8 @@ export let googleAdminScopes = {
     'https://www.googleapis.com/auth/admin.directory.user.alias.readonly',
   adminDirectoryUserSecurity: 'https://www.googleapis.com/auth/admin.directory.user.security',
   adminDirectoryGroup: 'https://www.googleapis.com/auth/admin.directory.group',
-  adminDirectoryGroupReadonly: 'https://www.googleapis.com/auth/admin.directory.group.readonly',
+  adminDirectoryGroupReadonly:
+    'https://www.googleapis.com/auth/admin.directory.group.readonly',
   adminDirectoryGroupMember: 'https://www.googleapis.com/auth/admin.directory.group.member',
   adminDirectoryGroupMemberReadonly:
     'https://www.googleapis.com/auth/admin.directory.group.member.readonly',
@@ -16,21 +17,25 @@ export let googleAdminScopes = {
   adminDirectoryOrgunit: 'https://www.googleapis.com/auth/admin.directory.orgunit',
   adminDirectoryOrgunitReadonly:
     'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
-  adminDirectoryRolemanagement: 'https://www.googleapis.com/auth/admin.directory.rolemanagement',
+  adminDirectoryRolemanagement:
+    'https://www.googleapis.com/auth/admin.directory.rolemanagement',
   adminDirectoryRolemanagementReadonly:
     'https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
-  adminDirectoryDeviceChromeos: 'https://www.googleapis.com/auth/admin.directory.device.chromeos',
+  adminDirectoryDeviceChromeos:
+    'https://www.googleapis.com/auth/admin.directory.device.chromeos',
   adminDirectoryDeviceChromeosReadonly:
     'https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly',
   adminDirectoryDeviceMobile: 'https://www.googleapis.com/auth/admin.directory.device.mobile',
   adminDirectoryDeviceMobileReadonly:
     'https://www.googleapis.com/auth/admin.directory.device.mobile.readonly',
   adminDirectoryDomain: 'https://www.googleapis.com/auth/admin.directory.domain',
-  adminDirectoryDomainReadonly: 'https://www.googleapis.com/auth/admin.directory.domain.readonly',
+  adminDirectoryDomainReadonly:
+    'https://www.googleapis.com/auth/admin.directory.domain.readonly',
   adminDirectoryCustomer: 'https://www.googleapis.com/auth/admin.directory.customer',
   adminDirectoryCustomerReadonly:
     'https://www.googleapis.com/auth/admin.directory.customer.readonly',
-  adminDirectoryResourceCalendar: 'https://www.googleapis.com/auth/admin.directory.resource.calendar',
+  adminDirectoryResourceCalendar:
+    'https://www.googleapis.com/auth/admin.directory.resource.calendar',
   adminDirectoryResourceCalendarReadonly:
     'https://www.googleapis.com/auth/admin.directory.resource.calendar.readonly',
   adminDirectoryUserschema: 'https://www.googleapis.com/auth/admin.directory.userschema',

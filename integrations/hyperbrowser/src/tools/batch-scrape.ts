@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { HyperbrowserClient } from '../lib/client';
-import { sessionOptionsSchema, scrapeOptionsSchema, crawledPageSchema } from '../lib/schemas';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { HyperbrowserClient } from '../lib/client';
+import { scrapeOptionsSchema, sessionOptionsSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let batchScrape = SlateTool.create(spec, {
   name: 'Batch Scrape',
@@ -69,7 +69,7 @@ Returns results for each URL in the same order as provided. Each page's content 
       () => client.getBatchScrapeJobResult(jobId)
     );
 
-    let pages = result.data as Array<Record<string, unknown>> | undefined;
+    let pages = result.data as Record<string, unknown>[] | undefined;
 
     return {
       output: {

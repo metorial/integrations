@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { LinearClient } from '../lib/client';
 import { linearServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let documentEventsTrigger = SlateTrigger.create(spec, {
   name: 'Document Events',

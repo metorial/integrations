@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchEventsTool,
-  getEventDetailsTool,
-  searchAttractionsTool,
-  getAttractionDetailsTool,
-  searchVenuesTool,
-  getVenueDetailsTool,
-  getEventOffersTool,
-  checkInventoryStatusTool,
   browseClassificationsTool,
+  checkInventoryStatusTool,
+  getAttractionDetailsTool,
+  getEventDetailsTool,
+  getEventOffersTool,
+  getVenueDetailsTool,
+  searchAttractionsTool,
+  searchEventsTool,
+  searchVenuesTool,
   suggestSearchTool
 } from './tools';
-import { newEventsTrigger, eventStatusChangesTrigger, inboundWebhook } from './triggers';
+import { eventStatusChangesTrigger, inboundWebhook, newEventsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

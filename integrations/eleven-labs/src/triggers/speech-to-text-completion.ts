@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let speechToTextCompletion = SlateTrigger.create(spec, {
   name: 'Speech to Text Completion',
@@ -49,8 +49,8 @@ export let speechToTextCompletion = SlateTrigger.create(spec, {
 
       return {
         registrationDetails: {
-          webhookId: data['webhook_id'] as string,
-          webhookSecret: data['webhook_secret'] as string | undefined
+          webhookId: data.webhook_id as string,
+          webhookSecret: data.webhook_secret as string | undefined
         }
       };
     },
@@ -69,12 +69,8 @@ export let speechToTextCompletion = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      let eventType = (data['type'] ||
-        data['event_type'] ||
-        'speech_to_text.completed') as string;
-      let transcriptionId = (data['transcription_id'] || data['request_id']) as
-        | string
-        | undefined;
+      let eventType = (data.type || data.event_type || 'speech_to_text.completed') as string;
+      let transcriptionId = (data.transcription_id || data.request_id) as string | undefined;
       let eventId = transcriptionId ? `stt_${transcriptionId}` : `stt_${Date.now()}`;
 
       return {
@@ -91,14 +87,14 @@ export let speechToTextCompletion = SlateTrigger.create(spec, {
 
     handleEvent: async ctx => {
       let payload = ctx.input.payload as Record<string, unknown>;
-      let innerData = (payload['data'] || payload) as Record<string, unknown>;
+      let innerData = (payload.data || payload) as Record<string, unknown>;
 
-      let words: Array<Record<string, unknown>> | undefined;
-      if (innerData['words'] && Array.isArray(innerData['words'])) {
-        words = (innerData['words'] as Array<Record<string, unknown>>).map(w => ({
-          text: w['text'] as string | undefined,
-          start: w['start'] as number | undefined,
-          end: w['end'] as number | undefined
+      let words: Record<string, unknown>[] | undefined;
+      if (innerData.words && Array.isArray(innerData.words)) {
+        words = (innerData.words as Record<string, unknown>[]).map(w => ({
+          text: w.text as string | undefined,
+          start: w.start as number | undefined,
+          end: w.end as number | undefined
         }));
       }
 
@@ -107,11 +103,11 @@ export let speechToTextCompletion = SlateTrigger.create(spec, {
         id: ctx.input.eventId,
         output: {
           transcriptionId: ctx.input.transcriptionId,
-          text: innerData['text'] as string | undefined,
-          languageCode: innerData['language_code'] as string | undefined,
-          status: innerData['status'] as string | undefined,
+          text: innerData.text as string | undefined,
+          languageCode: innerData.language_code as string | undefined,
+          status: innerData.status as string | undefined,
           words,
-          metadata: innerData['metadata'] || innerData['webhook_metadata']
+          metadata: innerData.metadata || innerData.webhook_metadata
         }
       };
     }

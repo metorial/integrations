@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { GoogleTasksClient } from '../lib/client';
 import { googleTasksActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let taskChanges = SlateTrigger.create(spec, {
   name: 'Task Changes',

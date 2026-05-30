@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { buildClientConfig, flattenResourceList } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listProducts = SlateTool.create(spec, {
   name: 'List Products',
@@ -38,12 +38,12 @@ export let listProducts = SlateTool.create(spec, {
     let client = new Client(buildClientConfig(ctx));
 
     let filters: Record<string, string> = {};
-    if (ctx.input.filterName) filters['name'] = ctx.input.filterName;
-    if (ctx.input.filterSku) filters['sku'] = ctx.input.filterSku;
+    if (ctx.input.filterName) filters.name = ctx.input.filterName;
+    if (ctx.input.filterSku) filters.sku = ctx.input.filterSku;
     if (ctx.input.filterTrackable !== undefined)
-      filters['trackable'] = String(ctx.input.filterTrackable);
+      filters.trackable = String(ctx.input.filterTrackable);
     if (ctx.input.filterArchived !== undefined)
-      filters['archived'] = String(ctx.input.filterArchived);
+      filters.archived = String(ctx.input.filterArchived);
 
     let response = await client.listProductGroups({
       pagination: {

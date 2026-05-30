@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchFilesTool,
-  getFileTool,
+  copyFileTool,
+  createCommentTool,
   createFileTool,
-  uploadFileTool,
+  createSharedDriveTool,
+  deleteCommentTool,
+  deleteFileTool,
+  deleteSharedDriveTool,
   downloadFileTool,
   exportFileTool,
-  updateFileTool,
-  copyFileTool,
-  deleteFileTool,
-  listPermissionsTool,
-  shareFileTool,
-  updatePermissionTool,
-  removePermissionTool,
+  getFileTool,
   listCommentsTool,
-  createCommentTool,
-  replyToCommentTool,
-  deleteCommentTool,
+  listPermissionsTool,
   listRevisionsTool,
   listSharedDrivesTool,
-  createSharedDriveTool,
+  removePermissionTool,
+  replyToCommentTool,
+  searchFilesTool,
+  shareFileTool,
+  updateFileTool,
+  updatePermissionTool,
   updateSharedDriveTool,
-  deleteSharedDriveTool
+  uploadFileTool
 } from './tools';
 import { fileChangesTrigger, inboundWebhook } from './triggers';
 

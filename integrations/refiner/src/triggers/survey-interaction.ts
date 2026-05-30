@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let webhookPayloadSchema = z.object({
   triggeredEvent: z.string().describe('The event that triggered the webhook'),

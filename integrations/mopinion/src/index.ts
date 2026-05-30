@@ -4,11 +4,11 @@ import {
   getAccount,
   getFeedback,
   getFields,
-  listReports,
   listDeployments,
-  manageReport,
+  listReports,
   manageDataset,
-  manageDeployment
+  manageDeployment,
+  manageReport
 } from './tools';
 import { feedbackReceived } from './triggers';
 

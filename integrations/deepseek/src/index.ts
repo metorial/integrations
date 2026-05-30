@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { chatCompletion, fimCompletion, listModels, getBalance } from './tools';
+import { chatCompletion, fimCompletion, getBalance, listModels } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

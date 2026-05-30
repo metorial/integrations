@@ -9,10 +9,8 @@ export interface SlateSpecificationParameters {
   metadata?: Record<string, any>;
 }
 
-export interface SlateSpecificationCreateParameters<
-  ConfigType extends {},
-  AuthType extends {}
-> extends SlateSpecificationParameters {
+export interface SlateSpecificationCreateParameters<ConfigType extends {}, AuthType extends {}>
+  extends SlateSpecificationParameters {
   config: SlateConfig<ConfigType>;
   auth: SlateAuth<AuthType>;
 }

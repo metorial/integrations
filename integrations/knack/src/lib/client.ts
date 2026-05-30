@@ -58,7 +58,7 @@ export class KnackClient {
       headers['X-Knack-REST-API-Key'] = this.token;
     } else {
       headers['X-Knack-REST-API-Key'] = 'knack';
-      headers['Authorization'] = this.token;
+      headers.Authorization = this.token;
     }
 
     return headers;
@@ -216,8 +216,8 @@ export class KnackClient {
   }
 
   async uploadFile(
-    objectKey: string,
-    fieldKey: string,
+    _objectKey: string,
+    _fieldKey: string,
     fileName: string,
     fileContent: string,
     contentType: string

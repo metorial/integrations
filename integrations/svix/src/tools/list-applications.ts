@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listApplications = SlateTool.create(spec, {
   name: 'List Applications',
@@ -87,7 +87,7 @@ export let listApplications = SlateTool.create(spec, {
         hasMore: !result.done,
         iterator: result.iterator ?? undefined
       },
-      message: `Found **${applications.length}** application(s).${applications.length > 0 ? '\n' + applications.map(a => `- **${a.name}**${a.uid ? ` (uid: ${a.uid})` : ''}`).join('\n') : ''}`
+      message: `Found **${applications.length}** application(s).${applications.length > 0 ? `\n${applications.map(a => `- **${a.name}**${a.uid ? ` (uid: ${a.uid})` : ''}`).join('\n')}` : ''}`
     };
   })
   .build();

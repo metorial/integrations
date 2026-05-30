@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generatePdf = SlateTool.create(spec, {
   name: 'Generate PDF',
@@ -67,7 +67,7 @@ Supports configurable paper size, margins, orientation, and custom headers/foote
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let result;
+    let result: any;
 
     if (ctx.input.sourceType === 'html') {
       if (!ctx.input.html) {

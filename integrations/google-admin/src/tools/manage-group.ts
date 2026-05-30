@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { googleAdminActionScopes } from '../scopes';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { googleAdminActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 export let manageGroup = SlateTool.create(spec, {
   name: 'Manage Group',

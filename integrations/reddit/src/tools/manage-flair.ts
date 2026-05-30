@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { RedditClient } from '../lib/client';
 import { requireRedditInput } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageFlair = SlateTool.create(spec, {
   name: 'Manage Flair',

@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { runMeasurement, getMeasurement, listProbes, getLimits, checkHealth } from './tools';
+import { checkHealth, getLimits, getMeasurement, listProbes, runMeasurement } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

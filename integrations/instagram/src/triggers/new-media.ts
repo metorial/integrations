@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { InstagramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newMediaTrigger = SlateTrigger.create(spec, {
   name: 'New Media',
@@ -49,7 +49,7 @@ export let newMediaTrigger = SlateTrigger.create(spec, {
       let result = await client.listMedia(effectiveUserId, { limit: 10 });
 
       let lastSeenTimestamp = ctx.state?.lastSeenTimestamp as string | undefined;
-      let media = (result.data || []) as Array<Record<string, any>>;
+      let media = (result.data || []) as Record<string, any>[];
 
       let newMedia = lastSeenTimestamp
         ? media.filter((m: any) => m.timestamp && m.timestamp > lastSeenTimestamp)

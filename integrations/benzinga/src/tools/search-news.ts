@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BenzingaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let newsArticleSchema = z.object({
   articleId: z.number().describe('Unique article identifier'),

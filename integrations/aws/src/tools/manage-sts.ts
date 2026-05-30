@@ -1,9 +1,9 @@
 import { GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { clientFromContext } from '../lib/helpers';
 import { awsServiceError } from '../lib/errors';
+import { clientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageStsTool = SlateTool.create(spec, {
   name: 'Manage STS',

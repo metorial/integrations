@@ -1,7 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { listCampaigns, startDeadline, trackPurchase, createCustomEvent } from './tools';
-import { newCustomEvent, newPortal, newFormSubmission, inboundWebhook } from './triggers';
+import { createCustomEvent, listCampaigns, startDeadline, trackPurchase } from './tools';
+import { inboundWebhook, newCustomEvent, newFormSubmission, newPortal } from './triggers';
 
 export let provider = Slate.create({
   spec,

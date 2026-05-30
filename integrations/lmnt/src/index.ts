@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateSpeech,
-  listVoices,
-  getVoice,
-  updateVoice,
   deleteVoice,
-  getAccount
+  generateSpeech,
+  getAccount,
+  getVoice,
+  listVoices,
+  updateVoice
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

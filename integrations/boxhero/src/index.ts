@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listItems,
-  listTransactions,
   createTransaction,
+  getTeam,
+  listAttributes,
+  listItems,
   listLocations,
   listPartners,
-  listAttributes,
-  getTeam
+  listTransactions
 } from './tools';
-import { transactionEvents, itemEvents } from './triggers';
+import { itemEvents, transactionEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

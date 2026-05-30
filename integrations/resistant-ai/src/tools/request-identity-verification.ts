@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IdentityCheckClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let requestIdentityVerification = SlateTool.create(spec, {
   name: 'Request Identity Verification',

@@ -1,19 +1,19 @@
 import { createAxios } from 'slates';
 import type {
-  PaginatedResponse,
   Brand,
+  BulkCampaign,
   Contact,
   ContactList,
   Field,
+  PaginatedResponse,
   Sender,
-  SuppressionList,
-  BulkCampaign
+  SuppressionList
 } from './types';
 
 export class Client {
   private http;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.http = createAxios({
       baseURL: 'https://api.bigmailer.io/v1',
       headers: {

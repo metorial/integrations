@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let VOUCHER_EVENT_TYPES = ['voucher_created', 'voucher_updated', 'voucher_redeemed'] as const;
 

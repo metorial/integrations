@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let personSchema = z.object({
   personId: z.number().describe('Person ID'),
@@ -46,7 +46,7 @@ export let listPeople = SlateTool.create(spec, {
       accountName: ctx.config.accountName
     });
 
-    let result;
+    let result: any;
     if (ctx.input.query) {
       result = await client.searchPeople(ctx.input.query, {
         page: ctx.input.page,

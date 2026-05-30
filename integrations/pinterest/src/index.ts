@@ -2,26 +2,26 @@ import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
   createPin,
-  getPin,
-  listPins,
-  updatePin,
   deletePin,
-  manageBoard,
-  listBoards,
-  manageBoardSection,
-  getUserAccount,
   getAnalytics,
-  listAdAccounts,
-  listCampaigns,
-  sendConversions,
-  listCatalogs,
-  getTrends,
+  getPin,
   getTerms,
-  searchPins,
+  getTrends,
+  getUserAccount,
+  listAdAccounts,
+  listBoards,
+  listCampaigns,
+  listCatalogs,
+  listPins,
   manageAudience,
-  savePin
+  manageBoard,
+  manageBoardSection,
+  savePin,
+  searchPins,
+  sendConversions,
+  updatePin
 } from './tools';
-import { newPin, newBoard, inboundWebhook } from './triggers';
+import { inboundWebhook, newBoard, newPin } from './triggers';
 
 export let provider = Slate.create({
   spec,

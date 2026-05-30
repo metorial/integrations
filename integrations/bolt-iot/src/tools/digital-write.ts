@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let digitalWrite = SlateTool.create(spec, {
   name: 'Digital Write',
@@ -38,7 +38,7 @@ export let digitalWrite = SlateTool.create(spec, {
       deviceName: ctx.auth.deviceName
     });
 
-    let response;
+    let response: any;
     if (ctx.input.pins.length === 1) {
       response = await client.digitalWrite(ctx.input.pins[0]!, ctx.input.states[0]!);
     } else {

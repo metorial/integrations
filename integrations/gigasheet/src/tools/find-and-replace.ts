@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GigasheetClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let findAndReplace = SlateTool.create(spec, {
   name: 'Find and Replace',

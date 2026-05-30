@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listPhantoms,
-  getPhantom,
-  savePhantom,
   deletePhantom,
-  launchPhantom,
-  stopPhantom,
-  getPhantomOutput,
   getExecution,
+  getPhantom,
+  getPhantomOutput,
+  getWorkspace,
+  launchPhantom,
   listExecutions,
+  listPhantoms,
   manageLeads,
   manageLists,
-  getWorkspace
+  savePhantom,
+  stopPhantom
 } from './tools';
 import { phantomExecutionCompleted } from './triggers';
 

@@ -68,7 +68,7 @@ export class LaunchDarklyClient {
   async updateFeatureFlag(
     projectKey: string,
     flagKey: string,
-    instructions: Array<Record<string, any>>
+    instructions: Record<string, any>[]
   ) {
     let response = await this.http.patch(
       `/flags/${projectKey}/${flagKey}`,
@@ -91,12 +91,7 @@ export class LaunchDarklyClient {
   // ─── Projects ───────────────────────────────────────────────────
 
   async listProjects(
-    params: {
-      limit?: number;
-      offset?: number;
-      filter?: string;
-      sort?: string;
-    } = {}
+    params: { limit?: number; offset?: number; filter?: string; sort?: string } = {}
   ) {
     let response = await this.http.get('/projects', { params });
     return response.data;
@@ -241,7 +236,7 @@ export class LaunchDarklyClient {
     projectKey: string,
     environmentKey: string,
     segmentKey: string,
-    instructions: Array<Record<string, any>>
+    instructions: Record<string, any>[]
   ) {
     let response = await this.http.patch(
       `/segments/${projectKey}/${environmentKey}/${segmentKey}`,
@@ -264,13 +259,7 @@ export class LaunchDarklyClient {
   // ─── Audit Log ─────────────────────────────────────────────────
 
   async getAuditLogEntries(
-    params: {
-      before?: number;
-      after?: number;
-      q?: string;
-      limit?: number;
-      spec?: string;
-    } = {}
+    params: { before?: number; after?: number; q?: string; limit?: number; spec?: string } = {}
   ) {
     let response = await this.http.get('/auditlog', { params });
     return response.data;
@@ -331,12 +320,7 @@ export class LaunchDarklyClient {
   // ─── Account Members ──────────────────────────────────────────
 
   async listMembers(
-    params: {
-      limit?: number;
-      offset?: number;
-      filter?: string;
-      sort?: string;
-    } = {}
+    params: { limit?: number; offset?: number; filter?: string; sort?: string } = {}
   ) {
     let response = await this.http.get('/members', { params });
     return response.data;
@@ -507,13 +491,7 @@ export class LaunchDarklyClient {
 
   // ─── Teams ─────────────────────────────────────────────────────
 
-  async listTeams(
-    params: {
-      limit?: number;
-      offset?: number;
-      filter?: string;
-    } = {}
-  ) {
+  async listTeams(params: { limit?: number; offset?: number; filter?: string } = {}) {
     let response = await this.http.get('/teams', { params });
     return response.data;
   }

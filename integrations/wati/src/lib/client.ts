@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(private params: { token: string; apiEndpoint: string }) {
+  constructor(params: { token: string; apiEndpoint: string }) {
     let baseURL = params.apiEndpoint.replace(/\/+$/, '');
     this.axios = createAxios({
       baseURL,

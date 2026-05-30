@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HelloLeadsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let listSchema = z.object({
   listKey: z.string().describe('Unique key identifier for the list'),

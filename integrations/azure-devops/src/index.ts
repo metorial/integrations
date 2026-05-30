@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjectsTool,
-  getWorkItemTool,
   createWorkItemTool,
-  updateWorkItemTool,
   deleteWorkItemTool,
-  queryWorkItemsTool,
-  manageRepositoryTool,
-  managePullRequestTool,
-  listPipelinesTool,
-  runPipelineTool,
   getPipelineRunTool,
+  getWorkItemTool,
   listBuildsTool,
-  manageWikiTool
+  listPipelinesTool,
+  listProjectsTool,
+  managePullRequestTool,
+  manageRepositoryTool,
+  manageWikiTool,
+  queryWorkItemsTool,
+  runPipelineTool,
+  updateWorkItemTool
 } from './tools';
 import {
-  workItemEventsTrigger,
+  buildCompleteEventsTrigger,
   codeEventsTrigger,
   pullRequestEventsTrigger,
-  buildCompleteEventsTrigger
+  workItemEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

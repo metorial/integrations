@@ -15,7 +15,7 @@ export class Client {
     };
 
     if (this.token) {
-      headers['Cookie'] = `SESSION=${this.token}`;
+      headers.Cookie = `SESSION=${this.token}`;
     }
 
     return createAxios({
@@ -237,11 +237,11 @@ export class Client {
   }): Promise<any> {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
-    if (params?.resourceType) query['resourceType'] = params.resourceType;
-    if (params?.event) query['event'] = params.event;
-    if (params?.userId) query['userId'] = params.userId;
-    if (params?.limit) query['limit'] = String(params.limit);
-    if (params?.sortOrder) query['sortOrder'] = params.sortOrder;
+    if (params?.resourceType) query.resourceType = params.resourceType;
+    if (params?.event) query.event = params.event;
+    if (params?.userId) query.userId = params.userId;
+    if (params?.limit) query.limit = String(params.limit);
+    if (params?.sortOrder) query.sortOrder = params.sortOrder;
     let response = await ax.get('/api/v1/audit-logs', { params: query });
     return response.data?.data ?? {};
   }

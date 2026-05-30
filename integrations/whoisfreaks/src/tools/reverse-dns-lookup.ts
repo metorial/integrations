@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WhoisFreaksClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let reverseDnsLookup = SlateTool.create(spec, {
   name: 'Reverse DNS Lookup',

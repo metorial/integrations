@@ -118,7 +118,7 @@ export class Client {
     joinAt?: string;
     recordingConfig?: Record<string, unknown>;
     transcriptionOptions?: Record<string, unknown>;
-    chatMessages?: Array<Record<string, unknown>>;
+    chatMessages?: Record<string, unknown>[];
     metadata?: Record<string, unknown>;
     automaticLeave?: Record<string, unknown>;
     autoRecordOnJoin?: boolean;

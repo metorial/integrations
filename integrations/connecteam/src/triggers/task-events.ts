@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { ConnecteamClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let taskEventTypes = ['task_published', 'task_completed'] as const;
 

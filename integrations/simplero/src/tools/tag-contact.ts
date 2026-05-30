@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SimpleroClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let tagContact = SlateTool.create(spec, {
   name: 'Tag Contact',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PowerBIClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let stageSchema = z.object({
   order: z.number().describe('Stage order (0=Development, 1=Test, 2=Production)'),

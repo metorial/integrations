@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GumroadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let variantCategorySchema = z.object({
   variantCategoryId: z.string().describe('Unique variant category ID'),

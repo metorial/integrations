@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BrazeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateSubscriptionStatus = SlateTool.create(spec, {
   name: 'Update Subscription Status',
@@ -100,7 +100,7 @@ export let getSubscriptionStatus = SlateTool.create(spec, {
       instanceUrl: ctx.config.instanceUrl
     });
 
-    let result;
+    let result: any;
     if (ctx.input.subscriptionGroupId) {
       result = await client.getSubscriptionStatus({
         subscriptionGroupId: ctx.input.subscriptionGroupId,

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { GoogleDocsClient, Document, StructuralElement } from '../lib/client';
+import { z } from 'zod';
+import { type Document, GoogleDocsClient, type StructuralElement } from '../lib/client';
 import { googleDocsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 // Helper to extract plain text from document structure
 let extractPlainText = (doc: Document): string => {

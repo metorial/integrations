@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listContracts,
-  getContract,
+  calculateEorCost,
   createContract,
-  manageContract,
-  listPeople,
-  getPerson,
-  manageTimesheets,
-  manageTimeOff,
-  manageInvoiceAdjustments,
-  listInvoices,
-  listPayments,
-  listOrganizationData,
+  getContract,
   getEorCountryGuide,
-  calculateEorCost
+  getPerson,
+  listContracts,
+  listInvoices,
+  listOrganizationData,
+  listPayments,
+  listPeople,
+  manageContract,
+  manageInvoiceAdjustments,
+  manageTimeOff,
+  manageTimesheets
 } from './tools';
 import {
   contractEvents,
-  workerEvents,
-  timesheetEvents,
-  timeOffEvents,
+  invoiceAdjustmentEvents,
   paymentEvents,
-  invoiceAdjustmentEvents
+  timeOffEvents,
+  timesheetEvents,
+  workerEvents
 } from './triggers';
 
 export let provider = Slate.create({

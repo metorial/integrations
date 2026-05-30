@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { createApiClient, listChatbots, fetchChatbot } from '../lib/client';
+import { createApiClient, fetchChatbot, listChatbots } from '../lib/client';
+import { spec } from '../spec';
 
 export let chatbotChangesTrigger = SlateTrigger.create(spec, {
   name: 'Chatbot Changes',

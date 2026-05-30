@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BrowserlessClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let runFunction = SlateTool.create(spec, {
   name: 'Run Browser Function',

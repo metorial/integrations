@@ -2,19 +2,19 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   findWorkbooks,
-  manageWorksheets,
-  readRange,
-  writeRange,
-  manageTables,
-  manageTableRows,
-  manageTableColumns,
-  sortFilterTable,
+  invokeFunction,
   manageCharts,
   manageNamedItems,
-  invokeFunction,
-  manageSessions
+  manageSessions,
+  manageTableColumns,
+  manageTableRows,
+  manageTables,
+  manageWorksheets,
+  readRange,
+  sortFilterTable,
+  writeRange
 } from './tools';
-import { workbookChanged, inboundWebhook } from './triggers';
+import { inboundWebhook, workbookChanged } from './triggers';
 
 export let provider = Slate.create({
   spec,

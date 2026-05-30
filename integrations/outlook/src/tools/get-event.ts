@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { optionalString } from '../lib/output';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getEvent = SlateTool.create(spec, {
   name: 'Get Calendar Event',
@@ -78,9 +78,7 @@ export let getEvent = SlateTool.create(spec, {
         isAllDay: ev.isAllDay,
         isCancelled: ev.isCancelled,
         isOnlineMeeting: ev.isOnlineMeeting,
-        onlineMeetingJoinUrl: optionalString(
-          ev.onlineMeeting?.joinUrl || ev.onlineMeetingUrl
-        ),
+        onlineMeetingJoinUrl: optionalString(ev.onlineMeeting?.joinUrl || ev.onlineMeetingUrl),
         organizerEmail: optionalString(ev.organizer?.emailAddress?.address),
         organizerName: optionalString(ev.organizer?.emailAddress?.name),
         attendees: ev.attendees?.map(a => ({

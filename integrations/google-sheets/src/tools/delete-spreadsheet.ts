@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DriveClient } from '../lib/drive-client';
 import { googleSheetsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deleteSpreadsheet = SlateTool.create(spec, {
   name: 'Delete Spreadsheet',

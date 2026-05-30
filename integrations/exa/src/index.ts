@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchTool,
-  getContentsTool,
-  findSimilarTool,
   answerTool,
-  createResearchTool,
-  getResearchTool,
-  createWebsetTool,
-  getWebsetTool,
-  listWebsetsTool,
-  updateWebsetTool,
-  deleteWebsetTool,
   cancelWebsetTool,
-  listWebsetItemsTool,
-  getWebsetItemTool,
-  deleteWebsetItemTool,
   createEnrichmentTool,
-  updateEnrichmentTool,
-  deleteEnrichmentTool,
-  createMonitorTool,
-  deleteMonitorTool,
   createExportTool,
-  getExportTool
+  createMonitorTool,
+  createResearchTool,
+  createWebsetTool,
+  deleteEnrichmentTool,
+  deleteMonitorTool,
+  deleteWebsetItemTool,
+  deleteWebsetTool,
+  findSimilarTool,
+  getContentsTool,
+  getExportTool,
+  getResearchTool,
+  getWebsetItemTool,
+  getWebsetTool,
+  listWebsetItemsTool,
+  listWebsetsTool,
+  searchTool,
+  updateEnrichmentTool,
+  updateWebsetTool
 } from './tools';
 import { websetEventsTrigger } from './triggers';
 

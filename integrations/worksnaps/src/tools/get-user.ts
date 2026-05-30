@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUser = SlateTool.create(spec, {
   name: 'Get User',
@@ -33,7 +33,7 @@ export let getUser = SlateTool.create(spec, {
       ? await client.getUser(ctx.input.userId)
       : await client.getCurrentUser();
 
-    let name = user['firstName'] || user['login'] || ctx.input.userId || 'current user';
+    let name = user.firstName || user.login || ctx.input.userId || 'current user';
 
     return {
       output: { user },

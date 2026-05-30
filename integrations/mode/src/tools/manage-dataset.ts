@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ModeClient } from '../lib/client';
-import { normalizeDataset, getEmbedded } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ModeClient } from '../lib/client';
+import { getEmbedded, normalizeDataset } from '../lib/helpers';
+import { spec } from '../spec';
 
 let datasetSchema = z.object({
   datasetToken: z.string().describe('Unique token of the dataset'),

@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let visualTestingEvents = SlateTrigger.create(spec, {
   name: 'Visual Testing Build Completed',
@@ -50,7 +50,7 @@ export let visualTestingEvents = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.build_id) {
+      if (!data?.build_id) {
         return { inputs: [] };
       }
 

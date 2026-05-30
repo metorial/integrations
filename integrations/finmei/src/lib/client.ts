@@ -50,7 +50,7 @@ export class FinmeiClient {
     currency?: string;
     use_default_seller_info?: boolean;
     buyer?: Record<string, any>;
-    products?: Array<Record<string, any>>;
+    products?: Record<string, any>[];
     notes?: string;
     [key: string]: any;
   }): Promise<any> {

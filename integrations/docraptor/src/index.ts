@@ -1,9 +1,9 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createDocument,
-  createAsyncDocument,
   checkAsyncStatus,
+  createAsyncDocument,
+  createDocument,
   createHostedDocument,
   expireHostedDocument,
   listDocuments,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateConversation = SlateTool.create(spec, {
   name: 'Update Conversation',
@@ -55,14 +55,14 @@ export let updateConversation = SlateTool.create(spec, {
 
     // Update meta if any meta fields provided
     let meta: Record<string, any> = {};
-    if (ctx.input.nickname !== undefined) meta['nickname'] = ctx.input.nickname;
-    if (ctx.input.email !== undefined) meta['email'] = ctx.input.email;
-    if (ctx.input.phone !== undefined) meta['phone'] = ctx.input.phone;
-    if (ctx.input.address !== undefined) meta['address'] = ctx.input.address;
-    if (ctx.input.subject !== undefined) meta['subject'] = ctx.input.subject;
-    if (ctx.input.avatar !== undefined) meta['avatar'] = ctx.input.avatar;
-    if (ctx.input.segments !== undefined) meta['segments'] = ctx.input.segments;
-    if (ctx.input.customData !== undefined) meta['data'] = ctx.input.customData;
+    if (ctx.input.nickname !== undefined) meta.nickname = ctx.input.nickname;
+    if (ctx.input.email !== undefined) meta.email = ctx.input.email;
+    if (ctx.input.phone !== undefined) meta.phone = ctx.input.phone;
+    if (ctx.input.address !== undefined) meta.address = ctx.input.address;
+    if (ctx.input.subject !== undefined) meta.subject = ctx.input.subject;
+    if (ctx.input.avatar !== undefined) meta.avatar = ctx.input.avatar;
+    if (ctx.input.segments !== undefined) meta.segments = ctx.input.segments;
+    if (ctx.input.customData !== undefined) meta.data = ctx.input.customData;
 
     if (Object.keys(meta).length > 0) {
       await client.updateConversationMeta(sessionId, meta);

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PilvioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let replicaSchema = z.object({
   replicaUuid: z.string().describe('Replica/snapshot UUID'),
@@ -70,7 +70,7 @@ export let manageSnapshots = SlateTool.create(spec, {
       }
 
       case 'create': {
-        let result = await client.createReplica(vmUuid);
+        let _result = await client.createReplica(vmUuid);
         return {
           output: { success: true, vmUuid },
           message: `Created snapshot for VM **${vmUuid}**.`

@@ -68,8 +68,8 @@ export class Client {
 
     return {
       records: Array.isArray(response.data) ? response.data : [],
-      nextPage: nextPage !== undefined ? parseInt(nextPage, 10) : null,
-      entityCount: entityCount ? parseInt(entityCount, 10) : 0
+      nextPage: nextPage !== undefined ? Number.parseInt(nextPage, 10) : null,
+      entityCount: entityCount ? Number.parseInt(entityCount, 10) : 0
     };
   }
 

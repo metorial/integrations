@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listResources,
-  getResource,
-  manageDeployment,
-  getPodLogs,
-  manageService,
-  manageConfigStorage,
-  manageNamespace,
-  deleteResource,
   applyResource,
   clusterInfo,
-  manageRbac,
+  deleteResource,
+  getPodLogs,
+  getResource,
+  listResources,
   manageAutoscaler,
-  manageJob
+  manageConfigStorage,
+  manageDeployment,
+  manageJob,
+  manageNamespace,
+  manageRbac,
+  manageService
 } from './tools';
-import { resourceEvents, inboundWebhook } from './triggers';
+import { inboundWebhook, resourceEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

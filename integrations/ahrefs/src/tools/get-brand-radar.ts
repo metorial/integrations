@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getBrandRadar = SlateTool.create(spec, {
   name: 'Get Brand Radar',
@@ -52,7 +52,7 @@ Use to track and analyze your brand's visibility and mentions in AI assistant re
     let client = new Client({ token: ctx.auth.token });
     let reportType = ctx.input.reportType || 'overview';
 
-    let result;
+    let result: any;
     switch (reportType) {
       case 'sov-history':
         result = await client.getBrandRadarSovHistory({

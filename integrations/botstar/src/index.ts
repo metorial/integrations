@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBots,
+  broadcastMessage,
+  createUserAttribute,
   getBot,
   getUser,
-  updateUser,
-  createUserAttribute,
-  broadcastMessage,
-  sendMessage,
+  listBots,
   listCmsEntities,
-  manageCmsEntity,
   listCmsItems,
-  manageCmsItem,
   manageBotAttributes,
-  publishBot
+  manageCmsEntity,
+  manageCmsItem,
+  publishBot,
+  sendMessage,
+  updateUser
 } from './tools';
-import { userEvent, chatbotEvent, cmsEvent } from './triggers';
+import { chatbotEvent, cmsEvent, userEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,

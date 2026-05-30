@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTableSchema = SlateTool.create(spec, {
   name: 'Get Table Schema',
@@ -63,7 +63,7 @@ export let getTableSchema = SlateTool.create(spec, {
       token: ctx.auth.token
     });
 
-    let tables;
+    let tables: any;
     if (ctx.input.tableId) {
       let table = await client.getTable(
         ctx.input.teamId,
@@ -76,16 +76,16 @@ export let getTableSchema = SlateTool.create(spec, {
     }
 
     let output = {
-      tables: tables.map(t => ({
+      tables: tables.map((t: any) => ({
         tableId: t.id,
         name: t.name,
-        fields: (t.fields || []).map(f => ({
+        fields: (t.fields || []).map((f: any) => ({
           fieldId: f.id,
           name: f.name,
           type: f.type,
           ...(f.choices
             ? {
-                choices: f.choices.map(c => ({
+                choices: f.choices.map((c: any) => ({
                   choiceId: c.id,
                   caption: c.caption
                 }))

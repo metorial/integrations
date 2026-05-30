@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class BiginClient {
   private axios;
 
-  constructor(private params: { token: string; apiDomain: string }) {
+  constructor(params: { token: string; apiDomain: string }) {
     this.axios = createAxios({
       baseURL: `${params.apiDomain}/bigin/v2`,
       headers: {

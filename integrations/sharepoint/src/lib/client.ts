@@ -4,9 +4,7 @@ let trimSlashes = (value: string) => value.replace(/^\/+|\/+$/g, '');
 
 let buildRootUploadPath = (driveId: string, parentPath: string, fileName: string) => {
   let normalizedParentPath = trimSlashes(parentPath);
-  let relativePath = normalizedParentPath
-    ? `${normalizedParentPath}/${fileName}`
-    : fileName;
+  let relativePath = normalizedParentPath ? `${normalizedParentPath}/${fileName}` : fileName;
   return `/drives/${driveId}/root:/${relativePath}:/content`;
 };
 
@@ -119,9 +117,13 @@ export class SharePointClient {
     fileName: string,
     content: string
   ) {
-    let response = await this.http.put(buildRootUploadPath(driveId, parentPath, fileName), content, {
-      headers: { 'Content-Type': 'application/octet-stream' }
-    });
+    let response = await this.http.put(
+      buildRootUploadPath(driveId, parentPath, fileName),
+      content,
+      {
+        headers: { 'Content-Type': 'application/octet-stream' }
+      }
+    );
     return response.data as any;
   }
 
@@ -298,7 +300,7 @@ export class SharePointClient {
   ) {
     let headers: Record<string, string> = {};
     if (params?.allowUnindexedQuery) {
-      headers['Prefer'] = 'HonorNonIndexedQueriesWarningMayFailRandomly';
+      headers.Prefer = 'HonorNonIndexedQueriesWarningMayFailRandomly';
     }
 
     if (params?.skipToken) {

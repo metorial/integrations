@@ -5,7 +5,7 @@ let BASE_URL = 'https://api.lexware.io/v1';
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string }) {
+  constructor(params: { token: string }) {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {

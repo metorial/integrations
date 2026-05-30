@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateUser = SlateTool.create(spec, {
   name: 'Update User',
@@ -29,10 +29,10 @@ export let updateUser = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let data: Record<string, unknown> = {};
-    if (ctx.input.firstName !== undefined) data['firstName'] = ctx.input.firstName;
-    if (ctx.input.lastName !== undefined) data['lastName'] = ctx.input.lastName;
-    if (ctx.input.email !== undefined) data['email'] = ctx.input.email;
-    if (ctx.input.timezoneId !== undefined) data['timezoneId'] = ctx.input.timezoneId;
+    if (ctx.input.firstName !== undefined) data.firstName = ctx.input.firstName;
+    if (ctx.input.lastName !== undefined) data.lastName = ctx.input.lastName;
+    if (ctx.input.email !== undefined) data.email = ctx.input.email;
+    if (ctx.input.timezoneId !== undefined) data.timezoneId = ctx.input.timezoneId;
 
     let user = await client.updateUser(ctx.input.userId, data);
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SensiboClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let acStateSchema = z.object({
   on: z.boolean().optional().describe('Whether the AC is on'),

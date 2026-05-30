@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let uploadDocument = SlateTool.create(spec, {
   name: 'Upload Document',
@@ -46,7 +46,7 @@ export let uploadDocument = SlateTool.create(spec, {
 
     let { extractorId, folderId, url, fileBase64, filename } = ctx.input;
 
-    let result;
+    let result: any;
 
     if (url) {
       ctx.info('Uploading document from URL');

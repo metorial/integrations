@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  renderVideoTool,
-  getRenderTool,
   createTemplateTool,
-  listTemplatesTool,
-  getTemplateTool,
-  updateTemplateTool,
-  deleteTemplateTool,
-  renderTemplateTool,
-  probeMediaTool,
-  getAssetTool,
-  getAssetsByRenderIdTool,
   deleteAssetTool,
-  transferAssetTool,
-  ingestSourceTool,
-  getSourceTool,
-  listSourcesTool,
   deleteSourceTool,
-  requestUploadUrlTool,
+  deleteTemplateTool,
   generateAssetTool,
-  getGeneratedAssetTool
+  getAssetsByRenderIdTool,
+  getAssetTool,
+  getGeneratedAssetTool,
+  getRenderTool,
+  getSourceTool,
+  getTemplateTool,
+  ingestSourceTool,
+  listSourcesTool,
+  listTemplatesTool,
+  probeMediaTool,
+  renderTemplateTool,
+  renderVideoTool,
+  requestUploadUrlTool,
+  transferAssetTool,
+  updateTemplateTool
 } from './tools';
 import { shotstackEventsTrigger } from './triggers';
 

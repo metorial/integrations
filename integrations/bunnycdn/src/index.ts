@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  managePullZone,
-  purgeCache,
-  manageStorageZone,
-  manageStorageFiles,
-  manageDnsZone,
-  manageDnsRecord,
-  manageVideoLibrary,
-  manageVideo,
-  manageCollection,
+  getBilling,
   getStatistics,
-  getBilling
+  manageCollection,
+  manageDnsRecord,
+  manageDnsZone,
+  managePullZone,
+  manageStorageFiles,
+  manageStorageZone,
+  manageVideo,
+  manageVideoLibrary,
+  purgeCache
 } from './tools';
 import { videoProcessing } from './triggers';
 

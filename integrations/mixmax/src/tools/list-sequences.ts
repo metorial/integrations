@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let recipientSchema = z.object({
+let _recipientSchema = z.object({
   email: z.string().describe('Recipient email address'),
   name: z.string().optional().describe('Recipient name')
 });

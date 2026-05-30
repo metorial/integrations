@@ -1,3 +1,4 @@
+import { openSlatesCliStore } from '@slates/profiles';
 import {
   createTextAttachment,
   Slate,
@@ -7,7 +8,6 @@ import {
   SlateTool,
   SlateTrigger
 } from '@slates/provider';
-import { openSlatesCliStore } from '@slates/profiles';
 import { mkdtemp, rm, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import path from 'path';

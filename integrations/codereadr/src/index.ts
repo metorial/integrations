@@ -1,33 +1,33 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listServices,
-  createService,
-  updateService,
-  deleteService,
-  manageServiceUsers,
-  manageServiceQuestions,
-  listUsers,
-  createUser,
-  updateUser,
-  deleteUser,
-  listDatabases,
   createDatabase,
-  updateDatabase,
-  deleteDatabase,
-  searchDatabaseValues,
-  manageDatabaseValues,
-  retrieveScans,
-  deleteScans,
-  listQuestions,
   createQuestion,
+  createService,
+  createUser,
+  deleteDatabase,
   deleteQuestion,
-  manageQuestionAnswers,
+  deleteScans,
+  deleteService,
+  deleteUser,
+  generateBarcode,
+  listDatabases,
   listDevices,
+  listQuestions,
+  listServices,
+  listUsers,
+  manageDatabaseValues,
+  manageQuestionAnswers,
+  manageServiceQuestions,
+  manageServiceUsers,
+  retrieveScans,
+  searchDatabaseValues,
+  updateDatabase,
   updateDevice,
-  generateBarcode
+  updateService,
+  updateUser
 } from './tools';
-import { newScans, inboundWebhook } from './triggers';
+import { inboundWebhook, newScans } from './triggers';
 
 export let provider = Slate.create({
   spec,

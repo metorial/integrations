@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageBotTool,
-  manageConversationTool,
-  sendMessageTool,
-  manageDatasetTool,
-  manageSkillsetTool,
-  manageContactTool,
-  manageMemoryTool,
-  manageIntegrationTool,
-  manageSpaceTool,
-  listResourcesTool,
+  conversationFeedbackTool,
   listMessagesTool,
-  conversationFeedbackTool
+  listResourcesTool,
+  manageBotTool,
+  manageContactTool,
+  manageConversationTool,
+  manageDatasetTool,
+  manageIntegrationTool,
+  manageMemoryTool,
+  manageSkillsetTool,
+  manageSpaceTool,
+  sendMessageTool
 } from './tools';
 import { chatbotkitEventsTrigger } from './triggers';
 

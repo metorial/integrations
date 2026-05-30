@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FindymailClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCredits = SlateTool.create(spec, {
   name: 'Get Credits Balance',

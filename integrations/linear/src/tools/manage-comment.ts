@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LinearClient } from '../lib/client';
 import { linearServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commentOutputSchema = z.object({
   commentId: z.string().describe('Comment ID'),

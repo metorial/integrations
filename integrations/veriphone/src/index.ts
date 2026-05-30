@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { verifyPhone, generateExamplePhone } from './tools';
+import { generateExamplePhone, verifyPhone } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

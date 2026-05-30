@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RefinerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let responseItemSchema = z.object({
   responseUuid: z.string().describe('UUID of the survey response'),

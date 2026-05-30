@@ -206,7 +206,7 @@ export class Client {
     });
     return {
       lines: response.data,
-      paginationId: response.headers?.['pagination_id'] || undefined
+      paginationId: response.headers?.pagination_id || undefined
     };
   }
 

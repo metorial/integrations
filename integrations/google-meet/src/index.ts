@@ -1,35 +1,35 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createSpaceTool,
-  getSpaceTool,
-  updateSpaceTool,
-  endActiveConferenceTool,
   addMemberTool,
-  getMemberTool,
-  listMembersTool,
-  removeMemberTool,
-  listConferenceRecordsTool,
+  createSpaceTool,
+  endActiveConferenceTool,
   getConferenceRecordTool,
-  getParticipantTool,
-  listParticipantsTool,
-  getParticipantSessionTool,
+  getMemberTool,
   getParticipantSessionsTool,
-  listRecordingsTool,
+  getParticipantSessionTool,
+  getParticipantTool,
   getRecordingTool,
-  listSmartNotesTool,
   getSmartNoteTool,
-  listTranscriptsTool,
-  getTranscriptTool,
+  getSpaceTool,
   getTranscriptEntryTool,
-  listTranscriptEntriesTool
+  getTranscriptTool,
+  listConferenceRecordsTool,
+  listMembersTool,
+  listParticipantsTool,
+  listRecordingsTool,
+  listSmartNotesTool,
+  listTranscriptEntriesTool,
+  listTranscriptsTool,
+  removeMemberTool,
+  updateSpaceTool
 } from './tools';
 import {
   conferenceEventsTrigger,
+  inboundWebhook,
   participantEventsTrigger,
   recordingEventsTrigger,
-  transcriptEventsTrigger,
-  inboundWebhook
+  transcriptEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

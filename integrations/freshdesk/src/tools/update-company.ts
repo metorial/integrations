@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateCompany = SlateTool.create(spec, {
   name: 'Update Company',
@@ -43,19 +43,16 @@ export let updateCompany = SlateTool.create(spec, {
     });
 
     let updateData: Record<string, any> = {};
-    if (ctx.input.name !== undefined) updateData['name'] = ctx.input.name;
-    if (ctx.input.domains !== undefined) updateData['domains'] = ctx.input.domains;
-    if (ctx.input.description !== undefined) updateData['description'] = ctx.input.description;
-    if (ctx.input.note !== undefined) updateData['note'] = ctx.input.note;
-    if (ctx.input.healthScore !== undefined)
-      updateData['health_score'] = ctx.input.healthScore;
-    if (ctx.input.accountTier !== undefined)
-      updateData['account_tier'] = ctx.input.accountTier;
-    if (ctx.input.renewalDate !== undefined)
-      updateData['renewal_date'] = ctx.input.renewalDate;
-    if (ctx.input.industry !== undefined) updateData['industry'] = ctx.input.industry;
+    if (ctx.input.name !== undefined) updateData.name = ctx.input.name;
+    if (ctx.input.domains !== undefined) updateData.domains = ctx.input.domains;
+    if (ctx.input.description !== undefined) updateData.description = ctx.input.description;
+    if (ctx.input.note !== undefined) updateData.note = ctx.input.note;
+    if (ctx.input.healthScore !== undefined) updateData.health_score = ctx.input.healthScore;
+    if (ctx.input.accountTier !== undefined) updateData.account_tier = ctx.input.accountTier;
+    if (ctx.input.renewalDate !== undefined) updateData.renewal_date = ctx.input.renewalDate;
+    if (ctx.input.industry !== undefined) updateData.industry = ctx.input.industry;
     if (ctx.input.customFields !== undefined)
-      updateData['custom_fields'] = ctx.input.customFields;
+      updateData.custom_fields = ctx.input.customFields;
 
     let company = await client.updateCompany(ctx.input.companyId, updateData);
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CodemagicClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let artifactSchema = z.object({
   name: z.string().optional().describe('Artifact file name'),

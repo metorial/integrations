@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let ticketClassSchema = z.object({
   ticketClassId: z.string().describe('The unique ID of the ticket class.'),

@@ -30,7 +30,7 @@ export class ConnectClient {
 
   async getConnection(connectionId: string, userId?: string) {
     let params: Record<string, string> = {};
-    if (userId) params['user_id'] = userId;
+    if (userId) params.user_id = userId;
 
     let response = await this.http.get(`/v2/connections/${connectionId}`, {
       headers: this.headers(),
@@ -75,7 +75,7 @@ export class ConnectClient {
     userId?: string
   ) {
     let params: Record<string, string> = {};
-    if (userId) params['user_id'] = userId;
+    if (userId) params.user_id = userId;
 
     let response = await this.http.get(
       `/v2/connections/${connectionId}/${type}/${typeId}/field_options/${fieldSlug}`,
@@ -96,7 +96,7 @@ export class ConnectClient {
     userFeatureId?: string
   ) {
     let body: Record<string, string> = { user_id: userId };
-    if (userFeatureId) body['user_feature_id'] = userFeatureId;
+    if (userFeatureId) body.user_feature_id = userFeatureId;
 
     let response = await this.http.post(
       `/v2/connections/${connectionId}/triggers/${triggerId}/test`,
@@ -119,8 +119,8 @@ export class ConnectClient {
     userFeatureId?: string
   ) {
     let body: Record<string, any> = { user_id: userId };
-    if (fields) body['fields'] = fields;
-    if (userFeatureId) body['user_feature_id'] = userFeatureId;
+    if (fields) body.fields = fields;
+    if (userFeatureId) body.user_feature_id = userFeatureId;
 
     let response = await this.http.post(
       `/v2/connections/${connectionId}/actions/${actionId}/run`,
@@ -144,9 +144,9 @@ export class ConnectClient {
     cursor?: string
   ) {
     let body: Record<string, any> = { user_id: userId };
-    if (fields) body['fields'] = fields;
-    if (limit) body['limit'] = limit;
-    if (cursor) body['cursor'] = cursor;
+    if (fields) body.fields = fields;
+    if (limit) body.limit = limit;
+    if (cursor) body.cursor = cursor;
 
     let response = await this.http.post(
       `/v2/connections/${connectionId}/queries/${queryId}/perform`,
@@ -170,8 +170,8 @@ export class ConnectClient {
 
     let data = notifications.map(n => {
       let item: Record<string, string> = {};
-      if (n.userId) item['user_id'] = n.userId;
-      if (n.triggerIdentity) item['trigger_identity'] = n.triggerIdentity;
+      if (n.userId) item.user_id = n.userId;
+      if (n.triggerIdentity) item.trigger_identity = n.triggerIdentity;
       return item;
     });
 

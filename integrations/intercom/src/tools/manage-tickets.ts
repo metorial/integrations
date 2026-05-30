@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { intercomServiceError } from '../lib/errors';
+import { spec } from '../spec';
 
 export let manageTickets = SlateTool.create(spec, {
   name: 'Manage Tickets',
@@ -126,8 +126,7 @@ Use the "list_ticket_types" action to discover available ticket types before cre
     }
 
     if (action === 'update') {
-      if (!ctx.input.ticketId)
-        throw intercomServiceError('ticketId is required for update');
+      if (!ctx.input.ticketId) throw intercomServiceError('ticketId is required for update');
       let result = await client.updateTicket(ctx.input.ticketId, {
         ticketAttributes: ctx.input.ticketAttributes,
         state: ctx.input.state,

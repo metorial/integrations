@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getEndpointHeaders = SlateTool.create(spec, {
   name: 'Get Endpoint Headers',
@@ -20,9 +20,7 @@ export let getEndpointHeaders = SlateTool.create(spec, {
   .output(
     z.object({
       headers: z.record(z.string(), z.string()).describe('Configured non-sensitive headers'),
-      sensitive: z
-        .array(z.string())
-        .describe('Header names whose values are redacted by Svix')
+      sensitive: z.array(z.string()).describe('Header names whose values are redacted by Svix')
     })
   )
   .handleInvocation(async ctx => {
@@ -32,7 +30,10 @@ export let getEndpointHeaders = SlateTool.create(spec, {
     });
 
     ctx.progress('Fetching endpoint headers...');
-    let result = await client.getEndpointHeaders(ctx.input.applicationId, ctx.input.endpointId);
+    let result = await client.getEndpointHeaders(
+      ctx.input.applicationId,
+      ctx.input.endpointId
+    );
 
     return {
       output: {

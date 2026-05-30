@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProperties,
-  getProperty,
-  listBookings,
-  getBooking,
   createBooking,
-  updateBookingStatus,
   getAvailability,
-  updateAvailability,
-  getRates,
-  updateRates,
+  getBooking,
+  getProperty,
   getQuote,
+  getRates,
+  listBookings,
+  listProperties,
   managePaymentLink,
-  sendMessage
+  sendMessage,
+  updateAvailability,
+  updateBookingStatus,
+  updateRates
 } from './tools';
 import {
-  bookingChanges,
   availabilityChanges,
-  rateChanges,
-  guestMessageReceived
+  bookingChanges,
+  guestMessageReceived,
+  rateChanges
 } from './triggers';
 
 export let provider = Slate.create({

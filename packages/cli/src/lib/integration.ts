@@ -1,6 +1,6 @@
-import { access, readFile, readdir } from 'fs/promises';
-import path from 'path';
 import { resolveSlatesCliRoot } from '@slates/profiles';
+import { access, readdir, readFile } from 'fs/promises';
+import path from 'path';
 
 export interface ResolvedIntegration {
   input: string;
@@ -142,7 +142,9 @@ export let listWorkspaceIntegrations = async (opts: { cwd?: string } = {}) => {
     );
 
     integrations.push(
-      ...chunk.filter((integration): integration is WorkspaceIntegrationSummary => integration !== null)
+      ...chunk.filter(
+        (integration): integration is WorkspaceIntegrationSummary => integration !== null
+      )
     );
   }
 

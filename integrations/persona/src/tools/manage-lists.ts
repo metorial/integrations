@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PersonaClient } from '../lib/client';
 import { normalizeResource } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listLists = SlateTool.create(spec, {
   name: 'List Lists',
@@ -161,7 +161,7 @@ export let createListItem = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new PersonaClient({ token: ctx.auth.token });
     let attrs: Record<string, any> = ctx.input.attributes || {};
-    if (ctx.input.value) attrs['value'] = ctx.input.value;
+    if (ctx.input.value) attrs.value = ctx.input.value;
 
     let result = await client.createListItem(ctx.input.listId, attrs);
     let normalized = normalizeResource(result.data);

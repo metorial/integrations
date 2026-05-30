@@ -1,5 +1,5 @@
 import { createAxios } from 'slates';
-import { CharacterGrid } from './client';
+import type { CharacterGrid } from './client';
 
 export interface VbmlComponent {
   template?: string;

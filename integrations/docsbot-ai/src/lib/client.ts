@@ -268,7 +268,7 @@ export interface UploadUrlResponse {
 export class DocsBotAdminClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://docsbot.ai/api/',
       headers: {
@@ -439,7 +439,7 @@ export class DocsBotAdminClient {
 export class DocsBotChatClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.docsbot.ai/',
       headers: {

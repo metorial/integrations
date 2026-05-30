@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 import { googleAdsScopes } from './scopes';
 
@@ -126,7 +126,12 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: {
-      output: { token: string; refreshToken?: string; expiresAt?: string; developerToken: string };
+      output: {
+        token: string;
+        refreshToken?: string;
+        expiresAt?: string;
+        developerToken: string;
+      };
       input: { developerToken: string };
       scopes: string[];
     }) => {

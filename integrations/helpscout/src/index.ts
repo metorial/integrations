@@ -1,33 +1,33 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listConversations,
-  getConversation,
-  createConversation,
-  updateConversation,
-  deleteConversation,
   addThread,
-  listCustomers,
-  getCustomer,
+  createConversation,
   createCustomer,
-  updateCustomer,
-  manageOrganization,
-  listMailboxes,
-  manageTags,
-  listUsers,
-  listTeams,
-  manageWorkflow,
+  deleteConversation,
+  getConversation,
+  getCustomer,
   getReport,
+  listConversations,
+  listCustomers,
+  listMailboxes,
   listSatisfactionRatings,
-  manageDocs
+  listTeams,
+  listUsers,
+  manageDocs,
+  manageOrganization,
+  manageTags,
+  manageWorkflow,
+  updateConversation,
+  updateCustomer
 } from './tools';
 import {
+  beaconChatEvents,
   conversationEvents,
   customerEvents,
-  satisfactionEvents,
   organizationEvents,
+  satisfactionEvents,
   tagEvents,
-  beaconChatEvents,
   userEvents
 } from './triggers';
 

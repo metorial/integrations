@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let ORDER_EVENT_TYPES = ['order.created', 'order.updated', 'order.fulfillment.updated'];
 
@@ -56,7 +56,7 @@ export let orderEvents = SlateTrigger.create(spec, {
 
     handleRequest: async ctx => {
       let body = (await ctx.request.json()) as any;
-      if (!body || !body.type) return { inputs: [] };
+      if (!body?.type) return { inputs: [] };
 
       let order = body.data?.object?.order || body.data?.object || {};
 

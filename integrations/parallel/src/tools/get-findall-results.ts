@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFindallResults = SlateTool.create(spec, {
   name: 'Get FindAll Results',
@@ -83,7 +83,7 @@ Use the run ID returned by the **Find Entities** tool.`,
     let client = new Client(ctx.auth.token);
     let run = await client.getFindAllRun(ctx.input.findallId);
 
-    let candidates = null;
+    let candidates: any = null;
     if (ctx.input.includeResults && run.status === 'completed') {
       let results = await client.getFindAllResults(ctx.input.findallId);
       candidates = results.candidates;

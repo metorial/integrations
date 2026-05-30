@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  convertFile,
-  optimizeFile,
   addWatermark,
   captureWebsite,
-  generateThumbnail,
-  mergeFiles,
-  extractMetadata,
+  convertFile,
   createArchive,
-  processPdf,
+  createJob,
+  extractMetadata,
+  generateThumbnail,
   getJob,
-  listJobs,
   listFormats,
-  createJob
+  listJobs,
+  mergeFiles,
+  optimizeFile,
+  processPdf
 } from './tools';
 import { jobEvent } from './triggers';
 

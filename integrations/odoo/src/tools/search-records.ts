@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
-import type { OdooDomainFilter } from '../lib/client';
 import { z } from 'zod';
+import type { OdooDomainFilter } from '../lib/client';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let domainFilterSchema = z
   .array(

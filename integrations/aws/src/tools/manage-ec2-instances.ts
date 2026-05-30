@@ -7,9 +7,9 @@ import {
 } from '@aws-sdk/client-ec2';
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { clientFromContext } from '../lib/helpers';
 import { awsServiceError } from '../lib/errors';
+import { clientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 let tagSchema = z.object({
   key: z.string().describe('Tag key'),

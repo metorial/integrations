@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ToneDenClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let totalsSchema = z.object({
   lastDay: z.number().optional().describe('Count in the last 24 hours'),

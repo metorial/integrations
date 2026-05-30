@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createEmbedding = SlateTool.create(spec, {
   name: 'Create Embedding',
@@ -57,7 +57,7 @@ export let createEmbedding = SlateTool.create(spec, {
       input: ctx.input.input ?? ''
     });
 
-    let rawData = (result.data as Array<Record<string, unknown>>) || [];
+    let rawData = (result.data as Record<string, unknown>[]) || [];
     let embeddings = rawData.map((item: Record<string, unknown>) => ({
       index: (item.index as number) || 0,
       embedding: (item.embedding as number[]) || []

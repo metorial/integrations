@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let PAYMENT_EVENT_TYPES = ['payment.changed'] as const;
 
@@ -49,7 +49,7 @@ export let paymentEvents = SlateTrigger.create(spec, {
       for (let sub of subs) {
         try {
           await client.deleteEventSubscription(sub.subscriptionId);
-        } catch (e) {
+        } catch (_e) {
           /* ignore cleanup errors */
         }
       }
@@ -82,7 +82,7 @@ export let paymentEvents = SlateTrigger.create(spec, {
         openAmount = payment.openAmount;
         paymentStatus = payment.paymentStatus ?? payment.status;
         currency = payment.currency;
-      } catch (e) {
+      } catch (_e) {
         /* resource may not be accessible */
       }
 

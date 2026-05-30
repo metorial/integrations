@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listUserPools,
-  manageUserPool,
-  listUsers,
-  manageUser,
   listGroups,
+  listUserPools,
+  listUsers,
+  manageAppClient,
   manageGroup,
   manageGroupMembership,
+  manageIdentityPool,
   manageIdentityProvider,
-  manageAppClient,
-  manageIdentityPool
+  manageUser,
+  manageUserPool
 } from './tools';
-import { userChanges, groupChanges, inboundWebhook } from './triggers';
+import { groupChanges, inboundWebhook, userChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendCard,
-  scheduleDripCampaign,
   cancelCards,
-  getContacts,
   getCards,
+  getContacts,
   getUser,
-  listTemplates
+  listTemplates,
+  scheduleDripCampaign,
+  sendCard
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

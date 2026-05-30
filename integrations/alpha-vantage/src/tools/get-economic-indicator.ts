@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let indicatorEnum = z.enum([
   'REAL_GDP',
@@ -64,19 +64,19 @@ export let getEconomicIndicator = SlateTool.create(spec, {
       maturity
     });
 
-    let rawData: any[] = data['data'] || [];
+    let rawData: any[] = data.data || [];
 
     let dataPoints = rawData
-      .filter((d: any) => d['value'] !== '.')
+      .filter((d: any) => d.value !== '.')
       .map((d: any) => ({
-        date: d['date'] || '',
-        value: d['value'] || ''
+        date: d.date || '',
+        value: d.value || ''
       }));
 
     return {
       output: {
-        indicator: data['name'] || indicator,
-        unit: data['unit'] || '',
+        indicator: data.name || indicator,
+        unit: data.unit || '',
         dataPoints
       },
       message: `Retrieved ${dataPoints.length} data points for **${indicator}**.`

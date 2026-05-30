@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTickets,
-  getTicket,
   createTicket,
-  updateTicket,
   deleteTicket,
-  mergeTickets,
-  sendRatingRequest,
   getReport,
-  queryAuditLog,
-  manageRules,
-  manageMacros,
+  getTicket,
+  listTickets,
   manageAgents,
-  manageTeams,
-  manageTags,
   manageCannedResponses,
-  manageCustomFields
+  manageCustomFields,
+  manageMacros,
+  manageRules,
+  manageTags,
+  manageTeams,
+  mergeTickets,
+  queryAuditLog,
+  sendRatingRequest,
+  updateTicket
 } from './tools';
 import { ticketEventsTrigger } from './triggers';
 

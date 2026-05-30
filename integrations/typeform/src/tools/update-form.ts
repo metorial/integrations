@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TypeformClient } from '../lib/client';
 import { typeformServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateForm = SlateTool.create(spec, {
   name: 'Update Form',

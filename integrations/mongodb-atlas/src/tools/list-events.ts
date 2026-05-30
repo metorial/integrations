@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let listEventsTool = SlateTool.create(spec, {
   name: 'List Events',
@@ -60,7 +60,7 @@ export let listEventsTool = SlateTool.create(spec, {
       pageNum: ctx.input.pageNum
     };
 
-    let result;
+    let result: any;
     if (projectId) {
       result = await client.listProjectEvents(projectId, params);
     } else if (orgId) {

@@ -1,35 +1,35 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCoursesTool,
+  getCourseAnalyticsTool,
   getCourseTool,
-  manageCourseTool,
-  listUsersTool,
-  listEnrollmentsTool,
-  manageEnrollmentTool,
-  listAssignmentsTool,
-  manageAssignmentTool,
-  listSubmissionsTool,
   gradeSubmissionTool,
-  listModulesTool,
-  manageModuleTool,
-  manageDiscussionTool,
-  managePageTool,
+  listAssignmentsTool,
   listCalendarEventsTool,
-  manageCalendarEventTool,
   listConversationsTool,
-  sendMessageTool,
-  listQuizzesTool,
+  listCoursesTool,
+  listEnrollmentsTool,
   listFilesTool,
-  getCourseAnalyticsTool
+  listModulesTool,
+  listQuizzesTool,
+  listSubmissionsTool,
+  listUsersTool,
+  manageAssignmentTool,
+  manageCalendarEventTool,
+  manageCourseTool,
+  manageDiscussionTool,
+  manageEnrollmentTool,
+  manageModuleTool,
+  managePageTool,
+  sendMessageTool
 } from './tools';
 import {
-  courseChangesTrigger,
-  newSubmissionsTrigger,
-  enrollmentChangesTrigger,
-  newAnnouncementsTrigger,
   assignmentChangesTrigger,
-  inboundWebhook
+  courseChangesTrigger,
+  enrollmentChangesTrigger,
+  inboundWebhook,
+  newAnnouncementsTrigger,
+  newSubmissionsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

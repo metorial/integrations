@@ -128,7 +128,8 @@ export class InstagramClient {
       if (params.coverUrl) body.cover_url = params.coverUrl;
       if (params.shareToFeed !== undefined) body.share_to_feed = params.shareToFeed;
     } else if (params.videoUrl) {
-      body.media_type = params.mediaType === 'VIDEO' || params.isCarouselItem ? 'VIDEO' : 'REELS';
+      body.media_type =
+        params.mediaType === 'VIDEO' || params.isCarouselItem ? 'VIDEO' : 'REELS';
       body.video_url = params.videoUrl;
     } else {
       body.image_url = params.imageUrl;

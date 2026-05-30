@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let mailcoachEvents = SlateTrigger.create(spec, {
   name: 'Mailcoach Events',
@@ -64,7 +64,7 @@ export let mailcoachEvents = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.event) {
+      if (!data?.event) {
         return { inputs: [] };
       }
 

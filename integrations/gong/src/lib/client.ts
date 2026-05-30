@@ -1,6 +1,6 @@
+import { Buffer } from 'node:buffer';
 import { createAxios } from 'slates';
 import { gongApiError } from './errors';
-import { Buffer } from 'node:buffer';
 
 type MeetingInvitee = {
   email: string;
@@ -197,12 +197,7 @@ export class GongClient {
 
   // ========== USERS ==========
 
-  async listUsers(
-    params: {
-      cursor?: string;
-      includeAvatars?: boolean;
-    } = {}
-  ) {
+  async listUsers(params: { cursor?: string; includeAvatars?: boolean } = {}) {
     let queryParams: Record<string, string> = {};
     if (params.cursor) queryParams.cursor = params.cursor;
     if (params.includeAvatars !== undefined)
@@ -303,11 +298,7 @@ export class GongClient {
 
   // ========== LIBRARY ==========
 
-  async getLibraryFolders(
-    params: {
-      workspaceId?: string;
-    } = {}
-  ) {
+  async getLibraryFolders(params: { workspaceId?: string } = {}) {
     let queryParams: Record<string, string> = {};
     if (params.workspaceId) queryParams.workspaceId = params.workspaceId;
 
@@ -328,12 +319,7 @@ export class GongClient {
 
   // ========== FLOWS (ENGAGE) ==========
 
-  async listFlows(
-    params: {
-      workspaceId?: string;
-      flowEmailOwner?: string;
-    } = {}
-  ) {
+  async listFlows(params: { workspaceId?: string; flowEmailOwner?: string } = {}) {
     let queryParams: Record<string, string> = {};
     if (params.workspaceId) queryParams.workspaceId = params.workspaceId;
     if (params.flowEmailOwner) queryParams.flowEmailOwner = params.flowEmailOwner;
@@ -345,12 +331,7 @@ export class GongClient {
     return response.data;
   }
 
-  async listFlowFolders(
-    params: {
-      workspaceId?: string;
-      flowEmailOwner?: string;
-    } = {}
-  ) {
+  async listFlowFolders(params: { workspaceId?: string; flowEmailOwner?: string } = {}) {
     let queryParams: Record<string, string> = {};
     if (params.workspaceId) queryParams.workspaceId = params.workspaceId;
     if (params.flowEmailOwner) queryParams.flowEmailOwner = params.flowEmailOwner;

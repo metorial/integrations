@@ -2,29 +2,29 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getReport,
-  listReports,
-  manageReport,
-  manageQuery,
-  runReport,
   getReportRun,
-  listReportRuns,
   listCollections,
-  manageCollection,
-  listDatasets,
-  manageDataset,
   listDataSources,
-  listReportSchedules,
-  manageReportSchedule,
+  listDatasets,
   listDefinitions,
+  listMembers,
+  listReportRuns,
+  listReportSchedules,
+  listReports,
+  manageCollection,
+  manageDataset,
   manageDefinition,
-  listMembers
+  manageQuery,
+  manageReport,
+  manageReportSchedule,
+  runReport
 } from './tools';
 import {
-  reportEvents,
-  reportRunEvents,
   dataSourceEvents,
   definitionEvents,
-  memberEvents
+  memberEvents,
+  reportEvents,
+  reportRunEvents
 } from './triggers';
 
 export let provider = Slate.create({

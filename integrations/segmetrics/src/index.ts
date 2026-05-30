@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  upsertContact,
   deleteContact,
-  manageTags,
-  upsertOrder,
   deleteOrder,
-  upsertSubscription,
   deleteSubscription,
-  upsertProduct,
-  recordAdPerformance,
-  getReport,
-  getCustomerJourney,
   getContact,
-  identifyVisitor
+  getCustomerJourney,
+  getReport,
+  identifyVisitor,
+  manageTags,
+  recordAdPerformance,
+  upsertContact,
+  upsertOrder,
+  upsertProduct,
+  upsertSubscription
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

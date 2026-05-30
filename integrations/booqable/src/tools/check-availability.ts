@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { buildClientConfig, flattenResourceList } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let checkAvailability = SlateTool.create(spec, {
   name: 'Check Inventory',
@@ -33,10 +33,10 @@ export let checkAvailability = SlateTool.create(spec, {
     let client = new Client(buildClientConfig(ctx));
 
     let filters: Record<string, string> = {};
-    if (ctx.input.productGroupId) filters['product_group_id'] = ctx.input.productGroupId;
-    if (ctx.input.locationId) filters['location_id'] = ctx.input.locationId;
-    if (ctx.input.from) filters['from'] = ctx.input.from;
-    if (ctx.input.till) filters['till'] = ctx.input.till;
+    if (ctx.input.productGroupId) filters.product_group_id = ctx.input.productGroupId;
+    if (ctx.input.locationId) filters.location_id = ctx.input.locationId;
+    if (ctx.input.from) filters.from = ctx.input.from;
+    if (ctx.input.till) filters.till = ctx.input.till;
 
     let response = await client.listInventoryLevels({
       pagination: {

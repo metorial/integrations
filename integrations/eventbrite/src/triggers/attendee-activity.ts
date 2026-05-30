@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let attendeeActivity = SlateTrigger.create(spec, {
   name: 'Attendee Activity',
@@ -83,7 +83,7 @@ export let attendeeActivity = SlateTrigger.create(spec, {
       if (eventId && attendeeId) {
         try {
           attendee = await client.getAttendee(eventId, attendeeId);
-        } catch (e) {
+        } catch (_e) {
           attendee = { id: attendeeId, event_id: eventId };
         }
       }

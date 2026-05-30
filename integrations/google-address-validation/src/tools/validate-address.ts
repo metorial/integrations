@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { googleAddressValidationActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressComponentSchema = z.object({
   componentName: z

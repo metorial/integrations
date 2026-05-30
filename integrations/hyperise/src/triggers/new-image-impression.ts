@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newImageImpression = SlateTrigger.create(spec, {
   name: 'New Image Impression',
@@ -68,7 +68,7 @@ export let newImageImpression = SlateTrigger.create(spec, {
       let lastDate = (ctx.state as any)?.lastDate as string | undefined;
       if (!lastDate) {
         let oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-        lastDate = oneDayAgo.toISOString().slice(0, 19) + 'Z';
+        lastDate = `${oneDayAgo.toISOString().slice(0, 19)}Z`;
       }
 
       let result = await client.listImageImpressions(imageHash, lastDate);

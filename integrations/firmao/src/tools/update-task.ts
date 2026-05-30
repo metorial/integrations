@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FirmaoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateTask = SlateTool.create(spec, {
   name: 'Update Task',

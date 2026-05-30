@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
-import { TwitterClient } from '../lib/client';
-import { userSchema, mapUser } from '../lib/helpers';
-import { spec } from '../spec';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from '@slates/provider';
 import { z } from 'zod';
+import { TwitterClient } from '../lib/client';
+import { mapUser, userSchema } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let newFollower = SlateTrigger.create(spec, {
   name: 'New Follower',

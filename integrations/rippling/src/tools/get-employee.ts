@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RipplingClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getEmployee = SlateTool.create(spec, {
   name: 'Get Employee',
@@ -63,7 +63,7 @@ export let getEmployee = SlateTool.create(spec, {
         compensation: emp.compensation,
         customFields: emp.customFields
       },
-      message: `Retrieved employee **${emp.name || emp.firstName + ' ' + emp.lastName || ctx.input.employeeId}** (${emp.roleState || 'Unknown status'}).`
+      message: `Retrieved employee **${emp.name || `${emp.firstName} ${emp.lastName}` || ctx.input.employeeId}** (${emp.roleState || 'Unknown status'}).`
     };
   })
   .build();

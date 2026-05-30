@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  geocodeAddress,
-  reverseGeocode,
   autocompleteAddress,
-  calculateRoute,
-  searchPlaces,
-  getPlaceDetails,
+  batchGeocode,
   calculateIsoline,
+  calculateRoute,
   calculateRouteMatrix,
+  checkBatchGeocode,
+  geocodeAddress,
+  getPlaceDetails,
   ipGeolocation,
   lookupBoundaries,
   lookupPostcodes,
   mapMatch,
-  batchGeocode,
-  checkBatchGeocode
+  reverseGeocode,
+  searchPlaces
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

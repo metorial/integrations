@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AmplitudeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let querySessionsTool = SlateTool.create(spec, {
   name: 'Query Sessions',
@@ -36,7 +36,7 @@ export let querySessionsTool = SlateTool.create(spec, {
       region: ctx.config.region
     });
 
-    let result;
+    let result: any;
     if (ctx.input.metric === 'length_distribution') {
       result = await client.getSessionLengthDistribution({
         start: ctx.input.start,

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { DialpadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let callEventTrigger = SlateTrigger.create(spec, {
   name: 'Call Event',

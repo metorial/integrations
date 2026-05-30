@@ -1,13 +1,13 @@
 import {
-  SlatesNotifications,
+  type SlatesNotifications,
   SlatesProviderProtoHandlerManager,
-  SlatesRequests,
-  SlatesResponses
+  type SlatesRequests,
+  type SlatesResponses
 } from '@slates/proto';
-import { Slate, SlateLogListener } from '@slates/provider';
+import type { Slate, SlateLogListener } from '@slates/provider';
 import { createProviderHandler } from '@slates/provider-handler';
 import { SlateProtocolError } from './error';
-import { SlatesMessageTransport } from './types';
+import type { SlatesMessageTransport } from './types';
 
 type ProviderMessage = SlatesNotifications | SlatesRequests;
 type ProviderResponse = SlatesNotifications | SlatesResponses;
@@ -39,7 +39,7 @@ export let createLocalSlateTransport = <ConfigType extends {}, AuthType extends 
       let responses: ProviderResponse[] = [];
 
       for (let message of messages as ProviderMessage[]) {
-        let response;
+        let response: any;
         try {
           response = await SlatesProviderProtoHandlerManager.handleInput(manager, message);
         } catch (error) {

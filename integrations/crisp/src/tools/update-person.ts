@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updatePerson = SlateTool.create(spec, {
   name: 'Update Person',
@@ -42,14 +42,14 @@ export let updatePerson = SlateTool.create(spec, {
     let updated: string[] = [];
 
     let profile: Record<string, any> = {};
-    if (ctx.input.email !== undefined) profile['email'] = ctx.input.email;
-    if (ctx.input.phone !== undefined) profile['phone'] = ctx.input.phone;
-    if (ctx.input.address !== undefined) profile['address'] = ctx.input.address;
-    if (ctx.input.segments !== undefined) profile['segments'] = ctx.input.segments;
+    if (ctx.input.email !== undefined) profile.email = ctx.input.email;
+    if (ctx.input.phone !== undefined) profile.phone = ctx.input.phone;
+    if (ctx.input.address !== undefined) profile.address = ctx.input.address;
+    if (ctx.input.segments !== undefined) profile.segments = ctx.input.segments;
     if (ctx.input.nickname !== undefined || ctx.input.avatar !== undefined) {
-      profile['person'] = {};
-      if (ctx.input.nickname !== undefined) profile['person']['nickname'] = ctx.input.nickname;
-      if (ctx.input.avatar !== undefined) profile['person']['avatar'] = ctx.input.avatar;
+      profile.person = {};
+      if (ctx.input.nickname !== undefined) profile.person.nickname = ctx.input.nickname;
+      if (ctx.input.avatar !== undefined) profile.person.avatar = ctx.input.avatar;
     }
 
     if (Object.keys(profile).length > 0) {

@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  checkVerification,
+  getAccountInfo,
+  listCalls,
+  makeCall,
+  manageApplications,
+  manageCall,
+  manageNumbers,
+  numberInsight,
   sendMessage,
   sendSms,
-  makeCall,
-  manageCall,
-  listCalls,
-  verifyUser,
-  checkVerification,
-  numberInsight,
-  manageNumbers,
-  manageApplications,
-  getAccountInfo
+  verifyUser
 } from './tools';
-import { messageEvents, voiceEvents, verifyEvents } from './triggers';
+import { messageEvents, verifyEvents, voiceEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

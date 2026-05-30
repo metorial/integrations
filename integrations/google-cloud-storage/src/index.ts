@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBuckets,
-  getBucket,
-  manageBucket,
-  listObjects,
-  getObject,
-  uploadObject,
-  deleteObject,
   copyObject,
-  updateObjectMetadata,
+  deleteObject,
+  getBucket,
+  getObject,
+  listBuckets,
+  listObjects,
+  manageBucket,
   manageBucketIam,
   manageLifecycle,
-  manageNotifications
+  manageNotifications,
+  updateObjectMetadata,
+  uploadObject
 } from './tools';
-import { objectChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, objectChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

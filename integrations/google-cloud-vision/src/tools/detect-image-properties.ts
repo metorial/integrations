@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { VisionClient } from '../lib/client';
 import { imageSourceSchema } from '../lib/schemas';
 import { googleCloudVisionActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let detectImageProperties = SlateTool.create(spec, {
   name: 'Detect Image Properties',

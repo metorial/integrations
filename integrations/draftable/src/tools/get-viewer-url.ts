@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { generateSignedViewerUrl, generatePublicViewerUrl } from '../lib/signing';
 import { z } from 'zod';
+import { generatePublicViewerUrl, generateSignedViewerUrl } from '../lib/signing';
+import { spec } from '../spec';
 
 let DEFAULT_BASE_URL = 'https://api.draftable.com/v1';
 

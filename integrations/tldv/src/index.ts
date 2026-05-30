@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listMeetings,
+  downloadRecording,
+  getHighlights,
   getMeeting,
   getTranscript,
-  getHighlights,
-  downloadRecording,
-  importMeeting
+  importMeeting,
+  listMeetings
 } from './tools';
 import { meetingReady, transcriptReady } from './triggers';
 

@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class StatsClient {
   private axios;
 
-  constructor(private config: { token: string; baseUrl: string }) {
+  constructor(config: { token: string; baseUrl: string }) {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
@@ -74,7 +74,7 @@ export class StatsClient {
 export class EventsClient {
   private axios;
 
-  constructor(private config: { baseUrl: string }) {
+  constructor(config: { baseUrl: string }) {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
@@ -115,7 +115,7 @@ export class EventsClient {
 export class SitesClient {
   private axios;
 
-  constructor(private config: { token: string; baseUrl: string }) {
+  constructor(config: { token: string; baseUrl: string }) {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {

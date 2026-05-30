@@ -356,7 +356,7 @@ export class GeoapifyClient {
   }
 
   async batchReverseGeocodeSubmit(params: {
-    coordinates: Array<[number, number]>;
+    coordinates: [number, number][];
     type?: string;
     lang?: string;
     limit?: number;

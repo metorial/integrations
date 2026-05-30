@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { AzureDevOpsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let buildCompleteEventsTrigger = SlateTrigger.create(spec, {
   name: 'Build & Pipeline Events',
@@ -59,7 +59,7 @@ export let buildCompleteEventsTrigger = SlateTrigger.create(spec, {
       for (let eventType of eventTypes) {
         let publisherInputs: Record<string, string> = {};
         if (ctx.config.project) {
-          publisherInputs['projectId'] = ctx.config.project;
+          publisherInputs.projectId = ctx.config.project;
         }
 
         // build.complete uses 'tfs' publisher, pipeline events use 'pipelines'

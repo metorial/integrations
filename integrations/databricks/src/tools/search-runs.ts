@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DatabricksClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchRuns = SlateTool.create(spec, {
   name: 'Search MLflow Runs',

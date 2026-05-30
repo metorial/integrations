@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageRankTracker = SlateTool.create(spec, {
   name: 'Manage Rank Tracker',
@@ -55,7 +55,7 @@ Management endpoints are free (no API unit cost).`,
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let result;
+    let result: any;
     switch (ctx.input.action) {
       case 'list-projects':
         result = await client.listRankTrackerProjects();

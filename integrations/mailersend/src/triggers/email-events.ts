@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let emailEventTypes = [
   'activity.sent',
@@ -80,7 +80,7 @@ export let emailEvents = SlateTrigger.create(spec, {
             webhookId: String(result.data.id || ''),
             domainId
           });
-        } catch (err) {
+        } catch (_err) {
           // Continue with other domains if one fails
         }
       }
@@ -99,7 +99,7 @@ export let emailEvents = SlateTrigger.create(spec, {
       for (let webhook of details.webhooks || []) {
         try {
           await client.deleteWebhook(webhook.webhookId);
-        } catch (err) {
+        } catch (_err) {
           // Best effort cleanup
         }
       }

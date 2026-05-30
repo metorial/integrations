@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let callbackInputSchema = z.object({
   requestId: z.string().describe('Request ID from Deepgram.'),

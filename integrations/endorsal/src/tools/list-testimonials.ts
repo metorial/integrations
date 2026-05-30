@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client, type EndorsalListResponse, type EndorsalTestimonial } from '../lib/client';
+import { spec } from '../spec';
 
 export let listTestimonials = SlateTool.create(spec, {
   name: 'List Testimonials',
@@ -48,7 +48,7 @@ export let listTestimonials = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let result;
+    let result: EndorsalListResponse<EndorsalTestimonial>;
 
     if (ctx.input.contactId) {
       result = await client.getTestimonialsForContact(ctx.input.contactId);

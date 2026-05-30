@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { createApiClient, listPipelines, fetchPipeline } from '../lib/client';
+import { createApiClient, fetchPipeline, listPipelines } from '../lib/client';
+import { spec } from '../spec';
 
 export let pipelineChangesTrigger = SlateTrigger.create(spec, {
   name: 'Pipeline Changes',

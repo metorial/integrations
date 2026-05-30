@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createLead,
   createContact,
   createJob,
-  searchContacts,
+  createLead,
   getBrands,
   getOrders,
-  getPayments
+  getPayments,
+  searchContacts
 } from './tools';
-import { contactCreated, orderBooked, paymentCreated, inboundWebhook } from './triggers';
+import { contactCreated, inboundWebhook, orderBooked, paymentCreated } from './triggers';
 
 export let provider = Slate.create({
   spec,

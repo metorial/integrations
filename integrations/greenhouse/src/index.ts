@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCandidatesTool,
-  getCandidateTool,
-  createCandidateTool,
-  updateCandidateTool,
-  listApplicationsTool,
-  getApplicationTool,
+  addCandidateNoteTool,
   advanceApplicationTool,
-  rejectApplicationTool,
-  listJobsTool,
-  getJobTool,
+  createCandidateTool,
   createJobTool,
-  listOffersTool,
-  listUsersTool,
+  getApplicationTool,
+  getCandidateTool,
+  getJobTool,
   getUserTool,
+  listApplicationsTool,
+  listCandidatesTool,
   listDepartmentsTool,
+  listJobsTool,
+  listOffersTool,
   listOfficesTool,
   listScheduledInterviewsTool,
-  addCandidateNoteTool,
-  manageCandidateTagsTool
+  listUsersTool,
+  manageCandidateTagsTool,
+  rejectApplicationTool,
+  updateCandidateTool
 } from './tools';
 import {
   applicationEventsTrigger,
   candidateEventsTrigger,
-  jobEventsTrigger,
-  interviewEventsTrigger
+  interviewEventsTrigger,
+  jobEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

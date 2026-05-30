@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { createClient, resolveProjectId, gitLabServiceError } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { createClient, gitLabServiceError, resolveProjectId } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getPipelineJobs = SlateTool.create(spec, {
   name: 'Get Pipeline Jobs',

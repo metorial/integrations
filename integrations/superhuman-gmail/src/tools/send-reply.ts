@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client, parseMessage } from '../lib/client';
 import {
   buildReplyHeaders,
@@ -7,7 +8,6 @@ import {
   pickReplyTarget
 } from '../lib/reply-context';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendReply = SlateTool.create(spec, {
   name: 'Send Reply',

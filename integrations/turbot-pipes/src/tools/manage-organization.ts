@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orgOutputSchema = z.object({
   orgId: z.string().describe('Unique organization identifier'),
@@ -214,7 +214,7 @@ export let manageOrgMember = SlateTool.create(spec, {
       baseUrl: ctx.config.baseUrl
     });
 
-    let member;
+    let member: any;
 
     if (ctx.input.action === 'add') {
       if (!ctx.input.role) {

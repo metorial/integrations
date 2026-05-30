@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listFiles = SlateTool.create(spec, {
   name: 'List Files',
@@ -26,7 +26,7 @@ export let listFiles = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let result;
+    let result: any;
 
     if (ctx.input.roomId) {
       result = await client.listConferenceFiles(ctx.input.roomId);

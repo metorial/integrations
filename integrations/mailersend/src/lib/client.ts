@@ -103,7 +103,7 @@ export class Client {
     };
   }
 
-  async sendBulkEmail(messages: Array<Record<string, unknown>>) {
+  async sendBulkEmail(messages: Record<string, unknown>[]) {
     let response = await this.axios.post('/bulk-email', messages);
     return response.data as { message: string; bulk_email_id: string };
   }
@@ -144,7 +144,7 @@ export class Client {
       }
     });
     return response.data as {
-      data: Array<Record<string, unknown>>;
+      data: Record<string, unknown>[];
       meta: Record<string, unknown>;
     };
   }
@@ -169,7 +169,7 @@ export class Client {
       }
     });
     return response.data as {
-      data: Array<Record<string, unknown>>;
+      data: Record<string, unknown>[];
       meta: Record<string, unknown>;
     };
   }
@@ -200,7 +200,7 @@ export class Client {
 
   async getDomainDnsRecords(domainId: string) {
     let response = await this.axios.get(`/domains/${domainId}/dns-records`);
-    return response.data as { data: Array<Record<string, unknown>> };
+    return response.data as { data: Record<string, unknown>[] };
   }
 
   async verifyDomain(domainId: string) {
@@ -224,7 +224,7 @@ export class Client {
       }
     });
     return response.data as {
-      data: Array<Record<string, unknown>>;
+      data: Record<string, unknown>[];
       meta: Record<string, unknown>;
     };
   }
@@ -308,7 +308,7 @@ export class Client {
       }
     });
     return response.data as {
-      data: Array<Record<string, unknown>>;
+      data: Record<string, unknown>[];
       meta: Record<string, unknown>;
     };
   }
@@ -335,7 +335,7 @@ export class Client {
       }
     });
     return response.data as {
-      data: Array<Record<string, unknown>>;
+      data: Record<string, unknown>[];
       meta: Record<string, unknown>;
     };
   }
@@ -367,7 +367,7 @@ export class Client {
       params: queryParams
     });
     return response.data as {
-      data: Array<Record<string, unknown>>;
+      data: Record<string, unknown>[];
       meta: Record<string, unknown>;
     };
   }
@@ -383,7 +383,7 @@ export class Client {
       }
     });
     return response.data as {
-      data: Array<Record<string, unknown>>;
+      data: Record<string, unknown>[];
       meta: Record<string, unknown>;
     };
   }
@@ -415,7 +415,7 @@ export class Client {
       }
     });
     return response.data as {
-      data: Array<Record<string, unknown>>;
+      data: Record<string, unknown>[];
       meta: Record<string, unknown>;
     };
   }
@@ -435,7 +435,7 @@ export class Client {
     if (params.patterns) body.patterns = params.patterns;
 
     let response = await this.axios.post(`/suppressions/${type}`, body);
-    return response.data as { data: Array<Record<string, unknown>> };
+    return response.data as { data: Record<string, unknown>[] };
   }
 
   async deleteFromSuppressionList(
@@ -460,7 +460,7 @@ export class Client {
     let response = await this.axios.get('/webhooks', {
       params: { domain_id: domainId }
     });
-    return response.data as { data: Array<Record<string, unknown>> };
+    return response.data as { data: Record<string, unknown>[] };
   }
 
   async createWebhook(params: {
@@ -508,7 +508,7 @@ export class Client {
     let response = await this.axios.get('/sms-webhooks', {
       params: { sms_number_id: smsNumberId }
     });
-    return response.data as { data: Array<Record<string, unknown>> };
+    return response.data as { data: Record<string, unknown>[] };
   }
 
   async createSmsWebhook(params: {

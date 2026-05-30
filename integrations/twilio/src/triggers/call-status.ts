@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { parseFormUrlEncoded } from '../lib/webhook-parser';
+import { spec } from '../spec';
 
 export let callStatus = SlateTrigger.create(spec, {
   name: 'Call Status Update',
@@ -55,17 +55,17 @@ export let callStatus = SlateTrigger.create(spec, {
       return {
         inputs: [
           {
-            callSid: data['CallSid'] || '',
-            callStatus: data['CallStatus'] || '',
-            from: data['From'] || data['Caller'] || '',
-            to: data['To'] || data['Called'] || '',
-            direction: data['Direction'] || '',
-            accountSid: data['AccountSid'] || '',
-            callDuration: data['CallDuration'],
-            recordingUrl: data['RecordingUrl'],
-            recordingSid: data['RecordingSid'],
-            timestamp: data['Timestamp'],
-            sequenceNumber: data['SequenceNumber']
+            callSid: data.CallSid || '',
+            callStatus: data.CallStatus || '',
+            from: data.From || data.Caller || '',
+            to: data.To || data.Called || '',
+            direction: data.Direction || '',
+            accountSid: data.AccountSid || '',
+            callDuration: data.CallDuration,
+            recordingUrl: data.RecordingUrl,
+            recordingSid: data.RecordingSid,
+            timestamp: data.Timestamp,
+            sequenceNumber: data.SequenceNumber
           }
         ]
       };

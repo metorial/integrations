@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let companyResultSchema = z.object({
   companyId: z.number().optional().describe('RocketReach internal company ID'),

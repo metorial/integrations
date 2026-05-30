@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ProcFuClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let queryMysql = SlateTool.create(spec, {
   name: 'Query MySQL',
@@ -48,7 +48,7 @@ Optionally specify a connection name if multiple MySQL databases are configured.
 
     let paramsStr = ctx.input.params ? JSON.stringify(ctx.input.params) : undefined;
 
-    let result;
+    let result: any;
     if (ctx.input.queryType === 'query') {
       result = await client.mysqlQuery(ctx.input.sql, paramsStr, ctx.input.connectionName);
     } else if (ctx.input.queryType === 'array') {

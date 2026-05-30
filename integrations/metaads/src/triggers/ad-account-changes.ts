@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let adAccountChanges = SlateTrigger.create(spec, {
   name: 'Ad Account Changes',
@@ -33,7 +33,7 @@ export let adAccountChanges = SlateTrigger.create(spec, {
       if (method === 'GET') {
         let url = new URL(ctx.request.url);
         let mode = url.searchParams.get('hub.mode');
-        let verifyToken = url.searchParams.get('hub.verify_token');
+        let _verifyToken = url.searchParams.get('hub.verify_token');
         let challenge = url.searchParams.get('hub.challenge');
 
         if (mode === 'subscribe' && challenge) {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ScrapeDoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createAsyncJob = SlateTool.create(spec, {
   name: 'Create Async Scraping Job',
@@ -90,19 +90,19 @@ export let createAsyncJob = SlateTool.create(spec, {
     if (input.render) {
       renderOptions = {};
       if (input.render.blockResources !== undefined)
-        renderOptions['BlockResources'] = input.render.blockResources;
-      if (input.render.waitUntil) renderOptions['WaitUntil'] = input.render.waitUntil;
+        renderOptions.BlockResources = input.render.blockResources;
+      if (input.render.waitUntil) renderOptions.WaitUntil = input.render.waitUntil;
       if (input.render.customWait !== undefined)
-        renderOptions['CustomWait'] = input.render.customWait;
-      if (input.render.waitSelector) renderOptions['WaitSelector'] = input.render.waitSelector;
+        renderOptions.CustomWait = input.render.customWait;
+      if (input.render.waitSelector) renderOptions.WaitSelector = input.render.waitSelector;
       if (input.render.returnJSON !== undefined)
-        renderOptions['ReturnJSON'] = input.render.returnJSON;
+        renderOptions.ReturnJSON = input.render.returnJSON;
       if (input.render.screenshot !== undefined)
-        renderOptions['Screenshot'] = input.render.screenshot;
+        renderOptions.Screenshot = input.render.screenshot;
       if (input.render.fullScreenshot !== undefined)
-        renderOptions['FullScreenshot'] = input.render.fullScreenshot;
+        renderOptions.FullScreenshot = input.render.fullScreenshot;
       if (input.render.particularScreenshot)
-        renderOptions['ParticularScreenshot'] = input.render.particularScreenshot;
+        renderOptions.ParticularScreenshot = input.render.particularScreenshot;
     }
 
     let result = await client.createAsyncJob({

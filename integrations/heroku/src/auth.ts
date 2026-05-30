@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { herokuApiError, herokuServiceError } from './lib/errors';
 
@@ -72,7 +72,9 @@ export let auth = SlateAuth.create()
 
       let data = response.data;
       if (!data.access_token) {
-        throw herokuServiceError('Heroku OAuth token response did not include an access token.');
+        throw herokuServiceError(
+          'Heroku OAuth token response did not include an access token.'
+        );
       }
 
       return {

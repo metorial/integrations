@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ShipdayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let carrierSchema = z
   .object({
@@ -92,7 +92,7 @@ export let manageCarriers = SlateTool.create(spec, {
       if (!ctx.input.name || !ctx.input.email || !ctx.input.phoneNumber) {
         throw new Error('name, email, and phoneNumber are required to add a carrier');
       }
-      let result = await client.addCarrier({
+      let _result = await client.addCarrier({
         name: ctx.input.name,
         email: ctx.input.email,
         phoneNumber: ctx.input.phoneNumber

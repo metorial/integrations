@@ -8,7 +8,7 @@ export interface NetLicensingItem {
   list?: Array<{
     name: string;
     property?: Array<{ name: string; value: string }>;
-    list?: Array<any>;
+    list?: any[];
   }>;
 }
 
@@ -100,7 +100,7 @@ export let buildFormData = (params: Record<string, any>): string => {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private authToken: string) {
+  constructor(authToken: string) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

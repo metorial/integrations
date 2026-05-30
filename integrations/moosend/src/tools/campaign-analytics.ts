@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MoosendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let campaignAnalytics = SlateTool.create(spec, {
   name: 'Campaign Analytics',

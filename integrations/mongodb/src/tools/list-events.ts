@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AtlasClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let eventSchema = z.object({
   eventId: z.string().describe('Unique identifier of the event'),
@@ -67,7 +67,7 @@ export let listEventsTool = SlateTool.create(spec, {
     if (ctx.input.minDate) params.minDate = ctx.input.minDate;
     if (ctx.input.maxDate) params.maxDate = ctx.input.maxDate;
 
-    let result;
+    let result: any;
     if (ctx.input.scope === 'project') {
       let projectId = ctx.input.projectId || ctx.config.projectId;
       if (!projectId) throw new Error('projectId is required for project scope');

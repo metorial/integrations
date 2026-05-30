@@ -5,7 +5,7 @@ let BASE_URL = 'https://api.exa.ai';
 export class ExaClient {
   private http;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {
@@ -389,7 +389,7 @@ export interface ResearchResponse {
     reasoningTokens?: number;
   };
   error?: string;
-  events?: Array<Record<string, unknown>>;
+  events?: Record<string, unknown>[];
 }
 
 // --- Webset Types ---
@@ -400,10 +400,10 @@ export interface Webset {
   status: 'idle' | 'pending' | 'running' | 'paused';
   externalId?: string;
   title?: string;
-  searches?: Array<Record<string, unknown>>;
-  imports?: Array<Record<string, unknown>>;
+  searches?: Record<string, unknown>[];
+  imports?: Record<string, unknown>[];
   enrichments?: WebsetEnrichment[];
-  monitors?: Array<Record<string, unknown>>;
+  monitors?: Record<string, unknown>[];
   metadata?: Record<string, string>;
   createdAt: string;
   updatedAt: string;

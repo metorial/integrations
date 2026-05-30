@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugsnagClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let collaboratorSchema = z.object({
   collaboratorId: z.string().describe('Collaborator user ID'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { PublicApiClient } from '../lib/public-api-client';
 import { z } from 'zod';
+import { PublicApiClient } from '../lib/public-api-client';
+import { spec } from '../spec';
 
 let subUserSchema = z.object({
   subUserId: z.number().describe('Sub-user ID'),

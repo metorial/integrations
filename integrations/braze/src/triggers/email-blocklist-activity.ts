@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BrazeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let emailBlocklistActivity = SlateTrigger.create(spec, {
   name: 'Email Blocklist Activity',
@@ -64,7 +64,7 @@ export let emailBlocklistActivity = SlateTrigger.create(spec, {
             });
           }
         }
-      } catch (e) {
+      } catch (_e) {
         // Endpoint may not be available with current API key permissions
       }
 
@@ -86,7 +86,7 @@ export let emailBlocklistActivity = SlateTrigger.create(spec, {
             });
           }
         }
-      } catch (e) {
+      } catch (_e) {
         // Endpoint may not be available with current API key permissions
       }
 

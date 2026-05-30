@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { createClient } from '../lib/helpers';
-import { lambdaServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { lambdaServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageRuntimeManagement = SlateTool.create(spec, {
   name: 'Manage Runtime Management',
@@ -62,14 +62,16 @@ export let manageRuntimeManagement = SlateTool.create(spec, {
       throw lambdaServiceError('updateRuntimeOn is required for set.');
     }
     if (ctx.input.updateRuntimeOn === 'Manual' && !ctx.input.runtimeVersionArn) {
-      throw lambdaServiceError('runtimeVersionArn is required when updateRuntimeOn is Manual.');
+      throw lambdaServiceError(
+        'runtimeVersionArn is required when updateRuntimeOn is Manual.'
+      );
     }
 
     let params: Record<string, any> = {
       UpdateRuntimeOn: ctx.input.updateRuntimeOn
     };
     if (ctx.input.runtimeVersionArn) {
-      params['RuntimeVersionArn'] = ctx.input.runtimeVersionArn;
+      params.RuntimeVersionArn = ctx.input.runtimeVersionArn;
     }
 
     let result = await client.putRuntimeManagementConfig(functionName, params, qualifier);

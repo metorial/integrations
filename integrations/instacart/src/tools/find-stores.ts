@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConnectClient } from '../lib/connect-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let findStores = SlateTool.create(spec, {
   name: 'Find Stores',
@@ -57,7 +57,7 @@ Requires **Connect OAuth** authentication with the \`connect:fulfillment\` scope
 
     return {
       output: { stores },
-      message: `Found **${stores.length}** store(s) offering **${ctx.input.fulfillmentType}**.${stores.length > 0 ? '\n\n' + stores.map(s => `- **${s.name}** (${s.locationCode})`).join('\n') : ''}`
+      message: `Found **${stores.length}** store(s) offering **${ctx.input.fulfillmentType}**.${stores.length > 0 ? `\n\n${stores.map(s => `- **${s.name}** (${s.locationCode})`).join('\n')}` : ''}`
     };
   })
   .build();

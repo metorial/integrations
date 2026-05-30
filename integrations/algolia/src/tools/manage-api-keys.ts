@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AlgoliaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageApiKeys = SlateTool.create(spec, {
   name: 'Manage API Keys',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickHouseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let queryEndpointResultSchema = z.object({
   raw: z.string().describe('Raw response body returned by the query endpoint'),

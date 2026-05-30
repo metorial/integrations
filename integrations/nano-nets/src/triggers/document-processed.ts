@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let predictionSchema = z.object({
   label: z.string().describe('Field or table header name'),
@@ -63,7 +63,7 @@ export let documentProcessed = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let body = (await ctx.request.json()) as any;
 
-      let inputs: Array<z.infer<typeof webhookInputSchema>> = [];
+      let inputs: z.infer<typeof webhookInputSchema>[] = [];
 
       // Document-level payload: body.result is an object
       // Page-level payload: body.result is an array
@@ -154,7 +154,7 @@ let determineEventType = (data: any): string => {
   return 'document.processed';
 };
 
-let extractPredictions = (data: any): Array<z.infer<typeof predictionSchema>> => {
+let extractPredictions = (data: any): z.infer<typeof predictionSchema>[] => {
   let preds = data.prediction || data.moderated_boxes || data.predicted_boxes || [];
   return preds.map((p: any) => ({
     label: p.label || '',

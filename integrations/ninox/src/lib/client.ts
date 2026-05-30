@@ -228,7 +228,7 @@ export class Client {
     teamId: string,
     databaseId: string,
     tableId: string,
-    records: Array<Record<string, any>>
+    records: Record<string, any>[]
   ): Promise<any[]> {
     let ax = this.createAxios();
     let response = await ax.post(

@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listFunctions,
-  getFunction,
   createFunction,
-  updateFunction,
   deleteFunction,
-  listRuntimes,
-  generateUploadUrl,
   generateDownloadUrl,
+  generateUploadUrl,
+  getFunction,
+  getOperation,
+  listFunctions,
+  listRuntimes,
   manageIamPolicy,
-  getOperation
+  updateFunction
 } from './tools';
 import { functionChanges, inboundWebhook } from './triggers';
 

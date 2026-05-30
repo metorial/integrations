@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  upsertPerson,
   deletePerson,
-  suppressPerson,
-  getPerson,
-  searchPeople,
-  mergePeople,
-  trackEvent,
-  manageDevice,
-  listSegments,
-  getSegmentMembership,
-  manageManualSegment,
-  listCampaigns,
   getCampaign,
-  triggerBroadcast,
-  sendTransactionalMessage,
+  getPerson,
+  getSegmentMembership,
+  listCampaigns,
+  listCollections,
+  listSegments,
   manageCollection,
-  listCollections
+  manageDevice,
+  manageManualSegment,
+  mergePeople,
+  searchPeople,
+  sendTransactionalMessage,
+  suppressPerson,
+  trackEvent,
+  triggerBroadcast,
+  upsertPerson
 } from './tools';
 import { messageEvent, subscriptionEvent } from './triggers';
 

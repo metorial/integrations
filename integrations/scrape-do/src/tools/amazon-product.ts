@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ScrapeDoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let amazonProduct = SlateTool.create(spec, {
   name: 'Amazon Product Details',
@@ -81,7 +81,7 @@ export let amazonProduct = SlateTool.create(spec, {
       });
     }
 
-    let title = (product['title'] as string) || input.asin;
+    let title = (product.title as string) || input.asin;
 
     return {
       output: {

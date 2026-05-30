@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createApiClient, deleteKnowledgeBase } from '../lib/client';
+import { spec } from '../spec';
 
 export let deleteKnowledgeBaseTool = SlateTool.create(spec, {
   name: 'Delete Knowledge Base',

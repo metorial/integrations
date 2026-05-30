@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let generationCompleted = SlateTrigger.create(spec, {
   name: 'Generation Completed',
@@ -42,18 +42,18 @@ export let generationCompleted = SlateTrigger.create(spec, {
 
       if ('image_url' in data) {
         generationType = 'image';
-        outputUrl = (data['image_url'] as string) ?? null;
+        outputUrl = (data.image_url as string) ?? null;
       } else if ('pdf_url' in data) {
         generationType = 'pdf';
-        outputUrl = (data['pdf_url'] as string) ?? null;
+        outputUrl = (data.pdf_url as string) ?? null;
       } else if ('video_url' in data) {
         generationType = 'video';
-        outputUrl = (data['video_url'] as string) ?? null;
+        outputUrl = (data.video_url as string) ?? null;
       }
 
-      let generationId = (data['id'] as number) ?? 0;
-      let status = (data['status'] as string) ?? 'finished';
-      let passthrough = (data['passthrough'] as string) ?? null;
+      let generationId = (data.id as number) ?? 0;
+      let status = (data.status as string) ?? 'finished';
+      let passthrough = (data.passthrough as string) ?? null;
 
       return {
         inputs: [

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickSendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressSchema = z.object({
   addressName: z.string().describe('Recipient full name'),
@@ -93,7 +93,7 @@ export let sendLetterTool = SlateTool.create(spec, {
     }));
 
     let totalPrice = sentLetters.reduce(
-      (sum: number, letter: any) => sum + (parseFloat(letter.price) || 0),
+      (sum: number, letter: any) => sum + (Number.parseFloat(letter.price) || 0),
       0
     );
 

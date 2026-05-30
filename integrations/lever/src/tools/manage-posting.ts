@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let managePostingTool = SlateTool.create(spec, {
   name: 'Manage Posting',
@@ -92,7 +92,7 @@ export let managePostingTool = SlateTool.create(spec, {
     if (ctx.input.ownerId) body.owner = ctx.input.ownerId;
     if (ctx.input.reqId) body.reqId = ctx.input.reqId;
 
-    let result;
+    let result: any;
     let isUpdate = !!ctx.input.postingId;
 
     if (isUpdate) {

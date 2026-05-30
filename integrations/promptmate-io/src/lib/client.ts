@@ -22,7 +22,7 @@ export interface CreateJobParams {
     language?: string;
     country?: string;
   };
-  data: Array<Record<string, string>>;
+  data: Record<string, string>[];
 }
 
 export interface JobCreateResponse {
@@ -33,7 +33,7 @@ export interface JobCreateResponse {
 export interface JobStatusResponse {
   jobId: string;
   jobStatus: string;
-  result?: Array<Record<string, unknown>>;
+  result?: Record<string, unknown>[];
   responseFields?: Array<{ name: string; type?: string; description?: string }>;
 }
 
@@ -126,7 +126,7 @@ export class Client {
   async getAppResults(
     appId: string,
     onlyDefaultResultFields?: boolean
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.http.get('/app-results', {
       params: {
         appId,

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { DopplerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let secretChanged = SlateTrigger.create(spec, {
   name: 'Secret Changed',
@@ -59,7 +59,7 @@ export let secretChanged = SlateTrigger.create(spec, {
             project: project.slug || project.name,
             webhookSlug: webhook.slug
           });
-        } catch (err) {
+        } catch (_err) {
           // Skip projects where webhook creation fails (e.g., permissions)
         }
       }
@@ -76,7 +76,7 @@ export let secretChanged = SlateTrigger.create(spec, {
       for (let entry of webhooks) {
         try {
           await client.deleteWebhook(entry.project, entry.webhookSlug);
-        } catch (err) {
+        } catch (_err) {
           // Ignore errors during cleanup
         }
       }

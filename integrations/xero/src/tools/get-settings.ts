@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
-import { createClientFromContext } from '../lib/helpers';
 import { z } from 'zod';
+import { createClientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getSettings = SlateTool.create(spec, {
   name: 'Get Settings',
@@ -127,7 +127,7 @@ export let getSettings = SlateTool.create(spec, {
       }));
     }
 
-    let parts = [];
+    let parts: any[] = [];
     if (output.taxRates) parts.push(`${output.taxRates.length} tax rates`);
     if (output.trackingCategories)
       parts.push(`${output.trackingCategories.length} tracking categories`);

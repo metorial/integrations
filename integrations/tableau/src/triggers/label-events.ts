@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let eventNameMap: Record<string, string> = {
   LabelCreated: 'label.created',
@@ -58,7 +58,7 @@ export let labelEvents = SlateTrigger.create(spec, {
       for (let webhookId of Object.values(webhookIds) as string[]) {
         try {
           await client.deleteWebhook(webhookId);
-        } catch (e) {
+        } catch (_e) {
           // Webhook may already be deleted
         }
       }

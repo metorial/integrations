@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { HNClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let topStoriesChanges = SlateTrigger.create(spec, {
   name: 'Top Stories Changes',

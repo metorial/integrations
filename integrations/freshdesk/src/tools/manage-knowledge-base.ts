@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listKnowledgeBase = SlateTool.create(spec, {
   name: 'List Knowledge Base',
@@ -217,13 +217,13 @@ export let createArticle = SlateTool.create(spec, {
       description: ctx.input.description
     };
 
-    if (ctx.input.status !== undefined) articleData['status'] = ctx.input.status;
-    if (ctx.input.tags) articleData['tags'] = ctx.input.tags;
+    if (ctx.input.status !== undefined) articleData.status = ctx.input.status;
+    if (ctx.input.tags) articleData.tags = ctx.input.tags;
     if (ctx.input.seoTitle || ctx.input.seoDescription) {
-      articleData['seo_data'] = {};
-      if (ctx.input.seoTitle) articleData['seo_data']['meta_title'] = ctx.input.seoTitle;
+      articleData.seo_data = {};
+      if (ctx.input.seoTitle) articleData.seo_data.meta_title = ctx.input.seoTitle;
       if (ctx.input.seoDescription)
-        articleData['seo_data']['meta_description'] = ctx.input.seoDescription;
+        articleData.seo_data.meta_description = ctx.input.seoDescription;
     }
 
     let article = await client.createSolutionArticle(ctx.input.folderId, articleData);

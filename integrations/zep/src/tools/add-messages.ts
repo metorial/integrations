@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addMessages = SlateTool.create(spec, {
   name: 'Add Messages',
@@ -64,7 +64,7 @@ export let addMessages = SlateTool.create(spec, {
       returnContext: ctx.input.returnContext
     };
 
-    let result;
+    let result: any;
     if (ctx.input.batch) {
       result = await client.addMessagesBatch(ctx.input.threadId, params);
     } else {

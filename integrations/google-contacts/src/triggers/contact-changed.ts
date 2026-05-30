@@ -1,10 +1,10 @@
 import { ServiceError } from '@lowerdeck/error';
 import { GOOGLE_PEOPLE_API_BASE_URL, GooglePeopleClient } from '@slates/google-people-recipes';
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds, createAxios } from 'slates';
-import { spec } from '../spec';
-import { googleContactsActionScopes } from '../scopes';
-import { contactOutputSchema, formatContact } from '../lib/schemas';
+import { createAxios, SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { contactOutputSchema, formatContact } from '../lib/schemas';
+import { googleContactsActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 let isExpiredSyncTokenError = (error: unknown) => {
   if (error instanceof ServiceError && error.data.upstreamStatus === 410) {

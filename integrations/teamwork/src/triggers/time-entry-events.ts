@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let timeEntryEvents = SlateTrigger.create(spec, {
   name: 'Time Entry Events',

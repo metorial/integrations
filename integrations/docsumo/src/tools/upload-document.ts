@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let documentSchema = z.object({
   docId: z.string().describe('Unique document identifier'),
@@ -74,7 +74,7 @@ export let uploadDocument = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let documents;
+    let documents: any;
 
     if (ctx.input.source === 'url') {
       if (!ctx.input.fileUrl) {
@@ -111,7 +111,7 @@ export let uploadDocument = SlateTool.create(spec, {
 
     return {
       output: { documents },
-      message: `Uploaded ${docCount} document(s) as type **${ctx.input.documentType}**. ${documents.map(d => `Document **${d.title}** (${d.docId}) is now in status: ${d.status}.`).join(' ')}`
+      message: `Uploaded ${docCount} document(s) as type **${ctx.input.documentType}**. ${documents.map((d: any) => `Document **${d.title}** (${d.docId}) is now in status: ${d.status}.`).join(' ')}`
     };
   })
   .build();

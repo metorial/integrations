@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { AzureDevOpsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let codeEventsTrigger = SlateTrigger.create(spec, {
   name: 'Code Push Events',
@@ -54,7 +54,7 @@ export let codeEventsTrigger = SlateTrigger.create(spec, {
 
       let publisherInputs: Record<string, string> = {};
       if (ctx.config.project) {
-        publisherInputs['projectId'] = ctx.config.project;
+        publisherInputs.projectId = ctx.config.project;
       }
 
       let sub = await client.createServiceHookSubscription({

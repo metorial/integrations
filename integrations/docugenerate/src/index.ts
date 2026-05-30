@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateDocument,
-  listTemplates,
-  getTemplate,
-  updateTemplate,
+  deleteDocument,
   deleteTemplate,
-  listDocuments,
+  generateDocument,
   getDocument,
+  getTemplate,
+  listDocuments,
+  listTemplates,
   updateDocument,
-  deleteDocument
+  updateTemplate
 } from './tools';
-import { watchNewDocument, watchNewTemplate, inboundWebhook } from './triggers';
+import { inboundWebhook, watchNewDocument, watchNewTemplate } from './triggers';
 
 export let provider = Slate.create({
   spec,

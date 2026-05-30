@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchEmail,
-  verifyEmail,
-  scanDomain,
-  getSearchResult,
   createBulkSearch,
-  getBulkSearchResults,
-  scrapeProfile,
-  scrapeCompany,
   findProfileUrl,
-  searchLeads,
+  getBulkSearchResults,
+  getSearchResult,
+  getSubscription,
+  scanDomain,
+  scrapeCompany,
+  scrapeProfile,
   searchCompanies,
-  getSubscription
+  searchEmail,
+  searchLeads,
+  verifyEmail
 } from './tools';
 import { bulkSearchEvent } from './triggers';
 

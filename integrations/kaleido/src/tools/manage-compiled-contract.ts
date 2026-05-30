@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { KaleidoClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageCompiledContract = SlateTool.create(spec, {
   name: 'Manage Compiled Contract',
@@ -81,7 +81,7 @@ Promoting a contract makes it available for deployment via the gateway with auto
 
       return {
         output: { contracts: mapped },
-        message: `Found **${mapped.length}** compiled contract(s).${mapped.length > 0 ? ' ' + mapped.map(c => `**${c.name}** (${c.state || 'unknown'})`).join(', ') : ''}`
+        message: `Found **${mapped.length}** compiled contract(s).${mapped.length > 0 ? ` ${mapped.map(c => `**${c.name}** (${c.state || 'unknown'})`).join(', ')}` : ''}`
       };
     }
 

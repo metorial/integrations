@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listPublications,
-  listIssues,
-  getIssue,
   createDraftIssue,
-  deleteDraftIssue,
-  listLinks,
   createLink,
-  updateLink,
+  deleteDraftIssue,
   deleteLink,
+  getIssue,
+  listCategories,
+  listIssues,
+  listLinks,
+  listPublications,
   listSubscribers,
+  listUnsubscribers,
   subscribeEmail,
   unsubscribeEmail,
-  listUnsubscribers,
-  listCategories
+  updateLink
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

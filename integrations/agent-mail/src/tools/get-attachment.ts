@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAttachment = SlateTool.create(spec, {
   name: 'Get Attachment',
@@ -39,7 +39,7 @@ export let getAttachment = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, podId: ctx.config.podId });
 
-    let attachment;
+    let attachment: any;
     if (ctx.input.messageId) {
       attachment = await client.getMessageAttachment(
         ctx.input.inboxId,

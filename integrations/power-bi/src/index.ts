@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listWorkspaces,
-  manageWorkspace,
-  manageWorkspaceUsers,
-  listDatasets,
-  getDataset,
-  refreshDataset,
-  updateDatasetParameters,
-  pushData,
-  listReports,
-  manageReport,
-  exportReport,
-  listDashboards,
+  assignWorkspaceCapacity,
   executeDaxQuery,
+  exportReport,
   generateEmbedToken,
-  managePipeline,
-  listDataflows,
-  refreshDataflow,
-  listGateways,
+  getDataset,
   listApps,
   listCapacities,
-  assignWorkspaceCapacity
+  listDashboards,
+  listDataflows,
+  listDatasets,
+  listGateways,
+  listReports,
+  listWorkspaces,
+  managePipeline,
+  manageReport,
+  manageWorkspace,
+  manageWorkspaceUsers,
+  pushData,
+  refreshDataflow,
+  refreshDataset,
+  updateDatasetParameters
 } from './tools';
 import { datasetRefreshCompleted, inboundWebhook } from './triggers';
 

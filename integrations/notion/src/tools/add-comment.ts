@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NotionClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addComment = SlateTool.create(spec, {
   name: 'Add Comment',
@@ -67,9 +67,7 @@ Comments can be placed at the top of a page or as a reply to an existing discuss
       throw new Error('richText must contain at least one rich text object');
     }
 
-    let richText = ctx.input.richText ?? [
-      { type: 'text', text: { content: ctx.input.text } }
-    ];
+    let richText = ctx.input.richText ?? [{ type: 'text', text: { content: ctx.input.text } }];
 
     let comment = await client.createComment({
       parentPageId: ctx.input.pageId,

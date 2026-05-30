@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { svixServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listEventTypes = SlateTool.create(spec, {
   name: 'List Event Types',
@@ -87,7 +87,7 @@ export let listEventTypes = SlateTool.create(spec, {
         hasMore: !result.done,
         iterator: result.iterator ?? undefined
       },
-      message: `Found **${eventTypes.length}** event type(s).${eventTypes.length > 0 ? '\n' + eventTypes.map(et => `- \`${et.name}\` — ${et.description}`).join('\n') : ''}`
+      message: `Found **${eventTypes.length}** event type(s).${eventTypes.length > 0 ? `\n${eventTypes.map(et => `- \`${et.name}\` — ${et.description}`).join('\n')}` : ''}`
     };
   })
   .build();
@@ -119,10 +119,7 @@ export let createEventType = SlateTool.create(spec, {
         .boolean()
         .optional()
         .describe('Whether to mark the event type as deprecated'),
-      featureFlag: z
-        .string()
-        .optional()
-        .describe('Deprecated. Use featureFlags instead.'),
+      featureFlag: z.string().optional().describe('Deprecated. Use featureFlags instead.'),
       featureFlags: z
         .array(z.string())
         .optional()
@@ -253,10 +250,7 @@ export let updateEventType = SlateTool.create(spec, {
         .describe('Updated JSON Schema definitions by version'),
       archived: z.boolean().optional().describe('Whether the event type is archived'),
       deprecated: z.boolean().optional().describe('Whether the event type is deprecated'),
-      featureFlag: z
-        .string()
-        .optional()
-        .describe('Deprecated. Use featureFlags instead.'),
+      featureFlag: z.string().optional().describe('Deprecated. Use featureFlags instead.'),
       featureFlags: z.array(z.string()).optional().describe('Updated feature flags'),
       groupName: z.string().optional().describe('Updated event type group name')
     })

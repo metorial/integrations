@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { bitbucketServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let formatWebhook = (hook: any) => ({
   webhookUuid: hook.uuid,
@@ -26,7 +26,10 @@ export let manageWebhooksTool = SlateTool.create(spec, {
       action: z
         .enum(['list', 'get', 'create', 'update', 'delete'])
         .describe('Action to perform'),
-      webhookUuid: z.string().optional().describe('Webhook UUID (required for get/update/delete)'),
+      webhookUuid: z
+        .string()
+        .optional()
+        .describe('Webhook UUID (required for get/update/delete)'),
       url: z.string().optional().describe('Webhook target URL (required for create)'),
       description: z.string().optional().describe('Webhook description'),
       events: z
@@ -138,7 +141,9 @@ export let manageWebhooksTool = SlateTool.create(spec, {
       if (ctx.input.secret !== undefined) body.secret = ctx.input.secret;
 
       if (Object.keys(body).length === 0) {
-        throw bitbucketServiceError('At least one webhook field is required for update action');
+        throw bitbucketServiceError(
+          'At least one webhook field is required for update action'
+        );
       }
 
       let hook = await client.updateWebhook(ctx.input.repoSlug, ctx.input.webhookUuid, body);

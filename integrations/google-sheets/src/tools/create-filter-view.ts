@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SheetsClient } from '../lib/client';
 import { googleSheetsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let filterCriteriaSchema = z.object({
   columnIndex: z.number().describe('Column index (0-based) to apply the filter on'),

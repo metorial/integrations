@@ -33,7 +33,7 @@ export interface FormSubmission {
 export class DeadlineFunnelClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://app.deadlinefunnel.com/api/v1',
       headers: {

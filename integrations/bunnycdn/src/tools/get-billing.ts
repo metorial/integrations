@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoreClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getBilling = SlateTool.create(spec, {
   name: 'Get Billing',

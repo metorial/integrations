@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GeoapifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let boundarySchema = z.object({
   placeId: z.string().optional().describe('Boundary place identifier'),
@@ -59,7 +59,7 @@ export let lookupBoundaries = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new GeoapifyClient({ token: ctx.auth.token });
 
-    let data;
+    let data: any;
     if (ctx.input.direction === 'part_of') {
       data = await client.getBoundariesPartOf({
         placeId: ctx.input.placeId,

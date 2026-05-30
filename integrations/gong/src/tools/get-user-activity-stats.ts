@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GongClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let activityStatsSchema = z.object({
+let _activityStatsSchema = z.object({
   userId: z.string().describe('User ID'),
   callsAsHost: z.number().optional().describe('Calls hosted'),
   callsAttended: z.number().optional().describe('Calls attended'),

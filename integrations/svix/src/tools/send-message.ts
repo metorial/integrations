@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { svixServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendMessage = SlateTool.create(spec, {
   name: 'Send Message',
@@ -40,11 +40,15 @@ export let sendMessage = SlateTool.create(spec, {
       payloadRetentionHours: z
         .number()
         .optional()
-        .describe('Number of hours to retain the payload. Mutually exclusive with payloadRetentionPeriod.'),
+        .describe(
+          'Number of hours to retain the payload. Mutually exclusive with payloadRetentionPeriod.'
+        ),
       payloadRetentionPeriod: z
         .number()
         .optional()
-        .describe('Number of days to retain the payload (default 90). Mutually exclusive with payloadRetentionHours.'),
+        .describe(
+          'Number of days to retain the payload (default 90). Mutually exclusive with payloadRetentionHours.'
+        ),
       transformationsParams: z
         .record(z.string(), z.unknown())
         .optional()

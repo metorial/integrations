@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCourses,
-  getCourse,
   createCourse,
-  updateCourse,
-  deleteCourse,
-  listRoster,
-  manageRoster,
-  manageInvitations,
-  listCoursework,
   createCoursework,
-  manageSubmissions,
+  deleteCourse,
+  getCourse,
+  getUserProfile,
+  listCourses,
+  listCoursework,
+  listRoster,
   manageAnnouncements,
-  manageTopics,
   manageCourseworkMaterials,
   manageGuardians,
-  getUserProfile,
-  manageRubrics
+  manageInvitations,
+  manageRoster,
+  manageRubrics,
+  manageSubmissions,
+  manageTopics,
+  updateCourse
 } from './tools';
 import {
+  announcementChanges,
   courseRosterChanges,
   courseworkChanges,
-  announcementChanges,
   inboundWebhook
 } from './triggers';
 

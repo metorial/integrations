@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newCalibration = SlateTrigger.create(spec, {
   name: 'New Calibration Created',
@@ -52,7 +52,7 @@ export let newCalibration = SlateTrigger.create(spec, {
       let newCalibrations = allCalibrations
         .filter((c: any) => {
           let ts = Date.parse(c.CreatedDate);
-          return !isNaN(ts) && ts > lastTs;
+          return !Number.isNaN(ts) && ts > lastTs;
         })
         .sort((a: any, b: any) => Date.parse(a.CreatedDate) - Date.parse(b.CreatedDate));
 

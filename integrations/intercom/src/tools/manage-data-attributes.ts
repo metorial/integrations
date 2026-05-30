@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { intercomServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageDataAttributes = SlateTool.create(spec, {
   name: 'Manage Data Attributes',
@@ -22,10 +22,7 @@ export let manageDataAttributes = SlateTool.create(spec, {
   .input(
     z.object({
       action: z.enum(['list', 'create', 'update']).describe('Operation to perform'),
-      attributeId: z
-        .string()
-        .optional()
-        .describe('Data attribute ID (required for update)'),
+      attributeId: z.string().optional().describe('Data attribute ID (required for update)'),
       model: z
         .enum(['contact', 'company', 'conversation'])
         .optional()
@@ -36,10 +33,7 @@ export let manageDataAttributes = SlateTool.create(spec, {
         .optional()
         .describe('Data type (required for create)'),
       description: z.string().optional().describe('Readable description'),
-      options: z
-        .array(z.string())
-        .optional()
-        .describe('Option values for dataType "options"'),
+      options: z.array(z.string()).optional().describe('Option values for dataType "options"'),
       includeArchived: z
         .boolean()
         .optional()

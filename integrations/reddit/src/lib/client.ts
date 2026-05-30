@@ -122,23 +122,12 @@ export class RedditClient {
     return response.data;
   }
 
-  async getMySubreddits(
-    params: {
-      limit?: number;
-      after?: string;
-      before?: string;
-    } = {}
-  ) {
+  async getMySubreddits(params: { limit?: number; after?: string; before?: string } = {}) {
     let response = await this.http.get('/subreddits/mine/subscriber', { params });
     return response.data;
   }
 
-  async getMyModeratedSubreddits(
-    params: {
-      limit?: number;
-      after?: string;
-    } = {}
-  ) {
+  async getMyModeratedSubreddits(params: { limit?: number; after?: string } = {}) {
     let response = await this.http.get('/subreddits/mine/moderator', { params });
     return response.data;
   }
@@ -480,34 +469,17 @@ export class RedditClient {
 
   // ─── Private Messages ─────────────────────────────────────────
 
-  async getInbox(
-    params: {
-      mark?: boolean;
-      limit?: number;
-      after?: string;
-    } = {}
-  ) {
+  async getInbox(params: { mark?: boolean; limit?: number; after?: string } = {}) {
     let response = await this.http.get('/message/inbox', { params });
     return response.data;
   }
 
-  async getUnread(
-    params: {
-      mark?: boolean;
-      limit?: number;
-      after?: string;
-    } = {}
-  ) {
+  async getUnread(params: { mark?: boolean; limit?: number; after?: string } = {}) {
     let response = await this.http.get('/message/unread', { params });
     return response.data;
   }
 
-  async getSent(
-    params: {
-      limit?: number;
-      after?: string;
-    } = {}
-  ) {
+  async getSent(params: { limit?: number; after?: string } = {}) {
     let response = await this.http.get('/message/sent', { params });
     return response.data;
   }

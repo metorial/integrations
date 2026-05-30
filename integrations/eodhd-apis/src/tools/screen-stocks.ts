@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EodhdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let screenStocks = SlateTool.create(spec, {
   name: 'Screen Stocks',

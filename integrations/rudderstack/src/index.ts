@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendEvent,
-  sendBatchEvents,
-  manageTransformation,
+  getAuditLogs,
+  getEventAudit,
+  listLibraries,
+  listRegulations,
+  listTrackingPlans,
   listTransformations,
   manageLibrary,
-  listLibraries,
-  publishTransformations,
-  manageTrackingPlan,
-  listTrackingPlans,
-  suppressUser,
-  listRegulations,
   manageRetlSync,
-  testEventDelivery,
-  getEventAudit,
-  getAuditLogs
+  manageTrackingPlan,
+  manageTransformation,
+  publishTransformations,
+  sendBatchEvents,
+  sendEvent,
+  suppressUser,
+  testEventDelivery
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

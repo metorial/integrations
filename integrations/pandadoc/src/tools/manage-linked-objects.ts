@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PandaDocClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let linkCrmObject = SlateTool.create(spec, {
   name: 'Link CRM Object',

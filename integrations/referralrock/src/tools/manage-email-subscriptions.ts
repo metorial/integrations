@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageEmailSubscriptions = SlateTool.create(spec, {
   name: 'Manage Email Subscriptions',
@@ -60,7 +60,7 @@ export let manageEmailSubscriptions = SlateTool.create(spec, {
 
     // list
     let result = await client.getUnsubscribedEmails(ctx.input.email);
-    let emails = (result as unknown as Array<string>) || [];
+    let emails = (result as unknown as string[]) || [];
 
     return {
       output: {

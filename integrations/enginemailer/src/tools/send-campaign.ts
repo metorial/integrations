@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendCampaign = SlateTool.create(spec, {
   name: 'Send or Schedule Campaign',
@@ -60,7 +60,7 @@ export let sendCampaign = SlateTool.create(spec, {
       ctx.info('Assigned recipient list to campaign');
     }
 
-    let result;
+    let result: any;
     let actionLabel: string;
 
     switch (ctx.input.action) {

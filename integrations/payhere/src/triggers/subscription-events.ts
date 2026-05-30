@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { PayhereClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let subscriptionEvents = SlateTrigger.create(spec, {
   name: 'Subscription Events',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createWixClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createWixClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageMembers = SlateTool.create(spec, {
   name: 'Manage Members',

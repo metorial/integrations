@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MagentoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getStoreInfo = SlateTool.create(spec, {
   name: 'Get Store Info',

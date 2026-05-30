@@ -65,7 +65,7 @@ export class GitLabClient {
       headers: this.headers()
     });
 
-    let totalPages = parseInt(response.headers?.['x-total-pages'] || '1', 10);
+    let totalPages = Number.parseInt(response.headers?.['x-total-pages'] || '1', 10);
     return { projects: response.data, totalPages };
   }
 
@@ -409,7 +409,7 @@ export class GitLabClient {
       headers: this.headers()
     });
 
-    let totalPages = parseInt(response.headers?.['x-total-pages'] || '1', 10);
+    let totalPages = Number.parseInt(response.headers?.['x-total-pages'] || '1', 10);
     return { issues: response.data, totalPages };
   }
 
@@ -542,7 +542,7 @@ export class GitLabClient {
       headers: this.headers()
     });
 
-    let totalPages = parseInt(response.headers?.['x-total-pages'] || '1', 10);
+    let totalPages = Number.parseInt(response.headers?.['x-total-pages'] || '1', 10);
     return { mergeRequests: response.data, totalPages };
   }
 
@@ -713,7 +713,7 @@ export class GitLabClient {
       { params: queryParams, headers: this.headers() }
     );
 
-    let totalPages = parseInt(response.headers?.['x-total-pages'] || '1', 10);
+    let totalPages = Number.parseInt(response.headers?.['x-total-pages'] || '1', 10);
     return { pipelines: response.data, totalPages };
   }
 

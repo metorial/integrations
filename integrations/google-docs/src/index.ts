@@ -2,11 +2,11 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createDocument,
-  getDocument,
   editDocument,
-  mergeTemplate,
+  getDocument,
   listDocuments,
-  manageNamedRanges
+  manageNamedRanges,
+  mergeTemplate
 } from './tools';
 import { documentChanged, inboundWebhook } from './triggers';
 

@@ -2,7 +2,7 @@ import { afterAll, beforeAll } from 'vitest';
 import {
   cleanupGoogleCalendarLiveHarness,
   createGoogleCalendarLiveHarness,
-  GoogleCalendarLiveHarness,
+  type GoogleCalendarLiveHarness,
   requireGoogleCalendarScopes
 } from '../test-helpers/live-fixtures';
 

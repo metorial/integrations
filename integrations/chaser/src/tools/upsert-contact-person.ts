@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { contactPersonInputSchema, contactPersonOutputSchema } from '../lib/schemas';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { contactPersonInputSchema, contactPersonOutputSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let upsertContactPerson = SlateTool.create(spec, {
   name: 'Create or Update Contact Person',

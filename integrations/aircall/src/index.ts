@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCalls,
+  createInsightCard,
   getCall,
-  manageCall,
-  listUsers,
   getUser,
-  manageUser,
-  startCall,
+  listCalls,
   listContacts,
-  manageContact,
   listNumbers,
-  manageTeam,
   listTags,
+  listUsers,
+  manageCall,
+  manageContact,
+  manageTeam,
+  manageUser,
   sendMessage,
-  createInsightCard
+  startCall
 } from './tools';
 import {
   callEvents,
-  userEvents,
   contactEvents,
+  messageEvents,
   numberEvents,
-  messageEvents
+  userEvents
 } from './triggers';
 
 export let provider = Slate.create({

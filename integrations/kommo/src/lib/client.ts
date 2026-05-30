@@ -68,9 +68,9 @@ export class KommoClient {
 
   async listLeads(filters?: LeadFilters, pagination?: PaginationParams) {
     let params: Record<string, any> = {};
-    if (pagination?.page) params['page'] = pagination.page;
-    if (pagination?.limit) params['limit'] = pagination.limit;
-    if (filters?.query) params['query'] = filters.query;
+    if (pagination?.page) params.page = pagination.page;
+    if (pagination?.limit) params.limit = pagination.limit;
+    if (filters?.query) params.query = filters.query;
     if (filters?.ids) filters.ids.forEach((id, i) => (params[`filter[id][${i}]`] = id));
     if (filters?.pipelineIds)
       filters.pipelineIds.forEach((id, i) => (params[`filter[pipeline_id][${i}]`] = id));
@@ -79,7 +79,7 @@ export class KommoClient {
         (id, i) => (params[`filter[responsible_user_id][${i}]`] = id)
       );
     if (filters?.orderBy) params[`order[${filters.orderBy}]`] = filters.orderDir || 'desc';
-    params['with'] = 'contacts,loss_reason';
+    params.with = 'contacts,loss_reason';
 
     let response = await this.http.get('/leads', { params });
     return response.data?._embedded?.leads || [];
@@ -111,16 +111,16 @@ export class KommoClient {
 
   async listContacts(filters?: ContactFilters, pagination?: PaginationParams) {
     let params: Record<string, any> = {};
-    if (pagination?.page) params['page'] = pagination.page;
-    if (pagination?.limit) params['limit'] = pagination.limit;
-    if (filters?.query) params['query'] = filters.query;
+    if (pagination?.page) params.page = pagination.page;
+    if (pagination?.limit) params.limit = pagination.limit;
+    if (filters?.query) params.query = filters.query;
     if (filters?.ids) filters.ids.forEach((id, i) => (params[`filter[id][${i}]`] = id));
     if (filters?.responsibleUserIds)
       filters.responsibleUserIds.forEach(
         (id, i) => (params[`filter[responsible_user_id][${i}]`] = id)
       );
     if (filters?.orderBy) params[`order[${filters.orderBy}]`] = filters.orderDir || 'desc';
-    params['with'] = 'leads';
+    params.with = 'leads';
 
     let response = await this.http.get('/contacts', { params });
     return response.data?._embedded?.contacts || [];
@@ -147,9 +147,9 @@ export class KommoClient {
 
   async listCompanies(filters?: CompanyFilters, pagination?: PaginationParams) {
     let params: Record<string, any> = {};
-    if (pagination?.page) params['page'] = pagination.page;
-    if (pagination?.limit) params['limit'] = pagination.limit;
-    if (filters?.query) params['query'] = filters.query;
+    if (pagination?.page) params.page = pagination.page;
+    if (pagination?.limit) params.limit = pagination.limit;
+    if (filters?.query) params.query = filters.query;
     if (filters?.ids) filters.ids.forEach((id, i) => (params[`filter[id][${i}]`] = id));
     if (filters?.responsibleUserIds)
       filters.responsibleUserIds.forEach(
@@ -182,8 +182,8 @@ export class KommoClient {
 
   async listTasks(filters?: TaskFilters, pagination?: PaginationParams) {
     let params: Record<string, any> = {};
-    if (pagination?.page) params['page'] = pagination.page;
-    if (pagination?.limit) params['limit'] = pagination.limit;
+    if (pagination?.page) params.page = pagination.page;
+    if (pagination?.limit) params.limit = pagination.limit;
     if (filters?.ids) filters.ids.forEach((id, i) => (params[`filter[id][${i}]`] = id));
     if (filters?.responsibleUserIds)
       filters.responsibleUserIds.forEach(
@@ -236,8 +236,8 @@ export class KommoClient {
 
   async listNotes(entityType: string, entityId: number, pagination?: PaginationParams) {
     let params: Record<string, any> = {};
-    if (pagination?.page) params['page'] = pagination.page;
-    if (pagination?.limit) params['limit'] = pagination.limit;
+    if (pagination?.page) params.page = pagination.page;
+    if (pagination?.limit) params.limit = pagination.limit;
 
     let response = await this.http.get(`/${entityType}/${entityId}/notes`, { params });
     return response.data?._embedded?.notes || [];
@@ -252,8 +252,8 @@ export class KommoClient {
 
   async listTags(entityType: string, pagination?: PaginationParams) {
     let params: Record<string, any> = {};
-    if (pagination?.page) params['page'] = pagination.page;
-    if (pagination?.limit) params['limit'] = pagination.limit;
+    if (pagination?.page) params.page = pagination.page;
+    if (pagination?.limit) params.limit = pagination.limit;
 
     let response = await this.http.get(`/${entityType}/tags`, { params });
     return response.data?._embedded?.tags || [];
@@ -268,8 +268,8 @@ export class KommoClient {
 
   async listCustomFields(entityType: string, pagination?: PaginationParams) {
     let params: Record<string, any> = {};
-    if (pagination?.page) params['page'] = pagination.page;
-    if (pagination?.limit) params['limit'] = pagination.limit;
+    if (pagination?.page) params.page = pagination.page;
+    if (pagination?.limit) params.limit = pagination.limit;
 
     let response = await this.http.get(`/${entityType}/custom_fields`, { params });
     return response.data?._embedded?.custom_fields || [];
@@ -284,8 +284,8 @@ export class KommoClient {
 
   async listLinks(entityType: string, entityId: number, pagination?: PaginationParams) {
     let params: Record<string, any> = {};
-    if (pagination?.page) params['page'] = pagination.page;
-    if (pagination?.limit) params['limit'] = pagination.limit;
+    if (pagination?.page) params.page = pagination.page;
+    if (pagination?.limit) params.limit = pagination.limit;
 
     let response = await this.http.get(`/${entityType}/${entityId}/links`, { params });
     return response.data?._embedded?.links || [];
@@ -317,8 +317,8 @@ export class KommoClient {
 
   async listUsers(pagination?: PaginationParams) {
     let params: Record<string, any> = {};
-    if (pagination?.page) params['page'] = pagination.page;
-    if (pagination?.limit) params['limit'] = pagination.limit;
+    if (pagination?.page) params.page = pagination.page;
+    if (pagination?.limit) params.limit = pagination.limit;
 
     let response = await this.http.get('/users', { params });
     return response.data?._embedded?.users || [];
@@ -351,8 +351,8 @@ export class KommoClient {
     pagination?: PaginationParams
   ) {
     let params: Record<string, any> = {};
-    if (pagination?.page) params['page'] = pagination.page;
-    if (pagination?.limit) params['limit'] = pagination.limit;
+    if (pagination?.page) params.page = pagination.page;
+    if (pagination?.limit) params.limit = pagination.limit;
     if (filters?.entityType) params['filter[entity]'] = filters.entityType;
     if (filters?.entityId) params['filter[entity_id]'] = filters.entityId;
     if (filters?.types) filters.types.forEach((t, i) => (params[`filter[type][${i}]`] = t));

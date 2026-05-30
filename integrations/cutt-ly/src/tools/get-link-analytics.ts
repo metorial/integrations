@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CuttlyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let deviceEntrySchema = z.object({
   tag: z.string().describe('Category label (e.g. country code, device type, browser name)'),

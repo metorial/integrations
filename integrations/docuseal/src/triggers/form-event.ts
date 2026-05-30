@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let documentSchema = z.object({
   name: z.string().optional().describe('Document name'),
@@ -81,7 +81,7 @@ export let formEvent = SlateTrigger.create(spec, {
 
       let eventType = body.event_type as string;
 
-      if (!eventType || !eventType.startsWith('form.')) {
+      if (!eventType?.startsWith('form.')) {
         return { inputs: [] };
       }
 

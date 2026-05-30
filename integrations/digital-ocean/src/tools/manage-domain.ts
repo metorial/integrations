@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { digitalOceanValidationError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let domainRecordSchema = z.object({
   recordId: z.number().describe('Unique ID of the DNS record'),

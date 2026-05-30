@@ -101,7 +101,7 @@ export interface AsyncJobRenderOptions {
   WaitUntil?: string;
   CustomWait?: number;
   WaitSelector?: string;
-  PlayWithBrowser?: Array<Record<string, unknown>>;
+  PlayWithBrowser?: Record<string, unknown>[];
   ReturnJSON?: boolean;
   ShowWebsocketRequests?: boolean;
   ShowFrames?: boolean;
@@ -191,48 +191,45 @@ export class ScrapeDoClient {
       url: options.url
     };
 
-    if (options.render !== undefined) params['render'] = options.render;
-    if (options.super !== undefined) params['super'] = options.super;
-    if (options.geoCode) params['geoCode'] = options.geoCode;
-    if (options.regionalGeoCode) params['regionalGeoCode'] = options.regionalGeoCode;
-    if (options.device) params['device'] = options.device;
-    if (options.sessionId) params['sessionId'] = options.sessionId;
-    if (options.customHeaders !== undefined) params['customHeaders'] = options.customHeaders;
-    if (options.extraHeaders !== undefined) params['extraHeaders'] = options.extraHeaders;
-    if (options.forwardHeaders !== undefined)
-      params['forwardHeaders'] = options.forwardHeaders;
-    if (options.setCookies) params['setCookies'] = options.setCookies;
-    if (options.timeout !== undefined) params['timeout'] = options.timeout;
-    if (options.retryTimeout !== undefined) params['retryTimeout'] = options.retryTimeout;
-    if (options.disableRetry !== undefined) params['disableRetry'] = options.disableRetry;
+    if (options.render !== undefined) params.render = options.render;
+    if (options.super !== undefined) params.super = options.super;
+    if (options.geoCode) params.geoCode = options.geoCode;
+    if (options.regionalGeoCode) params.regionalGeoCode = options.regionalGeoCode;
+    if (options.device) params.device = options.device;
+    if (options.sessionId) params.sessionId = options.sessionId;
+    if (options.customHeaders !== undefined) params.customHeaders = options.customHeaders;
+    if (options.extraHeaders !== undefined) params.extraHeaders = options.extraHeaders;
+    if (options.forwardHeaders !== undefined) params.forwardHeaders = options.forwardHeaders;
+    if (options.setCookies) params.setCookies = options.setCookies;
+    if (options.timeout !== undefined) params.timeout = options.timeout;
+    if (options.retryTimeout !== undefined) params.retryTimeout = options.retryTimeout;
+    if (options.disableRetry !== undefined) params.disableRetry = options.disableRetry;
     if (options.disableRedirection !== undefined)
-      params['disableRedirection'] = options.disableRedirection;
-    if (options.output) params['output'] = options.output;
+      params.disableRedirection = options.disableRedirection;
+    if (options.output) params.output = options.output;
     if (options.transparentResponse !== undefined)
-      params['transparentResponse'] = options.transparentResponse;
-    if (options.callback) params['callback'] = options.callback;
-    if (options.pureCookies !== undefined) params['pureCookies'] = options.pureCookies;
+      params.transparentResponse = options.transparentResponse;
+    if (options.callback) params.callback = options.callback;
+    if (options.pureCookies !== undefined) params.pureCookies = options.pureCookies;
 
     // Render-specific params
-    if (options.waitUntil) params['waitUntil'] = options.waitUntil;
-    if (options.customWait !== undefined) params['customWait'] = options.customWait;
-    if (options.waitSelector) params['waitSelector'] = options.waitSelector;
-    if (options.width !== undefined) params['width'] = options.width;
-    if (options.height !== undefined) params['height'] = options.height;
-    if (options.blockResources !== undefined)
-      params['blockResources'] = options.blockResources;
-    if (options.playWithBrowser) params['playWithBrowser'] = options.playWithBrowser;
-    if (options.returnJSON !== undefined) params['returnJSON'] = options.returnJSON;
-    if (options.showFrames !== undefined) params['showFrames'] = options.showFrames;
+    if (options.waitUntil) params.waitUntil = options.waitUntil;
+    if (options.customWait !== undefined) params.customWait = options.customWait;
+    if (options.waitSelector) params.waitSelector = options.waitSelector;
+    if (options.width !== undefined) params.width = options.width;
+    if (options.height !== undefined) params.height = options.height;
+    if (options.blockResources !== undefined) params.blockResources = options.blockResources;
+    if (options.playWithBrowser) params.playWithBrowser = options.playWithBrowser;
+    if (options.returnJSON !== undefined) params.returnJSON = options.returnJSON;
+    if (options.showFrames !== undefined) params.showFrames = options.showFrames;
     if (options.showWebsocketRequests !== undefined)
-      params['showWebsocketRequests'] = options.showWebsocketRequests;
+      params.showWebsocketRequests = options.showWebsocketRequests;
 
     // Screenshot params
-    if (options.screenShot !== undefined) params['screenShot'] = options.screenShot;
-    if (options.fullScreenShot !== undefined)
-      params['fullScreenShot'] = options.fullScreenShot;
+    if (options.screenShot !== undefined) params.screenShot = options.screenShot;
+    if (options.fullScreenShot !== undefined) params.fullScreenShot = options.fullScreenShot;
     if (options.particularScreenShot)
-      params['particularScreenShot'] = options.particularScreenShot;
+      params.particularScreenShot = options.particularScreenShot;
 
     let requestConfig: Record<string, unknown> = {
       params,
@@ -241,10 +238,10 @@ export class ScrapeDoClient {
     };
 
     if (headers) {
-      requestConfig['headers'] = headers;
+      requestConfig.headers = headers;
     }
 
-    let response;
+    let response: any;
     if (method === 'POST') {
       response = await apiAxios.post('/', postBody || '', requestConfig);
     } else {
@@ -273,19 +270,19 @@ export class ScrapeDoClient {
       q: options.query
     };
 
-    if (options.device) params['device'] = options.device;
-    if (options.gl) params['gl'] = options.gl;
-    if (options.hl) params['hl'] = options.hl;
-    if (options.cr) params['cr'] = options.cr;
-    if (options.lr) params['lr'] = options.lr;
-    if (options.location) params['location'] = options.location;
-    if (options.uule) params['uule'] = options.uule;
-    if (options.start !== undefined) params['start'] = options.start;
-    if (options.num !== undefined) params['num'] = options.num;
-    if (options.safe) params['safe'] = options.safe;
-    if (options.tbs) params['tbs'] = options.tbs;
-    if (options.nfpr) params['nfpr'] = options.nfpr;
-    if (options.includeHtml !== undefined) params['include_html'] = options.includeHtml;
+    if (options.device) params.device = options.device;
+    if (options.gl) params.gl = options.gl;
+    if (options.hl) params.hl = options.hl;
+    if (options.cr) params.cr = options.cr;
+    if (options.lr) params.lr = options.lr;
+    if (options.location) params.location = options.location;
+    if (options.uule) params.uule = options.uule;
+    if (options.start !== undefined) params.start = options.start;
+    if (options.num !== undefined) params.num = options.num;
+    if (options.safe) params.safe = options.safe;
+    if (options.tbs) params.tbs = options.tbs;
+    if (options.nfpr) params.nfpr = options.nfpr;
+    if (options.includeHtml !== undefined) params.include_html = options.includeHtml;
 
     let response = await apiAxios.get('/plugin/google/search', {
       params,
@@ -302,10 +299,10 @@ export class ScrapeDoClient {
       geocode: options.geocode
     };
 
-    if (options.zipcode) params['zipcode'] = options.zipcode;
-    if (options.language) params['language'] = options.language;
-    if (options.includeHtml !== undefined) params['include_html'] = options.includeHtml;
-    if (options.super !== undefined) params['super'] = options.super;
+    if (options.zipcode) params.zipcode = options.zipcode;
+    if (options.language) params.language = options.language;
+    if (options.includeHtml !== undefined) params.include_html = options.includeHtml;
+    if (options.super !== undefined) params.super = options.super;
 
     let response = await apiAxios.get('/plugin/amazon/pdp', {
       params,
@@ -322,11 +319,11 @@ export class ScrapeDoClient {
       geocode: options.geocode
     };
 
-    if (options.zipcode) params['zipcode'] = options.zipcode;
-    if (options.page !== undefined) params['page'] = options.page;
-    if (options.language) params['language'] = options.language;
-    if (options.includeHtml !== undefined) params['include_html'] = options.includeHtml;
-    if (options.super !== undefined) params['super'] = options.super;
+    if (options.zipcode) params.zipcode = options.zipcode;
+    if (options.page !== undefined) params.page = options.page;
+    if (options.language) params.language = options.language;
+    if (options.includeHtml !== undefined) params.include_html = options.includeHtml;
+    if (options.super !== undefined) params.super = options.super;
 
     let response = await apiAxios.get('/plugin/amazon/search', {
       params,
@@ -345,10 +342,10 @@ export class ScrapeDoClient {
       geocode: options.geocode
     };
 
-    if (options.zipcode) params['zipcode'] = options.zipcode;
-    if (options.language) params['language'] = options.language;
-    if (options.includeHtml !== undefined) params['include_html'] = options.includeHtml;
-    if (options.super !== undefined) params['super'] = options.super;
+    if (options.zipcode) params.zipcode = options.zipcode;
+    if (options.language) params.language = options.language;
+    if (options.includeHtml !== undefined) params.include_html = options.includeHtml;
+    if (options.super !== undefined) params.super = options.super;
 
     let response = await apiAxios.get('/plugin/amazon/offer-listing', {
       params,
@@ -364,8 +361,8 @@ export class ScrapeDoClient {
       url: options.url
     };
 
-    if (options.geocode) params['geocode'] = options.geocode;
-    if (options.super !== undefined) params['super'] = options.super;
+    if (options.geocode) params.geocode = options.geocode;
+    if (options.super !== undefined) params.super = options.super;
 
     let response = await apiAxios.get('/plugin/amazon/', {
       params,
@@ -383,27 +380,27 @@ export class ScrapeDoClient {
       Targets: options.targets
     };
 
-    if (options.method) body['Method'] = options.method;
-    if (options.body) body['Body'] = options.body;
-    if (options.geoCode) body['GeoCode'] = options.geoCode;
-    if (options.regionalGeoCode) body['RegionalGeoCode'] = options.regionalGeoCode;
-    if (options.super !== undefined) body['Super'] = options.super;
-    if (options.headers) body['Headers'] = options.headers;
-    if (options.forwardHeaders !== undefined) body['ForwardHeaders'] = options.forwardHeaders;
-    if (options.sessionId) body['SessionID'] = options.sessionId;
-    if (options.device) body['Device'] = options.device;
-    if (options.setCookies) body['SetCookies'] = options.setCookies;
-    if (options.timeout !== undefined) body['Timeout'] = options.timeout;
-    if (options.retryTimeout !== undefined) body['RetryTimeout'] = options.retryTimeout;
-    if (options.disableRetry !== undefined) body['DisableRetry'] = options.disableRetry;
+    if (options.method) body.Method = options.method;
+    if (options.body) body.Body = options.body;
+    if (options.geoCode) body.GeoCode = options.geoCode;
+    if (options.regionalGeoCode) body.RegionalGeoCode = options.regionalGeoCode;
+    if (options.super !== undefined) body.Super = options.super;
+    if (options.headers) body.Headers = options.headers;
+    if (options.forwardHeaders !== undefined) body.ForwardHeaders = options.forwardHeaders;
+    if (options.sessionId) body.SessionID = options.sessionId;
+    if (options.device) body.Device = options.device;
+    if (options.setCookies) body.SetCookies = options.setCookies;
+    if (options.timeout !== undefined) body.Timeout = options.timeout;
+    if (options.retryTimeout !== undefined) body.RetryTimeout = options.retryTimeout;
+    if (options.disableRetry !== undefined) body.DisableRetry = options.disableRetry;
     if (options.transparentResponse !== undefined)
-      body['TransparentResponse'] = options.transparentResponse;
+      body.TransparentResponse = options.transparentResponse;
     if (options.disableRedirection !== undefined)
-      body['DisableRedirection'] = options.disableRedirection;
-    if (options.output) body['Output'] = options.output;
-    if (options.webhookUrl) body['WebhookURL'] = options.webhookUrl;
-    if (options.webhookHeaders) body['WebhookHeaders'] = options.webhookHeaders;
-    if (options.render) body['Render'] = options.render;
+      body.DisableRedirection = options.disableRedirection;
+    if (options.output) body.Output = options.output;
+    if (options.webhookUrl) body.WebhookURL = options.webhookUrl;
+    if (options.webhookHeaders) body.WebhookHeaders = options.webhookHeaders;
+    if (options.render) body.Render = options.render;
 
     let response = await asyncAxios.post('/api/v1/jobs', body, {
       headers: { 'X-Token': this.token },

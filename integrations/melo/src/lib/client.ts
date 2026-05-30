@@ -9,7 +9,7 @@ export class Client {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; environment?: string }) {
-    let baseURL = BASE_URLS[config.environment ?? 'production'] ?? BASE_URLS['production'];
+    let baseURL = BASE_URLS[config.environment ?? 'production'] ?? BASE_URLS.production;
     this.axios = createAxios({
       baseURL,
       headers: {

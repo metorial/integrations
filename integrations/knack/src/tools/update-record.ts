@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KnackClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateRecord = SlateTool.create(spec, {
   name: 'Update Record',
@@ -49,7 +49,7 @@ export let updateRecord = SlateTool.create(spec, {
       authMode: ctx.auth.authMode
     });
 
-    let record;
+    let record: any;
 
     if (ctx.input.sceneKey && ctx.input.viewKey) {
       record = await client.updateViewRecord(

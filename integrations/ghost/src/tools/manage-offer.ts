@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GhostAdminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let offerOutputSchema = z.object({
   offerId: z.string().describe('Unique offer ID'),

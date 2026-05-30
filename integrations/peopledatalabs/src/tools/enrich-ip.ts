@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let enrichIp = SlateTool.create(spec, {
   name: 'Enrich IP Address',
@@ -95,8 +95,12 @@ export let enrichIp = SlateTool.create(spec, {
           country: data.location.country ?? null,
           continent: data.location.continent ?? null,
           postalCode: data.location.postal_code ?? null,
-          latitude: data.location.geo ? parseFloat(data.location.geo.split(',')[0]) : null,
-          longitude: data.location.geo ? parseFloat(data.location.geo.split(',')[1]) : null,
+          latitude: data.location.geo
+            ? Number.parseFloat(data.location.geo.split(',')[0])
+            : null,
+          longitude: data.location.geo
+            ? Number.parseFloat(data.location.geo.split(',')[1])
+            : null,
           metro: data.location.metro ?? null
         }
       : null;

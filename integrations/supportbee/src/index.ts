@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTickets,
-  getTicket,
-  searchTickets,
-  createTicket,
-  updateTicketStatus,
-  replyToTicket,
-  listReplies,
   addComment,
-  listComments,
   assignTicket,
-  manageLabels,
+  createTicket,
+  getReports,
+  getTicket,
   listAgents,
+  listComments,
+  listReplies,
+  listTickets,
+  manageLabels,
   manageSnippets,
-  getReports
+  replyToTicket,
+  searchTickets,
+  updateTicketStatus
 } from './tools';
-import { ticketEvents, replyCommentEvents, assignmentEvents } from './triggers';
+import { assignmentEvents, replyCommentEvents, ticketEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

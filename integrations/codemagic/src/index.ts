@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listApplications,
-  getApplication,
   addApplication,
-  startBuild,
-  getBuild,
-  listBuilds,
+  addVariables,
   cancelBuild,
   createArtifactUrl,
+  getApplication,
+  getBuild,
+  listApplications,
+  listBuilds,
   manageCaches,
-  addVariables
+  startBuild
 } from './tools';
 import { buildStatusTrigger, inboundWebhook } from './triggers';
 

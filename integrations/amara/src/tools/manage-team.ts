@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTeam = SlateTool.create(spec, {
   name: 'Manage Team',
@@ -60,7 +60,7 @@ export let manageTeam = SlateTool.create(spec, {
 
     let isCreate = !ctx.input.teamSlug;
 
-    let team;
+    let team: any;
     if (isCreate) {
       if (!ctx.input.name || !ctx.input.slug) {
         throw new Error('name and slug are required when creating a new team');

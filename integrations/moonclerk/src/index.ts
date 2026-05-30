@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listFormsTool,
+  getCustomerTool,
   getFormTool,
-  listPaymentsTool,
   getPaymentTool,
   listCustomersTool,
-  getCustomerTool
+  listFormsTool,
+  listPaymentsTool
 } from './tools';
 import { paymentCreatedTrigger, planEventTrigger } from './triggers';
 

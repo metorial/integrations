@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TogglClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listTasks = SlateTool.create(spec, {
   name: 'List Tasks',
@@ -51,7 +51,7 @@ export let listTasks = SlateTool.create(spec, {
       estimatedSeconds: t.estimated_seconds ?? null,
       trackedSeconds: t.tracked_seconds ?? null,
       userId: t.user_id ?? null,
-      projectId: t.project_id ?? parseInt(ctx.input.projectId)
+      projectId: t.project_id ?? Number.parseInt(ctx.input.projectId, 10)
     }));
 
     return {

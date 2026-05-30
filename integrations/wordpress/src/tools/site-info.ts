@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getSiteInfoTool = SlateTool.create(spec, {
   name: 'Get Site Info',
@@ -26,7 +26,7 @@ export let getSiteInfoTool = SlateTool.create(spec, {
     let client = createClient(ctx.config, ctx.auth);
     let info = await client.getSiteInfo();
 
-    let result;
+    let result: any;
     if (ctx.config.apiType === 'wpcom') {
       result = {
         siteName: info.name || '',

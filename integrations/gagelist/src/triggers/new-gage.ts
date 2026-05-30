@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newGage = SlateTrigger.create(spec, {
   name: 'New Gage Created',
@@ -56,7 +56,7 @@ export let newGage = SlateTrigger.create(spec, {
       let newGages = allGages
         .filter((g: any) => {
           let ts = Date.parse(g.CreatedDate);
-          return !isNaN(ts) && ts > lastTs;
+          return !Number.isNaN(ts) && ts > lastTs;
         })
         .sort((a: any, b: any) => Date.parse(a.CreatedDate) - Date.parse(b.CreatedDate));
 

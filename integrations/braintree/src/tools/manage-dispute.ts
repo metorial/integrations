@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { BraintreeRestClient } from '../lib/client';
-import { parseXml, buildXml } from '../lib/xml';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { BraintreeRestClient } from '../lib/client';
+import { buildXml, parseXml } from '../lib/xml';
+import { spec } from '../spec';
 
 let disputeOutputSchema = z.object({
   disputeId: z.string().describe('Dispute ID'),

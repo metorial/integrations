@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ConversionsClient } from '../lib/conversions-client';
-import type { ConversionEvent } from '../lib/conversions-client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import type { ConversionEvent } from '../lib/conversions-client';
+import { ConversionsClient } from '../lib/conversions-client';
+import { spec } from '../spec';
 
 let productSchema = z.object({
   productId: z.string().optional().describe('Product ID'),

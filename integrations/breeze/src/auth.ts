@@ -28,7 +28,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
+    getProfile: async (_ctx: { output: { token: string }; input: { token: string } }) => {
       return {
         profile: {
           name: 'Breeze Account'

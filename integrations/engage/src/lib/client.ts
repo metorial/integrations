@@ -1,22 +1,22 @@
 import { createAxios } from 'slates';
 import type {
-  EngageUser,
-  EngageList,
+  CreateListParams,
   CreateUserParams,
-  UpdateUserParams,
-  TrackEventParams,
+  EngageList,
+  EngageUser,
+  PaginatedResponse,
   SendEmailParams,
   SendSmsParams,
-  CreateListParams,
-  UpdateListParams,
   SubscribeToListParams,
-  PaginatedResponse
+  TrackEventParams,
+  UpdateListParams,
+  UpdateUserParams
 } from './types';
 
 export class Client {
   private http;
 
-  constructor(private credentials: { token: string; secret: string }) {
+  constructor(credentials: { token: string; secret: string }) {
     this.http = createAxios({
       baseURL: 'https://api.engage.so/v1',
       auth: {

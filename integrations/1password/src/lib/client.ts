@@ -92,7 +92,7 @@ export class ConnectClient {
 
   constructor(config: { token: string; serverUrl: string }) {
     this.http = createAxios({
-      baseURL: config.serverUrl.replace(/\/+$/, '') + '/v1',
+      baseURL: `${config.serverUrl.replace(/\/+$/, '')}/v1`,
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
@@ -104,7 +104,7 @@ export class ConnectClient {
 
   async listVaults(filter?: string): Promise<VaultSummary[]> {
     let params: Record<string, string> = {};
-    if (filter) params['filter'] = filter;
+    if (filter) params.filter = filter;
     let res = await this.http.get('/vaults', { params });
     return res.data;
   }
@@ -118,7 +118,7 @@ export class ConnectClient {
 
   async listItems(vaultId: string, filter?: string): Promise<ItemSummary[]> {
     let params: Record<string, string> = {};
-    if (filter) params['filter'] = filter;
+    if (filter) params.filter = filter;
     let res = await this.http.get(`/vaults/${vaultId}/items`, { params });
     return res.data;
   }
@@ -172,8 +172,8 @@ export class ConnectClient {
 
   async getActivity(limit?: number, offset?: number): Promise<ApiRequest[]> {
     let params: Record<string, string | number> = {};
-    if (limit !== undefined) params['limit'] = limit;
-    if (offset !== undefined) params['offset'] = offset;
+    if (limit !== undefined) params.limit = limit;
+    if (offset !== undefined) params.offset = offset;
     let res = await this.http.get('/activity', { params });
     return res.data;
   }

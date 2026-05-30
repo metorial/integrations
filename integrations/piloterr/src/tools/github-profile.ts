@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PiloterrClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let githubProfile = SlateTool.create(spec, {
   name: 'GitHub Profile',

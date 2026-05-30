@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let messageSchema = z.object({
   role: z.enum(['system', 'user', 'assistant']).describe('The role of the message author'),
@@ -193,7 +193,7 @@ export let chatCompletion = SlateTool.create(spec, {
 
     let contentPreview = content
       ? content.length > 200
-        ? content.substring(0, 200) + '...'
+        ? `${content.substring(0, 200)}...`
         : content
       : '(no text content)';
 

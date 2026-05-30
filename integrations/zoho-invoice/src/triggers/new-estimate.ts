@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let inputSchema = z.object({
   estimateId: z.string(),
@@ -59,7 +59,7 @@ export let newEstimate = SlateTrigger.create(spec, {
       });
 
       let estimates = result.estimates ?? [];
-      let inputs: Array<any> = [];
+      let inputs: any[] = [];
       let newestCreatedTime = lastCreatedTime;
 
       for (let est of estimates) {

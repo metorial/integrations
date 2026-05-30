@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
-import { syncTaskEnum } from '../lib/schemas';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { syncTaskEnum } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let syncOrganisation = SlateTool.create(spec, {
   name: 'Sync Organisation',

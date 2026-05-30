@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendMessage,
-  sendTemplateMessage,
-  listContacts,
-  manageContact,
   getMessages,
-  listTemplates,
-  manageConversation,
   listCampaigns,
   listChannels,
+  listContacts,
+  listTemplates,
+  manageContact,
+  manageConversation,
+  sendMessage,
+  sendTemplateMessage,
   startChatbot
 } from './tools';
-import { messageReceived, messageStatus, templateLifecycle, accountEvent } from './triggers';
+import { accountEvent, messageReceived, messageStatus, templateLifecycle } from './triggers';
 
 export let provider = Slate.create({
   spec,

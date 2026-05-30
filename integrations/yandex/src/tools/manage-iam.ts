@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import * as iam from '../lib/iam';
+import { spec } from '../spec';
 
 export let listServiceAccounts = SlateTool.create(spec, {
   name: 'List Service Accounts',

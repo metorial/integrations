@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { contactSchema, actionSchema } from '../lib/schemas';
+import { Client } from '../lib/client';
+import { actionSchema, contactSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 let actionStreamContactSchema = contactSchema.extend({
   nextAction: actionSchema.optional().describe('The next pending action for this contact')

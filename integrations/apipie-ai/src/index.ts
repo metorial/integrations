@@ -2,13 +2,13 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   chatCompletion,
-  generateImage,
-  textToSpeech,
   createEmbeddings,
   discoverModels,
-  webSearch,
+  generateImage,
+  getUsage,
   manageRag,
-  getUsage
+  textToSpeech,
+  webSearch
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

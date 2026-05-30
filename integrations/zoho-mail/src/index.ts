@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendEmail,
-  listEmails,
+  getAccountInfo,
   getEmail,
-  searchEmails,
-  updateEmail,
+  listEmails,
+  manageBookmarks,
   manageFolders,
   manageLabels,
-  manageTasks,
   manageNotes,
-  manageBookmarks,
-  getAccountInfo,
-  manageOrganization
+  manageOrganization,
+  manageTasks,
+  searchEmails,
+  sendEmail,
+  updateEmail
 } from './tools';
-import { newEmail, newTask, inboundWebhook } from './triggers';
+import { inboundWebhook, newEmail, newTask } from './triggers';
 
 export let provider = Slate.create({
   spec,

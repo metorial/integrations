@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactEventTypes = [
   'subscribe',
@@ -84,7 +84,7 @@ export let contactEvents = SlateTrigger.create(spec, {
         data = Object.fromEntries(params.entries());
       }
 
-      let eventType = data.type || data['type'] || 'unknown';
+      let eventType = data.type || data.type || 'unknown';
 
       return {
         inputs: [
@@ -99,16 +99,16 @@ export let contactEvents = SlateTrigger.create(spec, {
     handleEvent: async ctx => {
       let p = ctx.input.payload as Record<string, any>;
 
-      let contactId = String(p['contact[id]'] || p['contact_id'] || p['contactId'] || '');
-      let email = String(p['contact[email]'] || p['email'] || '');
-      let firstName = String(p['contact[first_name]'] || p['firstName'] || '');
-      let lastName = String(p['contact[last_name]'] || p['lastName'] || '');
-      let phone = String(p['contact[phone]'] || p['phone'] || '');
-      let listId = String(p['list'] || p['listId'] || p['list[id]'] || '');
-      let tagId = String(p['contact[tags]'] || p['tagId'] || p['tag[id]'] || '');
-      let tagName = String(p['tag[name]'] || p['tagName'] || '');
-      let initiatedBy = String(p['initiated_by'] || p['source'] || '');
-      let occurredAt = String(p['date_time'] || p['dateTime'] || '');
+      let contactId = String(p['contact[id]'] || p.contact_id || p.contactId || '');
+      let email = String(p['contact[email]'] || p.email || '');
+      let firstName = String(p['contact[first_name]'] || p.firstName || '');
+      let lastName = String(p['contact[last_name]'] || p.lastName || '');
+      let phone = String(p['contact[phone]'] || p.phone || '');
+      let listId = String(p.list || p.listId || p['list[id]'] || '');
+      let tagId = String(p['contact[tags]'] || p.tagId || p['tag[id]'] || '');
+      let tagName = String(p['tag[name]'] || p.tagName || '');
+      let initiatedBy = String(p.initiated_by || p.source || '');
+      let occurredAt = String(p.date_time || p.dateTime || '');
 
       let uniqueId = `${ctx.input.eventType}-${contactId || email}-${occurredAt || Date.now()}`;
 

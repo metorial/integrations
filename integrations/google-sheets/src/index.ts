@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createSpreadsheet,
-  getSpreadsheet,
-  updateSpreadsheet,
-  deleteSpreadsheet,
-  readCells,
-  writeCells,
-  clearCells,
-  manageSheets,
-  formatCells,
   batchUpdate,
+  clearCells,
   createChart,
-  createPivotTable,
-  setDataValidation,
-  manageProtectedRanges,
-  manageNamedRanges,
   createFilterView,
-  mergeCells
+  createPivotTable,
+  createSpreadsheet,
+  deleteSpreadsheet,
+  formatCells,
+  getSpreadsheet,
+  manageNamedRanges,
+  manageProtectedRanges,
+  manageSheets,
+  mergeCells,
+  readCells,
+  setDataValidation,
+  updateSpreadsheet,
+  writeCells
 } from './tools';
 import { spreadsheetChanged } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listBoards = SlateTool.create(spec, {
   name: 'List Boards',
@@ -49,7 +49,7 @@ export let listBoards = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let result;
+    let result: any;
     if (ctx.input.query) {
       result = await client.searchBoards({
         query: ctx.input.query,

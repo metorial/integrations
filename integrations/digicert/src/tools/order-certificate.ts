@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CertCentralClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let orderCertificate = SlateTool.create(spec, {
   name: 'Order Certificate',

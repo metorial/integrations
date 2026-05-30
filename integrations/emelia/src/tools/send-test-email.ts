@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EmeliaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendTestEmail = SlateTool.create(spec, {
   name: 'Send Test Email',

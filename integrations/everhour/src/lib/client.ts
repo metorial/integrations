@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class EverhourClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.everhour.com',
       headers: {

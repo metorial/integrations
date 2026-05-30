@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { submissionSchema } from '../lib/types';
+import { spec } from '../spec';
 
 export let createSubmission = SlateTool.create(spec, {
   name: 'Create Submission',

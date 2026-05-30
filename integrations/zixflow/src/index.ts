@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendWhatsAppMessage,
-  sendSms,
-  sendRcsMessage,
+  getMessageReport,
+  listCollections,
+  listLists,
+  listWhatsAppResources,
+  listWorkspaceMembers,
+  manageActivities,
+  manageCollectionRecords,
+  manageListEntries,
   sendEmail,
   sendOtp,
-  listWhatsAppResources,
-  getMessageReport,
-  manageCollectionRecords,
-  listCollections,
-  manageListEntries,
-  listLists,
-  manageActivities,
-  listWorkspaceMembers
+  sendRcsMessage,
+  sendSms,
+  sendWhatsAppMessage
 } from './tools';
-import { incomingWhatsAppMessage, incomingRcsMessage } from './triggers';
+import { incomingRcsMessage, incomingWhatsAppMessage } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BlazeMeterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTest = SlateTool.create(spec, {
   name: 'Manage Performance Test',

@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getEodPrices,
-  getIntradayPrices,
-  searchTickers,
-  getTickerDetails,
-  getSplitsAndDividends,
-  listExchanges,
-  getCommodities,
-  getMarketIndices,
-  getGovernmentBonds,
-  getEtfHoldings,
   getAnalystRatings,
+  getCommodities,
+  getEodPrices,
+  getEtfHoldings,
+  getGovernmentBonds,
+  getIntradayPrices,
+  getMarketIndices,
+  getSecFinancialData,
+  getSplitsAndDividends,
+  getTickerDetails,
+  listExchanges,
   searchSecFilings,
-  getSecFinancialData
+  searchTickers
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -66,7 +66,7 @@ export class RemoteConfigClient {
 
     return {
       ...response.data,
-      etag: response.headers['etag'] || response.data.etag || ''
+      etag: response.headers.etag || response.data.etag || ''
     };
   }
 
@@ -92,7 +92,7 @@ export class RemoteConfigClient {
 
     return {
       ...response.data,
-      etag: response.headers['etag'] || response.data.etag || ''
+      etag: response.headers.etag || response.data.etag || ''
     };
   }
 
@@ -138,7 +138,7 @@ export class RemoteConfigClient {
 
     return {
       ...response.data,
-      etag: response.headers['etag'] || response.data.etag || ''
+      etag: response.headers.etag || response.data.etag || ''
     };
   }
 }

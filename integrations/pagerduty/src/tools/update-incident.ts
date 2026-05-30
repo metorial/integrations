@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PagerDutyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateIncident = SlateTool.create(spec, {
   name: 'Update Incident',

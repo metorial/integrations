@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugsnagClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let errorSchema = z.object({
   errorId: z.string().describe('Unique identifier of the error'),
@@ -97,7 +97,7 @@ export let listErrors = SlateTool.create(spec, {
       filters['app.release_stage'] = [{ type: 'eq', value: ctx.input.releaseStage }];
     if (ctx.input.errorClass)
       filters['event.class'] = [{ type: 'eq', value: ctx.input.errorClass }];
-    if (ctx.input.search) filters['search'] = [{ type: 'eq', value: ctx.input.search }];
+    if (ctx.input.search) filters.search = [{ type: 'eq', value: ctx.input.search }];
     if (ctx.input.since) filters['event.since'] = [{ type: 'eq', value: ctx.input.since }];
     if (ctx.input.before) filters['event.before'] = [{ type: 'eq', value: ctx.input.before }];
 

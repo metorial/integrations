@@ -1,17 +1,17 @@
 import { createAxios } from 'slates';
 import { toAzureDevOpsAuthHeader } from './auth';
 import type {
-  AzureRepository,
+  AzureBranchStats,
+  AzureCommentThread,
+  AzureCommit,
+  AzureItem,
+  AzureListResponse,
+  AzurePullRequest,
+  AzurePush,
   AzureRef,
   AzureRefUpdateResult,
-  AzurePullRequest,
-  AzureCommit,
-  AzurePush,
-  AzureItem,
-  AzureCommentThread,
+  AzureRepository,
   AzureReviewer,
-  AzureBranchStats,
-  AzureListResponse,
   AzureServiceHookSubscription
 } from './types';
 
@@ -490,10 +490,10 @@ export class Client {
     let filters: Record<string, string[]> = {
       Project: [this.project]
     };
-    if (options?.repositoryName) filters['Repository'] = [options.repositoryName];
-    if (options?.branch) filters['Branch'] = [options.branch];
-    if (options?.path) filters['Path'] = [options.path];
-    if (options?.fileExtension) filters['CodeElement'] = [options.fileExtension];
+    if (options?.repositoryName) filters.Repository = [options.repositoryName];
+    if (options?.branch) filters.Branch = [options.branch];
+    if (options?.path) filters.Path = [options.path];
+    if (options?.fileExtension) filters.CodeElement = [options.fileExtension];
 
     let response = await searchHttp.post(
       `/${this.project}/_apis/search/codesearchresults?api-version=7.1`,

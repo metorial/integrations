@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BenzingaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transactionSchema = z.object({
   isDeriviative: z.boolean().optional().describe('Whether this is a derivative transaction'),

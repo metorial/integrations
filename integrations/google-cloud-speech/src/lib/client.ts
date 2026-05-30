@@ -30,14 +30,11 @@ export class SpeechToTextClient {
   private shouldRetryInGlobal(error: unknown) {
     let message = error instanceof Error ? error.message : String(error);
     return (
-      this.region !== 'global' &&
-      message.includes('Expected resource location to be global')
+      this.region !== 'global' && message.includes('Expected resource location to be global')
     );
   }
 
-  private async withLocationFallback<T>(
-    request: (region: string) => Promise<T>
-  ): Promise<T> {
+  private async withLocationFallback<T>(request: (region: string) => Promise<T>): Promise<T> {
     try {
       return await request(this.region);
     } catch (error) {

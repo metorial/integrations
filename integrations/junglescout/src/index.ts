@@ -1,9 +1,9 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  historicalSearchVolumeTool,
   keywordsByAsinTool,
   keywordsByKeywordTool,
-  historicalSearchVolumeTool,
   productDatabaseTool,
   salesEstimatesTool,
   shareOfVoiceTool

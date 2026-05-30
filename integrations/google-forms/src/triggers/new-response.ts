@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { GoogleFormsClient } from '../lib/client';
 import { googleFormsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let answerSchema = z.object({
   questionId: z.string().optional().describe('ID of the question'),

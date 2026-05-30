@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  findEnvelopesTool,
-  getEnvelopeTool,
   createEnvelopeTool,
-  updateEnvelopeTool,
   deleteEnvelopeTool,
   distributeEnvelopeTool,
   duplicateEnvelopeTool,
-  manageRecipientsTool,
+  findEnvelopesTool,
+  getAuditLogTool,
+  getEnvelopeTool,
   manageFieldsTool,
-  useTemplateTool,
   manageFoldersTool,
-  getAuditLogTool
+  manageRecipientsTool,
+  updateEnvelopeTool,
+  useTemplateTool
 } from './tools';
 import { documentEventTrigger } from './triggers';
 

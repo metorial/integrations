@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TypeformClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let getHref = (value: any) => {
   if (typeof value?.href === 'string') return value.href;

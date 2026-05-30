@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  browsePosts,
-  managePost,
-  browsePages,
-  managePage,
-  browseTags,
-  manageTag,
   browseMembers,
-  manageMember,
   browseNewsletters,
-  manageNewsletter,
+  browsePages,
+  browsePosts,
+  browseTags,
   browseTiers,
-  manageOffer,
   browseUsers,
   getSite,
+  manageMember,
+  manageNewsletter,
+  manageOffer,
+  managePage,
+  managePost,
+  manageTag,
   manageWebhook
 } from './tools';
-import { postEvents, pageEvents, tagEvents, memberEvents, siteChanged } from './triggers';
+import { memberEvents, pageEvents, postEvents, siteChanged, tagEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

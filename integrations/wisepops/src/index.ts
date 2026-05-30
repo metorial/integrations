@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listContacts,
-  listCampaigns,
-  listWebhooks,
   createWebhook,
+  deleteUserData,
   deleteWebhook,
-  deleteUserData
+  listCampaigns,
+  listContacts,
+  listWebhooks
 } from './tools';
 import { formSubmission } from './triggers';
 

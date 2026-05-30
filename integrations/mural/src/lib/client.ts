@@ -89,7 +89,7 @@ export interface VotingSession {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string; authType?: 'oauth' | 'apikey' }) {
+  constructor(params: { token: string; authType?: 'oauth' | 'apikey' }) {
     let authHeader =
       params.authType === 'apikey' ? `apikey ${params.token}` : `Bearer ${params.token}`;
 

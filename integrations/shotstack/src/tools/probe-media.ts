@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EditClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let probeMediaTool = SlateTool.create(spec, {
   name: 'Probe Media',

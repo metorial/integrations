@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let validateEmail = SlateTool.create(spec, {
   name: 'Validate Email',
@@ -68,7 +68,7 @@ export let validateEmail = SlateTool.create(spec, {
 
     return {
       output,
-      message: `Email \`${ctx.input.email}\` is ${status}.${extras.length > 0 ? ' ' + extras.join(', ') + '.' : ''}`
+      message: `Email \`${ctx.input.email}\` is ${status}.${extras.length > 0 ? ` ${extras.join(', ')}.` : ''}`
     };
   })
   .build();

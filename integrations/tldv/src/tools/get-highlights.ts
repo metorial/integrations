@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TldvClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getHighlights = SlateTool.create(spec, {
   name: 'Get Highlights',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactSchema = z.object({
   phone: z.string().describe('Phone number in E.164 format (e.g., +393331234567)'),

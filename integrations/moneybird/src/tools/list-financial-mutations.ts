@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MoneybirdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let mutationSchema = z.object({
   mutationId: z.string(),

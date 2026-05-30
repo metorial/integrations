@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MezmoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let archiveOutputSchema = z.object({
   integration: z.string().describe('Storage provider (e.g., "s3", "ibm", "gcs")'),

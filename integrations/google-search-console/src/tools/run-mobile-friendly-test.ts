@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MobileFriendlyTestClient } from '../lib/client';
 import { googleSearchConsoleActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let runMobileFriendlyTest = SlateTool.create(spec, {
   name: 'Run Mobile-Friendly Test',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SuggestionsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let directorySuggestionSchema = z.object({
   value: z.string().describe('Display value'),

@@ -10,7 +10,7 @@ export interface ProductsResponse {
   totalTime: string;
   partial: boolean;
   canonicalUrl: string;
-  products: Array<Record<string, unknown>>;
+  products: Record<string, unknown>[];
 }
 
 export interface StoresResponse {
@@ -21,7 +21,7 @@ export interface StoresResponse {
   totalPages: number;
   queryTime: string;
   totalTime: string;
-  stores: Array<Record<string, unknown>>;
+  stores: Record<string, unknown>[];
 }
 
 export interface CategoriesResponse {
@@ -30,7 +30,7 @@ export interface CategoriesResponse {
   total: number;
   currentPage: number;
   totalPages: number;
-  categories: Array<Record<string, unknown>>;
+  categories: Record<string, unknown>[];
 }
 
 export interface RecommendationProduct {
@@ -144,19 +144,19 @@ export class BestBuyClient {
     };
 
     if (params.keyword) {
-      queryParams['search'] = params.keyword;
+      queryParams.search = params.keyword;
     }
     if (params.show) {
-      queryParams['show'] = params.show;
+      queryParams.show = params.show;
     }
     if (params.sort) {
-      queryParams['sort'] = params.sort;
+      queryParams.sort = params.sort;
     }
     if (params.page !== undefined) {
-      queryParams['page'] = String(params.page);
+      queryParams.page = String(params.page);
     }
     if (params.pageSize !== undefined) {
-      queryParams['pageSize'] = String(params.pageSize);
+      queryParams.pageSize = String(params.pageSize);
     }
 
     let response = await this.axios.get(`/v1/products${searchPart}`, {
@@ -170,7 +170,7 @@ export class BestBuyClient {
       apiKey: this.token
     };
     if (show) {
-      queryParams['show'] = show;
+      queryParams.show = show;
     }
 
     let response = await this.axios.get(`/v1/products/${sku}.json`, {
@@ -194,13 +194,13 @@ export class BestBuyClient {
     };
 
     if (params.show) {
-      queryParams['show'] = params.show;
+      queryParams.show = params.show;
     }
     if (params.page !== undefined) {
-      queryParams['page'] = String(params.page);
+      queryParams.page = String(params.page);
     }
     if (params.pageSize !== undefined) {
-      queryParams['pageSize'] = String(params.pageSize);
+      queryParams.pageSize = String(params.pageSize);
     }
 
     let response = await this.axios.get(`/v1/categories${searchPart}`, {
@@ -242,13 +242,13 @@ export class BestBuyClient {
     };
 
     if (params.show) {
-      queryParams['show'] = params.show;
+      queryParams.show = params.show;
     }
     if (params.page !== undefined) {
-      queryParams['page'] = String(params.page);
+      queryParams.page = String(params.page);
     }
     if (params.pageSize !== undefined) {
-      queryParams['pageSize'] = String(params.pageSize);
+      queryParams.pageSize = String(params.pageSize);
     }
 
     let response = await this.axios.get(`/v1/stores${searchPart}`, {

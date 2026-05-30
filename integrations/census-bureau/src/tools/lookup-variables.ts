@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CensusDataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let variableSchema = z.object({
   name: z.string().describe('Variable name to use in queries'),

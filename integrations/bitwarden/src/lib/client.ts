@@ -1,18 +1,18 @@
 import { createAxios } from 'slates';
 import type {
-  MemberResponse,
-  GroupResponse,
+  CollectionAssociation,
   CollectionResponse,
-  PolicyResponse,
   EventResponse,
+  GroupResponse,
   ListResponse,
-  CollectionAssociation
+  MemberResponse,
+  PolicyResponse
 } from './types';
 
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; serverUrl: string }) {
+  constructor(config: { token: string; serverUrl: string }) {
     this.http = createAxios({
       baseURL: `${config.serverUrl}/public`,
       headers: {

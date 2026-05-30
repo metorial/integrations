@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RenderClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageEnvVars = SlateTool.create(spec, {
   name: 'Manage Environment Variables',

@@ -1,7 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { runLookup, listMonitors, createMonitor, deleteMonitor, getUsage } from './tools';
-import { monitorStatusChanged, inboundWebhook } from './triggers';
+import { createMonitor, deleteMonitor, getUsage, listMonitors, runLookup } from './tools';
+import { inboundWebhook, monitorStatusChanged } from './triggers';
 
 export let provider = Slate.create({
   spec,

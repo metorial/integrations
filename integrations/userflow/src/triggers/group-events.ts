@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let groupEvents = SlateTrigger.create(spec, {
   name: 'Group Events',
@@ -77,7 +77,7 @@ export let groupEvents = SlateTrigger.create(spec, {
       let group = body.group as Record<string, unknown> | undefined;
       let data = group || (body.data as Record<string, unknown>);
 
-      if (!data || !topic || !topic.startsWith('group.')) {
+      if (!data || !topic?.startsWith('group.')) {
         return { inputs: [] };
       }
 

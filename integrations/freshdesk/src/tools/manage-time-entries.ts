@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listTimeEntries = SlateTool.create(spec, {
   name: 'List Time Entries',
@@ -109,9 +109,9 @@ export let createTimeEntry = SlateTool.create(spec, {
       time_spent: ctx.input.timeSpent
     };
 
-    if (ctx.input.agentId !== undefined) entryData['agent_id'] = ctx.input.agentId;
-    if (ctx.input.billable !== undefined) entryData['billable'] = ctx.input.billable;
-    if (ctx.input.note) entryData['note'] = ctx.input.note;
+    if (ctx.input.agentId !== undefined) entryData.agent_id = ctx.input.agentId;
+    if (ctx.input.billable !== undefined) entryData.billable = ctx.input.billable;
+    if (ctx.input.note) entryData.note = ctx.input.note;
 
     let entry = await client.createTimeEntry(ctx.input.ticketId, entryData);
 

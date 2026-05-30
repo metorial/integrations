@@ -6,7 +6,7 @@ import {
 } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { HttpRequest } from '@smithy/protocol-http';
-import { SlateContext, runWithContext } from 'slates';
+import { runWithContext, SlateContext } from 'slates';
 import { describe, expect, it } from 'vitest';
 import { SlatesAwsSdkHttpHandler } from './index';
 
@@ -36,7 +36,9 @@ let listen = async (
   handler: (req: IncomingMessage, res: ServerResponse) => void | Promise<void>
 ) => {
   let server = createServer((req, res) => {
-    void handler(req, res);
+    Promise.resolve(handler(req, res)).catch(error => {
+      res.destroy(error instanceof Error ? error : new Error(String(error)));
+    });
   });
 
   await new Promise<void>((resolve, reject) => {

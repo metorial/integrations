@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addTicketReply = SlateTool.create(spec, {
   name: 'Add Ticket Reply',
@@ -57,8 +57,8 @@ export let addTicketReply = SlateTool.create(spec, {
       let replyData: Record<string, any> = {
         body: ctx.input.body
       };
-      if (ctx.input.ccEmails) replyData['cc_emails'] = ctx.input.ccEmails;
-      if (ctx.input.bccEmails) replyData['bcc_emails'] = ctx.input.bccEmails;
+      if (ctx.input.ccEmails) replyData.cc_emails = ctx.input.ccEmails;
+      if (ctx.input.bccEmails) replyData.bcc_emails = ctx.input.bccEmails;
       conversation = await client.addReply(ctx.input.ticketId, replyData);
     }
 

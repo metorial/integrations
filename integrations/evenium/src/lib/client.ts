@@ -269,7 +269,7 @@ export class Client {
 
   // Event Parts / Sessions
 
-  async listEventParts(eventId: string): Promise<Array<Record<string, unknown>>> {
+  async listEventParts(eventId: string): Promise<Record<string, unknown>[]> {
     let response = await this.http.get(`/events/${eventId}/eventParts`);
     let data = response.data;
     let parts = data.eventParts ?? data.eventPart ?? [];

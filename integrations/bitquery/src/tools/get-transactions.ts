@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transactionOutputSchema = z.object({
   blockTime: z.string().describe('Block timestamp'),
@@ -68,7 +68,7 @@ Use this to audit wallet activity, monitor address transactions, or investigate 
     let { blockchain, fromAddress, toAddress, since, till, limit } = ctx.input;
     ctx.info(`Fetching transactions on ${blockchain}`);
 
-    let transactions: Array<z.infer<typeof transactionOutputSchema>> = [];
+    let transactions: z.infer<typeof transactionOutputSchema>[] = [];
 
     if (blockchain === 'solana') {
       let txFilters: string[] = [];

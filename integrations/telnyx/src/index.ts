@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendMessage,
+  callAction,
+  dialCall,
+  getBalance,
   getMessage,
-  searchPhoneNumbers,
-  orderPhoneNumbers,
   listPhoneNumbers,
+  manageMessagingProfile,
   managePhoneNumber,
-  sendVerification,
-  verifyCode,
+  manageSimCard,
   manageVerifyProfile,
   numberLookup,
+  orderPhoneNumbers,
+  searchPhoneNumbers,
   sendFax,
-  dialCall,
-  callAction,
-  manageMessagingProfile,
-  manageSimCard,
-  getBalance
+  sendMessage,
+  sendVerification,
+  verifyCode
 } from './tools';
-import { messagingEvents, callEvents, faxEvents, verifyEvents } from './triggers';
+import { callEvents, faxEvents, messagingEvents, verifyEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

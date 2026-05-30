@@ -32,7 +32,9 @@ let optionalNumber = (value: unknown) =>
   typeof value === 'number' && Number.isFinite(value) ? value : undefined;
 
 let optionalStringArray = (value: unknown) =>
-  Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : undefined;
+  Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : undefined;
 
 let formatOrganization = (organization: Record<string, any>) => ({
   organizationId: optionalString(organization.id),

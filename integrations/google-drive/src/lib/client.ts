@@ -152,7 +152,7 @@ export class GoogleDriveClient {
   private api;
   private uploadApi;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.api = createAxios({
       baseURL: 'https://www.googleapis.com/drive/v3',
       headers: {
@@ -267,7 +267,7 @@ export class GoogleDriveClient {
     if (params.description) metadata.description = params.description;
     if (params.mimeType) metadata.mimeType = params.mimeType;
 
-    let boundary = '-------slate_boundary_' + Date.now();
+    let boundary = `-------slate_boundary_${Date.now()}`;
     let contentType = params.mimeType || 'application/octet-stream';
 
     let fileContent: string;
@@ -360,7 +360,7 @@ export class GoogleDriveClient {
     fileId: string,
     exportMimeType: string
   ): Promise<{ contentBase64: string; mimeType?: string; byteLength: number }> {
-    let response;
+    let response: any;
     try {
       response = await this.api.get(`/files/${encodeURIComponent(fileId)}/export`, {
         params: { mimeType: exportMimeType },
@@ -393,14 +393,15 @@ export class GoogleDriveClient {
           `(e.g. \`text/plain\`, \`application/pdf\`, or DOCX/XLSX depending on the source type).`
       );
     }
-    let declaredBytes = meta.size !== undefined && meta.size !== '' ? Number(meta.size) : NaN;
+    let declaredBytes =
+      meta.size !== undefined && meta.size !== '' ? Number(meta.size) : Number.NaN;
     if (Number.isFinite(declaredBytes) && declaredBytes > MAX_DRIVE_DOWNLOAD_BYTES) {
       throw new Error(
         `File size (~${declaredBytes} bytes) exceeds this tool’s limit of ${MAX_DRIVE_DOWNLOAD_BYTES} bytes for MCP-safe JSON payloads. Download via another path or split the file.`
       );
     }
 
-    let response;
+    let response: any;
     try {
       response = await this.api.get(`/files/${encodeURIComponent(fileId)}`, {
         params: { alt: 'media', supportsAllDrives: true },

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let availabilitySchema = z.object({
   days: z.array(z.number()).describe('Days of the week (0=Sunday, 1=Monday, ... 6=Saturday)'),

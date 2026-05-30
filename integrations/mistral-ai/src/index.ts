@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  chatCompletionTool,
-  createEmbeddingsTool,
-  moderateContentTool,
-  extractDocumentTool,
-  listModelsTool,
-  listFilesTool,
-  getFileTool,
-  deleteFileTool,
-  createFineTuningJobTool,
-  getFineTuningJobTool,
-  listFineTuningJobsTool,
-  cancelFineTuningJobTool,
-  codeCompletionTool,
   agentCompletionTool,
-  createBatchJobTool,
-  getBatchJobTool,
-  listBatchJobsTool,
   cancelBatchJobTool,
-  deleteModelTool
+  cancelFineTuningJobTool,
+  chatCompletionTool,
+  codeCompletionTool,
+  createBatchJobTool,
+  createEmbeddingsTool,
+  createFineTuningJobTool,
+  deleteFileTool,
+  deleteModelTool,
+  extractDocumentTool,
+  getBatchJobTool,
+  getFileTool,
+  getFineTuningJobTool,
+  listBatchJobsTool,
+  listFilesTool,
+  listFineTuningJobsTool,
+  listModelsTool,
+  moderateContentTool
 } from './tools';
-import { fineTuningJobStatusTrigger, batchJobStatusTrigger, inboundWebhook } from './triggers';
+import { batchJobStatusTrigger, fineTuningJobStatusTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

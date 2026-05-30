@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ExaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let enrichmentSchema = z.object({
   enrichmentId: z.string().describe('Enrichment identifier'),

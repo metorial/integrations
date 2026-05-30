@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  textToSpeech,
-  speechToText,
-  listVoices,
-  getVoice,
+  composeMusic,
+  createDubbing,
   deleteVoice,
   editVoiceSettings,
   generateSoundEffect,
-  composeMusic,
-  createDubbing,
+  getAccount,
   getDubbing,
+  getVoice,
   isolateAudio,
-  listModels,
   listHistory,
-  getAccount
+  listModels,
+  listVoices,
+  speechToText,
+  textToSpeech
 } from './tools';
-import { voiceAgentCall, speechToTextCompletion, voiceRemoval } from './triggers';
+import { speechToTextCompletion, voiceAgentCall, voiceRemoval } from './triggers';
 
 export let provider = Slate.create({
   spec,

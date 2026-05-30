@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { PlanyoClient } from '../lib/client';
 import { PAYMENT_EVENTS } from '../lib/webhook-events';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let paymentEvents = SlateTrigger.create(spec, {
   name: 'Payment Events',
@@ -57,7 +57,7 @@ export let paymentEvents = SlateTrigger.create(spec, {
         try {
           await client.addNotificationCallback(eventCode, webhookUrl);
           registeredEvents.push(eventCode);
-        } catch (e) {
+        } catch (_e) {
           // Continue on failure
         }
       }
@@ -80,7 +80,7 @@ export let paymentEvents = SlateTrigger.create(spec, {
       for (let eventCode of details.registeredEvents) {
         try {
           await client.removeNotificationCallback(eventCode, details.webhookUrl);
-        } catch (e) {
+        } catch (_e) {
           // Best effort
         }
       }

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let lifecycleConditionSchema = z.object({
   age: z.number().optional().describe('Object age in days'),
@@ -124,7 +124,7 @@ export let manageLifecycle = SlateTool.create(spec, {
     }
 
     // clear
-    let result = await client.setBucketLifecycle(ctx.input.bucketName, { rule: [] });
+    let _result = await client.setBucketLifecycle(ctx.input.bucketName, { rule: [] });
     return {
       output: { bucketName: ctx.input.bucketName, rules: [] },
       message: `Cleared all lifecycle rules from bucket **${ctx.input.bucketName}**.`

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FigmaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let devResourceSchema = z.object({
   devResourceId: z.string().describe('Unique dev resource identifier'),

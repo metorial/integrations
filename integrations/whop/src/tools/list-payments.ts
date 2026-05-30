@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WhopClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let paymentSchema = z.object({
   paymentId: z.string().describe('Unique payment identifier'),

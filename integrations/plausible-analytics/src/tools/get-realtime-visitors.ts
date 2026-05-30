@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StatsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRealtimeVisitors = SlateTool.create(spec, {
   name: 'Get Realtime Visitors',

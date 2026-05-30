@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlacidClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transferSchema = z
   .object({
@@ -91,13 +91,13 @@ export let generateVideo = SlateTool.create(spec, {
     let client = new PlacidClient({ token: ctx.auth.token });
 
     let modifications: Record<string, unknown> = {};
-    if (ctx.input.width !== undefined) modifications['width'] = ctx.input.width;
-    if (ctx.input.height !== undefined) modifications['height'] = ctx.input.height;
-    if (ctx.input.fps !== undefined) modifications['fps'] = ctx.input.fps;
-    if (ctx.input.filename) modifications['filename'] = ctx.input.filename;
+    if (ctx.input.width !== undefined) modifications.width = ctx.input.width;
+    if (ctx.input.height !== undefined) modifications.height = ctx.input.height;
+    if (ctx.input.fps !== undefined) modifications.fps = ctx.input.fps;
+    if (ctx.input.filename) modifications.filename = ctx.input.filename;
     if (ctx.input.canvasBackground)
-      modifications['canvas_background'] = ctx.input.canvasBackground;
-    modifications['format'] = 'mp4';
+      modifications.canvas_background = ctx.input.canvasBackground;
+    modifications.format = 'mp4';
 
     let result = await client.createVideo({
       clips: ctx.input.clips.map(clip => ({

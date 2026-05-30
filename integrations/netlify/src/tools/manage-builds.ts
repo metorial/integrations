@@ -40,13 +40,19 @@ export let manageBuilds = SlateTool.create(spec, {
         .optional()
         .describe('Whether to clear the build cache before creating a build'),
       image: z.string().optional().describe('Build image tag to use when creating a build'),
-      templateId: z.string().optional().describe('Build template ID to use when creating a build'),
+      templateId: z
+        .string()
+        .optional()
+        .describe('Build template ID to use when creating a build'),
       title: z.string().optional().describe('Build title when creating a build')
     })
   )
   .output(
     z.object({
-      builds: z.array(buildOutputSchema).optional().describe('Builds returned for list action'),
+      builds: z
+        .array(buildOutputSchema)
+        .optional()
+        .describe('Builds returned for list action'),
       build: buildOutputSchema.optional().describe('Build returned for get or create action')
     })
   )

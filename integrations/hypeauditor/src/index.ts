@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchInfluencers,
-  getInfluencerReport,
-  discoverInfluencers,
-  getAccountMedia,
-  exportReportPdf,
-  manageLists,
   competitorAnalysis,
+  discoverInfluencers,
+  exportReportPdf,
+  getAccountActivity,
+  getAccountMedia,
   getBrandMentions,
+  getInfluencerReport,
   getMetricsHistory,
   getMyNetwork,
-  getAccountActivity,
-  getReportConnections
+  getReportConnections,
+  manageLists,
+  searchInfluencers
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

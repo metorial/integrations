@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { printJobSchema, mapPrintJob } from '../lib/schemas';
+import { Client } from '../lib/client';
+import { mapPrintJob, printJobSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let listPrintJobs = SlateTool.create(spec, {
   name: 'List Print Jobs',

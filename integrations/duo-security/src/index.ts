@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listUsers,
-  getUser,
-  createUser,
-  updateUser,
-  deleteUser,
-  createBypassCodes,
-  listGroups,
-  createGroup,
-  deleteGroup,
-  listPhones,
-  createPhone,
-  deletePhone,
-  listAdmins,
   createAdmin,
-  updateAdmin,
+  createBypassCodes,
+  createGroup,
+  createPhone,
+  createUser,
   deleteAdmin,
-  listIntegrations,
-  getAuthenticationLogs,
+  deleteGroup,
+  deletePhone,
+  deleteUser,
+  getAccountSummary,
   getAdminLogs,
+  getAuthenticationLogs,
   getTelephonyLogs,
-  getAccountSummary
+  getUser,
+  listAdmins,
+  listGroups,
+  listIntegrations,
+  listPhones,
+  listUsers,
+  updateAdmin,
+  updateUser
 } from './tools';
-import { authenticationEvents, adminActionEvents, inboundWebhook } from './triggers';
+import { adminActionEvents, authenticationEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

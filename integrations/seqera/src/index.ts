@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listPipelines,
-  getPipeline,
-  createPipeline,
-  launchWorkflow,
-  listWorkflows,
-  getWorkflow,
   cancelWorkflow,
+  createPipeline,
+  getPipeline,
+  getWorkflow,
+  launchWorkflow,
   listComputeEnvs,
-  manageComputeEnv,
-  listDatasets,
-  manageDataset,
   listCredentials,
-  manageSecrets,
+  listDatasets,
   listOrganizations,
+  listParticipants,
+  listPipelines,
+  listWorkflows,
   listWorkspaces,
   manageActions,
+  manageComputeEnv,
+  manageDataset,
   manageLabels,
-  listParticipants
+  manageSecrets
 } from './tools';
-import { workflowUpdate, inboundWebhook } from './triggers';
+import { inboundWebhook, workflowUpdate } from './triggers';
 
 export let provider = Slate.create({
   spec,

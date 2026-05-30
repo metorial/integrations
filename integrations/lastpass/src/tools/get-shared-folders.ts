@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LastPassClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let sharedFolderUserSchema = z.object({
   username: z.string().describe('Email address of the user with access'),

@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listEmailCampaigns,
-  manageEmailCampaign,
-  updateEmailCampaign,
-  getCampaignStatistics,
-  manageCampaignContacts,
-  manageLinkedInCampaign,
-  manageAdvancedCampaign,
   findEmail,
   findPhone,
-  verifyEmail,
-  manageEmailProviders,
+  getCampaignStatistics,
+  listEmailCampaigns,
+  manageAdvancedCampaign,
   manageBlacklist,
+  manageCampaignContacts,
+  manageEmailCampaign,
+  manageEmailProviders,
+  manageLinkedInCampaign,
+  manageLinkedInScraper,
+  manageWebhooks,
   sendReply,
   sendTestEmail,
-  manageLinkedInScraper,
-  manageWebhooks
+  updateEmailCampaign,
+  verifyEmail
 } from './tools';
 import { campaignActivity, scraperWebhook } from './triggers';
 

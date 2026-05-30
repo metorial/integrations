@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let shoppingItemSchema = z
+let _shoppingItemSchema = z
   .object({
     type: z.string().optional().describe('Type of result'),
     rankGroup: z.number().optional().describe('Position in the results group'),

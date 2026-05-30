@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generateSimilarityKey,
-  matchScore,
-  customDataEnrichment,
   businessIntelligence,
+  classifyData,
   companyInsights,
   contactIntelligence,
-  standardizeData,
-  classifyData,
-  translateText,
-  parseAddress,
-  getWeather,
+  customDataEnrichment,
+  generateSimilarityKey,
   getCurrencyRate,
-  pagePerformance,
   getRemainingCredits,
-  stockAnalysis
+  getWeather,
+  matchScore,
+  pagePerformance,
+  parseAddress,
+  standardizeData,
+  stockAnalysis,
+  translateText
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

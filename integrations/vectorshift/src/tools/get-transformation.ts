@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createApiClient, fetchTransformation } from '../lib/client';
+import { spec } from '../spec';
 
 export let getTransformationTool = SlateTool.create(spec, {
   name: 'Get Transformation',

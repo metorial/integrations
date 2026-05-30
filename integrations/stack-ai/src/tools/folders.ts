@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listFolders = SlateTool.create(spec, {
   name: 'List Folders',
@@ -96,7 +96,7 @@ export let manageFolder = SlateTool.create(spec, {
         throw new Error('Folder ID is required for updating a folder');
       }
       let updateData: Record<string, unknown> = {};
-      if (ctx.input.name) updateData['name'] = ctx.input.name;
+      if (ctx.input.name) updateData.name = ctx.input.name;
       let folder = await client.updateFolder(ctx.input.folderId, updateData);
       return {
         output: { folder },

@@ -128,7 +128,7 @@ export interface WebhookSubscriptionParams {
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.headers = {
       Authorization: `Bearer ${config.token}`,
       'User-Agent': 'Slates-Squarespace-Integration/1.0',

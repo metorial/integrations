@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { VimeoClient } from '../lib/client';
-import { userSchema, mapUser } from '../lib/schemas';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { VimeoClient } from '../lib/client';
+import { mapUser, userSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let getUserTool = SlateTool.create(spec, {
   name: 'Get User Profile',

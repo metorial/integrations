@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let staticPageEvents = SlateTrigger.create(spec, {
   name: 'Static Page Events',
@@ -86,7 +86,7 @@ export let staticPageEvents = SlateTrigger.create(spec, {
             output.contentMarkdown = page.content?.markdown;
             output.contentHtml = page.content?.html;
           }
-        } catch (e) {
+        } catch (_e) {
           // Page may not be accessible, return what we have
         }
       }

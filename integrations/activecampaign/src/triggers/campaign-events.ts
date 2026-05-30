@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let campaignEventTypes = [
   'sent',
@@ -79,7 +79,7 @@ export let campaignEvents = SlateTrigger.create(spec, {
         data = Object.fromEntries(params.entries());
       }
 
-      let eventType = data.type || data['type'] || 'unknown';
+      let eventType = data.type || data.type || 'unknown';
 
       return {
         inputs: [
@@ -94,14 +94,14 @@ export let campaignEvents = SlateTrigger.create(spec, {
     handleEvent: async ctx => {
       let p = ctx.input.payload as Record<string, any>;
 
-      let contactId = String(p['contact[id]'] || p['contactId'] || '');
-      let contactEmail = String(p['contact[email]'] || p['email'] || '');
-      let campaignId = String(p['campaign[id]'] || p['campaignId'] || '');
-      let campaignName = String(p['campaign[name]'] || p['campaignName'] || '');
-      let listId = String(p['list'] || p['list[id]'] || p['listId'] || '');
-      let linkUrl = String(p['link[url]'] || p['linkUrl'] || '');
-      let initiatedBy = String(p['initiated_by'] || p['source'] || '');
-      let occurredAt = String(p['date_time'] || p['dateTime'] || '');
+      let contactId = String(p['contact[id]'] || p.contactId || '');
+      let contactEmail = String(p['contact[email]'] || p.email || '');
+      let campaignId = String(p['campaign[id]'] || p.campaignId || '');
+      let campaignName = String(p['campaign[name]'] || p.campaignName || '');
+      let listId = String(p.list || p['list[id]'] || p.listId || '');
+      let linkUrl = String(p['link[url]'] || p.linkUrl || '');
+      let initiatedBy = String(p.initiated_by || p.source || '');
+      let occurredAt = String(p.date_time || p.dateTime || '');
 
       let uniqueId = `${ctx.input.eventType}-${contactId || contactEmail}-${campaignId}-${occurredAt || Date.now()}`;
 

@@ -1,4 +1,4 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
 import { defineToolRecipe } from '@slates/tool-recipes';
 import { anyOf, createAxios } from 'slates';
 import { z } from 'zod';

@@ -54,7 +54,7 @@ export class Client {
     };
 
     if (params.country) {
-      queryParams['country'] = params.country;
+      queryParams.country = params.country;
     }
 
     let response = await http.get<GeokeoResponse>('/search.php', {

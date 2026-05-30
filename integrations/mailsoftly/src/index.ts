@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createOrUpdateContact,
-  getContacts,
-  searchContacts,
-  manageContactLists,
-  manageContactListMembers,
-  manageTags,
+  addCustomFieldToContact,
   createEmailCampaign,
-  getEmailCampaigns,
-  sendEmail,
+  createOrUpdateContact,
   getContactFields,
-  addCustomFieldToContact
+  getContacts,
+  getEmailCampaigns,
+  manageContactListMembers,
+  manageContactLists,
+  manageTags,
+  searchContacts,
+  sendEmail
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

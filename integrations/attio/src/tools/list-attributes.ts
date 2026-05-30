@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AttioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listAttributesTool = SlateTool.create(spec, {
   name: 'List Attributes',
@@ -40,7 +40,7 @@ export let listAttributesTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new AttioClient({ token: ctx.auth.token });
 
-    let attributes;
+    let attributes: any;
     if (ctx.input.targetType === 'object') {
       attributes = await client.listObjectAttributes(ctx.input.targetSlug);
     } else {

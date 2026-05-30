@@ -1,12 +1,12 @@
 import { createAxios } from 'slates';
 import type {
-  Sport,
   Event,
+  EventMarkets,
   EventWithOdds,
   EventWithScores,
-  EventMarkets,
+  HistoricalResponse,
   Participant,
-  HistoricalResponse
+  Sport
 } from './types';
 
 let api = createAxios({

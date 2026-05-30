@@ -71,10 +71,10 @@ export class Client {
     let parent = this.parentForLocation(location);
 
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.orderBy) queryParams['orderBy'] = params.orderBy;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageToken) queryParams.pageToken = params.pageToken;
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.orderBy) queryParams.orderBy = params.orderBy;
 
     let response = await api.get(`/v2/${parent}/functions`, {
       headers: this.headers,
@@ -124,8 +124,8 @@ export class Client {
 
   async generateUploadUrl(params?: GenerateUploadUrlParams): Promise<any> {
     let body: Record<string, any> = {};
-    if (params?.kmsKeyName) body['kmsKeyName'] = params.kmsKeyName;
-    if (params?.environment) body['environment'] = params.environment;
+    if (params?.kmsKeyName) body.kmsKeyName = params.kmsKeyName;
+    if (params?.environment) body.environment = params.environment;
 
     let response = await api.post(`/v2/${this.parent}/functions:generateUploadUrl`, body, {
       headers: this.headers
@@ -197,9 +197,9 @@ export class Client {
 
   async listOperations(filter?: string, pageSize?: number, pageToken?: string): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (filter) queryParams['filter'] = filter;
-    if (pageSize) queryParams['pageSize'] = String(pageSize);
-    if (pageToken) queryParams['pageToken'] = pageToken;
+    if (filter) queryParams.filter = filter;
+    if (pageSize) queryParams.pageSize = String(pageSize);
+    if (pageToken) queryParams.pageToken = pageToken;
 
     let response = await api.get(`/v2/${this.parent}/operations`, {
       headers: this.headers,

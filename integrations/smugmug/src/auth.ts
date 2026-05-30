@@ -1,6 +1,6 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
-import { getRequestToken, getAccessToken, buildOAuth1Header } from './lib/oauth1';
+import { buildOAuth1Header, getAccessToken, getRequestToken } from './lib/oauth1';
 
 export let auth = SlateAuth.create()
   .output(

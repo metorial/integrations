@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCompanyOverview = SlateTool.create(spec, {
   name: 'Get Company Overview',
@@ -60,41 +60,41 @@ export let getCompanyOverview = SlateTool.create(spec, {
     let data = await client.companyOverview({ symbol: ctx.input.symbol });
 
     let output = {
-      symbol: data['Symbol'] || ctx.input.symbol,
-      name: data['Name'] || '',
-      description: data['Description'] || '',
-      exchange: data['Exchange'] || '',
-      currency: data['Currency'] || '',
-      country: data['Country'] || '',
-      sector: data['Sector'] || '',
-      industry: data['Industry'] || '',
-      marketCapitalization: data['MarketCapitalization'] || '',
-      peRatio: data['PERatio'] || '',
-      pegRatio: data['PEGRatio'] || '',
-      bookValue: data['BookValue'] || '',
-      dividendPerShare: data['DividendPerShare'] || '',
-      dividendYield: data['DividendYield'] || '',
-      eps: data['EPS'] || '',
-      revenuePerShareTTM: data['RevenuePerShareTTM'] || '',
-      profitMargin: data['ProfitMargin'] || '',
-      operatingMarginTTM: data['OperatingMarginTTM'] || '',
-      returnOnAssetsTTM: data['ReturnOnAssetsTTM'] || '',
-      returnOnEquityTTM: data['ReturnOnEquityTTM'] || '',
-      revenueTTM: data['RevenueTTM'] || '',
-      grossProfitTTM: data['GrossProfitTTM'] || '',
-      ebitda: data['EBITDA'] || '',
-      beta: data['Beta'] || '',
+      symbol: data.Symbol || ctx.input.symbol,
+      name: data.Name || '',
+      description: data.Description || '',
+      exchange: data.Exchange || '',
+      currency: data.Currency || '',
+      country: data.Country || '',
+      sector: data.Sector || '',
+      industry: data.Industry || '',
+      marketCapitalization: data.MarketCapitalization || '',
+      peRatio: data.PERatio || '',
+      pegRatio: data.PEGRatio || '',
+      bookValue: data.BookValue || '',
+      dividendPerShare: data.DividendPerShare || '',
+      dividendYield: data.DividendYield || '',
+      eps: data.EPS || '',
+      revenuePerShareTTM: data.RevenuePerShareTTM || '',
+      profitMargin: data.ProfitMargin || '',
+      operatingMarginTTM: data.OperatingMarginTTM || '',
+      returnOnAssetsTTM: data.ReturnOnAssetsTTM || '',
+      returnOnEquityTTM: data.ReturnOnEquityTTM || '',
+      revenueTTM: data.RevenueTTM || '',
+      grossProfitTTM: data.GrossProfitTTM || '',
+      ebitda: data.EBITDA || '',
+      beta: data.Beta || '',
       weekHigh52: data['52WeekHigh'] || '',
       weekLow52: data['52WeekLow'] || '',
       movingAverage50Day: data['50DayMovingAverage'] || '',
       movingAverage200Day: data['200DayMovingAverage'] || '',
-      sharesOutstanding: data['SharesOutstanding'] || '',
-      analystTargetPrice: data['AnalystTargetPrice'] || '',
-      analystRatingStrongBuy: data['AnalystRatingStrongBuy'] || '',
-      analystRatingBuy: data['AnalystRatingBuy'] || '',
-      analystRatingHold: data['AnalystRatingHold'] || '',
-      analystRatingSell: data['AnalystRatingSell'] || '',
-      analystRatingStrongSell: data['AnalystRatingStrongSell'] || ''
+      sharesOutstanding: data.SharesOutstanding || '',
+      analystTargetPrice: data.AnalystTargetPrice || '',
+      analystRatingStrongBuy: data.AnalystRatingStrongBuy || '',
+      analystRatingBuy: data.AnalystRatingBuy || '',
+      analystRatingHold: data.AnalystRatingHold || '',
+      analystRatingSell: data.AnalystRatingSell || '',
+      analystRatingStrongSell: data.AnalystRatingStrongSell || ''
     };
 
     return {

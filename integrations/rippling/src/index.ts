@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listEmployees,
-  getEmployee,
-  getCompany,
   createGroup,
-  getGroup,
-  updateGroup,
   deleteGroup,
-  listLeaveRequests,
-  processLeaveRequest,
-  pushCandidate,
+  getCompany,
+  getCurrentUser,
+  getEmployee,
+  getGroup,
+  getLeaveBalances,
+  getSamlMetadata,
+  listCustomFields,
   listDepartments,
+  listEmployees,
+  listLeaveRequests,
+  listLeaveTypes,
+  listLevels,
   listTeams,
   listWorkLocations,
-  listLevels,
-  getSamlMetadata,
-  listLeaveTypes,
-  getLeaveBalances,
-  getCurrentUser,
-  listCustomFields
+  processLeaveRequest,
+  pushCandidate,
+  updateGroup
 } from './tools';
-import { employeeLifecycle, companyActivity } from './triggers';
+import { companyActivity, employeeLifecycle } from './triggers';
 
 export let provider = Slate.create({
   spec,

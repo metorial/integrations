@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getInvoice = SlateTool.create(spec, {
   name: 'Get Invoice',
@@ -55,7 +55,7 @@ export let getInvoice = SlateTool.create(spec, {
         dueDate: inv['due-date'] ?? inv.due_date ?? null,
         supplier: inv.supplier ?? null,
         currency: inv.currency ?? null,
-        totalAmount: inv['total'] ?? inv.total ?? null,
+        totalAmount: inv.total ?? inv.total ?? null,
         invoiceLines: inv['invoice-lines'] ?? inv.invoice_lines ?? null,
         paymentTerm: inv['payment-term'] ?? inv.payment_term ?? null,
         documentType: inv['document-type'] ?? inv.document_type ?? null,

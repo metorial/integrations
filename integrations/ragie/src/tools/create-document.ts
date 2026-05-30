@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createDocument = SlateTool.create(spec, {
   name: 'Create Document',
@@ -79,7 +79,7 @@ Use this to add content to your Ragie knowledge base. Documents go through proce
       partition: ctx.config.partition
     });
 
-    let doc;
+    let doc: any;
     if (ctx.input.source === 'url') {
       if (!ctx.input.url) {
         throw new Error('URL is required when source is "url"');

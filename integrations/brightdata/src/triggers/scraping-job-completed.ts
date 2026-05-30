@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BrightDataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let scrapingJobCompleted = SlateTrigger.create(spec, {
   name: 'Scraping Job Completed',
@@ -48,10 +48,10 @@ export let scrapingJobCompleted = SlateTrigger.create(spec, {
         [];
 
       for (let snap of snapshots) {
-        let id = ((snap as Record<string, unknown>)['snapshot_id'] ??
-          (snap as Record<string, unknown>)['id'] ??
+        let id = ((snap as Record<string, unknown>).snapshot_id ??
+          (snap as Record<string, unknown>).id ??
           '') as string;
-        let status = ((snap as Record<string, unknown>)['status'] ?? '') as string;
+        let status = ((snap as Record<string, unknown>).status ?? '') as string;
 
         if (!id) continue;
         if (seenSnapshotIds.includes(id)) continue;

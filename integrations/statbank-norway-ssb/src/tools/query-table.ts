@@ -2,8 +2,8 @@ import { Buffer } from 'node:buffer';
 import { createBase64Attachment, createTextAttachment, SlateTool } from 'slates';
 import { z } from 'zod';
 import { SsbClient, type TableQuery, type TableSelection } from '../lib/client';
-import { summarizeJsonData } from '../lib/metadata';
 import { ssbServiceError } from '../lib/errors';
+import { summarizeJsonData } from '../lib/metadata';
 import { spec } from '../spec';
 
 const MAX_EXTRACT_CELL_COUNT = 800_000;
@@ -390,7 +390,7 @@ let preflightQuerySelection = async (client: SsbClient, query: TableQuery) => {
 
 let validateOutputParams = (
   outputFormat: z.infer<typeof outputFormatSchema>,
-  outputFormatParams: Array<z.infer<typeof outputFormatParamSchema>>
+  outputFormatParams: z.infer<typeof outputFormatParamSchema>[]
 ) => {
   let presentationParams = ['UseCodes', 'UseTexts', 'UseCodesAndTexts'];
   let separatorParams = ['SeparatorTab', 'SeparatorSpace', 'SeparatorSemicolon'];

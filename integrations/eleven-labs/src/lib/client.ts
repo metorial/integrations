@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class ElevenLabsClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.elevenlabs.io',
       headers: {
@@ -43,13 +43,13 @@ export class ElevenLabsClient {
     sortDirection?: string;
   }) {
     let query: Record<string, string | number> = {};
-    if (params?.search) query['search'] = params.search;
-    if (params?.voiceType) query['voice_type'] = params.voiceType;
-    if (params?.category) query['category'] = params.category;
-    if (params?.pageSize) query['page_size'] = params.pageSize;
-    if (params?.nextPageToken) query['next_page_token'] = params.nextPageToken;
-    if (params?.sort) query['sort'] = params.sort;
-    if (params?.sortDirection) query['sort_direction'] = params.sortDirection;
+    if (params?.search) query.search = params.search;
+    if (params?.voiceType) query.voice_type = params.voiceType;
+    if (params?.category) query.category = params.category;
+    if (params?.pageSize) query.page_size = params.pageSize;
+    if (params?.nextPageToken) query.next_page_token = params.nextPageToken;
+    if (params?.sort) query.sort = params.sort;
+    if (params?.sortDirection) query.sort_direction = params.sortDirection;
 
     let response = await this.axios.get('/v2/voices', { params: query });
     return response.data;
@@ -80,12 +80,12 @@ export class ElevenLabsClient {
     }
   ) {
     let body: Record<string, unknown> = {};
-    if (settings.stability !== undefined) body['stability'] = settings.stability;
+    if (settings.stability !== undefined) body.stability = settings.stability;
     if (settings.similarityBoost !== undefined)
-      body['similarity_boost'] = settings.similarityBoost;
-    if (settings.style !== undefined) body['style'] = settings.style;
+      body.similarity_boost = settings.similarityBoost;
+    if (settings.style !== undefined) body.style = settings.style;
     if (settings.useSpeakerBoost !== undefined)
-      body['use_speaker_boost'] = settings.useSpeakerBoost;
+      body.use_speaker_boost = settings.useSpeakerBoost;
 
     let response = await this.axios.patch(`/v1/voices/${voiceId}/settings`, body);
     return response.data;
@@ -118,13 +118,13 @@ export class ElevenLabsClient {
     let body: Record<string, unknown> = {
       text: params.text
     };
-    if (params.modelId) body['model_id'] = params.modelId;
-    if (params.languageCode) body['language_code'] = params.languageCode;
-    if (params.seed !== undefined) body['seed'] = params.seed;
+    if (params.modelId) body.model_id = params.modelId;
+    if (params.languageCode) body.language_code = params.languageCode;
+    if (params.seed !== undefined) body.seed = params.seed;
     if (params.applyTextNormalization)
-      body['apply_text_normalization'] = params.applyTextNormalization;
+      body.apply_text_normalization = params.applyTextNormalization;
     if (params.pronunciationDictionaryLocators) {
-      body['pronunciation_dictionary_locators'] = params.pronunciationDictionaryLocators.map(
+      body.pronunciation_dictionary_locators = params.pronunciationDictionaryLocators.map(
         l => ({
           pronunciation_dictionary_id: l.pronunciationDictionaryId,
           version_id: l.versionId
@@ -134,18 +134,18 @@ export class ElevenLabsClient {
     if (params.voiceSettings) {
       let vs: Record<string, unknown> = {};
       if (params.voiceSettings.stability !== undefined)
-        vs['stability'] = params.voiceSettings.stability;
+        vs.stability = params.voiceSettings.stability;
       if (params.voiceSettings.similarityBoost !== undefined)
-        vs['similarity_boost'] = params.voiceSettings.similarityBoost;
-      if (params.voiceSettings.style !== undefined) vs['style'] = params.voiceSettings.style;
+        vs.similarity_boost = params.voiceSettings.similarityBoost;
+      if (params.voiceSettings.style !== undefined) vs.style = params.voiceSettings.style;
       if (params.voiceSettings.useSpeakerBoost !== undefined)
-        vs['use_speaker_boost'] = params.voiceSettings.useSpeakerBoost;
-      if (params.voiceSettings.speed !== undefined) vs['speed'] = params.voiceSettings.speed;
-      body['voice_settings'] = vs;
+        vs.use_speaker_boost = params.voiceSettings.useSpeakerBoost;
+      if (params.voiceSettings.speed !== undefined) vs.speed = params.voiceSettings.speed;
+      body.voice_settings = vs;
     }
 
     let query: Record<string, string> = {};
-    if (params.outputFormat) query['output_format'] = params.outputFormat;
+    if (params.outputFormat) query.output_format = params.outputFormat;
 
     let response = await this.axios.post(`/v1/text-to-speech/${voiceId}`, body, {
       params: query,
@@ -179,7 +179,7 @@ export class ElevenLabsClient {
     timestampsGranularity?: string;
     tagAudioEvents?: boolean;
   }) {
-    let boundary = '----SlatesBoundary' + Date.now().toString(36);
+    let boundary = `----SlatesBoundary${Date.now().toString(36)}`;
     let parts: string[] = [];
 
     parts.push(
@@ -230,7 +230,7 @@ export class ElevenLabsClient {
       );
     }
 
-    let bodyStr = parts.join('\r\n') + `\r\n--${boundary}--`;
+    let bodyStr = `${parts.join('\r\n')}\r\n--${boundary}--`;
 
     let response = await this.axios.post('/v1/speech-to-text', bodyStr, {
       headers: {
@@ -252,12 +252,11 @@ export class ElevenLabsClient {
     let body: Record<string, unknown> = {
       text: params.text
     };
-    if (params.durationSeconds !== undefined)
-      body['duration_seconds'] = params.durationSeconds;
-    if (params.loop !== undefined) body['loop'] = params.loop;
+    if (params.durationSeconds !== undefined) body.duration_seconds = params.durationSeconds;
+    if (params.loop !== undefined) body.loop = params.loop;
 
     let query: Record<string, string> = {};
-    if (params.outputFormat) query['output_format'] = params.outputFormat;
+    if (params.outputFormat) query.output_format = params.outputFormat;
 
     let response = await this.axios.post('/v1/sound-generation', body, {
       params: query,
@@ -286,11 +285,11 @@ export class ElevenLabsClient {
     outputFormat?: string;
   }) {
     let body: Record<string, unknown> = {};
-    if (params.prompt) body['prompt'] = params.prompt;
-    if (params.musicLengthMs !== undefined) body['music_length_ms'] = params.musicLengthMs;
+    if (params.prompt) body.prompt = params.prompt;
+    if (params.musicLengthMs !== undefined) body.music_length_ms = params.musicLengthMs;
 
     let query: Record<string, string> = {};
-    if (params.outputFormat) query['output_format'] = params.outputFormat;
+    if (params.outputFormat) query.output_format = params.outputFormat;
 
     let response = await this.axios.post('/v1/music/compose', body, {
       params: query,
@@ -323,7 +322,7 @@ export class ElevenLabsClient {
     name?: string;
     highestResolution?: boolean;
   }) {
-    let boundary = '----SlatesBoundary' + Date.now().toString(36);
+    let boundary = `----SlatesBoundary${Date.now().toString(36)}`;
     let parts: string[] = [];
 
     if (params.sourceUrl) {
@@ -363,7 +362,7 @@ export class ElevenLabsClient {
       `--${boundary}\r\nContent-Disposition: form-data; name="mode"\r\n\r\nautomatic`
     );
 
-    let bodyStr = parts.join('\r\n') + `\r\n--${boundary}--`;
+    let bodyStr = `${parts.join('\r\n')}\r\n--${boundary}--`;
 
     let response = await this.axios.post('/v1/dubbing', bodyStr, {
       headers: {
@@ -382,7 +381,7 @@ export class ElevenLabsClient {
   // ── Audio Isolation ──
 
   async isolateAudio(fileBase64: string, fileName?: string) {
-    let boundary = '----SlatesBoundary' + Date.now().toString(36);
+    let boundary = `----SlatesBoundary${Date.now().toString(36)}`;
     let binaryStr = atob(fileBase64);
     let fName = fileName || 'audio.mp3';
 
@@ -413,9 +412,9 @@ export class ElevenLabsClient {
 
   async listHistory(params?: { pageSize?: number; startAfterHistoryItemId?: string }) {
     let query: Record<string, string | number> = {};
-    if (params?.pageSize) query['page_size'] = params.pageSize;
+    if (params?.pageSize) query.page_size = params.pageSize;
     if (params?.startAfterHistoryItemId)
-      query['start_after_history_item_id'] = params.startAfterHistoryItemId;
+      query.start_after_history_item_id = params.startAfterHistoryItemId;
 
     let response = await this.axios.get('/v1/history', { params: query });
     return response.data;

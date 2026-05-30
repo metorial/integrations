@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleFormsClient } from '../lib/client';
 import { googleFormsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let watchSchema = z.object({
   watchId: z.string().optional().describe('Unique ID of the watch'),

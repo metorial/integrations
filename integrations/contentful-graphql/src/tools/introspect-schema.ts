@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createGraphQLClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let typeFieldSchema = z.object({
   name: z.string(),

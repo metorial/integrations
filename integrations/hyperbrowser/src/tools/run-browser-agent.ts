@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HyperbrowserClient } from '../lib/client';
 import { sessionOptionsSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let runBrowserAgent = SlateTool.create(spec, {
   name: 'Run Browser Agent',
@@ -125,7 +125,7 @@ Starts the agent task, waits for completion, and returns the final result and st
 
     let data = result.data as Record<string, unknown> | undefined;
     let finalResult = data?.finalResult as string | null | undefined;
-    let steps = data?.steps as Array<unknown> | undefined;
+    let steps = data?.steps as unknown[] | undefined;
 
     return {
       output: {

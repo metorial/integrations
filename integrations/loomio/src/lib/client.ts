@@ -75,10 +75,10 @@ export class Client {
       api_key: this.token
     };
     if (params?.groupId) {
-      queryParams['group_id'] = params.groupId;
+      queryParams.group_id = params.groupId;
     }
     if (params?.since) {
-      queryParams['since'] = params.since;
+      queryParams.since = params.since;
     }
     let response = await this.axios.get('/discussions', {
       params: queryParams
@@ -124,13 +124,13 @@ export class Client {
       api_key: this.token
     };
     if (params?.groupId) {
-      queryParams['group_id'] = params.groupId;
+      queryParams.group_id = params.groupId;
     }
     if (params?.discussionId) {
-      queryParams['discussion_id'] = params.discussionId;
+      queryParams.discussion_id = params.discussionId;
     }
     if (params?.since) {
-      queryParams['since'] = params.since;
+      queryParams.since = params.since;
     }
     let response = await this.axios.get('/polls', {
       params: queryParams

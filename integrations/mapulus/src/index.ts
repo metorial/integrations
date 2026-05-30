@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listMaps,
-  getMap,
+  addTravelBoundary,
   createLocation,
-  updateLocation,
   deleteLocation,
   findLocations,
+  getMap,
+  listMaps,
+  lookupTerritory,
   searchNearby,
-  addTravelBoundary,
-  lookupTerritory
+  updateLocation
 } from './tools';
-import { newLocation, newMap, inboundWebhook } from './triggers';
+import { inboundWebhook, newLocation, newMap } from './triggers';
 
 export let provider = Slate.create({
   spec,

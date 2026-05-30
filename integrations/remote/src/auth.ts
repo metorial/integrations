@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 let getBaseUrl = (environment: string) =>
@@ -40,7 +40,7 @@ function createRemoteOauth(name: string, key: string, environment: 'production' 
       let http = createAxios({ baseURL: baseUrl });
       let response = await http.post(
         '/auth/oauth2/token',
-        'grant_type=authorization_code&code=' + encodeURIComponent(ctx.code),
+        `grant_type=authorization_code&code=${encodeURIComponent(ctx.code)}`,
         {
           headers: {
             Authorization: `Basic ${credentials}`,

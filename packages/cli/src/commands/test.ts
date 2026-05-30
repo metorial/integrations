@@ -3,7 +3,7 @@ import { writeFile } from 'fs/promises';
 import path from 'path';
 import { chooseProfile } from '../lib/context';
 import { listWorkspaceIntegrations } from '../lib/integration';
-import { WithProfile } from '../lib/types';
+import type { WithProfile } from '../lib/types';
 
 let runVitest = async (opts: {
   cwd: string;
@@ -43,7 +43,7 @@ export let runVitestWithProfile = async (opts: WithProfile & { vitestArgs: strin
 
   await writeFile(
     contextPath,
-    JSON.stringify(
+    `${JSON.stringify(
       {
         integration: integration.relativeDir,
         profileId: profile.id,
@@ -53,7 +53,7 @@ export let runVitestWithProfile = async (opts: WithProfile & { vitestArgs: strin
       },
       null,
       2
-    ) + '\n',
+    )}\n`,
     'utf-8'
   );
 

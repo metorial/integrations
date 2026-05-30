@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NasaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let apodItemSchema = z.object({
   date: z.string().describe('Date of the APOD entry (YYYY-MM-DD)'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCampaign = SlateTool.create(spec, {
   name: 'Manage Campaign',
@@ -152,11 +152,11 @@ export let manageCampaign = SlateTool.create(spec, {
         throw new Error('subscriberEmail is required for the subscribe action.');
       }
       let sub: Record<string, any> = { email: ctx.input.subscriberEmail };
-      if (ctx.input.doubleOptIn !== undefined) sub['double_optin'] = ctx.input.doubleOptIn;
+      if (ctx.input.doubleOptIn !== undefined) sub.double_optin = ctx.input.doubleOptIn;
       if (ctx.input.startingEmailIndex !== undefined)
-        sub['starting_email_index'] = ctx.input.startingEmailIndex;
-      if (ctx.input.customFields) sub['custom_fields'] = ctx.input.customFields;
-      if (ctx.input.tags) sub['tags'] = ctx.input.tags;
+        sub.starting_email_index = ctx.input.startingEmailIndex;
+      if (ctx.input.customFields) sub.custom_fields = ctx.input.customFields;
+      if (ctx.input.tags) sub.tags = ctx.input.tags;
       await client.subscribeToCampaign(ctx.input.campaignId, sub);
       return {
         output: { subscribed: true },

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let scheduleDowntime = SlateTool.create(spec, {
   name: 'Schedule Downtime',
@@ -56,7 +56,7 @@ export let scheduleDowntime = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
 
-    let schedule: any = undefined;
+    let schedule: any;
     if (ctx.input.start || ctx.input.end) {
       schedule = {};
       if (ctx.input.start) schedule.start = ctx.input.start;

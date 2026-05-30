@@ -1,4 +1,4 @@
-export * from './booking-changes';
 export * from './availability-changes';
-export * from './rate-changes';
+export * from './booking-changes';
 export * from './guest-message-received';
+export * from './rate-changes';

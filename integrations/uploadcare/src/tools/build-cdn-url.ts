@@ -1,6 +1,6 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let buildCdnUrl = SlateTool.create(spec, {
   name: 'Build Image CDN URL',

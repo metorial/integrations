@@ -3,16 +3,16 @@ import { spec } from './spec';
 import {
   createDocument,
   createDocumentFromTemplate,
+  createTemplate,
+  deleteDocument,
+  deleteTemplate,
+  getCompletedPdf,
   getDocument,
+  getTemplate,
   sendDocument,
   sendReminder,
-  deleteDocument,
-  getCompletedPdf,
   updateDocumentRecipients,
-  getTemplate,
-  createTemplate,
-  updateTemplate,
-  deleteTemplate
+  updateTemplate
 } from './tools';
 import { documentEvents } from './triggers';
 

@@ -9,7 +9,7 @@ export class OpsGenieClient {
   private http: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; instance?: string }) {
-    let baseURL = BASE_URLS[config.instance ?? 'us'] ?? BASE_URLS['us'];
+    let baseURL = BASE_URLS[config.instance ?? 'us'] ?? BASE_URLS.us;
     this.http = createAxios({
       baseURL,
       headers: {
@@ -140,7 +140,7 @@ export class OpsGenieClient {
 
   async snoozeAlert(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       endTime: string;
       user?: string;
@@ -160,7 +160,7 @@ export class OpsGenieClient {
 
   async addNoteToAlert(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       note: string;
       user?: string;
@@ -195,7 +195,7 @@ export class OpsGenieClient {
 
   async addTagsToAlert(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       tags: string[];
       user?: string;
@@ -215,7 +215,7 @@ export class OpsGenieClient {
 
   async removeTagsFromAlert(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     params: {
       tags: string;
       user?: string;
@@ -233,7 +233,7 @@ export class OpsGenieClient {
 
   async updateAlertPriority(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       priority: string;
     }
@@ -250,7 +250,7 @@ export class OpsGenieClient {
 
   async updateAlertMessage(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       message: string;
     }
@@ -267,7 +267,7 @@ export class OpsGenieClient {
 
   async updateAlertDescription(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       description: string;
     }
@@ -284,7 +284,7 @@ export class OpsGenieClient {
 
   async assignAlert(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       owner: { id?: string; username?: string };
       user?: string;
@@ -304,7 +304,7 @@ export class OpsGenieClient {
 
   async escalateAlert(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       escalation: { id?: string; name?: string };
       user?: string;
@@ -324,7 +324,7 @@ export class OpsGenieClient {
 
   async addResponderToAlert(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       responder: { type: string; id?: string; username?: string; name?: string };
       user?: string;
@@ -444,7 +444,7 @@ export class OpsGenieClient {
 
   async addNoteToIncident(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       note: string;
     }
@@ -495,7 +495,7 @@ export class OpsGenieClient {
 
   async updateSchedule(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       name?: string;
       description?: string;
@@ -656,7 +656,7 @@ export class OpsGenieClient {
 
   async updateEscalation(
     identifier: string,
-    identifierType: string = 'id',
+    identifierType: string,
     data: {
       name?: string;
       description?: string;

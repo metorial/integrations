@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchTokens,
-  getTopTokens,
-  getPriceData,
+  askAiAgent,
+  getAiReports,
+  getCryptoInvestors,
   getGrades,
-  getTradingSignals,
+  getIndices,
   getMarketMetrics,
+  getPriceData,
+  getPricePrediction,
+  getQuantMetrics,
   getSentiment,
   getTechnicalAnalysis,
-  getQuantMetrics,
-  getPricePrediction,
-  getAiReports,
-  getIndices,
-  getCryptoInvestors,
-  askAiAgent
+  getTopTokens,
+  getTradingSignals,
+  searchTokens
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

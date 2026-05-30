@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CloudClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTransition = SlateTool.create(spec, {
   name: 'Get Transition Effect',

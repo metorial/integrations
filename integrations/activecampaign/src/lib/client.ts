@@ -73,7 +73,7 @@ export interface TaskInput {
 export class Client {
   private axios;
 
-  constructor(private params: { token: string; apiUrl: string }) {
+  constructor(params: { token: string; apiUrl: string }) {
     let baseUrl = params.apiUrl.replace(/\/+$/, '');
     this.axios = createAxios({
       baseURL: `${baseUrl}/api/3`,

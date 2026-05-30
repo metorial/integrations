@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
@@ -36,7 +36,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await axios.get('/verify');
+      let _response = await axios.get('/verify');
       let users = await axios.get('/company/users');
       let firstUser = Array.isArray(users.data) ? users.data[0] : null;
 

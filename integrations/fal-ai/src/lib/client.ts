@@ -5,7 +5,7 @@ export class FalClient {
   private queueAxios;
   private platformAxios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     let headers = {
       Authorization: `Key ${token}`,
       'Content-Type': 'application/json'
@@ -160,7 +160,7 @@ export class FalClient {
     limit?: number;
     cursor?: string;
   }): Promise<{
-    items: Array<Record<string, any>>;
+    items: Record<string, any>[];
     nextCursor: string | null;
     hasMore: boolean;
   }> {
@@ -189,7 +189,7 @@ export class FalClient {
     return { url: response.data.url || response.data.file_url || response.data };
   }
 
-  async listFiles(directory?: string): Promise<Array<Record<string, any>>> {
+  async listFiles(directory?: string): Promise<Record<string, any>[]> {
     let path = directory ? `/serverless/files/list/${directory}` : '/serverless/files/list';
     let response = await this.platformAxios.get(path);
     return response.data.files || response.data || [];

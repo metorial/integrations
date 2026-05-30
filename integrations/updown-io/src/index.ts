@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listChecks,
-  getCheck,
   createCheck,
-  updateCheck,
+  createRecipient,
+  createStatusPage,
   deleteCheck,
+  deleteRecipient,
+  deleteStatusPage,
+  getCheck,
   getDowntimes,
   getMetrics,
+  listChecks,
+  listNodes,
   listRecipients,
-  createRecipient,
-  deleteRecipient,
   listStatusPages,
-  createStatusPage,
-  updateStatusPage,
-  deleteStatusPage,
-  listNodes
+  updateCheck,
+  updateStatusPage
 } from './tools';
 import { monitoringEvents } from './triggers';
 

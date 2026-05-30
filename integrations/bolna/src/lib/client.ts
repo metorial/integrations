@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private http;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.http = createAxios({
       baseURL: 'https://api.bolna.ai',
       headers: {

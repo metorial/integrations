@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  geocodeAddress,
-  reverseGeocode,
-  searchPlaces,
   autosuggestPlaces,
-  lookupPlace,
-  calculateRoute,
-  calculateMatrix,
   calculateIsoline,
+  calculateMatrix,
+  calculateRoute,
+  estimatePosition,
+  geocodeAddress,
   getTraffic,
   getWeather,
+  lookupPlace,
   planTour,
-  estimatePosition
+  reverseGeocode,
+  searchPlaces
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

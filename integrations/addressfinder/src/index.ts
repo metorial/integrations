@@ -4,8 +4,8 @@ import {
   addressAutocompleteTool,
   addressMetadataTool,
   addressVerificationTool,
-  locationSearchTool,
   locationMetadataTool,
+  locationSearchTool,
   reverseGeocodeTool,
   verifyEmailTool,
   verifyPhoneTool

@@ -2,29 +2,29 @@ import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
   createPost,
+  deleteDirectMessage,
   deletePost,
+  getDirectMessages,
   getPost,
-  searchPosts,
   getTimeline,
   getUser,
-  manageLike,
-  manageRetweet,
+  manageBlockMute,
   manageBookmark,
   manageFollow,
-  manageBlockMute,
-  sendDirectMessage,
-  deleteDirectMessage,
-  getDirectMessages,
+  manageLike,
   manageList,
   manageReplyVisibility,
+  manageRetweet,
+  searchPosts,
+  sendDirectMessage,
   uploadMedia
 } from './tools';
 import {
-  newMention,
-  newPostFromSearch,
-  newFollower,
+  inboundWebhook,
   newDirectMessage,
-  inboundWebhook
+  newFollower,
+  newMention,
+  newPostFromSearch
 } from './triggers';
 
 export let provider = Slate.create({

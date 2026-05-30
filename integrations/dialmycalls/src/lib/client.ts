@@ -1,33 +1,33 @@
 import { createAxios } from 'slates';
 import type {
-  Contact,
-  Group,
-  Recording,
-  CallerId,
-  Callservice,
-  TextService,
-  CallRecipient,
-  TextRecipient,
-  IncomingText,
-  Keyword,
-  VanityNumber,
-  DoNotContact,
   AccessAccount,
   Account,
-  Shortcode,
-  CreateContactParams,
-  UpdateContactParams,
-  CreateGroupParams,
-  UpdateGroupParams,
-  CreateCallParams,
-  CreateTextParams,
-  CreateRecordingTtsParams,
-  CreateRecordingByUrlParams,
-  CreateRecordingByPhoneParams,
-  CreateCallerIdParams,
+  CallerId,
+  CallRecipient,
+  Callservice,
+  Contact,
   CreateAccessAccountParams,
+  CreateCallerIdParams,
+  CreateCallParams,
+  CreateContactParams,
+  CreateGroupParams,
+  CreateRecordingByPhoneParams,
+  CreateRecordingByUrlParams,
+  CreateRecordingTtsParams,
+  CreateTextParams,
+  DoNotContact,
+  Group,
+  IncomingText,
+  Keyword,
+  Recording,
+  Shortcode,
+  TextRecipient,
+  TextService,
   UpdateAccessAccountParams,
-  UpdateVanityNumberParams
+  UpdateContactParams,
+  UpdateGroupParams,
+  UpdateVanityNumberParams,
+  VanityNumber
 } from './types';
 
 export class Client {
@@ -48,14 +48,14 @@ export class Client {
 
   async listContacts(range?: string): Promise<Contact[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/contacts', { headers });
     return res.data?.contacts ?? [];
   }
 
   async listContactsByGroup(groupId: string, range?: string): Promise<Contact[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get(`/contacts/${groupId}`, { headers });
     return res.data?.contacts ?? [];
   }
@@ -83,7 +83,7 @@ export class Client {
 
   async listGroups(range?: string): Promise<Group[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/groups', { headers });
     return res.data?.groups ?? [];
   }
@@ -111,7 +111,7 @@ export class Client {
 
   async listCalls(range?: string): Promise<Callservice[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/service/calls', { headers });
     return res.data?.callservices ?? res.data?.calls ?? [];
   }
@@ -132,7 +132,7 @@ export class Client {
 
   async getCallRecipients(callId: string, range?: string): Promise<CallRecipient[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get(`/service/call/${callId}/recipients`, { headers });
     return res.data?.recipients ?? [];
   }
@@ -141,7 +141,7 @@ export class Client {
 
   async listTexts(range?: string): Promise<TextService[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/service/texts', { headers });
     return res.data?.services ?? res.data?.texts ?? [];
   }
@@ -162,7 +162,7 @@ export class Client {
 
   async getTextRecipients(textId: string, range?: string): Promise<TextRecipient[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get(`/service/text/${textId}/recipients`, { headers });
     return res.data?.recipients ?? [];
   }
@@ -171,7 +171,7 @@ export class Client {
 
   async listIncomingTexts(range?: string): Promise<IncomingText[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/incoming/texts', { headers });
     return res.data?.incoming_texts ?? res.data?.texts ?? [];
   }
@@ -189,7 +189,7 @@ export class Client {
 
   async listRecordings(range?: string): Promise<Recording[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/recordings', { headers });
     return res.data?.recordings ?? [];
   }
@@ -227,7 +227,7 @@ export class Client {
 
   async listCallerIds(range?: string): Promise<CallerId[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/callerids', { headers });
     return res.data?.callerids ?? [];
   }
@@ -265,7 +265,7 @@ export class Client {
 
   async listKeywords(range?: string): Promise<Keyword[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/keywords', { headers });
     return res.data?.keywords ?? [];
   }
@@ -283,7 +283,7 @@ export class Client {
 
   async listVanityNumbers(range?: string): Promise<VanityNumber[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/vanitynumbers', { headers });
     return res.data?.vanitynumbers ?? [];
   }
@@ -309,7 +309,7 @@ export class Client {
 
   async listDoNotContacts(range?: string): Promise<DoNotContact[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/donotcontacts', { headers });
     return res.data?.donotcontacts ?? [];
   }
@@ -318,7 +318,7 @@ export class Client {
 
   async listAccessAccounts(range?: string): Promise<AccessAccount[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/accessaccounts', { headers });
     return res.data?.accessaccounts ?? [];
   }
@@ -356,7 +356,7 @@ export class Client {
 
   async listShortcodes(range?: string): Promise<Shortcode[]> {
     let headers: Record<string, string> = {};
-    if (range) headers['Range'] = range;
+    if (range) headers.Range = range;
     let res = await this.axios.get('/shortcodes', { headers });
     return res.data?.shortcodes ?? [];
   }

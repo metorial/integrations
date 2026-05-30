@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { Client, ExtractRequest } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client, type ExtractRequest } from '../lib/client';
+import { spec } from '../spec';
 
 let dataType = z.enum([
   'productList',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleMapsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressComponentSchema = z.object({
   longName: z.string().describe('Full text of the address component'),
@@ -76,7 +76,7 @@ export let geocodeTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new GoogleMapsClient({ token: ctx.auth.token });
 
-    let response: { status: string; results: Array<Record<string, unknown>> };
+    let response: { status: string; results: Record<string, unknown>[] };
 
     if (ctx.input.address) {
       response = await client.geocodeAddress({
@@ -105,13 +105,11 @@ export let geocodeTool = SlateTool.create(spec, {
     let results = (response.results || []).map((r: Record<string, unknown>) => {
       let geometry = r.geometry as Record<string, unknown>;
       let location = geometry.location as { lat: number; lng: number };
-      let components = ((r.address_components as Array<Record<string, unknown>>) || []).map(
-        c => ({
-          longName: c.long_name as string,
-          shortName: c.short_name as string,
-          types: c.types as string[]
-        })
-      );
+      let components = ((r.address_components as Record<string, unknown>[]) || []).map(c => ({
+        longName: c.long_name as string,
+        shortName: c.short_name as string,
+        types: c.types as string[]
+      }));
 
       return {
         formattedAddress: r.formatted_address as string,

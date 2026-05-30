@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchModels,
-  getModel,
-  updateModel,
-  listTags,
   createTag,
-  updateTag,
   deleteTag,
   getAssets,
-  purchaseAssetBundle,
-  getSweeps,
   getDimensions,
-  getNotes
+  getModel,
+  getNotes,
+  getSweeps,
+  listTags,
+  purchaseAssetBundle,
+  searchModels,
+  updateModel,
+  updateTag
 } from './tools';
 import { modelEvents } from './triggers';
 

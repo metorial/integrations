@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let managePaymentLink = SlateTool.create(spec, {
   name: 'Manage Payment Link',
@@ -36,7 +36,7 @@ export let managePaymentLink = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let paymentLink;
+    let paymentLink: any;
     if (ctx.input.action === 'create') {
       paymentLink = await client.createPaymentLink(ctx.input.bookingId, {
         amount: ctx.input.amount,

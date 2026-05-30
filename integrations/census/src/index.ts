@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listSyncs,
-  getSync,
   createSync,
-  updateSync,
-  triggerSync,
   deleteSync,
+  getDatasetRecord,
+  getSync,
   getSyncRuns,
   listConnections,
-  manageWebhook,
+  listSyncs,
   listWebhooks,
-  getDatasetRecord
+  manageWebhook,
+  triggerSync,
+  updateSync
 } from './tools';
 import { syncAlert } from './triggers';
 

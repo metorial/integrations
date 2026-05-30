@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HyperbrowserClient } from '../lib/client';
 import { webSearchResultSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let webSearch = SlateTool.create(spec, {
   name: 'Web Search',
@@ -77,7 +77,7 @@ Returns titles, URLs, and descriptions for matching web pages. Supports advanced
     let result = await client.webSearch(params);
 
     let data = result.data as Record<string, unknown> | undefined;
-    let searchResults = (data?.results ?? []) as Array<Record<string, unknown>>;
+    let searchResults = (data?.results ?? []) as Record<string, unknown>[];
 
     return {
       output: {

@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { RedditClient } from '../lib/client';
 import { redditServiceError } from '../lib/errors';
 import { formatRedditListingItems } from '../lib/format';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userContentItemOutput = z.object({
   thingId: z.string().describe('Reddit fullname for the returned item'),

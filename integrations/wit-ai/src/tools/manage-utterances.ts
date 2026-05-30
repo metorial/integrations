@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let entityAnnotationSchema = z.object({
   entity: z.string().describe('Entity name (e.g., "wit$datetime" or a custom entity name)'),
@@ -58,8 +58,8 @@ export let listUtterances = SlateTool.create(spec, {
         utterances: (utterances ?? []).map((u: Record<string, unknown>) => ({
           text: u.text,
           intent: u.intent as string | undefined,
-          entities: u.entities as Array<Record<string, unknown>> | undefined,
-          traits: u.traits as Array<Record<string, unknown>> | undefined
+          entities: u.entities as Record<string, unknown>[] | undefined,
+          traits: u.traits as Record<string, unknown>[] | undefined
         }))
       },
       message: `Retrieved **${(utterances ?? []).length}** utterance(s).`

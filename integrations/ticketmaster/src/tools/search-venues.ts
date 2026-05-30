@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { DiscoveryClient } from '../lib/client';
-import { mapVenue, mapPagination } from '../lib/mappers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { DiscoveryClient } from '../lib/client';
+import { mapPagination, mapVenue } from '../lib/mappers';
+import { spec } from '../spec';
 
 let venueSchema = z.object({
   venueId: z.string().describe('Unique Ticketmaster venue ID'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BestBuyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let recommendationTypeEnum = z.enum([
   'trending',
@@ -78,7 +78,7 @@ Trending and mostViewed can be filtered by category. The other types require a s
     let client = new BestBuyClient({ token: ctx.auth.token });
     let { recommendationType, sku, categoryId } = ctx.input;
 
-    let result;
+    let result: any;
 
     switch (recommendationType) {
       case 'trending':
@@ -102,7 +102,7 @@ Trending and mostViewed can be filtered by category. The other types require a s
         break;
     }
 
-    let recommendations = (result.results || []).map(item => ({
+    let recommendations = (result.results || []).map((item: any) => ({
       sku: String(item.sku),
       rank: item.rank,
       title: item.names?.title || '',

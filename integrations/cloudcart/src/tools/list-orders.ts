@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listOrders = SlateTool.create(spec, {
   name: 'List Orders',
@@ -56,10 +56,10 @@ export let listOrders = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token, domain: ctx.config.domain });
 
     let filters: Record<string, string> = {};
-    if (ctx.input.startDate) filters['start_date'] = ctx.input.startDate;
-    if (ctx.input.endDate) filters['end_date'] = ctx.input.endDate;
-    if (ctx.input.geoZoneId) filters['geo_zone_id'] = ctx.input.geoZoneId;
-    if (ctx.input.geoZoneName) filters['geo_zone_name'] = ctx.input.geoZoneName;
+    if (ctx.input.startDate) filters.start_date = ctx.input.startDate;
+    if (ctx.input.endDate) filters.end_date = ctx.input.endDate;
+    if (ctx.input.geoZoneId) filters.geo_zone_id = ctx.input.geoZoneId;
+    if (ctx.input.geoZoneName) filters.geo_zone_name = ctx.input.geoZoneName;
 
     let res = await client.listOrders({
       pagination: { pageNumber: ctx.input.pageNumber, pageSize: ctx.input.pageSize },

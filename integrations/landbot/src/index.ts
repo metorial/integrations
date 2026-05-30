@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCustomersTool,
-  getCustomerTool,
-  updateCustomerTool,
+  createTicketTool,
   deleteCustomerTool,
+  getChannelTool,
+  getCustomerTool,
+  getTicketTool,
+  listAgentsTool,
+  listChannelsTool,
+  listCustomersTool,
+  listTicketsTool,
+  listWhatsAppTemplatesTool,
   sendMessageTool,
   sendWhatsAppTemplateTool,
-  listWhatsAppTemplatesTool,
-  listChannelsTool,
-  getChannelTool,
-  listTicketsTool,
-  getTicketTool,
-  createTicketTool,
-  updateTicketTool,
-  listAgentsTool
+  updateCustomerTool,
+  updateTicketTool
 } from './tools';
 import { conversationEventTrigger } from './triggers';
 

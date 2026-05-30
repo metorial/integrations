@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageContact = SlateTool.create(spec, {
   name: 'Manage Contact',
@@ -53,7 +53,7 @@ export let manageContact = SlateTool.create(spec, {
     let { action, contactId, firstName, lastName, email, company, gender, customId, fields } =
       ctx.input;
 
-    let contact;
+    let contact: any;
     let actionLabel: string;
 
     if (action === 'get') {

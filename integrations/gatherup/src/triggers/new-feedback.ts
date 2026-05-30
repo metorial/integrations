@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let newFeedback = SlateTrigger.create(spec, {
   name: 'New Feedback',
@@ -59,8 +59,8 @@ export let newFeedback = SlateTrigger.create(spec, {
       });
 
       let count =
-        typeof data.count === 'number' ? data.count : parseInt(data.count || '0', 10);
-      let inputs: Array<Record<string, unknown>> = [];
+        typeof data.count === 'number' ? data.count : Number.parseInt(data.count || '0', 10);
+      let inputs: Record<string, unknown>[] = [];
       let newSeenIds: string[] = [];
 
       for (let i = 1; i <= count; i++) {

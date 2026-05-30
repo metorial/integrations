@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTaskRun = SlateTool.create(spec, {
   name: 'Get Task Run',
@@ -66,7 +66,7 @@ Use the run ID returned by the **Deep Research** tool.`,
 
     let run = await client.getTaskRun(ctx.input.runId);
 
-    let result = null;
+    let result: any = null;
     if (ctx.input.includeResult && run.status === 'completed') {
       result = await client.getTaskRunResult(ctx.input.runId);
     } else if (ctx.input.includeResult && run.isActive) {

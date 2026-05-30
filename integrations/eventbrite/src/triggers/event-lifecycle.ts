@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let eventLifecycle = SlateTrigger.create(spec, {
   name: 'Event Lifecycle',
@@ -87,7 +87,7 @@ export let eventLifecycle = SlateTrigger.create(spec, {
       if (eventId) {
         try {
           event = await client.getEvent(eventId);
-        } catch (e) {
+        } catch (_e) {
           // If we can't fetch the event (e.g., deleted), return minimal data
           event = { id: eventId };
         }

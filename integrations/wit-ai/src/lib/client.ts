@@ -7,7 +7,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.wit.ai'
     });
-    this.axios.defaults.headers.common['Authorization'] = `Bearer ${params.token}`;
+    this.axios.defaults.headers.common.Authorization = `Bearer ${params.token}`;
   }
 
   private get v() {
@@ -277,7 +277,7 @@ export class Client {
         start: number;
         end: number;
         body: string;
-        entities?: Array<unknown>;
+        entities?: unknown[];
       }>;
       traits?: Array<{
         trait: string;

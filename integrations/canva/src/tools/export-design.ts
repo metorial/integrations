@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let exportDesign = SlateTool.create(spec, {
   name: 'Export Design',
@@ -83,32 +83,32 @@ export let exportDesign = SlateTool.create(spec, {
     let format: Record<string, unknown> = { type: ctx.input.formatType };
 
     if (ctx.input.formatType === 'jpg') {
-      if (ctx.input.quality) format['quality'] = ctx.input.quality;
-      if (ctx.input.width) format['width'] = ctx.input.width;
-      if (ctx.input.height) format['height'] = ctx.input.height;
-      if (ctx.input.exportQuality) format['export_quality'] = ctx.input.exportQuality;
+      if (ctx.input.quality) format.quality = ctx.input.quality;
+      if (ctx.input.width) format.width = ctx.input.width;
+      if (ctx.input.height) format.height = ctx.input.height;
+      if (ctx.input.exportQuality) format.export_quality = ctx.input.exportQuality;
     } else if (ctx.input.formatType === 'png') {
-      if (ctx.input.width) format['width'] = ctx.input.width;
-      if (ctx.input.height) format['height'] = ctx.input.height;
-      if (ctx.input.lossless !== undefined) format['lossless'] = ctx.input.lossless;
+      if (ctx.input.width) format.width = ctx.input.width;
+      if (ctx.input.height) format.height = ctx.input.height;
+      if (ctx.input.lossless !== undefined) format.lossless = ctx.input.lossless;
       if (ctx.input.transparentBackground !== undefined)
-        format['transparent_background'] = ctx.input.transparentBackground;
+        format.transparent_background = ctx.input.transparentBackground;
       if (ctx.input.asSingleImage !== undefined)
-        format['as_single_image'] = ctx.input.asSingleImage;
-      if (ctx.input.exportQuality) format['export_quality'] = ctx.input.exportQuality;
+        format.as_single_image = ctx.input.asSingleImage;
+      if (ctx.input.exportQuality) format.export_quality = ctx.input.exportQuality;
     } else if (ctx.input.formatType === 'pdf') {
-      if (ctx.input.exportQuality) format['export_quality'] = ctx.input.exportQuality;
-      if (ctx.input.pdfSize) format['size'] = ctx.input.pdfSize;
+      if (ctx.input.exportQuality) format.export_quality = ctx.input.exportQuality;
+      if (ctx.input.pdfSize) format.size = ctx.input.pdfSize;
     } else if (ctx.input.formatType === 'gif') {
-      if (ctx.input.width) format['width'] = ctx.input.width;
-      if (ctx.input.height) format['height'] = ctx.input.height;
-      if (ctx.input.exportQuality) format['export_quality'] = ctx.input.exportQuality;
+      if (ctx.input.width) format.width = ctx.input.width;
+      if (ctx.input.height) format.height = ctx.input.height;
+      if (ctx.input.exportQuality) format.export_quality = ctx.input.exportQuality;
     } else if (ctx.input.formatType === 'mp4') {
-      if (ctx.input.mp4Quality) format['quality'] = ctx.input.mp4Quality;
-      if (ctx.input.exportQuality) format['export_quality'] = ctx.input.exportQuality;
+      if (ctx.input.mp4Quality) format.quality = ctx.input.mp4Quality;
+      if (ctx.input.exportQuality) format.export_quality = ctx.input.exportQuality;
     }
 
-    if (ctx.input.pages) format['pages'] = ctx.input.pages;
+    if (ctx.input.pages) format.pages = ctx.input.pages;
 
     let job = await client.createExportJob({
       designId: ctx.input.designId,

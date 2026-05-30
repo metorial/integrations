@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageLeads = SlateTool.create(spec, {
   name: 'Manage Leads',
@@ -70,11 +70,11 @@ export let manageLeads = SlateTool.create(spec, {
       if (!ctx.input.leads || ctx.input.leads.length === 0) {
         throw new Error('leads array is required for the "save" action');
       }
-      let result: any;
+      let _result: any;
       if (ctx.input.leads.length === 1) {
-        result = await client.saveLead(ctx.input.leads[0]!);
+        _result = await client.saveLead(ctx.input.leads[0]!);
       } else {
-        result = await client.saveLeadsMany(ctx.input.leads);
+        _result = await client.saveLeadsMany(ctx.input.leads);
       }
       return {
         output: {

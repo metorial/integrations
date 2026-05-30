@@ -10,7 +10,7 @@ export class GitHubClient {
   private instanceUrl: string;
   private apiBaseUrl: string;
 
-  constructor(private config: GitHubClientConfig) {
+  constructor(config: GitHubClientConfig) {
     this.instanceUrl = config.instanceUrl?.replace(/\/+$/, '') || 'https://github.com';
     this.apiBaseUrl =
       this.instanceUrl === 'https://github.com'
@@ -185,7 +185,7 @@ export class GitHubClient {
     let body: Record<string, any> = { ...data };
     if (data.stateReason !== undefined) {
       body.state_reason = data.stateReason;
-      delete body.stateReason;
+      body.stateReason = undefined;
     }
     let response = await this.http.patch(
       `/repos/${owner}/${repo}/issues/${issueNumber}`,

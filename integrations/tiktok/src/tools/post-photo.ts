@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TikTokConsumerClient } from '../lib/client';
 import { tiktokServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let postPhoto = SlateTool.create(spec, {
   name: 'Post Photo',
@@ -24,11 +24,7 @@ export let postPhoto = SlateTool.create(spec, {
           'SELF_ONLY'
         ])
         .describe('Privacy level for the published photo post.'),
-      title: z
-        .string()
-        .max(90)
-        .optional()
-        .describe('Photo post title (max 90 UTF-16 runes).'),
+      title: z.string().max(90).optional().describe('Photo post title (max 90 UTF-16 runes).'),
       description: z
         .string()
         .max(4000)
@@ -63,9 +59,7 @@ export let postPhoto = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let photoCoverIndex = ctx.input.photoCoverIndex ?? 0;
     if (photoCoverIndex >= ctx.input.photoImageUrls.length) {
-      throw tiktokServiceError(
-        'photoCoverIndex must reference an item in photoImageUrls.'
-      );
+      throw tiktokServiceError('photoCoverIndex must reference an item in photoImageUrls.');
     }
 
     let client = new TikTokConsumerClient({ token: ctx.auth.token });

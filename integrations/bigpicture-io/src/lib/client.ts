@@ -90,7 +90,7 @@ let normalizeCompany = (data: any): Company => {
   // Map the API's 'id' field to 'companyId' for clarity
   if (company.id !== undefined) {
     company.companyId = company.id;
-    delete company.id;
+    company.id = undefined;
   }
   return company;
 };

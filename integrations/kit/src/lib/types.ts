@@ -46,7 +46,7 @@ export interface KitBroadcast {
   email_layout_template: string | null;
   content: string | null;
   public: boolean;
-  subscriber_filter: Array<Record<string, any>>;
+  subscriber_filter: Record<string, any>[];
 }
 
 export interface KitBroadcastStats {

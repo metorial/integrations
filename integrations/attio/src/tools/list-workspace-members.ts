@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AttioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listWorkspaceMembersTool = SlateTool.create(spec, {
   name: 'List Workspace Members',

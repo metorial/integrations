@@ -44,7 +44,7 @@ export interface CoinMarketCalEvent {
 export class Client {
   private http;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://developers.coinmarketcal.com/v1',
       headers: {

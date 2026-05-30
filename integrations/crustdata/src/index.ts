@@ -2,17 +2,17 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   enrichCompany,
-  searchCompanies,
-  screenCompanies,
   enrichPerson,
-  searchPeople,
-  searchJobListings,
-  getSocialPosts,
-  webSearch,
+  findDecisionMakers,
   getInvestorPortfolio,
-  findDecisionMakers
+  getSocialPosts,
+  screenCompanies,
+  searchCompanies,
+  searchJobListings,
+  searchPeople,
+  webSearch
 } from './tools';
-import { companyScreeningPoll, peopleChangesPoll, inboundWebhook } from './triggers';
+import { companyScreeningPoll, inboundWebhook, peopleChangesPoll } from './triggers';
 
 export let provider = Slate.create({
   spec,

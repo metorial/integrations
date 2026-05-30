@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 let httpClient = createAxios({
@@ -26,7 +26,7 @@ export let auth = SlateAuth.create()
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
-      let response = await httpClient.get('/call', {
+      let _response = await httpClient.get('/call', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`
         },

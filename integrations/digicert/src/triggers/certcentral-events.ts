@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CertCentralClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let certcentralEvents = SlateTrigger.create(spec, {
   name: 'CertCentral Events',
@@ -103,7 +103,7 @@ export let certcentralEvents = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.event) {
+      if (!data?.event) {
         return { inputs: [] };
       }
 

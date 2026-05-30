@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ServerAvatarClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listServerProviders = SlateTool.create(spec, {
   name: 'List Server Providers',

@@ -1,15 +1,15 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  sendMessage,
-  uploadAttachment,
-  sendTemplate,
-  manageProfile,
   getUserProfile,
+  handover,
+  manageProfile,
   senderAction,
-  handover
+  sendMessage,
+  sendTemplate,
+  uploadAttachment
 } from './tools';
-import { messageReceived, messageDelivery, accountEvent } from './triggers';
+import { accountEvent, messageDelivery, messageReceived } from './triggers';
 
 export let provider = Slate.create({
   spec,

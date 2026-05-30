@@ -1,21 +1,21 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  getUserProfile,
-  listPages,
-  getPosts,
-  publishContent,
-  managePost,
-  manageComments,
-  getPageInsights,
-  getPostInsights,
-  getReactions,
-  searchFacebook,
   getAdInsights,
   getLeads,
+  getPageInsights,
+  getPostInsights,
+  getPosts,
+  getReactions,
+  getUserProfile,
+  listPages,
+  manageComments,
+  managePost,
+  publishContent,
+  searchFacebook,
   sendPageMessage
 } from './tools';
-import { pageWebhook, newPagePost, newLead } from './triggers';
+import { newLead, newPagePost, pageWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

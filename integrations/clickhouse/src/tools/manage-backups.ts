@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickHouseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let backupSchema = z.object({
   backupId: z.string().describe('Unique backup identifier'),

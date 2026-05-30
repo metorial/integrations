@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { tableauServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
 import { normalizeBoolean } from '../lib/normalizers';
+import { spec } from '../spec';
 
 export let manageWorkbook = SlateTool.create(spec, {
   name: 'Manage Workbook',

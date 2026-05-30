@@ -1,9 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { ConnecteamClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
-let timeActivityEventTypes = [
+let _timeActivityEventTypes = [
   'clock_in',
   'clock_out',
   'auto_clock_out',

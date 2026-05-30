@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let profileSchema = z.object({
   profileId: z.string().describe('Unique identifier for the profile'),
@@ -44,7 +44,7 @@ export let getProfilesTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let profiles;
+    let profiles: any;
     if (ctx.input.profileId) {
       let profile = await client.getProfile(ctx.input.profileId);
       profiles = [profile];
@@ -52,7 +52,7 @@ export let getProfilesTool = SlateTool.create(spec, {
       profiles = await client.getProfiles();
     }
 
-    let mapped = profiles.map(p => ({
+    let mapped = profiles.map((p: any) => ({
       profileId: p.id,
       service: p.service,
       serviceUsername: p.serviceUsername,
@@ -67,7 +67,7 @@ export let getProfilesTool = SlateTool.create(spec, {
 
     return {
       output: { profiles: mapped },
-      message: `Retrieved **${mapped.length}** profile(s): ${mapped.map(p => `${p.formattedService} (@${p.serviceUsername})`).join(', ')}.`
+      message: `Retrieved **${mapped.length}** profile(s): ${mapped.map((p: any) => `${p.formattedService} (@${p.serviceUsername})`).join(', ')}.`
     };
   })
   .build();

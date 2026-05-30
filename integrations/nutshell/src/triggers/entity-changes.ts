@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { NutshellClient } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let entityChanges = SlateTrigger.create(spec, {
   name: 'Entity Changes',

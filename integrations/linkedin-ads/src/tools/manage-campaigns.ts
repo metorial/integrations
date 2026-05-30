@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let budgetSchema = z.object({
   amount: z.string().describe('Budget amount as string (e.g., "50.00")'),
@@ -223,23 +223,22 @@ export let createCampaign = SlateTool.create(spec, {
       status: ctx.input.status
     };
 
-    if (ctx.input.dailyBudget) data['dailyBudget'] = ctx.input.dailyBudget;
-    if (ctx.input.totalBudget) data['totalBudget'] = ctx.input.totalBudget;
-    if (ctx.input.unitCost) data['unitCost'] = ctx.input.unitCost;
-    if (ctx.input.locale) data['locale'] = ctx.input.locale;
+    if (ctx.input.dailyBudget) data.dailyBudget = ctx.input.dailyBudget;
+    if (ctx.input.totalBudget) data.totalBudget = ctx.input.totalBudget;
+    if (ctx.input.unitCost) data.unitCost = ctx.input.unitCost;
+    if (ctx.input.locale) data.locale = ctx.input.locale;
     if (ctx.input.audienceExpansionEnabled !== undefined)
-      data['audienceExpansionEnabled'] = ctx.input.audienceExpansionEnabled;
+      data.audienceExpansionEnabled = ctx.input.audienceExpansionEnabled;
     if (ctx.input.offsiteDeliveryEnabled !== undefined)
-      data['offsiteDeliveryEnabled'] = ctx.input.offsiteDeliveryEnabled;
+      data.offsiteDeliveryEnabled = ctx.input.offsiteDeliveryEnabled;
     if (ctx.input.optimizationTargetType)
-      data['optimizationTargetType'] = ctx.input.optimizationTargetType;
-    if (ctx.input.targetingCriteria) data['targetingCriteria'] = ctx.input.targetingCriteria;
+      data.optimizationTargetType = ctx.input.optimizationTargetType;
+    if (ctx.input.targetingCriteria) data.targetingCriteria = ctx.input.targetingCriteria;
 
     if (ctx.input.runScheduleStart || ctx.input.runScheduleEnd) {
-      data['runSchedule'] = {};
-      if (ctx.input.runScheduleStart)
-        data['runSchedule']['start'] = ctx.input.runScheduleStart;
-      if (ctx.input.runScheduleEnd) data['runSchedule']['end'] = ctx.input.runScheduleEnd;
+      data.runSchedule = {};
+      if (ctx.input.runScheduleStart) data.runSchedule.start = ctx.input.runScheduleStart;
+      if (ctx.input.runScheduleEnd) data.runSchedule.end = ctx.input.runScheduleEnd;
     }
 
     let campaignId = await client.createCampaign(data);
@@ -290,22 +289,21 @@ export let updateCampaign = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
 
     let patch: Record<string, any> = {};
-    if (ctx.input.name) patch['name'] = ctx.input.name;
-    if (ctx.input.status) patch['status'] = ctx.input.status;
-    if (ctx.input.dailyBudget) patch['dailyBudget'] = ctx.input.dailyBudget;
-    if (ctx.input.totalBudget) patch['totalBudget'] = ctx.input.totalBudget;
-    if (ctx.input.unitCost) patch['unitCost'] = ctx.input.unitCost;
+    if (ctx.input.name) patch.name = ctx.input.name;
+    if (ctx.input.status) patch.status = ctx.input.status;
+    if (ctx.input.dailyBudget) patch.dailyBudget = ctx.input.dailyBudget;
+    if (ctx.input.totalBudget) patch.totalBudget = ctx.input.totalBudget;
+    if (ctx.input.unitCost) patch.unitCost = ctx.input.unitCost;
     if (ctx.input.audienceExpansionEnabled !== undefined)
-      patch['audienceExpansionEnabled'] = ctx.input.audienceExpansionEnabled;
+      patch.audienceExpansionEnabled = ctx.input.audienceExpansionEnabled;
     if (ctx.input.optimizationTargetType)
-      patch['optimizationTargetType'] = ctx.input.optimizationTargetType;
-    if (ctx.input.targetingCriteria) patch['targetingCriteria'] = ctx.input.targetingCriteria;
+      patch.optimizationTargetType = ctx.input.optimizationTargetType;
+    if (ctx.input.targetingCriteria) patch.targetingCriteria = ctx.input.targetingCriteria;
 
     if (ctx.input.runScheduleStart || ctx.input.runScheduleEnd) {
-      patch['runSchedule'] = {};
-      if (ctx.input.runScheduleStart)
-        patch['runSchedule']['start'] = ctx.input.runScheduleStart;
-      if (ctx.input.runScheduleEnd) patch['runSchedule']['end'] = ctx.input.runScheduleEnd;
+      patch.runSchedule = {};
+      if (ctx.input.runScheduleStart) patch.runSchedule.start = ctx.input.runScheduleStart;
+      if (ctx.input.runScheduleEnd) patch.runSchedule.end = ctx.input.runScheduleEnd;
     }
 
     await client.updateCampaign(ctx.input.campaignId, { patch });

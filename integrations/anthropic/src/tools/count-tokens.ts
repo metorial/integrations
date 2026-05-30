@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AnthropicClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let messageSchema = z.object({
   role: z.enum(['user', 'assistant']).describe('Role of the message sender'),
@@ -53,7 +53,7 @@ export let countTokens = SlateTool.create(spec, {
 
     let messages = ctx.input.messages as Array<{
       role: 'user' | 'assistant';
-      content: string | Array<Record<string, unknown>>;
+      content: string | Record<string, unknown>[];
     }>;
     let result = await client.countTokens({
       model: ctx.input.model,

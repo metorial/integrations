@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IterableClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commerceItemSchema = z.object({
   itemId: z.string().describe('Unique item/product ID'),

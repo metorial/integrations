@@ -1,13 +1,13 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
+import { z } from 'zod';
+import { postgresServiceError } from '../lib/errors';
 import {
   createClient,
   escapeIdentifier,
   escapeLiteral,
   qualifiedTableName
 } from '../lib/helpers';
-import { postgresServiceError } from '../lib/errors';
-import { z } from 'zod';
+import { spec } from '../spec';
 
 export let insertRows = SlateTool.create(spec, {
   name: 'Insert Rows',

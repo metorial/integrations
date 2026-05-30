@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TelegramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let inlineKeyboardButtonSchema = z.object({
   text: z.string().describe('Button label text'),
@@ -66,7 +66,7 @@ export let sendMessageTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new TelegramClient(ctx.auth.token);
 
-    let replyMarkup: any = undefined;
+    let replyMarkup: any;
     if (ctx.input.replyMarkup?.inlineKeyboard) {
       replyMarkup = {
         inline_keyboard: ctx.input.replyMarkup.inlineKeyboard.map(row =>

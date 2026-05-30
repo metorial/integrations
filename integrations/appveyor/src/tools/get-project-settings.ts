@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AppVeyorClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getProjectSettings = SlateTool.create(spec, {
   name: 'Get Project Settings',

@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { createClient } from '../lib/helpers';
-import { openAIServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { openAIServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let messageSchema = z.object({
   role: z
@@ -22,7 +22,9 @@ let buildChatResponseFormat = (responseFormatType?: string, jsonSchema?: any) =>
   }
 
   if (!jsonSchema) {
-    throw openAIServiceError('jsonSchema is required when responseFormatType is "json_schema".');
+    throw openAIServiceError(
+      'jsonSchema is required when responseFormatType is "json_schema".'
+    );
   }
 
   let hasFullConfig =

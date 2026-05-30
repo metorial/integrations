@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TinifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let compressImage = SlateTool.create(spec, {
   name: 'Compress Image',
@@ -85,5 +85,5 @@ let formatBytes = (bytes: number): string => {
   let k = 1024;
   let sizes = ['B', 'KB', 'MB', 'GB'];
   let i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]!;
+  return `${Number.parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]!}`;
 };

@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { WebhookClient } from '../lib/webhooks';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let EVENT_TYPES = ['company.created', 'company.updated'] as const;
 

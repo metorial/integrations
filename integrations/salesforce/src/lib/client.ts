@@ -113,7 +113,7 @@ export let createSalesforceClient = (config: SalesforceClientConfig) => {
       if (method === 'GET') {
         let ids = records.map(r => r.id || r.Id).join(',');
         let objectType = records[0]?.attributes?.type;
-        let response = await http.get('/composite/sobjects/' + objectType, {
+        let response = await http.get(`/composite/sobjects/${objectType}`, {
           params: { ids }
         });
         return response.data;

@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listConnections,
-  listInteractions,
-  listProductLines,
-  listKnowledgeBaseQuestions,
-  listAuthorizationRequests,
-  getAuthorizationRequest,
-  ignoreAuthorizationRequest,
-  listAuthorizations,
-  grantAuthorization,
-  updateAuthorization,
-  listAccessGroups,
-  listFolders,
+  askQuestion,
   createFolder,
-  deleteFolder,
-  listDocuments,
-  updateDocument,
+  createQuestionnaireRequest,
   deleteDocument,
+  deleteFolder,
+  getAuthorizationRequest,
+  grantAuthorization,
+  ignoreAuthorizationRequest,
+  listAccessGroups,
+  listAuthorizationRequests,
+  listAuthorizations,
+  listConnections,
+  listDocuments,
+  listFolders,
+  listInteractions,
+  listKnowledgeBaseQuestions,
+  listProductLines,
   listQuestionnaires,
   submitQuestionnaire,
-  createQuestionnaireRequest,
-  updateQuestionnaireRequest,
-  askQuestion
+  updateAuthorization,
+  updateDocument,
+  updateQuestionnaireRequest
 } from './tools';
 import { accessRequested } from './triggers';
 

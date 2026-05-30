@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TypefullyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let platformPostSchema = z.object({
   text: z.string().describe('Text content of the post'),

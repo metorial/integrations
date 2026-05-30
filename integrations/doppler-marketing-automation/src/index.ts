@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getLists,
-  manageLists,
-  getSubscriber,
-  getListSubscribers,
   addOrUpdateSubscriber,
-  removeSubscriber,
-  importSubscribers,
-  getCustomFields,
-  manageCustomFields,
-  getCampaigns,
-  manageCampaigns,
   getCampaignReport,
-  getUnsubscribed
+  getCampaigns,
+  getCustomFields,
+  getListSubscribers,
+  getLists,
+  getSubscriber,
+  getUnsubscribed,
+  importSubscribers,
+  manageCampaigns,
+  manageCustomFields,
+  manageLists,
+  removeSubscriber
 } from './tools';
 import {
-  newSubscriber,
-  newUnsubscribe,
   campaignStatusChange,
-  inboundWebhook
+  inboundWebhook,
+  newSubscriber,
+  newUnsubscribe
 } from './triggers';
 
 export let provider = Slate.create({

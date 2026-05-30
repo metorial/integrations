@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RedisCloudClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDatabase = SlateTool.create(spec, {
   name: 'Get Database',

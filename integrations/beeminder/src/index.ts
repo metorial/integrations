@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getUser,
-  listGoals,
-  getGoal,
-  createGoal,
-  updateGoal,
-  manageGoal,
+  createCharge,
   createDatapoint,
-  listDatapoints,
-  updateDatapoint,
+  createGoal,
   deleteDatapoint,
-  createCharge
+  getGoal,
+  getUser,
+  listDatapoints,
+  listGoals,
+  manageGoal,
+  updateDatapoint,
+  updateGoal
 } from './tools';
 import { goalDerailReminder, goalUpdated } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ConnecteamClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendChatMessage = SlateTool.create(spec, {
   name: 'Send Chat Message',

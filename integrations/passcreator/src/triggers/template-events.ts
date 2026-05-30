@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let TEMPLATE_EVENT_TYPES = ['pass_template_created', 'pass_template_updated'] as const;
 

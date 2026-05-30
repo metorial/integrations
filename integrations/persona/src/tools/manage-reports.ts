@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PersonaClient } from '../lib/client';
 import { normalizeResource } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createReport = SlateTool.create(spec, {
   name: 'Create Report',
@@ -64,8 +64,8 @@ Provide the report template ID and relevant attributes for the report type.`,
       attrs['address-postal-code'] = ctx.input.addressPostalCode;
     if (ctx.input.addressCountryCode)
       attrs['address-country-code'] = ctx.input.addressCountryCode;
-    if (ctx.input.birthdate) attrs['birthdate'] = ctx.input.birthdate;
-    if (ctx.input.term) attrs['term'] = ctx.input.term;
+    if (ctx.input.birthdate) attrs.birthdate = ctx.input.birthdate;
+    if (ctx.input.term) attrs.term = ctx.input.term;
 
     let result = await client.createReport(ctx.input.reportTemplateId, attrs);
     let normalized = normalizeResource(result.data);

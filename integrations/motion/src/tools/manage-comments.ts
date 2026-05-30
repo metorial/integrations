@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MotionClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listComments = SlateTool.create(spec, {
   name: 'List Comments',

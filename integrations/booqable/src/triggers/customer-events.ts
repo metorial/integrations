@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { buildClientConfig } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let customerEventTypes = [
   'customer.created',
@@ -66,7 +66,7 @@ export let customerEvents = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
 
       let eventType = data?.event || data?.type || 'customer.updated';
-      let customerData = data?.data?.attributes || data?.data || data?.customer || data;
+      let _customerData = data?.data?.attributes || data?.data || data?.customer || data;
       let customerId = data?.data?.id || data?.customer_id || data?.id || '';
       let webhookId = data?.webhook_id || data?.id || `${customerId}-${Date.now()}`;
 

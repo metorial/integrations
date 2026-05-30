@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let externalUserInput = z.object({
   externalId: z.string().describe('Unique external identifier for the user'),
@@ -42,10 +42,10 @@ export let importExternalUsers = SlateTool.create(spec, {
       let user: Record<string, any> = {
         external_id: u.externalId
       };
-      if (u.email) user['email'] = u.email;
-      if (u.name) user['name'] = u.name;
+      if (u.email) user.email = u.email;
+      if (u.name) user.name = u.name;
       if (u.accountExternalId) {
-        user['external_account'] = {
+        user.external_account = {
           external_id: u.accountExternalId,
           name: u.accountName
         };

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let trackSchema = z.object({
   trackId: z.string().describe('Unique identifier (URN) of the track'),

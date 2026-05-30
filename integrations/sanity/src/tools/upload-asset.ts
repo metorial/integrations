@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SanityClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let uploadAsset = SlateTool.create(spec, {
   name: 'Upload Asset',

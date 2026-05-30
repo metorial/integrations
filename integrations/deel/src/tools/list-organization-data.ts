@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/utils';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listOrganizationData = SlateTool.create(spec, {
   name: 'List Organization Data',

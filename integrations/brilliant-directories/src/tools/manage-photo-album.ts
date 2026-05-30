@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPhotoAlbum = SlateTool.create(spec, {
   name: 'Get Photo Album',
@@ -37,7 +37,7 @@ Covers photo albums, products, digital products, properties, and classifieds.`,
       websiteDomain: ctx.config.websiteDomain
     });
 
-    let result;
+    let result: any;
     if (ctx.input.groupId) {
       result = await client.getPortfolioGroup(ctx.input.groupId);
     } else if (ctx.input.property && ctx.input.propertyValue) {

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { S3Client } from '../lib/client';
 import { hasS3ErrorCode, s3ServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageBucketPolicyTool = SlateTool.create(spec, {
   name: 'Manage Bucket Policy',

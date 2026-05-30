@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { NotionClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let databaseEvents = SlateTrigger.create(spec, {
   name: 'Database Events',

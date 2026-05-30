@@ -1,13 +1,12 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { ZoomClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getWebinar = SlateTool.create(spec, {
   name: 'Get Webinar',
   key: 'get_webinar',
-  description:
-    'Retrieve detailed information about a specific Zoom webinar by its ID.',
+  description: 'Retrieve detailed information about a specific Zoom webinar by its ID.',
   constraints: ['Requires a paid Zoom Webinar add-on'],
   tags: {
     destructive: false,

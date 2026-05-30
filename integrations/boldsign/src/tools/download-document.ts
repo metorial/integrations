@@ -1,7 +1,7 @@
 import { createBase64Attachment, SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let extractBase64FromDataUri = (value: string) => {
   let match = value.match(/^data:([^;,]+)?;base64,(.+)$/);

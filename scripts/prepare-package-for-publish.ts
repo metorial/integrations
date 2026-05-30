@@ -3,8 +3,8 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
-  preparePackageJsonForPublish,
-  type PackageJson
+  type PackageJson,
+  preparePackageJsonForPublish
 } from './lib/prepare-package-for-publish';
 
 type CliOptions = {

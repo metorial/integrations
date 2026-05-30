@@ -53,10 +53,10 @@ export class Client {
     };
 
     if (params.firstName) {
-      queryParams['first_name'] = params.firstName;
+      queryParams.first_name = params.firstName;
     }
     if (params.lastName) {
-      queryParams['last_name'] = params.lastName;
+      queryParams.last_name = params.lastName;
     }
 
     let response = await this.axios.get('/adduser', {

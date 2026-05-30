@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { collectAllColors, type SketchPage, type SketchDocumentJson } from '../lib/client';
+import { collectAllColors, type SketchDocumentJson, type SketchPage } from '../lib/client';
+import { spec } from '../spec';
 
 export let extractColorsTool = SlateTool.create(spec, {
   name: 'Extract Colors',

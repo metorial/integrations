@@ -17,7 +17,7 @@ export interface PaginatedResponse<T> {
 export class ChameleonClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.chameleon.io/v3',
       headers: {

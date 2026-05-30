@@ -11,7 +11,7 @@ let chatApi = createAxios({
 export class PlatformClient {
   private headers: Record<string, string>;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.headers = {
       Authorization: `Token ${token}`,
       'Content-Type': 'application/json'
@@ -228,7 +228,7 @@ export class PlatformClient {
 export class ChatClient {
   private headers: Record<string, string>;
 
-  constructor(private channelToken: string) {
+  constructor(channelToken: string) {
     this.headers = {
       Authorization: `Token ${channelToken}`,
       'Content-Type': 'application/json'

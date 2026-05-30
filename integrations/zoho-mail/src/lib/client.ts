@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; domain: string }) {
+  constructor(config: { token: string; domain: string }) {
     this.axios = createAxios({
       baseURL: `https://mail.${config.domain}/api`,
       headers: {
@@ -262,12 +262,7 @@ export class Client {
   // === Tasks ===
 
   async listPersonalTasks(
-    params: {
-      status?: string;
-      priority?: string;
-      start?: number;
-      limit?: number;
-    } = {}
+    params: { status?: string; priority?: string; start?: number; limit?: number } = {}
   ): Promise<any[]> {
     let response = await this.axios.get('/tasks/me', { params });
     return response.data?.data || [];
@@ -362,12 +357,7 @@ export class Client {
 
   // === Notes ===
 
-  async listPersonalNotes(
-    params: {
-      start?: number;
-      limit?: number;
-    } = {}
-  ): Promise<any[]> {
+  async listPersonalNotes(params: { start?: number; limit?: number } = {}): Promise<any[]> {
     let response = await this.axios.get('/notes/me', { params });
     return response.data?.data || [];
   }
@@ -426,10 +416,7 @@ export class Client {
   // === Bookmarks ===
 
   async listPersonalBookmarks(
-    params: {
-      start?: number;
-      limit?: number;
-    } = {}
+    params: { start?: number; limit?: number } = {}
   ): Promise<any[]> {
     let response = await this.axios.get('/links/me', { params });
     return response.data?.data || [];

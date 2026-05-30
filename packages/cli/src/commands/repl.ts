@@ -1,6 +1,6 @@
 import { input } from '@inquirer/prompts';
 import { print } from '../lib/prompts';
-import { WithProfile } from '../lib/types';
+import type { WithProfile } from '../lib/types';
 import { listAuth, setupAuth } from './auth';
 import { getConfig, setConfig } from './config';
 import { getProfile } from './profiles';

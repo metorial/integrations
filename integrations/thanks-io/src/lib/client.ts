@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class ThanksIoClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.thanks.io/api/v2',
       headers: {
@@ -26,7 +26,7 @@ export class ThanksIoClient {
     customBackgroundImage?: string;
     qrcodeUrl?: string;
     mailingLists?: number[];
-    recipients?: Array<Record<string, unknown>>;
+    recipients?: Record<string, unknown>[];
     radiusSearch?: Record<string, unknown>;
     handwritingStyle?: number;
     handwritingColor?: string;
@@ -88,7 +88,7 @@ export class ThanksIoClient {
     customBackgroundImage?: string;
     qrcodeUrl?: string;
     mailingLists?: number[];
-    recipients?: Array<Record<string, unknown>>;
+    recipients?: Record<string, unknown>[];
     radiusSearch?: Record<string, unknown>;
     handwritingStyle?: number;
     handwritingColor?: string;
@@ -150,7 +150,7 @@ export class ThanksIoClient {
     additionalPagesUrl?: string;
     pdfOnlyUrl?: string;
     mailingLists?: number[];
-    recipients?: Array<Record<string, unknown>>;
+    recipients?: Record<string, unknown>[];
     radiusSearch?: Record<string, unknown>;
     handwritingStyle?: number;
     handwritingColor?: string;
@@ -211,7 +211,7 @@ export class ThanksIoClient {
     giftcardBrand?: string;
     giftcardAmountInCents?: number;
     mailingLists?: number[];
-    recipients?: Array<Record<string, unknown>>;
+    recipients?: Record<string, unknown>[];
     radiusSearch?: Record<string, unknown>;
     handwritingStyle?: number;
     handwritingColor?: string;
@@ -305,7 +305,7 @@ export class ThanksIoClient {
   }
 
   async createMultipleRecipients(
-    recipients: Array<Record<string, unknown>>
+    recipients: Record<string, unknown>[]
   ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/recipients-utils/create-multiple', recipients);
     return response.data;

@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { optimizeImage, checkApiStatus, manageDomain, generateCdnUrl } from './tools';
+import { checkApiStatus, generateCdnUrl, manageDomain, optimizeImage } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

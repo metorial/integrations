@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let CONTACT_EVENT_TYPES = ['contact.created', 'contact.changed', 'contact.deleted'] as const;
 
@@ -49,7 +49,7 @@ export let contactEvents = SlateTrigger.create(spec, {
       for (let sub of subs) {
         try {
           await client.deleteEventSubscription(sub.subscriptionId);
-        } catch (e) {
+        } catch (_e) {
           /* ignore cleanup errors */
         }
       }
@@ -93,7 +93,7 @@ export let contactEvents = SlateTrigger.create(spec, {
             [];
           email = emailAddresses[0] || undefined;
           roles = contact.roles;
-        } catch (e) {
+        } catch (_e) {
           /* resource may not be accessible */
         }
       }

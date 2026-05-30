@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let workspaceSchema = z.object({
   workspaceId: z.string().describe('Unique workspace identifier'),
@@ -58,7 +58,7 @@ Each workspace includes a dedicated Steampipe database instance, Powerpipe serve
       baseUrl: ctx.config.baseUrl
     });
 
-    let result;
+    let result: any;
 
     if (ctx.input.scope === 'user') {
       let userHandle = ctx.input.userHandle;

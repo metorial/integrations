@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let nameResultSchema = z.object({
   phone: z.string().optional().describe('The queried phone number'),
@@ -40,7 +40,7 @@ export let nameLookup = SlateTool.create(spec, {
     let client = new Client(ctx.auth.token);
     let { phones } = ctx.input;
 
-    let results: Array<Record<string, string>>;
+    let results: Record<string, string>[];
 
     if (phones.length === 1) {
       let result = await client.nameLookup(phones[0]!);

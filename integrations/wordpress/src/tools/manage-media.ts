@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, extractMediaSummary } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, extractMediaSummary } from '../lib/helpers';
+import { spec } from '../spec';
 
 let mediaOutputSchema = z.object({
   mediaId: z.string().describe('Unique identifier of the media item'),

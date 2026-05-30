@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ZeplinClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let memberSchema = z.object({
   userId: z.string().describe('Member user ID'),

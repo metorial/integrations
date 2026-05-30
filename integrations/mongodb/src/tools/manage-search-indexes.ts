@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AtlasClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let searchIndexSchema = z.object({
   indexId: z.string().optional().describe('Unique identifier of the search index'),

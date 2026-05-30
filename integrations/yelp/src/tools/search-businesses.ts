@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let categorySchema = z.object({
   alias: z.string().describe('Category alias identifier'),
@@ -76,7 +76,7 @@ let mapBusiness = (b: any) => ({
   distance: b.distance
 });
 
-export { businessSchema, mapBusiness, categorySchema, coordinatesSchema, locationSchema };
+export { businessSchema, categorySchema, coordinatesSchema, locationSchema, mapBusiness };
 
 export let searchBusinesses = SlateTool.create(spec, {
   name: 'Search Businesses',

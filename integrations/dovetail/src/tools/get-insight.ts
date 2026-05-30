@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getInsight = SlateTool.create(spec, {
   name: 'Get Insight',
@@ -41,7 +41,7 @@ export let getInsight = SlateTool.create(spec, {
 
     let insight = await client.getInsight(ctx.input.insightId);
 
-    let exportedContent: any = undefined;
+    let exportedContent: any;
     if (ctx.input.exportFormat) {
       exportedContent = await client.exportInsight(
         ctx.input.insightId,

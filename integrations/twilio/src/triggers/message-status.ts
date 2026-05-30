@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { parseFormUrlEncoded } from '../lib/webhook-parser';
+import { spec } from '../spec';
 
 export let messageStatus = SlateTrigger.create(spec, {
   name: 'Message Status Update',
@@ -45,13 +45,13 @@ export let messageStatus = SlateTrigger.create(spec, {
       return {
         inputs: [
           {
-            messageSid: data['MessageSid'] || data['SmsSid'] || '',
-            messageStatus: data['MessageStatus'] || data['SmsStatus'] || '',
-            from: data['From'] || '',
-            to: data['To'] || '',
-            accountSid: data['AccountSid'] || '',
-            errorCode: data['ErrorCode'],
-            errorMessage: data['ErrorMessage']
+            messageSid: data.MessageSid || data.SmsSid || '',
+            messageStatus: data.MessageStatus || data.SmsStatus || '',
+            from: data.From || '',
+            to: data.To || '',
+            accountSid: data.AccountSid || '',
+            errorCode: data.ErrorCode,
+            errorMessage: data.ErrorMessage
           }
         ]
       };

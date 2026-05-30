@@ -1,21 +1,21 @@
 import { createAxios } from 'slates';
 import type {
-  PaginationParams,
-  MessageFilterParams,
-  Inbox,
-  Message,
-  Thread,
-  Draft,
-  Domain,
-  Pod,
-  Webhook,
-  ListEntry,
   AttachmentResponse,
-  SendMessageParams,
-  ReplyParams,
   CreateDraftParams,
+  Domain,
+  Draft,
+  Inbox,
+  ListEntry,
+  Message,
+  MessageFilterParams,
+  PaginationParams,
+  Pod,
+  ReplyParams,
+  SendAttachment,
+  SendMessageParams,
   SendResult,
-  SendAttachment
+  Thread,
+  Webhook
 } from './types';
 
 let toSnakeAttachment = (a: SendAttachment) => ({
@@ -30,7 +30,7 @@ let toSnakeAttachment = (a: SendAttachment) => ({
 export class Client {
   private axios;
 
-  constructor(private params: { token: string; podId?: string }) {
+  constructor(params: { token: string; podId?: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.agentmail.to/v0',
       headers: {
@@ -44,9 +44,9 @@ export class Client {
     params?: PaginationParams
   ): Record<string, string | number | boolean> {
     let query: Record<string, string | number | boolean> = {};
-    if (params?.limit) query['limit'] = params.limit;
-    if (params?.pageToken) query['page_token'] = params.pageToken;
-    if (params?.ascending !== undefined) query['ascending'] = params.ascending;
+    if (params?.limit) query.limit = params.limit;
+    if (params?.pageToken) query.page_token = params.pageToken;
+    if (params?.ascending !== undefined) query.ascending = params.ascending;
     return query;
   }
 
@@ -55,12 +55,12 @@ export class Client {
   ): Record<string, string | number | boolean | string[]> {
     let query: Record<string, string | number | boolean | string[]> =
       this.paginationQuery(params);
-    if (params?.labels?.length) query['labels'] = params.labels;
-    if (params?.before) query['before'] = params.before;
-    if (params?.after) query['after'] = params.after;
-    if (params?.includeSpam) query['include_spam'] = true;
-    if (params?.includeBlocked) query['include_blocked'] = true;
-    if (params?.includeTrash) query['include_trash'] = true;
+    if (params?.labels?.length) query.labels = params.labels;
+    if (params?.before) query.before = params.before;
+    if (params?.after) query.after = params.after;
+    if (params?.includeSpam) query.include_spam = true;
+    if (params?.includeBlocked) query.include_blocked = true;
+    if (params?.includeTrash) query.include_trash = true;
     return query;
   }
 

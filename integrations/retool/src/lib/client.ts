@@ -122,7 +122,7 @@ export interface RetoolPermission {
 export class Client {
   private axios;
 
-  constructor(private params: { token: string; baseUrl: string }) {
+  constructor(params: { token: string; baseUrl: string }) {
     this.axios = createAxios({
       baseURL: `${params.baseUrl}/api/v2`,
       headers: {

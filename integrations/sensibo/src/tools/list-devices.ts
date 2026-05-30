@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SensiboClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let deviceSummarySchema = z.object({
   deviceId: z.string().describe('Unique identifier of the Sensibo device'),

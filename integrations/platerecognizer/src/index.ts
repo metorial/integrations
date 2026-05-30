@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  recognizePlate,
   blurImage,
-  recognizeVin,
+  getUsage,
+  recognizeBoat,
+  recognizeContainer,
+  recognizePlate,
   recognizeTrailer,
   recognizeUsdot,
-  recognizeContainer,
-  recognizeBoat,
-  getUsage
+  recognizeVin
 } from './tools';
 import { plateRecognized } from './triggers';
 

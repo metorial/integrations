@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StoryblokClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let componentOutputSchema = z.object({
   componentId: z.number().optional().describe('Numeric ID of the component'),
@@ -111,7 +111,7 @@ export let manageComponent = SlateTool.create(spec, {
     if (action === 'delete') {
       await client.deleteComponent(componentId);
       return {
-        output: { componentId: parseInt(componentId, 10) },
+        output: { componentId: Number.parseInt(componentId, 10) },
         message: `Deleted component \`${componentId}\`.`
       };
     }

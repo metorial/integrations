@@ -24,10 +24,10 @@ export class Client {
       throw new Error(data['Error Message']);
     }
     if (data && typeof data === 'object' && 'Information' in data) {
-      throw new Error(data['Information']);
+      throw new Error(data.Information);
     }
     if (data && typeof data === 'object' && 'Note' in data) {
-      throw new Error(data['Note']);
+      throw new Error(data.Note);
     }
 
     return data;

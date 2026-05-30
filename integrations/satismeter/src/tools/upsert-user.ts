@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SatisMeterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let upsertUserTool = SlateTool.create(spec, {
   name: 'Create or Update User',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listIndicesTool = SlateTool.create(spec, {
   name: 'List Indices',

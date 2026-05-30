@@ -1,7 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let productPurchaseEvent = SlateTrigger.create(spec, {
   name: 'Product Purchase',

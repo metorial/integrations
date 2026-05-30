@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ApifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getDatasetItems = SlateTool.create(spec, {
   name: 'Get Dataset Items',
@@ -58,7 +58,7 @@ Use the dataset ID from an Actor run's output or from listing datasets.`,
   )
   .handleInvocation(async ctx => {
     let client = new ApifyClient({ token: ctx.auth.token });
-    let items: Array<Record<string, any>>;
+    let items: Record<string, any>[];
 
     if (ctx.input.runId) {
       items = await client.getRunDatasetItems(ctx.input.runId, {

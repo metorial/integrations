@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EagleDocClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let processAnyDocument = SlateTool.create(spec, {
   name: 'Process Any Document',

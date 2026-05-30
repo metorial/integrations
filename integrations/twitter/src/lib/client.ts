@@ -33,7 +33,7 @@ export let SIMPLE_MEDIA_TYPES = [
 export class TwitterClient {
   private api: ReturnType<typeof createAxios>;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.api = createTwitterClient(token);
     this.api.interceptors.response.use(
       response => response,

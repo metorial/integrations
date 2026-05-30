@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
 import * as compute from '../lib/compute';
+import { spec } from '../spec';
 
 export let instanceChanges = SlateTrigger.create(spec, {
   name: 'Instance Changes',

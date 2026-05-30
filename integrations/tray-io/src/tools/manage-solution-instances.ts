@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TrayGraphqlClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listSolutionInstances = SlateTool.create(spec, {
   name: 'List Solution Instances',

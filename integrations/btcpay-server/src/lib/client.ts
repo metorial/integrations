@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class BTCPayClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string; instanceUrl: string }) {
+  constructor(params: { token: string; instanceUrl: string }) {
     let baseUrl = params.instanceUrl.replace(/\/+$/, '');
     this.axios = createAxios({
       baseURL: baseUrl,
@@ -16,7 +16,7 @@ export class BTCPayClient {
 
   // ---- Stores ----
 
-  async getStores(): Promise<Array<Record<string, unknown>>> {
+  async getStores(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/api/v1/stores');
     return response.data;
   }
@@ -65,7 +65,7 @@ export class BTCPayClient {
       take?: number;
       skip?: number;
     }
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let query: Record<string, unknown> = {};
     if (params?.status) query.status = params.status;
     if (params?.orderId) query.orderId = params.orderId;
@@ -136,7 +136,7 @@ export class BTCPayClient {
   async getInvoicePaymentMethods(
     storeId: string,
     invoiceId: string
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/api/v1/stores/${storeId}/invoices/${invoiceId}/payment-methods`
     );
@@ -193,7 +193,7 @@ export class BTCPayClient {
       limit?: number;
       skip?: number;
     }
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let query: Record<string, unknown> = {};
     if (params?.statusFilter) query.statusFilter = params.statusFilter;
     if (params?.labelFilter) query.labelFilter = params.labelFilter;
@@ -305,7 +305,7 @@ export class BTCPayClient {
   async getLightningChannels(
     storeId: string,
     cryptoCode: string = 'BTC'
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/api/v1/stores/${storeId}/lightning/${cryptoCode}/channels`
     );
@@ -314,7 +314,7 @@ export class BTCPayClient {
 
   // ---- Payment Requests ----
 
-  async getPaymentRequests(storeId: string): Promise<Array<Record<string, unknown>>> {
+  async getPaymentRequests(storeId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/api/v1/stores/${storeId}/payment-requests`);
     return response.data;
   }
@@ -378,7 +378,7 @@ export class BTCPayClient {
     params?: {
       includeArchived?: boolean;
     }
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let query: Record<string, unknown> = {};
     if (params?.includeArchived !== undefined) query.includeArchived = params.includeArchived;
     let response = await this.axios.get(`/api/v1/stores/${storeId}/pull-payments`, {
@@ -427,7 +427,7 @@ export class BTCPayClient {
       includeCancelled?: boolean;
       paymentMethodId?: string;
     }
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let query: Record<string, unknown> = {};
     if (params?.includeCancelled !== undefined)
       query.includeCancelled = params.includeCancelled;
@@ -455,7 +455,7 @@ export class BTCPayClient {
 
   // ---- Webhooks ----
 
-  async getWebhooks(storeId: string): Promise<Array<Record<string, unknown>>> {
+  async getWebhooks(storeId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/api/v1/stores/${storeId}/webhooks`);
     return response.data;
   }
@@ -502,7 +502,7 @@ export class BTCPayClient {
     seen?: boolean;
     skip?: number;
     take?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let query: Record<string, unknown> = {};
     if (params?.seen !== undefined) query.seen = params.seen;
     if (params?.skip !== undefined) query.skip = params.skip;
@@ -535,7 +535,7 @@ export class BTCPayClient {
 
   // ---- Store Payment Methods ----
 
-  async getStorePaymentMethods(storeId: string): Promise<Array<Record<string, unknown>>> {
+  async getStorePaymentMethods(storeId: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/api/v1/stores/${storeId}/payment-methods`);
     return response.data;
   }

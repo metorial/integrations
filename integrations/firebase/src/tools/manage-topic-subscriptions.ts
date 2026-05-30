@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { MessagingClient } from '../lib/client';
 import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTopicSubscriptions = SlateTool.create(spec, {
   name: 'Manage Topic Subscriptions',
@@ -49,7 +49,7 @@ export let manageTopicSubscriptions = SlateTool.create(spec, {
 
     let { operation, topic, deviceTokens } = ctx.input;
 
-    let result;
+    let result: any;
     if (operation === 'subscribe') {
       result = await client.subscribeToTopic(deviceTokens, topic);
     } else {

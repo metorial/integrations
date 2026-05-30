@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PowerBIClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let dataflowSchema = z.object({
   dataflowId: z.string().describe('Unique identifier of the dataflow'),

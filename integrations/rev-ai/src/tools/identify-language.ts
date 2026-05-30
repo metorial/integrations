@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RevAIClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let identifyLanguage = SlateTool.create(spec, {
   name: 'Identify Language',

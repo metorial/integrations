@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let chatbotkitEventsTrigger = SlateTrigger.create(spec, {
   name: 'ChatBotKit Events',

@@ -1,7 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { listDevices, getDeviceData, getCurrentWeather } from './tools';
-import { weatherDataUpdated, inboundWebhook } from './triggers';
+import { getCurrentWeather, getDeviceData, listDevices } from './tools';
+import { inboundWebhook, weatherDataUpdated } from './triggers';
 
 export let provider = Slate.create({
   spec,

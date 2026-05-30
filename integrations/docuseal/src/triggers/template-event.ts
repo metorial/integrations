@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let templateEvent = SlateTrigger.create(spec, {
   name: 'Template Event',
@@ -48,7 +48,7 @@ export let templateEvent = SlateTrigger.create(spec, {
 
       let eventType = body.event_type as string;
 
-      if (!eventType || !eventType.startsWith('template.')) {
+      if (!eventType?.startsWith('template.')) {
         return { inputs: [] };
       }
 

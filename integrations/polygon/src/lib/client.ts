@@ -5,7 +5,7 @@ let BASE_URL = 'https://api.polygon.io';
 export class PolygonClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

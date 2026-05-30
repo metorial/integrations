@@ -1,13 +1,13 @@
 import { createAxios } from 'slates';
 import type {
-  ScrapingOptions,
-  HtmlPostOptions,
-  TextOptions,
-  SelectedOptions,
-  SelectedMultipleOptions,
-  AiQuestionOptions,
+  AccountInfo,
   AiFieldsOptions,
-  AccountInfo
+  AiQuestionOptions,
+  HtmlPostOptions,
+  ScrapingOptions,
+  SelectedMultipleOptions,
+  SelectedOptions,
+  TextOptions
 } from './types';
 
 let apiAxios = createAxios({

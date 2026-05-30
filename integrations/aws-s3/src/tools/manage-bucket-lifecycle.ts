@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { S3Client, type S3LifecycleRule } from '../lib/client';
 import { hasS3ErrorCode, s3ServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transitionStorageClassSchema = z.enum([
   'GLACIER',
@@ -124,10 +124,10 @@ let lifecycleRuleSchema = z.object({
 let hasRuleAction = (rule: S3LifecycleRule) =>
   Boolean(
     rule.expiration ||
-    rule.transitions?.length ||
-    rule.noncurrentVersionExpiration ||
-    rule.noncurrentVersionTransitions?.length ||
-    rule.abortIncompleteMultipartUploadDays !== undefined
+      rule.transitions?.length ||
+      rule.noncurrentVersionExpiration ||
+      rule.noncurrentVersionTransitions?.length ||
+      rule.abortIncompleteMultipartUploadDays !== undefined
   );
 
 let validateRule = (rule: S3LifecycleRule) => {

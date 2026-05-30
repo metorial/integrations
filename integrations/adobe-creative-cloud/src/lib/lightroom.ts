@@ -1,4 +1,4 @@
-import { AdobeAuthConfig, createAdobeAxios } from './client';
+import { type AdobeAuthConfig, createAdobeAxios } from './client';
 
 let LIGHTROOM_BASE_URL = 'https://lr.adobe.io';
 let LIGHTROOM_EDIT_BASE_URL = 'https://image.adobe.io';

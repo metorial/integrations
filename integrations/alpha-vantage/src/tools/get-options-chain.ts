@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let optionContractSchema = z.object({
   contractId: z.string().describe('Unique contract identifier'),
@@ -68,29 +68,29 @@ export let getOptionsChain = SlateTool.create(spec, {
       data = await client.realtimeOptions({ symbol, requireGreeks: includeGreeks, contract });
     }
 
-    let rawContracts: any[] = data['data'] || [];
+    let rawContracts: any[] = data.data || [];
 
     let contracts = rawContracts.map((c: any) => {
       let result: any = {
-        contractId: c['contractID'] || c['contract_id'] || '',
-        symbol: c['symbol'] || symbol,
-        expiration: c['expiration'] || '',
-        strike: c['strike'] || '',
-        type: c['type'] || '',
-        lastPrice: c['last'] || c['last_price'] || '',
-        bid: c['bid'] || '',
-        ask: c['ask'] || '',
-        volume: c['volume'] || '',
-        openInterest: c['open_interest'] || '',
-        impliedVolatility: c['implied_volatility'] || ''
+        contractId: c.contractID || c.contract_id || '',
+        symbol: c.symbol || symbol,
+        expiration: c.expiration || '',
+        strike: c.strike || '',
+        type: c.type || '',
+        lastPrice: c.last || c.last_price || '',
+        bid: c.bid || '',
+        ask: c.ask || '',
+        volume: c.volume || '',
+        openInterest: c.open_interest || '',
+        impliedVolatility: c.implied_volatility || ''
       };
 
       if (includeGreeks || mode === 'historical') {
-        result.delta = c['delta'] || '';
-        result.gamma = c['gamma'] || '';
-        result.theta = c['theta'] || '';
-        result.vega = c['vega'] || '';
-        result.rho = c['rho'] || '';
+        result.delta = c.delta || '';
+        result.gamma = c.gamma || '';
+        result.theta = c.theta || '';
+        result.vega = c.vega || '';
+        result.rho = c.rho || '';
       }
 
       return result;

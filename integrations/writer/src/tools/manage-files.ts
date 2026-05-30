@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WriterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listFiles = SlateTool.create(spec, {
   name: 'List Files',

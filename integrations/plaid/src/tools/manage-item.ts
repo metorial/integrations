@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlaidClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getItemTool = SlateTool.create(spec, {
   name: 'Get Item',

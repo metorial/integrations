@@ -18,8 +18,8 @@ export class Client {
   constructor(config: { token: string; environment?: string }) {
     this.token = config.token;
     let env = config.environment ?? 'production';
-    this.baseUrl = BASE_URLS[env] ?? BASE_URLS['production']!;
-    this.syncBaseUrl = SYNC_BASE_URLS[env] ?? SYNC_BASE_URLS['production']!;
+    this.baseUrl = BASE_URLS[env] ?? BASE_URLS.production!;
+    this.syncBaseUrl = SYNC_BASE_URLS[env] ?? SYNC_BASE_URLS.production!;
   }
 
   private getAxios() {
@@ -72,8 +72,8 @@ export class Client {
     let query: Record<string, string> = {};
     if (params?.status) query['filter[status]'] = params.status;
     if (params?.tag) query['filter[tag]'] = params.tag;
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.page) query['page'] = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.page) query.page = String(params.page);
     let response = await axios.get('/jobs', { params: query });
     return response.data;
   }
@@ -115,8 +115,8 @@ export class Client {
     if (params?.operation) query['filter[operation]'] = params.operation;
     if (params?.status) query['filter[status]'] = params.status;
     if (params?.jobId) query['filter[job_id]'] = params.jobId;
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.page) query['page'] = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.page) query.page = String(params.page);
     let response = await axios.get('/tasks', { params: query });
     return response.data;
   }

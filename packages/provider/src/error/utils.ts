@@ -62,7 +62,7 @@ export let normalizeRetryable = (code: string, retryable?: boolean) => {
 };
 
 export let getDefaultMessage = (code: string, message?: string) => {
-  if (message && message.trim()) return message;
+  if (message?.trim()) return message;
   return DEFAULT_MESSAGES[code] ?? DEFAULT_MESSAGES[DEFAULT_CODE];
 };
 

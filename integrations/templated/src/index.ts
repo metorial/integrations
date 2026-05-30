@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createRender,
-  listRenders,
-  deleteRender,
-  mergeRenders,
-  listTemplates,
-  getTemplate,
-  createTemplate,
-  updateTemplate,
-  deleteTemplate,
-  duplicateTemplate,
   browseGallery,
-  manageFolder,
-  listFolders,
-  listUploads,
-  deleteUploads,
-  listFonts,
+  createRender,
+  createTemplate,
   deleteFonts,
-  getAccount
+  deleteRender,
+  deleteTemplate,
+  deleteUploads,
+  duplicateTemplate,
+  getAccount,
+  getTemplate,
+  listFolders,
+  listFonts,
+  listRenders,
+  listTemplates,
+  listUploads,
+  manageFolder,
+  mergeRenders,
+  updateTemplate
 } from './tools';
 import { editorEvent } from './triggers';
 

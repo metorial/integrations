@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getPodioItem,
   createPodioItem,
-  updatePodioItem,
   deletePodioItem,
-  searchPodioItems,
   filterPodioItems,
-  managePodioComment,
-  runProcScript,
-  manageVariables,
-  triggerPwaFlow,
-  queryMysql,
   getPodioAppInfo,
+  getPodioItem,
+  managePodioComment,
+  manageVariables,
   podioRawApi,
-  sendOauthApiRequest
+  queryMysql,
+  runProcScript,
+  searchPodioItems,
+  sendOauthApiRequest,
+  triggerPwaFlow,
+  updatePodioItem
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

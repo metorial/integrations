@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MemClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let memIt = SlateTool.create(spec, {
   name: 'Mem It',

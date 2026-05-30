@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BlazeMeterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listWorkspaces = SlateTool.create(spec, {
   name: 'List Workspaces',
@@ -72,7 +72,7 @@ export let listWorkspaces = SlateTool.create(spec, {
     }
 
     let accounts = await client.listAccounts();
-    let result = [];
+    let result: any[] = [];
 
     for (let account of accounts) {
       try {

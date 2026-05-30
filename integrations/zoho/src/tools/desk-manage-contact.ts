@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { ZohoDeskClient } from '../lib/client';
-import type { Datacenter } from '../lib/urls';
 import { zohoServiceError } from '../lib/errors';
+import type { Datacenter } from '../lib/urls';
+import { spec } from '../spec';
 
 export let deskManageContact = SlateTool.create(spec, {
   name: 'Desk Manage Contact',

@@ -654,12 +654,7 @@ export class GoogleDocsClient {
   }
 
   async listDriveFiles(
-    options: {
-      query?: string;
-      pageSize?: number;
-      pageToken?: string;
-      orderBy?: string;
-    } = {}
+    options: { query?: string; pageSize?: number; pageToken?: string; orderBy?: string } = {}
   ): Promise<{ files: DriveFile[]; nextPageToken?: string }> {
     let params: Record<string, string | number> = {
       fields:

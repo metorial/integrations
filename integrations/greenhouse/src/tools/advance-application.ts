@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let advanceApplicationTool = SlateTool.create(spec, {
   name: 'Advance or Move Application',
@@ -40,12 +40,12 @@ export let advanceApplicationTool = SlateTool.create(spec, {
       token: ctx.auth.token,
       onBehalfOf: ctx.config.onBehalfOf
     });
-    let appId = parseInt(ctx.input.applicationId);
+    let appId = Number.parseInt(ctx.input.applicationId, 10);
 
     if (ctx.input.action === 'advance') {
       await client.advanceApplication(
         appId,
-        ctx.input.fromStageId ? parseInt(ctx.input.fromStageId) : undefined
+        ctx.input.fromStageId ? Number.parseInt(ctx.input.fromStageId, 10) : undefined
       );
     } else {
       if (!ctx.input.fromStageId || !ctx.input.toStageId) {
@@ -53,8 +53,8 @@ export let advanceApplicationTool = SlateTool.create(spec, {
       }
       await client.moveApplication(
         appId,
-        parseInt(ctx.input.fromStageId),
-        parseInt(ctx.input.toStageId)
+        Number.parseInt(ctx.input.fromStageId, 10),
+        Number.parseInt(ctx.input.toStageId, 10)
       );
     }
 

@@ -11,7 +11,7 @@ export interface XataClientConfig {
 export class XataCoreClient {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://api.xata.io',
       headers: {
@@ -207,7 +207,7 @@ export class XataWorkspaceClient {
   ): Promise<any> {
     let params: any = {};
     if (columns && columns.length > 0) {
-      params['columns'] = columns.join(',');
+      params.columns = columns.join(',');
     }
     let response = await this.http.get(
       `/db/${dbName}:${branch}/tables/${tableName}/data/${recordId}`,

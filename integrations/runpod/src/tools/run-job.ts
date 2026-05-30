@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RunPodClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let runJob = SlateTool.create(spec, {
   name: 'Run Serverless Job',
@@ -76,7 +76,7 @@ export let runJob = SlateTool.create(spec, {
       };
     }
 
-    let result;
+    let result: any;
     if (ctx.input.synchronous) {
       result = await client.runSyncJob(ctx.input.endpointId, payload);
     } else {

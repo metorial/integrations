@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listUsers,
-  getUser,
-  manageUser,
-  userActions,
-  listSystems,
   getSystem,
-  manageSystem,
+  getUser,
+  listApplications,
+  listCommandResults,
   listGroups,
-  manageUserGroup,
-  manageSystemGroup,
-  manageGroupMembership,
+  listSystems,
+  listUsers,
   manageAssociations,
   manageCommand,
+  manageGroupMembership,
+  manageSystem,
+  manageSystemGroup,
+  manageUser,
+  manageUserGroup,
+  queryEvents,
   runCommand,
-  listCommandResults,
-  listApplications,
-  queryEvents
+  userActions
 } from './tools';
 import {
-  directoryEvents,
   authenticationEvents,
-  systemEvents,
-  inboundWebhook
+  directoryEvents,
+  inboundWebhook,
+  systemEvents
 } from './triggers';
 
 export let provider = Slate.create({

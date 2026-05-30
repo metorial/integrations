@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let processSchema = z.object({
   processId: z.string().describe('Unique process identifier'),
@@ -59,7 +59,7 @@ export let listProcesses = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let result;
+    let result: any;
     if (ctx.input.ownerType === 'org') {
       result = await client.listOrgProcesses(ownerHandle, ctx.input.workspaceHandle, {
         limit: ctx.input.limit,

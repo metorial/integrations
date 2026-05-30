@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBrands,
-  getBrand,
-  createOrUpdateBrand,
-  listContacts,
-  getContact,
-  upsertContact,
-  deleteContact,
-  listLists,
-  manageList,
-  listFields,
+  createBulkCampaign,
   createField,
+  createOrUpdateBrand,
+  deleteContact,
+  getBrand,
+  getContact,
+  listBrands,
+  listBulkCampaigns,
+  listContacts,
+  listFields,
+  listLists,
   listSenders,
+  manageList,
   manageSender,
   sendTransactionalEmail,
-  createBulkCampaign,
-  listBulkCampaigns
+  upsertContact
 } from './tools';
 import { emailEvents } from './triggers';
 

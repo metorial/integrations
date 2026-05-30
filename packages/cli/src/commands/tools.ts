@@ -5,7 +5,7 @@ import {
   syncProfileMetadata
 } from '../lib/context';
 import { parseJsonObject, promptForObjectSchema } from '../lib/prompts';
-import { JsonInput, WithProfile } from '../lib/types';
+import type { JsonInput, WithProfile } from '../lib/types';
 
 export let listTools = async (opts: WithProfile) => {
   let { store, profile, client } = await createClientContext(opts);

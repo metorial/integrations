@@ -2,13 +2,20 @@
  * Convert a Unicode domain name to Punycode.
  * For example: "München.de" -> "xn--mnchen-3ya.de"
  */
+let isAscii = (value: string): boolean => {
+  for (let i = 0; i < value.length; i++) {
+    if (value.charCodeAt(i) > 0x7f) return false;
+  }
+  return true;
+};
+
 export let toPunycode = (domain: string): string => {
   let parts = domain.split('.');
   let encoded = parts.map(label => {
-    if (/^[\x00-\x7F]*$/.test(label)) {
+    if (isAscii(label)) {
       return label;
     }
-    return 'xn--' + punycodeEncode(label);
+    return `xn--${punycodeEncode(label)}`;
   });
   return encoded.join('.');
 };
@@ -36,14 +43,14 @@ export let extractDomain = (url: string): string => {
   let cleaned = url.trim();
 
   if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(cleaned)) {
-    cleaned = 'https://' + cleaned;
+    cleaned = `https://${cleaned}`;
   }
 
   try {
     let parsed = new URL(cleaned);
     return parsed.hostname;
   } catch {
-    let match = cleaned.match(/^(?:https?:\/\/)?([^\/\s:?#]+)/i);
+    let match = cleaned.match(/^(?:https?:\/\/)?([^/\s:?#]+)/i);
     return match ? (match[1] ?? cleaned) : cleaned;
   }
 };
@@ -154,7 +161,7 @@ let punycodeEncode = (input: string): string => {
   }
 
   while (h < inputArray.length) {
-    let m = Infinity;
+    let m = Number.POSITIVE_INFINITY;
     for (let char of inputArray) {
       let cp = char.codePointAt(0)!;
       if (cp >= n && cp < m) {

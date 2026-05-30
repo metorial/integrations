@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RadarClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let geofenceSchema = z.object({
   geofenceId: z.string().describe('Radar internal geofence ID'),

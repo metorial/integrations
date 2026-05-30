@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  executeSqlQuery,
   executeApiFunction,
-  manageFiles,
+  executeSqlQuery,
+  getFailedEmails,
   manageDirectories,
-  sendEmail,
+  manageFiles,
   manageNewsletterContacts,
-  getFailedEmails
+  sendEmail
 } from './tools';
-import { newFormSubmission, newOrder, orderStatusUpdated, inboundWebhook } from './triggers';
+import { inboundWebhook, newFormSubmission, newOrder, orderStatusUpdated } from './triggers';
 
 export let provider = Slate.create({
   spec,

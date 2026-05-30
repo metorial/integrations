@@ -1,7 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { publishMessage, pollMessages, updateNotification } from './tools';
-import { topicMessages, inboundWebhook } from './triggers';
+import { pollMessages, publishMessage, updateNotification } from './tools';
+import { inboundWebhook, topicMessages } from './triggers';
 
 export let provider = Slate.create({
   spec,

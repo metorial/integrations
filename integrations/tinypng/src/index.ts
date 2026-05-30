@@ -2,10 +2,10 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   compressImage,
-  resizeImage,
   convertImage,
-  saveToCloud,
-  getCompressionCount
+  getCompressionCount,
+  resizeImage,
+  saveToCloud
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

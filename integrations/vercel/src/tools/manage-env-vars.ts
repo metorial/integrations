@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { vercelServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageEnvVarsTool = SlateTool.create(spec, {
   name: 'Manage Environment Variables',
@@ -130,8 +130,7 @@ export let manageEnvVarsTool = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.envVarId)
-        throw vercelServiceError('envVarId is required for update');
+      if (!ctx.input.envVarId) throw vercelServiceError('envVarId is required for update');
       let data: any = {};
       if (ctx.input.value !== undefined) data.value = ctx.input.value;
       if (ctx.input.target) data.target = ctx.input.target;
@@ -156,8 +155,7 @@ export let manageEnvVarsTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.envVarId)
-        throw vercelServiceError('envVarId is required for delete');
+      if (!ctx.input.envVarId) throw vercelServiceError('envVarId is required for delete');
       await client.deleteEnvVar(projectIdOrName, ctx.input.envVarId);
       return {
         output: { success: true },

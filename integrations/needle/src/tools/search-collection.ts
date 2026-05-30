@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NeedleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchCollection = SlateTool.create(spec, {
   name: 'Search Collection',

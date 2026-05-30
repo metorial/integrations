@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createWebhookClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let assetEvents = SlateTrigger.create(spec, {
   name: 'Asset Events',

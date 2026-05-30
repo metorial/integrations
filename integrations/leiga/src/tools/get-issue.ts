@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getIssueTool = SlateTool.create(spec, {
   name: 'Get Issue',
@@ -43,7 +43,7 @@ export let getIssueTool = SlateTool.create(spec, {
       throw new Error('Either issueId or issueNumber must be provided');
     }
 
-    let response;
+    let response: any;
     if (ctx.input.issueNumber) {
       response = await client.getIssueByNumber(ctx.input.issueNumber);
     } else {

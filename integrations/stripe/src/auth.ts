@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { stripeApiError, stripeServiceError } from './lib/errors';
 
@@ -146,7 +146,9 @@ export let auth = SlateAuth.create()
 
       let data = response.data;
       if (!data.access_token) {
-        throw stripeServiceError('Stripe OAuth refresh response did not include an access token.');
+        throw stripeServiceError(
+          'Stripe OAuth refresh response did not include an access token.'
+        );
       }
 
       return {

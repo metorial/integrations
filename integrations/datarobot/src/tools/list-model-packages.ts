@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DataRobotClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let modelPackageSchema = z.object({
   modelPackageId: z.string().describe('Unique model package identifier'),

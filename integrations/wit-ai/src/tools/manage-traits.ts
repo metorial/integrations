@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let traitSchema = z.object({
   traitId: z.string().optional().describe('Unique trait ID'),
@@ -44,7 +44,7 @@ export let listTraits = SlateTool.create(spec, {
         traits: (traits ?? []).map((t: Record<string, unknown>) => ({
           traitId: t.id,
           name: t.name,
-          values: (t.values as Array<Record<string, unknown>> | undefined)?.map(v => ({
+          values: (t.values as Record<string, unknown>[] | undefined)?.map(v => ({
             value: v.value as string,
             traitValueId: v.id as string | undefined
           }))

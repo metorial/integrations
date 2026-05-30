@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubActionsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let secretSchema = z.object({
   secretName: z.string().describe('Secret name'),

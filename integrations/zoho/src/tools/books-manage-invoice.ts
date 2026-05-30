@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { ZohoBooksClient } from '../lib/client';
-import type { Datacenter } from '../lib/urls';
 import { zohoServiceError } from '../lib/errors';
+import type { Datacenter } from '../lib/urls';
+import { spec } from '../spec';
 
 let lineItemSchema = z.object({
   itemId: z.string().optional().describe('Item ID from Zoho Books inventory'),

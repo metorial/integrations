@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listBranches = SlateTool.create(spec, {
   name: 'List Branches',
@@ -33,7 +33,10 @@ export let listBranches = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new GitHubClient({ token: ctx.auth.token, instanceUrl: ctx.auth.instanceUrl });
+    let client = new GitHubClient({
+      token: ctx.auth.token,
+      instanceUrl: ctx.auth.instanceUrl
+    });
     let branches = await client.listBranches(ctx.input.owner, ctx.input.repo, {
       perPage: ctx.input.perPage,
       page: ctx.input.page,

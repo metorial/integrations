@@ -1,6 +1,6 @@
 import { sternFinancialDataApiError, sternFinancialDataServiceError } from './errors';
 import { extractRowsForSource, parseWorkbook } from './extractor';
-import { SOURCES, SourceId, SourceType, SternRow } from './sources';
+import { SOURCES, type SourceId, type SourceType, type SternRow } from './sources';
 
 export type SourceResult = {
   metadata: {

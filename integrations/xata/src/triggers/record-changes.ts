@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { XataWorkspaceClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let recordChanges = SlateTrigger.create(spec, {
   name: 'Record Changes',
@@ -120,7 +120,7 @@ export let recordChanges = SlateTrigger.create(spec, {
 
             newKnownVersions[compositeKey] = version;
           }
-        } catch (err) {
+        } catch (_err) {
           // Table might not support xata metadata columns, skip it
         }
       }

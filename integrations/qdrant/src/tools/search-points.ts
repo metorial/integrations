@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { QdrantClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchPoints = SlateTool.create(spec, {
   name: 'Search Points',
@@ -79,7 +79,7 @@ export let searchPoints = SlateTool.create(spec, {
       token: ctx.auth.token
     });
 
-    let params: any = undefined;
+    let params: any;
     if (ctx.input.searchParams) {
       params = {};
       if (ctx.input.searchParams.hnswEf !== undefined)

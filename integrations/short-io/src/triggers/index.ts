@@ -1,2 +1,2 @@
-export { newLink } from './new-link';
 export * from './inbound-webhook';
+export { newLink } from './new-link';

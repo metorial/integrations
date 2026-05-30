@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBookings,
-  getBooking,
   createBooking,
-  manageBooking,
-  listEventTypes,
   createEventType,
-  updateEventType,
   deleteEventType,
-  manageSchedule,
   getAvailableSlots,
+  getBooking,
+  getBusyTimes,
   getProfile,
+  listBookings,
   listCalendars,
-  getBusyTimes
+  listEventTypes,
+  manageBooking,
+  manageSchedule,
+  updateEventType
 } from './tools';
-import { bookingEvents, meetingEvents, noShowEvents, formEvents, oooEvents } from './triggers';
+import { bookingEvents, formEvents, meetingEvents, noShowEvents, oooEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

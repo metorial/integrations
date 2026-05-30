@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  scrapeWebsite,
-  createScrapeTask,
-  getScrapeTaskResults,
-  listSubUsers,
-  createSubUser,
-  updateSubUser,
-  deleteSubUser,
-  getSubUserTraffic,
-  listWhitelistedIps,
   addWhitelistedIps,
-  removeWhitelistedIp,
+  createScrapeTask,
+  createSubUser,
+  deleteSubUser,
+  getProxyEndpoints,
+  getScrapeTaskResults,
   getSubscriptions,
-  getProxyEndpoints
+  getSubUserTraffic,
+  listSubUsers,
+  listWhitelistedIps,
+  removeWhitelistedIp,
+  scrapeWebsite,
+  updateSubUser
 } from './tools';
 import { accountEvents } from './triggers';
 

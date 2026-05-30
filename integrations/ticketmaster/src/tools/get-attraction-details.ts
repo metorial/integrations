@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DiscoveryClient } from '../lib/client';
 import { mapAttraction } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAttractionDetailsTool = SlateTool.create(spec, {
   name: 'Get Attraction Details',

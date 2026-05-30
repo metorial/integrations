@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let asnPeerSchema = z
   .object({
@@ -102,7 +102,7 @@ export let lookupAsnTool = SlateTool.create(spec, {
 
     return {
       output: result,
-      message: `**${asnStr}** (${org}${country ? ', ' + country : ''}): ${ipCount} IPv4 addresses.`
+      message: `**${asnStr}** (${org}${country ? `, ${country}` : ''}): ${ipCount} IPv4 addresses.`
     };
   })
   .build();

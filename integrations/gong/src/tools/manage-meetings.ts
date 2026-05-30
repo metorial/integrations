@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GongClient } from '../lib/client';
 import { gongServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let meetingInviteeSchema = z.object({
   email: z.string().describe('Invitee email address'),
@@ -14,9 +14,7 @@ let meetingInviteeSchema = z.object({
 let inviteeInputSchema = z.union([z.string(), meetingInviteeSchema]);
 
 let normalizeInvitees = (
-  invitees:
-    | Array<string | z.infer<typeof meetingInviteeSchema>>
-    | undefined,
+  invitees: Array<string | z.infer<typeof meetingInviteeSchema>> | undefined,
   attendees:
     | Array<{
         email: string;
@@ -56,10 +54,7 @@ export let createMeeting = SlateTool.create(spec, {
       title: z.string().optional().describe('Meeting title'),
       startTime: z.string().optional().describe('Meeting start in ISO 8601 format'),
       endTime: z.string().optional().describe('Meeting end in ISO 8601 format'),
-      scheduledStartTime: z
-        .string()
-        .optional()
-        .describe('Deprecated alias for startTime'),
+      scheduledStartTime: z.string().optional().describe('Deprecated alias for startTime'),
       scheduledEndTime: z.string().optional().describe('Deprecated alias for endTime'),
       organizerEmail: z.string().describe('Email of the meeting organizer'),
       attendees: z
@@ -86,7 +81,10 @@ export let createMeeting = SlateTool.create(spec, {
     z.object({
       meetingId: z.string().optional().describe('ID of the created meeting'),
       meetingUrl: z.string().optional().describe('URL to join the Gong meeting'),
-      additionalInvitees: z.array(z.any()).optional().describe('Additional invitees added by Gong')
+      additionalInvitees: z
+        .array(z.any())
+        .optional()
+        .describe('Additional invitees added by Gong')
     })
   )
   .handleInvocation(async ctx => {

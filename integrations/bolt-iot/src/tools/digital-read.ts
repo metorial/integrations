@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let digitalRead = SlateTool.create(spec, {
   name: 'Digital Read',
@@ -36,7 +36,7 @@ export let digitalRead = SlateTool.create(spec, {
       deviceName: ctx.auth.deviceName
     });
 
-    let response;
+    let response: any;
     if (ctx.input.pins.length === 1) {
       response = await client.digitalRead(ctx.input.pins[0]!);
     } else {

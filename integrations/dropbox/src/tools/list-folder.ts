@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DropboxClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let entrySchema = z.object({
   tag: z.string().describe('Entry type: file, folder, or deleted'),

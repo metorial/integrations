@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RiteKitClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let extractContent = SlateTool.create(spec, {
   name: 'Extract Content from URL',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listAdAccounts = SlateTool.create(spec, {
   name: 'List Ad Accounts',
@@ -59,7 +59,7 @@ export let listAdAccounts = SlateTool.create(spec, {
         accounts,
         totalCount: result.paging?.total
       },
-      message: `Found **${accounts.length}** ad account(s).${accounts.length > 0 ? ' Accounts: ' + accounts.map(a => `${a.name} (${a.status})`).join(', ') : ''}`
+      message: `Found **${accounts.length}** ad account(s).${accounts.length > 0 ? ` Accounts: ${accounts.map(a => `${a.name} (${a.status})`).join(', ')}` : ''}`
     };
   })
   .build();

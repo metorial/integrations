@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TwelveDataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let symbolResultSchema = z.object({
   symbol: z.string().describe('Ticker symbol'),

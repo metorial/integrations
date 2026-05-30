@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  renderDocument,
-  listTemplates,
   deleteTemplate,
-  getTemplateStructure,
-  getTemplateDetails,
   getEnvironmentStatus,
-  getRenderTags
+  getRenderTags,
+  getTemplateDetails,
+  getTemplateStructure,
+  listTemplates,
+  renderDocument
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

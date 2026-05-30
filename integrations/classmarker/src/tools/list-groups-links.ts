@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClassMarkerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let assignedTestSchema = z.object({
   testId: z.number().describe('Unique identifier of the test'),

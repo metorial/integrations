@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, extractPostSummary } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, extractPostSummary } from '../lib/helpers';
+import { spec } from '../spec';
 
 let postOutputSchema = z.object({
   postId: z.string().describe('Unique identifier of the post'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MakeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUsage = SlateTool.create(spec, {
   name: 'Get Usage',
@@ -35,7 +35,7 @@ export let getUsage = SlateTool.create(spec, {
       throw new Error('Either organizationId or teamId must be provided');
     }
 
-    let result;
+    let result: any;
     let scope: string;
 
     if (ctx.input.organizationId) {

@@ -1,24 +1,24 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  listFormsTool,
-  getFormTool,
-  createFormTool,
-  updateFormTool,
-  deleteFormTool,
   cloneFormTool,
-  listSubmissionsTool,
-  getSubmissionTool,
+  createFormTool,
+  createReportTool,
   createSubmissionTool,
-  updateSubmissionTool,
+  deleteFormTool,
   deleteSubmissionTool,
+  getFormTool,
+  getSubmissionTool,
   getUserTool,
   listFoldersTool,
-  manageWebhooksTool,
-  listReportsTool,
-  createReportTool,
   listFormFilesTool,
-  manageFormQuestionTool
+  listFormsTool,
+  listReportsTool,
+  listSubmissionsTool,
+  manageFormQuestionTool,
+  manageWebhooksTool,
+  updateFormTool,
+  updateSubmissionTool
 } from './tools';
 import { formSubmissionWebhookTrigger, newSubmissionPollingTrigger } from './triggers';
 

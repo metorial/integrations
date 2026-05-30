@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SignPathClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let approveDenySigningRequest = SlateTool.create(spec, {
   name: 'Approve or Deny Signing Request',

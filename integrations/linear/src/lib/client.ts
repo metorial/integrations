@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import { ServiceError } from '@lowerdeck/error';
+import { createAxios } from 'slates';
 import { linearApiError } from './errors';
 
 let extractErrorMessage = (error: unknown) => {

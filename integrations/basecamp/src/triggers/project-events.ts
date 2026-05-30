@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let projectEventsTrigger = SlateTrigger.create(spec, {
   name: 'Project Events',
@@ -65,7 +65,7 @@ export let projectEventsTrigger = SlateTrigger.create(spec, {
             projectId: project.id,
             webhookId: webhook.id
           });
-        } catch (e) {
+        } catch (_e) {
           // Skip projects where webhook creation fails (e.g., permissions)
         }
       }
@@ -88,7 +88,7 @@ export let projectEventsTrigger = SlateTrigger.create(spec, {
       for (let reg of registrations) {
         try {
           await client.deleteWebhook(String(reg.projectId), String(reg.webhookId));
-        } catch (e) {
+        } catch (_e) {
           // Webhook may already be deleted
         }
       }
@@ -120,7 +120,7 @@ export let projectEventsTrigger = SlateTrigger.create(spec, {
     },
 
     handleEvent: async ctx => {
-      let { kind, recordingType, details } = ctx.input;
+      let { kind, details } = ctx.input;
       let recording = details?.recording || {};
 
       // Derive the event type from kind, e.g. "todo_created" -> "todo.created"
@@ -128,7 +128,7 @@ export let projectEventsTrigger = SlateTrigger.create(spec, {
       // Better: split on first underscore to get resource.action pattern
       let underscoreIdx = kind.indexOf('_');
       if (underscoreIdx > 0) {
-        eventType = kind.substring(0, underscoreIdx) + '.' + kind.substring(underscoreIdx + 1);
+        eventType = `${kind.substring(0, underscoreIdx)}.${kind.substring(underscoreIdx + 1)}`;
       }
 
       return {

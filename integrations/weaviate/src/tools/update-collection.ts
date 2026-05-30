@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateCollection = SlateTool.create(spec, {
   name: 'Update Collection',
@@ -63,12 +63,11 @@ Note: You **cannot change** the vectorizer, generative module, or existing prope
         class: collectionName,
         ...existing
       };
-      if (updates.description !== undefined)
-        updatePayload['description'] = updates.description;
+      if (updates.description !== undefined) updatePayload.description = updates.description;
       if (updates.invertedIndexConfig)
-        updatePayload['invertedIndexConfig'] = updates.invertedIndexConfig;
+        updatePayload.invertedIndexConfig = updates.invertedIndexConfig;
       if (updates.replicationConfig)
-        updatePayload['replicationConfig'] = updates.replicationConfig;
+        updatePayload.replicationConfig = updates.replicationConfig;
       await client.updateCollection(collectionName, updatePayload);
     }
 

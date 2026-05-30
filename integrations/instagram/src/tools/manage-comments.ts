@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { InstagramClient } from '../lib/client';
 import { instagramServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let commentSchema = z.object({
   commentId: z.string().describe('Comment ID'),

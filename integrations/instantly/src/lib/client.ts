@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.instantly.ai/api/v2',
       headers: {
@@ -376,11 +376,7 @@ export class Client {
   // ─── Lead Lists ─────────────────────────────────────────────
 
   async listLeadLists(
-    params: {
-      limit?: number;
-      startingAfter?: string;
-      search?: string;
-    } = {}
+    params: { limit?: number; startingAfter?: string; search?: string } = {}
   ) {
     let res = await this.axios.get('/lead-lists', {
       params: {
@@ -414,12 +410,7 @@ export class Client {
 
   // ─── Lead Labels ────────────────────────────────────────────
 
-  async listLeadLabels(
-    params: {
-      limit?: number;
-      startingAfter?: string;
-    } = {}
-  ) {
+  async listLeadLabels(params: { limit?: number; startingAfter?: string } = {}) {
     let res = await this.axios.get('/lead-labels', {
       params: {
         limit: params.limit,
@@ -451,12 +442,7 @@ export class Client {
 
   // ─── Block List Entries ─────────────────────────────────────
 
-  async listBlockListEntries(
-    params: {
-      limit?: number;
-      startingAfter?: string;
-    } = {}
-  ) {
+  async listBlockListEntries(params: { limit?: number; startingAfter?: string } = {}) {
     let res = await this.axios.get('/block-lists-entries', {
       params: {
         limit: params.limit,
@@ -479,11 +465,7 @@ export class Client {
   // ─── Custom Tags ────────────────────────────────────────────
 
   async listCustomTags(
-    params: {
-      limit?: number;
-      startingAfter?: string;
-      search?: string;
-    } = {}
+    params: { limit?: number; startingAfter?: string; search?: string } = {}
   ) {
     let res = await this.axios.get('/custom-tags', {
       params: {
@@ -565,11 +547,7 @@ export class Client {
   // ─── Account-Campaign Mappings ──────────────────────────────
 
   async listAccountCampaignMappings(
-    params: {
-      limit?: number;
-      startingAfter?: string;
-      campaignId?: string;
-    } = {}
+    params: { limit?: number; startingAfter?: string; campaignId?: string } = {}
   ) {
     let res = await this.axios.get('/account-campaign-mappings', {
       params: {

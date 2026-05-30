@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createOrUpdateDeal = SlateTool.create(spec, {
   name: 'Create or Update Deal',
@@ -82,7 +82,7 @@ export let createOrUpdateDeal = SlateTool.create(spec, {
       fields: ctx.input.customFields
     };
 
-    let result;
+    let result: any;
     if (ctx.input.dealId) {
       result = await client.updateDeal(ctx.input.dealId, dealInput);
     } else {

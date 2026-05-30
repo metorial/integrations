@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchNewsTool,
   getCalendarEventsTool,
-  getMarketMoversTool,
   getCompanyFundamentalsTool,
-  getQuotesTool,
-  getHistoricalBarsTool,
   getCorporateLogosTool,
-  getOptionsActivityTool,
   getGovernmentTradesTool,
+  getHistoricalBarsTool,
   getInsiderTransactionsTool,
+  getMarketMoversTool,
+  getOptionsActivityTool,
+  getQuotesTool,
   getShortInterestTool,
-  getWiimsTool
+  getWiimsTool,
+  searchNewsTool
 } from './tools';
 import { newsWebhookTrigger } from './triggers';
 

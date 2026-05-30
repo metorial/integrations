@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  upsertUser,
-  getUser,
   deleteUser,
+  exportData,
+  getChannels,
+  getUser,
+  manageCampaigns,
+  manageCatalogs,
+  manageLists,
+  manageSnippets,
+  manageTemplates,
+  sendMessage,
   trackEvent,
   trackPurchase,
   updateCart,
-  manageLists,
-  manageCampaigns,
-  manageTemplates,
-  manageCatalogs,
-  manageSnippets,
-  sendMessage,
   updateSubscriptions,
-  getChannels,
-  exportData
+  upsertUser
 } from './tools';
 import { systemWebhook } from './triggers';
 

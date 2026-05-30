@@ -1,30 +1,30 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTeams,
-  getTeam,
   createTeam,
-  updateTeam,
   deleteTeam,
-  listChannels,
-  manageChannel,
-  sendChannelMessage,
+  getPresence,
+  getTeam,
   listChannelMessages,
-  listChats,
-  sendChatMessage,
+  listChannels,
   listChatMessages,
+  listChats,
+  listTeams,
+  manageChannel,
   manageMembers,
   manageOnlineMeeting,
-  getPresence,
+  manageShifts,
   manageTags,
-  manageShifts
+  sendChannelMessage,
+  sendChatMessage,
+  updateTeam
 } from './tools';
 import {
+  channelChangeTrigger,
   channelMessageTrigger,
   chatMessageTrigger,
-  teamChangeTrigger,
   membershipChangeTrigger,
-  channelChangeTrigger
+  teamChangeTrigger
 } from './triggers';
 
 export let provider = Slate.create({

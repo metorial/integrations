@@ -535,7 +535,7 @@ export class WriterClient {
   async listApplications(params?: {
     offset?: number;
     limit?: number;
-  }): Promise<Array<Record<string, unknown>>> {
+  }): Promise<Record<string, unknown>[]> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);

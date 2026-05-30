@@ -12,12 +12,12 @@ export interface ODataQueryOptions {
 let buildODataParams = (options?: ODataQueryOptions): Record<string, string | number> => {
   let params: Record<string, string | number> = {};
   if (!options) return params;
-  if (options.filter) params['$filter'] = options.filter;
-  if (options.select) params['$select'] = options.select;
-  if (options.expand) params['$expand'] = options.expand;
-  if (options.orderby) params['$orderby'] = options.orderby;
-  if (options.top !== undefined) params['$top'] = options.top;
-  if (options.skip !== undefined) params['$skip'] = options.skip;
+  if (options.filter) params.$filter = options.filter;
+  if (options.select) params.$select = options.select;
+  if (options.expand) params.$expand = options.expand;
+  if (options.orderby) params.$orderby = options.orderby;
+  if (options.top !== undefined) params.$top = options.top;
+  if (options.skip !== undefined) params.$skip = options.skip;
   return params;
 };
 

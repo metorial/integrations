@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageFolders = SlateTool.create(spec, {
   name: 'Manage Folders',
@@ -59,7 +59,7 @@ export let manageFolders = SlateTool.create(spec, {
     let client = createClient(ctx);
 
     if (ctx.input.action === 'list') {
-      let result;
+      let result: any;
       if (ctx.input.path) {
         result = await client.listSubfolders(ctx.input.path, {
           maxResults: ctx.input.maxResults,
@@ -74,7 +74,7 @@ export let manageFolders = SlateTool.create(spec, {
 
       return {
         output: {
-          folders: result.folders.map(f => ({ name: f.name, path: f.path })),
+          folders: result.folders.map((f: any) => ({ name: f.name, path: f.path })),
           nextCursor: result.nextCursor
         },
         message: `Listed **${result.folders.length}** folder(s)${ctx.input.path ? ` under "${ctx.input.path}"` : ' at root'}.${result.nextCursor ? ' More results available.' : ''}`

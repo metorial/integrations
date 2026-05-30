@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getPageProperties = SlateTool.create(spec, {
   name: 'Get Page Properties',
@@ -71,7 +71,7 @@ export let setPageProperty = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
-    let result;
+    let result: any;
 
     if (ctx.input.propertyId && ctx.input.versionNumber !== undefined) {
       result = await client.updatePageProperty(

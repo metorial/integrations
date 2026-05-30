@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TavePublicClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let paymentSchema = z.object({
   paymentId: z.string().describe('ID of the payment'),
@@ -67,7 +67,7 @@ export let getPayments = SlateTool.create(spec, {
         payments,
         totalCount
       },
-      message: `Retrieved **${payments.length}** payment(s)${ctx.input.brand ? ' for brand "' + ctx.input.brand + '"' : ''}${ctx.input.jobType ? ' of type "' + ctx.input.jobType + '"' : ''}.`
+      message: `Retrieved **${payments.length}** payment(s)${ctx.input.brand ? ` for brand "${ctx.input.brand}"` : ''}${ctx.input.jobType ? ` of type "${ctx.input.jobType}"` : ''}.`
     };
   })
   .build();

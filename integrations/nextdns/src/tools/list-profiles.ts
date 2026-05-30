@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NextDnsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let profileSchema = z.object({
   profileId: z.string().describe('Unique identifier for the profile'),

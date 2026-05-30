@@ -295,7 +295,7 @@ export class MetaAdsClient {
 
   async sendConversionEvents(
     datasetId: string,
-    events: Array<Record<string, any>>,
+    events: Record<string, any>[],
     testEventCode?: string
   ) {
     let params: Record<string, any> = {

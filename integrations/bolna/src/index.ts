@@ -2,21 +2,21 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createAgent,
-  getAgent,
-  listAgents,
-  updateAgent,
   deleteAgent,
-  makeCall,
-  stopCall,
-  manageBatch,
+  getAccountInfo,
+  getAgent,
   getBatch,
   getExecution,
+  listAgents,
   listExecutions,
-  manageKnowledgeBase,
   listPhoneNumbers,
-  setupInbound,
   listVoices,
-  getAccountInfo
+  makeCall,
+  manageBatch,
+  manageKnowledgeBase,
+  setupInbound,
+  stopCall,
+  updateAgent
 } from './tools';
 import { callStatus } from './triggers';
 

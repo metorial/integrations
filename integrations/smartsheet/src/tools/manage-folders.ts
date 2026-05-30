@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SmartsheetClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let folderOutputSchema = z.object({
   folderId: z.number().describe('Folder ID'),
@@ -48,7 +48,7 @@ export let manageFolders = SlateTool.create(spec, {
     let client = new SmartsheetClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
-      let result;
+      let result: any;
       if (ctx.input.workspaceId) {
         result = await client.listWorkspaceFolders(ctx.input.workspaceId, {
           includeAll: true
@@ -82,7 +82,7 @@ export let manageFolders = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'create') {
-      let result;
+      let result: any;
       if (ctx.input.workspaceId) {
         result = await client.createFolderInWorkspace(ctx.input.workspaceId, {
           name: ctx.input.name!

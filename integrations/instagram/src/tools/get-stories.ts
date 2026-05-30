@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { InstagramClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getStoriesTool = SlateTool.create(spec, {
   name: 'Get Stories',

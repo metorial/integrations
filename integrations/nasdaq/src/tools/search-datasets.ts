@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TablesClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchDatasets = SlateTool.create(spec, {
   name: 'Search Datasets',

@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class SmartsheetClient {
   private api;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.api = createAxios({
       baseURL: 'https://api.smartsheet.com/2.0',
       headers: {

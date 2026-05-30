@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BenzingaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let govTradeSchema = z.object({
   tradeId: z.string().optional().describe('Unique trade identifier'),

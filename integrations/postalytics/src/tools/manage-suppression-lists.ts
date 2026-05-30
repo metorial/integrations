@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PostalyticsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageSuppressionLists = SlateTool.create(spec, {
   name: 'Manage Suppression Lists',

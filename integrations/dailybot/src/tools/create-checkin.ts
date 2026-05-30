@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DailyBotClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createCheckin = SlateTool.create(spec, {
   name: 'Create Check-in',

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { ModeClient } from '../lib/client';
-import { normalizeCollection, getEmbedded } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ModeClient } from '../lib/client';
+import { getEmbedded, normalizeCollection } from '../lib/helpers';
+import { spec } from '../spec';
 
 let collectionSchema = z.object({
   collectionToken: z.string().describe('Unique token of the collection'),

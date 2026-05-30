@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let giftSplitSchema = z.object({
   fundId: z.string().describe('System record ID of the fund for this split.'),

@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendMessage,
   countTokens,
+  getOrganization,
+  getUsageReport,
   listModels,
+  manageApiKeys,
+  manageFiles,
   manageMessageBatch,
   manageOrganizationMembers,
   manageWorkspaces,
-  manageApiKeys,
-  getOrganization,
-  manageFiles,
-  getUsageReport
+  sendMessage
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getExecution = SlateTool.create(spec, {
   name: 'Get Execution',
@@ -52,7 +52,7 @@ export let getExecution = SlateTool.create(spec, {
       try {
         let outputData = await client.fetchContainerOutput(ctx.input.containerId);
         consoleOutput = outputData?.output ?? undefined;
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Could not fetch console output');
       }
     }
@@ -61,7 +61,7 @@ export let getExecution = SlateTool.create(spec, {
       try {
         let resultData = await client.fetchContainerResultObject(ctx.input.containerId);
         resultObject = resultData ?? undefined;
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Could not fetch result object');
       }
     }

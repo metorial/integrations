@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CustomGPTClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendMessage = SlateTool.create(spec, {
   name: 'Send Message',
@@ -65,7 +65,7 @@ export let sendMessage = SlateTool.create(spec, {
 
     let preview =
       message.openaiResponse.length > 200
-        ? message.openaiResponse.substring(0, 200) + '...'
+        ? `${message.openaiResponse.substring(0, 200)}...`
         : message.openaiResponse;
 
     return {

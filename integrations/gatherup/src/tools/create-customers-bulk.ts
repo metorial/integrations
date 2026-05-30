@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let createCustomersBulk = SlateTool.create(spec, {
   name: 'Create Customers (Bulk)',
@@ -67,7 +67,7 @@ export let createCustomersBulk = SlateTool.create(spec, {
       );
     }
 
-    let results: Array<Record<string, unknown>> = [];
+    let results: Record<string, unknown>[] = [];
     for (let i = 1; i <= ctx.input.customers.length; i++) {
       results.push({
         customerId: data[`customerId${i}`],

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BestBuyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getOpenBoxOffers = SlateTool.create(spec, {
   name: 'Get Open Box Offers',
@@ -65,7 +65,7 @@ export let getOpenBoxOffers = SlateTool.create(spec, {
     let client = new BestBuyClient({ token: ctx.auth.token });
     let { sku, skus, categoryId } = ctx.input;
 
-    let result;
+    let result: any;
 
     if (sku) {
       result = await client.getOpenBoxBySku(sku);
@@ -77,7 +77,7 @@ export let getOpenBoxOffers = SlateTool.create(spec, {
       throw new Error('Provide either sku, skus, or categoryId to query open box offers.');
     }
 
-    let openBoxProducts = (result.results || []).map(item => ({
+    let openBoxProducts = (result.results || []).map((item: any) => ({
       sku: item.sku,
       title: item.names?.title || '',
       shortDescription: item.descriptions?.short || '',
@@ -85,7 +85,7 @@ export let getOpenBoxOffers = SlateTool.create(spec, {
       regularPrice: item.prices?.regular || 0,
       imageUrl: item.images?.standard || '',
       productUrl: item.links?.web || '',
-      offers: (item.offers || []).map(offer => ({
+      offers: (item.offers || []).map((offer: any) => ({
         condition: offer.condition || '',
         currentPrice: offer.prices?.current || 0,
         regularPrice: offer.prices?.regular || 0

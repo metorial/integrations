@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { Client } from '../lib/client';
+import { spec } from '../spec';
 
 export let inventoryEvents = SlateTrigger.create(spec, {
   name: 'Inventory Events',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugherdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taskSummarySchema = z.object({
   taskId: z.number().describe('Global task ID'),
@@ -82,7 +82,7 @@ export let listTasks = SlateTool.create(spec, {
       page: ctx.input.page
     };
 
-    let result;
+    let result: any;
     switch (ctx.input.category) {
       case 'feedback':
         result = await client.listFeedbackTasks(ctx.input.projectId, filters);
@@ -97,7 +97,7 @@ export let listTasks = SlateTool.create(spec, {
         result = await client.listTasks(ctx.input.projectId, filters);
     }
 
-    let tasks = result.tasks.map(t => ({
+    let tasks = result.tasks.map((t: any) => ({
       taskId: t.id,
       localTaskId: t.local_task_id,
       projectId: t.project_id,

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { GrafanaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let annotationEvents = SlateTrigger.create(spec, {
   name: 'Annotation Events',

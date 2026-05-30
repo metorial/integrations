@@ -2,7 +2,7 @@ import { execFileSync } from 'child_process';
 import { randomUUID } from 'crypto';
 import { mkdir, readFile, writeFile } from 'fs/promises';
 import path from 'path';
-import {
+import type {
   SlatesCliStoreData,
   SlatesCliStoreScope,
   SlatesOAuthCredentialRecord,
@@ -179,7 +179,12 @@ export class SlatesCliStore {
   ) {}
 
   static async open(
-    opts: { cwd?: string; rootDir?: string; scope?: SlatesCliStoreScope; storePath?: string } = {}
+    opts: {
+      cwd?: string;
+      rootDir?: string;
+      scope?: SlatesCliStoreScope;
+      storePath?: string;
+    } = {}
   ) {
     let storageRootDir = opts.storePath
       ? inferRootDirFromStorePath(opts.storePath)
@@ -216,12 +221,12 @@ export class SlatesCliStore {
         }
       : opts.storePath
         ? createEmptyStore()
-      : scopeKey
-        ? await loadMigratedLegacyStore(rootDir, scopeKey)
-        : createEmptyStore();
+        : scopeKey
+          ? await loadMigratedLegacyStore(rootDir, scopeKey)
+          : createEmptyStore();
 
     if (!parsed) {
-      await writeFile(storePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
+      await writeFile(storePath, `${JSON.stringify(data, null, 2)}\n`, 'utf-8');
     }
 
     return new SlatesCliStore(
@@ -238,7 +243,7 @@ export class SlatesCliStore {
     await ensureDir(this.dirPath);
     await ensureDir(this.cliDir);
     await ensureGitIgnore(this.cliDir);
-    await writeFile(this.storePath, JSON.stringify(this.data, null, 2) + '\n', 'utf-8');
+    await writeFile(this.storePath, `${JSON.stringify(this.data, null, 2)}\n`, 'utf-8');
   }
 
   listProfiles() {

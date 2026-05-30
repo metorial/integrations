@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoinbaseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let depositWithdraw = SlateTool.create(spec, {
   name: 'Deposit or Withdraw Fiat',

@@ -150,15 +150,15 @@ export class Client {
   async listMeetings(params: ListMeetingsParams = {}): Promise<PaginatedResponse<Meeting>> {
     let queryParams: Record<string, string> = {};
 
-    if (params.cursor) queryParams['cursor'] = params.cursor;
-    if (params.createdAfter) queryParams['created_after'] = params.createdAfter;
-    if (params.createdBefore) queryParams['created_before'] = params.createdBefore;
-    if (params.includeTranscript) queryParams['include_transcript'] = 'true';
-    if (params.includeSummary) queryParams['include_summary'] = 'true';
-    if (params.includeActionItems) queryParams['include_action_items'] = 'true';
-    if (params.includeCrmMatches) queryParams['include_crm_matches'] = 'true';
+    if (params.cursor) queryParams.cursor = params.cursor;
+    if (params.createdAfter) queryParams.created_after = params.createdAfter;
+    if (params.createdBefore) queryParams.created_before = params.createdBefore;
+    if (params.includeTranscript) queryParams.include_transcript = 'true';
+    if (params.includeSummary) queryParams.include_summary = 'true';
+    if (params.includeActionItems) queryParams.include_action_items = 'true';
+    if (params.includeCrmMatches) queryParams.include_crm_matches = 'true';
     if (params.calendarInviteesDomainsType) {
-      queryParams['calendar_invitees_domains_type'] = params.calendarInviteesDomainsType;
+      queryParams.calendar_invitees_domains_type = params.calendarInviteesDomainsType;
     }
 
     let url = '/meetings';
@@ -215,7 +215,7 @@ export class Client {
 
   async listTeams(cursor?: string): Promise<PaginatedResponse<Team>> {
     let params: Record<string, string> = {};
-    if (cursor) params['cursor'] = cursor;
+    if (cursor) params.cursor = cursor;
 
     let response = await this.axios.get('/teams', {
       headers: this.getHeaders(),
@@ -230,8 +230,8 @@ export class Client {
     cursor?: string
   ): Promise<PaginatedResponse<TeamMember>> {
     let params: Record<string, string> = {};
-    if (team) params['team'] = team;
-    if (cursor) params['cursor'] = cursor;
+    if (team) params.team = team;
+    if (cursor) params.cursor = cursor;
 
     let response = await this.axios.get('/team_members', {
       headers: this.getHeaders(),

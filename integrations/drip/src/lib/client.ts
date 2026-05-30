@@ -53,14 +53,14 @@ export class Client {
   }) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
-    if (params?.status) query['status'] = params.status;
-    if (params?.tags) query['tags'] = params.tags;
-    if (params?.subscribedBefore) query['subscribed_before'] = params.subscribedBefore;
-    if (params?.subscribedAfter) query['subscribed_after'] = params.subscribedAfter;
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
-    if (params?.sortDirection) query['sort_direction'] = params.sortDirection;
+    if (params?.status) query.status = params.status;
+    if (params?.tags) query.tags = params.tags;
+    if (params?.subscribedBefore) query.subscribed_before = params.subscribedBefore;
+    if (params?.subscribedAfter) query.subscribed_after = params.subscribedAfter;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.sortBy) query.sort_by = params.sortBy;
+    if (params?.sortDirection) query.sort_direction = params.sortDirection;
     let response = await ax.get(this.v2('/subscribers'), { params: query });
     return response.data;
   }
@@ -145,11 +145,11 @@ export class Client {
   }) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
-    if (params?.status) query['status'] = params.status;
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
-    if (params?.sortDirection) query['sort_direction'] = params.sortDirection;
+    if (params?.status) query.status = params.status;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.sortBy) query.sort_by = params.sortBy;
+    if (params?.sortDirection) query.sort_direction = params.sortDirection;
     let response = await ax.get(this.v2('/campaigns'), { params: query });
     return response.data;
   }
@@ -178,10 +178,10 @@ export class Client {
   ) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
-    if (params?.sortDirection) query['sort_direction'] = params.sortDirection;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.sortBy) query.sort_by = params.sortBy;
+    if (params?.sortDirection) query.sort_direction = params.sortDirection;
     let response = await ax.get(this.v2(`/campaigns/${campaignId}/subscribers`), {
       params: query
     });
@@ -207,11 +207,11 @@ export class Client {
   }) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
-    if (params?.status) query['status'] = params.status;
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
-    if (params?.sortDirection) query['sort_direction'] = params.sortDirection;
+    if (params?.status) query.status = params.status;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.sortBy) query.sort_by = params.sortBy;
+    if (params?.sortDirection) query.sort_direction = params.sortDirection;
     let response = await ax.get(this.v2('/broadcasts'), { params: query });
     return response.data;
   }
@@ -233,11 +233,11 @@ export class Client {
   }) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
-    if (params?.status) query['status'] = params.status;
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.sortBy) query['sort_by'] = params.sortBy;
-    if (params?.sortDirection) query['sort_direction'] = params.sortDirection;
+    if (params?.status) query.status = params.status;
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.sortBy) query.sort_by = params.sortBy;
+    if (params?.sortDirection) query.sort_direction = params.sortDirection;
     let response = await ax.get(this.v2('/workflows'), { params: query });
     return response.data;
   }
@@ -288,8 +288,8 @@ export class Client {
   async listEventActions(params?: { page?: number; perPage?: number }) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
     let response = await ax.get(this.v2('/event_actions'), { params: query });
     return response.data;
   }
@@ -329,8 +329,8 @@ export class Client {
   async listConversions(params?: { page?: number; perPage?: number }) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
-    if (params?.page) query['page'] = String(params.page);
-    if (params?.perPage) query['per_page'] = String(params.perPage);
+    if (params?.page) query.page = String(params.page);
+    if (params?.perPage) query.per_page = String(params.perPage);
     let response = await ax.get(this.v2('/goals'), { params: query });
     return response.data;
   }
@@ -402,9 +402,9 @@ export class Client {
   async createWebhook(postUrl: string, events?: string[], includeReceivedEmail?: boolean) {
     let ax = this.getAxios();
     let webhook: Record<string, any> = { post_url: postUrl };
-    if (events) webhook['events'] = events;
+    if (events) webhook.events = events;
     if (includeReceivedEmail !== undefined)
-      webhook['include_received_email'] = includeReceivedEmail;
+      webhook.include_received_email = includeReceivedEmail;
     let response = await ax.post(this.v2('/webhooks'), {
       webhooks: [webhook]
     });

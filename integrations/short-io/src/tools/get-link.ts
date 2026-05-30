@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getLink = SlateTool.create(spec, {
   name: 'Get Link',
@@ -55,7 +55,7 @@ export let getLink = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let link;
+    let link: any;
 
     if (ctx.input.linkId) {
       link = await client.getLink(ctx.input.linkId);

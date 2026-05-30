@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getFeedbacks = SlateTool.create(spec, {
   name: 'Get Feedbacks',
@@ -68,8 +68,9 @@ export let getFeedbacks = SlateTool.create(spec, {
       visible: ctx.input.visible !== undefined ? (ctx.input.visible ? 1 : 0) : undefined
     });
 
-    let count = typeof data.count === 'number' ? data.count : parseInt(data.count || '0', 10);
-    let feedbacks: Array<Record<string, unknown>> = [];
+    let count =
+      typeof data.count === 'number' ? data.count : Number.parseInt(data.count || '0', 10);
+    let feedbacks: Record<string, unknown>[] = [];
 
     for (let i = 1; i <= count; i++) {
       feedbacks.push({

@@ -1,9 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
-let papersignTriggerEvents = [
+let _papersignTriggerEvents = [
   'document.sent',
   'document.completed',
   'document.cancelled',
@@ -57,11 +56,11 @@ export let papersignEventTrigger = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let data = (await ctx.request.json()) as Record<string, unknown>;
 
-      let eventType = String(data['event'] || data['type'] || data['trigger'] || 'unknown');
-      let document = (data['document'] || data) as Record<string, unknown>;
-      let documentId = String(document['id'] || data['document_id'] || '');
-      let documentName = String(document['name'] || data['document_name'] || '');
-      let documentStatus = String(document['status'] || data['status'] || '');
+      let eventType = String(data.event || data.type || data.trigger || 'unknown');
+      let document = (data.document || data) as Record<string, unknown>;
+      let documentId = String(document.id || data.document_id || '');
+      let documentName = String(document.name || data.document_name || '');
+      let documentStatus = String(document.status || data.status || '');
 
       return {
         inputs: [
@@ -78,46 +77,43 @@ export let papersignEventTrigger = SlateTrigger.create(spec, {
 
     handleEvent: async ctx => {
       let payload = ctx.input.rawPayload;
-      let document = (payload['document'] || payload) as Record<string, unknown>;
-      let signer = (payload['signer'] || null) as Record<string, unknown> | null;
-      let folder = (document['folder'] || payload['folder'] || null) as Record<
+      let document = (payload.document || payload) as Record<string, unknown>;
+      let signer = (payload.signer || null) as Record<string, unknown> | null;
+      let folder = (document.folder || payload.folder || null) as Record<
         string,
         unknown
       > | null;
-      let space = (document['space'] || payload['space'] || null) as Record<
-        string,
-        unknown
-      > | null;
+      let space = (document.space || payload.space || null) as Record<string, unknown> | null;
 
       let documentUrl: string | null = null;
       if (ctx.input.eventType === 'document.completed') {
-        documentUrl = document['document_url']
-          ? String(document['document_url'])
-          : payload['document_url']
-            ? String(payload['document_url'])
+        documentUrl = document.document_url
+          ? String(document.document_url)
+          : payload.document_url
+            ? String(payload.document_url)
             : null;
       }
 
       return {
         type: ctx.input.eventType,
-        id: `${ctx.input.documentId}-${ctx.input.eventType}-${payload['timestamp'] || Date.now()}`,
+        id: `${ctx.input.documentId}-${ctx.input.eventType}-${payload.timestamp || Date.now()}`,
         output: {
           documentId: ctx.input.documentId,
           documentName: ctx.input.documentName,
           documentStatus: ctx.input.documentStatus,
           documentUrl,
-          signerKey: signer ? String(signer['key'] || '') : null,
-          signerName: signer ? String(signer['name'] || '') : null,
-          signerEmail: signer ? String(signer['email'] || '') : null,
-          folderId: folder ? String(folder['id'] || '') : null,
-          folderName: folder ? String(folder['name'] || '') : null,
-          spaceId: space ? String(space['id'] || '') : null,
-          spaceName: space ? String(space['name'] || '') : null,
+          signerKey: signer ? String(signer.key || '') : null,
+          signerName: signer ? String(signer.name || '') : null,
+          signerEmail: signer ? String(signer.email || '') : null,
+          folderId: folder ? String(folder.id || '') : null,
+          folderName: folder ? String(folder.name || '') : null,
+          spaceId: space ? String(space.id || '') : null,
+          spaceName: space ? String(space.name || '') : null,
           eventType: ctx.input.eventType,
-          occurredAt: payload['timestamp']
-            ? String(payload['timestamp'])
-            : payload['created_at']
-              ? String(payload['created_at'])
+          occurredAt: payload.timestamp
+            ? String(payload.timestamp)
+            : payload.created_at
+              ? String(payload.created_at)
               : null
         }
       };

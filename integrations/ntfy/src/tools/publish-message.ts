@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { Client, ActionButton } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { type ActionButton, Client } from '../lib/client';
+import { spec } from '../spec';
 
 let actionButtonSchema = z.object({
   action: z.enum(['view', 'http', 'broadcast', 'copy']).describe('Type of action button'),

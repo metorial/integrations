@@ -1,5 +1,6 @@
 import { Buffer } from 'node:buffer';
 import {
+  S3Client as AwsS3Client,
   CopyObjectCommand,
   CreateBucketCommand,
   DeleteBucketCommand,
@@ -7,8 +8,8 @@ import {
   DeleteBucketPolicyCommand,
   DeleteBucketTaggingCommand,
   DeleteObjectCommand,
-  DeleteObjectTaggingCommand,
   DeleteObjectsCommand,
+  DeleteObjectTaggingCommand,
   GetBucketLifecycleConfigurationCommand,
   GetBucketLocationCommand,
   GetBucketPolicyCommand,
@@ -18,15 +19,14 @@ import {
   GetObjectTaggingCommand,
   HeadObjectCommand,
   ListBucketsCommand,
-  ListObjectVersionsCommand,
   ListObjectsV2Command,
+  ListObjectVersionsCommand,
   PutBucketLifecycleConfigurationCommand,
   PutBucketPolicyCommand,
   PutBucketTaggingCommand,
   PutBucketVersioningCommand,
   PutObjectCommand,
-  PutObjectTaggingCommand,
-  S3Client as AwsS3Client
+  PutObjectTaggingCommand
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { createSlatesAwsSdkHttpHandler } from '@slates/aws-sdk-http-handler';

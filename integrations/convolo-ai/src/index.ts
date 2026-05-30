@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  triggerCall,
-  getSpeedToLeadReports,
   getDialerCallReports,
-  getDialerStatistics
+  getDialerStatistics,
+  getSpeedToLeadReports,
+  triggerCall
 } from './tools';
-import { speedToLeadCallEvents, dialerCallEvents } from './triggers';
+import { dialerCallEvents, speedToLeadCallEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

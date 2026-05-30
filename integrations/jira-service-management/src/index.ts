@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchIssuesTool,
-  getIssueTool,
-  createIssueTool,
-  updateIssueTool,
-  deleteIssueTool,
   addCommentTool,
   createCustomerRequestTool,
-  listServiceDesksTool,
-  listRequestTypesTool,
-  manageQueueTool,
-  manageApprovalTool,
+  createIssueTool,
+  deleteIssueTool,
+  getIssueTool,
   getSlaInformationTool,
-  manageOrganizationTool,
-  manageCustomerTool,
-  searchKnowledgeBaseTool,
   listProjectsTool,
-  searchUsersTool
+  listRequestTypesTool,
+  listServiceDesksTool,
+  manageApprovalTool,
+  manageCustomerTool,
+  manageOrganizationTool,
+  manageQueueTool,
+  searchIssuesTool,
+  searchKnowledgeBaseTool,
+  searchUsersTool,
+  updateIssueTool
 } from './tools';
-import { issueEventsTrigger, commentEventsTrigger, projectEventsTrigger } from './triggers';
+import { commentEventsTrigger, issueEventsTrigger, projectEventsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

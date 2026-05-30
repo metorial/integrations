@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  processFinanceDocument,
-  processAnyDocument,
+  checkBatchTask,
+  checkUsage,
   extractSignatures,
+  processAnyDocument,
+  processFinanceDocument,
   splitDocument,
   submitBatch,
-  checkBatchTask,
-  submitFeedback,
-  checkUsage
+  submitFeedback
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

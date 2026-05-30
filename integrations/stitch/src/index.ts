@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listSources,
-  getSource,
-  createSource,
-  updateSource,
-  deleteSource,
-  listSourceTypes,
-  getDestination,
   createDestination,
-  updateDestination,
+  createSource,
   deleteDestination,
-  listStreams,
+  deleteSource,
+  getDestination,
+  getExtractionLogs,
+  getSource,
   getStream,
-  updateStreamSelection,
-  startReplication,
-  stopReplication,
   listExtractions,
   listLoads,
-  getExtractionLogs,
   listNotifications,
+  listSources,
+  listSourceTypes,
+  listStreams,
   manageCustomEmail,
   managePostLoadHook,
   pushData,
+  startReplication,
+  stopReplication,
+  updateDestination,
+  updateSource,
+  updateStreamSelection,
   validateData
 } from './tools';
-import { postLoadTrigger, extractionStatusTrigger } from './triggers';
+import { extractionStatusTrigger, postLoadTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

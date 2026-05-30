@@ -1,8 +1,8 @@
 export { chatCompletion } from './chat-completion';
-export { generateImage } from './generate-image';
-export { textToSpeech } from './text-to-speech';
-export { speechToText } from './speech-to-text';
 export { generateEmbeddings } from './generate-embeddings';
-export { moderateContent } from './moderate-content';
+export { generateImage } from './generate-image';
 export { generateVideo } from './generate-video';
 export { listModels } from './list-models';
+export { moderateContent } from './moderate-content';
+export { speechToText } from './speech-to-text';
+export { textToSpeech } from './text-to-speech';

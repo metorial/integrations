@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let statusUpdatesPolling = SlateTrigger.create(spec, {
   name: 'Status Updates (Polling)',
@@ -53,7 +53,7 @@ export let statusUpdatesPolling = SlateTrigger.create(spec, {
       };
 
       if (lastPoll) {
-        params['updatedAfter'] = lastPoll;
+        params.updatedAfter = lastPoll;
       }
 
       let result = await client.listStatusUpdates(params);

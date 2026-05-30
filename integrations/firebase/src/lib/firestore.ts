@@ -56,7 +56,7 @@ export let encodeFirestoreValue = (value: any): FirestoreValue => {
 
 export let decodeFirestoreValue = (value: FirestoreValue): any => {
   if ('stringValue' in value) return value.stringValue;
-  if ('integerValue' in value) return parseInt(value.integerValue, 10);
+  if ('integerValue' in value) return Number.parseInt(value.integerValue, 10);
   if ('doubleValue' in value) return value.doubleValue;
   if ('booleanValue' in value) return value.booleanValue;
   if ('nullValue' in value) return null;
@@ -157,7 +157,7 @@ export class FirestoreClient {
   }> {
     let params: Record<string, string> = {};
     if (documentId) {
-      params['documentId'] = documentId;
+      params.documentId = documentId;
     }
 
     let response = await withFirebaseApiError('Firestore create document', () =>

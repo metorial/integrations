@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listIncidents,
-  getIncident,
   createIncident,
-  editIncident,
-  listAlerts,
-  sendAlertEvent,
-  listSchedules,
-  getScheduleEntries,
   createScheduleOverride,
-  listCatalogTypes,
+  editIncident,
+  getIncident,
+  getScheduleEntries,
+  listAlerts,
   listCatalogEntries,
-  manageCatalogEntry,
-  listSeveritiesAndStatuses,
-  listIncidentRolesAndTypes,
+  listCatalogTypes,
   listFollowUps,
-  manageStatusPageIncident,
+  listIncidentRolesAndTypes,
+  listIncidents,
+  listSchedules,
+  listSeveritiesAndStatuses,
   listUsers,
-  listWorkflows
+  listWorkflows,
+  manageCatalogEntry,
+  manageStatusPageIncident,
+  sendAlertEvent
 } from './tools';
 import {
-  incidentEvents,
-  followUpEvents,
   alertEvents,
+  followUpEvents,
+  incidentEvents,
   incidentMembershipEvents
 } from './triggers';
 

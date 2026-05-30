@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let databaseChanges = SlateTrigger.create(spec, {
   name: 'Database Changes',
@@ -145,17 +145,17 @@ export let databaseChanges = SlateTrigger.create(spec, {
 
       return {
         type: 'record.created_or_updated',
-        id: `${ctx.input.databaseId}-${recordKey}-${metaFields['_sq'] || Date.now()}`,
+        id: `${ctx.input.databaseId}-${recordKey}-${metaFields._sq || Date.now()}`,
         output: {
           recordKey,
           tableId,
           recordId,
           changeType: 'created_or_updated' as const,
           fields: recordFields,
-          createdAt: metaFields['_cd'],
-          createdBy: metaFields['_cu'],
-          modifiedAt: metaFields['_md'],
-          modifiedBy: metaFields['_mu']
+          createdAt: metaFields._cd,
+          createdBy: metaFields._cu,
+          modifiedAt: metaFields._md,
+          modifiedBy: metaFields._mu
         }
       };
     }

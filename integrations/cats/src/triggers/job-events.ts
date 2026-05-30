@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let JOB_EVENTS = ['job.created', 'job.updated', 'job.deleted', 'job.status_changed'] as const;
 

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { companySchema } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let companyEnriched = SlateTrigger.create(spec, {
   name: 'Company Enriched',
@@ -47,7 +47,7 @@ export let companyEnriched = SlateTrigger.create(spec, {
       // Normalize 'id' to 'companyId' in company data
       if (company && company.id !== undefined) {
         company.companyId = company.id;
-        delete company.id;
+        company.id = undefined;
       }
 
       return {

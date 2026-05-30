@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createBoard,
-  getBoard,
-  listBoards,
-  updateBoard,
-  deleteBoard,
-  copyBoard,
-  createBoardItem,
-  updateBoardItem,
-  getBoardItems,
-  deleteBoardItem,
-  createConnector,
-  getConnectors,
-  deleteConnector,
-  createTag,
-  getTags,
   attachTag,
-  detachTag,
+  copyBoard,
+  createBoard,
+  createBoardItem,
+  createConnector,
+  createTag,
+  deleteBoard,
+  deleteBoardItem,
+  deleteConnector,
   deleteTag,
-  shareBoard,
+  detachTag,
+  getBoard,
+  getBoardItems,
   getBoardMembers,
-  updateBoardMember,
-  removeBoardMember
+  getConnectors,
+  getTags,
+  listBoards,
+  removeBoardMember,
+  shareBoard,
+  updateBoard,
+  updateBoardItem,
+  updateBoardMember
 } from './tools';
 import { boardItemChanges, inboundWebhook } from './triggers';
 

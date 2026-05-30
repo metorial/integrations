@@ -1,9 +1,9 @@
 import {
-  SlateTool,
   type SlateActionParameters,
   type SlateActionScopes,
   type SlateAttachment,
-  type SlateContext
+  type SlateContext,
+  SlateTool
 } from 'slates';
 import type { z } from 'zod';
 
@@ -54,8 +54,8 @@ export let defineToolRecipe = <
 ): ToolRecipe<Dependencies, InputSchema, OutputSchema> => recipe;
 
 export type IncludeToolParameters<
-  ConfigType extends {},
-  AuthType extends {},
+  _ConfigType extends {},
+  _AuthType extends {},
   Dependencies,
   InputSchema extends z.ZodType<any>,
   OutputSchema extends z.ZodType<any>

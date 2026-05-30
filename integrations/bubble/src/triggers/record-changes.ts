@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let recordChanges = SlateTrigger.create(spec, {
   name: 'Record Changes',
@@ -61,7 +61,7 @@ export let recordChanges = SlateTrigger.create(spec, {
           let paths = swaggerSpec.paths ?? {};
           for (let path of Object.keys(paths)) {
             let match = path.match(/^\/obj\/([^/]+)$/);
-            if (match && match[1]) {
+            if (match?.[1]) {
               dataTypes.push(decodeURIComponent(match[1]));
             }
           }
@@ -80,7 +80,7 @@ export let recordChanges = SlateTrigger.create(spec, {
 
       for (let dataType of dataTypes) {
         let lastPollTime = lastPollTimes[dataType];
-        let constraints = [];
+        let constraints: any[] = [];
 
         if (lastPollTime) {
           constraints.push({

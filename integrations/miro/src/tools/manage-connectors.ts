@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MiroClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createConnector = SlateTool.create(spec, {
   name: 'Create Connector',
@@ -51,7 +51,7 @@ export let createConnector = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new MiroClient({ token: ctx.auth.token });
 
-    let style: any = undefined;
+    let style: any;
     if (
       ctx.input.strokeColor ||
       ctx.input.strokeWidth ||

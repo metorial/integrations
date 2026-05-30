@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoogleMapsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let reviewSchema = z.object({
   authorName: z.string().optional().describe('Reviewer name'),
@@ -62,7 +62,7 @@ export let getPlaceDetailsTool = SlateTool.create(spec, {
     let displayName = data.displayName as Record<string, string> | undefined;
     let location = data.location as Record<string, number> | undefined;
     let editorialSummary = data.editorialSummary as Record<string, string> | undefined;
-    let rawReviews = (data.reviews as Array<Record<string, unknown>>) || [];
+    let rawReviews = (data.reviews as Record<string, unknown>[]) || [];
     let openingHours = data.regularOpeningHours as Record<string, unknown> | undefined;
 
     let reviews = rawReviews.map(r => {

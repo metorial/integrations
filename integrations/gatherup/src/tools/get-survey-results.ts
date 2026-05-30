@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getSurveyResults = SlateTool.create(spec, {
   name: 'Get Survey Results',
@@ -45,7 +45,7 @@ export let getSurveyResults = SlateTool.create(spec, {
       );
     }
 
-    let questions: Array<Record<string, unknown>> = [];
+    let questions: Record<string, unknown>[] = [];
     let i = 1;
     while (data[`title${i}`] !== undefined) {
       questions.push({

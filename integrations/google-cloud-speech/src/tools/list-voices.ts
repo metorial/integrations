@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TextToSpeechClient } from '../lib/client';
 import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listVoices = SlateTool.create(spec, {
   name: 'List Voices',

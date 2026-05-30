@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ScrapeDoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let googleSearch = SlateTool.create(spec, {
   name: 'Google Search',
@@ -86,8 +86,8 @@ export let googleSearch = SlateTool.create(spec, {
 
     let resultSummary = '';
     if (results && typeof results === 'object') {
-      let organicResults = results['organicResults'] as unknown[] | undefined;
-      let ads = results['ads'] as unknown[] | undefined;
+      let organicResults = results.organicResults as unknown[] | undefined;
+      let ads = results.ads as unknown[] | undefined;
       resultSummary = `${organicResults?.length || 0} organic results`;
       if (ads && ads.length > 0) {
         resultSummary += `, ${ads.length} ads`;

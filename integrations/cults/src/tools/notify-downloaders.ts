@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CultsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let notifyDownloaders = SlateTool.create(spec, {
   name: 'Notify Downloaders',

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let iocStream = SlateTrigger.create(spec, {
   name: 'IoC Stream',
@@ -85,7 +85,7 @@ export let iocStream = SlateTrigger.create(spec, {
 
     handleEvent: async ctx => {
       let attrs = (ctx.input.attributes ?? {}) as Record<string, any>;
-      let stats = attrs['last_analysis_stats'] as Record<string, any> | undefined;
+      let stats = attrs.last_analysis_stats as Record<string, any> | undefined;
 
       return {
         type: `ioc.${ctx.input.notificationType}`,
@@ -97,14 +97,14 @@ export let iocStream = SlateTrigger.create(spec, {
           rulesetId: ctx.input.rulesetId,
           matchDate: ctx.input.matchDate,
           resourceId: ctx.input.resourceId,
-          sha256: attrs['sha256'] as string | undefined,
-          meaningfulName: attrs['meaningful_name'] as string | undefined,
-          reputation: attrs['reputation'] as number | undefined,
+          sha256: attrs.sha256 as string | undefined,
+          meaningfulName: attrs.meaningful_name as string | undefined,
+          reputation: attrs.reputation as number | undefined,
           tags: ctx.input.tags,
           detectionStats: stats
             ? {
-                malicious: stats['malicious'] as number | undefined,
-                undetected: stats['undetected'] as number | undefined
+                malicious: stats.malicious as number | undefined,
+                undetected: stats.undetected as number | undefined
               }
             : undefined
         }

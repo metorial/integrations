@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DocsBotAdminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listConversations = SlateTool.create(spec, {
   name: 'List Conversations',

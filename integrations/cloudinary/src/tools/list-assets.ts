@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listAssets = SlateTool.create(spec, {
   name: 'List Assets',
@@ -68,7 +68,7 @@ export let listAssets = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
-    let result;
+    let result: any;
     if (ctx.input.tag) {
       result = await client.listResourcesByTag({
         tag: ctx.input.tag,
@@ -90,7 +90,7 @@ export let listAssets = SlateTool.create(spec, {
 
     return {
       output: {
-        resources: result.resources.map(r => ({
+        resources: result.resources.map((r: any) => ({
           assetId: r.assetId,
           publicId: r.publicId,
           format: r.format,

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newPropertyMatch = SlateTrigger.create(spec, {
   name: 'New Property Match',
@@ -89,7 +89,7 @@ export let newPropertyMatch = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      let reversePropertyTypeMap: Record<number, string> = {
+      let _reversePropertyTypeMap: Record<number, string> = {
         0: 'apartment',
         1: 'house',
         2: 'building',

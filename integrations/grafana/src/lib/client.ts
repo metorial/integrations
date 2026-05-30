@@ -9,16 +9,16 @@ export interface GrafanaClientConfig {
 export class GrafanaClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: GrafanaClientConfig) {
+  constructor(config: GrafanaClientConfig) {
     let baseUrl = config.instanceUrl.replace(/\/+$/, '');
     let headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
 
     if (config.token.startsWith('Basic ')) {
-      headers['Authorization'] = config.token;
+      headers.Authorization = config.token;
     } else {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     }
 
     if (config.organizationId) {
@@ -363,11 +363,7 @@ export class GrafanaClient {
   // ---- Teams ----
 
   async searchTeams(
-    params: {
-      query?: string;
-      page?: number;
-      perPage?: number;
-    } = {}
+    params: { query?: string; page?: number; perPage?: number } = {}
   ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params.query) queryParams.query = params.query;

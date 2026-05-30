@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GongClient } from '../lib/client';
 import { gongServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCrmData = SlateTool.create(spec, {
   name: 'Get CRM Data',
@@ -18,18 +18,12 @@ export let getCrmData = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      mode: z
-        .enum(['objects'])
-        .default('objects')
-        .describe('Retrieve CRM objects'),
+      mode: z.enum(['objects']).default('objects').describe('Retrieve CRM objects'),
       integrationId: z.string().describe('CRM integration ID'),
       objectType: z
         .string()
         .describe('CRM object type: Account, Contact, Deal, Lead, or User'),
-      objectCrmIds: z
-        .array(z.string())
-        .min(1)
-        .describe('CRM IDs of the objects to retrieve')
+      objectCrmIds: z.array(z.string()).min(1).describe('CRM IDs of the objects to retrieve')
     })
   )
   .output(

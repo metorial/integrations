@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { GumroadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let SALE_RESOURCE_NAMES = ['sale', 'refund', 'dispute', 'dispute_won'] as const;
 
@@ -113,8 +113,8 @@ export let saleEvents = SlateTrigger.create(spec, {
         let parsed =
           typeof payload.price === 'number'
             ? payload.price
-            : parseInt(String(payload.price), 10);
-        priceCents = isNaN(parsed) ? undefined : parsed;
+            : Number.parseInt(String(payload.price), 10);
+        priceCents = Number.isNaN(parsed) ? undefined : parsed;
       }
 
       let quantity: number | undefined;
@@ -122,11 +122,11 @@ export let saleEvents = SlateTrigger.create(spec, {
         let parsed =
           typeof payload.quantity === 'number'
             ? payload.quantity
-            : parseInt(String(payload.quantity), 10);
-        quantity = isNaN(parsed) ? undefined : parsed;
+            : Number.parseInt(String(payload.quantity), 10);
+        quantity = Number.isNaN(parsed) ? undefined : parsed;
       }
 
-      let variants: any = undefined;
+      let variants: any;
       if (payload.variants) {
         try {
           variants =
@@ -138,7 +138,7 @@ export let saleEvents = SlateTrigger.create(spec, {
         }
       }
 
-      let customFields: any = undefined;
+      let customFields: any;
       if (payload.custom_fields) {
         try {
           customFields =
@@ -150,7 +150,7 @@ export let saleEvents = SlateTrigger.create(spec, {
         }
       }
 
-      let urlParams: any = undefined;
+      let urlParams: any;
       if (payload.url_params) {
         try {
           urlParams =

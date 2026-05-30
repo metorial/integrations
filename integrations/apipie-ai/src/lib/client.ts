@@ -8,7 +8,7 @@ export interface ClientConfig {
 
 export interface ChatCompletionParams {
   model: string;
-  messages: Array<{ role: string; content: string | Array<Record<string, unknown>> }>;
+  messages: Array<{ role: string; content: string | Record<string, unknown>[] }>;
   provider?: string;
   maxTokens?: number;
   temperature?: number;
@@ -32,7 +32,7 @@ export interface ChatCompletionParams {
   searchLang?: string;
   searchGeo?: string;
   webSearchContextSize?: string;
-  tools?: Array<Record<string, unknown>>;
+  tools?: Record<string, unknown>[];
   toolChoice?: string | Record<string, unknown>;
   responseFormat?: Record<string, unknown>;
 }

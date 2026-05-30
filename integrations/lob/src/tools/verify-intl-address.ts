@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let verifyInternationalAddress = SlateTool.create(spec, {
   name: 'Verify International Address',
@@ -64,6 +64,6 @@ export let verifyInternationalAddress = SlateTool.create(spec, {
         components: result.components ?? null,
         object: result.object ?? null
       },
-      message: `International address deliverability: **${result.deliverability}**${result.primary_line ? `\nStandardized: ${result.primary_line}${result.last_line ? ', ' + result.last_line : ''}` : ''}`
+      message: `International address deliverability: **${result.deliverability}**${result.primary_line ? `\nStandardized: ${result.primary_line}${result.last_line ? `, ${result.last_line}` : ''}` : ''}`
     };
   });

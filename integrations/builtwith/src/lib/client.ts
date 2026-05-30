@@ -61,14 +61,14 @@ export class Client {
       LOOKUP: options.domain
     };
 
-    if (options.hideAll) params['HIDETEXT'] = 'yes';
-    if (options.hideDescriptionAndLinks) params['HIDEDL'] = 'yes';
-    if (options.onlyLiveTechnologies) params['LIVEONLY'] = 'yes';
-    if (options.noMetaData) params['NOMETA'] = 'yes';
-    if (options.noAttributeData) params['NOATTR'] = 'yes';
-    if (options.noPii) params['NOPII'] = 'yes';
-    if (options.firstDetectedSince) params['FDRANGE'] = options.firstDetectedSince;
-    if (options.lastDetectedSince) params['LDRANGE'] = options.lastDetectedSince;
+    if (options.hideAll) params.HIDETEXT = 'yes';
+    if (options.hideDescriptionAndLinks) params.HIDEDL = 'yes';
+    if (options.onlyLiveTechnologies) params.LIVEONLY = 'yes';
+    if (options.noMetaData) params.NOMETA = 'yes';
+    if (options.noAttributeData) params.NOATTR = 'yes';
+    if (options.noPii) params.NOPII = 'yes';
+    if (options.firstDetectedSince) params.FDRANGE = options.firstDetectedSince;
+    if (options.lastDetectedSince) params.LDRANGE = options.lastDetectedSince;
 
     let response = await this.http.get('/v22/api.json', {
       params: this.buildParams(params)
@@ -87,9 +87,9 @@ export class Client {
     let params: Record<string, string | number | boolean | undefined> = {
       TECH: options.technology
     };
-    if (options.includeMetaData) params['META'] = 'yes';
-    if (options.offset !== undefined) params['OFFSET'] = options.offset;
-    if (options.since) params['SINCE'] = options.since;
+    if (options.includeMetaData) params.META = 'yes';
+    if (options.offset !== undefined) params.OFFSET = options.offset;
+    if (options.since) params.SINCE = options.since;
 
     let response = await this.http.get('/lists12/api.json', {
       params: this.buildParams(params)
@@ -108,7 +108,7 @@ export class Client {
     let params: Record<string, string | number | boolean | undefined> = {
       TECH: options.technology
     };
-    if (options.date) params['DATE'] = options.date;
+    if (options.date) params.DATE = options.date;
 
     let response = await this.http.get('/trends/v6/api.json', {
       params: this.buildParams(params)
@@ -120,8 +120,8 @@ export class Client {
     let params: Record<string, string | number | boolean | undefined> = {
       COMPANY: options.company
     };
-    if (options.amount !== undefined) params['AMOUNT'] = options.amount;
-    if (options.tld) params['TLD'] = options.tld;
+    if (options.amount !== undefined) params.AMOUNT = options.amount;
+    if (options.tld) params.TLD = options.tld;
 
     let response = await this.http.get('/ctu3/api.json', {
       params: this.buildParams(params)
@@ -140,8 +140,8 @@ export class Client {
     let params: Record<string, string | number | boolean | undefined> = {
       LOOKUP: options.domain
     };
-    if (options.stopwords) params['WORDS'] = options.stopwords;
-    if (options.live) params['LIVE'] = 'yes';
+    if (options.stopwords) params.WORDS = options.stopwords;
+    if (options.live) params.LIVE = 'yes';
 
     let response = await this.http.get('/trustv1/api.json', {
       params: this.buildParams(params)

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BusinessClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generateResponse = SlateTool.create(spec, {
   name: 'Generate Response',

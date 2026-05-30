@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageSecrets,
-  manageProjects,
-  manageEnvironments,
-  manageConfigs,
-  downloadSecrets,
-  configLogs,
   activityLogs,
-  shareSecret,
-  manageWebhooks,
+  configLogs,
+  downloadSecrets,
+  getWorkplace,
+  manageConfigs,
+  manageEnvironments,
+  manageProjects,
+  manageSecrets,
   manageTrustedIps,
-  getWorkplace
+  manageWebhooks,
+  shareSecret
 } from './tools';
 import { secretChanged } from './triggers';
 

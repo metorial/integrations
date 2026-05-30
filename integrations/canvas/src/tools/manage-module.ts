@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CanvasClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageModuleTool = SlateTool.create(spec, {
   name: 'Manage Module',
@@ -164,7 +164,7 @@ export let manageModuleTool = SlateTool.create(spec, {
       if (ctx.input.itemNewTab !== undefined) itemData.new_tab = ctx.input.itemNewTab;
       if (ctx.input.itemType === 'Page' && ctx.input.itemContentId) {
         itemData.page_url = ctx.input.itemContentId;
-        delete itemData.content_id;
+        itemData.content_id = undefined;
       }
 
       result = await client.createModuleItem(ctx.input.courseId, ctx.input.moduleId, itemData);

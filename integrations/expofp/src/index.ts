@@ -1,34 +1,34 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listEvents,
-  listExhibitors,
-  getExhibitor,
-  addExhibitor,
-  updateExhibitor,
-  deleteExhibitor,
-  listBooths,
-  getBooth,
-  updateBooth,
-  assignExhibitorBooth,
-  listCategories,
   addCategory,
-  updateCategory,
-  removeCategory,
-  listExtras,
-  listExhibitorExtras,
-  manageExhibitorExtra,
-  getSessions,
-  upsertSessions,
-  deleteSessions,
-  getSessionSpeakers,
-  upsertSessionSpeakers,
+  addExhibitor,
+  assignExhibitorBooth,
+  deleteExhibitor,
   deleteSessionSpeakers,
+  deleteSessions,
+  deleteSessionTracks,
+  getBooth,
+  getExhibitor,
+  getSessionSpeakers,
+  getSessions,
   getSessionTracks,
-  upsertSessionTracks,
-  deleteSessionTracks
+  listBooths,
+  listCategories,
+  listEvents,
+  listExhibitorExtras,
+  listExhibitors,
+  listExtras,
+  manageExhibitorExtra,
+  removeCategory,
+  updateBooth,
+  updateCategory,
+  updateExhibitor,
+  upsertSessionSpeakers,
+  upsertSessions,
+  upsertSessionTracks
 } from './tools';
-import { exhibitorChanges, boothChanges, inboundWebhook } from './triggers';
+import { boothChanges, exhibitorChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

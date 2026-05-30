@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { EgnyteClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let contentEventsTrigger = SlateTrigger.create(spec, {
   name: 'Content Events',

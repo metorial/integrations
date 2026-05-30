@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendSms,
-  sendOtp,
-  verifyOtp,
-  resendOtp,
-  sendEmail,
-  validateEmail,
-  sendWhatsAppMessage,
-  sendVoiceMessage,
-  sendRcsMessage,
-  runCampaign,
   createOrUpdateContact,
-  searchContacts,
   deleteContacts,
+  getMessagingLogs,
   getPhonebookFields,
+  resendOtp,
+  runCampaign,
+  searchContacts,
+  sendEmail,
+  sendOtp,
+  sendRcsMessage,
+  sendSms,
+  sendVoiceMessage,
+  sendWhatsAppMessage,
   trackEvent,
-  getMessagingLogs
+  validateEmail,
+  verifyOtp
 } from './tools';
 import {
-  smsDeliveryReport,
   emailDeliveryReport,
-  whatsappDeliveryReport,
+  rcsDeliveryReport,
+  smsDeliveryReport,
   voiceCallReport,
-  rcsDeliveryReport
+  whatsappDeliveryReport
 } from './triggers';
 
 export let provider = Slate.create({

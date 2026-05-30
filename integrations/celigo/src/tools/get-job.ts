@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getJob = SlateTool.create(spec, {
   name: 'Get Job',
@@ -43,7 +43,7 @@ export let getJob = SlateTool.create(spec, {
 
     let job = await client.getJob(ctx.input.jobId);
 
-    let jobErrors: any[] | undefined = undefined;
+    let jobErrors: any[] | undefined;
     if (ctx.input.includeErrors) {
       try {
         jobErrors = await client.getJobErrors(ctx.input.jobId);

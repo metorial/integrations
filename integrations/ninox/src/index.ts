@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listTeams,
-  listDatabases,
-  getDatabaseSchema,
-  getTableSchema,
-  listRecords,
-  getRecord,
   createRecords,
-  updateRecord,
+  deleteFile,
   deleteRecords,
   executeQuery,
   executeScript,
+  getDatabaseSchema,
+  getRecord,
+  getTableSchema,
+  listDatabases,
   listFiles,
-  deleteFile,
-  listViews
+  listRecords,
+  listTeams,
+  listViews,
+  updateRecord
 } from './tools';
 import { databaseChanges, inboundWebhook } from './triggers';
 

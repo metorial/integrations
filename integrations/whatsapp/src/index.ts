@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendMessage,
-  sendInteractiveMessage,
-  sendTemplateMessage,
-  listTemplates,
   createTemplate,
-  deleteTemplate,
-  getMediaUrl,
   deleteMedia,
+  deleteTemplate,
   getBusinessProfile,
-  updateBusinessProfile,
-  listPhoneNumbers,
+  getMediaUrl,
   getPhoneNumber,
+  listPhoneNumbers,
+  listTemplates,
+  markMessageRead,
   registerPhoneNumber,
-  markMessageRead
+  sendInteractiveMessage,
+  sendMessage,
+  sendTemplateMessage,
+  updateBusinessProfile
 } from './tools';
 import { messageReceived, messageStatus } from './triggers';
 

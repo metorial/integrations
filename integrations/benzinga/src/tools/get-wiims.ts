@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BenzingaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let wiimSchema = z.object({
   wiimId: z.string().optional().describe('Unique WIIMs identifier'),

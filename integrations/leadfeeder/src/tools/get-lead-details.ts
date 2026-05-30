@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LeadfeederClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getLeadDetails = SlateTool.create(spec, {
   name: 'Get Lead Details',

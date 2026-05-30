@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { Api2PdfClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let createZip = SlateTool.create(spec, {
   name: 'Create ZIP Archive',

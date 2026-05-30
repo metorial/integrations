@@ -2,29 +2,29 @@ import * as crypto from 'crypto';
 import * as net from 'net';
 import * as tls from 'tls';
 import {
-  AuthenticationTypes,
-  MessageTypes,
-  MessageWriter,
-  buildMessage,
-  buildPasswordMessage,
-  buildQueryMessage,
-  buildStartupMessage,
-  buildTerminateMessage,
-  oidToTypeName,
-  parseCommandComplete,
-  parseDataRow,
-  parseErrorFields,
-  parseMessages,
-  parseRowDescription,
-  type ColumnDescription,
-  type ParsedMessage
-} from './protocol';
-import {
   postgresFieldsError,
   postgresServiceError,
   postgresUpstreamError,
   toPostgresServiceError
 } from './errors';
+import {
+  AuthenticationTypes,
+  buildMessage,
+  buildPasswordMessage,
+  buildQueryMessage,
+  buildStartupMessage,
+  buildTerminateMessage,
+  type ColumnDescription,
+  MessageTypes,
+  MessageWriter,
+  oidToTypeName,
+  type ParsedMessage,
+  parseCommandComplete,
+  parseDataRow,
+  parseErrorFields,
+  parseMessages,
+  parseRowDescription
+} from './protocol';
 
 export interface ConnectionConfig {
   host: string;
@@ -306,7 +306,7 @@ export class PostgresClient {
       .update(password + username)
       .digest('hex');
     let outer = crypto.createHash('md5').update(inner).update(salt).digest('hex');
-    return 'md5' + outer;
+    return `md5${outer}`;
   }
 
   private async handleSaslAuth(
@@ -372,9 +372,9 @@ export class PostgresClient {
 
     let serverFirstMessage = decoder.decode(saslContinueMsg.msg.body.slice(4));
     let serverParams = this.parseScramMessage(serverFirstMessage);
-    let serverNonce = serverParams['r'] || '';
-    let saltBase64 = serverParams['s'] || '';
-    let iterations = parseInt(serverParams['i'] || '4096', 10);
+    let serverNonce = serverParams.r || '';
+    let saltBase64 = serverParams.s || '';
+    let iterations = Number.parseInt(serverParams.i || '4096', 10);
 
     if (!serverNonce.startsWith(nonce)) {
       throw postgresUpstreamError('Server nonce does not start with client nonce', {
@@ -425,7 +425,7 @@ export class PostgresClient {
     if (finalAuthType === AuthenticationTypes.SASL_FINAL) {
       let serverFinalMessage = decoder.decode(saslFinalMsg.msg.body.slice(4));
       let serverFinalParams = this.parseScramMessage(serverFinalMessage);
-      let serverSignature = serverFinalParams['v'];
+      let serverSignature = serverFinalParams.v;
 
       // Verify server signature
       let serverKey = this.hmacSha256(saltedPassword, 'Server Key');
@@ -781,11 +781,11 @@ let castValue = (value: string | null, typeOid: number): any => {
     case 21: // smallint
     case 23: // integer
     case 26: // oid
-      return parseInt(value, 10);
+      return Number.parseInt(value, 10);
     case 700: // real
     case 701: // double precision
     case 1700: // numeric
-      return parseFloat(value);
+      return Number.parseFloat(value);
     case 114: // json
     case 3802: // jsonb
       try {

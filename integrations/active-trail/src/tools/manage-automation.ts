@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ActiveTrailClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listAutomations = SlateTool.create(spec, {
   name: 'List Automations',
@@ -56,7 +56,7 @@ export let getAutomation = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new ActiveTrailClient(ctx.auth.token);
-    let automation = await client.getAutomation(ctx.input.automationId);
+    let _automation = await client.getAutomation(ctx.input.automationId);
     let details = await client.getAutomationDetails(ctx.input.automationId);
     let activation = await client.getAutomationActivation(ctx.input.automationId);
     let output: Record<string, any> = {

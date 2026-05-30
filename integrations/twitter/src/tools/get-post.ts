@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { TwitterClient } from '../lib/client';
-import { postSchema, mapPost } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { TwitterClient } from '../lib/client';
+import { mapPost, postSchema } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getPost = SlateTool.create(spec, {
   name: 'Get Post',
@@ -26,7 +26,7 @@ export let getPost = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new TwitterClient(ctx.auth.token);
 
-    let result;
+    let result: any;
     if (ctx.input.postIds.length === 1) {
       result = await client.getPost(ctx.input.postIds[0]!);
       let post = mapPost(result.data);

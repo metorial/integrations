@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BlocknativeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let baseFeeEstimateSchema = z.object({
   confidence: z.number().describe('Confidence level (e.g., 99 or 70)'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NanonetsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let retryFileProcessing = SlateTool.create(spec, {
   name: 'Retry File Processing',

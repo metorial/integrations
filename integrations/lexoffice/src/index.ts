@@ -2,27 +2,27 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createContact,
-  getContact,
-  updateContact,
-  listContacts,
-  createInvoice,
-  getInvoice,
-  createQuotation,
   createCreditNote,
+  createInvoice,
   createOrderConfirmation,
-  manageArticle,
-  listArticles,
-  manageVoucher,
-  listVouchers,
+  createQuotation,
+  getContact,
+  getInvoice,
   getPayment,
-  getProfile
+  getProfile,
+  listArticles,
+  listContacts,
+  listVouchers,
+  manageArticle,
+  manageVoucher,
+  updateContact
 } from './tools';
 import {
+  articleEvents,
   contactEvents,
   invoiceEvents,
-  articleEvents,
-  voucherEvents,
-  paymentEvents
+  paymentEvents,
+  voucherEvents
 } from './triggers';
 
 export let provider = Slate.create({

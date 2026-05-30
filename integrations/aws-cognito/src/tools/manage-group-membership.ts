@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { createCognitoClient, formatAttributes } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageGroupMembership = SlateTool.create(spec, {
   name: 'Manage Group Membership',

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { RuntimeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let incomingEventTrigger = SlateTrigger.create(spec, {
   name: 'Bot Event',
@@ -43,7 +43,7 @@ export let incomingEventTrigger = SlateTrigger.create(spec, {
 
       let lastSeenId = ctx.state?.lastSeenId as string | undefined;
       let result = await client.listEvents();
-      let events = (result.events || []) as Array<Record<string, unknown>>;
+      let events = (result.events || []) as Record<string, unknown>[];
 
       let newEvents = lastSeenId
         ? events.filter(

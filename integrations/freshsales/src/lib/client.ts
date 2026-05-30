@@ -20,7 +20,7 @@ let buildBaseUrl = (domain: string, apiVersion: ApiVersion): string => {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     this.axios = createAxios({
       baseURL: buildBaseUrl(config.domain, config.apiVersion),
       headers: {

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTicket = SlateTool.create(spec, {
   name: 'Get Ticket',
@@ -81,13 +81,13 @@ export let getTicket = SlateTool.create(spec, {
     };
 
     if (ctx.input.includeConversations && ticket.conversations) {
-      output['conversations'] = ticket.conversations;
+      output.conversations = ticket.conversations;
     }
     if (ctx.input.includeRequester && ticket.requester) {
-      output['requester'] = ticket.requester;
+      output.requester = ticket.requester;
     }
     if (ctx.input.includeStats && ticket.stats) {
-      output['stats'] = ticket.stats;
+      output.stats = ticket.stats;
     }
 
     return {

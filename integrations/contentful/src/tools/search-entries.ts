@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let searchEntries = SlateTool.create(spec, {
   name: 'Search Entries',
@@ -58,10 +58,10 @@ export let searchEntries = SlateTool.create(spec, {
     let client = createClient(ctx.config, ctx.auth);
 
     let params: Record<string, string | number | boolean> = {};
-    if (ctx.input.contentTypeId) params['content_type'] = ctx.input.contentTypeId;
-    if (ctx.input.fullTextSearch) params['query'] = ctx.input.fullTextSearch;
-    if (ctx.input.limit) params['limit'] = ctx.input.limit;
-    if (ctx.input.skip) params['skip'] = ctx.input.skip;
+    if (ctx.input.contentTypeId) params.content_type = ctx.input.contentTypeId;
+    if (ctx.input.fullTextSearch) params.query = ctx.input.fullTextSearch;
+    if (ctx.input.limit) params.limit = ctx.input.limit;
+    if (ctx.input.skip) params.skip = ctx.input.skip;
     if (ctx.input.queryParams) {
       for (let [key, value] of Object.entries(ctx.input.queryParams)) {
         params[key] = value;

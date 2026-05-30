@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  queryData,
   discoverDatasets,
-  lookupVariables,
   geocodeAddress,
   getGeography,
+  lookupVariables,
+  queryData,
   queryTigerweb
 } from './tools';
 

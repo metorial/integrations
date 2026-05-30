@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let postEventsTrigger = SlateTrigger.create(spec, {
   name: 'Post Events',
@@ -40,7 +40,7 @@ export let postEventsTrigger = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
       let eventType = data.type as string;
 
-      if (!eventType || !eventType.startsWith('post.')) {
+      if (!eventType?.startsWith('post.')) {
         return { inputs: [] };
       }
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoodyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let paymentMethodSchema = z.object({
   paymentMethodId: z.string().describe('Payment method ID'),

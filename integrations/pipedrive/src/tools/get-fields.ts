@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fieldSchema = z.object({
   fieldId: z.union([z.number(), z.string()]).optional().describe('Field ID or field code'),
@@ -75,7 +75,7 @@ export let getFields = SlateTool.create(spec, {
       limit: ctx.input.limit,
       includeFields: ctx.input.includeFields?.join(',')
     };
-    let result;
+    let result: any;
 
     if (ctx.input.resourceType === 'deal') {
       result = await client.getDealFields(params);

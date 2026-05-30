@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BroadcastClient } from '../lib/broadcast-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let broadcastMessage = SlateTool.create(spec, {
   name: 'Broadcast Message',

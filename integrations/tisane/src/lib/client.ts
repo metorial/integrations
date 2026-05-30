@@ -183,7 +183,7 @@ let mapParseResponse = (data: any): ParseResponse => ({
 export class Client {
   private http;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.http = createAxios({
       baseURL: 'https://api.tisane.ai',
       headers: {

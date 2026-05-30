@@ -2,13 +2,13 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createComparison,
-  getComparison,
-  listComparisons,
   deleteComparison,
-  getViewerUrl,
   exportComparison,
+  getChangeDetails,
+  getComparison,
   getExportStatus,
-  getChangeDetails
+  getViewerUrl,
+  listComparisons
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

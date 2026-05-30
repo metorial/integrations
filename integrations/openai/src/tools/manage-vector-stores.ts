@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileCountsSchema = z.object({
   inProgress: z.number(),
@@ -133,9 +133,7 @@ export let listVectorStores = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      vectorStores: z
-        .array(vectorStoreOutputSchema)
-        .describe('List of vector stores')
+      vectorStores: z.array(vectorStoreOutputSchema).describe('List of vector stores')
     })
   )
   .handleInvocation(async ctx => {
@@ -159,7 +157,8 @@ export let listVectorStores = SlateTool.create(spec, {
 export let getVectorStore = SlateTool.create(spec, {
   name: 'Get Vector Store',
   key: 'get_vector_store',
-  description: 'Retrieve details for a specific OpenAI vector store, including processing status and file counts.',
+  description:
+    'Retrieve details for a specific OpenAI vector store, including processing status and file counts.',
   tags: {
     readOnly: true,
     destructive: false
@@ -266,7 +265,7 @@ export let searchVectorStore = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
-    let rankingOptions: any = undefined;
+    let rankingOptions: any;
     if (ctx.input.scoreThreshold !== undefined || ctx.input.ranker !== undefined) {
       rankingOptions = {};
       if (ctx.input.ranker !== undefined) rankingOptions.ranker = ctx.input.ranker;
@@ -335,7 +334,8 @@ export let deleteVectorStore = SlateTool.create(spec, {
 export let addVectorStoreFile = SlateTool.create(spec, {
   name: 'Add Vector Store File',
   key: 'add_vector_store_file',
-  description: 'Attach an uploaded OpenAI file to a vector store so it can be indexed for file search.',
+  description:
+    'Attach an uploaded OpenAI file to a vector store so it can be indexed for file search.',
   tags: {
     readOnly: false,
     destructive: false
@@ -371,7 +371,8 @@ export let addVectorStoreFile = SlateTool.create(spec, {
 export let listVectorStoreFiles = SlateTool.create(spec, {
   name: 'List Vector Store Files',
   key: 'list_vector_store_files',
-  description: 'List files attached to a vector store, optionally filtered by processing status.',
+  description:
+    'List files attached to a vector store, optionally filtered by processing status.',
   tags: {
     readOnly: true,
     destructive: false
@@ -492,7 +493,8 @@ export let getVectorStoreFileContent = SlateTool.create(spec, {
 export let removeVectorStoreFile = SlateTool.create(spec, {
   name: 'Remove Vector Store File',
   key: 'remove_vector_store_file',
-  description: 'Detach a file from a vector store. This removes it from the vector store index but does not delete the uploaded file.',
+  description:
+    'Detach a file from a vector store. This removes it from the vector store index but does not delete the uploaded file.',
   tags: {
     readOnly: false,
     destructive: true

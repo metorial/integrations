@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let participantSchema = z.object({
   participantId: z.number().describe('Unique participant/ticket identifier'),
@@ -48,7 +48,7 @@ export let listParticipantsTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
-    let result;
+    let result: any;
     if (ctx.input.orderId) {
       result = await client.listParticipantsByOrder(ctx.input.eventId, ctx.input.orderId, {
         page: ctx.input.page,
@@ -65,7 +65,7 @@ export let listParticipantsTool = SlateTool.create(spec, {
       });
     }
 
-    let participants = result.data.map(p => ({
+    let participants = result.data.map((p: any) => ({
       participantId: p.id ?? 0,
       orderId: p.order_id ?? '',
       firstName: p.first_name ?? '',

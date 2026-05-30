@@ -20,7 +20,7 @@ export interface ListCallsParams extends PaginationParams {
 export class Client {
   private http;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.http = createAxios({
       baseURL: 'https://api.vapi.ai',
       headers: {

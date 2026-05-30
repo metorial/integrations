@@ -226,12 +226,7 @@ export class DiscoveryClient {
   }
 
   async searchClassifications(
-    params: {
-      keyword?: string;
-      sort?: string;
-      size?: number;
-      page?: number;
-    } = {}
+    params: { keyword?: string; sort?: string; size?: number; page?: number } = {}
   ): Promise<any> {
     let queryParams: Record<string, string> = { ...this.defaultParams() };
 

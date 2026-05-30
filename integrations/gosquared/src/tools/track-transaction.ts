@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GoSquaredClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let trackTransaction = SlateTool.create(spec, {
   name: 'Track Transaction',

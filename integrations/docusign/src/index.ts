@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendEnvelope,
-  getEnvelope,
-  listEnvelopes,
-  downloadDocument,
-  listTemplates,
-  sendEnvelopeFromTemplate,
-  voidEnvelope,
   createEmbeddedSigningUrl,
-  getEnvelopeRecipients
+  downloadDocument,
+  getEnvelope,
+  getEnvelopeRecipients,
+  listEnvelopes,
+  listTemplates,
+  sendEnvelope,
+  sendEnvelopeFromTemplate,
+  voidEnvelope
 } from './tools';
 import { envelopeEvents } from './triggers';
 

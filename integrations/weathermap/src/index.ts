@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getCurrentWeather,
-  getForecast,
   geocodeLocation,
   getAirQuality,
-  getOneCallWeather,
+  getCurrentWeather,
+  getForecast,
   getHistoricalWeather,
-  getWeatherOverview,
-  getWeatherMapTile
+  getOneCallWeather,
+  getWeatherMapTile,
+  getWeatherOverview
 } from './tools';
 import { weatherAlerts } from './triggers';
 

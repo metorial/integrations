@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NotionClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateBlock = SlateTool.create(spec, {
   name: 'Update Block',

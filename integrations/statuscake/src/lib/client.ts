@@ -383,7 +383,7 @@ export class Client {
       if (value === undefined || value === null) continue;
       if (Array.isArray(value)) {
         for (let item of value) {
-          parts.push(`${encodeURIComponent(key + '[]')}=${encodeURIComponent(String(item))}`);
+          parts.push(`${encodeURIComponent(`${key}[]`)}=${encodeURIComponent(String(item))}`);
         }
       } else if (typeof value === 'boolean') {
         parts.push(`${encodeURIComponent(key)}=${value ? 'true' : 'false'}`);

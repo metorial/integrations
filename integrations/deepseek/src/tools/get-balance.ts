@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DeepSeekClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getBalance = SlateTool.create(spec, {
   name: 'Get Balance',

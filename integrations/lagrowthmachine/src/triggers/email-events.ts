@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let emailEventTypes = z.enum(['email.sent', 'email.opened', 'email.clicked', 'email.replied']);
 

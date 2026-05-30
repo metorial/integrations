@@ -1,22 +1,22 @@
 import { createAxios } from 'slates';
 import type {
-  PaginatedResponse,
-  QrCode,
-  Beacon,
-  NfcTag,
-  Geofence,
-  Place,
-  Form,
-  MarkdownCard,
   AnalyticsOverview,
   AnalyticsPerformance,
-  BulkQrCode
+  Beacon,
+  BulkQrCode,
+  Form,
+  Geofence,
+  MarkdownCard,
+  NfcTag,
+  PaginatedResponse,
+  Place,
+  QrCode
 } from './types';
 
 export class BeaconstacClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; organizationId?: string }) {
+  constructor(config: { token: string; organizationId?: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.beaconstac.com/api/2.0',
       headers: {

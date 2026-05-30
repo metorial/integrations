@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SignWellClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let placeholderSchema = z.object({
   id: z.string().describe('Unique identifier for the placeholder'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ChameleonClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let environmentSchema = z.object({
   environmentId: z.string().describe('Chameleon environment (URL group) ID'),

@@ -1,5 +1,5 @@
-import { SlatesJsonObject } from '@slates/client';
-import { SlateAuthenticationMethod, SlatesAction } from '@slates/proto';
+import type { SlatesJsonObject } from '@slates/client';
+import type { SlateAuthenticationMethod, SlatesAction } from '@slates/proto';
 
 export interface SlatesStoredAuth {
   id: string;

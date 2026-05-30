@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GreenhouseClient } from '../lib/client';
 import { mapUser } from '../lib/mappers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listUsersTool = SlateTool.create(spec, {
   name: 'List Users',

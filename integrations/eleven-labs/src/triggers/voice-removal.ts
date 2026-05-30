@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let voiceRemoval = SlateTrigger.create(spec, {
   name: 'Voice Removal',
@@ -42,8 +42,8 @@ export let voiceRemoval = SlateTrigger.create(spec, {
 
       return {
         registrationDetails: {
-          webhookId: data['webhook_id'] as string,
-          webhookSecret: data['webhook_secret'] as string | undefined
+          webhookId: data.webhook_id as string,
+          webhookSecret: data.webhook_secret as string | undefined
         }
       };
     },
@@ -62,9 +62,9 @@ export let voiceRemoval = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      let eventType = (data['type'] || data['event_type'] || 'unknown') as string;
-      let innerData = (data['data'] || data) as Record<string, unknown>;
-      let voiceId = (innerData['voice_id'] || data['voice_id']) as string | undefined;
+      let eventType = (data.type || data.event_type || 'unknown') as string;
+      let innerData = (data.data || data) as Record<string, unknown>;
+      let voiceId = (innerData.voice_id || data.voice_id) as string | undefined;
       let eventId = voiceId
         ? `voice_removal_${eventType}_${voiceId}`
         : `voice_removal_${eventType}_${Date.now()}`;
@@ -83,7 +83,7 @@ export let voiceRemoval = SlateTrigger.create(spec, {
 
     handleEvent: async ctx => {
       let payload = ctx.input.payload as Record<string, unknown>;
-      let innerData = (payload['data'] || payload) as Record<string, unknown>;
+      let innerData = (payload.data || payload) as Record<string, unknown>;
 
       let removalStatus = 'unknown';
       let eventType = ctx.input.eventType.toLowerCase();
@@ -101,11 +101,11 @@ export let voiceRemoval = SlateTrigger.create(spec, {
         output: {
           voiceId: ctx.input.voiceId,
           voiceName:
-            (innerData['voice_name'] as string | undefined) ||
-            (innerData['name'] as string | undefined),
+            (innerData.voice_name as string | undefined) ||
+            (innerData.name as string | undefined),
           removalStatus,
-          removalDate: innerData['removal_date'] as string | undefined,
-          reason: innerData['reason'] as string | undefined
+          removalDate: innerData.removal_date as string | undefined,
+          reason: innerData.reason as string | undefined
         }
       };
     }

@@ -1,18 +1,18 @@
 import { createAxios } from 'slates';
 import type {
-  ImagineRequest,
-  VariationsRequest,
   BlendRequest,
   DescribeRequest,
-  UpscaleRequest,
+  FetchTaskResponse,
+  ImagineRequest,
   TaskSubmitResponse,
-  FetchTaskResponse
+  UpscaleRequest,
+  VariationsRequest
 } from './types';
 
 export class Client {
   private http;
 
-  constructor(private params: { token: string; baseUrl: string }) {
+  constructor(params: { token: string; baseUrl: string }) {
     this.http = createAxios({
       baseURL: params.baseUrl,
       headers: {
@@ -66,19 +66,19 @@ export class Client {
       type: req.type
     };
     if (req.parentTaskId) {
-      body['parent_task_id'] = req.parentTaskId;
+      body.parent_task_id = req.parentTaskId;
     }
     if (req.imageUrl) {
-      body['image_url'] = req.imageUrl;
+      body.image_url = req.imageUrl;
     }
     if (req.index) {
-      body['index'] = req.index;
+      body.index = req.index;
     }
     if (req.webhookUrl) {
-      body['webhook_url'] = req.webhookUrl;
+      body.webhook_url = req.webhookUrl;
     }
     if (req.webhookSecret) {
-      body['webhook_secret'] = req.webhookSecret;
+      body.webhook_secret = req.webhookSecret;
     }
 
     let response = await this.http.post('/upscale-highres', body);

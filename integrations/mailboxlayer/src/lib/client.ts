@@ -85,11 +85,11 @@ export class Client {
     };
 
     if (params.smtp === false) {
-      queryParams['smtp'] = '0';
+      queryParams.smtp = '0';
     }
 
     if (params.catchAll === true) {
-      queryParams['catch_all'] = '1';
+      queryParams.catch_all = '1';
     }
 
     let response = await this.api.get('/check', { params: queryParams });
@@ -107,11 +107,11 @@ export class Client {
     };
 
     if (params.smtp === false) {
-      queryParams['smtp'] = '0';
+      queryParams.smtp = '0';
     }
 
     if (params.catchAll === true) {
-      queryParams['catch_all'] = '1';
+      queryParams.catch_all = '1';
     }
 
     let response = await this.api.get('/bulk_check', { params: queryParams });

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SendbirdChatClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let openChannelSchema = z.object({
   channelUrl: z.string().describe('Unique channel URL'),

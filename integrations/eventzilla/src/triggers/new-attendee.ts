@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newAttendeeTrigger = SlateTrigger.create(spec, {
   name: 'New Attendee',
@@ -59,7 +59,7 @@ export let newAttendeeTrigger = SlateTrigger.create(spec, {
         eventIds = events.map((e: any) => String(e.id));
       }
 
-      let newAttendees: Array<any> = [];
+      let newAttendees: any[] = [];
 
       for (let eventId of eventIds) {
         try {

@@ -2,36 +2,36 @@ import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
   createMeeting,
-  getMeeting,
-  listMeetings,
-  updateMeeting,
+  createWebinar,
   deleteMeeting,
-  listUsers,
+  deleteRecording,
+  deleteWebinar,
+  getMeeting,
+  getMeetingInvitation,
+  getMeetingParticipants,
+  getMeetingRecordings,
+  getMeetingReport,
   getUser,
   getUserSettings,
-  createWebinar,
   getWebinar,
-  updateWebinar,
-  deleteWebinar,
-  listWebinars,
-  listRecordings,
-  getMeetingRecordings,
-  sendChatMessage,
-  manageChatMessages,
   listChatChannels,
-  getMeetingParticipants,
-  manageMeetingRegistrants,
+  listMeetings,
+  listRecordings,
+  listUsers,
+  listWebinars,
+  manageChatMessages,
   manageMeetingPolls,
-  getMeetingInvitation,
-  deleteRecording,
-  getMeetingReport
+  manageMeetingRegistrants,
+  sendChatMessage,
+  updateMeeting,
+  updateWebinar
 } from './tools';
 import {
+  chatMessageEvents,
   meetingEvents,
-  webinarEvents,
   recordingEvents,
   userEvents,
-  chatMessageEvents
+  webinarEvents
 } from './triggers';
 
 export let provider = Slate.create({

@@ -88,7 +88,7 @@ export interface CreditsResponse {
 export class Client {
   private http;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://api.usebouncer.com',
       headers: {
@@ -100,7 +100,7 @@ export class Client {
   async verifyEmail(email: string, timeout?: number): Promise<EmailRecord> {
     let params: Record<string, string | number> = { email };
     if (timeout !== undefined) {
-      params['timeout'] = timeout;
+      params.timeout = timeout;
     }
     let response = await this.http.get('/v1.1/email/verify', { params });
     return response.data;
@@ -119,7 +119,7 @@ export class Client {
   ): Promise<BatchCreateResponse> {
     let params: Record<string, string> = {};
     if (callback) {
-      params['callback'] = callback;
+      params.callback = callback;
     }
     let response = await this.http.post('/v1.1/email/verify/batch', emails, {
       params,
@@ -140,7 +140,7 @@ export class Client {
   async getBatchResults(batchId: string, statusFilter?: string): Promise<EmailRecord[]> {
     let params: Record<string, string> = {};
     if (statusFilter) {
-      params['download'] = statusFilter;
+      params.download = statusFilter;
     }
     let response = await this.http.get(`/v1.1/email/verify/batch/${batchId}/download`, {
       params

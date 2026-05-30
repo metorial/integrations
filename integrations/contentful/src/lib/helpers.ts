@@ -1,4 +1,4 @@
-import { ContentfulClient, ClientConfig } from './client';
+import { ContentfulClient } from './client';
 
 export let createClient = (
   config: { spaceId: string; environmentId: string; region: 'us' | 'eu' },

@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
-let eventTypes = [
+let _eventTypes = [
   'bulk_job.completed',
   'tps_status.changed',
   'credits.running_low',

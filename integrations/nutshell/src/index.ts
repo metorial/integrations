@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createContact,
-  getContact,
-  updateContact,
-  findContacts,
-  createAccount,
-  getAccount,
-  updateAccount,
-  findAccounts,
-  createLead,
-  getLead,
-  updateLead,
-  findLeads,
-  createActivity,
-  findActivities,
-  createTask,
   addNote,
-  searchCrm,
-  listProducts,
-  listPipelinesStages,
-  listUsersTeams,
+  createAccount,
+  createActivity,
+  createContact,
+  createLead,
+  createTask,
+  findAccounts,
+  findActivities,
+  findContacts,
+  findLeads,
+  getAccount,
+  getContact,
+  getLead,
+  getTimeline,
   listActivityTypes,
+  listPipelinesStages,
+  listProducts,
   listSources,
-  getTimeline
+  listUsersTeams,
+  searchCrm,
+  updateAccount,
+  updateContact,
+  updateLead
 } from './tools';
-import { entityChanges, newLeads, newContacts, newAccounts } from './triggers';
+import { entityChanges, newAccounts, newContacts, newLeads } from './triggers';
 
 export let provider = Slate.create({
   spec,

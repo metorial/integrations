@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { shortenUrl, deleteLink, listDomains, generateQrCode } from './tools';
+import { deleteLink, generateQrCode, listDomains, shortenUrl } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

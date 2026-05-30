@@ -53,17 +53,17 @@ export class Client {
 
   async listSubmissions(formId: string, params?: ListSubmissionsParams): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.limit !== undefined) queryParams['limit'] = String(params.limit);
-    if (params?.offset !== undefined) queryParams['offset'] = String(params.offset);
-    if (params?.afterDate) queryParams['afterDate'] = params.afterDate;
-    if (params?.beforeDate) queryParams['beforeDate'] = params.beforeDate;
-    if (params?.status) queryParams['status'] = params.status;
-    if (params?.sort) queryParams['sort'] = params.sort;
-    if (params?.search) queryParams['search'] = params.search;
+    if (params?.limit !== undefined) queryParams.limit = String(params.limit);
+    if (params?.offset !== undefined) queryParams.offset = String(params.offset);
+    if (params?.afterDate) queryParams.afterDate = params.afterDate;
+    if (params?.beforeDate) queryParams.beforeDate = params.beforeDate;
+    if (params?.status) queryParams.status = params.status;
+    if (params?.sort) queryParams.sort = params.sort;
+    if (params?.search) queryParams.search = params.search;
     if (params?.includeEditLink !== undefined)
-      queryParams['includeEditLink'] = String(params.includeEditLink);
+      queryParams.includeEditLink = String(params.includeEditLink);
     if (params?.includePreview !== undefined)
-      queryParams['includePreview'] = String(params.includePreview);
+      queryParams.includePreview = String(params.includePreview);
 
     let response = await this.axios.get(`/forms/${formId}/submissions`, {
       params: queryParams
@@ -77,7 +77,7 @@ export class Client {
     includeEditLink?: boolean
   ): Promise<any> {
     let params: Record<string, string> = {};
-    if (includeEditLink !== undefined) params['includeEditLink'] = String(includeEditLink);
+    if (includeEditLink !== undefined) params.includeEditLink = String(includeEditLink);
 
     let response = await this.axios.get(`/forms/${formId}/submissions/${submissionId}`, {
       params

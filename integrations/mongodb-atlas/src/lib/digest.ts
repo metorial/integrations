@@ -33,22 +33,22 @@ export let parseDigestChallenge = (header: string): DigestChallenge | null => {
   let params: Record<string, string> = {};
   let rest = header.substring(7);
   let regex = /(\w+)=(?:"([^"]*)"|([\w]+))/g;
-  let match;
+  let match: any;
 
   while ((match = regex.exec(rest)) !== null) {
     params[match[1]!] = match[2] ?? match[3] ?? '';
   }
 
-  if (!params['realm'] || !params['nonce']) {
+  if (!params.realm || !params.nonce) {
     return null;
   }
 
   return {
-    realm: params['realm'],
-    nonce: params['nonce'],
-    qop: params['qop'],
-    opaque: params['opaque'],
-    algorithm: params['algorithm']
+    realm: params.realm,
+    nonce: params.nonce,
+    qop: params.qop,
+    opaque: params.opaque,
+    algorithm: params.algorithm
   };
 };
 

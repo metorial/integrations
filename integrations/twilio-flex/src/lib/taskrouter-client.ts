@@ -4,10 +4,7 @@ import { encodeFormBody } from './client';
 export class TaskRouterClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(
-    private token: string,
-    private accountSid: string
-  ) {
+  constructor(token: string, _accountSid: string) {
     this.axios = createAxios({
       baseURL: `https://taskrouter.twilio.com/v1/Workspaces`,
       headers: {

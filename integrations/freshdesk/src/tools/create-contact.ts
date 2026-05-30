@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createContact = SlateTool.create(spec, {
   name: 'Create Contact',
@@ -53,18 +53,18 @@ export let createContact = SlateTool.create(spec, {
       name: ctx.input.name
     };
 
-    if (ctx.input.email) contactData['email'] = ctx.input.email;
-    if (ctx.input.phone) contactData['phone'] = ctx.input.phone;
-    if (ctx.input.mobile) contactData['mobile'] = ctx.input.mobile;
-    if (ctx.input.twitterId) contactData['twitter_id'] = ctx.input.twitterId;
-    if (ctx.input.address) contactData['address'] = ctx.input.address;
-    if (ctx.input.companyId) contactData['company_id'] = ctx.input.companyId;
-    if (ctx.input.description) contactData['description'] = ctx.input.description;
-    if (ctx.input.jobTitle) contactData['job_title'] = ctx.input.jobTitle;
-    if (ctx.input.language) contactData['language'] = ctx.input.language;
-    if (ctx.input.timezone) contactData['time_zone'] = ctx.input.timezone;
-    if (ctx.input.tags) contactData['tags'] = ctx.input.tags;
-    if (ctx.input.customFields) contactData['custom_fields'] = ctx.input.customFields;
+    if (ctx.input.email) contactData.email = ctx.input.email;
+    if (ctx.input.phone) contactData.phone = ctx.input.phone;
+    if (ctx.input.mobile) contactData.mobile = ctx.input.mobile;
+    if (ctx.input.twitterId) contactData.twitter_id = ctx.input.twitterId;
+    if (ctx.input.address) contactData.address = ctx.input.address;
+    if (ctx.input.companyId) contactData.company_id = ctx.input.companyId;
+    if (ctx.input.description) contactData.description = ctx.input.description;
+    if (ctx.input.jobTitle) contactData.job_title = ctx.input.jobTitle;
+    if (ctx.input.language) contactData.language = ctx.input.language;
+    if (ctx.input.timezone) contactData.time_zone = ctx.input.timezone;
+    if (ctx.input.tags) contactData.tags = ctx.input.tags;
+    if (ctx.input.customFields) contactData.custom_fields = ctx.input.customFields;
 
     let contact = await client.createContact(contactData);
 

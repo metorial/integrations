@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getUser = SlateTool.create(spec, {
   name: 'Get User',
@@ -45,7 +45,7 @@ export let getUser = SlateTool.create(spec, {
       apiVersion: ctx.config.apiVersion
     });
 
-    let user;
+    let user: any;
     if (ctx.input.userId && !ctx.input.email) {
       user = await client.getUser(ctx.input.userId, ctx.input.expand);
     } else if (ctx.input.email) {

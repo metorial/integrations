@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
@@ -30,7 +30,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://app.keyword.com'
       });
 
-      let response = await http.get('/api/v2/groups/active', {
+      let _response = await http.get('/api/v2/groups/active', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`,
           'Content-Type': 'application/json'

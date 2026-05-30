@@ -42,11 +42,11 @@ export interface CloudflareResponse<T> {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private authConfig: CloudflareAuthConfig) {
+  constructor(authConfig: CloudflareAuthConfig) {
     let headers: Record<string, string> = {};
 
     if (authConfig.authType === 'api_token') {
-      headers['Authorization'] = `Bearer ${authConfig.token}`;
+      headers.Authorization = `Bearer ${authConfig.token}`;
     } else {
       headers['X-Auth-Email'] = authConfig.email!;
       headers['X-Auth-Key'] = authConfig.token;
@@ -490,7 +490,7 @@ export class Client {
     namespaceId: string,
     key: string,
     value: string,
-    metadata?: any
+    _metadata?: any
   ) {
     let response = await this.http.put(
       `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${encodePathSegment(key)}`,

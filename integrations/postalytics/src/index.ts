@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendMail,
-  manageContacts,
-  manageCampaigns,
-  manageTemplates,
-  manageFlows,
+  createLoginLink,
   getCampaignEvents,
-  manageWebhooks,
   manageAccount,
+  manageCampaigns,
+  manageContacts,
+  manageFlows,
   manageSuppressionLists,
-  createLoginLink
+  manageTemplates,
+  manageWebhooks,
+  sendMail
 } from './tools';
 import { mailEvent } from './triggers';
 

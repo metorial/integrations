@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  deleteLead,
+  discoverCompanies,
   domainSearch,
+  emailCount,
   emailFinder,
   emailVerifier,
-  enrichPerson,
   enrichCompany,
-  discoverCompanies,
-  emailCount,
-  manageLead,
+  enrichPerson,
+  getAccount,
   listLeads,
-  deleteLead,
+  manageLead,
   manageLeadsList,
-  manageSequence,
-  getAccount
+  manageSequence
 } from './tools';
 import { sequenceEmailEvent } from './triggers';
 

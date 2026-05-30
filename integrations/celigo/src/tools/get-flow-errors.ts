@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getFlowErrors = SlateTool.create(spec, {
   name: 'Get Flow Errors',
@@ -46,8 +46,8 @@ export let getFlowErrors = SlateTool.create(spec, {
     });
 
     let params: Record<string, string> = {};
-    if (ctx.input.occurredAtFrom) params['occurredAt_gte'] = ctx.input.occurredAtFrom;
-    if (ctx.input.occurredAtTo) params['occurredAt_lte'] = ctx.input.occurredAtTo;
+    if (ctx.input.occurredAtFrom) params.occurredAt_gte = ctx.input.occurredAtFrom;
+    if (ctx.input.occurredAtTo) params.occurredAt_lte = ctx.input.occurredAtTo;
 
     let result = await client.getFlowErrors(ctx.input.flowId, ctx.input.processorId, params);
 

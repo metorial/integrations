@@ -4,7 +4,7 @@ import { encodeFormBody } from './client';
 export class EventsClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://events.twilio.com/v1',
       headers: {

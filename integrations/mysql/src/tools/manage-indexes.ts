@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, escapeIdentifier, qualifiedTableName } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageIndexes = SlateTool.create(spec, {
   name: 'Manage Indexes',

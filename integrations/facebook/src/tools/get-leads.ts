@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import { facebookServiceError } from '../lib/errors';
+import { spec } from '../spec';
 
 export let getLeads = SlateTool.create(spec, {
   name: 'Get Leads',

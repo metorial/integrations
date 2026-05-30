@@ -1,33 +1,33 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getActor,
-  listWorkspaces,
-  getWorkspace,
+  createConnection,
+  createOrganization,
   createWorkspace,
-  updateWorkspace,
+  deleteConnection,
+  deleteOrganization,
   deleteWorkspace,
   executeQuery,
-  listConnections,
-  createConnection,
-  updateConnection,
-  deleteConnection,
-  testConnection,
-  listOrganizations,
+  getActor,
   getOrganization,
-  createOrganization,
-  updateOrganization,
-  deleteOrganization,
-  listOrgMembers,
-  manageOrgMember,
-  listPipelines,
-  runPipeline,
-  listProcesses,
   getProcess,
+  getSnapshot,
+  getWorkspace,
+  listConnections,
+  listOrganizations,
+  listOrgMembers,
+  listPipelines,
+  listProcesses,
   listSnapshots,
-  getSnapshot
+  listWorkspaces,
+  manageOrgMember,
+  runPipeline,
+  testConnection,
+  updateConnection,
+  updateOrganization,
+  updateWorkspace
 } from './tools';
-import { processActivity, inboundWebhook } from './triggers';
+import { inboundWebhook, processActivity } from './triggers';
 
 export let provider = Slate.create({
   spec,

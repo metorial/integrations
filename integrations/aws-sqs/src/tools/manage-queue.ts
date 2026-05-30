@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SqsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageQueue = SlateTool.create(spec, {
   name: 'Manage Queue',

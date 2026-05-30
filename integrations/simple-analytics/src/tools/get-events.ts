@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { getEvents } from '../lib/stats';
 import { z } from 'zod';
+import { getEvents } from '../lib/stats';
+import { spec } from '../spec';
 
 export let getEventsTool = SlateTool.create(spec, {
   name: 'Get Event Counts',

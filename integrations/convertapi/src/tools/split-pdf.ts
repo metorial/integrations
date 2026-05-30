@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fileSourceSchema = z
   .object({
@@ -64,7 +64,7 @@ By default, splits into one PDF per page. Use the splitByPage parameter to contr
     let fileSource = buildFileSource(ctx.input.file);
     let parameters: Record<string, string> = {};
     if (ctx.input.splitByPage) {
-      parameters['SplitByPage'] = ctx.input.splitByPage;
+      parameters.SplitByPage = ctx.input.splitByPage;
     }
 
     let result = await client.convert({

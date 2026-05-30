@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  addComment,
+  addVote,
+  getAnalysisStatus,
+  getComments,
+  getDomainReport,
+  getFileReport,
+  getIpReport,
+  getRelationships,
+  getUrlReport,
+  manageLivehuntRuleset,
+  manageRetrohunt,
   scanFile,
   scanUrl,
-  getFileReport,
-  getUrlReport,
-  getDomainReport,
-  getIpReport,
-  getAnalysisStatus,
-  addComment,
-  getComments,
-  addVote,
-  getRelationships,
-  searchIntelligence,
-  manageLivehuntRuleset,
-  manageRetrohunt
+  searchIntelligence
 } from './tools';
-import { iocStream, inboundWebhook } from './triggers';
+import { inboundWebhook, iocStream } from './triggers';
 
 export let provider = Slate.create({
   spec,

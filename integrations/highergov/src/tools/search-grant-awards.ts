@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchGrantAwards = SlateTool.create(spec, {
   name: 'Search Grant Awards',
@@ -68,7 +68,7 @@ export let searchGrantAwards = SlateTool.create(spec, {
     let client = new Client(ctx.auth.token);
     let input = ctx.input;
 
-    let response;
+    let response: any;
     if (input.awardType === 'subgrant') {
       response = await client.getSubgrants({
         awardeeKey: input.awardeeKey,

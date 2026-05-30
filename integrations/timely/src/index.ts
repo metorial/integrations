@@ -1,32 +1,32 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getAccount,
-  listTimeEntries,
-  createTimeEntry,
-  updateTimeEntry,
-  deleteTimeEntry,
-  manageTimer,
-  listProjects,
   createProject,
-  updateProject,
-  deleteProject,
-  listClients,
-  manageClient,
-  listLabels,
-  manageLabel,
-  deleteLabel,
-  listTeams,
-  manageTeam,
-  deleteTeam,
-  listUsers,
-  listForecasts,
-  manageForecast,
+  createTimeEntry,
   deleteForecast,
+  deleteLabel,
+  deleteProject,
+  deleteTeam,
+  deleteTimeEntry,
+  getAccount,
   getReport,
-  manageDayLock
+  listClients,
+  listForecasts,
+  listLabels,
+  listProjects,
+  listTeams,
+  listTimeEntries,
+  listUsers,
+  manageClient,
+  manageDayLock,
+  manageForecast,
+  manageLabel,
+  manageTeam,
+  manageTimer,
+  updateProject,
+  updateTimeEntry
 } from './tools';
-import { timeEntryEvents, projectEvents, forecastEvents, labelEvents } from './triggers';
+import { forecastEvents, labelEvents, projectEvents, timeEntryEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TrelloClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let checkItemSchema = z.object({
   checkItemId: z.string().describe('Check item ID'),

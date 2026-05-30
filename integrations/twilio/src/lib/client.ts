@@ -30,7 +30,7 @@ export interface TwilioClientConfig {
 let buildAuthHeader = (config: TwilioClientConfig): string => {
   let username = config.apiKeySid || config.accountSid;
   let password = config.token;
-  return 'Basic ' + btoa(`${username}:${password}`);
+  return `Basic ${btoa(`${username}:${password}`)}`;
 };
 
 type FormValue = string | string[] | undefined | null;
@@ -78,7 +78,7 @@ export class TwilioClient {
   private authHeader: string;
   private accountSid: string;
 
-  constructor(private config: TwilioClientConfig) {
+  constructor(config: TwilioClientConfig) {
     this.authHeader = buildAuthHeader(config);
     this.accountSid = config.accountSid;
   }
@@ -155,7 +155,7 @@ export class TwilioClient {
     }
 
     let query = encodeFormData(queryParams);
-    let url = `/Accounts/${this.accountSid}/Messages.json${query ? '?' + query : ''}`;
+    let url = `/Accounts/${this.accountSid}/Messages.json${query ? `?${query}` : ''}`;
 
     return await twilioRequest('list messages', () =>
       coreApi.get(url, {
@@ -282,7 +282,7 @@ export class TwilioClient {
     }
 
     let query = encodeFormData(queryParams);
-    let url = `/Accounts/${this.accountSid}/Calls.json${query ? '?' + query : ''}`;
+    let url = `/Accounts/${this.accountSid}/Calls.json${query ? `?${query}` : ''}`;
 
     return await twilioRequest('list calls', () =>
       coreApi.get(url, {
@@ -388,7 +388,7 @@ export class TwilioClient {
     if (params?.pageToken) queryParams.PageToken = params.pageToken;
 
     let query = encodeFormData(queryParams);
-    let url = `/Services${query ? '?' + query : ''}`;
+    let url = `/Services${query ? `?${query}` : ''}`;
 
     return await twilioRequest('list verify services', () =>
       verifyApi.get(url, {
@@ -421,7 +421,7 @@ export class TwilioClient {
 
     let query = encodeFormData(queryParams);
     let encodedNumber = encodeURIComponent(phoneNumber);
-    let url = `/PhoneNumbers/${encodedNumber}${query ? '?' + query : ''}`;
+    let url = `/PhoneNumbers/${encodedNumber}${query ? `?${query}` : ''}`;
 
     return await twilioRequest('lookup phone number', () =>
       lookupsApi.get(url, {
@@ -460,7 +460,7 @@ export class TwilioClient {
     }
 
     let query = encodeFormData(queryParams);
-    let url = `/Accounts/${this.accountSid}/AvailablePhoneNumbers/${countryCode}/${type}.json${query ? '?' + query : ''}`;
+    let url = `/Accounts/${this.accountSid}/AvailablePhoneNumbers/${countryCode}/${type}.json${query ? `?${query}` : ''}`;
 
     return await twilioRequest('search available phone numbers', () =>
       coreApi.get(url, {
@@ -525,7 +525,7 @@ export class TwilioClient {
     }
 
     let query = encodeFormData(queryParams);
-    let url = `/Accounts/${this.accountSid}/IncomingPhoneNumbers.json${query ? '?' + query : ''}`;
+    let url = `/Accounts/${this.accountSid}/IncomingPhoneNumbers.json${query ? `?${query}` : ''}`;
 
     return await twilioRequest('list incoming phone numbers', () =>
       coreApi.get(url, {
@@ -626,7 +626,7 @@ export class TwilioClient {
     }
 
     let query = encodeFormData(queryParams);
-    let url = `/Conversations${query ? '?' + query : ''}`;
+    let url = `/Conversations${query ? `?${query}` : ''}`;
 
     return await twilioRequest('list conversations', () =>
       conversationsApi.get(url, {
@@ -706,7 +706,7 @@ export class TwilioClient {
     if (params?.pageSize) queryParams.PageSize = String(params.pageSize);
 
     let query = encodeFormData(queryParams);
-    let url = `/Conversations/${conversationSid}/Participants${query ? '?' + query : ''}`;
+    let url = `/Conversations/${conversationSid}/Participants${query ? `?${query}` : ''}`;
 
     return await twilioRequest('list conversation participants', () =>
       conversationsApi.get(url, {
@@ -765,7 +765,7 @@ export class TwilioClient {
     }
 
     let query = encodeFormData(queryParams);
-    let url = `/Conversations/${conversationSid}/Messages${query ? '?' + query : ''}`;
+    let url = `/Conversations/${conversationSid}/Messages${query ? `?${query}` : ''}`;
 
     return await twilioRequest('list conversation messages', () =>
       conversationsApi.get(url, {
@@ -844,7 +844,7 @@ export class TwilioClient {
     if (params?.pageToken) queryParams.PageToken = params.pageToken;
 
     let query = encodeFormData(queryParams);
-    let url = `/Services${query ? '?' + query : ''}`;
+    let url = `/Services${query ? `?${query}` : ''}`;
 
     return await twilioRequest('list messaging services', () =>
       messagingServicesApi.get(url, {
@@ -920,7 +920,7 @@ export class TwilioClient {
     if (params?.pageSize) queryParams.PageSize = String(params.pageSize);
 
     let query = encodeFormData(queryParams);
-    let url = `/Accounts/${this.accountSid}/Calls/${callSid}/Recordings.json${query ? '?' + query : ''}`;
+    let url = `/Accounts/${this.accountSid}/Calls/${callSid}/Recordings.json${query ? `?${query}` : ''}`;
 
     return await twilioRequest('list call recordings', () =>
       coreApi.get(url, {
@@ -950,7 +950,7 @@ export class TwilioClient {
     }
 
     let query = encodeFormData(queryParams);
-    let url = `/Accounts/${this.accountSid}/Recordings.json${query ? '?' + query : ''}`;
+    let url = `/Accounts/${this.accountSid}/Recordings.json${query ? `?${query}` : ''}`;
 
     return await twilioRequest('list recordings', () =>
       coreApi.get(url, {

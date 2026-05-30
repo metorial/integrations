@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getCurrentUser,
-  getUser,
-  updateUser,
-  listGroups,
-  getGroup,
-  createGroup,
-  manageGroupMembers,
-  deleteGroup,
-  listExpenses,
-  getExpense,
-  createExpense,
-  updateExpense,
-  deleteExpense,
-  listFriends,
   addFriend,
-  deleteFriend,
-  listComments,
   createComment,
+  createExpense,
+  createGroup,
   deleteComment,
+  deleteExpense,
+  deleteFriend,
+  deleteGroup,
+  getCategories,
   getCurrencies,
-  getCategories
+  getCurrentUser,
+  getExpense,
+  getGroup,
+  getUser,
+  listComments,
+  listExpenses,
+  listFriends,
+  listGroups,
+  manageGroupMembers,
+  updateExpense,
+  updateUser
 } from './tools';
 import { accountActivity, inboundWebhook } from './triggers';
 

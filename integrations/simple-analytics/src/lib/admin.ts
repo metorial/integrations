@@ -18,9 +18,9 @@ export let addWebsite = async (config: ClientConfig, params: AddWebsiteParams) =
   let body: Record<string, unknown> = {
     hostname: params.hostname
   };
-  if (params.timezone) body['timezone'] = params.timezone;
-  if (params.isPublic !== undefined) body['public'] = params.isPublic;
-  if (params.label) body['label'] = params.label;
+  if (params.timezone) body.timezone = params.timezone;
+  if (params.isPublic !== undefined) body.public = params.isPublic;
+  if (params.label) body.label = params.label;
 
   let response = await client.post('/api/websites/add', body);
   return response.data;

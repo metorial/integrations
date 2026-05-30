@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClearbitClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let enrichCombined = SlateTool.create(spec, {
   name: 'Enrich Person & Company',

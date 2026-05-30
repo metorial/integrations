@@ -12,10 +12,10 @@ import {
   SetQueueAttributesCommand
 } from '@aws-sdk/client-sqs';
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { clientFromContext } from '../lib/helpers';
 import { awsServiceError } from '../lib/errors';
+import { clientFromContext } from '../lib/helpers';
+import { spec } from '../spec';
 
 let messageSchema = z.object({
   messageId: z.string().describe('Unique message identifier'),

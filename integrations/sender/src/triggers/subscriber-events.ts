@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let subscriberEvents = SlateTrigger.create(spec, {
   name: 'Subscriber Events',
@@ -43,7 +43,7 @@ export let subscriberEvents = SlateTrigger.create(spec, {
             topic
           });
           webhookIds.push(result.data.id);
-        } catch (err) {
+        } catch (_err) {
           // If webhook creation fails for a topic, continue with others
         }
       }
@@ -60,7 +60,7 @@ export let subscriberEvents = SlateTrigger.create(spec, {
       for (let webhookId of details.webhookIds || []) {
         try {
           await client.deleteWebhook(webhookId);
-        } catch (err) {
+        } catch (_err) {
           // Best effort cleanup
         }
       }

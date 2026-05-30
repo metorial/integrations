@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let abuseItemSchema = z.object({
   sentenceIndex: z.number().describe('Zero-based index of the sentence'),
@@ -221,7 +221,7 @@ Configure the analysis through optional settings to enable/disable specific feat
     });
 
     let parts: string[] = [
-      '**Text analyzed** in language `' + (result.language || ctx.input.language) + '`.'
+      `**Text analyzed** in language \`${result.language || ctx.input.language}\`.`
     ];
 
     if (result.abuse && result.abuse.length > 0) {

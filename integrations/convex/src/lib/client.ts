@@ -63,13 +63,9 @@ export class ConvexClient {
   // --- Streaming Export ---
 
   async listSnapshot(
-    params: {
-      tableName?: string;
-      cursor?: string;
-      snapshotId?: string;
-    } = {}
+    params: { tableName?: string; cursor?: string; snapshotId?: string } = {}
   ): Promise<{
-    values: Array<Record<string, any>>;
+    values: Record<string, any>[];
     cursor: string;
     snapshot: string;
     hasMore: boolean;
@@ -84,13 +80,8 @@ export class ConvexClient {
     return response.data;
   }
 
-  async documentDeltas(
-    params: {
-      cursor?: string;
-      tableName?: string;
-    } = {}
-  ): Promise<{
-    values: Array<Record<string, any>>;
+  async documentDeltas(params: { cursor?: string; tableName?: string } = {}): Promise<{
+    values: Record<string, any>[];
     cursor: string;
     hasMore: boolean;
   }> {

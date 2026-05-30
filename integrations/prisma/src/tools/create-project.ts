@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PrismaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createProject = SlateTool.create(spec, {
   name: 'Create Project',
@@ -57,14 +57,14 @@ export let createProject = SlateTool.create(spec, {
 
     let workspaceId = ctx.input.workspaceId ?? ctx.config.workspaceId;
 
-    let project;
+    let project: any;
     if (workspaceId && !ctx.input.region) {
       project = await client.createProjectInWorkspace(workspaceId, { name: ctx.input.name });
     } else {
       project = await client.createProject({ name: ctx.input.name, region: ctx.input.region });
     }
 
-    let databases = (project.databases ?? []).map(db => ({
+    let databases = (project.databases ?? []).map((db: any) => ({
       databaseId: db.id,
       databaseName: db.name,
       region: db.region,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LeadBoxerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let ipLookup = SlateTool.create(spec, {
   name: 'IP Lookup',

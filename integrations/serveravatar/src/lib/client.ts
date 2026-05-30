@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class ServerAvatarClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.serveravatar.com',
       headers: {
@@ -16,7 +16,7 @@ export class ServerAvatarClient {
 
   // ---- Organizations ----
 
-  async listOrganizations(): Promise<Array<Record<string, unknown>>> {
+  async listOrganizations(): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/organizations');
     return response.data.organizations || response.data;
   }
@@ -36,7 +36,7 @@ export class ServerAvatarClient {
       search?: string;
     }
   ): Promise<{
-    providers: Array<Record<string, unknown>>;
+    providers: Record<string, unknown>[];
     pagination: Record<string, unknown>;
   }> {
     let queryParams: Record<string, string> = { pagination: '1' };
@@ -63,7 +63,7 @@ export class ServerAvatarClient {
   async getProviderRegions(
     organizationId: string,
     providerId: string
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/organizations/${organizationId}/cloud-server-providers/${providerId}/regions`
     );
@@ -74,7 +74,7 @@ export class ServerAvatarClient {
     organizationId: string,
     providerId: string,
     region: string
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/organizations/${organizationId}/cloud-server-providers/${providerId}/sizes`,
       {
@@ -92,7 +92,7 @@ export class ServerAvatarClient {
       page?: number;
     }
   ): Promise<{
-    servers: Array<Record<string, unknown>>;
+    servers: Record<string, unknown>[];
     pagination: Record<string, unknown>;
   }> {
     let queryParams: Record<string, string> = { pagination: '1' };
@@ -269,7 +269,7 @@ export class ServerAvatarClient {
   async listServices(
     organizationId: string,
     serverId: string
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/organizations/${organizationId}/servers/${serverId}/services`
     );
@@ -301,7 +301,7 @@ export class ServerAvatarClient {
       page?: number;
     }
   ): Promise<{
-    applications: Array<Record<string, unknown>>;
+    applications: Record<string, unknown>[];
     pagination: Record<string, unknown>;
   }> {
     let queryParams: Record<string, string> = { pagination: '1' };
@@ -365,7 +365,7 @@ export class ServerAvatarClient {
     organizationId: string,
     serverId: string,
     applicationId: string
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/organizations/${organizationId}/servers/${serverId}/applications/${applicationId}/domains`
     );
@@ -493,7 +493,7 @@ export class ServerAvatarClient {
       search?: string;
     }
   ): Promise<{
-    databases: Array<Record<string, unknown>>;
+    databases: Record<string, unknown>[];
     pagination: Record<string, unknown>;
   }> {
     let queryParams: Record<string, string> = { pagination: '1' };
@@ -570,7 +570,7 @@ export class ServerAvatarClient {
   async listFirewallRules(
     organizationId: string,
     serverId: string
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/organizations/${organizationId}/servers/${serverId}/firewall-rules`
     );
@@ -624,7 +624,7 @@ export class ServerAvatarClient {
     serverId: string,
     page?: number
   ): Promise<{
-    cronJobs: Array<Record<string, unknown>>;
+    cronJobs: Record<string, unknown>[];
     pagination: Record<string, unknown>;
   }> {
     let queryParams: Record<string, string> = { pagination: '1' };
@@ -690,7 +690,7 @@ export class ServerAvatarClient {
     organizationId: string,
     page?: number
   ): Promise<{
-    backups: Array<Record<string, unknown>>;
+    backups: Record<string, unknown>[];
     pagination: Record<string, unknown>;
   }> {
     let queryParams: Record<string, string> = { pagination: '1' };
@@ -717,7 +717,7 @@ export class ServerAvatarClient {
   async listSystemUsers(
     organizationId: string,
     serverId: string
-  ): Promise<Array<Record<string, unknown>>> {
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/organizations/${organizationId}/servers/${serverId}/system-users`
     );

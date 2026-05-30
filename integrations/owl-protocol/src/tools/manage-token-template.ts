@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OwlClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let templateMetadataSchema = z.object({
   name: z.string().optional().describe('Template name for the token'),

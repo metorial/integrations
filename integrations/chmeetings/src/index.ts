@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  createContribution,
+  createFamily,
+  createPerson,
+  createProfileNote,
+  deleteContribution,
+  deleteFamily,
+  deletePerson,
+  deleteProfileNote,
+  getFamily,
+  getGroupMembers,
+  getPerson,
+  listCampaigns,
+  listContributions,
+  listFamilies,
+  listGroups,
   listOrganizations,
   listPeople,
-  getPerson,
-  createPerson,
-  updatePerson,
-  deletePerson,
+  listPledges,
   listProfileNotes,
-  createProfileNote,
-  updateProfileNote,
-  deleteProfileNote,
-  listFamilies,
-  getFamily,
-  createFamily,
-  deleteFamily,
   manageFamilyMembers,
-  listGroups,
-  getGroupMembers,
   manageGroupMembership,
-  listContributions,
-  createContribution,
-  deleteContribution,
-  listCampaigns,
-  listPledges
+  updatePerson,
+  updateProfileNote
 } from './tools';
-import { peopleEvents, contributionEvents } from './triggers';
+import { contributionEvents, peopleEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LinkedInClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createComment = SlateTool.create(spec, {
   name: 'Create Comment',
@@ -52,7 +52,7 @@ export let createComment = SlateTool.create(spec, {
       output: {
         commentUrn:
           comment.commentUrn ??
-          comment['$URN'] ??
+          comment.$URN ??
           (comment.object && comment.id
             ? `urn:li:comment:(${comment.object},${comment.id})`
             : undefined),
@@ -108,7 +108,7 @@ export let getComments = SlateTool.create(spec, {
     let comments = result.elements.map(c => ({
       commentUrn:
         c.commentUrn ??
-        c['$URN'] ??
+        c.$URN ??
         (c.object && c.id ? `urn:li:comment:(${c.object},${c.id})` : undefined),
       actorUrn: c.actor,
       text: c.message.text,
@@ -137,9 +137,7 @@ export let deleteComment = SlateTool.create(spec, {
   .input(
     z.object({
       postUrn: z.string().describe('URN of the post the comment belongs to'),
-      commentUrn: z
-        .string()
-        .describe('Comment ID or composite URN of the comment to delete')
+      commentUrn: z.string().describe('Comment ID or composite URN of the comment to delete')
     })
   )
   .output(

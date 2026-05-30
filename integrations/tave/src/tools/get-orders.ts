@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TavePublicClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let orderSchema = z.object({
   orderId: z.string().describe('ID of the order'),
@@ -67,7 +67,7 @@ export let getOrders = SlateTool.create(spec, {
         orders,
         totalCount
       },
-      message: `Retrieved **${orders.length}** order(s)${ctx.input.brand ? ' for brand "' + ctx.input.brand + '"' : ''}${ctx.input.jobType ? ' of type "' + ctx.input.jobType + '"' : ''}.`
+      message: `Retrieved **${orders.length}** order(s)${ctx.input.brand ? ` for brand "${ctx.input.brand}"` : ''}${ctx.input.jobType ? ` of type "${ctx.input.jobType}"` : ''}.`
     };
   })
   .build();

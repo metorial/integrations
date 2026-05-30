@@ -1,21 +1,21 @@
 import { createAxios } from 'slates';
 import type {
-  PdfCoFileResponse,
-  PdfCoSplitResponse,
-  PdfCoInlineResponse,
-  PdfCoInfoResponse,
   PdfCoBarcodeReadResponse,
-  PdfCoFindTextResponse,
   PdfCoClassifierResponse,
   PdfCoDocumentParserResponse,
+  PdfCoFileResponse,
+  PdfCoFindTextResponse,
+  PdfCoInfoResponse,
+  PdfCoInlineResponse,
   PdfCoJobCheckResponse,
+  PdfCoSplitResponse,
   PdfCoUploadResponse
 } from './types';
 
 export class Client {
   private http;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://api.pdf.co/v1',
       headers: {

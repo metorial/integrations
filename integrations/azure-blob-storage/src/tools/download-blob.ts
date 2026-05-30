@@ -1,7 +1,7 @@
 import { createTextAttachment, SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let downloadBlob = SlateTool.create(spec, {
   name: 'Download Blob',

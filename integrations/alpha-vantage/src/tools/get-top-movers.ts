@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let moverSchema = z.object({
   ticker: z.string().describe('Ticker symbol'),
@@ -42,22 +42,22 @@ export let getTopMovers = SlateTool.create(spec, {
 
     let mapMovers = (items: any[]) =>
       (items || []).map((item: any) => ({
-        ticker: item['ticker'] || '',
-        price: item['price'] || '',
-        changeAmount: item['change_amount'] || '',
-        changePercentage: item['change_percentage'] || '',
-        volume: item['volume'] || ''
+        ticker: item.ticker || '',
+        price: item.price || '',
+        changeAmount: item.change_amount || '',
+        changePercentage: item.change_percentage || '',
+        volume: item.volume || ''
       }));
 
     let output: any = {};
     if (category === 'gainers' || category === 'all') {
-      output.topGainers = mapMovers(data['top_gainers']);
+      output.topGainers = mapMovers(data.top_gainers);
     }
     if (category === 'losers' || category === 'all') {
-      output.topLosers = mapMovers(data['top_losers']);
+      output.topLosers = mapMovers(data.top_losers);
     }
     if (category === 'active' || category === 'all') {
-      output.mostActive = mapMovers(data['most_actively_traded']);
+      output.mostActive = mapMovers(data.most_actively_traded);
     }
 
     return {

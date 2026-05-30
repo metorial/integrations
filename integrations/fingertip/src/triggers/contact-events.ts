@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { FingertipClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let contactEvents = SlateTrigger.create(spec, {
   name: 'Contact Events',

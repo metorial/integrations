@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from '@slates/provider';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { DiscordClient } from '../lib/client';
 import { discordActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let channelUpdate = SlateTrigger.create(spec, {
   name: 'Channel Update',
@@ -97,21 +97,19 @@ export let channelUpdate = SlateTrigger.create(spec, {
                 topic: channel.topic || undefined
               });
             }
-          } else {
-            if (
-              channel.name !== known.name ||
-              (channel.topic || undefined) !== known.topic ||
-              channel.type !== known.type
-            ) {
-              inputs.push({
-                eventType: 'updated',
-                guildId: guild.id,
-                channelId: channel.id,
-                channelName: channel.name,
-                channelType: channel.type,
-                topic: channel.topic || undefined
-              });
-            }
+          } else if (
+            channel.name !== known.name ||
+            (channel.topic || undefined) !== known.topic ||
+            channel.type !== known.type
+          ) {
+            inputs.push({
+              eventType: 'updated',
+              guildId: guild.id,
+              channelId: channel.id,
+              channelName: channel.name,
+              channelType: channel.type,
+              topic: channel.topic || undefined
+            });
           }
         }
       }

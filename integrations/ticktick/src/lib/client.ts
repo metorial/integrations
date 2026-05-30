@@ -118,7 +118,7 @@ export interface UserProfile {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.ticktick.com/open/v1',
       headers: {
@@ -145,7 +145,7 @@ export class Client {
       ...input,
       id: taskId
     };
-    delete (body as any).taskId;
+    (body as any).taskId = undefined;
     let response = await this.axios.post(`/task/${taskId}`, body);
     return response.data;
   }

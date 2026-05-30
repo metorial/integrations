@@ -4,8 +4,8 @@ import {
   generateContentTool,
   generateFromTemplateTool,
   getGenerationStatusTool,
-  listThemesTool,
-  listFoldersTool
+  listFoldersTool,
+  listThemesTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let attributeValueSchema = z.object({
   date: z.string().describe('Date in YYYY-MM-DD format'),
@@ -86,7 +86,7 @@ export let getAttributesTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
-    let result;
+    let result: any;
     if (ctx.input.includeValues) {
       result = await client.getAttributesWithValues({
         groups: ctx.input.groups,
@@ -112,7 +112,7 @@ export let getAttributesTool = SlateTool.create(spec, {
       });
     }
 
-    let attributes = result.results.map(attr => ({
+    let attributes = result.results.map((attr: any) => ({
       templateName: attr.template,
       attributeName: attr.name,
       label: attr.label,
@@ -125,7 +125,7 @@ export let getAttributesTool = SlateTool.create(spec, {
       valueTypeDescription: attr.value_type_description,
       serviceName: attr.service?.name ?? null,
       serviceLabel: attr.service?.label ?? null,
-      values: attr.values?.map(v => ({ date: v.date, value: v.value }))
+      values: attr.values?.map((v: any) => ({ date: v.date, value: v.value }))
     }));
 
     return {

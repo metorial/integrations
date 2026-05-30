@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PandaDocClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contactFieldsSchema = z.object({
   email: z.string().describe('Contact email address'),

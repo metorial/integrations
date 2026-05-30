@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 let taskOutputSchema = z.object({
   taskId: z.string().describe('Unique ID of the task'),
@@ -21,7 +21,7 @@ let taskOutputSchema = z.object({
 
 let parseTask = (t: any) => ({
   taskId: String(t.id),
-  content: t.content || t['content'] || '',
+  content: t.content || t.content || '',
   description: t.description || undefined,
   status: t.status || undefined,
   priority: t.priority || undefined,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TwelveDataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAnalystData = SlateTool.create(spec, {
   name: 'Get Analyst Data',
@@ -49,8 +49,8 @@ Includes consensus target prices (high, low, median, average) and revenue foreca
       country: ctx.input.country
     };
 
-    let priceTarget: any = undefined;
-    let revenueEstimates: any[] | undefined = undefined;
+    let priceTarget: any;
+    let revenueEstimates: any[] | undefined;
 
     if (ctx.input.dataType === 'price_target' || ctx.input.dataType === 'both') {
       let ptResult = await client.getPriceTarget(baseParams);

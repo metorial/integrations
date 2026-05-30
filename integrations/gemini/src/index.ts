@@ -1,21 +1,21 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  generateText,
+  countTokens,
+  createCachedContent,
+  deleteCachedContent,
+  deleteFile,
   generateEmbeddings,
   generateImage,
-  listModels,
-  getModel,
-  countTokens,
-  uploadFile,
-  listFiles,
-  getFile,
-  deleteFile,
-  createCachedContent,
-  listCachedContents,
+  generateText,
   getCachedContent,
+  getFile,
+  getModel,
+  listCachedContents,
+  listFiles,
+  listModels,
   updateCachedContent,
-  deleteCachedContent
+  uploadFile
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

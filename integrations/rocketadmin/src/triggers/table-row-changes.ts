@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { RocketadminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let tableRowChanges = SlateTrigger.create(spec, {
   name: 'Table Row Changes',
@@ -84,11 +84,11 @@ export let tableRowChanges = SlateTrigger.create(spec, {
         perPage: 100
       });
 
-      let logs: Array<Record<string, unknown>> = [];
+      let logs: Record<string, unknown>[] = [];
       if (Array.isArray(result)) {
         logs = result;
       } else if (result.logs && Array.isArray(result.logs)) {
-        logs = result.logs as Array<Record<string, unknown>>;
+        logs = result.logs as Record<string, unknown>[];
       }
 
       let rowOperations = ['addRowInTable', 'updateRowInTable', 'deleteRowInTable'];

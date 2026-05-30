@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let refreshDatasource = SlateTool.create(spec, {
   name: 'Refresh Data Sources',
@@ -54,7 +54,7 @@ export let refreshDatasource = SlateTool.create(spec, {
 
     return {
       output: { success: true },
-      message: actions.length > 0 ? actions.join('; ') + '.' : 'No actions performed.'
+      message: actions.length > 0 ? `${actions.join('; ')}.` : 'No actions performed.'
     };
   })
   .build();

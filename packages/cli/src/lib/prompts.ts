@@ -1,5 +1,5 @@
 import { checkbox, confirm, input, password, select } from '@inquirer/prompts';
-import { JsonObject } from './types';
+import type { JsonObject } from './types';
 
 export let prettyJson = (value: unknown) => JSON.stringify(value, null, 2);
 

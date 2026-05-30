@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TapfiliateClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let customerSchema = z.object({
   customerId: z.string().describe('Unique identifier of the customer'),
@@ -178,7 +178,7 @@ export let updateCustomerStatus = SlateTool.create(spec, {
   .output(customerSchema)
   .handleInvocation(async ctx => {
     let client = new TapfiliateClient({ token: ctx.auth.token });
-    let result;
+    let result: any;
 
     if (ctx.input.action === 'cancel') {
       result = await client.cancelCustomer(ctx.input.customerId);

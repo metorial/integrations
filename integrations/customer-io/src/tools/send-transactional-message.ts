@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AppClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let sendTransactionalMessage = SlateTool.create(spec, {
   name: 'Send Transactional Message',

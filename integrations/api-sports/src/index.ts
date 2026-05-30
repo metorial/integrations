@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchLeaguesTool,
-  searchTeamsTool,
+  getCoachesTool,
+  getCountriesTool,
   getFixturesTool,
-  getStandingsTool,
-  getMatchDetailsTool,
-  getPlayerStatsTool,
-  getOddsTool,
-  getPredictionsTool,
   getInjuriesTool,
+  getMatchDetailsTool,
+  getOddsTool,
+  getPlayerStatsTool,
+  getPredictionsTool,
+  getStandingsTool,
   getTeamStatisticsTool,
   getTransfersTool,
-  getCoachesTool,
-  getCountriesTool
+  searchLeaguesTool,
+  searchTeamsTool
 } from './tools';
-import { fixtureStatusChangeTrigger, fixtureResultsTrigger, inboundWebhook } from './triggers';
+import { fixtureResultsTrigger, fixtureStatusChangeTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,

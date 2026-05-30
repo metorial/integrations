@@ -1,15 +1,15 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import {
-  flattenLayers,
   findLayerById,
-  findLayersByName,
   findLayersByClass,
-  type SketchPage,
+  findLayersByName,
+  flattenLayers,
   type SketchLayer,
-  type SketchLayerClass
+  type SketchLayerClass,
+  type SketchPage
 } from '../lib/client';
+import { spec } from '../spec';
 
 let layerClassEnum = z.enum([
   'artboard',
@@ -155,7 +155,7 @@ Use this to drill into specific layers or find all layers of a certain type acro
     let { objectId, layerName, layerClass, includeRawJson } = ctx.input;
 
     let matched: LayerSummary[] = [];
-    let rawMatched: Array<Record<string, unknown>> = [];
+    let rawMatched: Record<string, unknown>[] = [];
 
     if (objectId) {
       for (let page of pages) {

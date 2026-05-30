@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ClickSendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let smsDeliveryReceiptTrigger = SlateTrigger.create(spec, {
   name: 'SMS Delivery Receipt',
@@ -109,7 +109,7 @@ export let smsDeliveryReceiptTrigger = SlateTrigger.create(spec, {
           to: receipt.to || receipt.recipient || '',
           from: receipt.from || receipt.sender || '',
           timestamp: receipt.timestamp
-            ? parseInt(receipt.timestamp)
+            ? Number.parseInt(receipt.timestamp, 10)
             : Math.floor(Date.now() / 1000),
           customString: receipt.custom_string || undefined,
           originalPayload: receipt

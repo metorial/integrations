@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getMetadata,
-  getProfileAnalytics,
-  getPostAnalytics,
-  getMessages,
   createDraftPost,
-  uploadMedia,
+  getCases,
   getListeningMessages,
   getListeningMetrics,
-  getCases,
-  getPublishingPost
+  getMessages,
+  getMetadata,
+  getPostAnalytics,
+  getProfileAnalytics,
+  getPublishingPost,
+  uploadMedia
 } from './tools';
-import { newMessages, newCases, inboundWebhook } from './triggers';
+import { inboundWebhook, newCases, newMessages } from './triggers';
 
 export let provider = Slate.create({
   spec,

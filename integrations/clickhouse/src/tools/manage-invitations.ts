@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ClickHouseClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let assignedRoleSchema = z.object({
   roleId: z.string().optional(),

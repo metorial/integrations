@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BugherdClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let userRefSchema = z
   .object({
@@ -58,7 +58,7 @@ export let getTask = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new BugherdClient(ctx.auth.token);
 
-    let task;
+    let task: any;
     if (ctx.input.projectId) {
       task = await client.getTask(ctx.input.projectId, ctx.input.taskId);
     } else {

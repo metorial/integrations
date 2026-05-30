@@ -10,6 +10,9 @@
       "dependsOn": ["^build", "^test"],
       "outputs": []
     },
+    "biome:check": {
+      "outputs": []
+    },
     "typecheck": {
       "dependsOn": ["^typecheck"]
     }

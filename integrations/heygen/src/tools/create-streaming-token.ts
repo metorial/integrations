@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HeyGenClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createStreamingToken = SlateTool.create(spec, {
   name: 'Create Streaming Token',

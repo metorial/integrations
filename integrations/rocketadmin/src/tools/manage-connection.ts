@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RocketadminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageConnection = SlateTool.create(spec, {
   name: 'Manage Connection',

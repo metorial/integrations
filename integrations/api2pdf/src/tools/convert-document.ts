@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { Api2PdfClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let convertDocument = SlateTool.create(spec, {
   name: 'Convert Document',
@@ -52,7 +52,7 @@ export let convertDocument = SlateTool.create(spec, {
       useXlCluster: ctx.config.useXlCluster
     });
 
-    let result;
+    let result: any;
 
     if (ctx.input.outputFormat === 'pdf') {
       if (!ctx.input.url) {

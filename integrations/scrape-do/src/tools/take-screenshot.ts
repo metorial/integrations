@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ScrapeDoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let takeScreenshot = SlateTool.create(spec, {
   name: 'Take Screenshot',

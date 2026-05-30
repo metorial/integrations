@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string; serverUrl: string }) {
+  constructor(config: { token: string; serverUrl: string }) {
     this.axios = createAxios({
       baseURL: config.serverUrl,
       headers: {
@@ -116,7 +116,7 @@ export class Client {
   }
 
   async createEventBatch(body: {
-    events: Array<Record<string, any>>;
+    events: Record<string, any>[];
     is_single_session?: boolean;
   }) {
     let res = await this.axios.post('/events/batch', body);
@@ -205,7 +205,7 @@ export class Client {
     datasetId: string,
     body: {
       project: string;
-      data: Array<Record<string, any>>;
+      data: Record<string, any>[];
       mapping: {
         inputs: string[];
         ground_truth: string[];
@@ -231,7 +231,7 @@ export class Client {
   async createDatapoint(body: {
     project: string;
     inputs: Record<string, any>;
-    history?: Array<Record<string, any>>;
+    history?: Record<string, any>[];
     ground_truth?: Record<string, any>;
     linked_event?: string;
     linked_datasets?: string[];
@@ -250,7 +250,7 @@ export class Client {
     datapointId: string,
     body: {
       inputs?: Record<string, any>;
-      history?: Array<Record<string, any>>;
+      history?: Record<string, any>[];
       ground_truth?: Record<string, any>;
       linked_event?: string;
       linked_datasets?: string[];

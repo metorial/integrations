@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let productSchema = z.object({
   productId: z.string().describe('Shopify product ID'),

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { KommoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let LEAD_WEBHOOK_SETTINGS = [
   'add_lead',
@@ -91,7 +91,7 @@ export let leadEventsTrigger = SlateTrigger.create(spec, {
         }
       }
 
-      let inputs: Array<any> = [];
+      let inputs: any[] = [];
 
       let eventTypes: Record<string, string> = {
         add_lead: 'lead.added',

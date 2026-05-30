@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchSerp,
-  scheduleSerp,
   checkSerpTask,
+  getAccountInfo,
   getSerpResult,
-  searchGoogleJobs,
-  searchGoogleVideos,
-  searchGoogleShortVideos,
-  searchTrends,
-  searchLocations,
-  listLanguages,
   listDomains,
-  getAccountInfo
+  listLanguages,
+  scheduleSerp,
+  searchGoogleJobs,
+  searchGoogleShortVideos,
+  searchGoogleVideos,
+  searchLocations,
+  searchSerp,
+  searchTrends
 } from './tools';
 import { scheduledTaskCompleted } from './triggers';
 

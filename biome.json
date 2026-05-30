@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -15,7 +15,9 @@
       "!**/.next",
       "!**/coverage",
       "!**/*.min.js",
+      "!**/*.map",
       "!**/*.config.js",
+      "!**/dist-*",
       "!**/.turbo",
       "!**/.cache",
       "!**/prisma/migrations"
@@ -30,9 +32,7 @@
     "lineEnding": "lf"
   },
   "javascript": {
-    "globals": [
-      "Bun"
-    ],
+    "globals": ["Bun"],
     "formatter": {
       "quoteStyle": "single",
       "jsxQuoteStyle": "double",
@@ -165,6 +165,12 @@
         "noUnsafeNegation": "error",
         "useAwait": "off",
         "useDefaultSwitchClauseLast": "error",
+        "useIterableCallbackReturn": {
+          "level": "error",
+          "options": {
+            "checkForEach": false
+          }
+        },
         "useNamespaceKeyword": "error",
         "noWith": "error",
         "noDuplicateElseIf": "error",
@@ -173,9 +179,7 @@
         "noConsole": {
           "level": "off",
           "options": {
-            "allow": [
-              "log"
-            ]
+            "allow": ["log"]
           }
         },
         "noNonNullAssertedOptionalChain": "off"
@@ -184,12 +188,7 @@
   },
   "overrides": [
     {
-      "includes": [
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/*.spec.ts",
-        "**/*.spec.tsx"
-      ],
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -199,10 +198,7 @@
       }
     },
     {
-      "includes": [
-        "**/db.ts",
-        "**/prisma/*.ts"
-      ],
+      "includes": ["**/db.ts", "**/prisma/*.ts"],
       "linter": {
         "rules": {
           "style": {

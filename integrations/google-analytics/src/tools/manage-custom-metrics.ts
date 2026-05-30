@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AnalyticsAdminClient } from '../lib/client';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCustomMetrics = SlateTool.create(spec, {
   name: 'Manage Custom Metrics',

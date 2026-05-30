@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getFileInfo,
-  uploadFile,
-  manageFile,
   getDownloadUrl,
+  getFileInfo,
   listFolderItems,
-  manageFolder,
-  searchContent,
-  manageCollaboration,
-  manageSharedLink,
-  manageComments,
-  manageTasks,
-  manageMetadata,
-  manageSignRequest,
   listUsers,
-  manageWebLink
+  manageCollaboration,
+  manageComments,
+  manageFile,
+  manageFolder,
+  manageMetadata,
+  manageSharedLink,
+  manageSignRequest,
+  manageTasks,
+  manageWebLink,
+  searchContent,
+  uploadFile
 } from './tools';
 import {
-  fileEvents,
-  folderEvents,
   collaborationEvents,
   commentEvents,
-  sharedLinkEvents,
+  fileEvents,
+  folderEvents,
   metadataEvents,
-  taskAssignmentEvents,
-  signRequestEvents
+  sharedLinkEvents,
+  signRequestEvents,
+  taskAssignmentEvents
 } from './triggers';
 
 export let provider = Slate.create({

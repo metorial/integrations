@@ -144,7 +144,7 @@ export interface AnalyticsOverview {
 }
 
 export interface AnalyticsPerformance {
-  data: Array<Record<string, unknown>>;
+  data: Record<string, unknown>[];
 }
 
 export interface BulkQrCode {

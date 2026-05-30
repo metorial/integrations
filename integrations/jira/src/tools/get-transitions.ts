@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { JiraClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTransitionsTool = SlateTool.create(spec, {
   name: 'Get Transitions',

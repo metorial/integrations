@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { AlchemyClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let getBlockInfo = SlateTool.create(spec, {
   name: 'Get Block Info',
@@ -70,7 +70,7 @@ Use this to inspect block data, check the current chain head, or retrieve block 
       let latestBlockNumber = await client.getBlockNumber();
       return {
         output: { latestBlockNumber },
-        message: `Current block number: **${parseInt(latestBlockNumber, 16)}** (\`${latestBlockNumber}\`).`
+        message: `Current block number: **${Number.parseInt(latestBlockNumber, 16)}** (\`${latestBlockNumber}\`).`
       };
     }
 
@@ -107,10 +107,10 @@ Use this to inspect block data, check the current chain head, or retrieve block 
       transactions: ctx.input.includeTransactions ? blockData.transactions : undefined
     };
 
-    let blockNum = blockData.number ? parseInt(blockData.number, 16) : 'unknown';
+    let blockNum = blockData.number ? Number.parseInt(blockData.number, 16) : 'unknown';
     return {
       output: { block },
-      message: `Block **#${blockNum}** — ${block.transactionCount ?? 0} transaction(s), gas used: ${blockData.gasUsed ? parseInt(blockData.gasUsed, 16).toLocaleString() : 'N/A'}.`
+      message: `Block **#${blockNum}** — ${block.transactionCount ?? 0} transaction(s), gas used: ${blockData.gasUsed ? Number.parseInt(blockData.gasUsed, 16).toLocaleString() : 'N/A'}.`
     };
   })
   .build();

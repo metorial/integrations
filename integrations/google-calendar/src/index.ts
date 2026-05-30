@@ -2,18 +2,18 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createEvent,
-  listEvents,
-  getEvent,
-  updateEvent,
   deleteEvent,
-  quickAddEvent,
-  listCalendars,
-  manageCalendar,
   findFreeBusy,
+  getColors,
+  getEvent,
+  listCalendars,
+  listEvents,
+  manageCalendar,
   manageSharing,
-  getColors
+  quickAddEvent,
+  updateEvent
 } from './tools';
-import { eventChanges, calendarListChanges } from './triggers';
+import { calendarListChanges, eventChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

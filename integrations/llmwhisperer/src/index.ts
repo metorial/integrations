@@ -3,10 +3,10 @@ import { spec } from './spec';
 import {
   extractDocument,
   getExtractionStatus,
-  retrieveExtraction,
   getHighlights,
   getUsageInfo,
-  manageWebhook
+  manageWebhook,
+  retrieveExtraction
 } from './tools';
 import { extractionCompleted } from './triggers';
 

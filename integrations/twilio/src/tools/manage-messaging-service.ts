@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwilioClient } from '../lib/client';
 import { twilioServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let messagingServiceSchema = z.object({
   serviceSid: z.string().describe('Unique SID of the Messaging Service (starts with MG)'),

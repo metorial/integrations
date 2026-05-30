@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { HootsuiteClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageMessageTool = SlateTool.create(spec, {
   name: 'Manage Message',

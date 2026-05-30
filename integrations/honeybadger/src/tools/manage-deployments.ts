@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HoneybadgerClient } from '../lib/client';
 import { HoneybadgerReportingClient } from '../lib/reporting-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let deploySchema = z.object({
   deployId: z.number().optional().describe('Deployment ID'),

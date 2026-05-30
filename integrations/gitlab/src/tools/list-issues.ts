@@ -1,8 +1,7 @@
 import { SlateTool } from 'slates';
-import { GitLabClient } from '../lib/client';
-import { gitLabServiceError } from '../lib/errors';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { GitLabClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let listIssues = SlateTool.create(spec, {
   name: 'List Issues',

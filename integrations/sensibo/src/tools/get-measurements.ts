@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SensiboClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let measurementSchema = z.object({
   temperature: z.number().optional().describe('Temperature reading'),

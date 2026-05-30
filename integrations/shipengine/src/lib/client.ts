@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(private config: { token: string; baseUrl: string }) {
+  constructor(config: { token: string; baseUrl: string }) {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
@@ -830,7 +830,7 @@ export interface ListPickupsParams {
   page_size?: number;
 }
 
-export interface PaginatedResponse<T> {
+export interface PaginatedResponse<_T> {
   total: number;
   page: number;
   pages: number;

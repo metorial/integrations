@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addComment = SlateTool.create(spec, {
   name: 'Add Comment',
@@ -34,7 +34,7 @@ export let addComment = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let comment;
+    let comment: any;
     if (ctx.input.parentCommentId) {
       comment = await client.replyToComment(ctx.input.parentCommentId, {
         author_id: ctx.input.authorId,

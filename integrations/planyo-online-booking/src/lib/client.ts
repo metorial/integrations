@@ -614,10 +614,7 @@ export class PlanyoClient {
   }
 
   async listCouponTypes(
-    params: {
-      resourceId?: string;
-      includeUnpublished?: boolean;
-    } = {}
+    params: { resourceId?: string; includeUnpublished?: boolean } = {}
   ): Promise<any> {
     let apiParams: Record<string, any> = {};
     if (params.resourceId) apiParams.resource_id = params.resourceId;

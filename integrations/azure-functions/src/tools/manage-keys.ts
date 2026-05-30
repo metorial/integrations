@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ArmClient } from '../lib/client';
 import { azureFunctionsServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageKeys = SlateTool.create(spec, {
   name: 'Manage Access Keys',
@@ -63,7 +63,7 @@ export let manageKeys = SlateTool.create(spec, {
     }
 
     ctx.info(
-      `${action} ${scope} key(s) for ${appName}${functionName ? '/' + functionName : ''}`
+      `${action} ${scope} key(s) for ${appName}${functionName ? `/${functionName}` : ''}`
     );
 
     if (action === 'list') {

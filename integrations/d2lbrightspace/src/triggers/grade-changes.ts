@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let gradeChanges = SlateTrigger.create(spec, {
   name: 'Grade Changes',
@@ -85,8 +85,7 @@ export let gradeChanges = SlateTrigger.create(spec, {
                 newSnapshots[key] = snapshotValue;
 
                 if (
-                  state?.gradeSnapshots &&
-                  state.gradeSnapshots[key] &&
+                  state?.gradeSnapshots?.[key] &&
                   state.gradeSnapshots[key] !== snapshotValue
                 ) {
                   inputs.push({

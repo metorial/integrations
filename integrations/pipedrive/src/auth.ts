@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { pipedriveApiError, pipedriveServiceError } from './lib/errors';
 
@@ -183,7 +183,7 @@ export let auth = SlateAuth.create()
 
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response;
+      let response: any;
       try {
         response = await http.post(
           'https://oauth.pipedrive.com/oauth/token',
@@ -234,7 +234,7 @@ export let auth = SlateAuth.create()
 
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response;
+      let response: any;
       try {
         response = await http.post(
           'https://oauth.pipedrive.com/oauth/token',
@@ -281,7 +281,7 @@ export let auth = SlateAuth.create()
         baseURL: `https://api.pipedrive.com/v1`
       });
 
-      let response;
+      let response: any;
       try {
         response = await http.get('/users/me', {
           headers: {
@@ -329,7 +329,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: any) => {
       let http = createAxios();
 
-      let response;
+      let response: any;
       try {
         response = await http.get(`https://api.pipedrive.com/v1/users/me`, {
           headers: {

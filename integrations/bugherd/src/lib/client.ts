@@ -1,20 +1,20 @@
 import { createAxios } from 'slates';
 import type {
-  BugherdOrganization,
-  BugherdUser,
-  BugherdProject,
-  BugherdTask,
-  BugherdComment,
   BugherdAttachment,
   BugherdColumn,
-  BugherdWebhook,
+  BugherdComment,
   BugherdMeta,
-  TaskFilters,
-  CreateTaskParams,
-  UpdateTaskParams,
+  BugherdOrganization,
+  BugherdProject,
+  BugherdTask,
+  BugherdUser,
+  BugherdWebhook,
+  CreateCommentParams,
   CreateProjectParams,
+  CreateTaskParams,
+  TaskFilters,
   UpdateProjectParams,
-  CreateCommentParams
+  UpdateTaskParams
 } from './types';
 
 export class BugherdClient {
@@ -62,12 +62,12 @@ export class BugherdClient {
     filters?: TaskFilters
   ): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
     let params: Record<string, string | number> = {};
-    if (filters?.updatedSince) params['updated_since'] = filters.updatedSince;
-    if (filters?.createdSince) params['created_since'] = filters.createdSince;
-    if (filters?.priority) params['priority'] = filters.priority;
-    if (filters?.tag) params['tag'] = filters.tag;
-    if (filters?.assignedToId) params['assigned_to_id'] = filters.assignedToId;
-    if (filters?.page) params['page'] = filters.page;
+    if (filters?.updatedSince) params.updated_since = filters.updatedSince;
+    if (filters?.createdSince) params.created_since = filters.createdSince;
+    if (filters?.priority) params.priority = filters.priority;
+    if (filters?.tag) params.tag = filters.tag;
+    if (filters?.assignedToId) params.assigned_to_id = filters.assignedToId;
+    if (filters?.page) params.page = filters.page;
 
     let response = await this.axios.get(`/users/${userId}/tasks.json`, { params });
     return { tasks: response.data.tasks ?? [], meta: response.data.meta };
@@ -78,8 +78,8 @@ export class BugherdClient {
     filters?: { createdSince?: string; isActive?: boolean }
   ): Promise<BugherdProject[]> {
     let params: Record<string, string | boolean> = {};
-    if (filters?.createdSince) params['created_since'] = filters.createdSince;
-    if (filters?.isActive !== undefined) params['is_active'] = filters.isActive;
+    if (filters?.createdSince) params.created_since = filters.createdSince;
+    if (filters?.isActive !== undefined) params.is_active = filters.isActive;
 
     let response = await this.axios.get(`/users/${userId}/projects.json`, { params });
     return response.data.projects ?? [];
@@ -123,11 +123,11 @@ export class BugherdClient {
     params: UpdateProjectParams
   ): Promise<BugherdProject> {
     let body: Record<string, any> = {};
-    if (params.name !== undefined) body['name'] = params.name;
-    if (params.devurl !== undefined) body['devurl'] = params.devurl;
-    if (params.isActive !== undefined) body['is_active'] = params.isActive;
-    if (params.isPublic !== undefined) body['is_public'] = params.isPublic;
-    if (params.permission !== undefined) body['permission'] = params.permission;
+    if (params.name !== undefined) body.name = params.name;
+    if (params.devurl !== undefined) body.devurl = params.devurl;
+    if (params.isActive !== undefined) body.is_active = params.isActive;
+    if (params.isPublic !== undefined) body.is_public = params.isPublic;
+    if (params.permission !== undefined) body.permission = params.permission;
 
     let response = await this.axios.put(`/projects/${projectId}.json`, { project: body });
     return response.data.project;
@@ -146,8 +146,8 @@ export class BugherdClient {
     params: { userId?: number; email?: string }
   ): Promise<void> {
     let body: Record<string, any> = {};
-    if (params.userId) body['user_id'] = params.userId;
-    if (params.email) body['email'] = params.email;
+    if (params.userId) body.user_id = params.userId;
+    if (params.email) body.email = params.email;
     await this.axios.post(`/projects/${projectId}/add_guest.json`, body);
   }
 
@@ -209,14 +209,14 @@ export class BugherdClient {
     let body: Record<string, any> = {
       description: params.description
     };
-    if (params.priority) body['priority'] = params.priority;
-    if (params.status) body['status'] = params.status;
-    if (params.requesterId) body['requester_id'] = params.requesterId;
-    if (params.requesterEmail) body['requester_email'] = params.requesterEmail;
-    if (params.assignedToId) body['assigned_to_id'] = params.assignedToId;
-    if (params.assignedToEmail) body['assigned_to_email'] = params.assignedToEmail;
-    if (params.tagNames) body['tag_names'] = params.tagNames;
-    if (params.externalId) body['external_id'] = params.externalId;
+    if (params.priority) body.priority = params.priority;
+    if (params.status) body.status = params.status;
+    if (params.requesterId) body.requester_id = params.requesterId;
+    if (params.requesterEmail) body.requester_email = params.requesterEmail;
+    if (params.assignedToId) body.assigned_to_id = params.assignedToId;
+    if (params.assignedToEmail) body.assigned_to_email = params.assignedToEmail;
+    if (params.tagNames) body.tag_names = params.tagNames;
+    if (params.externalId) body.external_id = params.externalId;
 
     let response = await this.axios.post(`/projects/${projectId}/tasks.json`, { task: body });
     return response.data.task;
@@ -228,16 +228,15 @@ export class BugherdClient {
     params: UpdateTaskParams
   ): Promise<BugherdTask> {
     let body: Record<string, any> = {};
-    if (params.description !== undefined) body['description'] = params.description;
-    if (params.priority !== undefined) body['priority'] = params.priority;
-    if (params.status !== undefined) body['status'] = params.status;
-    if (params.assignedToId !== undefined) body['assigned_to_id'] = params.assignedToId;
-    if (params.assignedToEmail !== undefined)
-      body['assigned_to_email'] = params.assignedToEmail;
-    if (params.unassignUser !== undefined) body['unassign_user'] = params.unassignUser;
-    if (params.tagNames !== undefined) body['tag_names'] = params.tagNames;
-    if (params.externalId !== undefined) body['external_id'] = params.externalId;
-    if (params.updaterEmail !== undefined) body['updater_email'] = params.updaterEmail;
+    if (params.description !== undefined) body.description = params.description;
+    if (params.priority !== undefined) body.priority = params.priority;
+    if (params.status !== undefined) body.status = params.status;
+    if (params.assignedToId !== undefined) body.assigned_to_id = params.assignedToId;
+    if (params.assignedToEmail !== undefined) body.assigned_to_email = params.assignedToEmail;
+    if (params.unassignUser !== undefined) body.unassign_user = params.unassignUser;
+    if (params.tagNames !== undefined) body.tag_names = params.tagNames;
+    if (params.externalId !== undefined) body.external_id = params.externalId;
+    if (params.updaterEmail !== undefined) body.updater_email = params.updaterEmail;
 
     let response = await this.axios.put(`/projects/${projectId}/tasks/${taskId}.json`, {
       task: body
@@ -273,9 +272,9 @@ export class BugherdClient {
     let body: Record<string, any> = {
       text: params.text
     };
-    if (params.userId) body['user_id'] = params.userId;
-    if (params.email) body['email'] = params.email;
-    if (params.isPrivate !== undefined) body['is_private'] = params.isPrivate;
+    if (params.userId) body.user_id = params.userId;
+    if (params.email) body.email = params.email;
+    if (params.isPrivate !== undefined) body.is_private = params.isPrivate;
 
     let response = await this.axios.post(
       `/projects/${projectId}/tasks/${taskId}/comments.json`,
@@ -378,7 +377,7 @@ export class BugherdClient {
       target_url: targetUrl,
       event: event
     };
-    if (projectId !== undefined) body['project_id'] = projectId;
+    if (projectId !== undefined) body.project_id = projectId;
 
     let response = await this.axios.post('/webhooks.json', body);
     return response.data.webhook;
@@ -393,14 +392,14 @@ export class BugherdClient {
   private buildTaskFilterParams(filters?: TaskFilters): Record<string, string | number> {
     let params: Record<string, string | number> = {};
     if (!filters) return params;
-    if (filters.updatedSince) params['updated_since'] = filters.updatedSince;
-    if (filters.createdSince) params['created_since'] = filters.createdSince;
-    if (filters.status) params['status'] = filters.status;
-    if (filters.priority) params['priority'] = filters.priority;
-    if (filters.tag) params['tag'] = filters.tag;
-    if (filters.assignedToId) params['assigned_to_id'] = filters.assignedToId;
-    if (filters.externalId) params['external_id'] = filters.externalId;
-    if (filters.page) params['page'] = filters.page;
+    if (filters.updatedSince) params.updated_since = filters.updatedSince;
+    if (filters.createdSince) params.created_since = filters.createdSince;
+    if (filters.status) params.status = filters.status;
+    if (filters.priority) params.priority = filters.priority;
+    if (filters.tag) params.tag = filters.tag;
+    if (filters.assignedToId) params.assigned_to_id = filters.assignedToId;
+    if (filters.externalId) params.external_id = filters.externalId;
+    if (filters.page) params.page = filters.page;
     return params;
   }
 }

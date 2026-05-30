@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fieldSchema = z.object({
   key: z.string().describe('Unique question identifier'),
@@ -69,7 +69,7 @@ export let formResponse = SlateTrigger.create(spec, {
               webhookId: webhook.id,
               formId: form.id
             });
-          } catch (e) {
+          } catch (_e) {
             // Skip forms where webhook creation fails (e.g., permissions)
           }
         }
@@ -96,7 +96,7 @@ export let formResponse = SlateTrigger.create(spec, {
         for (let webhook of details.webhooks) {
           try {
             await client.deleteWebhook(webhook.webhookId);
-          } catch (e) {
+          } catch (_e) {
             // Ignore errors during cleanup (webhook may already be deleted)
           }
         }

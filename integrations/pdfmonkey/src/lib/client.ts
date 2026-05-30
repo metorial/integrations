@@ -62,7 +62,7 @@ export interface ListTemplatesParams {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.pdfmonkey.io/api/v1',
       headers: {
@@ -199,13 +199,13 @@ export class Client {
     };
 
     if (params.page) {
-      queryParams['page'] = String(params.page);
+      queryParams.page = String(params.page);
     }
     if (params.folders) {
       queryParams['q[folders]'] = params.folders;
     }
     if (params.sort) {
-      queryParams['sort'] = params.sort;
+      queryParams.sort = params.sort;
     }
 
     let response = await this.axios.get('/document_template_cards', { params: queryParams });

@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchContacts,
-  searchCompanies,
-  enrichContacts,
+  complianceCheck,
   enrichCompanies,
-  searchIntent,
-  enrichIntent,
-  searchScoops,
-  searchNews,
-  websightsLookup,
-  getUsage,
+  enrichContacts,
   enrichCorporateHierarchy,
+  enrichIntent,
   enrichTechnographics,
-  complianceCheck
+  getUsage,
+  searchCompanies,
+  searchContacts,
+  searchIntent,
+  searchNews,
+  searchScoops,
+  websightsLookup
 } from './tools';
 import { recordUpdated } from './triggers';
 

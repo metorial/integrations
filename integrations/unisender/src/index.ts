@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageLists,
-  getLists,
-  subscribeContact,
-  unsubscribeContact,
-  getContact,
-  importContacts,
-  createEmailMessage,
-  updateEmailMessage,
-  launchCampaign,
   cancelCampaign,
+  createEmailMessage,
+  deleteTag,
+  getAccountInfo,
   getCampaignStats,
+  getContact,
+  getFieldsAndTags,
+  getLists,
+  getTemplates,
+  importContacts,
+  launchCampaign,
   listCampaigns,
+  listMessages,
+  manageFields,
+  manageLists,
+  manageTemplates,
   sendEmail,
   sendSms,
-  manageTemplates,
-  getTemplates,
-  manageFields,
-  getFieldsAndTags,
-  deleteTag,
-  listMessages,
-  validateSender,
-  getAccountInfo
+  subscribeContact,
+  unsubscribeContact,
+  updateEmailMessage,
+  validateSender
 } from './tools';
 import { unisenderEvents } from './triggers';
 

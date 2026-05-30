@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GhostAdminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let newsletterOutputSchema = z.object({
   newsletterId: z.string().describe('Unique newsletter ID'),

@@ -1,9 +1,9 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  screenOrder,
-  orderFeedback,
   getOrderResult,
+  orderFeedback,
+  screenOrder,
   sendSmsVerification,
   verifyOtp
 } from './tools';

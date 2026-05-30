@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { ConnectClient, PatchOperation } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { ConnectClient, type PatchOperation } from '../lib/client';
+import { spec } from '../spec';
 
 export let updateItem = SlateTool.create(spec, {
   name: 'Update Item',
@@ -78,7 +78,7 @@ export let updateItem = SlateTool.create(spec, {
       ctx.input.favorite !== undefined ||
       ctx.input.urls !== undefined;
 
-    let result;
+    let result: any;
 
     if (hasConvenienceUpdates && !ctx.input.patchOperations) {
       ctx.progress('Fetching current item...');

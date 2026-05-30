@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { HelloLeadsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createLead = SlateTool.create(spec, {
   name: 'Create Lead',
@@ -103,7 +103,7 @@ export let createLead = SlateTool.create(spec, {
         mobile: ctx.input.mobile,
         organization: ctx.input.organization
       },
-      message: `Successfully created lead **${ctx.input.firstName}${ctx.input.lastName ? ' ' + ctx.input.lastName : ''}** (ID: ${leadId}).`
+      message: `Successfully created lead **${ctx.input.firstName}${ctx.input.lastName ? ` ${ctx.input.lastName}` : ''}** (ID: ${leadId}).`
     };
   })
   .build();

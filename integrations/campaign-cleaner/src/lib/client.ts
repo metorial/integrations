@@ -262,7 +262,7 @@ let mapCampaignListItem = (data: any): CampaignListItem => ({
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.headers = {
       'X-CC-API-Key': config.token,
       'Content-Type': 'application/json'

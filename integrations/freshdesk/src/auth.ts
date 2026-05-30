@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from 'slates';
+import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
@@ -26,7 +26,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: any) => {
+    getProfile: async (_ctx: any) => {
       // We cannot fetch the profile without the subdomain (which is in config, not auth).
       // Return a minimal profile with the token present indication.
       return {

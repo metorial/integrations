@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  uploadAsset,
-  searchAssets,
-  getAsset,
-  updateAsset,
   deleteAssets,
-  manageTags,
+  getAsset,
+  getUsage,
   listAssets,
   manageFolders,
-  getUsage
+  manageTags,
+  searchAssets,
+  updateAsset,
+  uploadAsset
 } from './tools';
 import { assetEvent } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DialpadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let managePhoneNumberTool = SlateTool.create(spec, {
   name: 'Manage Phone Number',

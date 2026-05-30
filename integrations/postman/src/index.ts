@@ -1,31 +1,31 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listWorkspacesTool,
-  getWorkspaceTool,
-  manageWorkspaceTool,
-  listCollectionsTool,
-  getCollectionTool,
-  manageCollectionTool,
+  createWebhookTool,
   forkCollectionTool,
-  managePullRequestTool,
-  listEnvironmentsTool,
+  getCollectionTool,
   getEnvironmentTool,
+  getUserTool,
+  getWorkspaceTool,
+  listCollectionsTool,
+  listEnvironmentsTool,
+  listWorkspacesTool,
+  manageApiTool,
+  manageCollectionTool,
+  manageCommentTool,
   manageEnvironmentTool,
   manageMockServerTool,
   manageMonitorTool,
-  runMonitorTool,
-  manageApiTool,
-  manageCommentTool,
-  getUserTool,
+  managePullRequestTool,
   manageTagsTool,
-  createWebhookTool
+  manageWorkspaceTool,
+  runMonitorTool
 } from './tools';
 import {
   collectionUpdatedTrigger,
+  inboundWebhook,
   monitorRunCompletedTrigger,
-  workspaceUpdatedTrigger,
-  inboundWebhook
+  workspaceUpdatedTrigger
 } from './triggers';
 
 export let provider = Slate.create({

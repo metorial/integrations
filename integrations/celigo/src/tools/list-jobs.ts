@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listJobs = SlateTool.create(spec, {
   name: 'List Jobs',
@@ -58,11 +58,11 @@ Filter by flowId, integrationId, status, date ranges, and more.`,
     });
 
     let params: Record<string, string> = {};
-    if (ctx.input.flowId) params['_flowId'] = ctx.input.flowId;
-    if (ctx.input.integrationId) params['_integrationId'] = ctx.input.integrationId;
-    if (ctx.input.status) params['status'] = ctx.input.status;
-    if (ctx.input.createdAtFrom) params['createdAt_gte'] = ctx.input.createdAtFrom;
-    if (ctx.input.createdAtTo) params['createdAt_lte'] = ctx.input.createdAtTo;
+    if (ctx.input.flowId) params._flowId = ctx.input.flowId;
+    if (ctx.input.integrationId) params._integrationId = ctx.input.integrationId;
+    if (ctx.input.status) params.status = ctx.input.status;
+    if (ctx.input.createdAtFrom) params.createdAt_gte = ctx.input.createdAtFrom;
+    if (ctx.input.createdAtTo) params.createdAt_lte = ctx.input.createdAtTo;
 
     let jobs = await client.listJobs(params);
 

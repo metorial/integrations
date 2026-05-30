@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import {
-  imageOptionsSchema,
-  jobResponseSchema,
   authenticationSchema,
-  cookieSchema
+  cookieSchema,
+  imageOptionsSchema,
+  jobResponseSchema
 } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let generateImageFromUrl = SlateTool.create(spec, {
   name: 'Generate Image from URL',

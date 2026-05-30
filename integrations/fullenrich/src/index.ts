@@ -2,12 +2,12 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   enrichContacts,
-  getEnrichmentResult,
-  reverseEmailLookup,
-  getReverseEmailResult,
-  searchPeople,
-  searchCompanies,
   getCreditBalance,
+  getEnrichmentResult,
+  getReverseEmailResult,
+  reverseEmailLookup,
+  searchCompanies,
+  searchPeople,
   verifyApiKey
 } from './tools';
 import { enrichmentCompleted } from './triggers';

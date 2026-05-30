@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  contentWorkflow,
+  executeGraphql,
+  getContentHistory,
   getContentItem,
-  listContent,
+  getLocales,
   getPage,
   getSitemap,
-  executeGraphql,
-  syncContent,
-  manageContentItem,
-  contentWorkflow,
-  managePage,
   listAssets,
-  manageAsset,
-  manageFolder,
-  listContentModels,
-  manageContentModel,
-  getContentHistory,
   listContainers,
+  listContent,
+  listContentModels,
   listUsers,
-  getLocales
+  manageAsset,
+  manageContentItem,
+  manageContentModel,
+  manageFolder,
+  managePage,
+  syncContent
 } from './tools';
 import { contentChanged } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BigQueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let fieldSchema: z.ZodType<any> = z.lazy(() =>
   z.object({

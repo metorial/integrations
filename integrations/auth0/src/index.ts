@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchUsersTool,
-  getUserTool,
   createUserTool,
-  updateUserTool,
   deleteUserTool,
-  manageUserRolesTool,
-  manageRolesTool,
-  manageConnectionsTool,
-  manageApplicationsTool,
-  manageOrganizationsTool,
-  manageOrganizationMembersTool,
   getLogsTool,
-  manageResourceServersTool,
+  getUserTool,
   manageActionsTool,
-  manageClientGrantsTool
+  manageApplicationsTool,
+  manageClientGrantsTool,
+  manageConnectionsTool,
+  manageOrganizationMembersTool,
+  manageOrganizationsTool,
+  manageResourceServersTool,
+  manageRolesTool,
+  manageUserRolesTool,
+  searchUsersTool,
+  updateUserTool
 } from './tools';
 import { logEventsTrigger } from './triggers';
 

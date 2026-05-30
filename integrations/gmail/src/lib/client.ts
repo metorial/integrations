@@ -192,7 +192,7 @@ export class Client {
 
     let payload: Record<string, string> = { raw: encoded };
     if (params.threadId) {
-      payload['threadId'] = params.threadId;
+      payload.threadId = params.threadId;
     }
 
     let response = await gmailAxios.post(`/users/${this.userId}/messages/send`, payload, {
@@ -391,7 +391,7 @@ export class Client {
       labelListVisibility: params.labelListVisibility
     };
     if (params.backgroundColor || params.textColor) {
-      body['color'] = {
+      body.color = {
         backgroundColor: params.backgroundColor,
         textColor: params.textColor
       };
@@ -415,13 +415,13 @@ export class Client {
     let body: Record<string, any> = {
       id: labelId
     };
-    if (params.name !== undefined) body['name'] = params.name;
+    if (params.name !== undefined) body.name = params.name;
     if (params.messageListVisibility !== undefined)
-      body['messageListVisibility'] = params.messageListVisibility;
+      body.messageListVisibility = params.messageListVisibility;
     if (params.labelListVisibility !== undefined)
-      body['labelListVisibility'] = params.labelListVisibility;
+      body.labelListVisibility = params.labelListVisibility;
     if (params.backgroundColor || params.textColor) {
-      body['color'] = {
+      body.color = {
         backgroundColor: params.backgroundColor,
         textColor: params.textColor
       };
@@ -488,7 +488,7 @@ export class Client {
       message: { raw: encoded }
     };
     if (params.threadId) {
-      payload['message']['threadId'] = params.threadId;
+      payload.message.threadId = params.threadId;
     }
 
     let response = await gmailAxios.post(`/users/${this.userId}/drafts`, payload, {
@@ -516,7 +516,7 @@ export class Client {
       message: { raw: encoded }
     };
     if (params.threadId) {
-      payload['message']['threadId'] = params.threadId;
+      payload.message.threadId = params.threadId;
     }
 
     let response = await gmailAxios.put(`/users/${this.userId}/drafts/${draftId}`, payload, {

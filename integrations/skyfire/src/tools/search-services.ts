@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SkyfireClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let serviceSchema = z.object({
   serviceId: z.string().describe('UUID of the service'),
@@ -85,7 +85,7 @@ export let searchServices = SlateTool.create(spec, {
       };
     }
 
-    let result;
+    let result: any;
     if (ctx.input.tags && ctx.input.tags.length > 0) {
       result = await client.searchServicesByTags(ctx.input.tags);
     } else if (ctx.input.agentId) {

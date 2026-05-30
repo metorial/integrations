@@ -142,7 +142,7 @@ export class Client {
       scheduledAt?: string;
       isReoccurring?: boolean;
       recurrenceRules?: string[];
-      contacts?: Array<Record<string, any>>;
+      contacts?: Record<string, any>[];
       variables?: Array<{ name: string; value: string }>;
     }
   ) {

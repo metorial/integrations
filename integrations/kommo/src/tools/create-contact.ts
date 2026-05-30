@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
-import { KommoClient } from '../lib/client';
-import { spec } from '../spec';
-import {
-  customFieldValueSchema,
-  tagSchema,
-  buildCustomFieldsPayload,
-  buildTagsPayload
-} from '../lib/schemas';
 import { z } from 'zod';
+import { KommoClient } from '../lib/client';
+import {
+  buildCustomFieldsPayload,
+  buildTagsPayload,
+  customFieldValueSchema,
+  tagSchema
+} from '../lib/schemas';
+import { spec } from '../spec';
 
 export let createContactTool = SlateTool.create(spec, {
   name: 'Create Contact',
@@ -42,25 +42,24 @@ export let createContactTool = SlateTool.create(spec, {
 
     let payload: Record<string, any> = {};
 
-    if (ctx.input.name) payload['name'] = ctx.input.name;
-    if (ctx.input.firstName) payload['first_name'] = ctx.input.firstName;
-    if (ctx.input.lastName) payload['last_name'] = ctx.input.lastName;
-    if (ctx.input.responsibleUserId)
-      payload['responsible_user_id'] = ctx.input.responsibleUserId;
+    if (ctx.input.name) payload.name = ctx.input.name;
+    if (ctx.input.firstName) payload.first_name = ctx.input.firstName;
+    if (ctx.input.lastName) payload.last_name = ctx.input.lastName;
+    if (ctx.input.responsibleUserId) payload.responsible_user_id = ctx.input.responsibleUserId;
 
     if (ctx.input.customFieldsValues?.length) {
-      payload['custom_fields_values'] = buildCustomFieldsPayload(ctx.input.customFieldsValues);
+      payload.custom_fields_values = buildCustomFieldsPayload(ctx.input.customFieldsValues);
     }
 
     let embedded: Record<string, any> = {};
     if (ctx.input.tags?.length) {
-      embedded['tags'] = buildTagsPayload(ctx.input.tags);
+      embedded.tags = buildTagsPayload(ctx.input.tags);
     }
     if (ctx.input.companyId) {
-      embedded['companies'] = [{ id: ctx.input.companyId }];
+      embedded.companies = [{ id: ctx.input.companyId }];
     }
     if (Object.keys(embedded).length > 0) {
-      payload['_embedded'] = embedded;
+      payload._embedded = embedded;
     }
 
     let result = await client.createContact(payload);

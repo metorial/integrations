@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageChangeRequest = SlateTool.create(spec, {
   name: 'Manage Change Request',
@@ -97,7 +97,7 @@ export let manageChangeRequest = SlateTool.create(spec, {
     if (ctx.input.closeCode) fields.close_code = ctx.input.closeCode;
     if (ctx.input.closeNotes) fields.close_notes = ctx.input.closeNotes;
 
-    let record;
+    let record: any;
     let action: string;
 
     if (ctx.input.changeRequestId) {

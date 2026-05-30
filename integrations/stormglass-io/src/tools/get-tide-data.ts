@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTideDataTool = SlateTool.create(spec, {
   name: 'Get Tide Data',
@@ -82,8 +82,8 @@ Can return either **sea level** data (hourly predicted sea levels) or **extremes
       datum: ctx.input.datum
     };
 
-    let seaLevelData: any = undefined;
-    let extremesData: any = undefined;
+    let seaLevelData: any;
+    let extremesData: any;
     let meta: any = {};
 
     if (ctx.input.dataType === 'seaLevel' || ctx.input.dataType === 'both') {

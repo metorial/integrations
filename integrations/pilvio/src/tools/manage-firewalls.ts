@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PilvioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let firewallRuleSchema = z.object({
   protocol: z.enum(['TCP', 'UDP', 'ICMP']).describe('Protocol'),

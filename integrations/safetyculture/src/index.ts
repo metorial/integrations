@@ -1,27 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchInspections,
+  addIssueComment,
+  createAction,
+  createIssue,
+  deleteActions,
   getInspection,
-  manageInspection,
-  listTemplates,
+  getIssue,
   getTemplate,
   listActions,
-  createAction,
-  updateAction,
-  deleteActions,
   listIssues,
-  getIssue,
-  createIssue,
-  updateIssue,
-  addIssueComment,
+  listTemplates,
   listUsersAndGroups,
+  manageAssets,
+  manageInspection,
   manageSchedules,
-  manageAssets
+  searchInspections,
+  updateAction,
+  updateIssue
 } from './tools';
 import {
-  inspectionEvents,
   actionEvents,
+  inspectionEvents,
   issueEvents,
   mediaEvents,
   trainingEvents

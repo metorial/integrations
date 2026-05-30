@@ -1,17 +1,17 @@
 import { createAxios } from '@slates/provider';
 import { youtubeApiError, youtubeServiceError } from './errors';
 import type {
-  YouTubeVideo,
-  YouTubeListResponse,
-  YouTubeSearchResult,
+  YouTubeActivity,
+  YouTubeCaption,
   YouTubeChannel,
+  YouTubeComment,
+  YouTubeCommentThread,
+  YouTubeListResponse,
   YouTubePlaylist,
   YouTubePlaylistItem,
-  YouTubeCommentThread,
-  YouTubeComment,
+  YouTubeSearchResult,
   YouTubeSubscription,
-  YouTubeCaption,
-  YouTubeActivity
+  YouTubeVideo
 } from './types';
 
 type YouTubeAuthConfig = {
@@ -28,7 +28,7 @@ export class Client {
   private axios;
   private apiKey?: string;
 
-  constructor(private config: YouTubeAuthConfig) {
+  constructor(config: YouTubeAuthConfig) {
     this.apiKey =
       config.authType === 'apiKey' || config.apiKey
         ? (config.apiKey ?? config.token)

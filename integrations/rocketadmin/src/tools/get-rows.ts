@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RocketadminClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getRows = SlateTool.create(spec, {
   name: 'Get Table Rows',
@@ -93,7 +93,7 @@ export let getRows = SlateTool.create(spec, {
 
       let rows = Array.isArray(result)
         ? result
-        : (result.rows as Array<Record<string, unknown>>) || [];
+        : (result.rows as Record<string, unknown>[]) || [];
       let pagination = !Array.isArray(result)
         ? {
             total: result.total_count as number | undefined,
@@ -118,7 +118,7 @@ export let getRows = SlateTool.create(spec, {
 
     let rows = Array.isArray(result)
       ? result
-      : (result.rows as Array<Record<string, unknown>>) || [];
+      : (result.rows as Record<string, unknown>[]) || [];
     let pagination = !Array.isArray(result)
       ? {
           total: result.total_count as number | undefined,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WorkdayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let workdayReferenceSchema = z.object({
   id: z.string().optional().describe('Workday ID'),

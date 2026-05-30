@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listEmployees,
-  getEmployee,
-  createEmployee,
-  listAbsences,
   cancelAbsence,
-  manageLeaveRequest,
-  listLeaveRequests,
-  listSicknesses,
+  createEmployee,
   createSickness,
-  manageExpense,
-  manageExpenseClaim,
-  listBonuses,
-  listSalaries,
-  listOrganization,
+  getAccount,
   getDepartmentData,
+  getEmployee,
+  listAbsences,
+  listBonuses,
+  listEmployees,
+  listHolidayAllowances,
+  listLeaveRequests,
+  listOrganization,
+  listOtherLeaveReasons,
+  listSalaries,
+  listSicknesses,
   listTraining,
   listWorkingPatterns,
-  listHolidayAllowances,
-  listOtherLeaveReasons,
-  getAccount
+  manageExpense,
+  manageExpenseClaim,
+  manageLeaveRequest
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

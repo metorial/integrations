@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient, extractCategorySummary, extractTagSummary } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient, extractCategorySummary, extractTagSummary } from '../lib/helpers';
+import { spec } from '../spec';
 
 let categoryOutputSchema = z.object({
   categoryId: z.string().describe('Unique identifier of the category'),

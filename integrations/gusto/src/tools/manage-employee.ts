@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { getBaseUrl } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageEmployee = SlateTool.create(spec, {
   name: 'Manage Employee',

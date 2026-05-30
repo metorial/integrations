@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listConversations,
-  getConversation,
-  sendMessage,
+  createAnalyticsReport,
   createCustomChannelMessage,
   createPost,
-  manageConversation,
-  manageContacts,
-  listContacts,
+  getConversation,
   listContactBooks,
-  manageSharedLabels,
-  manageTeams,
-  manageTasks,
+  listContacts,
+  listConversations,
+  listOrganizationsAndUsers,
   listTasks,
+  manageContacts,
+  manageConversation,
   manageResponses,
-  createAnalyticsReport,
-  listOrganizationsAndUsers
+  manageSharedLabels,
+  manageTasks,
+  manageTeams,
+  sendMessage
 } from './tools';
 import { incomingMessage, newComment } from './triggers';
 

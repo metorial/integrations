@@ -1,15 +1,15 @@
 import { createAxios } from 'slates';
 import type {
-  JumpCloudUser,
-  JumpCloudSystem,
-  JumpCloudGroup,
+  Association,
+  AssociationRequest,
+  JumpCloudApplication,
   JumpCloudCommand,
   JumpCloudCommandResult,
-  JumpCloudApplication,
   JumpCloudEvent,
-  PaginatedResponse,
-  AssociationRequest,
-  Association
+  JumpCloudGroup,
+  JumpCloudSystem,
+  JumpCloudUser,
+  PaginatedResponse
 } from './types';
 
 export class Client {
@@ -106,7 +106,7 @@ export class Client {
     password_never_expires?: boolean;
     passwordless_sudo?: boolean;
     attributes?: Array<{ name: string; value: string }>;
-    addresses?: Array<Record<string, string>>;
+    addresses?: Record<string, string>[];
     phoneNumbers?: Array<{ number: string; type?: string }>;
     [key: string]: any;
   }): Promise<JumpCloudUser> {
@@ -573,7 +573,7 @@ export class Client {
 
     let response = await axios.post('/events', body);
     let searchAfterHeader = response.headers?.['x-search_after'];
-    let searchAfterValue: any = undefined;
+    let searchAfterValue: any;
     if (searchAfterHeader) {
       try {
         searchAfterValue = JSON.parse(searchAfterHeader);

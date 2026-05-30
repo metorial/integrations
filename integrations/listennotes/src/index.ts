@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchPodcasts,
-  getPodcast,
-  getEpisode,
   batchFetch,
   bestPodcasts,
-  getRecommendations,
   curatedLists,
-  typeaheadSearch,
-  getPlaylists,
-  submitPodcast,
   deletePodcast,
+  getEpisode,
   getGenresAndRegions,
-  randomEpisode
+  getPlaylists,
+  getPodcast,
+  getRecommendations,
+  randomEpisode,
+  searchPodcasts,
+  submitPodcast,
+  typeaheadSearch
 } from './tools';
 import { podcastSubmission } from './triggers';
 

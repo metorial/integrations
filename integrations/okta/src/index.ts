@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listUsersTool,
-  getUserTool,
   createUserTool,
-  updateUserTool,
-  userLifecycleTool,
-  listGroupsTool,
-  manageGroupTool,
-  manageGroupMembershipTool,
+  getUserTool,
   listApplicationsTool,
-  manageAppAssignmentTool,
-  querySystemLogTool,
+  listGroupsTool,
   listPoliciesTool,
-  manageUserFactorsTool
+  listUsersTool,
+  manageAppAssignmentTool,
+  manageGroupMembershipTool,
+  manageGroupTool,
+  manageUserFactorsTool,
+  querySystemLogTool,
+  updateUserTool,
+  userLifecycleTool
 } from './tools';
 import { eventHookTrigger, systemLogPollTrigger } from './triggers';
 

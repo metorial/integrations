@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { buildLogoUrl } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getLogoUrl = SlateTool.create(spec, {
   name: 'Get Logo URL',

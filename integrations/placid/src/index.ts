@@ -4,11 +4,11 @@ import {
   generateImage,
   generatePdf,
   generateVideo,
-  manageTemplates,
+  getGenerationStatus,
   manageCollections,
-  uploadMedia,
+  manageTemplates,
   mergePdfs,
-  getGenerationStatus
+  uploadMedia
 } from './tools';
 import { generationCompleted } from './triggers';
 

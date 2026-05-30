@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { createApiClient, fetchKnowledgeBase } from '../lib/client';
+import { spec } from '../spec';
 
 export let getKnowledgeBaseTool = SlateTool.create(spec, {
   name: 'Get Knowledge Base',

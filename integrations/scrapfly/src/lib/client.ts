@@ -126,9 +126,11 @@ export class Client {
 
     return {
       screenshotUrl,
-      upstreamStatusCode: upstreamStatusCode ? parseInt(upstreamStatusCode, 10) : undefined,
+      upstreamStatusCode: upstreamStatusCode
+        ? Number.parseInt(upstreamStatusCode, 10)
+        : undefined,
       upstreamUrl: upstreamUrl || undefined,
-      apiCost: apiCost ? parseInt(apiCost, 10) : undefined,
+      apiCost: apiCost ? Number.parseInt(apiCost, 10) : undefined,
 
       imageBase64: Buffer.from(response.data).toString('base64'),
       imageFormat: options.format ?? 'jpg'

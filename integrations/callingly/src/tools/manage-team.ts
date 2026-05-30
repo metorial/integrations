@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageTeam = SlateTool.create(spec, {
   name: 'Manage Team',
@@ -77,7 +77,7 @@ export let manageTeam = SlateTool.create(spec, {
     if (ctx.input.smsAutoSend !== undefined) data.sms_auto_send = ctx.input.smsAutoSend;
     if (ctx.input.smsBody !== undefined) data.sms_body = ctx.input.smsBody;
 
-    let result;
+    let result: any;
     let action: string;
 
     if (ctx.input.teamId) {

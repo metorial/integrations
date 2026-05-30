@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EverhourClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let taskSchema = z.object({
   taskId: z.string().describe('Task ID (e.g., "ev:9876543210")'),

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createSession = SlateTool.create(spec, {
   name: 'Create Session',

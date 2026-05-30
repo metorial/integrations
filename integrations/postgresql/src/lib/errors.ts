@@ -1,4 +1,4 @@
-import { ServiceError, badRequestError } from '@lowerdeck/error';
+import { badRequestError, ServiceError } from '@lowerdeck/error';
 
 export let postgresServiceError = (message: string) =>
   new ServiceError(badRequestError({ message }));
@@ -40,16 +40,13 @@ export let postgresFieldsError = (
   fields: Record<string, string>,
   fallbackMessage = 'Unknown error'
 ) => {
-  let message = fields['message'] || fallbackMessage;
-  if (fields['detail']) message += ` - ${fields['detail']}`;
-  if (fields['hint']) message += ` (Hint: ${fields['hint']})`;
-  if (fields['position']) message += ` at position ${fields['position']}`;
+  let message = fields.message || fallbackMessage;
+  if (fields.detail) message += ` - ${fields.detail}`;
+  if (fields.hint) message += ` (Hint: ${fields.hint})`;
+  if (fields.position) message += ` at position ${fields.position}`;
 
-  return postgresUpstreamError(
-    `PostgreSQL error [${fields['code'] || 'UNKNOWN'}]: ${message}`,
-    {
-      reason: 'postgresql_server_error',
-      code: fields['code']
-    }
-  );
+  return postgresUpstreamError(`PostgreSQL error [${fields.code || 'UNKNOWN'}]: ${message}`, {
+    reason: 'postgresql_server_error',
+    code: fields.code
+  });
 };

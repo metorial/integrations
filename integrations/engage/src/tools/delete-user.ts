@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deleteUser = SlateTool.create(spec, {
   name: 'Archive or Delete User',
@@ -35,7 +35,7 @@ export let deleteUser = SlateTool.create(spec, {
       secret: ctx.auth.secret
     });
 
-    let result;
+    let result: any;
     if (ctx.input.action === 'archive') {
       result = await client.archiveUser(ctx.input.uid);
     } else {

@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getRealTimeDepartures,
-  planTrip,
   getFare,
-  getStationInfo,
+  getRealTimeDepartures,
   getRouteInfo,
+  getSchedule,
   getServiceAdvisories,
+  getStationInfo,
   getSystemStatus,
-  getSchedule
+  planTrip
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

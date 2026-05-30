@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import { fetchOEmbed, isValidLoomUrl } from '../lib/client';
+import { spec } from '../spec';
 
 export let getVideoMetadata = SlateTool.create(spec, {
   name: 'Get Video Metadata',

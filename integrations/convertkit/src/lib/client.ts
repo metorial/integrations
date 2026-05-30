@@ -1,17 +1,17 @@
 import { createAxios } from 'slates';
 import type {
-  Subscriber,
-  Tag,
-  Form,
-  Sequence,
+  Account,
   Broadcast,
   CustomField,
+  EmailTemplate,
+  Form,
+  PaginationInfo,
   Purchase,
   Segment,
-  EmailTemplate,
-  Webhook,
-  Account,
-  PaginationInfo
+  Sequence,
+  Subscriber,
+  Tag,
+  Webhook
 } from './types';
 
 interface ClientConfig {
@@ -22,7 +22,7 @@ interface ClientConfig {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
@@ -30,7 +30,7 @@ export class Client {
     if (config.authMethod === 'api_key') {
       headers['X-Kit-Api-Key'] = config.token;
     } else {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers.Authorization = `Bearer ${config.token}`;
     }
 
     this.http = createAxios({
@@ -61,16 +61,16 @@ export class Client {
     after?: string;
   }): Promise<{ subscribers: Subscriber[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.status) query['status'] = params.status;
-    if (params?.emailAddress) query['email_address'] = params.emailAddress;
-    if (params?.createdAfter) query['created_after'] = params.createdAfter;
-    if (params?.createdBefore) query['created_before'] = params.createdBefore;
-    if (params?.updatedAfter) query['updated_after'] = params.updatedAfter;
-    if (params?.updatedBefore) query['updated_before'] = params.updatedBefore;
-    if (params?.sortField) query['sort_field'] = params.sortField;
-    if (params?.sortOrder) query['sort_order'] = params.sortOrder;
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.status) query.status = params.status;
+    if (params?.emailAddress) query.email_address = params.emailAddress;
+    if (params?.createdAfter) query.created_after = params.createdAfter;
+    if (params?.createdBefore) query.created_before = params.createdBefore;
+    if (params?.updatedAfter) query.updated_after = params.updatedAfter;
+    if (params?.updatedBefore) query.updated_before = params.updatedBefore;
+    if (params?.sortField) query.sort_field = params.sortField;
+    if (params?.sortOrder) query.sort_order = params.sortOrder;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get('/subscribers', { params: query });
     let data = response.data as { subscribers: Subscriber[]; pagination: PaginationInfo };
@@ -92,9 +92,9 @@ export class Client {
     let body: Record<string, any> = {
       email_address: params.emailAddress
     };
-    if (params.firstName) body['first_name'] = params.firstName;
-    if (params.state) body['state'] = params.state;
-    if (params.fields) body['fields'] = params.fields;
+    if (params.firstName) body.first_name = params.firstName;
+    if (params.state) body.state = params.state;
+    if (params.fields) body.fields = params.fields;
 
     let response = await this.http.post('/subscribers', body);
     let data = response.data as { subscriber: Subscriber };
@@ -110,9 +110,9 @@ export class Client {
     }
   ): Promise<Subscriber> {
     let body: Record<string, any> = {};
-    if (params.emailAddress) body['email_address'] = params.emailAddress;
-    if (params.firstName !== undefined) body['first_name'] = params.firstName;
-    if (params.fields) body['fields'] = params.fields;
+    if (params.emailAddress) body.email_address = params.emailAddress;
+    if (params.firstName !== undefined) body.first_name = params.firstName;
+    if (params.fields) body.fields = params.fields;
 
     let response = await this.http.put(`/subscribers/${subscriberId}`, body);
     let data = response.data as { subscriber: Subscriber };
@@ -137,8 +137,8 @@ export class Client {
     after?: string;
   }): Promise<{ tags: Tag[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get('/tags', { params: query });
     return response.data as { tags: Tag[]; pagination: PaginationInfo };
@@ -177,9 +177,9 @@ export class Client {
     }
   ): Promise<{ subscribers: Subscriber[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.status) query['status'] = params.status;
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.status) query.status = params.status;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get(`/tags/${tagId}/subscribers`, { params: query });
     return response.data as { subscribers: Subscriber[]; pagination: PaginationInfo };
@@ -194,10 +194,10 @@ export class Client {
     after?: string;
   }): Promise<{ forms: Form[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.status) query['status'] = params.status;
-    if (params?.type) query['type'] = params.type;
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.status) query.status = params.status;
+    if (params?.type) query.type = params.type;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get('/forms', { params: query });
     return response.data as { forms: Form[]; pagination: PaginationInfo };
@@ -220,9 +220,9 @@ export class Client {
     }
   ): Promise<{ subscribers: Subscriber[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.status) query['status'] = params.status;
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.status) query.status = params.status;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get(`/forms/${formId}/subscribers`, { params: query });
     return response.data as { subscribers: Subscriber[]; pagination: PaginationInfo };
@@ -235,8 +235,8 @@ export class Client {
     after?: string;
   }): Promise<{ sequences: Sequence[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get('/sequences', { params: query });
     return response.data as { sequences: Sequence[]; pagination: PaginationInfo };
@@ -264,9 +264,9 @@ export class Client {
     }
   ): Promise<{ subscribers: Subscriber[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.status) query['status'] = params.status;
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.status) query.status = params.status;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get(`/sequences/${sequenceId}/subscribers`, {
       params: query
@@ -281,8 +281,8 @@ export class Client {
     after?: string;
   }): Promise<{ broadcasts: Broadcast[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get('/broadcasts', { params: query });
     return response.data as { broadcasts: Broadcast[]; pagination: PaginationInfo };
@@ -309,20 +309,19 @@ export class Client {
     subscriberFilter?: any[];
   }): Promise<Broadcast> {
     let body: Record<string, any> = {};
-    if (params.subject !== undefined) body['subject'] = params.subject;
-    if (params.content !== undefined) body['content'] = params.content;
-    if (params.previewText !== undefined) body['preview_text'] = params.previewText;
-    if (params.description !== undefined) body['description'] = params.description;
-    if (params.isPublic !== undefined) body['public'] = params.isPublic;
-    if (params.publishedAt !== undefined) body['published_at'] = params.publishedAt;
-    if (params.sendAt !== undefined) body['send_at'] = params.sendAt;
-    if (params.emailTemplateId !== undefined)
-      body['email_template_id'] = params.emailTemplateId;
-    if (params.emailAddress !== undefined) body['email_address'] = params.emailAddress;
-    if (params.thumbnailUrl !== undefined) body['thumbnail_url'] = params.thumbnailUrl;
-    if (params.thumbnailAlt !== undefined) body['thumbnail_alt'] = params.thumbnailAlt;
+    if (params.subject !== undefined) body.subject = params.subject;
+    if (params.content !== undefined) body.content = params.content;
+    if (params.previewText !== undefined) body.preview_text = params.previewText;
+    if (params.description !== undefined) body.description = params.description;
+    if (params.isPublic !== undefined) body.public = params.isPublic;
+    if (params.publishedAt !== undefined) body.published_at = params.publishedAt;
+    if (params.sendAt !== undefined) body.send_at = params.sendAt;
+    if (params.emailTemplateId !== undefined) body.email_template_id = params.emailTemplateId;
+    if (params.emailAddress !== undefined) body.email_address = params.emailAddress;
+    if (params.thumbnailUrl !== undefined) body.thumbnail_url = params.thumbnailUrl;
+    if (params.thumbnailAlt !== undefined) body.thumbnail_alt = params.thumbnailAlt;
     if (params.subscriberFilter !== undefined)
-      body['subscriber_filter'] = params.subscriberFilter;
+      body.subscriber_filter = params.subscriberFilter;
 
     let response = await this.http.post('/broadcasts', body);
     let data = response.data as { broadcast: Broadcast };
@@ -347,20 +346,19 @@ export class Client {
     }
   ): Promise<Broadcast> {
     let body: Record<string, any> = {};
-    if (params.subject !== undefined) body['subject'] = params.subject;
-    if (params.content !== undefined) body['content'] = params.content;
-    if (params.previewText !== undefined) body['preview_text'] = params.previewText;
-    if (params.description !== undefined) body['description'] = params.description;
-    if (params.isPublic !== undefined) body['public'] = params.isPublic;
-    if (params.publishedAt !== undefined) body['published_at'] = params.publishedAt;
-    if (params.sendAt !== undefined) body['send_at'] = params.sendAt;
-    if (params.emailTemplateId !== undefined)
-      body['email_template_id'] = params.emailTemplateId;
-    if (params.emailAddress !== undefined) body['email_address'] = params.emailAddress;
-    if (params.thumbnailUrl !== undefined) body['thumbnail_url'] = params.thumbnailUrl;
-    if (params.thumbnailAlt !== undefined) body['thumbnail_alt'] = params.thumbnailAlt;
+    if (params.subject !== undefined) body.subject = params.subject;
+    if (params.content !== undefined) body.content = params.content;
+    if (params.previewText !== undefined) body.preview_text = params.previewText;
+    if (params.description !== undefined) body.description = params.description;
+    if (params.isPublic !== undefined) body.public = params.isPublic;
+    if (params.publishedAt !== undefined) body.published_at = params.publishedAt;
+    if (params.sendAt !== undefined) body.send_at = params.sendAt;
+    if (params.emailTemplateId !== undefined) body.email_template_id = params.emailTemplateId;
+    if (params.emailAddress !== undefined) body.email_address = params.emailAddress;
+    if (params.thumbnailUrl !== undefined) body.thumbnail_url = params.thumbnailUrl;
+    if (params.thumbnailAlt !== undefined) body.thumbnail_alt = params.thumbnailAlt;
     if (params.subscriberFilter !== undefined)
-      body['subscriber_filter'] = params.subscriberFilter;
+      body.subscriber_filter = params.subscriberFilter;
 
     let response = await this.http.put(`/broadcasts/${broadcastId}`, body);
     let data = response.data as { broadcast: Broadcast };
@@ -378,8 +376,8 @@ export class Client {
     after?: string;
   }): Promise<{ customFields: CustomField[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get('/custom_fields', { params: query });
     let data = response.data as { custom_fields: CustomField[]; pagination: PaginationInfo };
@@ -409,8 +407,8 @@ export class Client {
     after?: string;
   }): Promise<{ purchases: Purchase[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get('/purchases', { params: query });
     return response.data as { purchases: Purchase[]; pagination: PaginationInfo };
@@ -477,8 +475,8 @@ export class Client {
     after?: string;
   }): Promise<{ segments: Segment[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get('/segments', { params: query });
     return response.data as { segments: Segment[]; pagination: PaginationInfo };
@@ -491,8 +489,8 @@ export class Client {
     after?: string;
   }): Promise<{ emailTemplates: EmailTemplate[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
-    if (params?.perPage) query['per_page'] = String(params.perPage);
-    if (params?.after) query['after'] = params.after;
+    if (params?.perPage) query.per_page = String(params.perPage);
+    if (params?.after) query.after = params.after;
 
     let response = await this.http.get('/email_templates', { params: query });
     let data = response.data as {
@@ -521,12 +519,11 @@ export class Client {
     }
   ): Promise<Webhook> {
     let eventBody: Record<string, any> = { name: event.name };
-    if (event.tagId !== undefined) eventBody['tag_id'] = event.tagId;
-    if (event.formId !== undefined) eventBody['form_id'] = event.formId;
-    if (event.sequenceId !== undefined) eventBody['sequence_id'] = event.sequenceId;
-    if (event.productId !== undefined) eventBody['product_id'] = event.productId;
-    if (event.initiatorValue !== undefined)
-      eventBody['initiator_value'] = event.initiatorValue;
+    if (event.tagId !== undefined) eventBody.tag_id = event.tagId;
+    if (event.formId !== undefined) eventBody.form_id = event.formId;
+    if (event.sequenceId !== undefined) eventBody.sequence_id = event.sequenceId;
+    if (event.productId !== undefined) eventBody.product_id = event.productId;
+    if (event.initiatorValue !== undefined) eventBody.initiator_value = event.initiatorValue;
 
     let response = await this.http.post('/webhooks', {
       target_url: targetUrl,

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SqsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newMessage = SlateTrigger.create(spec, {
   name: 'New Message',
@@ -127,12 +127,12 @@ export let newMessage = SlateTrigger.create(spec, {
           body: ctx.input.body,
           md5OfBody: ctx.input.md5OfBody,
           queueUrl: ctx.input.queueUrl,
-          senderId: systemAttrs['SenderId'],
-          sentTimestamp: systemAttrs['SentTimestamp'],
-          approximateReceiveCount: systemAttrs['ApproximateReceiveCount'],
-          approximateFirstReceiveTimestamp: systemAttrs['ApproximateFirstReceiveTimestamp'],
-          messageGroupId: systemAttrs['MessageGroupId'],
-          messageDeduplicationId: systemAttrs['MessageDeduplicationId'],
+          senderId: systemAttrs.SenderId,
+          sentTimestamp: systemAttrs.SentTimestamp,
+          approximateReceiveCount: systemAttrs.ApproximateReceiveCount,
+          approximateFirstReceiveTimestamp: systemAttrs.ApproximateFirstReceiveTimestamp,
+          messageGroupId: systemAttrs.MessageGroupId,
+          messageDeduplicationId: systemAttrs.MessageDeduplicationId,
           messageAttributes: ctx.input.messageAttributes
         }
       };

@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let interactionWebhookTrigger = SlateTrigger.create(spec, {
   name: 'Interaction Events',
@@ -60,21 +60,21 @@ export let interactionWebhookTrigger = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      let eventType = data['EventType'] || data['event_type'] || data['Type'] || 'unknown';
-      let eventSid = data['Sid'] || data['sid'] || `${eventType}-${Date.now()}`;
+      let eventType = data.EventType || data.event_type || data.Type || 'unknown';
+      let eventSid = data.Sid || data.sid || `${eventType}-${Date.now()}`;
 
       return {
         inputs: [
           {
             eventType,
             eventSid,
-            interactionSid: data['InteractionSid'] || data['interaction_sid'],
-            channelSid: data['ChannelSid'] || data['channel_sid'],
-            channelType: data['ChannelType'] || data['channel_type'],
-            channelStatus: data['ChannelStatus'] || data['channel_status'] || data['Status'],
-            participantSid: data['ParticipantSid'] || data['participant_sid'],
-            participantType: data['ParticipantType'] || data['participant_type'],
-            timestamp: data['Timestamp'] || data['timestamp'] || new Date().toISOString(),
+            interactionSid: data.InteractionSid || data.interaction_sid,
+            channelSid: data.ChannelSid || data.channel_sid,
+            channelType: data.ChannelType || data.channel_type,
+            channelStatus: data.ChannelStatus || data.channel_status || data.Status,
+            participantSid: data.ParticipantSid || data.participant_sid,
+            participantType: data.ParticipantType || data.participant_type,
+            timestamp: data.Timestamp || data.timestamp || new Date().toISOString(),
             rawPayload: data
           }
         ]

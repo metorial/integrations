@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { TwitterClient } from '../lib/client';
-import { postSchema, mapPost } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { TwitterClient } from '../lib/client';
+import { mapPost, postSchema } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let searchPosts = SlateTool.create(spec, {
   name: 'Search Posts',

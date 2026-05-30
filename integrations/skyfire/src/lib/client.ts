@@ -124,7 +124,7 @@ export class SkyfireClient {
 
   // ─── Seller Service APIs ──────────────────────────────────
 
-  async getSellerServices(): Promise<Array<SellerService>> {
+  async getSellerServices(): Promise<SellerService[]> {
     let response = await api.get('/api/v1/agents/seller-services', {
       headers: this.headers()
     });
@@ -190,7 +190,7 @@ export class SkyfireClient {
     return response.data;
   }
 
-  async getDirectoryServices(): Promise<{ data: Array<DirectoryService> }> {
+  async getDirectoryServices(): Promise<{ data: DirectoryService[] }> {
     let response = await api.get('/api/v1/directory/services', {
       headers: this.headers()
     });
@@ -207,7 +207,7 @@ export class SkyfireClient {
     return response.data;
   }
 
-  async searchServicesByTags(tags: string[]): Promise<{ data: Array<DirectoryService> }> {
+  async searchServicesByTags(tags: string[]): Promise<{ data: DirectoryService[] }> {
     let response = await api.get('/api/v1/directory/services/search', {
       params: { commaDelimitedTags: tags.join(',') },
       headers: this.headers()
@@ -215,7 +215,7 @@ export class SkyfireClient {
     return response.data;
   }
 
-  async getServicesByAgent(agentId: string): Promise<{ data: Array<DirectoryService> }> {
+  async getServicesByAgent(agentId: string): Promise<{ data: DirectoryService[] }> {
     let response = await api.get(
       `/api/v1/directory/agents/${encodeURIComponent(agentId)}/services`,
       {

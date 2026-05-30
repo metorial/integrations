@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let opportunitySchema = z.object({
   opportunityId: z.number().describe('Unique identifier'),
@@ -53,7 +53,7 @@ export let listOpportunities = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new CapsuleClient({ token: ctx.auth.token });
 
-    let result;
+    let result: any;
     if (ctx.input.partyId) {
       result = await client.listOpportunitiesByParty(ctx.input.partyId, {
         page: ctx.input.page,

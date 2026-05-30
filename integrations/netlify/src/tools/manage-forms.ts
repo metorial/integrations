@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { netlifyServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let submissionOutputSchema = z.object({
   submissionId: z.string().describe('Unique submission identifier'),
@@ -187,7 +187,9 @@ export let manageFormSubmissionState = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      submission: submissionOutputSchema.optional().describe('Updated submission, if returned'),
+      submission: submissionOutputSchema
+        .optional()
+        .describe('Updated submission, if returned'),
       state: z.string().describe('Target state applied to the submission')
     })
   )

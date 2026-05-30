@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CustomGPTClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCitation = SlateTool.create(spec, {
   name: 'Get Citation',

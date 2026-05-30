@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let databaseWebhookTrigger = SlateTrigger.create(spec, {
   name: 'Database Webhook',
@@ -50,7 +50,7 @@ export let databaseWebhookTrigger = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.type) {
+      if (!data?.type) {
         return { inputs: [] };
       }
 

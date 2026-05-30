@@ -24,7 +24,7 @@ export interface DataForSEOResponse<T = any> {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.dataforseo.com/v3',
       headers: {

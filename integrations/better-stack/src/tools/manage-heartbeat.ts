@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { UptimeClient } from '../lib/client';
+import { spec } from '../spec';
 
 let heartbeatOutputSchema = z.object({
   heartbeatId: z.string().describe('Heartbeat ID'),

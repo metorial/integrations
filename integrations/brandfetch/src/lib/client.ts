@@ -9,7 +9,7 @@ import type {
 export class BrandApiClient {
   private axios;
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.axios = createAxios({
       baseURL: 'https://api.brandfetch.io/v2',
       headers: {

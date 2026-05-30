@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let submitMetrics = SlateTool.create(spec, {
   name: 'Submit Metrics',
@@ -51,7 +51,7 @@ export let submitMetrics = SlateTool.create(spec, {
       ctx.input.series as Array<{
         metric: string;
         type?: number;
-        points: Array<[number, number]>;
+        points: [number, number][];
         host?: string;
         tags?: string[];
       }>

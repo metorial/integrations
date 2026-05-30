@@ -17,7 +17,7 @@ export interface PaginationParams {
 export class Client {
   private api: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.api = createAxios({
       baseURL: 'https://api.productboard.com',
       headers: {
@@ -36,9 +36,9 @@ export class Client {
     }
   ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
-    if (params?.updatedSince) queryParams['updatedSince'] = params.updatedSince;
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
+    if (params?.updatedSince) queryParams.updatedSince = params.updatedSince;
 
     let response = await this.api.get('/features', { params: queryParams });
     return response.data;
@@ -101,9 +101,9 @@ export class Client {
     }
   ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
-    if (params?.updatedSince) queryParams['updatedSince'] = params.updatedSince;
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
+    if (params?.updatedSince) queryParams.updatedSince = params.updatedSince;
 
     let response = await this.api.get('/notes', { params: queryParams });
     return response.data;
@@ -148,8 +148,8 @@ export class Client {
 
   async listProducts(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
 
     let response = await this.api.get('/products', { params: queryParams });
     return response.data;
@@ -159,8 +159,8 @@ export class Client {
 
   async listComponents(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
 
     let response = await this.api.get('/components', { params: queryParams });
     return response.data;
@@ -170,8 +170,8 @@ export class Client {
 
   async listCompanies(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
 
     let response = await this.api.get('/companies', { params: queryParams });
     return response.data;
@@ -202,8 +202,8 @@ export class Client {
 
   async listUsers(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
 
     let response = await this.api.get('/users', { params: queryParams });
     return response.data;
@@ -239,8 +239,8 @@ export class Client {
 
   async listCustomFields(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
 
     let response = await this.api.get('/custom-fields', { params: queryParams });
     return response.data;
@@ -276,8 +276,8 @@ export class Client {
 
   async listReleases(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
 
     let response = await this.api.get('/releases', { params: queryParams });
     return response.data;
@@ -320,8 +320,8 @@ export class Client {
 
   async listReleaseGroups(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
 
     let response = await this.api.get('/release-groups', { params: queryParams });
     return response.data;
@@ -354,8 +354,8 @@ export class Client {
 
   async listObjectives(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
 
     let response = await this.api.get('/objectives', { params: queryParams });
     return response.data;
@@ -401,8 +401,8 @@ export class Client {
     }
   ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
     if (params?.objectiveId) queryParams['objective.id'] = params.objectiveId;
 
     let response = await this.api.get('/key-results', { params: queryParams });
@@ -446,8 +446,8 @@ export class Client {
 
   async listInitiatives(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
 
     let response = await this.api.get('/initiatives', { params: queryParams });
     return response.data;
@@ -489,8 +489,8 @@ export class Client {
 
   async listWebhooks(params?: PaginationParams): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
-    if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
+    if (params?.pageCursor) queryParams.pageCursor = params.pageCursor;
+    if (params?.pageLimit) queryParams.pageLimit = String(params.pageLimit);
 
     let response = await this.api.get('/webhooks', { params: queryParams });
     return response.data;

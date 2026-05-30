@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let tagOutputSchema = z.object({
   tagId: z.string(),
@@ -69,7 +69,7 @@ export let createTag = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let tag;
+    let tag: any;
     if (ctx.input.parentTagId) {
       tag = await client.createChildTag(ctx.input.parentTagId, {
         name: ctx.input.name,

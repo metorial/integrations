@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  googleSearch,
-  googleNews,
-  googleMapsSearch,
-  googleShopping,
-  googleScholar,
-  googleImages,
-  googleVideos,
-  googleFinance,
-  googleAutocomplete,
-  googleJobs,
-  youtubeSearch,
-  bingSearch,
+  accountInfo,
   amazonSearch,
-  walmartProduct,
-  yelpSearch,
+  bingSearch,
+  googleAutocomplete,
+  googleFinance,
+  googleImages,
+  googleJobs,
+  googleMapsSearch,
+  googleNews,
+  googleScholar,
+  googleSearch,
+  googleShopping,
+  googleVideos,
   linkedinJobs,
+  walmartProduct,
   webScraper,
-  accountInfo
+  yelpSearch,
+  youtubeSearch
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

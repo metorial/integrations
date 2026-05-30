@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let contractSchema = z.object({
   address: z.string().describe('Contract address'),
@@ -74,7 +74,7 @@ export let getCollection = SlateTool.create(spec, {
 
     let collectionData = await client.getCollection(ctx.input.collectionSlug);
 
-    let stats = null;
+    let stats: any = null;
     if (ctx.input.includeStats) {
       let statsData = await client.getCollectionStats(ctx.input.collectionSlug);
       let s = statsData.total ?? statsData;
@@ -90,7 +90,7 @@ export let getCollection = SlateTool.create(spec, {
       };
     }
 
-    let traits = null;
+    let traits: any = null;
     if (ctx.input.includeTraits) {
       let traitsData = await client.getCollectionTraits(ctx.input.collectionSlug);
       traits = traitsData.categories ?? traitsData;

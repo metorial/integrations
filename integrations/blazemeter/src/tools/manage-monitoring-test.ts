@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RunscopeClient } from '../lib/runscope-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageMonitoringTest = SlateTool.create(spec, {
   name: 'Manage API Monitoring Test',

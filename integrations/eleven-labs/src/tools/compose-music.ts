@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let composeMusic = SlateTool.create(spec, {
   name: 'Compose Music',
@@ -54,7 +54,7 @@ export let composeMusic = SlateTool.create(spec, {
     });
 
     let promptPreview =
-      ctx.input.prompt.length > 80 ? ctx.input.prompt.slice(0, 80) + '...' : ctx.input.prompt;
+      ctx.input.prompt.length > 80 ? `${ctx.input.prompt.slice(0, 80)}...` : ctx.input.prompt;
     let durationInfo = ctx.input.musicLengthMs
       ? ` (${(ctx.input.musicLengthMs / 1000).toFixed(1)}s)`
       : '';

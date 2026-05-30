@@ -3,14 +3,14 @@ import type {
   Booking,
   BookingCalendar,
   BookingPage,
-  MasterPage,
   EventType,
-  User,
-  Team,
-  Webhook,
-  PaginatedResponse,
   ListBookingsParams,
-  PaginationParams
+  MasterPage,
+  PaginatedResponse,
+  PaginationParams,
+  Team,
+  User,
+  Webhook
 } from './types';
 
 export class Client {
@@ -34,16 +34,16 @@ export class Client {
     if (params.lastUpdatedTimeGt)
       queryParams['last_updated_time.gt'] = params.lastUpdatedTimeGt;
     if (params.creationTimeGt) queryParams['creation_time.gt'] = params.creationTimeGt;
-    if (params.status) queryParams['status'] = params.status;
-    if (params.owner) queryParams['owner'] = params.owner;
-    if (params.bookingPage) queryParams['booking_page'] = params.bookingPage;
-    if (params.eventType) queryParams['event_type'] = params.eventType;
-    if (params.bookingCalendar) queryParams['booking_calendar'] = params.bookingCalendar;
+    if (params.status) queryParams.status = params.status;
+    if (params.owner) queryParams.owner = params.owner;
+    if (params.bookingPage) queryParams.booking_page = params.bookingPage;
+    if (params.eventType) queryParams.event_type = params.eventType;
+    if (params.bookingCalendar) queryParams.booking_calendar = params.bookingCalendar;
     if (params.expand && params.expand.length > 0)
-      queryParams['expand'] = params.expand.join(',');
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.after) queryParams['after'] = params.after;
-    if (params.before) queryParams['before'] = params.before;
+      queryParams.expand = params.expand.join(',');
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.after) queryParams.after = params.after;
+    if (params.before) queryParams.before = params.before;
 
     let response = await this.http.get('/bookings', { params: queryParams });
     return response.data;
@@ -51,7 +51,7 @@ export class Client {
 
   async getBooking(bookingId: string, expand?: string[]): Promise<Booking> {
     let queryParams: Record<string, string> = {};
-    if (expand && expand.length > 0) queryParams['expand'] = expand.join(',');
+    if (expand && expand.length > 0) queryParams.expand = expand.join(',');
 
     let response = await this.http.get(`/bookings/${bookingId}`, { params: queryParams });
     return response.data;
@@ -61,9 +61,9 @@ export class Client {
     params: PaginationParams = {}
   ): Promise<PaginatedResponse<BookingCalendar>> {
     let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.after) queryParams['after'] = params.after;
-    if (params.before) queryParams['before'] = params.before;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.after) queryParams.after = params.after;
+    if (params.before) queryParams.before = params.before;
 
     let response = await this.http.get('/booking-calendars', { params: queryParams });
     return response.data;
@@ -78,9 +78,9 @@ export class Client {
     params: PaginationParams = {}
   ): Promise<PaginatedResponse<BookingPage>> {
     let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.after) queryParams['after'] = params.after;
-    if (params.before) queryParams['before'] = params.before;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.after) queryParams.after = params.after;
+    if (params.before) queryParams.before = params.before;
 
     let response = await this.http.get('/booking-pages', { params: queryParams });
     return response.data;
@@ -95,9 +95,9 @@ export class Client {
     params: PaginationParams = {}
   ): Promise<PaginatedResponse<MasterPage>> {
     let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.after) queryParams['after'] = params.after;
-    if (params.before) queryParams['before'] = params.before;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.after) queryParams.after = params.after;
+    if (params.before) queryParams.before = params.before;
 
     let response = await this.http.get('/master-pages', { params: queryParams });
     return response.data;
@@ -110,9 +110,9 @@ export class Client {
 
   async listEventTypes(params: PaginationParams = {}): Promise<PaginatedResponse<EventType>> {
     let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.after) queryParams['after'] = params.after;
-    if (params.before) queryParams['before'] = params.before;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.after) queryParams.after = params.after;
+    if (params.before) queryParams.before = params.before;
 
     let response = await this.http.get('/event-types', { params: queryParams });
     return response.data;
@@ -125,9 +125,9 @@ export class Client {
 
   async listUsers(params: PaginationParams = {}): Promise<PaginatedResponse<User>> {
     let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.after) queryParams['after'] = params.after;
-    if (params.before) queryParams['before'] = params.before;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.after) queryParams.after = params.after;
+    if (params.before) queryParams.before = params.before;
 
     let response = await this.http.get('/users', { params: queryParams });
     return response.data;
@@ -140,9 +140,9 @@ export class Client {
 
   async listTeams(params: PaginationParams = {}): Promise<PaginatedResponse<Team>> {
     let queryParams: Record<string, string> = {};
-    if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.after) queryParams['after'] = params.after;
-    if (params.before) queryParams['before'] = params.before;
+    if (params.limit) queryParams.limit = String(params.limit);
+    if (params.after) queryParams.after = params.after;
+    if (params.before) queryParams.before = params.before;
 
     let response = await this.http.get('/teams', { params: queryParams });
     return response.data;

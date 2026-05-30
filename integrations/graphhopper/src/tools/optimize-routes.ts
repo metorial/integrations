@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GraphHopperClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let addressSchema = z.object({
   locationId: z.string().describe('Unique identifier for this location'),
@@ -331,14 +331,14 @@ Handles pickup-and-delivery problems, multiple vehicles, multiple depots, and va
       };
     }
 
-    let routes = ((solution.routes || []) as Array<Record<string, unknown>>).map(r => ({
+    let routes = ((solution.routes || []) as Record<string, unknown>[]).map(r => ({
       vehicleId: r.vehicle_id as string,
       distance: r.distance as number,
       transportTime: r.transport_time as number,
       completionTime: r.completion_time as number,
       waitingTime: r.waiting_time as number | undefined,
       serviceDuration: r.service_duration as number | undefined,
-      activities: ((r.activities || []) as Array<Record<string, unknown>>).map(a => ({
+      activities: ((r.activities || []) as Record<string, unknown>[]).map(a => ({
         type: a.type as string,
         activityId: a.id as string | undefined,
         locationId: a.location_id as string | undefined,
@@ -358,7 +358,7 @@ Handles pickup-and-delivery problems, multiple vehicles, multiple depots, and va
       ? {
           services: unassigned.services as string[] | undefined,
           shipments: unassigned.shipments as string[] | undefined,
-          details: ((unassigned.details || []) as Array<Record<string, unknown>>).map(d => ({
+          details: ((unassigned.details || []) as Record<string, unknown>[]).map(d => ({
             unassignedId: d.id as string,
             code: d.code as number,
             reason: d.reason as string

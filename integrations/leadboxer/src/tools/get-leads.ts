@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { LeadBoxerClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let leadSchema = z.object({
   leadId: z.string().optional().describe('LeadBoxer user ID'),

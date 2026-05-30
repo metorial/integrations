@@ -2,14 +2,14 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createFlipbook,
-  listFlipbooks,
-  getFlipbook,
   deleteFlipbook,
-  updateSocialMetadata,
-  managePasswordProtection,
+  getFlipbook,
+  getOembed,
+  listFlipbooks,
   manageAccessList,
   manageBookshelf,
-  getOembed
+  managePasswordProtection,
+  updateSocialMetadata
 } from './tools';
 import { leadCollected } from './triggers';
 

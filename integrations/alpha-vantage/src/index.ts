@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getStockPrice,
-  getQuote,
-  searchSymbol,
-  getCompanyOverview,
-  getFinancialStatements,
-  getEarnings,
-  getDividendsAndSplits,
-  getForexRate,
-  getCryptoPrice,
   getCommodityPrice,
+  getCompanyOverview,
+  getCryptoPrice,
+  getDividendsAndSplits,
+  getEarnings,
   getEconomicIndicator,
-  getTechnicalIndicator,
+  getFinancialStatements,
+  getForexRate,
+  getMarketStatus,
   getNewsSentiment,
   getOptionsChain,
+  getQuote,
+  getStockPrice,
+  getTechnicalIndicator,
   getTopMovers,
-  getMarketStatus
+  searchSymbol
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createCampaign,
-  getCampaigns,
-  sendCampaign,
-  updateCampaign,
-  deleteCampaign,
   campaignAnalytics,
-  manageMailingList,
-  manageSubscriber,
+  createCampaign,
+  deleteCampaign,
+  getCampaigns,
   listSubscribers,
   manageCustomField,
+  manageMailingList,
   manageSegment,
-  sendTransactionalEmail
+  manageSubscriber,
+  sendCampaign,
+  sendTransactionalEmail,
+  updateCampaign
 } from './tools';
-import { newSubscriber, campaignSent, inboundWebhook } from './triggers';
+import { campaignSent, inboundWebhook, newSubscriber } from './triggers';
 
 export let provider = Slate.create({
   spec,

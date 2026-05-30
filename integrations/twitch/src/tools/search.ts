@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { TwitchClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let search = SlateTool.create(spec, {
   name: 'Search',

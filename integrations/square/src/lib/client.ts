@@ -1,14 +1,14 @@
 import { createAxios } from 'slates';
 import type {
-  SquareClientConfig,
-  SquarePayment,
-  SquareOrder,
-  SquareCustomer,
   SquareCatalogObject,
+  SquareClientConfig,
+  SquareCustomer,
+  SquareInventoryCount,
   SquareInvoice,
   SquareLocation,
+  SquareOrder,
+  SquarePayment,
   SquareRefund,
-  SquareInventoryCount,
   SquareWebhookSubscription
 } from './types';
 
@@ -21,7 +21,7 @@ export class SquareClient {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(config: SquareClientConfig) {
-    let baseURL = BASE_URLS[config.environment] || BASE_URLS['production']!;
+    let baseURL = BASE_URLS[config.environment] || BASE_URLS.production!;
     this.axios = createAxios({
       baseURL,
       headers: {

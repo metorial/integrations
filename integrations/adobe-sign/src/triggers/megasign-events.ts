@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let megaSignEvents = SlateTrigger.create(spec, {
   name: 'Send in Bulk Events',
@@ -86,7 +86,7 @@ export let megaSignEvents = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
       let clientId = ctx.request.headers.get('X-AdobeSign-ClientId') || '';
 
-      if (!data.event || !data.event.startsWith('MEGASIGN_')) {
+      if (!data.event?.startsWith('MEGASIGN_')) {
         return {
           inputs: [],
           response: new Response(JSON.stringify({ xAdobeSignClientId: clientId }), {

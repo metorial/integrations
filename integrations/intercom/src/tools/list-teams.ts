@@ -1,9 +1,9 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { intercomServiceError } from '../lib/errors';
 import { numberOrUndefined, stringOrUndefined } from '../lib/output';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listTeams = SlateTool.create(spec, {
   name: 'List Teams',
@@ -37,7 +37,10 @@ export let listTeams = SlateTool.create(spec, {
             name: z.string().optional().describe('Team name'),
             adminIds: z.array(z.string()).optional().describe('Admin IDs on the team'),
             assignmentLimit: z.number().optional().describe('Assignment limit'),
-            distributionMethod: z.string().optional().describe('Assignment distribution method')
+            distributionMethod: z
+              .string()
+              .optional()
+              .describe('Assignment distribution method')
           })
         )
         .optional()

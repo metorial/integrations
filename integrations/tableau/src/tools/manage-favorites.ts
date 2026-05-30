@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { tableauServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageFavorites = SlateTool.create(spec, {
   name: 'Manage Favorites',
@@ -68,7 +68,7 @@ export let manageFavorites = SlateTool.create(spec, {
         throw tableauServiceError('resourceId is required for remove action.');
       }
 
-      await client.deleteFavorite(userId, ctx.input.resourceType + 's', ctx.input.resourceId);
+      await client.deleteFavorite(userId, `${ctx.input.resourceType}s`, ctx.input.resourceId);
       return {
         output: { removed: true },
         message: `Removed ${ctx.input.resourceType} \`${ctx.input.resourceId}\` from favorites.`

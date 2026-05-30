@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
-import { productSchema, mapProduct } from '../lib/schemas';
+import { Client } from '../lib/client';
+import { mapProduct, productSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 let webhookPayloadSchema = z.object({
   event: z.string(),

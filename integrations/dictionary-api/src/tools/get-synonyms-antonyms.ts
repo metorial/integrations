@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DictionaryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let partOfSpeechGroupSchema = z.object({
   partOfSpeech: z.string().describe('Part of speech (e.g., noun, verb, adjective)'),

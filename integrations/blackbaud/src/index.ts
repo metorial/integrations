@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchConstituents,
-  listConstituents,
-  getConstituent,
-  createConstituent,
-  updateConstituent,
-  getGivingSummary,
-  listGifts,
-  getGift,
-  createGift,
-  listActions,
   createAction,
-  updateAction,
-  listCampaigns,
-  getCampaign,
-  listFunds,
-  getFund,
-  listAppeals,
+  createConstituent,
+  createGift,
   getAppeal,
+  getCampaign,
+  getConstituent,
+  getFund,
+  getGift,
+  getGivingSummary,
+  getListResults,
+  listActions,
+  listAppeals,
+  listCampaigns,
+  listConstituents,
+  listFunds,
+  listGifts,
   listLists,
-  getListResults
+  searchConstituents,
+  updateAction,
+  updateConstituent
 } from './tools';
-import { constituentEvents, giftEvents, actionEvents } from './triggers';
+import { actionEvents, constituentEvents, giftEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

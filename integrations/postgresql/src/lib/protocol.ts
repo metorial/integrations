@@ -186,20 +186,20 @@ export let parseErrorFields = (body: Uint8Array): Record<string, string> => {
     let key = String.fromCharCode(fieldType);
 
     // Map common field types
-    if (key === 'S') fields['severity'] = value;
-    else if (key === 'V') fields['severityNonLocalized'] = value;
-    else if (key === 'C') fields['code'] = value;
-    else if (key === 'M') fields['message'] = value;
-    else if (key === 'D') fields['detail'] = value;
-    else if (key === 'H') fields['hint'] = value;
-    else if (key === 'P') fields['position'] = value;
-    else if (key === 'q') fields['internalPosition'] = value;
-    else if (key === 'W') fields['where'] = value;
-    else if (key === 's') fields['schema'] = value;
-    else if (key === 't') fields['table'] = value;
-    else if (key === 'c') fields['column'] = value;
-    else if (key === 'd') fields['dataType'] = value;
-    else if (key === 'n') fields['constraint'] = value;
+    if (key === 'S') fields.severity = value;
+    else if (key === 'V') fields.severityNonLocalized = value;
+    else if (key === 'C') fields.code = value;
+    else if (key === 'M') fields.message = value;
+    else if (key === 'D') fields.detail = value;
+    else if (key === 'H') fields.hint = value;
+    else if (key === 'P') fields.position = value;
+    else if (key === 'q') fields.internalPosition = value;
+    else if (key === 'W') fields.where = value;
+    else if (key === 's') fields.schema = value;
+    else if (key === 't') fields.table = value;
+    else if (key === 'c') fields.column = value;
+    else if (key === 'd') fields.dataType = value;
+    else if (key === 'n') fields.constraint = value;
     else fields[key] = value;
 
     offset = end + 1;
@@ -291,7 +291,7 @@ export let parseCommandComplete = (
   let parts = tag.split(' ');
   let command = parts[0] || tag;
   let lastPart = parts[parts.length - 1];
-  let rowCount = lastPart && /^\d+$/.test(lastPart) ? parseInt(lastPart, 10) : null;
+  let rowCount = lastPart && /^\d+$/.test(lastPart) ? Number.parseInt(lastPart, 10) : null;
   return { command, rowCount };
 };
 

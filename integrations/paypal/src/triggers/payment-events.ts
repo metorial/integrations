@@ -1,7 +1,7 @@
 import { SlateTrigger } from '@slates/provider';
+import { z } from 'zod';
 import { PayPalClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let PAYMENT_EVENT_TYPES = [
   'PAYMENT.AUTHORIZATION.CREATED',

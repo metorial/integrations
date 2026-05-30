@@ -23,7 +23,7 @@ export interface PaginationParams {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let domain = config.deskDomain || regionToDeskDomain[config.region] || 'desk.zoho.com';
 
     this.http = createAxios({

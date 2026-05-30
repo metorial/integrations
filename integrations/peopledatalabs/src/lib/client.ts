@@ -8,7 +8,7 @@ export interface ClientConfig {
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     let baseURL = config.sandbox
       ? 'https://sandbox.api.peopledatalabs.com/v5'
       : 'https://api.peopledatalabs.com/v5';

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { ZohoCrmClient } from '../lib/client';
 import type { Datacenter } from '../lib/urls';
+import { spec } from '../spec';
 
 export let crmGetModules = SlateTool.create(spec, {
   name: 'CRM Get Modules',

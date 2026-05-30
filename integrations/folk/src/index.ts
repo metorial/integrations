@@ -1,36 +1,36 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createPerson,
-  updatePerson,
-  getPerson,
-  listPeople,
-  deletePerson,
   createCompany,
-  updateCompany,
-  getCompany,
-  listCompanies,
-  deleteCompany,
   createDeal,
-  updateDeal,
-  getDeal,
-  listDeals,
-  deleteDeal,
   createNote,
-  updateNote,
-  listNotes,
-  deleteNote,
+  createPerson,
   createReminder,
-  listReminders,
+  deleteCompany,
+  deleteDeal,
+  deleteNote,
+  deletePerson,
   deleteReminder,
+  getCompany,
+  getDeal,
+  getPerson,
+  listCompanies,
+  listCustomFields,
+  listDeals,
   listGroups,
-  listCustomFields
+  listNotes,
+  listPeople,
+  listReminders,
+  updateCompany,
+  updateDeal,
+  updateNote,
+  updatePerson
 } from './tools';
 import {
-  personEvents,
   companyEvents,
   dealEvents,
   noteEvents,
+  personEvents,
   reminderEvents
 } from './triggers';
 

@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  confirmOrder,
   createOrder,
   createTranslationOrder,
-  getOrder,
-  confirmOrder,
-  listTranscriptions,
-  getTranscription,
   deleteTranscription,
   exportTranscription,
+  getOrder,
+  getTranscription,
   getUploadUrl,
   listGlossaries,
-  listStyleGuides
+  listStyleGuides,
+  listTranscriptions
 } from './tools';
-import { transcriptionUpdated, inboundWebhook } from './triggers';
+import { inboundWebhook, transcriptionUpdated } from './triggers';
 
 export let provider = Slate.create({
   spec,

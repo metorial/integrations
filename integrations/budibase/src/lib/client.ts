@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private params: { token: string; baseUrl: string; appId?: string }) {
+  constructor(params: { token: string; baseUrl: string; appId?: string }) {
     let headers: Record<string, string> = {
       'x-budibase-api-key': params.token,
       'Content-Type': 'application/json'

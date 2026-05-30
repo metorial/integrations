@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { pageOutputSchema, reportOutputSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPage = SlateTool.create(spec, {
   name: 'Get Page',
@@ -52,7 +52,7 @@ export let getPage = SlateTool.create(spec, {
 
     let page = await client.getPage(ctx.input.pageId);
 
-    let latestReport;
+    let latestReport: any;
     if (ctx.input.includeLatestReport) {
       try {
         latestReport = await client.getPageLatestReport(ctx.input.pageId);
@@ -63,7 +63,7 @@ export let getPage = SlateTool.create(spec, {
       }
     }
 
-    let reports;
+    let reports: any;
     if (ctx.input.includeReports) {
       let result = await client.listPageReports(ctx.input.pageId, {
         pageSize: ctx.input.reportsPageSize,

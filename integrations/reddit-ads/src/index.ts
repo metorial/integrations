@@ -2,16 +2,16 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getAccountInfo,
-  listCampaigns,
-  manageCampaign,
-  listAdGroups,
-  manageAdGroup,
-  listAds,
-  manageAd,
   getPerformanceReport,
+  listAdGroups,
+  listAds,
+  listCampaigns,
   listCustomAudiences,
-  manageCustomAudience,
+  manageAd,
+  manageAdGroup,
   manageAudienceUsers,
+  manageCampaign,
+  manageCustomAudience,
   sendConversionEvents
 } from './tools';
 import { campaignStatusChange, inboundWebhook } from './triggers';

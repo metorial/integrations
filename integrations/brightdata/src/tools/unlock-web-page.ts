@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BrightDataClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let unlockWebPage = SlateTool.create(spec, {
   name: 'Unlock Web Page',
@@ -56,7 +56,7 @@ export let unlockWebPage = SlateTool.create(spec, {
     });
 
     let contentPreview =
-      result.content.length > 200 ? result.content.substring(0, 200) + '...' : result.content;
+      result.content.length > 200 ? `${result.content.substring(0, 200)}...` : result.content;
 
     return {
       output: result,

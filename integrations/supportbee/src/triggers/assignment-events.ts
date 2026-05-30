@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let assignmentOutputSchema = z.object({
   ticketId: z.number().describe('ID of the ticket whose assignment changed'),

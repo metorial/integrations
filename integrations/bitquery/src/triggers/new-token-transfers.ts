@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let transferInputSchema = z.object({
   blockTime: z.string(),
@@ -62,7 +62,7 @@ export let newTokenTransfers = SlateTrigger.create(spec, {
         ctx.state?.lastPollTime || new Date(Date.now() - 5 * 60 * 1000).toISOString();
       let now = new Date().toISOString();
 
-      let transfers: Array<z.infer<typeof transferInputSchema>> = [];
+      let transfers: z.infer<typeof transferInputSchema>[] = [];
 
       try {
         if (blockchain === 'solana') {
@@ -163,7 +163,7 @@ export let newTokenTransfers = SlateTrigger.create(spec, {
             transferType: t.Transfer?.Type
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         // Return empty on error, will retry next poll
       }
 

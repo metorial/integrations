@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ArmClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let slotSummarySchema = z.object({
   slotName: z.string().describe('Name of the deployment slot'),
@@ -76,7 +76,7 @@ export let manageSlots = SlateTool.create(spec, {
 
       return {
         output: { slots: mapped, action, success: true },
-        message: `Found **${mapped.length}** deployment slot(s) for **${appName}**.${mapped.length > 0 ? '\n\nSlots: ' + mapped.map((s: any) => `\`${s.slotName}\` (${s.state || 'unknown'})`).join(', ') : ''}`
+        message: `Found **${mapped.length}** deployment slot(s) for **${appName}**.${mapped.length > 0 ? `\n\nSlots: ${mapped.map((s: any) => `\`${s.slotName}\` (${s.state || 'unknown'})`).join(', ')}` : ''}`
       };
     }
 

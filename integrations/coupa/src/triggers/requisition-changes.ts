@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let requisitionChanges = SlateTrigger.create(spec, {
   name: 'Requisition Changes',
@@ -94,7 +94,7 @@ export let requisitionChanges = SlateTrigger.create(spec, {
           requisitionNumber: ctx.input.requisitionNumber,
           status: ctx.input.status,
           requestedBy: r['requested-by'] ?? r.requested_by ?? null,
-          totalAmount: r['total'] ?? r.total ?? null,
+          totalAmount: r.total ?? r.total ?? null,
           currency: r.currency ?? null,
           requisitionLines: r['requisition-lines'] ?? r.requisition_lines ?? null,
           justification: r.justification ?? null,

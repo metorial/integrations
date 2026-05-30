@@ -451,6 +451,6 @@ let buildListParams = (params?: ListParams): Record<string, string | number> => 
   let result: Record<string, string | number> = {};
   if (params?.page) result['page[number]'] = params.page;
   if (params?.perPage) result['page[size]'] = params.perPage;
-  if (params?.include) result['include'] = params.include;
+  if (params?.include) result.include = params.include;
   return result;
 };

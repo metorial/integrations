@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let addLeadNote = SlateTool.create(spec, {
   name: 'Add Lead Note',
@@ -36,7 +36,7 @@ export let addLeadNote = SlateTool.create(spec, {
     let noteData = result.data ?? result;
 
     let preview =
-      ctx.input.note.length > 100 ? ctx.input.note.substring(0, 100) + '...' : ctx.input.note;
+      ctx.input.note.length > 100 ? `${ctx.input.note.substring(0, 100)}...` : ctx.input.note;
 
     return {
       output: {

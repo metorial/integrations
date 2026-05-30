@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BeeminderClient } from '../lib/client';
 import { chargeSchema } from '../lib/schemas';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createCharge = SlateTool.create(spec, {
   name: 'Create Charge',

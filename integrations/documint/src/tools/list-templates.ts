@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DocumintClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listTemplates = SlateTool.create(spec, {
   name: 'List Templates',
@@ -48,7 +48,7 @@ export let listTemplates = SlateTool.create(spec, {
 
     return {
       output: { templates },
-      message: `Retrieved **${templates.length}** template(s) from Documint.${templates.length > 0 ? '\n\nTemplates:\n' + templates.map(t => `- **${t.templateName}** (\`${t.templateId}\`)`).join('\n') : ''}`
+      message: `Retrieved **${templates.length}** template(s) from Documint.${templates.length > 0 ? `\n\nTemplates:\n${templates.map(t => `- **${t.templateName}** (\`${t.templateId}\`)`).join('\n')}` : ''}`
     };
   })
   .build();

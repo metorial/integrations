@@ -23,7 +23,7 @@ export class PipedriveClient {
     if (this.isApiToken) {
       headers['x-api-token'] = this.token;
     } else {
-      headers['Authorization'] = `Bearer ${this.token}`;
+      headers.Authorization = `Bearer ${this.token}`;
     }
 
     let http = createAxios({

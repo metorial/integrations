@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { OmnisendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let variantSchema = z.object({
   variantId: z.string().describe('Unique variant identifier'),

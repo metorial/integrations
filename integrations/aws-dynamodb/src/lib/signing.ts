@@ -64,7 +64,7 @@ let deriveSigningKey = (
   region: string,
   service: string
 ): Uint8Array => {
-  let kDate = hmacSha256('AWS4' + secretKey, dateStamp);
+  let kDate = hmacSha256(`AWS4${secretKey}`, dateStamp);
   let kRegion = hmacSha256(kDate, region);
   let kService = hmacSha256(kRegion, service);
   let kSigning = hmacSha256(kService, 'aws4_request');
@@ -113,13 +113,12 @@ export let signRequest = (params: AwsSignatureParams): Record<string, string> =>
     .map(k => k.toLowerCase())
     .sort();
 
-  let canonicalHeaders =
-    headerKeys
-      .map(
-        k =>
-          `${k}:${allHeaders[Object.keys(allHeaders).find(h => h.toLowerCase() === k)!]!.trim()}`
-      )
-      .join('\n') + '\n';
+  let canonicalHeaders = `${headerKeys
+    .map(
+      k =>
+        `${k}:${allHeaders[Object.keys(allHeaders).find(h => h.toLowerCase() === k)!]!.trim()}`
+    )
+    .join('\n')}\n`;
 
   let signedHeaders = headerKeys.join(';');
 

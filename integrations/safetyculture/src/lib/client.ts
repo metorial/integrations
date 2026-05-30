@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private http;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://api.safetyculture.io',
       headers: {
@@ -25,12 +25,12 @@ export class Client {
     } = {}
   ): Promise<{ inspections: any[]; total?: number }> {
     let queryParams: Record<string, string> = {};
-    if (params.modifiedAfter) queryParams['modified_after'] = params.modifiedAfter;
-    if (params.archived) queryParams['archived'] = params.archived;
-    if (params.completed) queryParams['completed'] = params.completed;
-    if (params.limit) queryParams['limit'] = String(params.limit);
+    if (params.modifiedAfter) queryParams.modified_after = params.modifiedAfter;
+    if (params.archived) queryParams.archived = params.archived;
+    if (params.completed) queryParams.completed = params.completed;
+    if (params.limit) queryParams.limit = String(params.limit);
 
-    queryParams['field'] = 'audit_id';
+    queryParams.field = 'audit_id';
 
     let queryStr = new URLSearchParams(queryParams).toString();
     if (params.templateId && params.templateId.length > 0) {
@@ -63,8 +63,8 @@ export class Client {
     let body: Record<string, any> = {
       template_id: templateId
     };
-    if (options.headerItems) body['header_items'] = options.headerItems;
-    if (options.siteId) body['site_id'] = options.siteId;
+    if (options.headerItems) body.header_items = options.headerItems;
+    if (options.siteId) body.site_id = options.siteId;
 
     let response = await this.http.post('/audits', body);
     return response.data;
@@ -115,11 +115,7 @@ export class Client {
 
   // ─── Templates ───
 
-  async searchTemplates(
-    params: {
-      modifiedAfter?: string;
-    } = {}
-  ): Promise<any[]> {
+  async searchTemplates(params: { modifiedAfter?: string } = {}): Promise<any[]> {
     let queryStr = 'field=template_id&field=name&field=modified_at&field=description';
     if (params.modifiedAfter)
       queryStr += `&modified_after=${encodeURIComponent(params.modifiedAfter)}`;
@@ -151,15 +147,15 @@ export class Client {
     } = {}
   ): Promise<{ actions: any[]; nextPageToken?: string }> {
     let body: Record<string, any> = {};
-    if (params.pageSize) body['page_size'] = params.pageSize;
-    if (params.pageToken) body['page_token'] = params.pageToken;
-    if (params.searchValue) body['search_value'] = params.searchValue;
+    if (params.pageSize) body.page_size = params.pageSize;
+    if (params.pageToken) body.page_token = params.pageToken;
+    if (params.searchValue) body.search_value = params.searchValue;
 
     let taskFilters: Record<string, any> = {};
-    if (params.status) taskFilters['status'] = params.status;
-    if (params.priority) taskFilters['priority'] = params.priority;
-    if (params.assigneeIds) taskFilters['user_ids'] = params.assigneeIds;
-    if (Object.keys(taskFilters).length > 0) body['task_filters'] = taskFilters;
+    if (params.status) taskFilters.status = params.status;
+    if (params.priority) taskFilters.priority = params.priority;
+    if (params.assigneeIds) taskFilters.user_ids = params.assigneeIds;
+    if (Object.keys(taskFilters).length > 0) body.task_filters = taskFilters;
 
     let response = await this.http.post('/tasks/v1/actions/list', body);
     return {
@@ -187,14 +183,14 @@ export class Client {
     let body: Record<string, any> = {
       title: data.title
     };
-    if (data.description) body['description'] = data.description;
-    if (data.assigneeIds) body['assignee_ids'] = data.assigneeIds;
-    if (data.dueAt) body['due_at'] = data.dueAt;
-    if (data.priority) body['priority'] = data.priority;
-    if (data.siteId) body['site_id'] = data.siteId;
-    if (data.inspectionId) body['inspection_id'] = data.inspectionId;
-    if (data.inspectionItemId) body['inspection_item_id'] = data.inspectionItemId;
-    if (data.labels) body['label_ids'] = data.labels;
+    if (data.description) body.description = data.description;
+    if (data.assigneeIds) body.assignee_ids = data.assigneeIds;
+    if (data.dueAt) body.due_at = data.dueAt;
+    if (data.priority) body.priority = data.priority;
+    if (data.siteId) body.site_id = data.siteId;
+    if (data.inspectionId) body.inspection_id = data.inspectionId;
+    if (data.inspectionItemId) body.inspection_item_id = data.inspectionItemId;
+    if (data.labels) body.label_ids = data.labels;
 
     let response = await this.http.post('/tasks/v1/actions', body);
     return response.data;
@@ -265,15 +261,15 @@ export class Client {
     } = {}
   ): Promise<{ issues: any[]; nextPageToken?: string }> {
     let body: Record<string, any> = {};
-    if (params.pageSize) body['page_size'] = params.pageSize;
-    if (params.pageToken) body['page_token'] = params.pageToken;
+    if (params.pageSize) body.page_size = params.pageSize;
+    if (params.pageToken) body.page_token = params.pageToken;
 
     let filters: Record<string, any> = {};
-    if (params.status) filters['status'] = params.status;
-    if (params.priority) filters['priority'] = params.priority;
-    if (params.categoryIds) filters['category_ids'] = params.categoryIds;
-    if (params.siteIds) filters['site_ids'] = params.siteIds;
-    if (Object.keys(filters).length > 0) body['filters'] = filters;
+    if (params.status) filters.status = params.status;
+    if (params.priority) filters.priority = params.priority;
+    if (params.categoryIds) filters.category_ids = params.categoryIds;
+    if (params.siteIds) filters.site_ids = params.siteIds;
+    if (Object.keys(filters).length > 0) body.filters = filters;
 
     let response = await this.http.post('/tasks/v1/incidents/list', body);
     return {
@@ -301,14 +297,14 @@ export class Client {
     let body: Record<string, any> = {
       title: data.title
     };
-    if (data.description) body['description'] = data.description;
-    if (data.categoryId) body['category_id'] = data.categoryId;
-    if (data.priority) body['priority'] = data.priority;
-    if (data.assigneeIds) body['collaborator_ids'] = data.assigneeIds;
-    if (data.dueAt) body['due_at'] = data.dueAt;
-    if (data.siteId) body['site_id'] = data.siteId;
-    if (data.assetId) body['asset_id'] = data.assetId;
-    if (data.occurredAt) body['occurred_at'] = data.occurredAt;
+    if (data.description) body.description = data.description;
+    if (data.categoryId) body.category_id = data.categoryId;
+    if (data.priority) body.priority = data.priority;
+    if (data.assigneeIds) body.collaborator_ids = data.assigneeIds;
+    if (data.dueAt) body.due_at = data.dueAt;
+    if (data.siteId) body.site_id = data.siteId;
+    if (data.assetId) body.asset_id = data.assetId;
+    if (data.occurredAt) body.occurred_at = data.occurredAt;
 
     let response = await this.http.post('/tasks/v1/incidents/submit', body);
     return response.data;
@@ -423,11 +419,7 @@ export class Client {
   // ─── Schedules ───
 
   async listSchedules(
-    params: {
-      pageSize?: number;
-      pageToken?: string;
-      templateId?: string;
-    } = {}
+    params: { pageSize?: number; pageToken?: string; templateId?: string } = {}
   ): Promise<{ schedules: any[]; nextPageToken?: string }> {
     let queryParams: string[] = [];
     if (params.pageSize) queryParams.push(`page_size=${params.pageSize}`);
@@ -456,8 +448,8 @@ export class Client {
       assignee_ids: data.assigneeIds,
       frequency: data.frequency
     };
-    if (data.startTime) body['start_time'] = data.startTime;
-    if (data.siteId) body['site_id'] = data.siteId;
+    if (data.startTime) body.start_time = data.startTime;
+    if (data.siteId) body.site_id = data.siteId;
 
     let response = await this.http.post('/schedules/v1/schedule-items', body);
     return response.data;
@@ -471,10 +463,7 @@ export class Client {
   // ─── Assets ───
 
   async listAssets(
-    params: {
-      pageSize?: number;
-      pageToken?: string;
-    } = {}
+    params: { pageSize?: number; pageToken?: string } = {}
   ): Promise<{ assets: any[]; nextPageToken?: string }> {
     let queryParams: string[] = [];
     if (params.pageSize) queryParams.push(`page_size=${params.pageSize}`);
@@ -503,9 +492,9 @@ export class Client {
     let body: Record<string, any> = {
       type_id: data.typeId
     };
-    if (data.code) body['code'] = data.code;
-    if (data.fields) body['fields'] = data.fields;
-    if (data.siteId) body['site_id'] = data.siteId;
+    if (data.code) body.code = data.code;
+    if (data.fields) body.fields = data.fields;
+    if (data.siteId) body.site_id = data.siteId;
 
     let response = await this.http.post('/assets/v1/assets', body);
     return response.data;
@@ -567,10 +556,7 @@ export class Client {
   // ─── Sites / Directory ───
 
   async listSites(
-    params: {
-      pageSize?: number;
-      pageToken?: string;
-    } = {}
+    params: { pageSize?: number; pageToken?: string } = {}
   ): Promise<{ sites: any[]; nextPageToken?: string }> {
     let queryParams: string[] = [];
     if (params.pageSize) queryParams.push(`page_size=${params.pageSize}`);

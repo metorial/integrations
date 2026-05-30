@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { workspaceConfigSchema } from '../lib/types';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getWorkspaceConfig = SlateTool.create(spec, {
   name: 'Get Workspace Config',

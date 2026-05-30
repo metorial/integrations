@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NasaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getNasaMediaAssets = SlateTool.create(spec, {
   name: 'Get NASA Media Assets',

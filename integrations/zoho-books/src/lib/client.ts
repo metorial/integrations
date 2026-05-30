@@ -14,7 +14,7 @@ export class Client {
     this.organizationId = config.organizationId;
     let baseURL = `https://www.zohoapis${config.region}/books/v3`;
     this.http = createAxios({ baseURL });
-    this.http.defaults.headers.common['Authorization'] = `Zoho-oauthtoken ${config.token}`;
+    this.http.defaults.headers.common.Authorization = `Zoho-oauthtoken ${config.token}`;
   }
 
   private params(extra?: Record<string, any>) {

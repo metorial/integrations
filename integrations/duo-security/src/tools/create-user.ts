@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { DuoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createUser = SlateTool.create(spec, {
   name: 'Create User',
@@ -65,7 +65,7 @@ export let createUser = SlateTool.create(spec, {
           email: ctx.input.email
         });
         enrollmentSent = true;
-      } catch (e) {
+      } catch (_e) {
         ctx.warn('Failed to send enrollment email');
       }
     }

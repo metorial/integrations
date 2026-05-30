@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateOpportunity = SlateTool.create(spec, {
   name: 'Update Opportunity',
@@ -78,7 +78,7 @@ export let updateOpportunity = SlateTool.create(spec, {
         name: result.name,
         updatedAt: result.updatedAt
       },
-      message: `Updated opportunity **${result.name ?? '#' + result.id}**.`
+      message: `Updated opportunity **${result.name ?? `#${result.id}`}**.`
     };
   })
   .build();

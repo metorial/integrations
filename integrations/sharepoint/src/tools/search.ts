@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SharePointClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let sharepointIdsSchema = z.object({
   siteId: z.string().optional().describe('SharePoint site ID'),
@@ -24,7 +24,9 @@ let searchResultSchema = z.object({
     .optional()
     .describe('Type of the matched resource (e.g. driveItem, site, listItem)'),
   webUrl: z.string().optional().describe('URL of the resource'),
-  sharepointIds: sharepointIdsSchema.optional().describe('Graph sharepointIds for the resource'),
+  sharepointIds: sharepointIdsSchema
+    .optional()
+    .describe('Graph sharepointIds for the resource'),
   summary: z.string().optional().describe('Search result summary/snippet'),
   lastModifiedDateTime: z.string().optional().describe('Last modified date'),
   lastModifiedBy: z.string().optional().describe('User who last modified the resource')
@@ -75,7 +77,7 @@ export let search = SlateTool.create(spec, {
       ctx.input.size
     );
 
-    let results: Array<any> = [];
+    let results: any[] = [];
     let totalCount = 0;
     let moreResultsAvailable = false;
 

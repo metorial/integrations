@@ -39,19 +39,19 @@ export class CallPageClient {
 
     if (params.widgetIds?.length) query['widget_ids[]'] = params.widgetIds;
     if (params.statuses?.length) query['statuses[]'] = params.statuses;
-    if (params.phoneNumber) query['phone_number'] = params.phoneNumber;
+    if (params.phoneNumber) query.phone_number = params.phoneNumber;
     if (params.userIds?.length) query['user_ids[]'] = params.userIds;
     if (params.callIds?.length) query['call_id[]'] = params.callIds;
     if (params.tagIds?.length) query['tag_ids[]'] = params.tagIds;
-    if (params.dateFrom) query['date_from'] = params.dateFrom;
-    if (params.dateTo) query['date_to'] = params.dateTo;
-    if (params.url) query['url'] = params.url;
+    if (params.dateFrom) query.date_from = params.dateFrom;
+    if (params.dateTo) query.date_to = params.dateTo;
+    if (params.url) query.url = params.url;
     if (params.incomingNumberIds?.length)
       query['incoming_number_ids[]'] = params.incomingNumberIds;
     if (params.displayHidden !== undefined)
-      query['display_hidden'] = params.displayHidden ? 1 : 0;
-    if (params.limit !== undefined) query['limit'] = params.limit;
-    if (params.offset !== undefined) query['offset'] = params.offset;
+      query.display_hidden = params.displayHidden ? 1 : 0;
+    if (params.limit !== undefined) query.limit = params.limit;
+    if (params.offset !== undefined) query.offset = params.offset;
 
     let response = await this.axios.get('/api/v3/external/calls/history', { params: query });
     return {
@@ -81,8 +81,8 @@ export class CallPageClient {
     params: { limit?: number; offset?: number } = {}
   ): Promise<{ widgets: any[]; meta: any }> {
     let query: Record<string, any> = {};
-    if (params.limit !== undefined) query['limit'] = params.limit;
-    if (params.offset !== undefined) query['offset'] = params.offset;
+    if (params.limit !== undefined) query.limit = params.limit;
+    if (params.offset !== undefined) query.offset = params.offset;
 
     let response = await this.axios.get('/api/v1/external/widgets/all', { params: query });
     return {
@@ -104,8 +104,8 @@ export class CallPageClient {
     localeCode?: string;
   }): Promise<{ widgetId: number }> {
     let body: Record<string, any> = { url: data.url };
-    if (data.description) body['description'] = data.description;
-    if (data.localeCode) body['locale_code'] = data.localeCode;
+    if (data.description) body.description = data.description;
+    if (data.localeCode) body.locale_code = data.localeCode;
 
     let response = await this.axios.post('/api/v1/external/widgets/create', body);
     return { widgetId: response.data.data.id };
@@ -120,11 +120,11 @@ export class CallPageClient {
     settings?: Record<string, any>;
   }): Promise<{ widgetId: number }> {
     let body: Record<string, any> = { id: data.widgetId };
-    if (data.url) body['url'] = data.url;
-    if (data.description !== undefined) body['description'] = data.description;
-    if (data.localeCode) body['locale_code'] = data.localeCode;
-    if (data.enabled !== undefined) body['enabled'] = data.enabled;
-    if (data.settings) body['settings'] = data.settings;
+    if (data.url) body.url = data.url;
+    if (data.description !== undefined) body.description = data.description;
+    if (data.localeCode) body.locale_code = data.localeCode;
+    if (data.enabled !== undefined) body.enabled = data.enabled;
+    if (data.settings) body.settings = data.settings;
 
     let response = await this.axios.post('/api/v1/external/widgets/update', body);
     return { widgetId: response.data.data.id };
@@ -143,7 +143,7 @@ export class CallPageClient {
       id: data.widgetId,
       user_id: data.userIds.length === 1 ? data.userIds[0] : data.userIds
     };
-    if (data.businessTimes) body['business_times'] = data.businessTimes;
+    if (data.businessTimes) body.business_times = data.businessTimes;
 
     let response = await this.axios.post('/api/v1/external/widgets/add-users', body);
     let result = response.data.data || [];
@@ -163,7 +163,7 @@ export class CallPageClient {
       id: data.widgetId,
       tel: data.phoneNumber
     };
-    if (data.departmentId) body['department_id'] = data.departmentId;
+    if (data.departmentId) body.department_id = data.departmentId;
 
     let response = await this.axios.post('/api/v1/external/widgets/call', body);
     return { callId: response.data.data.id };
@@ -178,7 +178,7 @@ export class CallPageClient {
       id: data.widgetId,
       tel: data.phoneNumber
     };
-    if (data.departmentId) body['department_id'] = data.departmentId;
+    if (data.departmentId) body.department_id = data.departmentId;
 
     let response = await this.axios.post('/api/v1/external/widgets/call-or-schedule', body);
     return { callId: response.data.data.id };
@@ -192,8 +192,8 @@ export class CallPageClient {
     params: { limit?: number; offset?: number } = {}
   ): Promise<{ users: any[]; meta: any }> {
     let query: Record<string, any> = {};
-    if (params.limit !== undefined) query['limit'] = params.limit;
-    if (params.offset !== undefined) query['offset'] = params.offset;
+    if (params.limit !== undefined) query.limit = params.limit;
+    if (params.offset !== undefined) query.offset = params.offset;
 
     let response = await this.axios.get('/api/v1/external/users/all', { params: query });
     return {
@@ -204,8 +204,8 @@ export class CallPageClient {
 
   async getUser(params: { userId?: number; email?: string }): Promise<any> {
     let query: Record<string, any> = {};
-    if (params.userId) query['id'] = params.userId;
-    if (params.email) query['email'] = params.email;
+    if (params.userId) query.id = params.userId;
+    if (params.email) query.email = params.email;
 
     let response = await this.axios.get('/api/v1/external/users/get', { params: query });
     return response.data.data;
@@ -221,8 +221,8 @@ export class CallPageClient {
       name: data.name,
       tel: data.phoneNumber
     };
-    if (data.email) body['email'] = data.email;
-    if (data.role) body['role'] = data.role;
+    if (data.email) body.email = data.email;
+    if (data.role) body.role = data.role;
 
     let response = await this.axios.post('/api/v1/external/users/create', body);
     return { userId: response.data.data.id };
@@ -240,8 +240,8 @@ export class CallPageClient {
       name: data.name,
       tel: data.phoneNumber
     };
-    if (data.email) body['email'] = data.email;
-    if (data.role) body['role'] = data.role;
+    if (data.email) body.email = data.email;
+    if (data.role) body.role = data.role;
 
     let response = await this.axios.post('/api/v1/external/users/update', body);
     return { userId: response.data.data.id };
@@ -261,8 +261,8 @@ export class CallPageClient {
     offset?: number;
   }): Promise<{ managers: any[]; meta: any }> {
     let query: Record<string, any> = { widget_id: params.widgetId };
-    if (params.limit !== undefined) query['limit'] = params.limit;
-    if (params.offset !== undefined) query['offset'] = params.offset;
+    if (params.limit !== undefined) query.limit = params.limit;
+    if (params.offset !== undefined) query.offset = params.offset;
 
     let response = await this.axios.get('/api/v1/external/managers/all', { params: query });
     return {
@@ -289,7 +289,7 @@ export class CallPageClient {
       widget_id: data.widgetId,
       enabled: data.enabled
     };
-    if (data.businessTimes) body['business_times'] = data.businessTimes;
+    if (data.businessTimes) body.business_times = data.businessTimes;
 
     let response = await this.axios.post('/api/v1/external/managers/create', body);
     return { managerId: response.data.data.id };
@@ -305,8 +305,8 @@ export class CallPageClient {
       user_id: data.userId,
       widget_id: data.widgetId
     };
-    if (data.enabled !== undefined) body['enabled'] = data.enabled;
-    if (data.businessTimes) body['business_times'] = data.businessTimes;
+    if (data.enabled !== undefined) body.enabled = data.enabled;
+    if (data.businessTimes) body.business_times = data.businessTimes;
 
     let response = await this.axios.post('/api/v1/external/managers/update', body);
     return { managerId: response.data.data.id };
@@ -355,8 +355,8 @@ export class CallPageClient {
       widget_id: data.widgetId,
       message_id: data.messageId
     };
-    if (data.enabled !== undefined) body['enabled'] = data.enabled;
-    if (data.text) body['text'] = data.text;
+    if (data.enabled !== undefined) body.enabled = data.enabled;
+    if (data.text) body.text = data.text;
 
     let response = await this.axios.post('/api/v1/external/sms/update', body);
     return { smsId: response.data.data.id };
@@ -364,7 +364,7 @@ export class CallPageClient {
 
   async resetSmsMessage(widgetId: number, messageId?: string): Promise<void> {
     let body: Record<string, any> = { widget_id: widgetId };
-    if (messageId) body['message_id'] = messageId;
+    if (messageId) body.message_id = messageId;
 
     await this.axios.post('/api/v1/external/sms/reset', body);
   }
@@ -391,7 +391,7 @@ export class CallPageClient {
       message_id: data.messageId,
       enabled: data.enabled
     };
-    if (data.fileUrl) body['file'] = data.fileUrl;
+    if (data.fileUrl) body.file = data.fileUrl;
 
     let response = await this.axios.post('/api/v1/external/voice/create', body);
     return { voiceId: response.data.data.id };
@@ -407,8 +407,8 @@ export class CallPageClient {
       widget_id: data.widgetId,
       message_id: data.messageId
     };
-    if (data.enabled !== undefined) body['enabled'] = data.enabled;
-    if (data.fileUrl) body['file'] = data.fileUrl;
+    if (data.enabled !== undefined) body.enabled = data.enabled;
+    if (data.fileUrl) body.file = data.fileUrl;
 
     let response = await this.axios.post('/api/v1/external/voice/update', body);
     return { voiceId: response.data.data.id };
@@ -416,7 +416,7 @@ export class CallPageClient {
 
   async resetVoiceMessage(widgetId: number, messageId?: string): Promise<void> {
     let body: Record<string, any> = { widget_id: widgetId };
-    if (messageId) body['message_id'] = messageId;
+    if (messageId) body.message_id = messageId;
 
     await this.axios.post('/api/v1/external/voice/reset', body);
   }

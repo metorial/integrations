@@ -69,47 +69,47 @@ export class Client {
     };
 
     if (params.where && params.where.length > 0) {
-      query['where'] = params.where.map(w => `${w.fieldId},${w.operator},${w.value}`);
+      query.where = params.where.map(w => `${w.fieldId},${w.operator},${w.value}`);
     }
 
     if (params.fts) {
-      query['fts'] = params.fts;
+      query.fts = params.fts;
     }
 
     if (params.order) {
-      query['order'] = `${params.order.fieldId},${params.order.direction}`;
+      query.order = `${params.order.fieldId},${params.order.direction}`;
     }
 
     if (params.limit !== undefined) {
-      query['limit'] = String(params.limit);
+      query.limit = String(params.limit);
     }
 
     if (params.offset !== undefined) {
-      query['offset'] = String(params.offset);
+      query.offset = String(params.offset);
     }
 
     if (params.subtables === false) {
-      query['subtables'] = '0';
+      query.subtables = '0';
     }
 
     if (params.listing) {
-      query['listing'] = 'true';
+      query.listing = 'true';
     }
 
     if (params.naming) {
-      query['naming'] = params.naming;
+      query.naming = params.naming;
     }
 
     if (params.info) {
-      query['info'] = 'true';
+      query.info = 'true';
     }
 
     if (params.comment) {
-      query['comment'] = 'true';
+      query.comment = 'true';
     }
 
     if (params.reverse) {
-      query['reverse'] = 'true';
+      query.reverse = 'true';
     }
 
     return query;
@@ -122,27 +122,27 @@ export class Client {
     };
 
     if (params?.doFormula) {
-      query['doFormula'] = 'true';
+      query.doFormula = 'true';
     }
 
     if (params?.doDefaultValue) {
-      query['doDefaultValue'] = 'true';
+      query.doDefaultValue = 'true';
     }
 
     if (params?.doLinkLoad !== undefined) {
-      query['doLinkLoad'] = String(params.doLinkLoad);
+      query.doLinkLoad = String(params.doLinkLoad);
     }
 
     if (params?.doWorkflow) {
-      query['doWorkflow'] = 'true';
+      query.doWorkflow = 'true';
     }
 
     if (params?.notification !== undefined) {
-      query['notification'] = String(params.notification);
+      query.notification = String(params.notification);
     }
 
     if (params?.checkLock) {
-      query['checkLock'] = 'true';
+      query.checkLock = 'true';
     }
 
     return query;
@@ -308,7 +308,7 @@ export class Client {
 
     let params: Record<string, string> = { api: '' };
     if (category) {
-      params['category'] = category;
+      params.category = category;
     }
 
     let response = await ax.get(url, { params });

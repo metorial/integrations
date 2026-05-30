@@ -1,6 +1,6 @@
 import { SlateTrigger } from '@slates/provider';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let accountEvent = SlateTrigger.create(spec, {
   name: 'Account & Handover Event',

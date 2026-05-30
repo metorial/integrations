@@ -5,7 +5,7 @@ let BASE_URL = 'https://api.catsone.com/v3';
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

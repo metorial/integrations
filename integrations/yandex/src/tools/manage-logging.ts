@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import * as logging from '../lib/logging';
+import { spec } from '../spec';
 
 export let readLogs = SlateTool.create(spec, {
   name: 'Read Logs',

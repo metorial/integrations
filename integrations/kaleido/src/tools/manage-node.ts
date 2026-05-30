@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { KaleidoClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let manageNode = SlateTool.create(spec, {
   name: 'Manage Node',
@@ -90,7 +90,7 @@ Nodes run the blockchain protocol and can be configured with different sizes and
 
       return {
         output: { nodes: mapped },
-        message: `Found **${mapped.length}** node(s).${mapped.length > 0 ? ' ' + mapped.map(n => `**${n.name}** (${n.state || 'unknown'})`).join(', ') : ''}`
+        message: `Found **${mapped.length}** node(s).${mapped.length > 0 ? ` ${mapped.map(n => `**${n.name}** (${n.state || 'unknown'})`).join(', ')}` : ''}`
       };
     }
 

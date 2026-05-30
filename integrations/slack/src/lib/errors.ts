@@ -1,4 +1,4 @@
-import { ServiceError, badRequestError, forbiddenError } from '@lowerdeck/error';
+import { badRequestError, forbiddenError, ServiceError } from '@lowerdeck/error';
 
 export let slackServiceError = (message: string) =>
   new ServiceError(badRequestError({ message }));

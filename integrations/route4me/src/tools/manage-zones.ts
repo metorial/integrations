@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let territoryDataSchema = z.object({
   type: z.string().describe('Shape type: circle, poly, or rect'),

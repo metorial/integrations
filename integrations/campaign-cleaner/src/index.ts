@@ -2,12 +2,12 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   cleanCampaign,
-  getCampaign,
-  getCampaignStatus,
-  listCampaigns,
   deleteCampaign,
+  getCampaign,
+  getCampaignPdf,
+  getCampaignStatus,
   getCredits,
-  getCampaignPdf
+  listCampaigns
 } from './tools';
 import { campaignCompleted, inboundWebhook } from './triggers';
 

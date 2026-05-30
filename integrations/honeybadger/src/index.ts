@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
-  manageProject,
-  searchErrors,
   getErrorDetails,
-  manageError,
-  manageUptime,
   listOutages,
+  listProjects,
   manageCheckIns,
   manageDeployments,
+  manageEnvironments,
+  manageError,
+  manageProject,
   manageTeams,
+  manageUptime,
   queryInsights,
-  sendEvents,
   reportCheckIn,
   reportError,
-  manageEnvironments
+  searchErrors,
+  sendEvents
 } from './tools';
-import { errorEvent, uptimeEvent, checkInEvent, deployEvent } from './triggers';
+import { checkInEvent, deployEvent, errorEvent, uptimeEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { StitchImportClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let pushData = SlateTool.create(spec, {
   name: 'Push Data',
@@ -122,7 +122,7 @@ export let validateData = SlateTool.create(spec, {
 
     let now = Date.now();
     let records = ctx.input.records.map((record, index) => ({
-      client_id: parseInt(ctx.config.clientId!, 10),
+      client_id: Number.parseInt(ctx.config.clientId!, 10),
       table_name: ctx.input.tableName,
       sequence: now + index,
       action: 'upsert' as const,

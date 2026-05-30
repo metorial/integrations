@@ -11,7 +11,7 @@ export interface ClientConfig {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: ClientConfig) {
+  constructor(config: ClientConfig) {
     this.http = createAxios({
       baseURL: BASE_URL
     });

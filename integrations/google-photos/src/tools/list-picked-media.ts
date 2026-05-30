@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { GooglePhotosPickerClient } from '../lib/client';
-import { spec } from '../spec';
-import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
+import { GooglePhotosPickerClient } from '../lib/client';
+import { googlePhotosActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 export let listPickedMedia = SlateTool.create(spec, {
   name: 'List Picked Media',

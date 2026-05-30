@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WriterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let queryKnowledgeGraph = SlateTool.create(spec, {
   name: 'Query Knowledge Graph',
@@ -113,7 +113,7 @@ export let queryKnowledgeGraph = SlateTool.create(spec, {
 
     let sourceCount = result.sources.length;
     let preview =
-      result.answer.length > 300 ? result.answer.substring(0, 300) + '...' : result.answer;
+      result.answer.length > 300 ? `${result.answer.substring(0, 300)}...` : result.answer;
 
     return {
       output: result,

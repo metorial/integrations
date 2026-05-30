@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GumroadClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let offerCodeSchema = z.object({
   offerCodeId: z.string().describe('Unique offer code ID'),

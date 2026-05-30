@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { getProfile, createPost, initializeImageUpload } from './tools';
+import { createPost, getProfile, initializeImageUpload } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

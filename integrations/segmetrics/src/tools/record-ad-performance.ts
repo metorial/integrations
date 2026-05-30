@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ImportClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let recordAdPerformance = SlateTool.create(spec, {
   name: 'Record Ad Performance',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EcologiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let purchaseTreesTool = SlateTool.create(spec, {
   name: 'Purchase Trees',

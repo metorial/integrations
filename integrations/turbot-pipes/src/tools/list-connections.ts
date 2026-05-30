@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let connectionSchema = z.object({
   connectionId: z.string().describe('Unique connection identifier'),
@@ -54,7 +54,7 @@ export let listConnections = SlateTool.create(spec, {
       ownerHandle = actor.handle;
     }
 
-    let result;
+    let result: any;
     if (ctx.input.scope === 'org') {
       result = await client.listOrgConnections(ownerHandle, {
         limit: ctx.input.limit,

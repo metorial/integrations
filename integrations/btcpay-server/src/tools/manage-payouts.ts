@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BTCPayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let payoutSchema = z.object({
   payoutId: z.string().describe('Payout ID'),

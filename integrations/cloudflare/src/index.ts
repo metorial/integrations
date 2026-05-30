@@ -2,28 +2,28 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listDnsRecordsTool,
-  manageDnsRecordTool,
+  listWorkersTool,
   listZonesTool,
+  manageAccountTool,
+  manageDnsRecordTool,
+  manageDomainsTool,
+  manageFirewallRulesTool,
+  manageKvTool,
+  manageLoadBalancerTool,
+  manageNotificationsTool,
+  managePagesTool,
+  manageR2BucketsTool,
+  manageSslCertificatesTool,
+  manageStreamTool,
+  manageWorkerRoutesTool,
   manageZoneTool,
   purgeCacheTool,
-  updateZoneSettingsTool,
-  manageFirewallRulesTool,
-  listWorkersTool,
-  manageWorkerRoutesTool,
-  manageKvTool,
-  manageR2BucketsTool,
-  manageLoadBalancerTool,
-  managePagesTool,
-  manageSslCertificatesTool,
-  manageAccountTool,
   queryAnalyticsTool,
-  manageDomainsTool,
-  manageStreamTool,
-  manageNotificationsTool
+  updateZoneSettingsTool
 } from './tools';
 import {
-  notificationWebhookTrigger,
   dnsRecordChangesTrigger,
+  notificationWebhookTrigger,
   zoneStatusChangesTrigger
 } from './triggers';
 

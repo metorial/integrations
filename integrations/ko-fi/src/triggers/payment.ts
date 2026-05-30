@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
-import { verifyWebhookToken, parseWebhookPayload } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { parseWebhookPayload, verifyWebhookToken } from '../lib/client';
+import { spec } from '../spec';
 
 let shopItemSchema = z.object({
   directLinkCode: z.string().describe('Unique code identifying the shop product'),

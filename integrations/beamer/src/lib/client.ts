@@ -275,7 +275,7 @@ export interface FeatureRequestVoteParams {
 export class Client {
   private axios;
 
-  constructor(private params: { token: string }) {
+  constructor(params: { token: string }) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {

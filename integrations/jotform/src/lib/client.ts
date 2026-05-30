@@ -54,7 +54,7 @@ let toFormBody = (payload: Record<string, unknown>) => {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: JotFormClientConfig) {
+  constructor(config: JotFormClientConfig) {
     this.http = createAxios({
       baseURL: config.apiDomain,
       headers: {

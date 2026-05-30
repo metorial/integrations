@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SendloopClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getCampaignReport = SlateTool.create(spec, {
   name: 'Get Campaign Report',
@@ -51,12 +51,12 @@ export let getCampaignReport = SlateTool.create(spec, {
     let { campaignId } = ctx.input;
     let sections: string[] = [];
 
-    let opens: any = undefined;
-    let clicks: any = undefined;
-    let bounces: any = undefined;
-    let unsubscriptions: any = undefined;
-    let forwards: any = undefined;
-    let openLocations: any = undefined;
+    let opens: any;
+    let clicks: any;
+    let bounces: any;
+    let unsubscriptions: any;
+    let forwards: any;
+    let openLocations: any;
 
     if (ctx.input.includeOpens) {
       opens = await client.getCampaignEmailOpens(campaignId);

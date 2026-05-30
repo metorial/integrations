@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let campaignEventTypes = ['campaign.sent', 'campaign.open', 'campaign.click'] as const;
 
@@ -62,7 +62,7 @@ export let campaignEvents = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let body = (await ctx.request.json()) as any;
 
-      let events: Array<any> = Array.isArray(body) ? body : [body];
+      let events: any[] = Array.isArray(body) ? body : [body];
 
       let inputs = events.map((event: any) => {
         let eventType = event.type || 'campaign.sent';

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MailsoftlyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getContacts = SlateTool.create(spec, {
   name: 'Get Contacts',

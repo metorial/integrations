@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PendoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateVisitorMetadata = SlateTool.create(spec, {
   name: 'Update Visitor Metadata',

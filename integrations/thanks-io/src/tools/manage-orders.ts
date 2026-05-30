@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ThanksIoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageOrders = SlateTool.create(spec, {
   name: 'Manage Orders',
@@ -58,7 +58,7 @@ Only orders in "Reviewing" status can be cancelled for a full refund.`,
         itemsPerPage: ctx.input.itemsPerPage,
         subAccountId: ctx.input.subAccountId
       });
-      let data = (result.data || []) as Array<Record<string, unknown>>;
+      let data = (result.data || []) as Record<string, unknown>[];
       let meta = result.meta as Record<string, unknown> | undefined;
       return {
         output: {

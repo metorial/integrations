@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let buildEvents = SlateTrigger.create(spec, {
   name: 'Build Events',
@@ -53,7 +53,7 @@ export let buildEvents = SlateTrigger.create(spec, {
       let data = (await ctx.request.json()) as any;
       let event = data.event as string | undefined;
 
-      if (!event || !event.startsWith('build.')) {
+      if (!event?.startsWith('build.')) {
         return { inputs: [] };
       }
 

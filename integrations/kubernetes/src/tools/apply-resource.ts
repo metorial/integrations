@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { createKubeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let applyResource = SlateTool.create(spec, {
   name: 'Apply Resource',
@@ -53,12 +53,7 @@ Accepts a full resource manifest as a JSON object. The kind, apiVersion, and met
     // Try to get the existing resource to determine if this is create or update
     let wasCreated = false;
     let result: any;
-
-    try {
-      result = await client.applyResource(manifest, ctx.input.namespace);
-    } catch (e: any) {
-      throw e;
-    }
+    result = await client.applyResource(manifest, ctx.input.namespace);
 
     // Determine if it was created by checking if resourceVersion is the initial one
     // A heuristic: if we caught 404 in applyResource, it was created

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageWorkflow = SlateTool.create(spec, {
   name: 'Manage Workflow',
@@ -133,8 +133,8 @@ export let manageWorkflow = SlateTool.create(spec, {
         throw new Error('subscriberEmail is required to start a subscriber on a workflow.');
       }
       let sub: Record<string, any> = { email: ctx.input.subscriberEmail };
-      if (ctx.input.customFields) sub['custom_fields'] = ctx.input.customFields;
-      if (ctx.input.tags) sub['tags'] = ctx.input.tags;
+      if (ctx.input.customFields) sub.custom_fields = ctx.input.customFields;
+      if (ctx.input.tags) sub.tags = ctx.input.tags;
       await client.startOnWorkflow(ctx.input.workflowId, sub);
       return {
         output: { started: true },

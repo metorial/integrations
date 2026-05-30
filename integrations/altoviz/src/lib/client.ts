@@ -192,13 +192,13 @@ export class Client {
   async listSaleInvoices(params?: ListInvoicesParams): Promise<any[]> {
     let axios = this.getAxios();
     let queryParams: Record<string, any> = this.buildPaginationParams(params);
-    if (params?.sortBy) queryParams['SortBy'] = params.sortBy;
-    if (params?.sortDirection) queryParams['SortDirection'] = params.sortDirection;
-    if (params?.dateFrom) queryParams['DateFrom'] = params.dateFrom;
-    if (params?.dateTo) queryParams['DateTo'] = params.dateTo;
-    if (params?.customerId) queryParams['CustomerId'] = params.customerId;
-    if (params?.status) queryParams['Status'] = params.status;
-    if (params?.includeCanceled) queryParams['IncludeCanceled'] = params.includeCanceled;
+    if (params?.sortBy) queryParams.SortBy = params.sortBy;
+    if (params?.sortDirection) queryParams.SortDirection = params.sortDirection;
+    if (params?.dateFrom) queryParams.DateFrom = params.dateFrom;
+    if (params?.dateTo) queryParams.DateTo = params.dateTo;
+    if (params?.customerId) queryParams.CustomerId = params.customerId;
+    if (params?.status) queryParams.Status = params.status;
+    if (params?.includeCanceled) queryParams.IncludeCanceled = params.includeCanceled;
     let response = await axios.get('/SaleInvoices', { params: queryParams });
     return response.data;
   }
@@ -364,7 +364,7 @@ export class Client {
   async listProducts(params?: ListProductsParams): Promise<any[]> {
     let axios = this.getAxios();
     let queryParams: Record<string, any> = this.buildPaginationParams(params);
-    if (params?.productNumber) queryParams['productNumber'] = params.productNumber;
+    if (params?.productNumber) queryParams.productNumber = params.productNumber;
     let response = await axios.get('/Products', { params: queryParams });
     return response.data;
   }
@@ -487,8 +487,8 @@ export class Client {
 
   private buildPaginationParams(params?: PaginationParams): Record<string, any> {
     let result: Record<string, any> = {};
-    if (params?.pageIndex) result['PageIndex'] = params.pageIndex;
-    if (params?.pageSize) result['PageSize'] = params.pageSize;
+    if (params?.pageIndex) result.PageIndex = params.pageIndex;
+    if (params?.pageSize) result.PageSize = params.pageSize;
     return result;
   }
 }

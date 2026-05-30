@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  cancelEsignSession,
+  createAutomation,
+  deleteAutomation,
+  duplicateAutomation,
+  duplicateTemplate,
   generateDocument,
+  getAutomation,
+  getEsignSession,
   getJobStatus,
   getQueueStats,
   listAutomations,
-  getAutomation,
-  createAutomation,
-  updateAutomation,
-  deleteAutomation,
-  duplicateAutomation,
-  listPlaceholders,
-  duplicateTemplate,
   listEsignSessions,
-  getEsignSession,
-  cancelEsignSession,
-  resendEsignInvitation
+  listPlaceholders,
+  resendEsignInvitation,
+  updateAutomation
 } from './tools';
-import { esignEvent, documentGenerated } from './triggers';
+import { documentGenerated, esignEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,

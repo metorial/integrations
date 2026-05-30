@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  generateKeywordIdeas,
   listAccounts,
-  searchReports,
-  manageCampaigns,
   manageAdGroups,
   manageAds,
-  manageKeywords,
+  manageAudienceLists,
   manageBiddingStrategies,
+  manageCampaigns,
   manageConversionActions,
-  generateKeywordIdeas,
-  uploadOfflineConversions,
-  manageAudienceLists
+  manageKeywords,
+  searchReports,
+  uploadOfflineConversions
 } from './tools';
 import { leadFormSubmit } from './triggers';
 

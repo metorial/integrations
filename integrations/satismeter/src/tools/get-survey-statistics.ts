@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SatisMeterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSurveyStatisticsTool = SlateTool.create(spec, {
   name: 'Get Survey Statistics',

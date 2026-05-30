@@ -2,21 +2,21 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createLink,
-  updateLink,
-  getLink,
-  listLinks,
-  upsertLink,
   deleteLink,
   getAnalytics,
+  getLink,
+  getMetatags,
+  listCustomers,
+  listEvents,
+  listLinks,
+  manageDomains,
+  manageTags,
   trackLead,
   trackSale,
-  manageTags,
-  manageDomains,
-  listCustomers,
-  getMetatags,
-  listEvents
+  updateLink,
+  upsertLink
 } from './tools';
-import { linkEvents, linkClicked, conversionEvents, partnerEvents } from './triggers';
+import { conversionEvents, linkClicked, linkEvents, partnerEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

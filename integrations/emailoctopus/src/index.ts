@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listLists,
-  getList,
-  createList,
-  updateList,
-  deleteList,
-  listContacts,
-  getContact,
-  createContact,
-  updateContact,
-  upsertContact,
-  deleteContact,
   batchUpdateContacts,
-  manageTags,
-  manageFields,
-  listCampaigns,
+  createContact,
+  createList,
+  deleteContact,
+  deleteList,
   getCampaign,
   getCampaignReport,
-  triggerAutomation
+  getContact,
+  getList,
+  listCampaigns,
+  listContacts,
+  listLists,
+  manageFields,
+  manageTags,
+  triggerAutomation,
+  updateContact,
+  updateList,
+  upsertContact
 } from './tools';
 import { contactEvent } from './triggers';
 

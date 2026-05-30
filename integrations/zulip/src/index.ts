@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  sendMessage,
-  getMessages,
-  updateMessage,
-  deleteMessage,
-  manageReactions,
-  manageMessageFlags,
-  listChannels,
-  createChannel,
-  updateChannel,
   archiveChannel,
+  createChannel,
+  deleteMessage,
   getChannelTopics,
-  manageSubscriptions,
-  listUsers,
+  getMessages,
   getUser,
-  setUserStatus,
   getUserPresence,
+  listChannels,
+  listUsers,
+  manageMessageFlags,
+  manageReactions,
+  manageSubscriptions,
   manageUserGroups,
-  sendInvitation
+  sendInvitation,
+  sendMessage,
+  setUserStatus,
+  updateChannel,
+  updateMessage
 } from './tools';
-import { messageEvents, channelEvents, reactionEvents, inboundWebhook } from './triggers';
+import { channelEvents, inboundWebhook, messageEvents, reactionEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

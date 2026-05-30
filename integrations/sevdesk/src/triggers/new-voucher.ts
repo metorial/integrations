@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newVoucher = SlateTrigger.create(spec, {
   name: 'New Voucher',
@@ -45,7 +45,7 @@ export let newVoucher = SlateTrigger.create(spec, {
 
       let sorted = (vouchers ?? []).sort((a: any, b: any) => Number(b.id) - Number(a.id));
 
-      let newVouchers = [];
+      let newVouchers: any[] = [];
       for (let v of sorted) {
         let vId = String(v.id);
         if (lastSeenId && Number(vId) <= Number(lastSeenId)) break;

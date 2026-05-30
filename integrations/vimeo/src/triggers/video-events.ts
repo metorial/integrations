@@ -1,8 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { VimeoClient } from '../lib/client';
-import { videoSchema, mapVideo } from '../lib/schemas';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { VimeoClient } from '../lib/client';
+import { mapVideo, videoSchema } from '../lib/schemas';
+import { spec } from '../spec';
 
 export let videoEventsTrigger = SlateTrigger.create(spec, {
   name: 'Video Events',

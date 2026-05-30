@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  upsertCustomerTool,
-  upsertOrderTool,
-  manageProductTool,
-  upsertCartTool,
+  batchUploadContactsTool,
   manageNewsletterTool,
+  manageProductTool,
   sendCustomEventTool,
-  batchUploadContactsTool
+  upsertCartTool,
+  upsertCustomerTool,
+  upsertOrderTool
 } from './tools';
 import {
   emailEventsTrigger,
-  smsEventsTrigger,
   newsletterEventsTrigger,
+  smsEventsTrigger,
   suppressionEventsTrigger
 } from './triggers';
 

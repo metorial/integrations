@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let evidenceItemSchema = z.object({
   description: z.string().optional().describe('Description of the evidence item'),

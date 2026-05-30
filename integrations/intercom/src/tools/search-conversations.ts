@@ -1,12 +1,8 @@
 import { SlateTool } from '@slates/provider';
-import { Client } from '../lib/client';
-import {
-  booleanOrUndefined,
-  stringOrUndefined,
-  timestampOrUndefined
-} from '../lib/output';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { booleanOrUndefined, stringOrUndefined, timestampOrUndefined } from '../lib/output';
+import { spec } from '../spec';
 
 export let searchConversations = SlateTool.create(spec, {
   name: 'Search Conversations',

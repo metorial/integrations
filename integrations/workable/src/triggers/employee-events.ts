@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { WorkableClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let employeeEventsTrigger = SlateTrigger.create(spec, {
   name: 'Employee Events',

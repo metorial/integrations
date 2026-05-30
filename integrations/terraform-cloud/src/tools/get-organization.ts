@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let getOrganizationTool = SlateTool.create(spec, {
   name: 'Get Organization',
@@ -47,7 +47,7 @@ export let getOrganizationTool = SlateTool.create(spec, {
         planExpiresAt: org.attributes?.['plan-expires-at'] || '',
         costEstimationEnabled: org.attributes?.['cost-estimation-enabled'] ?? false,
         createdAt: org.attributes?.['created-at'] || '',
-        trialing: org.attributes?.['trialing'] ?? false,
+        trialing: org.attributes?.trialing ?? false,
         permissions: {
           canCreateTeam: org.attributes?.permissions?.['can-create-team'] ?? false,
           canCreateWorkspace: org.attributes?.permissions?.['can-create-workspace'] ?? false,

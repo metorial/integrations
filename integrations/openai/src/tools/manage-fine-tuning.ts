@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createFineTuningJob = SlateTool.create(spec, {
   name: 'Create Fine-Tuning Job',
@@ -53,7 +53,7 @@ export let createFineTuningJob = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
-    let hyperparameters: any = undefined;
+    let hyperparameters: any;
     if (
       ctx.input.nEpochs !== undefined ||
       ctx.input.batchSize !== undefined ||

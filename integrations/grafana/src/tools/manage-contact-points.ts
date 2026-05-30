@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { GrafanaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listContactPoints = SlateTool.create(spec, {
   name: 'List Contact Points',

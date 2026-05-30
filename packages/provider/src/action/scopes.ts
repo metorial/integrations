@@ -78,7 +78,9 @@ let normalizeClause = (input: SlateActionScopeClauseInput): SlateActionScopeClau
 
 let assertScopeValues = (scopes: readonly SlateActionScopeValue[]) => {
   if (scopes.length === 0) {
-    throw new SlateDeclarationError('Each action scope clause must include at least one OR scope');
+    throw new SlateDeclarationError(
+      'Each action scope clause must include at least one OR scope'
+    );
   }
 
   for (let scope of scopes) {

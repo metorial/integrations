@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  trackEvent,
-  manageUserProperties,
-  manageAccountProperties,
+  deleteUser,
   identifyUser,
-  deleteUser
+  manageAccountProperties,
+  manageUserProperties,
+  trackEvent
 } from './tools';
 import { segmentSync } from './triggers';
 

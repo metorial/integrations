@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getNewsletter,
   addSubscriber,
-  updateSubscriberStatus,
-  getSubscriberCounts,
   createContentLink,
+  getEmailAnalytics,
+  getNewsletter,
+  getSubscriberCounts,
   listSentEmails,
-  getEmailAnalytics
+  updateSubscriberStatus
 } from './tools';
-import { newSentEmail, inboundWebhook } from './triggers';
+import { inboundWebhook, newSentEmail } from './triggers';
 
 export let provider = Slate.create({
   spec,

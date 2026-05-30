@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { LaunchDarklyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let resourceChangeTrigger = SlateTrigger.create(spec, {
   name: 'Resource Changes',
@@ -88,7 +88,7 @@ export let resourceChangeTrigger = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data._id) {
+      if (!data?._id) {
         return { inputs: [] };
       }
 

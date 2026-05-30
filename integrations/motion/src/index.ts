@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createTask,
-  getTask,
-  listTasks,
-  updateTask,
-  deleteTask,
-  createProject,
-  getProject,
-  listProjects,
-  createRecurringTask,
-  listRecurringTasks,
-  deleteRecurringTask,
-  listComments,
   createComment,
-  listCustomFields,
   createCustomField,
+  createProject,
+  createRecurringTask,
+  createTask,
   deleteCustomField,
-  setCustomFieldValue,
-  listWorkspaces,
-  listStatuses,
+  deleteRecurringTask,
+  deleteTask,
+  getProject,
+  getTask,
+  listComments,
+  listCustomFields,
+  listProjects,
+  listRecurringTasks,
   listSchedules,
-  listUsers
+  listStatuses,
+  listTasks,
+  listUsers,
+  listWorkspaces,
+  setCustomFieldValue,
+  updateTask
 } from './tools';
-import { taskUpdates, inboundWebhook } from './triggers';
+import { inboundWebhook, taskUpdates } from './triggers';
 
 export let provider = Slate.create({
   spec,

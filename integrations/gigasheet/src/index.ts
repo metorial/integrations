@@ -1,26 +1,26 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listFiles,
-  getSheet,
-  createSheet,
-  manageFile,
-  filterData,
-  modifyRows,
-  manageColumns,
-  exportSheet,
-  downloadExport,
-  shareFile,
-  runFormula,
-  findAndReplace,
-  manageViews,
-  manageComments,
   aiAssistant,
+  createSheet,
   crossFileLookup,
   deduplicateRows,
+  downloadExport,
   enrichData,
+  exportSheet,
+  filterData,
+  findAndReplace,
   getActivity,
-  manageSavedFilters
+  getSheet,
+  listFiles,
+  manageColumns,
+  manageComments,
+  manageFile,
+  manageSavedFilters,
+  manageViews,
+  modifyRows,
+  runFormula,
+  shareFile
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

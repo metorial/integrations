@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchBusinesses,
+  aiChat,
+  autocomplete,
   getBusinessDetails,
   getReviews,
-  autocomplete,
   matchBusiness,
+  searchBusinesses,
   searchByPhone,
-  searchTransactions,
-  aiChat
+  searchTransactions
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

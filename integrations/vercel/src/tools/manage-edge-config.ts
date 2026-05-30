@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { vercelServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageEdgeConfigTool = SlateTool.create(spec, {
   name: 'Manage Edge Config',
@@ -102,8 +102,7 @@ export let manageEdgeConfigTool = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.edgeConfigId)
-        throw vercelServiceError('edgeConfigId is required');
+      if (!ctx.input.edgeConfigId) throw vercelServiceError('edgeConfigId is required');
       let ec = await client.getEdgeConfig(ctx.input.edgeConfigId);
       return {
         output: {
@@ -136,8 +135,7 @@ export let manageEdgeConfigTool = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.edgeConfigId)
-        throw vercelServiceError('edgeConfigId is required');
+      if (!ctx.input.edgeConfigId) throw vercelServiceError('edgeConfigId is required');
       await client.deleteEdgeConfig(ctx.input.edgeConfigId);
       return {
         output: { success: true },
@@ -146,8 +144,7 @@ export let manageEdgeConfigTool = SlateTool.create(spec, {
     }
 
     if (action === 'get_items') {
-      if (!ctx.input.edgeConfigId)
-        throw vercelServiceError('edgeConfigId is required');
+      if (!ctx.input.edgeConfigId) throw vercelServiceError('edgeConfigId is required');
       let result = await client.getEdgeConfigItems(ctx.input.edgeConfigId);
       let items = (Array.isArray(result) ? result : []).map((item: any) => ({
         key: item.key,

@@ -1,25 +1,25 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listOpportunitiesTool,
-  getOpportunityTool,
-  createOpportunityTool,
-  updateOpportunityTool,
-  listPostingsTool,
-  managePostingTool,
-  manageInterviewTool,
   addNoteTool,
-  manageUserTool,
-  listUsersTool,
-  getPipelineMetadataTool,
+  createOpportunityTool,
   getOpportunityActivityTool,
+  getOpportunityTool,
+  getPipelineMetadataTool,
+  listOpportunitiesTool,
+  listPostingsTool,
+  listUsersTool,
+  manageInterviewTool,
+  managePostingTool,
   manageRequisitionTool,
-  updateContactTool
+  manageUserTool,
+  updateContactTool,
+  updateOpportunityTool
 } from './tools';
 import {
-  opportunityEventsTrigger,
+  contactEventsTrigger,
   interviewEventsTrigger,
-  contactEventsTrigger
+  opportunityEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({

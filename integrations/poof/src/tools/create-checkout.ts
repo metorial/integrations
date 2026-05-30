@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PoofClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createCheckout = SlateTool.create(spec, {
   name: 'Create Checkout',

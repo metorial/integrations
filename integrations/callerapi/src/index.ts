@@ -1,14 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  lookupPhoneNumber,
-  getCallerId,
-  getCallerPicture,
-  checkPortedStatus,
-  getPortingHistory,
   assessPortFraudRisk,
   checkOnlinePresence,
-  getAccountInfo
+  checkPortedStatus,
+  getAccountInfo,
+  getCallerId,
+  getCallerPicture,
+  getPortingHistory,
+  lookupPhoneNumber
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

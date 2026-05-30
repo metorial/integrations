@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSettings = SlateTool.create(spec, {
   name: 'Get Account Settings',
@@ -32,9 +32,9 @@ export let getSettings = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
     let include = ctx.input.include;
 
-    let accountSettings: any = undefined;
-    let brandSettings: any = undefined;
-    let mergeTags: any = undefined;
+    let accountSettings: any;
+    let brandSettings: any;
+    let mergeTags: any;
 
     if (include.includes('account')) {
       let result = await client.getSettings();

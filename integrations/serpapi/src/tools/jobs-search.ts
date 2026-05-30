@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SerpApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let jobResultSchema = z.object({
   title: z.string().optional().describe('Job title'),

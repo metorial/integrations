@@ -2,15 +2,15 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createLink,
-  updateLink,
-  getLink,
-  listLinks,
   deleteLinks,
   getClickAnalytics,
   getClickCounters,
-  manageWebhooks,
+  getLink,
+  listDomains,
+  listLinks,
   listWorkspaces,
-  listDomains
+  manageWebhooks,
+  updateLink
 } from './tools';
 import { linkClicked } from './triggers';
 

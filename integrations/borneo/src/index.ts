@@ -2,27 +2,27 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createAndScheduleScan,
-  manageScan,
+  downloadReport,
+  exportInventory,
+  getCloudAccount,
+  getResourceStatistics,
   getScanIteration,
   listInspectionResults,
-  manageDataBreach,
-  manageEmployee,
-  manageDepartment,
-  manageHeadquarter,
-  manageDomain,
-  manageDashboardUser,
-  manageProcessingActivity,
-  manageDpia,
-  manageRecipient,
   manageAsset,
-  manageLegalDocument,
+  manageDashboardUser,
+  manageDataBreach,
+  manageDepartment,
+  manageDomain,
+  manageDpia,
+  manageEmployee,
+  manageHeadquarter,
   manageInfotypeCategory,
-  exportInventory,
-  getResourceStatistics,
-  downloadReport,
-  getCloudAccount
+  manageLegalDocument,
+  manageProcessingActivity,
+  manageRecipient,
+  manageScan
 } from './tools';
-import { scanCompleted, dataBreachUpdated, inboundWebhook } from './triggers';
+import { dataBreachUpdated, inboundWebhook, scanCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,

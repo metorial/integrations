@@ -1,4 +1,4 @@
-import { Client, ClientConfig } from './client';
+import { Client } from './client';
 
 export let createClient = (ctx: {
   auth: { token: string; deskDomain?: string };

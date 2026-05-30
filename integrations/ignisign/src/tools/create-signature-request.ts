@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IgnisignClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createSignatureRequest = SlateTool.create(spec, {
   name: 'Create Signature Request',
@@ -79,7 +79,7 @@ export let createSignatureRequest = SlateTool.create(spec, {
       ctx.input.expirationDate ||
       ctx.input.expirationDateIsActivated !== undefined;
 
-    let context: any = undefined;
+    let context: any;
 
     if (hasUpdateData) {
       let updateData: Record<string, any> = {};

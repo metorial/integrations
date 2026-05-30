@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  searchCertificates,
+  authorizeCertificate,
+  authorizePublicKey,
   listMonitoredDomains,
   manageMonitoredDomain,
-  authorizeCertificate,
-  authorizePublicKey
+  searchCertificates
 } from './tools';
 import { certificateEvents } from './triggers';
 

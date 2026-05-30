@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SerpApiClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let localResultSchema = z.object({
   position: z.number().optional().describe('Position in results'),

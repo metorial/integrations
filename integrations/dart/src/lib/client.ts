@@ -1,5 +1,5 @@
 import { createAxios } from 'slates';
-import type { Task, ConciseTask, Comment, Doc, ConciseDoc, WorkspaceConfig } from './types';
+import type { Comment, ConciseDoc, ConciseTask, Doc, Task, WorkspaceConfig } from './types';
 
 let api = createAxios({
   baseURL: 'https://app.dartai.com/api/v0/public'
@@ -183,7 +183,7 @@ let mapConciseDoc = (raw: any): ConciseDoc => ({
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.headers = {
       Authorization: `Bearer ${config.token}`,
       'Content-Type': 'application/json'

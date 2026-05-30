@@ -6,23 +6,21 @@ let ACCEPT_HEADER = `application/vnd.atlas.${ATLAS_API_VERSION}+json`;
 export class AtlasClient {
   private axios;
 
-  constructor(
-    private authConfig: {
-      token: string;
-      authMethod: string;
-      publicKey?: string;
-      privateKey?: string;
-    }
-  ) {
+  constructor(authConfig: {
+    token: string;
+    authMethod: string;
+    publicKey?: string;
+    privateKey?: string;
+  }) {
     let headers: Record<string, string> = {
       Accept: ACCEPT_HEADER,
       'Content-Type': 'application/json'
     };
 
     if (authConfig.authMethod === 'oauth') {
-      headers['Authorization'] = `Bearer ${authConfig.token}`;
+      headers.Authorization = `Bearer ${authConfig.token}`;
     } else {
-      headers['Authorization'] = `Basic ${authConfig.token}`;
+      headers.Authorization = `Basic ${authConfig.token}`;
     }
 
     this.axios = createAxios({

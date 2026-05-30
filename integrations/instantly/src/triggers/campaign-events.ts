@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let campaignEvents = SlateTrigger.create(spec, {
   name: 'Campaign & Email Events',
@@ -72,7 +72,7 @@ export let campaignEvents = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      let eventId =
+      let _eventId =
         data.id ??
         data.event_id ??
         `${eventType}_${data.lead_email ?? ''}_${data.timestamp ?? Date.now()}`;

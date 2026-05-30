@@ -35,7 +35,7 @@ export interface CreateLeadParams {
 export class HelloLeadsClient {
   private http;
 
-  constructor(private config: HelloLeadsClientConfig) {
+  constructor(config: HelloLeadsClientConfig) {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {

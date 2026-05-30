@@ -1,22 +1,22 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  validateEmailTool,
-  verifyEmailTool,
-  validatePhoneTool,
-  ipInfoTool,
-  ipBlocklistTool,
-  ipProbeTool,
-  hostReputationTool,
+  badWordFilterTool,
+  binLookupTool,
+  convertTool,
   domainLookupTool,
   geocodeAddressTool,
   geocodeReverseTool,
-  binLookupTool,
-  convertTool,
-  badWordFilterTool,
+  hostReputationTool,
+  ipBlocklistTool,
+  ipInfoTool,
+  ipProbeTool,
   smsVerifyTool,
-  verifySecurityCodeTool,
-  urlInfoTool
+  urlInfoTool,
+  validateEmailTool,
+  validatePhoneTool,
+  verifyEmailTool,
+  verifySecurityCodeTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

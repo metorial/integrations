@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { flattenResource, cleanAttributes } from '../lib/helpers';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
+import { cleanAttributes, flattenResource } from '../lib/helpers';
+import { spec } from '../spec';
 
 export let manageTask = SlateTool.create(spec, {
   name: 'Manage Task',

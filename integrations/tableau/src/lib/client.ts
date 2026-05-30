@@ -129,10 +129,10 @@ export class TableauClient {
     sort?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.http.get(`/sites/${this.siteId}/workbooks`, {
       params: queryParams
@@ -204,10 +204,10 @@ export class TableauClient {
     sort?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.http.get(`/sites/${this.siteId}/datasources`, {
       params: queryParams
@@ -274,10 +274,10 @@ export class TableauClient {
     sort?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.http.get(`/sites/${this.siteId}/views`, { params: queryParams });
     return response.data;
@@ -329,8 +329,8 @@ export class TableauClient {
 
   async queryCustomViews(params?: { pageSize?: number; pageNumber?: number }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
 
     let response = await this.http.get(`/sites/${this.siteId}/customviews`, {
       params: queryParams
@@ -401,10 +401,10 @@ export class TableauClient {
     sort?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.http.get(`/sites/${this.siteId}/users`, { params: queryParams });
     return response.data;
@@ -455,10 +455,10 @@ export class TableauClient {
     sort?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.http.get(`/sites/${this.siteId}/groups`, {
       params: queryParams
@@ -512,8 +512,8 @@ export class TableauClient {
     }
   ): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
 
     let response = await this.http.get(`/sites/${this.siteId}/groups/${groupId}/users`, {
       params: queryParams
@@ -530,10 +530,10 @@ export class TableauClient {
     sort?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.http.get(`/sites/${this.siteId}/projects`, {
       params: queryParams
@@ -647,9 +647,9 @@ export class TableauClient {
     filter?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
-    if (params?.filter) queryParams['filter'] = params.filter;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
+    if (params?.filter) queryParams.filter = params.filter;
 
     let response = await this.http.get(`/sites/${this.siteId}/jobs`, { params: queryParams });
     return response.data;
@@ -712,10 +712,10 @@ export class TableauClient {
     sort?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.http.get(`/sites/${this.siteId}/flows`, { params: queryParams });
     return response.data;
@@ -800,8 +800,8 @@ export class TableauClient {
 
   async queryAlerts(params?: { pageSize?: number; pageNumber?: number }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
 
     let response = await this.http.get(`/sites/${this.siteId}/dataAlerts`, {
       params: queryParams
@@ -837,10 +837,10 @@ export class TableauClient {
     sort?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.resourceHttp.get(`/collections`, {
       params: queryParams
@@ -910,10 +910,10 @@ export class TableauClient {
     }
   ): Promise<any> {
     let queryParams: Record<string, string> = {};
-    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
-    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
-    if (params?.filter) queryParams['filter'] = params.filter;
-    if (params?.sort) queryParams['sort'] = params.sort;
+    if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
+    if (params?.pageNumber) queryParams.pageNumber = String(params.pageNumber);
+    if (params?.filter) queryParams.filter = params.filter;
+    if (params?.sort) queryParams.sort = params.sort;
 
     let response = await this.resourceHttp.get(`/collections/${collectionId}/items`, {
       params: queryParams

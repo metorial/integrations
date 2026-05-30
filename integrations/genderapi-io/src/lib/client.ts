@@ -122,7 +122,7 @@ let mapPhoneResponse = (data: any): PhoneValidationResponse => ({
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.genderapi.io',
       headers: {

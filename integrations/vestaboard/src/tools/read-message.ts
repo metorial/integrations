@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CloudClient, LocalClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let readMessage = SlateTool.create(spec, {
   name: 'Read Current Message',
@@ -36,7 +36,7 @@ Available via the **Cloud API** and **Local API** only (not supported by the Sub
       );
     }
 
-    let result;
+    let result: any;
 
     if (apiType === 'cloud') {
       let client = new CloudClient(ctx.auth.token);

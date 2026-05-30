@@ -1,35 +1,35 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  queryMetrics,
-  submitMetrics,
-  manageMonitor,
-  listMonitors,
   deleteMonitor,
-  muteMonitor,
-  manageDashboard,
-  listDashboards,
   getDashboard,
-  postEvent,
+  listDashboards,
   listEvents,
-  manageIncident,
+  listHosts,
   listIncidents,
+  listMonitors,
+  listSlos,
+  listSyntheticsTests,
+  listUsers,
+  manageDashboard,
+  manageIncident,
+  manageMonitor,
+  manageSlo,
+  manageSynthetics,
+  muteMonitor,
+  postEvent,
+  queryMetrics,
+  scheduleDowntime,
   searchLogs,
   submitLogs,
-  manageSlo,
-  listSlos,
-  manageSynthetics,
-  listSyntheticsTests,
-  triggerSynthetics,
-  listUsers,
-  listHosts,
-  scheduleDowntime
+  submitMetrics,
+  triggerSynthetics
 } from './tools';
 import {
-  monitorAlertTrigger,
-  newEventTrigger,
+  inboundWebhook,
   incidentUpdateTrigger,
-  inboundWebhook
+  monitorAlertTrigger,
+  newEventTrigger
 } from './triggers';
 
 export let provider = Slate.create({

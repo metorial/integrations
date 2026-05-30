@@ -1,8 +1,8 @@
 import { input } from '@inquirer/prompts';
-import { createSlatesClientFromProfile, openSlatesCliStore } from '@slates/profiles';
+import { createSlatesClientFromProfile, type openSlatesCliStore } from '@slates/profiles';
 import path from 'path';
 import { chooseProfile, openIntegrationStore, syncProfileMetadata } from '../lib/context';
-import { WithProfile } from '../lib/types';
+import type { WithProfile } from '../lib/types';
 
 let normalizeEntry = (rootDir: string, entry: string) => {
   let absolute = path.isAbsolute(entry) ? entry : path.resolve(process.cwd(), entry);
@@ -12,7 +12,9 @@ let normalizeEntry = (rootDir: string, entry: string) => {
     : absolute;
 };
 
-let getNextSetupProfileName = async (store: Awaited<ReturnType<typeof openSlatesCliStore>>) => {
+let getNextSetupProfileName = async (
+  store: Awaited<ReturnType<typeof openSlatesCliStore>>
+) => {
   let names = new Set(store.listProfiles().map(profile => profile.name));
   if (!names.has('default')) {
     return 'default';
@@ -41,10 +43,14 @@ let createProfile = async (
 
   let defaultName =
     opts.name ??
-    (opts.initializeConfig ? await getNextSetupProfileName(store) : `profile-${store.listProfiles().length + 1}`);
+    (opts.initializeConfig
+      ? await getNextSetupProfileName(store)
+      : `profile-${store.listProfiles().length + 1}`);
   let name =
     opts.name ??
-    (interactive ? await input({ message: 'Profile name', default: defaultName }) : defaultName);
+    (interactive
+      ? await input({ message: 'Profile name', default: defaultName })
+      : defaultName);
   let defaultEntry = opts.entry ?? integration.entry;
   let entry =
     opts.entry ??
@@ -56,7 +62,9 @@ let createProfile = async (
       : defaultEntry);
   let exportName =
     opts.exportName ??
-    (interactive ? await input({ message: 'Export name (optional)', default: 'provider' }) : 'provider');
+    (interactive
+      ? await input({ message: 'Export name (optional)', default: 'provider' })
+      : 'provider');
 
   let profile = store.upsertProfile({
     name,

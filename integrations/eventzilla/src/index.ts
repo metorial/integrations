@@ -1,24 +1,24 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listEventsTool,
-  getEventTool,
-  getEventTicketsTool,
-  listAttendeesTool,
-  getAttendeeTool,
   checkinAttendeeTool,
-  listTransactionsTool,
-  getTransactionTool,
-  manageOrderTool,
-  toggleEventSalesTool,
-  prepareCheckoutTool,
+  confirmCheckoutTool,
   createCheckoutTool,
   fillOrderTool,
-  confirmCheckoutTool,
+  getAttendeeTool,
+  getCategoriesTool,
+  getEventTicketsTool,
+  getEventTool,
+  getTransactionTool,
+  listAttendeesTool,
+  listEventsTool,
+  listTransactionsTool,
   listUsersTool,
-  getCategoriesTool
+  manageOrderTool,
+  prepareCheckoutTool,
+  toggleEventSalesTool
 } from './tools';
-import { newAttendeeTrigger, newTransactionTrigger, inboundWebhook } from './triggers';
+import { inboundWebhook, newAttendeeTrigger, newTransactionTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

@@ -1,8 +1,8 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { MailchimpClient } from '../lib/client';
 import { getSubscriberHash } from '../lib/helpers';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageMemberTool = SlateTool.create(spec, {
   name: 'Manage Member',

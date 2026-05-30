@@ -1,7 +1,6 @@
 import { createAxios } from 'slates';
 
-let XLSX_MIME_TYPE =
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+let XLSX_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
 let collectErrorMessages = (error: unknown): string[] => {
   let seen = new Set<unknown>();

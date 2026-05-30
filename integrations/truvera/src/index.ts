@@ -2,32 +2,32 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createDid,
-  listDids,
-  getDid,
+  createProofRequest,
+  createProofTemplate,
+  createRegistry,
+  createSchema,
   deleteDid,
+  getCredential,
+  getDid,
+  getJob,
+  getProofRequest,
   issueCredential,
   listCredentials,
-  getCredential,
-  revokeCredential,
-  createSchema,
-  listSchemas,
-  createRegistry,
-  listRegistries,
-  createProofTemplate,
-  listProofTemplates,
-  createProofRequest,
-  getProofRequest,
-  verifyCredential,
-  manageProfile,
+  listDids,
   listProfiles,
-  getJob
+  listProofTemplates,
+  listRegistries,
+  listSchemas,
+  manageProfile,
+  revokeCredential,
+  verifyCredential
 } from './tools';
 import {
   credentialEvents,
   didEvents,
+  proofEvents,
   registryEvents,
-  schemaEvents,
-  proofEvents
+  schemaEvents
 } from './triggers';
 
 export let provider = Slate.create({

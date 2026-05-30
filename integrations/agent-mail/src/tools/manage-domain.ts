@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let dnsRecordSchema = z.object({
   type: z.string().describe('DNS record type (TXT, MX, CNAME)'),

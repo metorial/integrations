@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NeutrinoClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let convertTool = SlateTool.create(spec, {
   name: 'Convert Currency & Units',

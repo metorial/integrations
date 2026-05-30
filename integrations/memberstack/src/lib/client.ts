@@ -82,9 +82,9 @@ export class Client {
     let api = createApi(this.token);
     let queryParams: Record<string, string> = {};
 
-    if (params.after !== undefined) queryParams['after'] = String(params.after);
-    if (params.limit !== undefined) queryParams['limit'] = String(params.limit);
-    if (params.order) queryParams['order'] = params.order;
+    if (params.after !== undefined) queryParams.after = String(params.after);
+    if (params.limit !== undefined) queryParams.limit = String(params.limit);
+    if (params.order) queryParams.order = params.order;
 
     let response = await api.get('/members', { params: queryParams });
     let data = response.data;

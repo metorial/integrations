@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let balanceEntrySchema = z.object({
   tokenSymbol: z.string().optional().describe('Token symbol'),
@@ -62,7 +62,7 @@ Use this to check portfolio holdings, verify wallet balances, or monitor address
     let { blockchain, walletAddress, limit } = ctx.input;
     ctx.info(`Fetching token balances for ${walletAddress} on ${blockchain}`);
 
-    let balances: Array<z.infer<typeof balanceEntrySchema>> = [];
+    let balances: z.infer<typeof balanceEntrySchema>[] = [];
 
     if (blockchain === 'solana') {
       let query = `query GetSolanaBalance($address: String!, $limit: Int!) {
@@ -94,7 +94,7 @@ Use this to check portfolio holdings, verify wallet balances, or monitor address
           tokenSymbol: b.Currency?.Symbol,
           tokenName: b.Currency?.Name,
           tokenAddress: b.Currency?.MintAddress,
-          balance: parseFloat(b.balance) || 0
+          balance: Number.parseFloat(b.balance) || 0
         }))
         .filter((b: any) => b.balance > 0);
     } else if (ctx.config.apiVersion === 'v1') {
@@ -180,7 +180,7 @@ Use this to check portfolio holdings, verify wallet balances, or monitor address
           tokenName: b.Currency?.Name,
           tokenAddress: b.Currency?.SmartContract,
           tokenDecimals: b.Currency?.Decimals,
-          balance: parseFloat(b.balance) || 0
+          balance: Number.parseFloat(b.balance) || 0
         }))
         .filter((b: any) => b.balance > 0);
     }

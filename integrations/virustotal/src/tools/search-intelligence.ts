@@ -1,14 +1,14 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let searchIntelligence = SlateTool.create(spec, {
   name: 'Search Intelligence',
   key: 'search_intelligence',
   description: `Search VirusTotal's entire dataset using advanced search modifiers. Find files, URLs, domains, and IP addresses matching specific criteria such as file type, detection count, behavioral attributes, submission metadata, and more. **Premium feature.**`,
   instructions: [
-    'Use VirusTotal search modifiers like "type:pdf positives:5+" or "engines:\"emotet\"" for targeted results.',
+    'Use VirusTotal search modifiers like "type:pdf positives:5+" or "engines:"emotet"" for targeted results.',
     'Results include matching items with their attributes.'
   ],
   constraints: ['This feature requires a VirusTotal Premium API key.'],

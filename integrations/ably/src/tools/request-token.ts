@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { AblyRestClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let requestToken = SlateTool.create(spec, {
   name: 'Request Token',

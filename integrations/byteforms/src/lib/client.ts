@@ -4,7 +4,7 @@ export interface FormItem {
   id: number;
   public_id: string;
   name: string;
-  body: Array<Record<string, any>>;
+  body: Record<string, any>[];
   pages: any;
   is_custom: boolean;
   options: FormOptions;

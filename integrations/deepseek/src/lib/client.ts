@@ -4,8 +4,8 @@ import type {
   ChatCompletionResponse,
   FimCompletionRequest,
   FimCompletionResponse,
-  ListModelsResponse,
-  GetBalanceResponse
+  GetBalanceResponse,
+  ListModelsResponse
 } from './types';
 
 export class DeepSeekClient {

@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { LaunchDarklyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let flagChangeTrigger = SlateTrigger.create(spec, {
   name: 'Flag Changes',
@@ -66,7 +66,8 @@ export let flagChangeTrigger = SlateTrigger.create(spec, {
       }
 
       let newTimestamp = items.reduce((max: number, entry: any) => {
-        let entryDate = typeof entry.date === 'number' ? entry.date : parseInt(entry.date, 10);
+        let entryDate =
+          typeof entry.date === 'number' ? entry.date : Number.parseInt(entry.date, 10);
         return entryDate > max ? entryDate : max;
       }, lastTimestamp ?? 0);
 

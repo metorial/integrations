@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SpotifyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let simplifiedArtistSchema = z.object({
   artistId: z.string(),

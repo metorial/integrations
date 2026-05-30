@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
+import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 import { mapWorkspace } from '../lib/mappers';
-import { z } from 'zod';
+import { spec } from '../spec';
 
 export let getWorkspaceTool = SlateTool.create(spec, {
   name: 'Get Workspace',
@@ -43,7 +43,7 @@ export let getWorkspaceTool = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = createClient(ctx);
-    let response;
+    let response: any;
 
     if (ctx.input.workspaceId) {
       response = await client.getWorkspace(ctx.input.workspaceId);

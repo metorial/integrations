@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { NerdGraphClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let alertIssues = SlateTrigger.create(spec, {
   name: 'Alert Issues',
@@ -76,7 +76,7 @@ export let alertIssues = SlateTrigger.create(spec, {
       });
 
       let previousIssueStates: Record<string, string> = ctx.state?.issueStates || {};
-      let lastPollTime: string | undefined = ctx.state?.lastPollTime;
+      let _lastPollTime: string | undefined = ctx.state?.lastPollTime;
 
       let result = await client.listAlertIssues();
       let issues = result?.issues || [];

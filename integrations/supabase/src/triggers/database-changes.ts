@@ -1,8 +1,8 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
 import { ProjectClient } from '../lib/project-client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let databaseChangesTrigger = SlateTrigger.create(spec, {
   name: 'Database Changes',

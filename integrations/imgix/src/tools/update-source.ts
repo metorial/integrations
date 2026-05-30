@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ImgixClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let updateSource = SlateTool.create(spec, {
   name: 'Update Source',
@@ -61,28 +61,27 @@ export let updateSource = SlateTool.create(spec, {
 
     let attributes: Record<string, any> = {};
 
-    if (ctx.input.name !== undefined) attributes['name'] = ctx.input.name;
-    if (ctx.input.enabled !== undefined) attributes['enabled'] = ctx.input.enabled;
+    if (ctx.input.name !== undefined) attributes.name = ctx.input.name;
+    if (ctx.input.enabled !== undefined) attributes.enabled = ctx.input.enabled;
     if (ctx.input.secureUrlEnabled !== undefined)
-      attributes['secure_url_enabled'] = ctx.input.secureUrlEnabled;
-    if (ctx.input.cacheTtlBehavior)
-      attributes['cache_ttl_behavior'] = ctx.input.cacheTtlBehavior;
+      attributes.secure_url_enabled = ctx.input.secureUrlEnabled;
+    if (ctx.input.cacheTtlBehavior) attributes.cache_ttl_behavior = ctx.input.cacheTtlBehavior;
     if (ctx.input.cacheTtlValue !== undefined)
-      attributes['cache_ttl_value'] = ctx.input.cacheTtlValue;
+      attributes.cache_ttl_value = ctx.input.cacheTtlValue;
     if (ctx.input.cacheTtlError !== undefined)
-      attributes['cache_ttl_error'] = ctx.input.cacheTtlError;
-    if (ctx.input.defaultParams) attributes['default_params'] = ctx.input.defaultParams;
-    if (ctx.input.imageError !== undefined) attributes['image_error'] = ctx.input.imageError;
+      attributes.cache_ttl_error = ctx.input.cacheTtlError;
+    if (ctx.input.defaultParams) attributes.default_params = ctx.input.defaultParams;
+    if (ctx.input.imageError !== undefined) attributes.image_error = ctx.input.imageError;
     if (ctx.input.imageMissing !== undefined)
-      attributes['image_missing'] = ctx.input.imageMissing;
+      attributes.image_missing = ctx.input.imageMissing;
 
     if (ctx.input.deployment) {
       let deployment: Record<string, any> = {};
       if (ctx.input.deployment.imgixSubdomains)
-        deployment['imgix_subdomains'] = ctx.input.deployment.imgixSubdomains;
+        deployment.imgix_subdomains = ctx.input.deployment.imgixSubdomains;
       if (ctx.input.deployment.customDomains)
-        deployment['custom_domains'] = ctx.input.deployment.customDomains;
-      attributes['deployment'] = deployment;
+        deployment.custom_domains = ctx.input.deployment.customDomains;
+      attributes.deployment = deployment;
     }
 
     let result = await client.updateSource(ctx.input.sourceId, attributes);

@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 let bannerSchema = z.object({
   bannerId: z.string().describe('Generated banner UUID'),

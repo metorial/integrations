@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let planEvents = SlateTrigger.create(spec, {
   name: 'Plan Events',
@@ -39,7 +39,7 @@ export let planEvents = SlateTrigger.create(spec, {
       let body = (await ctx.request.json()) as any;
 
       let eventStr = body.event as string;
-      if (!eventStr || !eventStr.startsWith('plan.')) {
+      if (!eventStr?.startsWith('plan.')) {
         return { inputs: [] };
       }
 

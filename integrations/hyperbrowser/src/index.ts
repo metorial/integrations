@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  scrapeWebpage,
   batchScrape,
   crawlWebsite,
-  extractData,
-  webSearch,
-  createSession,
-  getSession,
-  stopSession,
-  listSessions,
   createProfile,
-  listProfiles,
+  createSession,
   deleteProfile,
+  extractData,
+  getSession,
+  getSessionRecording,
+  listProfiles,
+  listSessions,
   runBrowserAgent,
-  getSessionRecording
+  scrapeWebpage,
+  stopSession,
+  webSearch
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

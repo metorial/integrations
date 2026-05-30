@@ -57,7 +57,7 @@ export interface TagSuggestions {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.ln.ht/v1',
       headers: {

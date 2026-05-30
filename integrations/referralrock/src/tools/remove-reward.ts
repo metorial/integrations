@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let removeReward = SlateTool.create(spec, {
   name: 'Remove Reward',
@@ -35,7 +35,7 @@ export let removeReward = SlateTool.create(spec, {
 
     let result = await client.removeRewards(ctx.input.rewardIds);
 
-    let results = ((result as unknown as Array<Record<string, unknown>>) || []).map(r => {
+    let results = ((result as unknown as Record<string, unknown>[]) || []).map(r => {
       let info = (r.resultInfo || {}) as Record<string, unknown>;
       return {
         rewardId: (r.rewardId || '') as string,

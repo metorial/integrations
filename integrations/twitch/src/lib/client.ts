@@ -1,32 +1,29 @@
 import { createAxios } from 'slates';
 import type {
-  TwitchUser,
+  TwitchBannedUser,
   TwitchChannel,
-  TwitchStream,
-  TwitchSubscription,
-  TwitchFollower,
+  TwitchCharityCampaign,
+  TwitchChatSettings,
   TwitchClip,
-  TwitchVideo,
   TwitchCustomReward,
-  TwitchRedemption,
+  TwitchFollower,
+  TwitchGoal,
   TwitchPoll,
   TwitchPrediction,
-  TwitchBannedUser,
+  TwitchRedemption,
+  TwitchResponse,
   TwitchSchedule,
   TwitchScheduleSegment,
-  TwitchChatSettings,
-  TwitchResponse,
-  TwitchCharityCampaign,
-  TwitchGoal
+  TwitchStream,
+  TwitchSubscription,
+  TwitchUser,
+  TwitchVideo
 } from './types';
 
 export class TwitchClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(
-    private token: string,
-    private clientId: string
-  ) {
+  constructor(token: string, clientId: string) {
     this.axios = createAxios({
       baseURL: 'https://api.twitch.tv/helix',
       headers: {

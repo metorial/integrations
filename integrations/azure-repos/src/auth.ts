@@ -1,7 +1,7 @@
 import { createMicrosoftGraphOauth, mapAzureDevOpsScopes } from '@slates/oauth-microsoft';
-import { SlateAuth, createAxios } from 'slates';
-import { toAzureDevOpsAuthHeader } from './lib/auth';
+import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
+import { toAzureDevOpsAuthHeader } from './lib/auth';
 
 let scopes = [
   {

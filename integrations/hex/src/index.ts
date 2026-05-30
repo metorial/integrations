@@ -1,28 +1,28 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
-  getProject,
-  createProject,
-  updateProjectStatus,
-  runProject,
-  getRunStatus,
   cancelRun,
-  listProjectRuns,
-  manageProjectSharing,
   createEmbeddingUrl,
-  listUsers,
+  createProject,
   deactivateUser,
-  manageGroup,
-  listGroups,
   deleteGroup,
-  manageCollection,
+  getDataConnection,
+  getProject,
+  getQueriedTables,
+  getRunStatus,
   listCollections,
   listDataConnections,
-  getDataConnection,
-  getQueriedTables
+  listGroups,
+  listProjectRuns,
+  listProjects,
+  listUsers,
+  manageCollection,
+  manageGroup,
+  manageProjectSharing,
+  runProject,
+  updateProjectStatus
 } from './tools';
-import { projectRunCompleted, newProject, inboundWebhook } from './triggers';
+import { inboundWebhook, newProject, projectRunCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,

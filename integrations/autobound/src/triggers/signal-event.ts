@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { AutoboundClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let signalInputSchema = z.object({
   signalId: z.string().describe('Unique signal event identifier'),

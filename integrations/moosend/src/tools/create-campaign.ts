@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MoosendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let mailingListSchema = z.object({
   mailingListId: z.string().describe('ID of the mailing list to send to'),

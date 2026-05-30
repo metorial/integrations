@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { SignPathClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let signingPolicySchema = z.object({
   slug: z.string().describe('Slug identifier of the signing policy'),

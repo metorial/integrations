@@ -160,10 +160,10 @@ export class Client {
     limit?: number;
   }): Promise<{ pushes: Push[]; cursor?: string }> {
     let query: Record<string, string> = {};
-    if (params?.modifiedAfter) query['modified_after'] = params.modifiedAfter;
-    if (params?.active !== undefined) query['active'] = String(params.active);
-    if (params?.cursor) query['cursor'] = params.cursor;
-    if (params?.limit) query['limit'] = String(params.limit);
+    if (params?.modifiedAfter) query.modified_after = params.modifiedAfter;
+    if (params?.active !== undefined) query.active = String(params.active);
+    if (params?.cursor) query.cursor = params.cursor;
+    if (params?.limit) query.limit = String(params.limit);
 
     let response = await this.axios.get('/v2/pushes', { params: query });
     let data = response.data as { pushes: Push[]; cursor?: string };
@@ -227,9 +227,9 @@ export class Client {
     limit?: number;
   }): Promise<{ devices: Device[]; cursor?: string }> {
     let query: Record<string, string> = {};
-    if (params?.active !== undefined) query['active'] = String(params.active);
-    if (params?.cursor) query['cursor'] = params.cursor;
-    if (params?.limit) query['limit'] = String(params.limit);
+    if (params?.active !== undefined) query.active = String(params.active);
+    if (params?.cursor) query.cursor = params.cursor;
+    if (params?.limit) query.limit = String(params.limit);
 
     let response = await this.axios.get('/v2/devices', { params: query });
     return response.data as { devices: Device[]; cursor?: string };
@@ -304,9 +304,9 @@ export class Client {
     limit?: number;
   }): Promise<{ chats: Chat[]; cursor?: string }> {
     let query: Record<string, string> = {};
-    if (params?.active !== undefined) query['active'] = String(params.active);
-    if (params?.cursor) query['cursor'] = params.cursor;
-    if (params?.limit) query['limit'] = String(params.limit);
+    if (params?.active !== undefined) query.active = String(params.active);
+    if (params?.cursor) query.cursor = params.cursor;
+    if (params?.limit) query.limit = String(params.limit);
 
     let response = await this.axios.get('/v2/chats', { params: query });
     return response.data as { chats: Chat[]; cursor?: string };
@@ -334,9 +334,9 @@ export class Client {
     limit?: number;
   }): Promise<{ subscriptions: Subscription[]; cursor?: string }> {
     let query: Record<string, string> = {};
-    if (params?.active !== undefined) query['active'] = String(params.active);
-    if (params?.cursor) query['cursor'] = params.cursor;
-    if (params?.limit) query['limit'] = String(params.limit);
+    if (params?.active !== undefined) query.active = String(params.active);
+    if (params?.cursor) query.cursor = params.cursor;
+    if (params?.limit) query.limit = String(params.limit);
 
     let response = await this.axios.get('/v2/subscriptions', { params: query });
     return response.data as { subscriptions: Subscription[]; cursor?: string };
@@ -363,7 +363,7 @@ export class Client {
 
   async getChannelInfo(tag: string, noRecentPushes?: boolean): Promise<ChannelInfo> {
     let query: Record<string, string> = { tag };
-    if (noRecentPushes) query['no_recent_pushes'] = 'true';
+    if (noRecentPushes) query.no_recent_pushes = 'true';
 
     let response = await this.axios.get('/v2/channel-info', { params: query });
     return response.data as ChannelInfo;

@@ -1,6 +1,6 @@
 import { SlateTrigger } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
 export let alertFired = SlateTrigger.create(spec, {
   name: 'Alert Fired',
@@ -45,7 +45,7 @@ export let alertFired = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!body || !body.search_name) {
+      if (!body?.search_name) {
         return { inputs: [] };
       }
 

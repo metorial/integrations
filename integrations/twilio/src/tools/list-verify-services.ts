@@ -1,7 +1,7 @@
 import { SlateTool } from '@slates/provider';
+import { z } from 'zod';
 import { TwilioClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let verifyServiceSchema = z.object({
   serviceSid: z.string().describe('Unique SID of the Verify Service (starts with VA)'),

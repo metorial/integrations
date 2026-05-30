@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(private options: { baseUrl: string; token: string }) {
+  constructor(options: { baseUrl: string; token: string }) {
     this.axios = createAxios({
       baseURL: `${options.baseUrl.replace(/\/+$/, '')}/api/ext`,
       headers: {
@@ -18,7 +18,7 @@ export class Client {
   async listUsers(groupNames?: string): Promise<any[]> {
     let params: Record<string, string> = {};
     if (groupNames) {
-      params['group_names'] = groupNames;
+      params.group_names = groupNames;
     }
     let response = await this.axios.get('/users', { params });
     return response.data;
@@ -114,13 +114,13 @@ export class Client {
   ): Promise<any> {
     let params: Record<string, string> = {};
     if (options?.exportTJDB !== undefined) {
-      params['exportTJDB'] = String(options.exportTJDB);
+      params.exportTJDB = String(options.exportTJDB);
     }
     if (options?.appVersion) {
-      params['appVersion'] = options.appVersion;
+      params.appVersion = options.appVersion;
     }
     if (options?.exportAllVersions !== undefined) {
-      params['exportAllVersions'] = String(options.exportAllVersions);
+      params.exportAllVersions = String(options.exportAllVersions);
     }
     let response = await this.axios.post(
       `/export/workspace/${encodeURIComponent(workspaceId)}/apps/${encodeURIComponent(appId)}`,

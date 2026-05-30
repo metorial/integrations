@@ -1,21 +1,21 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getVisitor,
-  getAccount,
-  updateVisitorMetadata,
-  updateAccountMetadata,
-  listGuides,
-  getGuide,
-  listSegments,
+  bulkDelete,
   createSegment,
   deleteSegment,
-  runAggregation,
-  listPages,
-  listFeatures,
-  bulkDelete,
+  getAccount,
+  getGuide,
+  getMetadataSchema,
   getReport,
-  getMetadataSchema
+  getVisitor,
+  listFeatures,
+  listGuides,
+  listPages,
+  listSegments,
+  runAggregation,
+  updateAccountMetadata,
+  updateVisitorMetadata
 } from './tools';
 import { pendoEvents } from './triggers';
 

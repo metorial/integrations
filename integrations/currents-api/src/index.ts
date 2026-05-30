@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  getAvailableFilters,
   getLatestNews,
-  searchNews,
   getNewsSources,
   getSourceNews,
-  getAvailableFilters
+  searchNews
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

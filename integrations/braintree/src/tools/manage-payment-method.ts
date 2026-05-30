@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BraintreeGraphQLClient, BraintreeRestClient } from '../lib/client';
-import { VAULT_PAYMENT_METHOD, DELETE_PAYMENT_METHOD } from '../lib/graphql-queries';
+import { VAULT_PAYMENT_METHOD } from '../lib/graphql-queries';
 import { parseXml } from '../lib/xml';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let paymentMethodOutputSchema = z.object({
   paymentMethodId: z.string().optional().describe('GraphQL payment method ID'),

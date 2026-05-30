@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CodemagicClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let cancelBuild = SlateTool.create(spec, {
   name: 'Cancel Build',

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
-import { createClient } from '../lib/helpers';
-import { mapRun, mapPagination } from '../lib/mappers';
 import { z } from 'zod';
+import { createClient } from '../lib/helpers';
+import { mapPagination, mapRun } from '../lib/mappers';
+import { spec } from '../spec';
 
 export let listRunsTool = SlateTool.create(spec, {
   name: 'List Runs',

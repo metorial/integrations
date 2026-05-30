@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BlazeMeterClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getTestResults = SlateTool.create(spec, {
   name: 'Get Test Results',
@@ -81,7 +81,7 @@ export let getTestResults = SlateTool.create(spec, {
     if (ctx.input.masterId) {
       let master = await client.getMaster(ctx.input.masterId);
       let status = await client.getMasterStatus(ctx.input.masterId);
-      let summary: any = undefined;
+      let summary: any;
 
       if (ctx.input.includeSummary) {
         try {

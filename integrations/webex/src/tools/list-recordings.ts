@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { WebexClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let recordingSchema = z.object({
   recordingId: z.string().describe('Unique ID of the recording'),
@@ -122,7 +122,7 @@ export let getRecording = SlateTool.create(spec, {
         format: result.format,
         status: result.status
       },
-      message: `Recording **${result.topic}** (${result.durationSeconds ? Math.round(result.durationSeconds / 60) + ' minutes' : 'unknown duration'}).`
+      message: `Recording **${result.topic}** (${result.durationSeconds ? `${Math.round(result.durationSeconds / 60)} minutes` : 'unknown duration'}).`
     };
   })
   .build();

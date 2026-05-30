@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listRecords,
-  getRecord,
   createRecords,
-  updateRecords,
-  deleteRecords,
-  listBases,
-  listTables,
-  getTable,
   createTable,
-  manageField,
+  deleteRecords,
+  getRecord,
+  getTable,
+  linkRecords,
+  listBases,
+  listRecords,
+  listTables,
   listViews,
+  manageField,
   manageWebhook,
-  linkRecords
+  updateRecords
 } from './tools';
 import { recordEvent } from './triggers';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let exchangeStatusSchema = z.object({
   nasdaq: z.string().optional().describe('Nasdaq exchange status'),

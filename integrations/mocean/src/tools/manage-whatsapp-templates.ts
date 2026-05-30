@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { MoceanClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let templateComponentSchema = z.object({
   type: z.enum(['HEADER', 'BODY', 'FOOTER', 'BUTTONS']).describe('Component type'),

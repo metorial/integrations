@@ -89,12 +89,10 @@ export interface HistoricEventData {
 export class Client {
   private axios;
 
-  constructor(
-    private params: {
-      token: string;
-      accountName: string;
-    }
-  ) {
+  constructor(params: {
+    token: string;
+    accountName: string;
+  }) {
     this.axios = createAxios({
       baseURL: `https://${params.accountName}.centralstationcrm.net/api`,
       headers: {

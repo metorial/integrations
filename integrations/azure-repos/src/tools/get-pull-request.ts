@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getPullRequest = SlateTool.create(spec, {
   name: 'Get Pull Request',
@@ -100,7 +100,7 @@ export let getPullRequest = SlateTool.create(spec, {
 
     let pr = await client.getPullRequest(ctx.input.repositoryId, ctx.input.pullRequestId);
 
-    let threads;
+    let threads: any;
     if (ctx.input.includeThreads) {
       let rawThreads = await client.listCommentThreads(
         ctx.input.repositoryId,

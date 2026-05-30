@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listGroupsAndLinks,
-  getExamResults,
-  listCategories,
-  manageCategory,
-  getQuestions,
   createOrUpdateQuestion,
-  manageAccessList
+  getExamResults,
+  getQuestions,
+  listCategories,
+  listGroupsAndLinks,
+  manageAccessList,
+  manageCategory
 } from './tools';
 import { examResultsCompleted } from './triggers';
 

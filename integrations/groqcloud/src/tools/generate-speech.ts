@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let generateSpeech = SlateTool.create(spec, {
   name: 'Generate Speech',
@@ -60,7 +60,7 @@ export let generateSpeech = SlateTool.create(spec, {
       input: ctx.input.text,
       voice: ctx.input.voice,
       responseFormat: ctx.input.responseFormat,
-      sampleRate: ctx.input.sampleRate ? parseInt(ctx.input.sampleRate) : undefined,
+      sampleRate: ctx.input.sampleRate ? Number.parseInt(ctx.input.sampleRate, 10) : undefined,
       speed: ctx.input.speed
     });
 

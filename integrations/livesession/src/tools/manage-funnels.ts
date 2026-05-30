@@ -1,13 +1,13 @@
 import { SlateTool } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { Client } from '../lib/client';
 import {
   FUNNEL_CREATE_MUTATION,
   FUNNEL_DELETE_MUTATION,
-  FUNNEL_UPDATE_MUTATION,
-  FUNNEL_SET_FAVOURITE_MUTATION
+  FUNNEL_SET_FAVOURITE_MUTATION,
+  FUNNEL_UPDATE_MUTATION
 } from '../lib/graphql';
+import { spec } from '../spec';
 
 let filterDataStringSchema = z
   .object({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RaiselyClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listDonations = SlateTool.create(spec, {
   name: 'List Donations',

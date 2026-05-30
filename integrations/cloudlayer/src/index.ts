@@ -1,17 +1,17 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  generatePdfFromHtml,
-  generatePdfFromUrl,
-  generatePdfFromTemplate,
   generateImageFromHtml,
-  generateImageFromUrl,
   generateImageFromTemplate,
-  getJob,
-  listJobs,
+  generateImageFromUrl,
+  generatePdfFromHtml,
+  generatePdfFromTemplate,
+  generatePdfFromUrl,
+  getAccountStatus,
   getAsset,
+  getJob,
   listAssets,
-  getAccountStatus
+  listJobs
 } from './tools';
 import { jobCompleted } from './triggers';
 

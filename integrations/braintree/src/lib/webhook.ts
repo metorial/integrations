@@ -34,7 +34,7 @@ export let verifyAndParseWebhook = (params: {
   let expectedSignature = hmacSha1(privateKey, cleanPayload);
 
   // Also try with newline appended (Braintree SDK does this)
-  let expectedSignatureWithNewline = hmacSha1(privateKey, cleanPayload + '\n');
+  let expectedSignatureWithNewline = hmacSha1(privateKey, `${cleanPayload}\n`);
 
   if (
     !secureCompare(signature, expectedSignature) &&

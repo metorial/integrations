@@ -2,7 +2,8 @@ import { allOf, anyOf } from 'slates';
 
 export let youtubeAnalyticsScopes = {
   ytAnalyticsReadonly: 'https://www.googleapis.com/auth/yt-analytics.readonly',
-  ytAnalyticsMonetaryReadonly: 'https://www.googleapis.com/auth/yt-analytics-monetary.readonly',
+  ytAnalyticsMonetaryReadonly:
+    'https://www.googleapis.com/auth/yt-analytics-monetary.readonly',
   youtube: 'https://www.googleapis.com/auth/youtube',
   youtubeReadonly: 'https://www.googleapis.com/auth/youtube.readonly',
   youtubepartner: 'https://www.googleapis.com/auth/youtubepartner'
@@ -10,7 +11,10 @@ export let youtubeAnalyticsScopes = {
 
 let reportingApiAccess = allOf(
   [youtubeAnalyticsScopes.youtube, youtubeAnalyticsScopes.youtubeReadonly],
-  [youtubeAnalyticsScopes.ytAnalyticsReadonly, youtubeAnalyticsScopes.ytAnalyticsMonetaryReadonly]
+  [
+    youtubeAnalyticsScopes.ytAnalyticsReadonly,
+    youtubeAnalyticsScopes.ytAnalyticsMonetaryReadonly
+  ]
 );
 
 export let youtubeAnalyticsActionScopes = {
@@ -35,7 +39,10 @@ export let youtubeAnalyticsActionScopes = {
       youtubeAnalyticsScopes.youtubeReadonly,
       youtubeAnalyticsScopes.youtubepartner
     ],
-    [youtubeAnalyticsScopes.ytAnalyticsReadonly, youtubeAnalyticsScopes.ytAnalyticsMonetaryReadonly]
+    [
+      youtubeAnalyticsScopes.ytAnalyticsReadonly,
+      youtubeAnalyticsScopes.ytAnalyticsMonetaryReadonly
+    ]
   ),
   listBulkReports: reportingApiAccess,
   listReportTypes: reportingApiAccess,

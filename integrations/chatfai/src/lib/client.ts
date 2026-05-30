@@ -36,7 +36,7 @@ export interface SearchCharactersResponse {
 export class Client {
   private axios;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.chatfai.com/v1/',
       headers: {

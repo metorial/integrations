@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listJobsTool,
+  createCandidateTool,
+  getAccountTool,
+  getCandidateTool,
   getJobTool,
   listCandidatesTool,
-  getCandidateTool,
-  createCandidateTool,
-  manageCandidateTool,
+  listDepartmentsTool,
   listEmployeesTool,
+  listEventsTool,
+  listJobsTool,
+  manageCandidateTool,
   manageEmployeeTool,
   manageRequisitionTool,
-  listEventsTool,
-  listDepartmentsTool,
-  manageTimeOffTool,
-  getAccountTool
+  manageTimeOffTool
 } from './tools';
 import {
   candidateEventsTrigger,

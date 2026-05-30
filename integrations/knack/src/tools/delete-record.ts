@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { KnackClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let deleteRecord = SlateTool.create(spec, {
   name: 'Delete Record',
@@ -40,7 +40,7 @@ export let deleteRecord = SlateTool.create(spec, {
       authMode: ctx.auth.authMode
     });
 
-    let result;
+    let result: any;
 
     if (ctx.input.sceneKey && ctx.input.viewKey) {
       result = await client.deleteViewRecord(

@@ -1,6 +1,6 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { searchEvents, listCoins, listCategories } from './tools';
+import { listCategories, listCoins, searchEvents } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 

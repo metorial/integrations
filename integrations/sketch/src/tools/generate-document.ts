@@ -1,21 +1,20 @@
 import { SlateTool } from 'slates';
-import { spec } from '../spec';
 import { z } from 'zod';
 import {
-  createPage,
   createArtboard,
-  createLayer,
-  createStyle,
   createDocumentJson,
+  createLayer,
   createMetaJson,
-  hexToColor,
+  createPage,
+  createStyle,
   generateObjectId,
+  hexToColor,
   type SketchLayer,
-  type SketchPage,
   type SketchLayerClass,
-  type SketchSharedStyle,
-  type SketchColor
+  type SketchPage,
+  type SketchSharedStyle
 } from '../lib/client';
+import { spec } from '../spec';
 
 let layerInputSchema: z.ZodType<{
   name: string;
@@ -30,7 +29,7 @@ let layerInputSchema: z.ZodType<{
   opacity?: number;
   isVisible?: boolean;
   textContent?: string;
-  children?: Array<unknown>;
+  children?: unknown[];
 }> = z.object({
   name: z.string().describe('Name of the layer'),
   layerClass: z
@@ -101,7 +100,7 @@ let buildLayer = (input: z.infer<typeof layerInputSchema>): SketchLayer => {
 
   let children: SketchLayer[] | undefined;
   if (input.children && input.children.length > 0) {
-    children = (input.children as Array<z.infer<typeof layerInputSchema>>).map(buildLayer);
+    children = (input.children as z.infer<typeof layerInputSchema>[]).map(buildLayer);
   }
 
   let layer = createLayer({

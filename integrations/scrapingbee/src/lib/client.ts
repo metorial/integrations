@@ -36,23 +36,23 @@ export class Client {
       url: params.url
     };
 
-    if (params.renderJs !== undefined) queryParams['render_js'] = params.renderJs;
-    if (params.premiumProxy !== undefined) queryParams['premium_proxy'] = params.premiumProxy;
-    if (params.countryCode) queryParams['country_code'] = params.countryCode;
-    if (params.blockAds !== undefined) queryParams['block_ads'] = params.blockAds;
+    if (params.renderJs !== undefined) queryParams.render_js = params.renderJs;
+    if (params.premiumProxy !== undefined) queryParams.premium_proxy = params.premiumProxy;
+    if (params.countryCode) queryParams.country_code = params.countryCode;
+    if (params.blockAds !== undefined) queryParams.block_ads = params.blockAds;
     if (params.blockResources !== undefined)
-      queryParams['block_resources'] = params.blockResources;
-    if (params.device) queryParams['device'] = params.device;
-    if (params.wait !== undefined) queryParams['wait'] = params.wait;
-    if (params.waitFor) queryParams['wait_for'] = params.waitFor;
+      queryParams.block_resources = params.blockResources;
+    if (params.device) queryParams.device = params.device;
+    if (params.wait !== undefined) queryParams.wait = params.wait;
+    if (params.waitFor) queryParams.wait_for = params.waitFor;
     if (params.returnPageSource !== undefined)
-      queryParams['return_page_source'] = params.returnPageSource;
-    if (params.timeout !== undefined) queryParams['timeout'] = params.timeout;
-    if (params.ownProxy) queryParams['own_proxy'] = params.ownProxy;
-    if (params.jsonResponse !== undefined) queryParams['json_response'] = params.jsonResponse;
+      queryParams.return_page_source = params.returnPageSource;
+    if (params.timeout !== undefined) queryParams.timeout = params.timeout;
+    if (params.ownProxy) queryParams.own_proxy = params.ownProxy;
+    if (params.jsonResponse !== undefined) queryParams.json_response = params.jsonResponse;
     if (params.forwardHeaders !== undefined)
-      queryParams['forward_headers'] = params.forwardHeaders;
-    if (params.cookies) queryParams['cookies'] = params.cookies;
+      queryParams.forward_headers = params.forwardHeaders;
+    if (params.cookies) queryParams.cookies = params.cookies;
 
     let headers: Record<string, string> = {};
     if (params.customHeaders) {
@@ -85,14 +85,14 @@ export class Client {
       url: params.url
     };
 
-    if (params.renderJs !== undefined) queryParams['render_js'] = params.renderJs;
-    if (params.premiumProxy !== undefined) queryParams['premium_proxy'] = params.premiumProxy;
-    if (params.countryCode) queryParams['country_code'] = params.countryCode;
-    if (params.device) queryParams['device'] = params.device;
-    if (params.wait !== undefined) queryParams['wait'] = params.wait;
-    if (params.waitFor) queryParams['wait_for'] = params.waitFor;
+    if (params.renderJs !== undefined) queryParams.render_js = params.renderJs;
+    if (params.premiumProxy !== undefined) queryParams.premium_proxy = params.premiumProxy;
+    if (params.countryCode) queryParams.country_code = params.countryCode;
+    if (params.device) queryParams.device = params.device;
+    if (params.wait !== undefined) queryParams.wait = params.wait;
+    if (params.waitFor) queryParams.wait_for = params.waitFor;
 
-    queryParams['extract_rules'] = JSON.stringify(params.extractionRules);
+    queryParams.extract_rules = JSON.stringify(params.extractionRules);
 
     let response = await this.axios.get('/api/v1/', {
       params: queryParams
@@ -118,16 +118,16 @@ export class Client {
       url: params.url
     };
 
-    if (params.aiQuery) queryParams['ai_query'] = params.aiQuery;
+    if (params.aiQuery) queryParams.ai_query = params.aiQuery;
     if (params.aiExtractRules)
-      queryParams['ai_extract_rules'] = JSON.stringify(params.aiExtractRules);
-    if (params.aiSelector) queryParams['ai_selector'] = params.aiSelector;
-    if (params.renderJs !== undefined) queryParams['render_js'] = params.renderJs;
-    if (params.premiumProxy !== undefined) queryParams['premium_proxy'] = params.premiumProxy;
-    if (params.countryCode) queryParams['country_code'] = params.countryCode;
-    if (params.device) queryParams['device'] = params.device;
-    if (params.wait !== undefined) queryParams['wait'] = params.wait;
-    if (params.waitFor) queryParams['wait_for'] = params.waitFor;
+      queryParams.ai_extract_rules = JSON.stringify(params.aiExtractRules);
+    if (params.aiSelector) queryParams.ai_selector = params.aiSelector;
+    if (params.renderJs !== undefined) queryParams.render_js = params.renderJs;
+    if (params.premiumProxy !== undefined) queryParams.premium_proxy = params.premiumProxy;
+    if (params.countryCode) queryParams.country_code = params.countryCode;
+    if (params.device) queryParams.device = params.device;
+    if (params.wait !== undefined) queryParams.wait = params.wait;
+    if (params.waitFor) queryParams.wait_for = params.waitFor;
 
     let response = await this.axios.get('/api/v1/', {
       params: queryParams
@@ -155,17 +155,16 @@ export class Client {
       screenshot: true
     };
 
-    if (params.fullPage !== undefined) queryParams['screenshot_full_page'] = params.fullPage;
-    if (params.windowWidth !== undefined) queryParams['window_width'] = params.windowWidth;
-    if (params.windowHeight !== undefined) queryParams['window_height'] = params.windowHeight;
-    if (params.screenshotSelector)
-      queryParams['screenshot_selector'] = params.screenshotSelector;
-    if (params.renderJs !== undefined) queryParams['render_js'] = params.renderJs;
-    if (params.premiumProxy !== undefined) queryParams['premium_proxy'] = params.premiumProxy;
-    if (params.countryCode) queryParams['country_code'] = params.countryCode;
-    if (params.device) queryParams['device'] = params.device;
-    if (params.wait !== undefined) queryParams['wait'] = params.wait;
-    if (params.waitFor) queryParams['wait_for'] = params.waitFor;
+    if (params.fullPage !== undefined) queryParams.screenshot_full_page = params.fullPage;
+    if (params.windowWidth !== undefined) queryParams.window_width = params.windowWidth;
+    if (params.windowHeight !== undefined) queryParams.window_height = params.windowHeight;
+    if (params.screenshotSelector) queryParams.screenshot_selector = params.screenshotSelector;
+    if (params.renderJs !== undefined) queryParams.render_js = params.renderJs;
+    if (params.premiumProxy !== undefined) queryParams.premium_proxy = params.premiumProxy;
+    if (params.countryCode) queryParams.country_code = params.countryCode;
+    if (params.device) queryParams.device = params.device;
+    if (params.wait !== undefined) queryParams.wait = params.wait;
+    if (params.waitFor) queryParams.wait_for = params.waitFor;
 
     let response = await this.axios.get('/api/v1/', {
       params: queryParams,
@@ -179,7 +178,7 @@ export class Client {
   async runJsScenario(params: {
     url: string;
     jsScenario: {
-      instructions: Array<Record<string, any>>;
+      instructions: Record<string, any>[];
       strict?: boolean;
     };
     renderJs?: boolean;
@@ -196,14 +195,14 @@ export class Client {
       js_scenario: JSON.stringify(params.jsScenario)
     };
 
-    if (params.renderJs !== undefined) queryParams['render_js'] = params.renderJs;
-    else queryParams['render_js'] = true;
-    if (params.premiumProxy !== undefined) queryParams['premium_proxy'] = params.premiumProxy;
-    if (params.countryCode) queryParams['country_code'] = params.countryCode;
-    if (params.device) queryParams['device'] = params.device;
-    if (params.wait !== undefined) queryParams['wait'] = params.wait;
-    if (params.waitFor) queryParams['wait_for'] = params.waitFor;
-    if (params.jsonResponse !== undefined) queryParams['json_response'] = params.jsonResponse;
+    if (params.renderJs !== undefined) queryParams.render_js = params.renderJs;
+    else queryParams.render_js = true;
+    if (params.premiumProxy !== undefined) queryParams.premium_proxy = params.premiumProxy;
+    if (params.countryCode) queryParams.country_code = params.countryCode;
+    if (params.device) queryParams.device = params.device;
+    if (params.wait !== undefined) queryParams.wait = params.wait;
+    if (params.waitFor) queryParams.wait_for = params.waitFor;
+    if (params.jsonResponse !== undefined) queryParams.json_response = params.jsonResponse;
 
     let response = await this.axios.get('/api/v1/', {
       params: queryParams
@@ -228,13 +227,13 @@ export class Client {
       search: params.search
     };
 
-    if (params.searchType) queryParams['search_type'] = params.searchType;
-    if (params.language) queryParams['language'] = params.language;
-    if (params.countryCode) queryParams['country_code'] = params.countryCode;
-    if (params.location) queryParams['location'] = params.location;
-    if (params.nbResults !== undefined) queryParams['nb_results'] = params.nbResults;
-    if (params.page !== undefined) queryParams['page'] = params.page;
-    if (params.device) queryParams['device'] = params.device;
+    if (params.searchType) queryParams.search_type = params.searchType;
+    if (params.language) queryParams.language = params.language;
+    if (params.countryCode) queryParams.country_code = params.countryCode;
+    if (params.location) queryParams.location = params.location;
+    if (params.nbResults !== undefined) queryParams.nb_results = params.nbResults;
+    if (params.page !== undefined) queryParams.page = params.page;
+    if (params.device) queryParams.device = params.device;
 
     if (params.additionalParams) {
       for (let [key, value] of Object.entries(params.additionalParams)) {
@@ -265,14 +264,14 @@ export class Client {
       query: params.query
     };
 
-    if (params.domain) queryParams['domain'] = params.domain;
-    if (params.language) queryParams['language'] = params.language;
-    if (params.countryCode) queryParams['country_code'] = params.countryCode;
-    if (params.device) queryParams['device'] = params.device;
-    if (params.sortBy) queryParams['sort_by'] = params.sortBy;
-    if (params.minPrice !== undefined) queryParams['min_price'] = params.minPrice;
-    if (params.maxPrice !== undefined) queryParams['max_price'] = params.maxPrice;
-    if (params.page !== undefined) queryParams['page'] = params.page;
+    if (params.domain) queryParams.domain = params.domain;
+    if (params.language) queryParams.language = params.language;
+    if (params.countryCode) queryParams.country_code = params.countryCode;
+    if (params.device) queryParams.device = params.device;
+    if (params.sortBy) queryParams.sort_by = params.sortBy;
+    if (params.minPrice !== undefined) queryParams.min_price = params.minPrice;
+    if (params.maxPrice !== undefined) queryParams.max_price = params.maxPrice;
+    if (params.page !== undefined) queryParams.page = params.page;
 
     let response = await this.axios.get('/api/v1/store/amazon', {
       params: queryParams
@@ -293,10 +292,10 @@ export class Client {
       asin: params.asin
     };
 
-    if (params.domain) queryParams['domain'] = params.domain;
-    if (params.language) queryParams['language'] = params.language;
-    if (params.countryCode) queryParams['country_code'] = params.countryCode;
-    if (params.device) queryParams['device'] = params.device;
+    if (params.domain) queryParams.domain = params.domain;
+    if (params.language) queryParams.language = params.language;
+    if (params.countryCode) queryParams.country_code = params.countryCode;
+    if (params.device) queryParams.device = params.device;
 
     let response = await this.axios.get('/api/v1/store/amazon/product', {
       params: queryParams
@@ -315,8 +314,8 @@ export class Client {
       search: params.query
     };
 
-    if (params.uploadDate) queryParams['upload_date'] = params.uploadDate;
-    if (params.page !== undefined) queryParams['page'] = params.page;
+    if (params.uploadDate) queryParams.upload_date = params.uploadDate;
+    if (params.page !== undefined) queryParams.page = params.page;
 
     let response = await this.axios.get('/api/v1/store/youtube/search', {
       params: queryParams
@@ -344,7 +343,7 @@ export class Client {
       video_id: params.videoId
     };
 
-    if (params.language) queryParams['language'] = params.language;
+    if (params.language) queryParams.language = params.language;
 
     let response = await this.axios.get('/api/v1/store/youtube/transcript', {
       params: queryParams
@@ -381,13 +380,13 @@ export class Client {
       query: params.query
     };
 
-    if (params.sortBy) queryParams['sort_by'] = params.sortBy;
-    if (params.minPrice !== undefined) queryParams['min_price'] = params.minPrice;
-    if (params.maxPrice !== undefined) queryParams['max_price'] = params.maxPrice;
-    if (params.fulfillmentType) queryParams['fulfillment_type'] = params.fulfillmentType;
-    if (params.fulfillmentSpeed) queryParams['fulfillment_speed'] = params.fulfillmentSpeed;
-    if (params.domain) queryParams['domain'] = params.domain;
-    if (params.page !== undefined) queryParams['page'] = params.page;
+    if (params.sortBy) queryParams.sort_by = params.sortBy;
+    if (params.minPrice !== undefined) queryParams.min_price = params.minPrice;
+    if (params.maxPrice !== undefined) queryParams.max_price = params.maxPrice;
+    if (params.fulfillmentType) queryParams.fulfillment_type = params.fulfillmentType;
+    if (params.fulfillmentSpeed) queryParams.fulfillment_speed = params.fulfillmentSpeed;
+    if (params.domain) queryParams.domain = params.domain;
+    if (params.page !== undefined) queryParams.page = params.page;
 
     let response = await this.axios.get('/api/v1/store/walmart/search', {
       params: queryParams
@@ -406,8 +405,8 @@ export class Client {
       product_id: params.productId
     };
 
-    if (params.deliveryZip) queryParams['delivery_zip'] = params.deliveryZip;
-    if (params.storeId) queryParams['store_id'] = params.storeId;
+    if (params.deliveryZip) queryParams.delivery_zip = params.deliveryZip;
+    if (params.storeId) queryParams.store_id = params.storeId;
 
     let response = await this.axios.get('/api/v1/store/walmart/product', {
       params: queryParams

@@ -1,14 +1,14 @@
 import { createAxios } from 'slates';
 import type {
-  ConvertApiConversionResponse,
-  ConvertApiRawConversionResponse,
-  ConvertApiUploadResponse,
-  ConvertApiRawUploadResponse,
-  ConvertApiUserInfo,
-  ConvertApiRawUserInfo,
   ConvertApiAsyncJobResponse,
-  ConvertApiRawAsyncJobResponse,
+  ConvertApiConversionResponse,
   ConvertApiParameter,
+  ConvertApiRawAsyncJobResponse,
+  ConvertApiRawConversionResponse,
+  ConvertApiRawUploadResponse,
+  ConvertApiRawUserInfo,
+  ConvertApiUploadResponse,
+  ConvertApiUserInfo,
   FileSource
 } from './types';
 
@@ -26,7 +26,7 @@ export class Client {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; region?: string }) {
-    let baseURL = regionBaseUrls[config.region ?? 'auto'] ?? regionBaseUrls['auto'];
+    let baseURL = regionBaseUrls[config.region ?? 'auto'] ?? regionBaseUrls.auto;
     this.axios = createAxios({
       baseURL,
       headers: {
@@ -121,9 +121,7 @@ export class Client {
     return { jobId: response.data.JobId };
   }
 
-  async getAsyncJobResult(
-    jobId: string
-  ): Promise<{
+  async getAsyncJobResult(jobId: string): Promise<{
     status: 'processing' | 'completed' | 'not_found';
     result?: ConvertApiConversionResponse;
   }> {

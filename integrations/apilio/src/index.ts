@@ -1,18 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listBooleanVariables,
-  updateBooleanVariable,
-  listStringVariables,
-  updateStringVariable,
-  listNumericVariables,
-  updateNumericVariable,
-  getVariable,
-  listConditions,
-  getCondition,
-  listLogicblocks,
   evaluateLogicblock,
-  manageLogicblock
+  getCondition,
+  getVariable,
+  listBooleanVariables,
+  listConditions,
+  listLogicblocks,
+  listNumericVariables,
+  listStringVariables,
+  manageLogicblock,
+  updateBooleanVariable,
+  updateNumericVariable,
+  updateStringVariable
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

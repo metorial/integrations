@@ -2,20 +2,20 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createCredential,
-  getCredential,
-  updateCredential,
-  deleteCredential,
-  issueCredential,
-  searchCredentials,
+  createCredentialInteraction,
   createGroup,
-  getGroup,
-  updateGroup,
+  deleteCredential,
   deleteGroup,
-  listGroups,
-  listDesigns,
+  getCredential,
   getDesign,
+  getGroup,
+  issueCredential,
   listCredentialInteractions,
-  createCredentialInteraction
+  listDesigns,
+  listGroups,
+  searchCredentials,
+  updateCredential,
+  updateGroup
 } from './tools';
 import { credentialEvent } from './triggers';
 

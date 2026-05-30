@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { googleCloudFunctionsActionScopes } from '../scopes';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let functionSummarySchema = z.object({
   name: z.string().describe('Fully qualified function resource name'),

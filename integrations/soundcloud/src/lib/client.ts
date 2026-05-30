@@ -128,7 +128,7 @@ export interface SoundCloudOEmbed {
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
-  constructor(private config: { token: string }) {
+  constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://api.soundcloud.com',
       headers: {
@@ -145,9 +145,7 @@ export class Client {
     return response.data;
   }
 
-  async getTrackStreams(
-    trackId: string
-  ): Promise<{
+  async getTrackStreams(trackId: string): Promise<{
     http_mp3_128_url?: string;
     hls_mp3_128_url?: string;
     hls_aac_160_url?: string;

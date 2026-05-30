@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RipplingClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let groupOutputSchema = z.object({
   groupId: z.string().describe('Unique group identifier'),

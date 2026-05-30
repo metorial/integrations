@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let createDubbing = SlateTool.create(spec, {
   name: 'Create Dubbing',
@@ -63,9 +63,9 @@ export let createDubbing = SlateTool.create(spec, {
 
     return {
       output: {
-        dubbingId: data['dubbing_id'] as string
+        dubbingId: data.dubbing_id as string
       },
-      message: `Created dubbing project \`${data['dubbing_id']}\` — translating to **${ctx.input.targetLang}**${ctx.input.name ? ` ("${ctx.input.name}")` : ''}.`
+      message: `Created dubbing project \`${data.dubbing_id}\` — translating to **${ctx.input.targetLang}**${ctx.input.name ? ` ("${ctx.input.name}")` : ''}.`
     };
   })
   .build();

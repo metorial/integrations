@@ -1,11 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  detectAiText,
+  compareTexts,
   detectAiImage,
+  detectAiText,
   detectPlagiarism,
-  factCheck,
-  compareTexts
+  factCheck
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

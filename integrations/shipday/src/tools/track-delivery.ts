@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { ShipdayClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let trackDelivery = SlateTool.create(spec, {
   name: 'Track Delivery',

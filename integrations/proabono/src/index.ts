@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  manageCustomers,
-  manageSubscriptions,
-  manageUsages,
-  manageOffers,
-  manageInvoices,
   manageBalance,
   manageCustomerSettings,
+  manageCustomers,
+  manageInvoices,
+  manageOffers,
+  manageSubscriptions,
+  manageUsages,
   quotePricing
 } from './tools';
-import { customerEvents, subscriptionEvents, invoiceAndPaymentEvents } from './triggers';
+import { customerEvents, invoiceAndPaymentEvents, subscriptionEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,

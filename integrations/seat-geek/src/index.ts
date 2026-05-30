@@ -1,13 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  getEventDetails,
+  getPerformerDetails,
+  getRecommendations,
+  getTaxonomies,
   searchEvents,
   searchPerformers,
-  searchVenues,
-  getTaxonomies,
-  getRecommendations,
-  getEventDetails,
-  getPerformerDetails
+  searchVenues
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,7 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { getUserTool, listPromotionsTool, getPromotionLeadsTool } from './tools';
-import { newLeadTrigger, inboundWebhook } from './triggers';
+import { getPromotionLeadsTool, getUserTool, listPromotionsTool } from './tools';
+import { inboundWebhook, newLeadTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,

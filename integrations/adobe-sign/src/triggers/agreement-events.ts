@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let agreementEvents = SlateTrigger.create(spec, {
   name: 'Agreement Events',
@@ -108,7 +108,7 @@ export let agreementEvents = SlateTrigger.create(spec, {
       let clientId = ctx.request.headers.get('X-AdobeSign-ClientId') || '';
 
       // Only process agreement events
-      if (!data.event || !data.event.startsWith('AGREEMENT_')) {
+      if (!data.event?.startsWith('AGREEMENT_')) {
         return {
           inputs: [],
           response: new Response(JSON.stringify({ xAdobeSignClientId: clientId }), {

@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { HelpScoutClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let CUSTOMER_EVENTS = ['customer.created', 'customer.updated', 'customer.deleted'] as const;
 

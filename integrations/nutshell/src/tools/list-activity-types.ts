@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { NutshellClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listActivityTypes = SlateTool.create(spec, {
   name: 'List Activity Types',

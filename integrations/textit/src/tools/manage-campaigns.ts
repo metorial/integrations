@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let manageCampaigns = SlateTool.create(spec, {
   name: 'Manage Campaigns',
@@ -35,7 +35,7 @@ export let manageCampaigns = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
-    let campaign;
+    let campaign: any;
 
     if (ctx.input.action === 'create') {
       campaign = await client.createCampaign({

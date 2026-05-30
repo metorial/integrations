@@ -60,7 +60,7 @@ export interface SlateAxiosErrorOptions {
   mapAxiosError?: (
     error: AxiosError,
     inferred: SlateErrorResponse
-  ) => SlateError | Partial<SlateErrorResponse> | void;
+  ) => SlateError | Partial<SlateErrorResponse> | undefined;
 }
 
 export interface SlateServiceErrorData {

@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjectsTool,
-  getProjectTool,
   createProjectTool,
-  updateProjectTool,
-  listTodoListsTool,
-  manageTodoListTool,
-  listTodosTool,
-  manageTodoTool,
+  getProjectTool,
   listMessagesTool,
-  manageMessageTool,
+  listPeopleTool,
+  listProjectsTool,
+  listTodoListsTool,
+  listTodosTool,
   manageCommentTool,
-  sendCampfireMessageTool,
+  manageMessageTool,
   manageScheduleEntryTool,
-  listPeopleTool
+  manageTodoListTool,
+  manageTodoTool,
+  sendCampfireMessageTool,
+  updateProjectTool
 } from './tools';
 import { projectEventsTrigger } from './triggers';
 

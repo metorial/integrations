@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { RetellClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let phoneNumberOutputSchema = z.object({
   phoneNumber: z.string().describe('Phone number in E.164 format'),

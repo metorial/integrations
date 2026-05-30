@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let evmNetworkSchema = z
+let _evmNetworkSchema = z
   .enum([
     'eth',
     'bsc',
@@ -111,7 +111,7 @@ Supports major DEXs like Uniswap, PancakeSwap, Raydium, Jupiter, and more across
 
     ctx.info(`Fetching DEX trades on ${blockchain}`);
 
-    let trades: Array<z.infer<typeof tradeOutputSchema>> = [];
+    let trades: z.infer<typeof tradeOutputSchema>[] = [];
 
     if (ctx.config.apiVersion === 'v1' && blockchain !== 'solana') {
       let query = buildV1DexTradesQuery(baseCurrency, quoteCurrency, dexProtocol, since, till);

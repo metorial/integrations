@@ -34,7 +34,7 @@ export interface BrandDescription {
 export class LogoDevClient {
   private axios;
 
-  constructor(private secretKey: string) {
+  constructor(secretKey: string) {
     this.axios = createAxios({
       baseURL: 'https://api.logo.dev',
       headers: {

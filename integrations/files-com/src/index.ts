@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listFolder,
-  getFileInfo,
-  manageFile,
   createFolder,
+  getFileInfo,
+  listFolder,
   listUsers,
-  manageUser,
+  manageAutomation,
+  manageFile,
   manageGroup,
+  manageNotification,
   managePermission,
   manageShareLink,
-  manageAutomation,
-  manageNotification,
+  manageUser,
   searchHistory
 } from './tools';
-import { fileActivity, actionLog } from './triggers';
+import { actionLog, fileActivity } from './triggers';
 
 export let provider = Slate.create({
   spec,

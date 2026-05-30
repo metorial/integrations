@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let employeeChanged = SlateTrigger.create(spec, {
   name: 'Employee Data Changed',
@@ -119,7 +119,7 @@ export let employeeChanged = SlateTrigger.create(spec, {
         return { inputs: [] };
       }
 
-      if (!data || !data.employees) {
+      if (!data?.employees) {
         return { inputs: [] };
       }
 

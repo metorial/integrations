@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { UserManagementClient } from '../lib/users';
+import { spec } from '../spec';
 
 export let manageUsers = SlateTool.create(spec, {
   name: 'Manage Users',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { BotstarClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listCmsEntities = SlateTool.create(spec, {
   name: 'List CMS Entities',

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { AlchemyClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let callContract = SlateTool.create(spec, {
   name: 'Call Contract',
@@ -62,9 +62,9 @@ Use this to read smart contract state, call view/pure functions, or estimate gas
       return {
         output: {
           estimatedGas: estimated,
-          estimatedGasDecimal: parseInt(estimated, 16)
+          estimatedGasDecimal: Number.parseInt(estimated, 16)
         },
-        message: `Estimated gas: **${parseInt(estimated, 16).toLocaleString()}** (\`${estimated}\`).`
+        message: `Estimated gas: **${Number.parseInt(estimated, 16).toLocaleString()}** (\`${estimated}\`).`
       };
     }
 
@@ -83,7 +83,7 @@ Use this to read smart contract state, call view/pure functions, or estimate gas
       output: {
         callResult: result
       },
-      message: `Contract call returned: \`${result.length > 66 ? result.slice(0, 66) + '...' : result}\`.`
+      message: `Contract call returned: \`${result.length > 66 ? `${result.slice(0, 66)}...` : result}\`.`
     };
   })
   .build();

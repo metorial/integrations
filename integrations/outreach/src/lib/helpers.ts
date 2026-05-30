@@ -1,4 +1,4 @@
-import { JsonApiResource } from './client';
+import type { JsonApiResource } from './client';
 
 export let flattenResource = (resource: JsonApiResource): Record<string, any> => {
   let result: Record<string, any> = {

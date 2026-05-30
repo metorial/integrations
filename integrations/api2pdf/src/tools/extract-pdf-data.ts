@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { spec } from '../spec';
 import { Api2PdfClient } from '../lib/client';
+import { spec } from '../spec';
 
 export let extractPdfData = SlateTool.create(spec, {
   name: 'Extract PDF Data',
@@ -50,7 +50,7 @@ export let extractPdfData = SlateTool.create(spec, {
       useXlCluster: ctx.config.useXlCluster
     });
 
-    let result;
+    let result: any;
 
     if (ctx.input.outputFormat === 'json') {
       result = await client.extractJsonFromPdf({

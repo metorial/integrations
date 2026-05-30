@@ -1,29 +1,29 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createPipe,
-  listPipes,
-  updatePipe,
-  runPipe,
-  createMemory,
-  listMemories,
-  deleteMemory,
-  retrieveMemory,
-  listDocuments,
-  deleteDocument,
-  retryDocumentEmbeddings,
-  createThread,
-  getThread,
-  updateThread,
-  deleteThread,
   appendMessages,
-  listMessages,
-  runAgent,
   chunkText,
+  createMemory,
+  createPipe,
+  createThread,
+  deleteDocument,
+  deleteMemory,
+  deleteThread,
   generateEmbeddings,
   generateImages,
-  webSearch,
-  webCrawl
+  getThread,
+  listDocuments,
+  listMemories,
+  listMessages,
+  listPipes,
+  retrieveMemory,
+  retryDocumentEmbeddings,
+  runAgent,
+  runPipe,
+  updatePipe,
+  updateThread,
+  webCrawl,
+  webSearch
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

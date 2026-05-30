@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let subscriptionSchema = z.object({
   subscriptionId: z.number().describe('Subscription ID'),
@@ -53,7 +53,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
 
     if (action === 'cancel') {
       if (!ctx.input.subscriptionId) throw new Error('subscriptionId is required to cancel');
-      let result = await client.cancelSubscription(ctx.input.subscriptionId);
+      let _result = await client.cancelSubscription(ctx.input.subscriptionId);
       return {
         output: {
           subscriptions: [
@@ -69,7 +69,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
 
     if (action === 'activate') {
       if (!ctx.input.subscriptionId) throw new Error('subscriptionId is required to activate');
-      let result = await client.activateSubscription(ctx.input.subscriptionId);
+      let _result = await client.activateSubscription(ctx.input.subscriptionId);
       return {
         output: {
           subscriptions: [

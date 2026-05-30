@@ -1,37 +1,37 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listJobsTool,
-  getJobTool,
-  createJobTool,
-  searchJobsTool,
-  manageJobRepresentativesTool,
-  manageJobInsuranceTool,
-  listContactsTool,
-  getContactTool,
-  createContactTool,
-  searchContactsTool,
   createContactLogTool,
+  createContactTool,
+  createJobMessageTool,
+  createJobTool,
+  getCompanySettingsTool,
+  getContactTool,
   getEstimatesTool,
   getInvoicesTool,
   getJobFinancialsTool,
-  managePaymentsTool,
-  manageAppointmentsTool,
-  uploadJobFileTool,
-  createJobMessageTool,
+  getJobTool,
+  getLeadHistoryTool,
   getSupplementsTool,
   getUsersTool,
-  getCompanySettingsTool,
-  getLeadHistoryTool
+  listContactsTool,
+  listJobsTool,
+  manageAppointmentsTool,
+  manageJobInsuranceTool,
+  manageJobRepresentativesTool,
+  managePaymentsTool,
+  searchContactsTool,
+  searchJobsTool,
+  uploadJobFileTool
 } from './tools';
 import {
   contactEventsTrigger,
-  jobLifecycleEventsTrigger,
-  jobMilestoneEventsTrigger,
-  jobFinancialEventsTrigger,
+  jobAppointmentEventsTrigger,
   jobClassificationEventsTrigger,
   jobContactEventsTrigger,
-  jobAppointmentEventsTrigger,
+  jobFinancialEventsTrigger,
+  jobLifecycleEventsTrigger,
+  jobMilestoneEventsTrigger,
   jobRepresentativeEventsTrigger
 } from './triggers';
 

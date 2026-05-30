@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
-import { GooglePhotosLibraryClient } from '../lib/client';
-import { spec } from '../spec';
-import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
+import { GooglePhotosLibraryClient } from '../lib/client';
+import { googlePhotosActionScopes } from '../scopes';
+import { spec } from '../spec';
 
 let dateSchema = z.object({
   year: z.number().optional().describe('Year (e.g. 2024). Use 0 to match any year.'),

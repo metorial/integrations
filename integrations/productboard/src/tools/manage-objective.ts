@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let listObjectivesTool = SlateTool.create(spec, {
   name: 'List Objectives',
@@ -91,7 +91,7 @@ export let createObjectiveTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let timeframe: any = undefined;
+    let timeframe: any;
     if (ctx.input.startDate || ctx.input.endDate) {
       timeframe = {};
       if (ctx.input.startDate) timeframe.startDate = ctx.input.startDate;
@@ -135,7 +135,7 @@ export let updateObjectiveTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let timeframe: any = undefined;
+    let timeframe: any;
     if (ctx.input.startDate !== undefined || ctx.input.endDate !== undefined) {
       timeframe = {};
       if (ctx.input.startDate !== undefined) timeframe.startDate = ctx.input.startDate;

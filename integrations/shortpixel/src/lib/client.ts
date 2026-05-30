@@ -1,10 +1,10 @@
 import { createAxios } from 'slates';
 import type {
-  ReducerRequest,
-  OptimizationResult,
   ApiStatusResponse,
+  DomainCdnUsageResponse,
   DomainStatusResponse,
-  DomainCdnUsageResponse
+  OptimizationResult,
+  ReducerRequest
 } from './types';
 
 export class ShortPixelClient {

@@ -1,9 +1,8 @@
 import { SlateTrigger } from 'slates';
-import { Client } from '../lib/client';
-import { spec } from '../spec';
 import { z } from 'zod';
+import { spec } from '../spec';
 
-let cellSchema = z.object({
+let _cellSchema = z.object({
   fieldId: z.string().describe('ID of the data set column'),
   value: z.union([z.string(), z.number(), z.null()]).optional().describe('Cell value')
 });

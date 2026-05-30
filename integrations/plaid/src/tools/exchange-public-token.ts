@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { PlaidClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let exchangePublicTokenTool = SlateTool.create(spec, {
   name: 'Exchange Public Token',

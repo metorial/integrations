@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { IgnisignClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSignatureProof = SlateTool.create(spec, {
   name: 'Get Signature Proof',
@@ -33,7 +33,7 @@ export let getSignatureProof = SlateTool.create(spec, {
       appEnv: ctx.config.appEnv
     });
 
-    let images: any = undefined;
+    let images: any;
     if (ctx.input.includeImages) {
       images = await client.getSignatureImages(ctx.input.documentId);
     }

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getAthleteProfile = SlateTool.create(spec, {
   name: 'Get Athlete Profile',
@@ -41,8 +41,8 @@ export let getAthleteProfile = SlateTool.create(spec, {
 
     let athlete = await client.getAuthenticatedAthlete();
 
-    let zones: any = undefined;
-    let stats: any = undefined;
+    let zones: any;
+    let stats: any;
 
     if (ctx.input.includeZones) {
       zones = await client.getAthleteZones();

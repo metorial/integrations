@@ -1,46 +1,45 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listProjects,
-  createProject,
-  updateProject,
-  deleteProject
-} from './tools/manage-projects';
-import { startSession, getSession, deleteSession } from './tools/manage-sessions';
+  createConfiguration,
+  deleteConfiguration,
+  listConfigurations,
+  updateConfiguration
+} from './tools/manage-configurations';
 import {
-  logEvent,
-  updateEvent,
-  logEventBatch,
-  queryEvents,
-  getEvent,
-  deleteEvent
-} from './tools/manage-events';
-import {
-  listDatasets,
+  addDatapointsToDataset,
   createDataset,
-  updateDataset,
   deleteDataset,
-  addDatapointsToDataset
+  listDatasets,
+  updateDataset
 } from './tools/manage-datasets';
 import {
-  listConfigurations,
-  createConfiguration,
-  updateConfiguration,
-  deleteConfiguration
-} from './tools/manage-configurations';
-import { listMetrics, createMetric, updateMetric, deleteMetric } from './tools/manage-metrics';
+  deleteEvent,
+  getEvent,
+  logEvent,
+  logEventBatch,
+  queryEvents,
+  updateEvent
+} from './tools/manage-events';
+import { createMetric, deleteMetric, listMetrics, updateMetric } from './tools/manage-metrics';
 import {
-  listRuns,
+  createProject,
+  deleteProject,
+  listProjects,
+  updateProject
+} from './tools/manage-projects';
+import {
+  compareRuns,
   createRun,
+  deleteRun,
   getRun,
   getRunResult,
-  compareRuns,
-  deleteRun
+  listRuns
 } from './tools/manage-runs';
+import { deleteSession, getSession, startSession } from './tools/manage-sessions';
 import { postFeedback } from './tools/post-feedback';
-import { newEvents } from './triggers/new-events';
-
 import { inboundWebhook } from './triggers/inbound-webhook';
+import { newEvents } from './triggers/new-events';
 
 export let provider = Slate.create({
   spec,

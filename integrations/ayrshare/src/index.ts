@@ -1,33 +1,33 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createPost,
-  deletePost,
-  updatePost,
-  getPostHistory,
-  getPostAnalytics,
-  getSocialAnalytics,
-  getComments,
-  postComment,
-  deleteComment,
-  sendMessage,
-  getMessages,
-  uploadMedia,
-  generateHashtags,
-  createProfile,
-  getProfiles,
-  deleteProfile,
-  getReviews,
-  validatePost,
   addFeed,
+  createPost,
+  createProfile,
+  deleteComment,
+  deleteFeed,
+  deletePost,
+  deleteProfile,
+  generateHashtags,
+  getComments,
   getFeeds,
-  deleteFeed
+  getMessages,
+  getPostAnalytics,
+  getPostHistory,
+  getProfiles,
+  getReviews,
+  getSocialAnalytics,
+  postComment,
+  sendMessage,
+  updatePost,
+  uploadMedia,
+  validatePost
 } from './tools';
 import {
-  scheduledPostTrigger,
-  socialAccountTrigger,
+  feedTrigger,
   messagesTrigger,
-  feedTrigger
+  scheduledPostTrigger,
+  socialAccountTrigger
 } from './triggers';
 
 export let provider = Slate.create({

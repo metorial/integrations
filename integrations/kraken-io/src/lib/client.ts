@@ -1,15 +1,15 @@
 import { createAxios } from 'slates';
 import type {
   KrakenAuth,
+  KrakenCallbackResponse,
+  KrakenConvertOptions,
+  KrakenImageSetResponse,
   KrakenOptimizeRequest,
   KrakenOptimizeResponse,
-  KrakenImageSetResponse,
-  KrakenCallbackResponse,
-  KrakenUserStatusResponse,
   KrakenResizeOptions,
   KrakenResizeSetItem,
-  KrakenConvertOptions,
-  KrakenS3Store
+  KrakenS3Store,
+  KrakenUserStatusResponse
 } from './types';
 
 let apiAxios = createAxios({

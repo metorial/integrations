@@ -1,16 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  recordEvents,
-  runQuery,
-  funnelAnalysis,
+  deleteEvents,
   extractEvents,
-  manageSavedQueries,
+  funnelAnalysis,
+  getProjectInfo,
+  inspectSchema,
   manageAccessKeys,
   manageCachedDatasets,
-  inspectSchema,
-  deleteEvents,
-  getProjectInfo
+  manageSavedQueries,
+  recordEvents,
+  runQuery
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let supplierOutputSchema = z.object({
   supplierId: z.number().describe('Coupa internal supplier ID'),
@@ -70,9 +70,9 @@ export let searchSuppliers = SlateTool.create(spec, {
         filters[key] = value;
       }
     }
-    if (ctx.input.name) filters['name'] = ctx.input.name;
-    if (ctx.input.status) filters['status'] = ctx.input.status;
-    if (ctx.input.supplierNumber) filters['number'] = ctx.input.supplierNumber;
+    if (ctx.input.name) filters.name = ctx.input.name;
+    if (ctx.input.status) filters.status = ctx.input.status;
+    if (ctx.input.supplierNumber) filters.number = ctx.input.supplierNumber;
     if (ctx.input.updatedAfter) filters['updated-at[gt]'] = ctx.input.updatedAfter;
 
     let results = await client.listSuppliers({
@@ -280,20 +280,20 @@ export let updateSupplier = SlateTool.create(spec, {
     if (ctx.input.primaryAddress) {
       let a = ctx.input.primaryAddress;
       payload['primary-address'] = {};
-      if (a.street1 !== undefined) payload['primary-address']['street1'] = a.street1;
-      if (a.street2 !== undefined) payload['primary-address']['street2'] = a.street2;
-      if (a.city !== undefined) payload['primary-address']['city'] = a.city;
-      if (a.state !== undefined) payload['primary-address']['state'] = a.state;
+      if (a.street1 !== undefined) payload['primary-address'].street1 = a.street1;
+      if (a.street2 !== undefined) payload['primary-address'].street2 = a.street2;
+      if (a.city !== undefined) payload['primary-address'].city = a.city;
+      if (a.state !== undefined) payload['primary-address'].state = a.state;
       if (a.postalCode !== undefined) payload['primary-address']['postal-code'] = a.postalCode;
       if (a.countryCode !== undefined)
-        payload['primary-address']['country'] = { code: a.countryCode };
+        payload['primary-address'].country = { code: a.countryCode };
     }
 
     if (ctx.input.primaryContact) {
       let c = ctx.input.primaryContact;
       payload['primary-contact'] = {};
       if (c.name) payload['primary-contact']['name-fullname'] = c.name;
-      if (c.email) payload['primary-contact']['email'] = c.email;
+      if (c.email) payload['primary-contact'].email = c.email;
       if (c.phone) payload['primary-contact']['phone-work'] = c.phone;
     }
 

@@ -1,9 +1,9 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
-let vector3Schema = z
+let _vector3Schema = z
   .object({
     x: z.number(),
     y: z.number(),
@@ -12,7 +12,7 @@ let vector3Schema = z
   .nullable()
   .optional();
 
-let contactSchema = z
+let _contactSchema = z
   .object({
     name: z.string().nullable().optional(),
     email: z.string().nullable().optional(),

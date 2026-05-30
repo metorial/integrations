@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { EverhourClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let projectSchema = z.object({
   projectId: z.string().describe('Project ID (e.g., "ev:1234567890")'),

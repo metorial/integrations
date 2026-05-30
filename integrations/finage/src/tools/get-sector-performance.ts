@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { FinageClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let getSectorPerformance = SlateTool.create(spec, {
   name: 'Get Sector Performance',

@@ -1,32 +1,32 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  createOrder,
-  getOrder,
+  addTracking,
   authorizeOrder,
   captureOrder,
-  managePayment,
   createInvoice,
-  manageInvoice,
-  listInvoices,
-  searchInvoices,
-  manageProduct,
-  manageBillingPlan,
+  createOrder,
   createSubscription,
-  manageSubscription,
-  sendPayout,
+  getOrder,
   getPayout,
+  listInvoices,
+  manageBillingPlan,
   manageDispute,
+  manageInvoice,
+  managePayment,
+  manageProduct,
+  manageSubscription,
+  searchInvoices,
   searchTransactions,
-  addTracking
+  sendPayout
 } from './tools';
 import {
-  paymentEvents,
-  orderEvents,
-  subscriptionEvents,
+  disputeEvents,
   invoiceEvents,
+  orderEvents,
+  paymentEvents,
   payoutEvents,
-  disputeEvents
+  subscriptionEvents
 } from './triggers';
 
 export let provider = Slate.create({

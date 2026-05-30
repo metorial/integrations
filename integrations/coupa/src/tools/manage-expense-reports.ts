@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let expenseReportOutputSchema = z.object({
   expenseReportId: z.number().describe('Coupa internal expense report ID'),
@@ -74,7 +74,7 @@ export let searchExpenseReports = SlateTool.create(spec, {
         filters[key] = value;
       }
     }
-    if (ctx.input.status) filters['status'] = ctx.input.status;
+    if (ctx.input.status) filters.status = ctx.input.status;
     if (ctx.input.submittedById) filters['submitted-by[id]'] = String(ctx.input.submittedById);
     if (ctx.input.createdAfter) filters['created-at[gt]'] = ctx.input.createdAfter;
     if (ctx.input.updatedAfter) filters['updated-at[gt]'] = ctx.input.updatedAfter;
@@ -94,7 +94,7 @@ export let searchExpenseReports = SlateTool.create(spec, {
       status: er.status ?? null,
       expenseReportNumber: er['expense-report-number'] ?? er.expense_report_number ?? null,
       submittedBy: er['submitted-by'] ?? er.submitted_by ?? null,
-      totalAmount: er['total'] ?? er.total ?? null,
+      totalAmount: er.total ?? er.total ?? null,
       currency: er.currency ?? null,
       expenseLines: er['expense-lines'] ?? er.expense_lines ?? null,
       department: er.department ?? null,
@@ -188,7 +188,7 @@ export let createExpenseReport = SlateTool.create(spec, {
         expenseReportNumber:
           result['expense-report-number'] ?? result.expense_report_number ?? null,
         submittedBy: result['submitted-by'] ?? result.submitted_by ?? null,
-        totalAmount: result['total'] ?? result.total ?? null,
+        totalAmount: result.total ?? result.total ?? null,
         currency: result.currency ?? null,
         expenseLines: result['expense-lines'] ?? result.expense_lines ?? null,
         department: result.department ?? null,

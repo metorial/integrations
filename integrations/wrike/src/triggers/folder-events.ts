@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { WrikeClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let folderEvents = SlateTrigger.create(spec, {
   name: 'Folder & Project Events',

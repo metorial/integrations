@@ -1,12 +1,12 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  getLeads,
-  getLeadDetails,
-  ipLookup,
   domainLookup,
-  trackEvent,
-  manageLeadTags
+  getLeadDetails,
+  getLeads,
+  ipLookup,
+  manageLeadTags,
+  trackEvent
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

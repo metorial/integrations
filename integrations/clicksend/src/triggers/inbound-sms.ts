@@ -1,7 +1,7 @@
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { ClickSendClient } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let inboundSmsTrigger = SlateTrigger.create(spec, {
   name: 'Inbound SMS Received',
@@ -109,7 +109,7 @@ export let inboundSmsTrigger = SlateTrigger.create(spec, {
           body: msg.body || msg.message || '',
           timestamp:
             msg.timestamp || msg.date
-              ? parseInt(msg.date || msg.timestamp)
+              ? Number.parseInt(msg.date || msg.timestamp, 10)
               : Math.floor(Date.now() / 1000),
           originalMessage: msg
         }))

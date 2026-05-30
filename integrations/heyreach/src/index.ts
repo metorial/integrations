@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listCampaigns,
-  getCampaign,
-  toggleCampaignStatus,
   addLeadsToCampaign,
+  addLeadsToList,
+  createList,
+  getCampaign,
+  getConversations,
   getLead,
   getLeadsFromList,
-  addLeadsToList,
-  listLists,
-  createList,
-  getConversations,
-  sendMessage,
   getLinkedInAccounts,
-  getStats
+  getStats,
+  listCampaigns,
+  listLists,
+  sendMessage,
+  toggleCampaignStatus
 } from './tools';
 import { outreachEvents } from './triggers';
 

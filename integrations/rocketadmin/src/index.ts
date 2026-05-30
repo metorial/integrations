@@ -1,23 +1,23 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listConnections,
-  manageConnection,
-  listTables,
-  getRows,
   addRow,
-  updateRow,
   deleteRow,
-  manageGroups,
-  manageDashboards,
-  manageSavedQueries,
+  exportCsv,
   getAuditLogs,
-  manageCompanyUsers,
+  getRows,
+  listConnections,
+  listTables,
   manageActionRules,
+  manageCompanyUsers,
+  manageConnection,
+  manageDashboards,
+  manageGroups,
+  manageSavedQueries,
   manageTableSettings,
-  exportCsv
+  updateRow
 } from './tools';
-import { tableRowChanges, inboundWebhook } from './triggers';
+import { inboundWebhook, tableRowChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,

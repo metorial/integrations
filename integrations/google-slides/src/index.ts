@@ -1,19 +1,19 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createPresentation,
-  getPresentation,
-  manageSlides,
-  editText,
-  replaceText,
   addImage,
   addShape,
-  manageSpeakerNotes,
-  embedSheetsChart,
   batchUpdate,
-  deleteElement
+  createPresentation,
+  deleteElement,
+  editText,
+  embedSheetsChart,
+  getPresentation,
+  manageSlides,
+  manageSpeakerNotes,
+  replaceText
 } from './tools';
-import { presentationChanged, inboundWebhook } from './triggers';
+import { inboundWebhook, presentationChanged } from './triggers';
 
 export let provider = Slate.create({
   spec,

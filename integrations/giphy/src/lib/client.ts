@@ -337,11 +337,7 @@ export class Client {
     };
   }
 
-  async searchChannels(options: {
-    query: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<{
+  async searchChannels(options: { query: string; limit?: number; offset?: number }): Promise<{
     channels: Array<{
       channelId: number;
       url: string;

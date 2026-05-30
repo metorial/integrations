@@ -1,20 +1,20 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  listNotebooks,
-  getNotebook,
+  copyContent,
   createNotebook,
-  listSections,
-  createSection,
-  listSectionGroups,
-  createSectionGroup,
-  listPages,
-  getPage,
   createPage,
-  updatePageContent,
+  createSection,
+  createSectionGroup,
   deletePage,
+  getNotebook,
+  getPage,
+  listNotebooks,
+  listPages,
+  listSectionGroups,
+  listSections,
   searchPages,
-  copyContent
+  updatePageContent
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

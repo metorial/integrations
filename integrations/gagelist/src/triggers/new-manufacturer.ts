@@ -1,7 +1,7 @@
-import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
+import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 export let newManufacturer = SlateTrigger.create(spec, {
   name: 'New Manufacturer Created',
@@ -45,7 +45,7 @@ export let newManufacturer = SlateTrigger.create(spec, {
       let newManufacturers = allManufacturers
         .filter((m: any) => {
           let ts = Date.parse(m.UpdatedDate);
-          return !isNaN(ts) && ts > lastTs;
+          return !Number.isNaN(ts) && ts > lastTs;
         })
         .sort((a: any, b: any) => Date.parse(a.UpdatedDate) - Date.parse(b.UpdatedDate));
 

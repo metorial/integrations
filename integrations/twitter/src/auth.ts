@@ -1,4 +1,4 @@
-import { SlateAuth, createAxios } from '@slates/provider';
+import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
 import { twitterApiError, twitterServiceError } from './lib/errors';
 
@@ -112,7 +112,7 @@ export let auth = SlateAuth.create()
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
       let codeVerifier = ctx.callbackState?.codeVerifier || '';
 
-      let response;
+      let response: any;
       try {
         response = await twitterApi.post(
           '/2/oauth2/token',
@@ -166,7 +166,7 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response;
+      let response: any;
       try {
         response = await twitterApi.post(
           '/2/oauth2/token',
@@ -208,7 +208,7 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let response;
+      let response: any;
       try {
         response = await twitterApi.get('/2/users/me', {
           headers: {

@@ -50,41 +50,41 @@ export class Client {
 
     if (params.language) {
       let langs = Array.isArray(params.language) ? params.language : [params.language];
-      query['language'] = langs.join(',');
+      query.language = langs.join(',');
     }
 
     if (params.pageRange) {
-      query['pagerange'] = params.pageRange;
+      query.pagerange = params.pageRange;
     }
 
     if (params.convertToBlackWhite) {
-      query['tobw'] = 'true';
+      query.tobw = 'true';
     }
 
     if (params.zones && params.zones.length > 0) {
-      query['zone'] = params.zones
+      query.zone = params.zones
         .map(z => `${z.top}:${z.left}:${z.height}:${z.width}`)
         .join(';');
     }
 
     if (params.outputFormats && params.outputFormats.length > 0) {
-      query['outputformat'] = params.outputFormats.join(',');
+      query.outputformat = params.outputFormats.join(',');
     }
 
     if (params.getText) {
-      query['gettext'] = 'true';
+      query.gettext = 'true';
     }
 
     if (params.getWords) {
-      query['getwords'] = 'true';
+      query.getwords = 'true';
     }
 
     if (params.newline) {
-      query['newline'] = 'true';
+      query.newline = 'true';
     }
 
     if (params.description) {
-      query['description'] = params.description;
+      query.description = params.description;
     }
 
     return query;

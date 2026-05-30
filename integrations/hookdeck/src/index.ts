@@ -1,23 +1,23 @@
 import { Slate } from '@slates/provider';
 import { spec } from './spec';
 import {
-  manageSources,
-  manageDestinations,
-  manageConnections,
-  listEvents,
-  retryEvents,
-  manageIssues,
-  manageTransformations,
-  manageBookmarks,
   configureNotifications,
-  publishEvent,
-  listRequests,
   listAttempts,
-  queryMetrics,
+  listEvents,
+  listRequests,
+  manageBookmarks,
+  manageConnections,
+  manageDestinations,
+  manageIssues,
   manageIssueTriggers,
+  manageSources,
+  manageTransformations,
+  publishEvent,
+  queryMetrics,
+  retryEvents,
   retryRequests
 } from './tools';
-import { issueNotification, eventSuccessful } from './triggers';
+import { eventSuccessful, issueNotification } from './triggers';
 
 export let provider = Slate.create({
   spec,

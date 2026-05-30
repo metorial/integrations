@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let invalidReportSchema = z.object({
   input: z.string().describe('The raw CSV row that failed validation'),

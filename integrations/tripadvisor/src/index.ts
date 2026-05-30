@@ -1,15 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  checkReviewOptIn,
+  getLocationDetails,
+  getLocationPhotos,
+  getLocationReviews,
+  manageReviewRequest,
+  mapLocation,
   searchLocations,
   searchNearbyLocations,
-  getLocationDetails,
-  getLocationReviews,
-  getLocationPhotos,
-  mapLocation,
-  sendReviewRequest,
-  manageReviewRequest,
-  checkReviewOptIn
+  sendReviewRequest
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

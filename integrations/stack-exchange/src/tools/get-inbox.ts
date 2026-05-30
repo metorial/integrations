@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 let inboxItemSchema = z.object({
   itemType: z.string().optional().describe('Type of inbox item (e.g., comment, answer)'),
@@ -41,7 +41,7 @@ export let getInbox = SlateTool.create(spec, {
       site: ctx.config.site
     });
 
-    let result;
+    let result: any;
     if (ctx.input.unreadOnly) {
       result = await client.getInboxUnread({
         page: ctx.input.page,
