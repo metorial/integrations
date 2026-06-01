@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createTextAttachment, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
@@ -6,7 +6,7 @@ import { spec } from '../spec';
 export let getRunArtifactTool = SlateTool.create(spec, {
   name: 'Get Run Artifact',
   key: 'get_run_artifact',
-  description: `Fetch an artifact file from a completed dbt Cloud run. Supports retrieving \`manifest.json\`, \`run_results.json\`, and \`catalog.json\`. These artifacts contain model metadata, execution timing, test results, and catalog information. Optionally target a specific run step.`,
+  description: `Fetch an artifact file from a completed dbt Cloud run as a Slate attachment. Supports retrieving \`manifest.json\`, \`run_results.json\`, and \`catalog.json\`. These artifacts contain model metadata, execution timing, test results, and catalog information. Optionally target a specific run step.`,
   instructions: [
     'Common artifact paths: "manifest.json", "run_results.json", "catalog.json".',
     'Use the step parameter to get artifacts from a specific step (1-indexed). Defaults to the last step.'
@@ -33,7 +33,11 @@ export let getRunArtifactTool = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      artifact: z.any().describe('The artifact file contents (JSON)')
+      runId: z.string().describe('Run the artifact was downloaded from'),
+      path: z.string().describe('Artifact file path'),
+      contentType: z.string().describe('Artifact MIME type'),
+      sizeBytes: z.number().describe('Artifact size in bytes'),
+      attachmentCount: z.number().describe('Number of returned attachments')
     })
   )
   .handleInvocation(async ctx => {
@@ -50,7 +54,14 @@ export let getRunArtifactTool = SlateTool.create(spec, {
     );
 
     return {
-      output: { artifact },
+      output: {
+        runId: ctx.input.runId,
+        path: ctx.input.path,
+        contentType: artifact.contentType,
+        sizeBytes: artifact.sizeBytes,
+        attachmentCount: 1
+      },
+      attachments: [createTextAttachment(artifact.content, artifact.contentType)],
       message: `Retrieved artifact **${ctx.input.path}** from run #${ctx.input.runId}.`
     };
   })

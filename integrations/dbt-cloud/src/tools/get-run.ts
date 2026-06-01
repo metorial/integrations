@@ -15,9 +15,9 @@ export let getRunTool = SlateTool.create(spec, {
     z.object({
       runId: z.string().describe('The unique ID of the run to retrieve'),
       includeRelated: z
-        .array(z.string())
+        .array(z.enum(['trigger', 'job', 'audit', 'debug_logs']))
         .optional()
-        .describe('Related resources to include (e.g., ["run_steps", "job", "trigger"])')
+        .describe('Related resources to include (trigger, job, audit, debug_logs)')
     })
   )
   .output(

@@ -20,10 +20,27 @@ export let triggerJobRunTool = SlateTool.create(spec, {
       jobId: z.string().describe('The ID of the job to trigger'),
       cause: z
         .string()
-        .optional()
-        .describe('Reason for triggering the run (shown in run history)'),
+        .describe(
+          'Reason for triggering the run (required by dbt Cloud and shown in run history)'
+        ),
       gitSha: z.string().optional().describe('Git SHA to checkout before running'),
       gitBranch: z.string().optional().describe('Git branch to checkout before running'),
+      azurePullRequestId: z
+        .number()
+        .optional()
+        .describe('Azure DevOps pull request ID associated with this run'),
+      githubPullRequestId: z
+        .number()
+        .optional()
+        .describe('GitHub pull request ID associated with this run'),
+      gitlabMergeRequestId: z
+        .number()
+        .optional()
+        .describe('GitLab merge request ID associated with this run'),
+      nonNativePullRequestId: z
+        .number()
+        .optional()
+        .describe('Non-native pull request ID associated with this run'),
       schemaOverride: z
         .string()
         .optional()
@@ -78,6 +95,10 @@ export let triggerJobRunTool = SlateTool.create(spec, {
       cause: ctx.input.cause,
       gitSha: ctx.input.gitSha,
       gitBranch: ctx.input.gitBranch,
+      azurePullRequestId: ctx.input.azurePullRequestId,
+      githubPullRequestId: ctx.input.githubPullRequestId,
+      gitlabMergeRequestId: ctx.input.gitlabMergeRequestId,
+      nonNativePullRequestId: ctx.input.nonNativePullRequestId,
       schemaOverride: ctx.input.schemaOverride,
       dbtVersionOverride: ctx.input.dbtVersionOverride,
       threadsOverride: ctx.input.threadsOverride,

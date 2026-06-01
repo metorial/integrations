@@ -14,7 +14,28 @@ export let listProjectsTool = SlateTool.create(spec, {
   .input(
     z.object({
       limit: z.number().optional().describe('Maximum number of projects to return (max 100)'),
-      offset: z.number().optional().describe('Number of projects to skip for pagination')
+      offset: z.number().optional().describe('Number of projects to skip for pagination'),
+      orderBy: z
+        .string()
+        .optional()
+        .describe('Field to order results by (prefix with - for descending, e.g., "-id")'),
+      nameContains: z.string().optional().describe('Case-insensitive project name filter'),
+      state: z
+        .enum(['active', 'deleted', 'all'])
+        .optional()
+        .describe('Filter by soft deletion state'),
+      includeRelated: z
+        .array(
+          z.enum([
+            'repository',
+            'connection',
+            'group_permissions',
+            'docs_job',
+            'freshness_job'
+          ])
+        )
+        .optional()
+        .describe('Related resources to include in each project response')
     })
   )
   .output(
@@ -52,7 +73,11 @@ export let listProjectsTool = SlateTool.create(spec, {
 
     let projects = await client.listProjects({
       limit: ctx.input.limit,
-      offset: ctx.input.offset
+      offset: ctx.input.offset,
+      order_by: ctx.input.orderBy,
+      name__icontains: ctx.input.nameContains,
+      state: ctx.input.state,
+      include_related: ctx.input.includeRelated?.join(',')
     });
 
     let mapped = projects.map((p: any) => ({

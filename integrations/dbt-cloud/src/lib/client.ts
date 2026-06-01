@@ -1,10 +1,19 @@
 import { createAxios } from 'slates';
+import { dbtCloudApiError } from './errors';
 
 export interface ClientConfig {
   token: string;
   accountId: string;
   baseUrl: string;
 }
+
+export let normalizeWebhookJobIds = (jobIds: unknown): number[] | undefined => {
+  if (!Array.isArray(jobIds)) return undefined;
+
+  return jobIds
+    .map(jobId => (typeof jobId === 'number' ? jobId : Number(jobId)))
+    .filter(jobId => Number.isFinite(jobId));
+};
 
 export class Client {
   private axios;
@@ -19,6 +28,10 @@ export class Client {
         'Content-Type': 'application/json'
       }
     });
+    this.axios.interceptors.response.use(
+      (response: any) => response,
+      (error: unknown) => Promise.reject(dbtCloudApiError(error))
+    );
   }
 
   // ─── Accounts ──────────────────────────────────────────────
@@ -30,7 +43,14 @@ export class Client {
 
   // ─── Projects ──────────────────────────────────────────────
 
-  async listProjects(params?: { limit?: number; offset?: number }): Promise<any[]> {
+  async listProjects(params?: {
+    limit?: number;
+    offset?: number;
+    order_by?: string;
+    name__icontains?: string;
+    state?: string;
+    include_related?: string;
+  }): Promise<any[]> {
     let response = await this.axios.get(`/api/v3/accounts/${this.accountId}/projects/`, {
       params
     });
@@ -48,7 +68,19 @@ export class Client {
 
   async listEnvironments(
     projectId: string,
-    params?: { limit?: number; offset?: number }
+    params?: {
+      limit?: number;
+      offset?: number;
+      order_by?: string;
+      name?: string;
+      name__icontains?: string;
+      state?: string;
+      type?: string;
+      deployment_type?: string;
+      dbt_version?: string;
+      dbt_version__in?: string[];
+      include_related?: string;
+    }
   ): Promise<any[]> {
     let response = await this.axios.get(
       `/api/v3/accounts/${this.accountId}/projects/${projectId}/environments/`,
@@ -72,6 +104,13 @@ export class Client {
     limit?: number;
     offset?: number;
     order_by?: string;
+    include_related?: string;
+    name__icontains?: string;
+    state?: string;
+    dbt_version__in?: string[];
+    is_fusion_ready?: boolean;
+    is_system?: boolean;
+    triggers_schedule?: boolean;
   }): Promise<any[]> {
     let response = await this.axios.get(`/api/v2/accounts/${this.accountId}/jobs/`, {
       params
@@ -107,6 +146,10 @@ export class Client {
       cause?: string;
       gitSha?: string;
       gitBranch?: string;
+      azurePullRequestId?: number;
+      githubPullRequestId?: number;
+      gitlabMergeRequestId?: number;
+      nonNativePullRequestId?: number;
       schemaOverride?: string;
       dbtVersionOverride?: string;
       threadsOverride?: number;
@@ -120,6 +163,14 @@ export class Client {
     if (options?.cause) body.cause = options.cause;
     if (options?.gitSha) body.git_sha = options.gitSha;
     if (options?.gitBranch) body.git_branch = options.gitBranch;
+    if (options?.azurePullRequestId !== undefined)
+      body.azure_pull_request_id = options.azurePullRequestId;
+    if (options?.githubPullRequestId !== undefined)
+      body.github_pull_request_id = options.githubPullRequestId;
+    if (options?.gitlabMergeRequestId !== undefined)
+      body.gitlab_merge_request_id = options.gitlabMergeRequestId;
+    if (options?.nonNativePullRequestId !== undefined)
+      body.non_native_pull_request_id = options.nonNativePullRequestId;
     if (options?.schemaOverride) body.schema_override = options.schemaOverride;
     if (options?.dbtVersionOverride) body.dbt_version_override = options.dbtVersionOverride;
     if (options?.threadsOverride !== undefined)
@@ -145,9 +196,16 @@ export class Client {
     project_id?: string;
     environment_id?: string;
     status?: number;
+    status__in?: number[];
     order_by?: string;
     limit?: number;
     offset?: number;
+    include_related?: string;
+    state?: string;
+    dbt_version?: string;
+    dbt_version__in?: string[];
+    has_docs_generated?: boolean;
+    has_sources_generated?: boolean;
   }): Promise<any[]> {
     let response = await this.axios.get(`/api/v2/accounts/${this.accountId}/runs/`, {
       params
@@ -173,16 +231,74 @@ export class Client {
     return response.data.data;
   }
 
+  async getRunFailureDetails(runId: string): Promise<any> {
+    let response = await this.axios.get(
+      `/api/v2/accounts/${this.accountId}/runs/${runId}/retry/`
+    );
+    return response.data.data;
+  }
+
+  async retryRun(runId: string): Promise<any> {
+    let response = await this.axios.post(
+      `/api/v2/accounts/${this.accountId}/runs/${runId}/retry/`
+    );
+    return response.data.data;
+  }
+
+  async retryFailedJob(jobId: string): Promise<any> {
+    let [latestRun] = await this.listRuns({
+      job_definition_id: jobId,
+      order_by: '-created_at',
+      limit: 1
+    });
+
+    if (latestRun?.status === 20) {
+      let response = await this.axios.post(
+        `/api/v2/accounts/${this.accountId}/jobs/${jobId}/rerun/`
+      );
+      return response.data.data;
+    }
+
+    return this.triggerJobRun(jobId, {
+      cause: 'Triggered by Slates retry_failed_job because no latest failed run was available'
+    });
+  }
+
   // ─── Artifacts ─────────────────────────────────────────────
 
-  async getRunArtifact(runId: string, path: string, step?: number): Promise<any> {
+  async getRunArtifact(
+    runId: string,
+    path: string,
+    step?: number
+  ): Promise<{
+    content: string;
+    contentType: string;
+    sizeBytes: number;
+  }> {
     let params: Record<string, any> = {};
     if (step !== undefined) params.step = step;
     let response = await this.axios.get(
       `/api/v2/accounts/${this.accountId}/runs/${runId}/artifacts/${path}`,
-      { params }
+      {
+        params,
+        responseType: 'text',
+        transformResponse: [(data: unknown) => data]
+      }
     );
-    return response.data;
+    let content =
+      typeof response.data === 'string'
+        ? response.data
+        : (JSON.stringify(response.data, null, 2) ?? String(response.data ?? ''));
+    let contentType =
+      typeof response.headers?.['content-type'] === 'string'
+        ? (response.headers['content-type'].split(';')[0] ?? 'application/json')
+        : 'application/json';
+
+    return {
+      content,
+      contentType,
+      sizeBytes: Buffer.byteLength(content, 'utf8')
+    };
   }
 
   async listRunArtifacts(runId: string, step?: number): Promise<string[]> {
@@ -206,9 +322,10 @@ export class Client {
 
   // ─── Webhooks ──────────────────────────────────────────────
 
-  async listWebhooks(): Promise<any[]> {
+  async listWebhooks(params?: { limit?: number; offset?: number }): Promise<any[]> {
     let response = await this.axios.get(
-      `/api/v3/accounts/${this.accountId}/webhooks/subscriptions`
+      `/api/v3/accounts/${this.accountId}/webhooks/subscriptions`,
+      { params }
     );
     return response.data.data;
   }
@@ -235,7 +352,7 @@ export class Client {
     };
     if (data.description) body.description = data.description;
     if (data.active !== undefined) body.active = data.active;
-    if (data.jobIds) body.job_ids = data.jobIds;
+    if (data.jobIds !== undefined) body.job_ids = data.jobIds;
 
     let response = await this.axios.post(
       `/api/v3/accounts/${this.accountId}/webhooks/subscriptions`,
@@ -255,13 +372,20 @@ export class Client {
       jobIds?: number[];
     }
   ): Promise<any> {
-    let body: Record<string, any> = {};
-    if (data.name) body.name = data.name;
-    if (data.clientUrl) body.client_url = data.clientUrl;
-    if (data.eventTypes) body.event_types = data.eventTypes;
-    if (data.description) body.description = data.description;
-    if (data.active !== undefined) body.active = data.active;
-    if (data.jobIds) body.job_ids = data.jobIds;
+    let current = await this.getWebhook(webhookId);
+    let body: Record<string, any> = {
+      name: data.name ?? current.name,
+      client_url: data.clientUrl ?? current.client_url,
+      event_types: data.eventTypes ?? current.event_types,
+      active: data.active ?? current.active
+    };
+
+    let description = data.description ?? current.description;
+    if (description !== undefined) body.description = description;
+
+    let jobIds =
+      data.jobIds !== undefined ? data.jobIds : normalizeWebhookJobIds(current.job_ids);
+    if (jobIds !== undefined) body.job_ids = jobIds;
 
     let response = await this.axios.put(
       `/api/v3/accounts/${this.accountId}/webhooks/subscription/${webhookId}`,
@@ -279,6 +403,13 @@ export class Client {
   async testWebhook(webhookId: string): Promise<any> {
     let response = await this.axios.get(
       `/api/v3/accounts/${this.accountId}/webhooks/subscription/${webhookId}/test`
+    );
+    return response.data.data;
+  }
+
+  async listWebhookEvents(webhookId: string): Promise<any[]> {
+    let response = await this.axios.get(
+      `/api/v3/accounts/${this.accountId}/webhooks/subscription/${webhookId}/events`
     );
     return response.data.data;
   }

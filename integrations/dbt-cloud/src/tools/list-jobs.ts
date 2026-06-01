@@ -20,7 +20,31 @@ export let listJobsTool = SlateTool.create(spec, {
         .optional()
         .describe('Field to order results by (prefix with - for descending, e.g., "-id")'),
       limit: z.number().optional().describe('Maximum number of jobs to return (max 100)'),
-      offset: z.number().optional().describe('Number of jobs to skip for pagination')
+      offset: z.number().optional().describe('Number of jobs to skip for pagination'),
+      nameContains: z.string().optional().describe('Case-insensitive job name filter'),
+      state: z
+        .enum(['active', 'deleted', 'all'])
+        .optional()
+        .describe('Filter by soft deletion state'),
+      dbtVersions: z.array(z.string()).optional().describe('Filter by dbt version list'),
+      includeRelated: z
+        .array(
+          z.enum([
+            'environment',
+            'custom_environment_variables',
+            'most_recent_run',
+            'most_recent_completed_run',
+            'fusion_readiness'
+          ])
+        )
+        .optional()
+        .describe('Related resources to include in each job response'),
+      isFusionReady: z.boolean().optional().describe('Filter jobs by Fusion readiness'),
+      isSystem: z.boolean().optional().describe('Whether to include system jobs'),
+      triggersSchedule: z
+        .boolean()
+        .optional()
+        .describe('Filter jobs by whether they have schedule triggers')
     })
   )
   .output(
@@ -64,7 +88,14 @@ export let listJobsTool = SlateTool.create(spec, {
       environment_id: ctx.input.environmentId,
       order_by: ctx.input.orderBy,
       limit: ctx.input.limit,
-      offset: ctx.input.offset
+      offset: ctx.input.offset,
+      name__icontains: ctx.input.nameContains,
+      state: ctx.input.state,
+      dbt_version__in: ctx.input.dbtVersions,
+      include_related: ctx.input.includeRelated?.join(','),
+      is_fusion_ready: ctx.input.isFusionReady,
+      is_system: ctx.input.isSystem,
+      triggers_schedule: ctx.input.triggersSchedule
     });
 
     let mapped = jobs.map((j: any) => ({

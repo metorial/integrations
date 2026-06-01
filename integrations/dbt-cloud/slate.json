@@ -1,18 +1,16 @@
 {
   "name": "@metorial/dbt-cloud",
-  "description": "Manage dbt Cloud projects, environments, and data transformation jobs. Create, trigger, schedule, and monitor dbt job runs. Fetch run artifacts including manifest, run results, and catalog files. Query project metadata and lineage via the Discovery API for models, sources, tests, and execution results. Define and query business metrics and dimensions through the Semantic Layer. Manage users, permissions, service tokens, and webhook subscriptions for job run events. Configure repository connections and environment settings programmatically.",
+  "description": "Manage dbt Cloud account operations for projects, environments, jobs, runs, artifacts, users, and webhook subscriptions. Discover projects and environments, inspect jobs, trigger or retry job runs, monitor run status, cancel queued or running jobs, list and download run artifacts as attachments, audit account users, and create, update, test, or delete webhook subscriptions for job run events.",
   "categories": ["apis-and-http-requests"],
   "skills": [
-    "trigger and schedule jobs",
+    "trigger dbt jobs",
+    "retry failed runs",
     "monitor job run status",
     "fetch run artifacts",
-    "query project metadata",
-    "query semantic layer metrics",
-    "manage projects and environments",
-    "manage users and permissions",
+    "inspect projects and environments",
+    "list account users",
     "configure webhook subscriptions",
-    "explore data lineage",
-    "manage repository connections"
+    "inspect webhook delivery events"
   ],
   "logoUrl": "https://provider-logos.metorial-cdn.com/dbt-cloud.png"
 }

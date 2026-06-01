@@ -35,12 +35,33 @@ export let listRunsTool = SlateTool.create(spec, {
         .describe(
           'Filter by status code (1=Queued, 2=Starting, 3=Running, 10=Success, 20=Error, 30=Cancelled)'
         ),
+      statuses: z
+        .array(z.number())
+        .optional()
+        .describe(
+          'Filter by multiple status codes (1=Queued, 2=Starting, 3=Running, 10=Success, 20=Error, 30=Cancelled)'
+        ),
       orderBy: z
         .string()
         .optional()
         .describe('Order results by field (prefix with - for descending, e.g., "-id")'),
       limit: z.number().optional().describe('Maximum number of runs to return (max 100)'),
-      offset: z.number().optional().describe('Number of runs to skip for pagination')
+      offset: z.number().optional().describe('Number of runs to skip for pagination'),
+      state: z
+        .enum(['active', 'deleted', 'all'])
+        .optional()
+        .describe('Filter by soft deletion state'),
+      dbtVersion: z.string().optional().describe('Filter by dbt version'),
+      dbtVersions: z.array(z.string()).optional().describe('Filter by dbt version list'),
+      includeRelated: z
+        .array(z.enum(['trigger', 'job', 'audit', 'debug_logs']))
+        .optional()
+        .describe('Related resources to include in each run response'),
+      hasDocsGenerated: z.boolean().optional().describe('Filter by docs artifact generation'),
+      hasSourcesGenerated: z
+        .boolean()
+        .optional()
+        .describe('Filter by source freshness artifact generation')
     })
   )
   .output(
@@ -81,9 +102,16 @@ export let listRunsTool = SlateTool.create(spec, {
       project_id: ctx.input.projectId,
       environment_id: ctx.input.environmentId,
       status: ctx.input.status,
+      status__in: ctx.input.statuses,
       order_by: ctx.input.orderBy,
       limit: ctx.input.limit,
-      offset: ctx.input.offset
+      offset: ctx.input.offset,
+      state: ctx.input.state,
+      dbt_version: ctx.input.dbtVersion,
+      dbt_version__in: ctx.input.dbtVersions,
+      include_related: ctx.input.includeRelated?.join(','),
+      has_docs_generated: ctx.input.hasDocsGenerated,
+      has_sources_generated: ctx.input.hasSourcesGenerated
     });
 
     let mapped = runs.map((r: any) => ({

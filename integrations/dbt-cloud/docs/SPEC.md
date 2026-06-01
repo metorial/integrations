@@ -1,10 +1,10 @@
-Now let me fetch the API v2 page to see the actual endpoint listing:I have enough information to write the specification. Let me compile everything.
-
 # Slates Specification for dbt Cloud
 
 ## Overview
 
 dbt Cloud is a managed platform for dbt (data build tool) that enables data teams to transform data in their warehouse using SQL. It provides job scheduling, CI/CD, an integrated development environment, project metadata and discovery APIs, and a semantic layer for defining and querying business metrics. The platform exposes Administrative, Discovery, and Semantic Layer APIs for programmatic access.
+
+This Slates integration focuses on the current Administrative API routes that are practical for agent workflows: account inspection, project and environment discovery, job discovery and triggering, run monitoring/cancel/retry flows, artifact listing and download, user listing, and webhook subscription management. Discovery API and Semantic Layer GraphQL endpoints are separate dbt APIs with endpoint URLs and token permissions that vary by account and are not exposed as tools in this package.
 
 ## Authentication
 
@@ -41,7 +41,7 @@ The dbt Cloud API can perform CRUD operations on multiple endpoints for Connecti
 
 ### Job Orchestration
 
-Create, configure, trigger, and monitor dbt jobs through the API. Create custom schedules to run your production jobs. Schedule jobs by day of the week, time of day, or a recurring interval. When triggering a job run, you can override parameters such as dbt version, number of threads, target name, timeout, whether to generate docs, and the list of steps to execute. You can also cancel running jobs and retrieve detailed run status and history.
+Discover, trigger, retry, and monitor dbt jobs through the API. When triggering a job run, you can override parameters such as dbt version, number of threads, target name, timeout, whether to generate docs, pull request identifiers, and the list of steps to execute. You can also cancel queued or running jobs and retrieve detailed run status, failure details, and history.
 
 ### Run Artifacts
 

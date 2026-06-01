@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
+import { dbtCloudServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageWebhookTool = SlateTool.create(spec, {
@@ -9,7 +10,7 @@ export let manageWebhookTool = SlateTool.create(spec, {
   description: `Create, update, or delete a dbt Cloud webhook subscription. Webhooks notify external systems when job runs start, complete, or fail. Supports scoping to specific jobs and configuring which event types to listen for.`,
   instructions: [
     'Set action to "create" to register a new webhook, "update" to modify an existing one, or "delete" to remove one.',
-    'Available event types: "job.run.started", "job.run.completed", "job.run.errored".',
+    'Available event types: "job.run.started", "job.run.completed", "job.run.errored", "job.run.cancelled".',
     'Leave jobIds empty to trigger on all jobs in the account.'
   ],
   tags: {
@@ -26,7 +27,14 @@ export let manageWebhookTool = SlateTool.create(spec, {
         .optional()
         .describe('Endpoint URL to receive webhook events (required for create)'),
       eventTypes: z
-        .array(z.enum(['job.run.started', 'job.run.completed', 'job.run.errored']))
+        .array(
+          z.enum([
+            'job.run.started',
+            'job.run.completed',
+            'job.run.errored',
+            'job.run.cancelled'
+          ])
+        )
         .optional()
         .describe('Event types to subscribe to (required for create)'),
       description: z.string().optional().describe('Webhook description'),
@@ -60,7 +68,7 @@ export let manageWebhookTool = SlateTool.create(spec, {
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.name || !ctx.input.clientUrl || !ctx.input.eventTypes) {
-        throw new Error(
+        throw dbtCloudServiceError(
           'name, clientUrl, and eventTypes are required when creating a webhook'
         );
       }
@@ -89,7 +97,7 @@ export let manageWebhookTool = SlateTool.create(spec, {
 
     if (ctx.input.action === 'update') {
       if (!ctx.input.webhookId) {
-        throw new Error('webhookId is required when updating a webhook');
+        throw dbtCloudServiceError('webhookId is required when updating a webhook');
       }
 
       let webhook = await client.updateWebhook(ctx.input.webhookId, {
@@ -115,7 +123,7 @@ export let manageWebhookTool = SlateTool.create(spec, {
 
     if (ctx.input.action === 'delete') {
       if (!ctx.input.webhookId) {
-        throw new Error('webhookId is required when deleting a webhook');
+        throw dbtCloudServiceError('webhookId is required when deleting a webhook');
       }
 
       await client.deleteWebhook(ctx.input.webhookId);
@@ -129,6 +137,6 @@ export let manageWebhookTool = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw dbtCloudServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();
