@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let getProjectTool = SlateTool.create(spec, {
   name: 'Get Project',
@@ -13,6 +13,7 @@ export let getProjectTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       projectId: z.string().describe('The project ID to retrieve')
     })
   )
@@ -29,11 +30,7 @@ export let getProjectTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let project = await client.getProject(ctx.input.projectId);
 

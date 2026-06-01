@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let listJobsTool = SlateTool.create(spec, {
   name: 'List Jobs',
@@ -13,6 +13,7 @@ export let listJobsTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       projectId: z.string().optional().describe('Filter jobs by project ID'),
       environmentId: z.string().optional().describe('Filter jobs by environment ID'),
       orderBy: z
@@ -77,11 +78,7 @@ export let listJobsTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let jobs = await client.listJobs({
       project_id: ctx.input.projectId,

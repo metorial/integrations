@@ -5,7 +5,10 @@ export let config = SlateConfig.create(
   z.object({
     accountId: z
       .string()
-      .describe('Your dbt Cloud account ID. Found in your dbt Cloud URL or account settings.'),
+      .optional()
+      .describe(
+        'Optional dbt Cloud account ID. If omitted, account-scoped tools use the token directly when it can access exactly one account on the configured base URL. For multi-account tokens, call List Accounts and pass the selected accountId to the tool.'
+      ),
     baseUrl: z
       .string()
       .default('https://cloud.getdbt.com')

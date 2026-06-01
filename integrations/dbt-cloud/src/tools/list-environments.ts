@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let listEnvironmentsTool = SlateTool.create(spec, {
   name: 'List Environments',
@@ -13,6 +13,7 @@ export let listEnvironmentsTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       projectId: z.string().describe('The project ID to list environments for'),
       limit: z
         .number()
@@ -81,11 +82,7 @@ export let listEnvironmentsTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let environments = await client.listEnvironments(ctx.input.projectId, {
       limit: ctx.input.limit,

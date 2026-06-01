@@ -4,7 +4,7 @@
 
 dbt Cloud is a managed platform for dbt (data build tool) that enables data teams to transform data in their warehouse using SQL. It provides job scheduling, CI/CD, an integrated development environment, project metadata and discovery APIs, and a semantic layer for defining and querying business metrics. The platform exposes Administrative, Discovery, and Semantic Layer APIs for programmatic access.
 
-This Slates integration focuses on the current Administrative API routes that are practical for agent workflows: account inspection, project and environment discovery, job discovery and triggering, run monitoring/cancel/retry flows, artifact listing and download, user listing, and webhook subscription management. Discovery API and Semantic Layer GraphQL endpoints are separate dbt APIs with endpoint URLs and token permissions that vary by account and are not exposed as tools in this package.
+This Slates integration focuses on the current Administrative API routes that are practical for agent workflows: account discovery and inspection, project and environment discovery, job discovery and triggering, run monitoring/cancel/retry flows, artifact listing and download, user listing, and webhook subscription management. Discovery API and Semantic Layer GraphQL endpoints are separate dbt APIs with endpoint URLs and token permissions that vary by account and are not exposed as tools in this package.
 
 ## Authentication
 
@@ -31,7 +31,7 @@ Service account tokens belong to an account rather than a user. You can use serv
 
 Include the token in the Authorization header of your API requests. For example: `Authorization: Bearer <your-token>`.
 
-The base URL depends on your region and deployment type (e.g., `https://cloud.getdbt.com` for US multi-tenant, `https://emea.dbt.com` for EMEA). Single-tenant deployments have custom hostnames. All API requests require an `account_id` path parameter.
+The base URL depends on your region and deployment type (e.g., `https://cloud.getdbt.com` for US multi-tenant, `https://emea.dbt.com` for EMEA). Single-tenant deployments have custom hostnames. Account-scoped API requests require an `account_id` path parameter. The integration keeps `accountId` optional: tools use a configured or per-call `accountId` when provided, single-account tokens can omit it, and multi-account tokens should call **List Accounts** before passing the selected account ID to account-scoped tools.
 
 ## Features
 

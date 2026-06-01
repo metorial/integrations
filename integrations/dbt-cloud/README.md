@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/dbt-cloud.png" height="20"> Dbt Cloud
 
-Manage dbt Cloud account operations for projects, environments, jobs, runs, artifacts, users, and webhook subscriptions. Discover projects and environments, inspect jobs, trigger or retry job runs, monitor run status, cancel queued or running jobs, list and download run artifacts as attachments, audit account users, and create, update, test, or delete webhook subscriptions for job run events.
+Manage dbt Cloud account operations for accounts, projects, environments, jobs, runs, artifacts, users, and webhook subscriptions. Discover accessible accounts, projects, and environments, inspect jobs, trigger or retry job runs, monitor run status, cancel queued or running jobs, list and download run artifacts as attachments, audit account users, and create, update, test, or delete webhook subscriptions for job run events.
 
 ## Tools
 
@@ -43,6 +43,10 @@ Retrieve a dbt Cloud webhook subscription by ID, including subscribed events, ta
 ### List Environments
 
 List all environments for a given dbt Cloud project. Returns environment names, types, dbt versions, and configuration details. Useful for inspecting available deployment targets and their settings.
+
+### List Accounts
+
+List dbt Cloud accounts accessible to the token on the configured base URL. Use this when an account-scoped tool needs accountId and the user has not already provided one.
 
 ### List Jobs
 

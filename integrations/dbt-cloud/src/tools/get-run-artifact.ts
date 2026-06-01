@@ -1,7 +1,7 @@
 import { createTextAttachment, SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let getRunArtifactTool = SlateTool.create(spec, {
   name: 'Get Run Artifact',
@@ -17,6 +17,7 @@ export let getRunArtifactTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       runId: z.string().describe('The unique ID of the completed run'),
       path: z
         .string()
@@ -41,11 +42,7 @@ export let getRunArtifactTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let artifact = await client.getRunArtifact(
       ctx.input.runId,

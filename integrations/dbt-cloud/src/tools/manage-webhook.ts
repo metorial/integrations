@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { dbtCloudServiceError } from '../lib/errors';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let manageWebhookTool = SlateTool.create(spec, {
   name: 'Manage Webhook',
@@ -19,6 +19,7 @@ export let manageWebhookTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
       webhookId: z.string().optional().describe('Webhook ID (required for update and delete)'),
       name: z.string().optional().describe('Webhook name (required for create)'),
@@ -60,11 +61,7 @@ export let manageWebhookTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.name || !ctx.input.clientUrl || !ctx.input.eventTypes) {

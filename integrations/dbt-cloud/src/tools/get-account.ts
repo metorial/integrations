@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let getAccountTool = SlateTool.create(spec, {
   name: 'Get Account',
@@ -11,7 +11,7 @@ export let getAccountTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
-  .input(z.object({}))
+  .input(z.object(accountIdInput))
   .output(
     z.object({
       accountId: z.number().describe('Unique account identifier'),
@@ -24,11 +24,7 @@ export let getAccountTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let account = await client.getAccount();
 

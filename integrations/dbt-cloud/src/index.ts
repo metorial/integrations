@@ -10,6 +10,7 @@ import {
   getRunFailureDetailsTool,
   getRunTool,
   getWebhookTool,
+  listAccountsTool,
   listEnvironmentsTool,
   listJobsTool,
   listProjectsTool,
@@ -29,6 +30,7 @@ import { jobRunEventTrigger } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [
+    listAccountsTool,
     getAccountTool,
     listProjectsTool,
     getProjectTool,

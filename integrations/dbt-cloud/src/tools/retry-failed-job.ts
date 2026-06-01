@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let retryFailedJobTool = SlateTool.create(spec, {
   name: 'Retry Failed Job',
@@ -13,6 +13,7 @@ export let retryFailedJobTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       jobId: z.string().describe('The job ID whose failed run should be retried')
     })
   )
@@ -29,11 +30,7 @@ export let retryFailedJobTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let run = await client.retryFailedJob(ctx.input.jobId);
 

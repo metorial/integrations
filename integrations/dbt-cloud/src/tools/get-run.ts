@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let getRunTool = SlateTool.create(spec, {
   name: 'Get Run',
@@ -13,6 +13,7 @@ export let getRunTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       runId: z.string().describe('The unique ID of the run to retrieve'),
       includeRelated: z
         .array(z.enum(['trigger', 'job', 'audit', 'debug_logs']))
@@ -47,11 +48,7 @@ export let getRunTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let run = await client.getRun(ctx.input.runId, {
       include_related: ctx.input.includeRelated

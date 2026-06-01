@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let listWebhooksTool = SlateTool.create(spec, {
   name: 'List Webhooks',
@@ -13,6 +13,7 @@ export let listWebhooksTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       limit: z
         .number()
         .optional()
@@ -36,11 +37,7 @@ export let listWebhooksTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let webhooks = await client.listWebhooks({
       limit: ctx.input.limit,

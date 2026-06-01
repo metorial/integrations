@@ -1,9 +1,9 @@
 import { createAxios } from 'slates';
-import { dbtCloudApiError } from './errors';
+import { dbtCloudApiError, dbtCloudServiceError } from './errors';
 
 export interface ClientConfig {
   token: string;
-  accountId: string;
+  accountId?: string;
   baseUrl: string;
 }
 
@@ -17,12 +17,15 @@ export let normalizeWebhookJobIds = (jobIds: unknown): number[] | undefined => {
 
 export class Client {
   private axios;
-  private accountId: string;
+  private accountId?: string;
+  private resolvedAccountId?: string;
+  readonly baseUrl: string;
 
   constructor(config: ClientConfig) {
-    this.accountId = config.accountId;
+    this.accountId = config.accountId?.trim() || undefined;
+    this.baseUrl = config.baseUrl.replace(/\/+$/, '');
     this.axios = createAxios({
-      baseURL: config.baseUrl.replace(/\/$/, ''),
+      baseURL: this.baseUrl,
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
@@ -34,10 +37,48 @@ export class Client {
     );
   }
 
+  private async getAccountId(): Promise<string> {
+    if (this.accountId) return this.accountId;
+    if (this.resolvedAccountId) return this.resolvedAccountId;
+
+    let accounts = await this.listAccounts({ limit: 2 });
+    if (accounts.length === 1) {
+      let accountId = accounts[0]?.id;
+      if (accountId !== undefined && accountId !== null) {
+        this.resolvedAccountId = String(accountId);
+        return this.resolvedAccountId;
+      }
+    }
+
+    if (accounts.length === 0) {
+      throw dbtCloudServiceError(
+        `No dbt Cloud accounts were found for ${this.baseUrl}. Verify the baseUrl and token permissions.`
+      );
+    }
+
+    let accountSummary = accounts
+      .map(account => {
+        let id = account?.id ?? 'unknown';
+        let name = typeof account?.name === 'string' ? ` (${account.name})` : '';
+        return `${id}${name}`;
+      })
+      .join(', ');
+
+    throw dbtCloudServiceError(
+      `This dbt Cloud token can access multiple accounts on ${this.baseUrl}. Call List Accounts and pass the selected accountId to the tool. Found: ${accountSummary}.`
+    );
+  }
+
   // ─── Accounts ──────────────────────────────────────────────
 
+  async listAccounts(params?: { limit?: number; offset?: number }): Promise<any[]> {
+    let response = await this.axios.get('/api/v3/accounts/', { params });
+    return Array.isArray(response.data.data) ? response.data.data : [];
+  }
+
   async getAccount(): Promise<any> {
-    let response = await this.axios.get(`/api/v2/accounts/${this.accountId}/`);
+    let accountId = await this.getAccountId();
+    let response = await this.axios.get(`/api/v2/accounts/${accountId}/`);
     return response.data.data;
   }
 
@@ -51,15 +92,17 @@ export class Client {
     state?: string;
     include_related?: string;
   }): Promise<any[]> {
-    let response = await this.axios.get(`/api/v3/accounts/${this.accountId}/projects/`, {
+    let accountId = await this.getAccountId();
+    let response = await this.axios.get(`/api/v3/accounts/${accountId}/projects/`, {
       params
     });
     return response.data.data;
   }
 
   async getProject(projectId: string): Promise<any> {
+    let accountId = await this.getAccountId();
     let response = await this.axios.get(
-      `/api/v3/accounts/${this.accountId}/projects/${projectId}/`
+      `/api/v3/accounts/${accountId}/projects/${projectId}/`
     );
     return response.data.data;
   }
@@ -82,16 +125,18 @@ export class Client {
       include_related?: string;
     }
   ): Promise<any[]> {
+    let accountId = await this.getAccountId();
     let response = await this.axios.get(
-      `/api/v3/accounts/${this.accountId}/projects/${projectId}/environments/`,
+      `/api/v3/accounts/${accountId}/projects/${projectId}/environments/`,
       { params }
     );
     return response.data.data;
   }
 
   async getEnvironment(projectId: string, environmentId: string): Promise<any> {
+    let accountId = await this.getAccountId();
     let response = await this.axios.get(
-      `/api/v3/accounts/${this.accountId}/projects/${projectId}/environments/${environmentId}/`
+      `/api/v3/accounts/${accountId}/projects/${projectId}/environments/${environmentId}/`
     );
     return response.data.data;
   }
@@ -112,32 +157,37 @@ export class Client {
     is_system?: boolean;
     triggers_schedule?: boolean;
   }): Promise<any[]> {
-    let response = await this.axios.get(`/api/v2/accounts/${this.accountId}/jobs/`, {
+    let accountId = await this.getAccountId();
+    let response = await this.axios.get(`/api/v2/accounts/${accountId}/jobs/`, {
       params
     });
     return response.data.data;
   }
 
   async getJob(jobId: string): Promise<any> {
-    let response = await this.axios.get(`/api/v2/accounts/${this.accountId}/jobs/${jobId}/`);
+    let accountId = await this.getAccountId();
+    let response = await this.axios.get(`/api/v2/accounts/${accountId}/jobs/${jobId}/`);
     return response.data.data;
   }
 
   async createJob(jobData: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(`/api/v2/accounts/${this.accountId}/jobs/`, jobData);
+    let accountId = await this.getAccountId();
+    let response = await this.axios.post(`/api/v2/accounts/${accountId}/jobs/`, jobData);
     return response.data.data;
   }
 
   async updateJob(jobId: string, jobData: Record<string, any>): Promise<any> {
+    let accountId = await this.getAccountId();
     let response = await this.axios.post(
-      `/api/v2/accounts/${this.accountId}/jobs/${jobId}/`,
+      `/api/v2/accounts/${accountId}/jobs/${jobId}/`,
       jobData
     );
     return response.data.data;
   }
 
   async deleteJob(jobId: string): Promise<void> {
-    await this.axios.delete(`/api/v2/accounts/${this.accountId}/jobs/${jobId}/`);
+    let accountId = await this.getAccountId();
+    await this.axios.delete(`/api/v2/accounts/${accountId}/jobs/${jobId}/`);
   }
 
   async triggerJobRun(
@@ -159,6 +209,7 @@ export class Client {
       stepsOverride?: string[];
     }
   ): Promise<any> {
+    let accountId = await this.getAccountId();
     let body: Record<string, any> = {};
     if (options?.cause) body.cause = options.cause;
     if (options?.gitSha) body.git_sha = options.gitSha;
@@ -183,7 +234,7 @@ export class Client {
     if (options?.stepsOverride) body.steps_override = options.stepsOverride;
 
     let response = await this.axios.post(
-      `/api/v2/accounts/${this.accountId}/jobs/${jobId}/run/`,
+      `/api/v2/accounts/${accountId}/jobs/${jobId}/run/`,
       body
     );
     return response.data.data;
@@ -207,41 +258,42 @@ export class Client {
     has_docs_generated?: boolean;
     has_sources_generated?: boolean;
   }): Promise<any[]> {
-    let response = await this.axios.get(`/api/v2/accounts/${this.accountId}/runs/`, {
+    let accountId = await this.getAccountId();
+    let response = await this.axios.get(`/api/v2/accounts/${accountId}/runs/`, {
       params
     });
     return response.data.data;
   }
 
   async getRun(runId: string, params?: { include_related?: string[] }): Promise<any> {
+    let accountId = await this.getAccountId();
     let queryParams: Record<string, any> = {};
     if (params?.include_related) {
       queryParams.include_related = params.include_related.join(',');
     }
-    let response = await this.axios.get(`/api/v2/accounts/${this.accountId}/runs/${runId}/`, {
+    let response = await this.axios.get(`/api/v2/accounts/${accountId}/runs/${runId}/`, {
       params: queryParams
     });
     return response.data.data;
   }
 
   async cancelRun(runId: string): Promise<any> {
+    let accountId = await this.getAccountId();
     let response = await this.axios.post(
-      `/api/v2/accounts/${this.accountId}/runs/${runId}/cancel/`
+      `/api/v2/accounts/${accountId}/runs/${runId}/cancel/`
     );
     return response.data.data;
   }
 
   async getRunFailureDetails(runId: string): Promise<any> {
-    let response = await this.axios.get(
-      `/api/v2/accounts/${this.accountId}/runs/${runId}/retry/`
-    );
+    let accountId = await this.getAccountId();
+    let response = await this.axios.get(`/api/v2/accounts/${accountId}/runs/${runId}/retry/`);
     return response.data.data;
   }
 
   async retryRun(runId: string): Promise<any> {
-    let response = await this.axios.post(
-      `/api/v2/accounts/${this.accountId}/runs/${runId}/retry/`
-    );
+    let accountId = await this.getAccountId();
+    let response = await this.axios.post(`/api/v2/accounts/${accountId}/runs/${runId}/retry/`);
     return response.data.data;
   }
 
@@ -253,8 +305,9 @@ export class Client {
     });
 
     if (latestRun?.status === 20) {
+      let accountId = await this.getAccountId();
       let response = await this.axios.post(
-        `/api/v2/accounts/${this.accountId}/jobs/${jobId}/rerun/`
+        `/api/v2/accounts/${accountId}/jobs/${jobId}/rerun/`
       );
       return response.data.data;
     }
@@ -275,10 +328,11 @@ export class Client {
     contentType: string;
     sizeBytes: number;
   }> {
+    let accountId = await this.getAccountId();
     let params: Record<string, any> = {};
     if (step !== undefined) params.step = step;
     let response = await this.axios.get(
-      `/api/v2/accounts/${this.accountId}/runs/${runId}/artifacts/${path}`,
+      `/api/v2/accounts/${accountId}/runs/${runId}/artifacts/${path}`,
       {
         params,
         responseType: 'text',
@@ -302,10 +356,11 @@ export class Client {
   }
 
   async listRunArtifacts(runId: string, step?: number): Promise<string[]> {
+    let accountId = await this.getAccountId();
     let params: Record<string, any> = {};
     if (step !== undefined) params.step = step;
     let response = await this.axios.get(
-      `/api/v2/accounts/${this.accountId}/runs/${runId}/artifacts/`,
+      `/api/v2/accounts/${accountId}/runs/${runId}/artifacts/`,
       { params }
     );
     return response.data.data;
@@ -314,7 +369,8 @@ export class Client {
   // ─── Users ─────────────────────────────────────────────────
 
   async listUsers(params?: { limit?: number; offset?: number }): Promise<any[]> {
-    let response = await this.axios.get(`/api/v2/accounts/${this.accountId}/users/`, {
+    let accountId = await this.getAccountId();
+    let response = await this.axios.get(`/api/v2/accounts/${accountId}/users/`, {
       params
     });
     return response.data.data;
@@ -323,16 +379,18 @@ export class Client {
   // ─── Webhooks ──────────────────────────────────────────────
 
   async listWebhooks(params?: { limit?: number; offset?: number }): Promise<any[]> {
+    let accountId = await this.getAccountId();
     let response = await this.axios.get(
-      `/api/v3/accounts/${this.accountId}/webhooks/subscriptions`,
+      `/api/v3/accounts/${accountId}/webhooks/subscriptions`,
       { params }
     );
     return response.data.data;
   }
 
   async getWebhook(webhookId: string): Promise<any> {
+    let accountId = await this.getAccountId();
     let response = await this.axios.get(
-      `/api/v3/accounts/${this.accountId}/webhooks/subscription/${webhookId}`
+      `/api/v3/accounts/${accountId}/webhooks/subscription/${webhookId}`
     );
     return response.data.data;
   }
@@ -345,6 +403,7 @@ export class Client {
     active?: boolean;
     jobIds?: number[];
   }): Promise<any> {
+    let accountId = await this.getAccountId();
     let body: Record<string, any> = {
       name: data.name,
       client_url: data.clientUrl,
@@ -355,7 +414,7 @@ export class Client {
     if (data.jobIds !== undefined) body.job_ids = data.jobIds;
 
     let response = await this.axios.post(
-      `/api/v3/accounts/${this.accountId}/webhooks/subscriptions`,
+      `/api/v3/accounts/${accountId}/webhooks/subscriptions`,
       body
     );
     return response.data.data;
@@ -372,6 +431,7 @@ export class Client {
       jobIds?: number[];
     }
   ): Promise<any> {
+    let accountId = await this.getAccountId();
     let current = await this.getWebhook(webhookId);
     let body: Record<string, any> = {
       name: data.name ?? current.name,
@@ -388,28 +448,31 @@ export class Client {
     if (jobIds !== undefined) body.job_ids = jobIds;
 
     let response = await this.axios.put(
-      `/api/v3/accounts/${this.accountId}/webhooks/subscription/${webhookId}`,
+      `/api/v3/accounts/${accountId}/webhooks/subscription/${webhookId}`,
       body
     );
     return response.data.data;
   }
 
   async deleteWebhook(webhookId: string): Promise<void> {
+    let accountId = await this.getAccountId();
     await this.axios.delete(
-      `/api/v3/accounts/${this.accountId}/webhooks/subscription/${webhookId}`
+      `/api/v3/accounts/${accountId}/webhooks/subscription/${webhookId}`
     );
   }
 
   async testWebhook(webhookId: string): Promise<any> {
+    let accountId = await this.getAccountId();
     let response = await this.axios.get(
-      `/api/v3/accounts/${this.accountId}/webhooks/subscription/${webhookId}/test`
+      `/api/v3/accounts/${accountId}/webhooks/subscription/${webhookId}/test`
     );
     return response.data.data;
   }
 
   async listWebhookEvents(webhookId: string): Promise<any[]> {
+    let accountId = await this.getAccountId();
     let response = await this.axios.get(
-      `/api/v3/accounts/${this.accountId}/webhooks/subscription/${webhookId}/events`
+      `/api/v3/accounts/${accountId}/webhooks/subscription/${webhookId}/events`
     );
     return response.data.data;
   }

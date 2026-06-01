@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 let runStatusDescriptions: Record<number, string> = {
   1: 'Queued',
@@ -26,6 +26,7 @@ export let listRunsTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       jobId: z.string().optional().describe('Filter runs by job ID'),
       projectId: z.string().optional().describe('Filter runs by project ID'),
       environmentId: z.string().optional().describe('Filter runs by environment ID'),
@@ -91,11 +92,7 @@ export let listRunsTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let runs = await client.listRuns({
       job_definition_id: ctx.input.jobId,

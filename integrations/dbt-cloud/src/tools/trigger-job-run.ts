@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let triggerJobRunTool = SlateTool.create(spec, {
   name: 'Trigger Job Run',
@@ -17,6 +17,7 @@ export let triggerJobRunTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       jobId: z.string().describe('The ID of the job to trigger'),
       cause: z
         .string()
@@ -85,11 +86,7 @@ export let triggerJobRunTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let run = await client.triggerJobRun(ctx.input.jobId, {
       cause: ctx.input.cause,

@@ -1,7 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client, normalizeWebhookJobIds } from '../lib/client';
+import { normalizeWebhookJobIds } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let getWebhookTool = SlateTool.create(spec, {
   name: 'Get Webhook',
@@ -13,6 +14,7 @@ export let getWebhookTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       webhookId: z.string().describe('Webhook subscription ID to retrieve')
     })
   )
@@ -28,11 +30,7 @@ export let getWebhookTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let webhook = await client.getWebhook(ctx.input.webhookId);
 

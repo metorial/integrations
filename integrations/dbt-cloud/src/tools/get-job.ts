@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { accountIdInput, createDbtCloudClient } from './common';
 
 export let getJobTool = SlateTool.create(spec, {
   name: 'Get Job',
@@ -13,6 +13,7 @@ export let getJobTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
+      ...accountIdInput,
       jobId: z.string().describe('The unique ID of the job to retrieve')
     })
   )
@@ -46,11 +47,7 @@ export let getJobTool = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({
-      token: ctx.auth.token,
-      accountId: ctx.config.accountId,
-      baseUrl: ctx.config.baseUrl
-    });
+    let client = createDbtCloudClient(ctx);
 
     let job = await client.getJob(ctx.input.jobId);
 

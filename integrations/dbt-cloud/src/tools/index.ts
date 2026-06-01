@@ -7,6 +7,7 @@ export * from './get-run';
 export * from './get-run-artifact';
 export * from './get-run-failure-details';
 export * from './get-webhook';
+export * from './list-accounts';
 export * from './list-environments';
 export * from './list-jobs';
 export * from './list-projects';
