@@ -16,14 +16,6 @@ let analyticsDataRead = anyOf(
 
 let analyticsAdminWrite = anyOf(googleAnalyticsScopes.analyticsEdit);
 
-let measurementProtocolOAuth = anyOf(
-  googleAnalyticsScopes.analyticsReadonly,
-  googleAnalyticsScopes.analyticsEdit,
-  googleAnalyticsScopes.analyticsManageUsers,
-  googleAnalyticsScopes.analyticsManageUsersReadonly,
-  googleAnalyticsScopes.openIdEmailProfile
-);
-
 export let googleAnalyticsActionScopes = {
   runReport: allOf(analyticsDataRead),
   runRealtimeReport: analyticsDataRead,
@@ -31,13 +23,10 @@ export let googleAnalyticsActionScopes = {
   getMetadata: analyticsDataRead,
   listAccountsAndProperties: analyticsDataRead,
   auditDataAccess: analyticsDataRead,
-  sendEvents: measurementProtocolOAuth,
-  validateEvents: measurementProtocolOAuth,
   manageDataStreams: analyticsAdminWrite,
   manageCustomDimensions: analyticsAdminWrite,
   manageCustomMetrics: analyticsAdminWrite,
   manageKeyEvents: analyticsAdminWrite,
   manageAudiences: analyticsAdminWrite,
-  propertyChange: analyticsDataRead,
-  inboundWebhook: measurementProtocolOAuth
+  propertyChange: analyticsAdminWrite
 } as const;

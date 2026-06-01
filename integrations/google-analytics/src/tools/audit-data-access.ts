@@ -1,6 +1,11 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { AnalyticsAdminClient } from '../lib/client';
+import {
+  propertyIdInstructions,
+  propertyIdSchema,
+  resolvePropertyId
+} from '../lib/properties';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -10,6 +15,7 @@ export let auditDataAccess = SlateTool.create(spec, {
   description: `Generate a data access report to audit who accessed your analytics data and when. Shows which users and service accounts made data requests against the GA4 property.
 
 This helps with compliance and security monitoring by tracking API and UI data access patterns.`,
+  instructions: propertyIdInstructions,
   tags: {
     readOnly: true
   }
@@ -17,27 +23,43 @@ This helps with compliance and security monitoring by tracking API and UI data a
   .scopes(googleAnalyticsActionScopes.auditDataAccess)
   .input(
     z.object({
+      propertyId: propertyIdSchema,
       startDate: z.string().describe('Start date in YYYY-MM-DD format.'),
       endDate: z.string().describe('End date in YYYY-MM-DD format.'),
       dimensions: z
         .array(
           z.enum([
-            'accessorEmail',
+            'accessDateHour',
+            'accessedPropertyId',
+            'accessedPropertyName',
+            'accessorAppName',
+            'accessorAppVersion',
             'accessMechanism',
+            'accessorOs',
+            'accessorOsVersion',
+            'accessorUserType',
+            'dataApiQuotaCategory',
             'epochTimeMicros',
-            'propertyId',
-            'propertyName',
-            'quotaCategory',
+            'mostRecentAccessEpochTimeMicros',
             'reportType',
-            'isRestrictedDataModel'
+            'revenueDataReturned',
+            'costDataReturned',
+            'userCountry',
+            'userCountryId',
+            'userEmail',
+            'userIP'
           ])
         )
         .optional()
-        .describe('Dimensions for the access report. Common: accessorEmail, accessMechanism.'),
+        .describe(
+          'Dimensions for the access report. Common: accessedPropertyId, accessedPropertyName, accessorAppName.'
+        ),
       metrics: z
-        .array(z.enum(['accessCount']))
+        .array(z.enum(['accessCount', 'dataApiQuotaPropertyTokensConsumed']))
         .optional()
-        .describe('Metrics for the access report. Default: accessCount.'),
+        .describe(
+          'Metrics for the access report. Default: dataApiQuotaPropertyTokensConsumed. accessCount requires a Google Analytics 360 property.'
+        ),
       limit: z.number().optional().describe('Maximum number of rows to return.'),
       offset: z.number().optional().describe('Row offset for pagination.')
     })
@@ -71,21 +93,23 @@ This helps with compliance and security monitoring by tracking API and UI data a
   )
   .handleInvocation(async ctx => {
     let client = new AnalyticsAdminClient({
-      token: ctx.auth.token,
-      propertyId: ctx.config.propertyId
+      token: ctx.auth.token
     });
+    const propertyId = resolvePropertyId(ctx.input, ctx.config);
 
-    let requestDimensions = (ctx.input.dimensions || ['accessorEmail', 'accessMechanism']).map(
-      d => ({ dimensionName: d })
+    let requestDimensions = (
+      ctx.input.dimensions || ['accessedPropertyId', 'accessedPropertyName', 'accessorAppName']
+    ).map(d => ({ dimensionName: d }));
+    let requestMetrics = (ctx.input.metrics || ['dataApiQuotaPropertyTokensConsumed']).map(
+      m => ({ metricName: m })
     );
-    let requestMetrics = (ctx.input.metrics || ['accessCount']).map(m => ({ metricName: m }));
 
-    let result = await client.runAccessReport({
+    let result = await client.runAccessReport(propertyId, {
       dateRanges: [{ startDate: ctx.input.startDate, endDate: ctx.input.endDate }],
       dimensions: requestDimensions,
       metrics: requestMetrics,
-      limit: ctx.input.limit,
-      offset: ctx.input.offset
+      limit: ctx.input.limit === undefined ? undefined : String(ctx.input.limit),
+      offset: ctx.input.offset === undefined ? undefined : String(ctx.input.offset)
     });
 
     let rowCount = result.rowCount || (result.rows ? result.rows.length : 0);

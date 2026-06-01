@@ -1,14 +1,98 @@
-import { createAxios, SlateAuth } from 'slates';
+import { SlateAuth } from 'slates';
 import { z } from 'zod';
+import { googleAnalyticsOAuthError, googleAnalyticsServiceError } from './lib/errors';
 import { googleAnalyticsScopes } from './scopes';
 
-let googleOAuthAxios = createAxios({
-  baseURL: 'https://oauth2.googleapis.com'
-});
+type GoogleOAuthTokenResponse = {
+  access_token: string;
+  refresh_token?: string;
+  expires_in?: number;
+  scope?: string;
+};
 
-let googleUserInfoAxios = createAxios({
-  baseURL: 'https://www.googleapis.com'
-});
+type GoogleUserInfoResponse = {
+  id?: string;
+  email?: string;
+  name?: string;
+  picture?: string;
+};
+
+type GoogleOAuthRefreshContext = {
+  output: {
+    token: string;
+    refreshToken?: string;
+    measurementId?: string;
+    apiSecret?: string;
+  };
+  input: Record<string, unknown>;
+  clientId: string;
+  clientSecret: string;
+  scopes: string[];
+};
+
+let readJsonResponse = async (response: Response) => {
+  let text = await response.text();
+  if (!text) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+};
+
+let googleFetch = async <T>(operation: string, url: string, init: RequestInit): Promise<T> => {
+  try {
+    let response = await fetch(url, init);
+    let data = await readJsonResponse(response);
+
+    if (!response.ok) {
+      throw googleAnalyticsOAuthError(operation, {
+        response: {
+          status: response.status,
+          statusText: response.statusText,
+          data
+        }
+      });
+    }
+
+    return data as T;
+  } catch (error) {
+    throw googleAnalyticsOAuthError(operation, error);
+  }
+};
+
+let measurementProtocolAuth = {
+  type: 'auth.custom' as const,
+  name: 'Measurement Protocol Only',
+  key: 'measurement_protocol',
+
+  inputSchema: z.object({
+    measurementId: z.string().describe('Measurement ID for web streams (e.g., "G-XXXXXXX").'),
+    apiSecret: z
+      .string()
+      .describe(
+        'API secret for the Measurement Protocol. Generated in GA4 Admin > Data Streams.'
+      )
+  }),
+
+  getOutput: async (ctx: {
+    input: {
+      measurementId: string;
+      apiSecret: string;
+    };
+  }) => {
+    return {
+      output: {
+        token: '',
+        measurementId: ctx.input.measurementId,
+        apiSecret: ctx.input.apiSecret
+      }
+    };
+  }
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -28,12 +112,14 @@ export let auth = SlateAuth.create()
         .string()
         .optional()
         .describe(
-          'Measurement ID for web streams (e.g., "G-XXXXXXX"). Required for Measurement Protocol.'
+          'Measurement ID for web streams (e.g., "G-XXXXXXX"). Populated by Measurement Protocol Only auth or legacy OAuth profiles.'
         ),
       apiSecret: z
         .string()
         .optional()
-        .describe('API secret for Measurement Protocol. Stream-specific.')
+        .describe(
+          'API secret for Measurement Protocol. Populated by Measurement Protocol Only auth or legacy OAuth profiles.'
+        )
     })
   )
   .addOauth({
@@ -70,18 +156,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    inputSchema: z.object({
-      measurementId: z
-        .string()
-        .optional()
-        .describe(
-          'Measurement ID for web streams (e.g., "G-XXXXXXX"). Only needed for sending events via Measurement Protocol.'
-        ),
-      apiSecret: z
-        .string()
-        .optional()
-        .describe('API secret for Measurement Protocol. Only needed for sending events.')
-    }),
+    inputSchema: z.object({}),
 
     getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
@@ -101,23 +176,24 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response = await googleOAuthAxios.post(
-        '/token',
-        new URLSearchParams({
-          code: ctx.code,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri,
-          grant_type: 'authorization_code'
-        }).toString(),
+      let data = await googleFetch<GoogleOAuthTokenResponse>(
+        'callback',
+        'https://oauth2.googleapis.com/token',
         {
+          method: 'POST',
+          body: new URLSearchParams({
+            code: ctx.code,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri,
+            grant_type: 'authorization_code'
+          }),
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
         }
       );
 
-      let data = response.data;
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -128,36 +204,37 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-          measurementId: ctx.input.measurementId,
-          apiSecret: ctx.input.apiSecret
+          expiresAt
         },
         input: ctx.input,
         scopes: grantedScopes
       };
     },
 
-    handleTokenRefresh: async (ctx: any) => {
+    handleTokenRefresh: async (ctx: GoogleOAuthRefreshContext) => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available. Please re-authenticate.');
+        throw googleAnalyticsServiceError(
+          'No refresh token available. Please re-authenticate.'
+        );
       }
 
-      let response = await googleOAuthAxios.post(
-        '/token',
-        new URLSearchParams({
-          refresh_token: ctx.output.refreshToken,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          grant_type: 'refresh_token'
-        }).toString(),
+      let data = await googleFetch<GoogleOAuthTokenResponse>(
+        'refresh',
+        'https://oauth2.googleapis.com/token',
         {
+          method: 'POST',
+          body: new URLSearchParams({
+            refresh_token: ctx.output.refreshToken,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            grant_type: 'refresh_token'
+          }),
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
         }
       );
 
-      let data = response.data;
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -173,14 +250,21 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: any; scopes: string[] }) => {
-      let response = await googleUserInfoAxios.get('/oauth2/v2/userinfo', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: Record<string, unknown>;
+      scopes: string[];
+    }) => {
+      let data = await googleFetch<GoogleUserInfoResponse>(
+        'profile lookup',
+        'https://www.googleapis.com/oauth2/v2/userinfo',
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
         }
-      });
-
-      let data = response.data;
+      );
 
       return {
         profile: {
@@ -192,29 +276,4 @@ export let auth = SlateAuth.create()
       };
     }
   })
-  .addCustomAuth({
-    type: 'auth.custom',
-    name: 'Measurement Protocol Only',
-    key: 'measurement_protocol',
-
-    inputSchema: z.object({
-      measurementId: z
-        .string()
-        .describe('Measurement ID for web streams (e.g., "G-XXXXXXX").'),
-      apiSecret: z
-        .string()
-        .describe(
-          'API secret for the Measurement Protocol. Generated in GA4 Admin > Data Streams.'
-        )
-    }),
-
-    getOutput: async ctx => {
-      return {
-        output: {
-          token: '',
-          measurementId: ctx.input.measurementId,
-          apiSecret: ctx.input.apiSecret
-        }
-      };
-    }
-  });
+  .addCustomAuth(measurementProtocolAuth);

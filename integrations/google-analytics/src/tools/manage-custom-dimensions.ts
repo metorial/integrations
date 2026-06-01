@@ -1,6 +1,12 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { AnalyticsAdminClient } from '../lib/client';
+import { googleAnalyticsServiceError } from '../lib/errors';
+import {
+  propertyIdInstructions,
+  propertyIdSchema,
+  resolvePropertyId
+} from '../lib/properties';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -10,6 +16,7 @@ export let manageCustomDimensions = SlateTool.create(spec, {
   description: `List, create, update, or archive custom dimensions on a GA4 property. Custom dimensions allow you to track additional data points beyond the built-in dimensions.
 
 Use **list** to see all custom dimensions, **create** to add new ones, **update** to modify display names or descriptions, and **archive** to remove them.`,
+  instructions: propertyIdInstructions,
   tags: {
     destructive: false
   }
@@ -17,6 +24,7 @@ Use **list** to see all custom dimensions, **create** to add new ones, **update*
   .scopes(googleAnalyticsActionScopes.manageCustomDimensions)
   .input(
     z.object({
+      propertyId: propertyIdSchema,
       action: z
         .enum(['list', 'create', 'update', 'archive'])
         .describe('Action to perform on custom dimensions.'),
@@ -82,12 +90,12 @@ Use **list** to see all custom dimensions, **create** to add new ones, **update*
   )
   .handleInvocation(async ctx => {
     let client = new AnalyticsAdminClient({
-      token: ctx.auth.token,
-      propertyId: ctx.config.propertyId
+      token: ctx.auth.token
     });
+    const propertyId = resolvePropertyId(ctx.input, ctx.config);
 
     if (ctx.input.action === 'list') {
-      let result = await client.listCustomDimensions({
+      let result = await client.listCustomDimensions(propertyId, {
         pageSize: ctx.input.pageSize,
         pageToken: ctx.input.pageToken
       });
@@ -102,11 +110,11 @@ Use **list** to see all custom dimensions, **create** to add new ones, **update*
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.parameterName || !ctx.input.displayName || !ctx.input.scope) {
-        throw new Error(
+        throw googleAnalyticsServiceError(
           'parameterName, displayName, and scope are required for creating a custom dimension.'
         );
       }
-      let result = await client.createCustomDimension({
+      let result = await client.createCustomDimension(propertyId, {
         parameterName: ctx.input.parameterName,
         displayName: ctx.input.displayName,
         description: ctx.input.description,
@@ -120,7 +128,9 @@ Use **list** to see all custom dimensions, **create** to add new ones, **update*
 
     if (ctx.input.action === 'update') {
       if (!ctx.input.customDimensionId) {
-        throw new Error('customDimensionId is required for updating a custom dimension.');
+        throw googleAnalyticsServiceError(
+          'customDimensionId is required for updating a custom dimension.'
+        );
       }
       let updateFields: string[] = [];
       let body: any = {};
@@ -133,11 +143,12 @@ Use **list** to see all custom dimensions, **create** to add new ones, **update*
         body.description = ctx.input.description;
       }
       if (updateFields.length === 0) {
-        throw new Error(
+        throw googleAnalyticsServiceError(
           'At least one field (displayName or description) must be provided for update.'
         );
       }
       let result = await client.updateCustomDimension(
+        propertyId,
         ctx.input.customDimensionId,
         updateFields.join(','),
         body
@@ -150,15 +161,17 @@ Use **list** to see all custom dimensions, **create** to add new ones, **update*
 
     if (ctx.input.action === 'archive') {
       if (!ctx.input.customDimensionId) {
-        throw new Error('customDimensionId is required for archiving a custom dimension.');
+        throw googleAnalyticsServiceError(
+          'customDimensionId is required for archiving a custom dimension.'
+        );
       }
-      await client.archiveCustomDimension(ctx.input.customDimensionId);
+      await client.archiveCustomDimension(propertyId, ctx.input.customDimensionId);
       return {
         output: { archived: true },
         message: `Archived custom dimension **${ctx.input.customDimensionId}**.`
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw googleAnalyticsServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

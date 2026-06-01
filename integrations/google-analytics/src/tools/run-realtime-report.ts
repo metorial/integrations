@@ -1,6 +1,11 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { AnalyticsDataClient } from '../lib/client';
+import {
+  propertyIdInstructions,
+  propertyIdSchema,
+  resolvePropertyId
+} from '../lib/properties';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -11,6 +16,7 @@ export let runRealtimeReport = SlateTool.create(spec, {
 
 Common real-time dimensions: \`unifiedScreenName\`, \`city\`, \`country\`, \`deviceCategory\`, \`platform\`, \`appVersion\`.
 Common real-time metrics: \`activeUsers\`, \`screenPageViews\`, \`eventCount\`, \`conversions\`.`,
+  instructions: propertyIdInstructions,
   tags: {
     readOnly: true
   }
@@ -18,6 +24,7 @@ Common real-time metrics: \`activeUsers\`, \`screenPageViews\`, \`eventCount\`, 
   .scopes(googleAnalyticsActionScopes.runRealtimeReport)
   .input(
     z.object({
+      propertyId: propertyIdSchema,
       dimensions: z
         .array(
           z.object({
@@ -78,11 +85,11 @@ Common real-time metrics: \`activeUsers\`, \`screenPageViews\`, \`eventCount\`, 
   )
   .handleInvocation(async ctx => {
     let client = new AnalyticsDataClient({
-      token: ctx.auth.token,
-      propertyId: ctx.config.propertyId
+      token: ctx.auth.token
     });
+    const propertyId = resolvePropertyId(ctx.input, ctx.config);
 
-    let result = await client.runRealtimeReport({
+    let result = await client.runRealtimeReport(propertyId, {
       dimensions: ctx.input.dimensions,
       metrics: ctx.input.metrics,
       dimensionFilter: ctx.input.dimensionFilter,

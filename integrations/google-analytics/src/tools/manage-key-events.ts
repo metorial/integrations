@@ -1,6 +1,12 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { AnalyticsAdminClient } from '../lib/client';
+import { googleAnalyticsServiceError } from '../lib/errors';
+import {
+  propertyIdInstructions,
+  propertyIdSchema,
+  resolvePropertyId
+} from '../lib/properties';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -10,6 +16,7 @@ export let manageKeyEvents = SlateTool.create(spec, {
   description: `List, create, update, or delete key events (conversions) on a GA4 property. Key events mark specific user actions as valuable for your business (e.g., purchases, sign-ups, form submissions).
 
 Previously known as "conversion events" in Google Analytics.`,
+  instructions: propertyIdInstructions,
   tags: {
     destructive: false
   }
@@ -17,6 +24,7 @@ Previously known as "conversion events" in Google Analytics.`,
   .scopes(googleAnalyticsActionScopes.manageKeyEvents)
   .input(
     z.object({
+      propertyId: propertyIdSchema,
       action: z
         .enum(['list', 'create', 'get', 'update', 'delete'])
         .describe('Action to perform on key events.'),
@@ -72,12 +80,12 @@ Previously known as "conversion events" in Google Analytics.`,
   )
   .handleInvocation(async ctx => {
     let client = new AnalyticsAdminClient({
-      token: ctx.auth.token,
-      propertyId: ctx.config.propertyId
+      token: ctx.auth.token
     });
+    const propertyId = resolvePropertyId(ctx.input, ctx.config);
 
     if (ctx.input.action === 'list') {
-      let result = await client.listKeyEvents({
+      let result = await client.listKeyEvents(propertyId, {
         pageSize: ctx.input.pageSize,
         pageToken: ctx.input.pageToken
       });
@@ -92,8 +100,9 @@ Previously known as "conversion events" in Google Analytics.`,
     }
 
     if (ctx.input.action === 'get') {
-      if (!ctx.input.keyEventId) throw new Error('keyEventId is required for get action.');
-      let result = await client.getKeyEvent(ctx.input.keyEventId);
+      if (!ctx.input.keyEventId)
+        throw googleAnalyticsServiceError('keyEventId is required for get action.');
+      let result = await client.getKeyEvent(propertyId, ctx.input.keyEventId);
       return {
         output: { keyEvent: result },
         message: `Retrieved key event **${result.eventName}** (counting: ${result.countingMethod}).`
@@ -101,10 +110,11 @@ Previously known as "conversion events" in Google Analytics.`,
     }
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.eventName) throw new Error('eventName is required for create action.');
+      if (!ctx.input.eventName)
+        throw googleAnalyticsServiceError('eventName is required for create action.');
       let body: any = { eventName: ctx.input.eventName };
       if (ctx.input.countingMethod) body.countingMethod = ctx.input.countingMethod;
-      let result = await client.createKeyEvent(body);
+      let result = await client.createKeyEvent(propertyId, body);
       return {
         output: { keyEvent: result },
         message: `Created key event **${result.eventName}**.`
@@ -112,7 +122,8 @@ Previously known as "conversion events" in Google Analytics.`,
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.keyEventId) throw new Error('keyEventId is required for update action.');
+      if (!ctx.input.keyEventId)
+        throw googleAnalyticsServiceError('keyEventId is required for update action.');
       let updateFields: string[] = [];
       let body: any = {};
       if (ctx.input.countingMethod !== undefined) {
@@ -120,9 +131,12 @@ Previously known as "conversion events" in Google Analytics.`,
         body.countingMethod = ctx.input.countingMethod;
       }
       if (updateFields.length === 0) {
-        throw new Error('At least one field (countingMethod) must be provided for update.');
+        throw googleAnalyticsServiceError(
+          'At least one field (countingMethod) must be provided for update.'
+        );
       }
       let result = await client.updateKeyEvent(
+        propertyId,
         ctx.input.keyEventId,
         updateFields.join(','),
         body
@@ -134,14 +148,15 @@ Previously known as "conversion events" in Google Analytics.`,
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.keyEventId) throw new Error('keyEventId is required for delete action.');
-      await client.deleteKeyEvent(ctx.input.keyEventId);
+      if (!ctx.input.keyEventId)
+        throw googleAnalyticsServiceError('keyEventId is required for delete action.');
+      await client.deleteKeyEvent(propertyId, ctx.input.keyEventId);
       return {
         output: { deleted: true },
         message: `Deleted key event **${ctx.input.keyEventId}**.`
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw googleAnalyticsServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

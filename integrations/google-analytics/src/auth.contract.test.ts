@@ -2,43 +2,47 @@ import { createLocalSlateTestClient, expectSlateError } from '@slates/test';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { googleAnalyticsScopes } from './scopes';
 
-let oauthPost = vi.fn();
-let profileGet = vi.fn();
+let fetchMock = vi.fn();
+
+let googleResponse = (data: unknown, init?: ResponseInit) =>
+  new Response(JSON.stringify(data), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    ...init
+  });
 
 let loadProviderClient = async () => {
   vi.resetModules();
-  oauthPost.mockReset();
-  profileGet.mockReset();
-
-  vi.doMock('slates', async () => {
-    let actual = await vi.importActual<typeof import('slates')>('slates');
-
-    return {
-      ...actual,
-      createAxios: vi.fn((config?: { baseURL?: string }) => {
-        if (config?.baseURL === 'https://oauth2.googleapis.com') {
-          return {
-            post: oauthPost
-          };
-        }
-
-        if (config?.baseURL === 'https://www.googleapis.com') {
-          return {
-            get: profileGet
-          };
-        }
-
-        return actual.createAxios(config);
-      })
-    };
-  });
+  fetchMock.mockReset();
+  vi.stubGlobal('fetch', fetchMock);
 
   let { provider } = await import('./index');
   return createLocalSlateTestClient({ slate: provider });
 };
 
+type OAuthCallbackMethod = {
+  key: string;
+  handleCallback: (ctx: {
+    code: string;
+    state: string;
+    redirectUri: string;
+    input: Record<string, unknown>;
+    clientId: string;
+    clientSecret: string;
+    scopes: string[];
+    callbackParams: Record<string, string>;
+    callbackState: Record<string, unknown>;
+  }) => Promise<{
+    output: Record<string, unknown>;
+    input?: Record<string, unknown>;
+    scopes?: string[];
+  }>;
+};
+
 afterEach(() => {
-  vi.doUnmock('slates');
+  vi.unstubAllGlobals();
   vi.resetModules();
 });
 
@@ -49,7 +53,7 @@ describe('google-analytics auth contract', () => {
       authenticationMethodId: 'oauth',
       redirectUri: 'https://example.com/callback',
       state: 'state-123',
-      input: { measurementId: 'G-TEST123', apiSecret: 'secret' },
+      input: {},
       clientId: 'client-id',
       clientSecret: 'client-secret',
       scopes: [
@@ -65,27 +69,74 @@ describe('google-analytics auth contract', () => {
     expect(url.searchParams.get('scope')).toBe(
       `${googleAnalyticsScopes.analyticsReadonly} ${googleAnalyticsScopes.openIdEmailProfile}`
     );
-    expect(result.input).toEqual({ measurementId: 'G-TEST123', apiSecret: 'secret' });
+    expect(result.input).toEqual({});
   });
 
-  it('maps callback and refresh token responses into the stored auth shape', async () => {
-    let client = await loadProviderClient();
-
-    oauthPost.mockResolvedValueOnce({
-      data: {
+  it('handles OAuth callback token exchange without a Slate invocation context', async () => {
+    vi.resetModules();
+    fetchMock.mockReset();
+    vi.stubGlobal('fetch', fetchMock);
+    fetchMock.mockResolvedValueOnce(
+      googleResponse({
         access_token: 'access-token',
         refresh_token: 'refresh-token',
         expires_in: 3600,
-        scope: `${googleAnalyticsScopes.analyticsEdit} ${googleAnalyticsScopes.openIdEmailProfile}`
-      }
+        scope: googleAnalyticsScopes.analyticsReadonly
+      })
+    );
+
+    let { auth } = await import('./auth');
+    let oauthMethod = auth.authStack.find(
+      method => method.key === 'oauth' && 'handleCallback' in method
+    );
+
+    if (!oauthMethod || !('handleCallback' in oauthMethod)) {
+      throw new Error('Google Analytics OAuth method was not found.');
+    }
+
+    let result = await (oauthMethod as unknown as OAuthCallbackMethod).handleCallback({
+      code: 'auth-code',
+      state: 'state-123',
+      redirectUri: 'http://127.0.0.1:45873/callback',
+      input: {},
+      clientId: 'client-id',
+      clientSecret: 'client-secret',
+      scopes: [googleAnalyticsScopes.analyticsReadonly],
+      callbackParams: {},
+      callbackState: {}
     });
+
+    expect(result.output).toMatchObject({
+      token: 'access-token',
+      refreshToken: 'refresh-token'
+    });
+  });
+
+  it('maps callback and refresh token responses into the stored OAuth auth shape', async () => {
+    let client = await loadProviderClient();
+
+    fetchMock
+      .mockResolvedValueOnce(
+        googleResponse({
+          access_token: 'access-token',
+          refresh_token: 'refresh-token',
+          expires_in: 3600,
+          scope: `${googleAnalyticsScopes.analyticsEdit} ${googleAnalyticsScopes.openIdEmailProfile}`
+        })
+      )
+      .mockResolvedValueOnce(
+        googleResponse({
+          access_token: 'refreshed-token',
+          expires_in: 1800
+        })
+      );
 
     let callbackResult = await client.handleAuthorizationCallback({
       authenticationMethodId: 'oauth',
       code: 'auth-code',
       state: 'state-123',
       redirectUri: 'https://example.com/callback',
-      input: { measurementId: 'G-X', apiSecret: 's' },
+      input: {},
       clientId: 'client-id',
       clientSecret: 'client-secret',
       scopes: [googleAnalyticsScopes.analyticsEdit]
@@ -93,10 +144,10 @@ describe('google-analytics auth contract', () => {
 
     expect(callbackResult.output).toMatchObject({
       token: 'access-token',
-      refreshToken: 'refresh-token',
-      measurementId: 'G-X',
-      apiSecret: 's'
+      refreshToken: 'refresh-token'
     });
+    expect(callbackResult.output.measurementId).toBeUndefined();
+    expect(callbackResult.output.apiSecret).toBeUndefined();
     expect(callbackResult.scopes).toEqual([
       googleAnalyticsScopes.analyticsEdit,
       'openid',
@@ -105,13 +156,7 @@ describe('google-analytics auth contract', () => {
     ]);
     expect(Date.parse(String(callbackResult.output.expiresAt))).toBeGreaterThan(Date.now());
 
-    oauthPost.mockResolvedValueOnce({
-      data: {
-        access_token: 'refreshed-token',
-        expires_in: 1800
-      }
-    });
-
+    // Preserve legacy/Measurement Protocol credentials if an existing OAuth profile has them.
     let refreshResult = await client.refreshToken({
       authenticationMethodId: 'oauth',
       output: {
@@ -133,6 +178,34 @@ describe('google-analytics auth contract', () => {
       apiSecret: 's'
     });
     expect(Date.parse(String(refreshResult.output.expiresAt))).toBeGreaterThan(Date.now());
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      'https://oauth2.googleapis.com/token',
+      expect.objectContaining({ method: 'POST' })
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      'https://oauth2.googleapis.com/token',
+      expect.objectContaining({ method: 'POST' })
+    );
+  });
+
+  it('maps Measurement Protocol Only auth input into the stored auth shape', async () => {
+    let client = await loadProviderClient();
+
+    let result = await client.getAuthOutput({
+      authenticationMethodId: 'measurement_protocol',
+      input: {
+        measurementId: 'G-TEST123',
+        apiSecret: 'secret'
+      }
+    });
+
+    expect(result.output).toEqual({
+      token: '',
+      measurementId: 'G-TEST123',
+      apiSecret: 'secret'
+    });
   });
 
   it('fails refreshes cleanly when no refresh token is stored', async () => {
@@ -150,21 +223,21 @@ describe('google-analytics auth contract', () => {
           clientSecret: 'client-secret',
           scopes: [googleAnalyticsScopes.analyticsReadonly]
         }),
-      { code: 'internal.unexpected', kind: 'internal', status: 500 }
+      { code: 'request.bad', kind: 'request', status: 400 }
     );
   });
 
   it('maps the Google profile payload into the Slate profile shape', async () => {
     let client = await loadProviderClient();
 
-    profileGet.mockResolvedValueOnce({
-      data: {
+    fetchMock.mockResolvedValueOnce(
+      googleResponse({
         id: 'user-123',
         email: 'ga-test@example.com',
         name: 'GA Test User',
         picture: 'https://example.com/avatar.png'
-      }
-    });
+      })
+    );
 
     let result = await client.getAuthProfile({
       authenticationMethodId: 'oauth',
@@ -181,5 +254,14 @@ describe('google-analytics auth contract', () => {
       name: 'GA Test User',
       imageUrl: 'https://example.com/avatar.png'
     });
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://www.googleapis.com/oauth2/v2/userinfo',
+      expect.objectContaining({
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer profile-token'
+        }
+      })
+    );
   });
 });
