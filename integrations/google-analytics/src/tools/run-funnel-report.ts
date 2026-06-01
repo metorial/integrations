@@ -1,6 +1,11 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { AnalyticsDataClient } from '../lib/client';
+import {
+  propertyIdInstructions,
+  propertyIdSchema,
+  resolvePropertyId
+} from '../lib/properties';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -62,6 +67,7 @@ export let runFunnelReport = SlateTool.create(spec, {
 
 Use this to analyze conversion funnels like checkout flows, onboarding sequences, or any multi-step user journey.`,
   instructions: [
+    ...propertyIdInstructions,
     'Each step in the funnel should have a descriptive name and a filter expression that defines which users qualify for that step.',
     'Steps are evaluated in order — a user must complete step N before being counted in step N+1 (unless isOpenFunnel is true).'
   ],
@@ -72,6 +78,7 @@ Use this to analyze conversion funnels like checkout flows, onboarding sequences
   .scopes(googleAnalyticsActionScopes.runFunnelReport)
   .input(
     z.object({
+      propertyId: propertyIdSchema,
       dateRanges: z
         .array(
           z.object({
@@ -92,11 +99,11 @@ Use this to analyze conversion funnels like checkout flows, onboarding sequences
             filterExpression: funnelFilterExpressionSchema
               .optional()
               .describe('Filter expression defining which users qualify for this step.'),
-            isOpenFunnel: z
+            isDirectlyFollowedBy: z
               .boolean()
               .optional()
               .describe(
-                'If true, users can enter the funnel at this step without completing prior steps.'
+                'If true, this step must directly follow the previous step without intervening events.'
               ),
             withinDurationFromPriorStep: z
               .string()
@@ -131,13 +138,18 @@ Use this to analyze conversion funnels like checkout flows, onboarding sequences
   )
   .handleInvocation(async ctx => {
     let client = new AnalyticsDataClient({
-      token: ctx.auth.token,
-      propertyId: ctx.config.propertyId
+      token: ctx.auth.token
     });
+    const propertyId = resolvePropertyId(ctx.input, ctx.config);
 
     let requestBody: any = {
       funnel: {
-        steps: ctx.input.steps,
+        steps: ctx.input.steps.map(step => ({
+          name: step.name,
+          filterExpression: step.filterExpression,
+          isDirectlyFollowedBy: step.isDirectlyFollowedBy,
+          withinDurationFromPriorStep: step.withinDurationFromPriorStep
+        })),
         isOpenFunnel: ctx.input.isOpenFunnel
       }
     };
@@ -152,7 +164,7 @@ Use this to analyze conversion funnels like checkout flows, onboarding sequences
       };
     }
 
-    let result = await client.runFunnelReport(requestBody);
+    let result = await client.runFunnelReport(propertyId, requestBody);
 
     return {
       output: {

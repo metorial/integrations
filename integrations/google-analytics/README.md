@@ -2,6 +2,10 @@
 
 Query and retrieve analytics reports on user interactions, traffic, and engagement metrics across websites and apps. Send event data to GA4 via the Measurement Protocol for tracking server-side and offline interactions. Manage GA4 accounts, properties, data streams, and user permissions. Create and manage custom dimensions, metrics, audiences, and key events. Generate real-time and funnel reports with configurable dimensions, metrics, date ranges, and filters. Link properties with Firebase, Google Ads, BigQuery, and other Google services. Audit data access and search change history.
 
+## Configuration
+
+`propertyId` and `measurementId` are optional static defaults. When `propertyId` is configured, property-scoped tools can run without a `propertyId` input; otherwise use **List Accounts and Properties** to discover a GA4 property and pass its ID manually. When `measurementId` is configured, Measurement Protocol tools can run without a `measurementId` input; otherwise use **Manage Data Streams** to discover a web stream measurement ID. Measurement Protocol `apiSecret` must still be supplied by tool input or Measurement Protocol auth.
+
 ## Tools
 
 ### Audit Data Access
@@ -30,7 +34,7 @@ List, create, update, or archive custom metrics on a GA4 property. Custom metric
 
 ### Manage Data Streams
 
-List, get, create, update, or delete data streams on a GA4 property. Data streams represent sources of data flowing into GA4, such as websites (Web) or mobile apps (iOS/Android). Also supports listing and creating Measurement Protocol secrets for a specific data stream.
+List, get, create, update, or delete data streams on a GA4 property. Data streams represent sources of data flowing into GA4, such as websites (Web) or mobile apps (iOS/Android). Also supports listing and creating Measurement Protocol secrets for a specific data stream, and exposes web stream `measurementId` values for event tools.
 
 ### Manage Key Events
 
@@ -50,11 +54,11 @@ Query an analytics report from a GA4 property with configurable dimensions, metr
 
 ### Send Events
 
-Send event data to Google Analytics 4 via the Measurement Protocol. Use this to record server-side interactions, offline conversions, or events from non-web/app contexts (e.g., kiosks, POS systems, CRM triggers). The Measurement Protocol supplements automatic data collection — it does not replace gtag, Tag Manager, or Firebase.
+Send event data to Google Analytics 4 via the Measurement Protocol. Use this to record server-side interactions, offline conversions, or events from non-web/app contexts (e.g., kiosks, POS systems, CRM triggers). Pass the selected stream `measurementId` and Measurement Protocol `apiSecret` directly, use configured `measurementId`, or use Measurement Protocol Only auth as a fallback. The Measurement Protocol supplements automatic data collection — it does not replace gtag, Tag Manager, or Firebase.
 
 ### Validate Events
 
-Validate event data against the GA4 Measurement Protocol without actually sending the events. Use this to test event payloads for errors before sending them to production. Returns validation messages indicating any issues with the event data format, parameter names, or values.
+Validate event data against the GA4 Measurement Protocol without actually sending the events. Use this to test event payloads for errors before sending them to production. Pass the selected stream `measurementId` and Measurement Protocol `apiSecret` directly, use configured `measurementId`, or use Measurement Protocol Only auth as a fallback. Returns validation messages indicating any issues with the event data format, parameter names, or values.
 
 ## License
 

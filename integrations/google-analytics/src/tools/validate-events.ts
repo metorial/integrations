@@ -1,7 +1,11 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { MeasurementProtocolClient } from '../lib/client';
-import { googleAnalyticsActionScopes } from '../scopes';
+import {
+  apiSecretSchema,
+  measurementIdSchema,
+  resolveMeasurementProtocolCredentials
+} from '../lib/measurement-protocol';
 import { spec } from '../spec';
 
 export let validateEvents = SlateTool.create(spec, {
@@ -11,15 +15,19 @@ export let validateEvents = SlateTool.create(spec, {
 
 Returns validation messages indicating any issues with the event data format, parameter names, or values.`,
   instructions: [
-    'Use this tool before "send_events" to catch formatting issues or invalid parameters.'
+    'Use this tool before "send_events" to catch formatting issues or invalid parameters.',
+    'If measurementId is supplied by the user or configured for the integration, call this tool directly with that measurement ID.',
+    'For OAuth connections without a known measurementId, first use manage_data_streams with action "list" or "get" to select a web stream and read webStreamData.measurementId.',
+    'Pass apiSecret from manage_data_streams action "list_secrets" or "create_secret". Measurement Protocol Only auth can provide measurementId and apiSecret as a fallback.'
   ],
   tags: {
     readOnly: true
   }
 })
-  .scopes(googleAnalyticsActionScopes.validateEvents)
   .input(
     z.object({
+      measurementId: measurementIdSchema,
+      apiSecret: apiSecretSchema,
       clientId: z
         .string()
         .describe('A unique client identifier (same format as send_events).'),
@@ -63,15 +71,11 @@ Returns validation messages indicating any issues with the event data format, pa
     })
   )
   .handleInvocation(async ctx => {
-    if (!ctx.auth.measurementId || !ctx.auth.apiSecret) {
-      throw new Error(
-        'Measurement Protocol requires measurementId and apiSecret. Please configure these in your authentication settings.'
-      );
-    }
+    let credentials = resolveMeasurementProtocolCredentials(ctx.input, ctx.config, ctx.auth);
 
     let client = new MeasurementProtocolClient({
-      measurementId: ctx.auth.measurementId,
-      apiSecret: ctx.auth.apiSecret
+      measurementId: credentials.measurementId,
+      apiSecret: credentials.apiSecret
     });
 
     let result = await client.validateEvents({

@@ -53,14 +53,16 @@ describe('google-analytics provider contract', () => {
     });
 
     expect(contract.actions).toHaveLength(15);
-    expect(Object.keys(contract.configSchema.properties ?? {})).toEqual(['propertyId']);
+    expect(Object.keys(contract.configSchema.properties ?? {})).toEqual([
+      'propertyId',
+      'measurementId'
+    ]);
+    expect(contract.configSchema.required ?? []).toEqual([]);
 
     let expectedScopes = {
       run_report: googleAnalyticsActionScopes.runReport,
       run_realtime_report: googleAnalyticsActionScopes.runRealtimeReport,
       run_funnel_report: googleAnalyticsActionScopes.runFunnelReport,
-      send_events: googleAnalyticsActionScopes.sendEvents,
-      validate_events: googleAnalyticsActionScopes.validateEvents,
       get_metadata: googleAnalyticsActionScopes.getMetadata,
       list_accounts_and_properties: googleAnalyticsActionScopes.listAccountsAndProperties,
       manage_data_streams: googleAnalyticsActionScopes.manageDataStreams,
@@ -69,12 +71,14 @@ describe('google-analytics provider contract', () => {
       manage_key_events: googleAnalyticsActionScopes.manageKeyEvents,
       manage_audiences: googleAnalyticsActionScopes.manageAudiences,
       audit_data_access: googleAnalyticsActionScopes.auditDataAccess,
-      inbound_webhook: googleAnalyticsActionScopes.inboundWebhook,
       property_change: googleAnalyticsActionScopes.propertyChange
     };
 
     for (let [actionId, scopes] of Object.entries(expectedScopes)) {
       expect(contract.actions.find(action => action.id === actionId)?.scopes).toEqual(scopes);
+    }
+    for (let actionId of ['send_events', 'validate_events', 'inbound_webhook']) {
+      expect(contract.actions.find(action => action.id === actionId)?.scopes).toBeUndefined();
     }
 
     let oauth = await client.getAuthMethod('oauth');
@@ -84,5 +88,6 @@ describe('google-analytics provider contract', () => {
 
     let mp = await client.getAuthMethod('measurement_protocol');
     expect(mp.authenticationMethod.type).toBe('auth.custom');
+    expect(mp.authenticationMethod.scopes).toBeUndefined();
   });
 });

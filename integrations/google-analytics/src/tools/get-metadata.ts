@@ -1,6 +1,11 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { AnalyticsDataClient } from '../lib/client';
+import {
+  propertyIdInstructions,
+  propertyIdSchema,
+  resolvePropertyId
+} from '../lib/properties';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -10,12 +15,17 @@ export let getMetadata = SlateTool.create(spec, {
   description: `Retrieve the available dimensions and metrics for a GA4 property. Use this to discover which fields can be used in report queries, including both standard and custom dimensions/metrics.
 
 Returns the full catalog of available dimensions and metrics with their descriptions, types, and categories.`,
+  instructions: propertyIdInstructions,
   tags: {
     readOnly: true
   }
 })
   .scopes(googleAnalyticsActionScopes.getMetadata)
-  .input(z.object({}))
+  .input(
+    z.object({
+      propertyId: propertyIdSchema
+    })
+  )
   .output(
     z.object({
       dimensions: z
@@ -46,11 +56,11 @@ Returns the full catalog of available dimensions and metrics with their descript
   )
   .handleInvocation(async ctx => {
     let client = new AnalyticsDataClient({
-      token: ctx.auth.token,
-      propertyId: ctx.config.propertyId
+      token: ctx.auth.token
     });
+    const propertyId = resolvePropertyId(ctx.input, ctx.config);
 
-    let result = await client.getMetadata();
+    let result = await client.getMetadata(propertyId);
 
     let dimensions = result.dimensions || [];
     let metrics = result.metrics || [];

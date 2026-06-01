@@ -1,6 +1,11 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { AnalyticsDataClient } from '../lib/client';
+import {
+  propertyIdInstructions,
+  propertyIdSchema,
+  resolvePropertyId
+} from '../lib/properties';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -78,6 +83,7 @@ export let runReport = SlateTool.create(spec, {
 Common dimensions: \`date\`, \`city\`, \`country\`, \`pagePath\`, \`pageTitle\`, \`sessionSource\`, \`sessionMedium\`, \`deviceCategory\`, \`browser\`, \`operatingSystem\`.
 Common metrics: \`activeUsers\`, \`sessions\`, \`screenPageViews\`, \`conversions\`, \`totalRevenue\`, \`bounceRate\`, \`averageSessionDuration\`, \`newUsers\`.`,
   instructions: [
+    ...propertyIdInstructions,
     'Use the "get_metadata" tool first to explore available dimensions and metrics if unsure what to query.',
     'Date format for startDate/endDate is "YYYY-MM-DD". You can also use "today", "yesterday", or "NdaysAgo" (e.g., "30daysAgo").'
   ],
@@ -93,6 +99,7 @@ Common metrics: \`activeUsers\`, \`sessions\`, \`screenPageViews\`, \`conversion
   .scopes(googleAnalyticsActionScopes.runReport)
   .input(
     z.object({
+      propertyId: propertyIdSchema,
       dateRanges: z
         .array(
           z.object({
@@ -174,11 +181,11 @@ Common metrics: \`activeUsers\`, \`sessions\`, \`screenPageViews\`, \`conversion
   )
   .handleInvocation(async ctx => {
     let client = new AnalyticsDataClient({
-      token: ctx.auth.token,
-      propertyId: ctx.config.propertyId
+      token: ctx.auth.token
     });
+    const propertyId = resolvePropertyId(ctx.input, ctx.config);
 
-    let result = await client.runReport({
+    let result = await client.runReport(propertyId, {
       dateRanges: ctx.input.dateRanges,
       dimensions: ctx.input.dimensions,
       metrics: ctx.input.metrics,

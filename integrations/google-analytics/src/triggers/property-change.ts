@@ -1,8 +1,33 @@
 import { SlateDefaultPollingIntervalSeconds, SlateTrigger } from 'slates';
 import { z } from 'zod';
 import { AnalyticsAdminClient } from '../lib/client';
+import { accountResourceName } from '../lib/properties';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
+
+let lastPathSegment = (value?: string | null) =>
+  typeof value === 'string' && value.length > 0
+    ? value.split('/').filter(Boolean).at(-1)
+    : undefined;
+
+let extractPropertyName = (change: any) => {
+  let resource = typeof change.resource === 'string' ? change.resource : undefined;
+  if (resource?.startsWith('properties/')) {
+    return resource;
+  }
+
+  let before = change.resourceBeforeChange?.property?.name;
+  if (typeof before === 'string') {
+    return before;
+  }
+
+  let after = change.resourceAfterChange?.property?.name;
+  if (typeof after === 'string') {
+    return after;
+  }
+
+  return undefined;
+};
 
 export let propertyChange = SlateTrigger.create(spec, {
   name: 'Property Change',
@@ -14,6 +39,21 @@ export let propertyChange = SlateTrigger.create(spec, {
   .input(
     z.object({
       changeId: z.string().describe('Unique ID for this change history event.'),
+      accountId: z.string().optional().describe('Google Analytics account ID.'),
+      accountName: z
+        .string()
+        .optional()
+        .describe('Google Analytics account resource name, e.g. "accounts/123456".'),
+      accountDisplayName: z.string().optional().describe('Google Analytics account name.'),
+      propertyId: z
+        .string()
+        .optional()
+        .describe('GA4 property ID, if the change is property-scoped.'),
+      propertyName: z
+        .string()
+        .optional()
+        .describe('GA4 property resource name, e.g. "properties/987654".'),
+      propertyDisplayName: z.string().optional().describe('GA4 property display name.'),
       changeTime: z.string().describe('Timestamp of the change.'),
       actorEmail: z.string().optional().describe('Email of the user who made the change.'),
       actorType: z.string().optional().describe('Type of actor (USER, SYSTEM, SUPPORT).'),
@@ -26,6 +66,21 @@ export let propertyChange = SlateTrigger.create(spec, {
   .output(
     z.object({
       changeId: z.string().describe('Unique ID for this change history event.'),
+      accountId: z.string().optional().describe('Google Analytics account ID.'),
+      accountName: z
+        .string()
+        .optional()
+        .describe('Google Analytics account resource name, e.g. "accounts/123456".'),
+      accountDisplayName: z.string().optional().describe('Google Analytics account name.'),
+      propertyId: z
+        .string()
+        .optional()
+        .describe('GA4 property ID, if the change is property-scoped.'),
+      propertyName: z
+        .string()
+        .optional()
+        .describe('GA4 property resource name, e.g. "properties/987654".'),
+      propertyDisplayName: z.string().optional().describe('GA4 property display name.'),
       changeTime: z.string().describe('Timestamp when the change occurred.'),
       actorEmail: z
         .string()
@@ -55,8 +110,7 @@ export let propertyChange = SlateTrigger.create(spec, {
 
     pollEvents: async ctx => {
       let client = new AnalyticsAdminClient({
-        token: ctx.auth.token,
-        propertyId: ctx.config.propertyId
+        token: ctx.auth.token
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -76,22 +130,89 @@ export let propertyChange = SlateTrigger.create(spec, {
         params.latestChangeTime = now;
       }
 
-      let result = await client.searchChangeHistoryEvents(params);
-      let changeEvents = result.changeHistoryEvents || [];
+      let accountSummaries: any[] = [];
+      let pageToken: string | undefined;
 
-      let inputs = changeEvents.flatMap((event: any) => {
-        let changes = event.changes || [];
-        return changes.map((change: any) => ({
-          changeId: `${event.id || ''}-${change.resource || ''}`,
-          changeTime: event.changeTime || now,
-          actorEmail: event.userActorEmail,
-          actorType: event.actorType,
-          resourceType: change.resourceType || 'UNKNOWN',
-          action: change.action || 'UNKNOWN',
-          resourceBeforeChange: change.resourceBeforeChange,
-          resourceAfterChange: change.resourceAfterChange
-        }));
-      });
+      do {
+        let summariesResult = await client.listAccountSummaries({
+          pageSize: 200,
+          pageToken
+        });
+        accountSummaries.push(...(summariesResult.accountSummaries || []));
+        pageToken = summariesResult.nextPageToken;
+      } while (pageToken);
+
+      let inputs: Array<{
+        changeId: string;
+        accountId?: string;
+        accountName?: string;
+        accountDisplayName?: string;
+        propertyId?: string;
+        propertyName?: string;
+        propertyDisplayName?: string;
+        changeTime: string;
+        actorEmail?: string;
+        actorType?: string;
+        resourceType: string;
+        action: string;
+        resourceBeforeChange?: any;
+        resourceAfterChange?: any;
+      }> = [];
+
+      for (let summary of accountSummaries) {
+        let accountName =
+          typeof summary.account === 'string'
+            ? summary.account
+            : summary.name
+              ? accountResourceName(lastPathSegment(summary.name) || summary.name)
+              : undefined;
+
+        if (!accountName) {
+          continue;
+        }
+
+        let propertiesByName = new Map<string, any>(
+          (summary.propertySummaries || [])
+            .filter((property: any) => typeof property.property === 'string')
+            .map((property: any) => [property.property, property])
+        );
+
+        let changePageToken: string | undefined;
+
+        do {
+          let result = await client.searchChangeHistoryEvents(accountName, {
+            ...params,
+            pageToken: changePageToken
+          });
+          let changeEvents = result.changeHistoryEvents || [];
+          changePageToken = result.nextPageToken;
+
+          for (let event of changeEvents) {
+            let changes = event.changes || [];
+            changes.forEach((change: any, index: number) => {
+              let propertyName = extractPropertyName(change);
+              let property = propertyName ? propertiesByName.get(propertyName) : undefined;
+
+              inputs.push({
+                changeId: `${accountName}-${event.id || ''}-${change.resource || index}`,
+                accountId: lastPathSegment(accountName),
+                accountName,
+                accountDisplayName: summary.displayName,
+                propertyId: lastPathSegment(propertyName),
+                propertyName,
+                propertyDisplayName: property?.displayName,
+                changeTime: event.changeTime || now,
+                actorEmail: event.userActorEmail,
+                actorType: event.actorType,
+                resourceType: change.resourceType || 'UNKNOWN',
+                action: change.action || 'UNKNOWN',
+                resourceBeforeChange: change.resourceBeforeChange,
+                resourceAfterChange: change.resourceAfterChange
+              });
+            });
+          }
+        } while (changePageToken);
+      }
 
       return {
         inputs,
@@ -112,6 +233,12 @@ export let propertyChange = SlateTrigger.create(spec, {
         id: ctx.input.changeId,
         output: {
           changeId: ctx.input.changeId,
+          accountId: ctx.input.accountId,
+          accountName: ctx.input.accountName,
+          accountDisplayName: ctx.input.accountDisplayName,
+          propertyId: ctx.input.propertyId,
+          propertyName: ctx.input.propertyName,
+          propertyDisplayName: ctx.input.propertyDisplayName,
           changeTime: ctx.input.changeTime,
           actorEmail: ctx.input.actorEmail,
           actorType: ctx.input.actorType,

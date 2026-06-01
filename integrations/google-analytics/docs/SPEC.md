@@ -4,6 +4,11 @@
 
 Google Analytics 4 (GA4) is Google's web and app analytics platform that tracks user interactions, measures traffic, and provides reporting on engagement metrics across websites and applications. It provides the Measurement Protocol API for sending data to GA4 and the Google Analytics Data API for retrieving data from GA4. An Admin API allows for programmatic management of accounts, properties, data streams, and integrations with other Google services.
 
+## Configuration
+
+- `propertyId` is optional. When configured, property-scoped Data API and Admin API tools use it as the default GA4 property ID if the tool input omits `propertyId`. When it is not configured, callers should use `list_accounts_and_properties` to discover a property and pass its ID manually.
+- `measurementId` is optional. When configured, Measurement Protocol tools use it as the default web stream Measurement ID if the tool input omits `measurementId`. `apiSecret` is not a config value and must come from tool input or Measurement Protocol auth.
+
 ## Authentication
 
 Google Analytics supports two authentication methods:
@@ -42,6 +47,7 @@ For sending data to GA4 via the Measurement Protocol, a different authentication
 - Data is sent to Google Analytics via HTTP POST requests to `https://www.google-analytics.com/mp/collect`. The request requires an `api_secret` query parameter and a JSON body.
 - The API secret key is data stream specific, so it cannot be used across data streams or properties.
 - The `measurement_id` (for web streams) or `firebase_app_id` (for app streams) is also required as a query parameter.
+- OAuth connections can use configured `measurementId`, or discover web stream `measurementId` values through data stream listing and pass `measurementId` plus `apiSecret` directly to event tools. Measurement Protocol Only auth can still store these stream-specific credentials as a fallback.
 
 ## Features
 

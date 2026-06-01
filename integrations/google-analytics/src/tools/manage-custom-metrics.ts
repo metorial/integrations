@@ -1,6 +1,12 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { AnalyticsAdminClient } from '../lib/client';
+import { googleAnalyticsServiceError } from '../lib/errors';
+import {
+  propertyIdInstructions,
+  propertyIdSchema,
+  resolvePropertyId
+} from '../lib/properties';
 import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -10,6 +16,7 @@ export let manageCustomMetrics = SlateTool.create(spec, {
   description: `List, create, update, or archive custom metrics on a GA4 property. Custom metrics allow you to track numerical data beyond the built-in metrics.
 
 Use **list** to see all custom metrics, **create** to add new ones, **update** to modify display names, descriptions, or measurement units, and **archive** to remove them.`,
+  instructions: propertyIdInstructions,
   tags: {
     destructive: false
   }
@@ -17,6 +24,7 @@ Use **list** to see all custom metrics, **create** to add new ones, **update** t
   .scopes(googleAnalyticsActionScopes.manageCustomMetrics)
   .input(
     z.object({
+      propertyId: propertyIdSchema,
       action: z
         .enum(['list', 'create', 'update', 'archive'])
         .describe('Action to perform on custom metrics.'),
@@ -99,12 +107,12 @@ Use **list** to see all custom metrics, **create** to add new ones, **update** t
   )
   .handleInvocation(async ctx => {
     let client = new AnalyticsAdminClient({
-      token: ctx.auth.token,
-      propertyId: ctx.config.propertyId
+      token: ctx.auth.token
     });
+    const propertyId = resolvePropertyId(ctx.input, ctx.config);
 
     if (ctx.input.action === 'list') {
-      let result = await client.listCustomMetrics({
+      let result = await client.listCustomMetrics(propertyId, {
         pageSize: ctx.input.pageSize,
         pageToken: ctx.input.pageToken
       });
@@ -124,11 +132,11 @@ Use **list** to see all custom metrics, **create** to add new ones, **update** t
         !ctx.input.scope ||
         !ctx.input.measurementUnit
       ) {
-        throw new Error(
+        throw googleAnalyticsServiceError(
           'parameterName, displayName, scope, and measurementUnit are required for creating a custom metric.'
         );
       }
-      let result = await client.createCustomMetric({
+      let result = await client.createCustomMetric(propertyId, {
         parameterName: ctx.input.parameterName,
         displayName: ctx.input.displayName,
         description: ctx.input.description,
@@ -143,7 +151,9 @@ Use **list** to see all custom metrics, **create** to add new ones, **update** t
 
     if (ctx.input.action === 'update') {
       if (!ctx.input.customMetricId) {
-        throw new Error('customMetricId is required for updating a custom metric.');
+        throw googleAnalyticsServiceError(
+          'customMetricId is required for updating a custom metric.'
+        );
       }
       let updateFields: string[] = [];
       let body: any = {};
@@ -160,9 +170,10 @@ Use **list** to see all custom metrics, **create** to add new ones, **update** t
         body.measurementUnit = ctx.input.measurementUnit;
       }
       if (updateFields.length === 0) {
-        throw new Error('At least one field must be provided for update.');
+        throw googleAnalyticsServiceError('At least one field must be provided for update.');
       }
       let result = await client.updateCustomMetric(
+        propertyId,
         ctx.input.customMetricId,
         updateFields.join(','),
         body
@@ -175,15 +186,17 @@ Use **list** to see all custom metrics, **create** to add new ones, **update** t
 
     if (ctx.input.action === 'archive') {
       if (!ctx.input.customMetricId) {
-        throw new Error('customMetricId is required for archiving a custom metric.');
+        throw googleAnalyticsServiceError(
+          'customMetricId is required for archiving a custom metric.'
+        );
       }
-      await client.archiveCustomMetric(ctx.input.customMetricId);
+      await client.archiveCustomMetric(propertyId, ctx.input.customMetricId);
       return {
         output: { archived: true },
         message: `Archived custom metric **${ctx.input.customMetricId}**.`
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw googleAnalyticsServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();
