@@ -1,5 +1,7 @@
 import type z from 'zod';
 
+type SlateAuthCallbackConfig = Record<string, any>;
+
 export type SlateAuthWithOauth<
   InputType extends {},
   OutputType extends {
@@ -36,6 +38,7 @@ export type SlateAuthWithOauth<
     clientId: string;
     clientSecret: string;
     scopes: string[];
+    config?: SlateAuthCallbackConfig;
   }) => Promise<{
     url: string;
     input?: InputType;
@@ -52,6 +55,7 @@ export type SlateAuthWithOauth<
     scopes: string[];
     callbackParams?: Record<string, string>;
     callbackState: Record<string, any>;
+    config?: SlateAuthCallbackConfig;
   }) => Promise<{
     output: OutputType;
     input?: InputType;
@@ -64,12 +68,18 @@ export type SlateAuthWithOauth<
     clientId: string;
     clientSecret: string;
     scopes: string[];
+    config?: SlateAuthCallbackConfig;
   }) => Promise<{
     output: OutputType;
     input?: InputType;
   }>;
 
-  getProfile?: (ctx: { output: OutputType; input: InputType; scopes: string[] }) => Promise<{
+  getProfile?: (ctx: {
+    output: OutputType;
+    input: InputType;
+    scopes: string[];
+    config?: SlateAuthCallbackConfig;
+  }) => Promise<{
     profile: Record<string, any>;
   }>;
 };

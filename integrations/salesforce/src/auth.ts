@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
+import { normalizeSalesforceConfig, type SalesforceConfig } from './config';
 import { salesforceOAuthError, salesforceServiceError } from './lib/errors';
 
 let generateCodeVerifier = () => randomBytes(32).toString('base64url');
@@ -15,6 +16,23 @@ let normalizeSalesforceRedirectUri = (redirectUri: string) => {
   }
 
   return url.toString();
+};
+
+export let resolveSalesforceOAuthConfig = (config: Record<string, any>): SalesforceConfig =>
+  normalizeSalesforceConfig(config);
+
+export let resolveSalesforceOAuthBaseUrl = (config: Record<string, any>) => {
+  let oauthConfig = resolveSalesforceOAuthConfig(config);
+
+  if (oauthConfig.environment === 'sandbox') {
+    return 'https://test.salesforce.com';
+  }
+
+  if (oauthConfig.environment === 'custom') {
+    return `https://${oauthConfig.customDomain}`;
+  }
+
+  return 'https://login.salesforce.com';
 };
 
 export let auth = SlateAuth.create()
@@ -90,19 +108,10 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    inputSchema: z.object({
-      environment: z
-        .enum(['production', 'sandbox', 'custom'])
-        .default('production')
-        .describe('Salesforce environment type'),
-      customDomain: z
-        .string()
-        .optional()
-        .describe('Custom domain (e.g., yourorg.my) when using a custom environment')
-    }),
+    inputSchema: z.object({}),
 
     getAuthorizationUrl: async ctx => {
-      let baseUrl = getLoginUrl(ctx.input.environment, ctx.input.customDomain);
+      let baseUrl = resolveSalesforceOAuthBaseUrl(ctx.config ?? {});
       let redirectUri = normalizeSalesforceRedirectUri(ctx.redirectUri);
       let codeVerifier = generateCodeVerifier();
       let params = new URLSearchParams({
@@ -117,13 +126,12 @@ export let auth = SlateAuth.create()
 
       return {
         url: `${baseUrl}/services/oauth2/authorize?${params.toString()}`,
-        input: ctx.input,
         callbackState: { codeVerifier }
       };
     },
 
     handleCallback: async ctx => {
-      let baseUrl = getLoginUrl(ctx.input.environment, ctx.input.customDomain);
+      let baseUrl = resolveSalesforceOAuthBaseUrl(ctx.config ?? {});
       let http = createAxios({ baseURL: baseUrl });
       let redirectUri = normalizeSalesforceRedirectUri(ctx.redirectUri);
       let codeVerifier = ctx.callbackState.codeVerifier as string | undefined;
@@ -164,8 +172,7 @@ export let auth = SlateAuth.create()
           expiresAt: data.issued_at
             ? new Date(Number.parseInt(data.issued_at, 10) + 7200 * 1000).toISOString()
             : undefined
-        },
-        input: ctx.input
+        }
       };
     },
 
@@ -176,7 +183,7 @@ export let auth = SlateAuth.create()
         );
       }
 
-      let baseUrl = getLoginUrl(ctx.input.environment, ctx.input.customDomain);
+      let baseUrl = resolveSalesforceOAuthBaseUrl(ctx.config ?? {});
       let http = createAxios({ baseURL: baseUrl });
 
       let response: any;
@@ -207,8 +214,7 @@ export let auth = SlateAuth.create()
           expiresAt: data.issued_at
             ? new Date(Number.parseInt(data.issued_at, 10) + 7200 * 1000).toISOString()
             : undefined
-        },
-        input: ctx.input
+        }
       };
     },
 
@@ -233,13 +239,3 @@ export let auth = SlateAuth.create()
       };
     }
   });
-
-let getLoginUrl = (environment: string, customDomain?: string): string => {
-  if (environment === 'sandbox') {
-    return 'https://test.salesforce.com';
-  }
-  if (environment === 'custom' && customDomain) {
-    return `https://${customDomain}.my.salesforce.com`;
-  }
-  return 'https://login.salesforce.com';
-};

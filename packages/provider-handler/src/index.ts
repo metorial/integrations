@@ -225,6 +225,8 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
       };
     };
 
+    let getAuthConfig = (): Record<string, any> => config.get()?.value ?? {};
+
     let getEmptyContext = () => new SlateContext({}, {}, {}, slate.spec as any, logger);
     let withRequestTraces = <Result extends Record<string, any>>(
       context: SlateContext<any, any, any>,
@@ -540,7 +542,8 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
                 clientSecret: params.clientSecret,
                 scopes: params.scopes,
                 callbackParams: params.callbackParams || {},
-                callbackState: params.callbackState || {}
+                callbackState: params.callbackState || {},
+                config: getAuthConfig()
               })
             )
         );
@@ -590,7 +593,8 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
                 input: params.input,
                 clientId: params.clientId,
                 clientSecret: params.clientSecret,
-                scopes: params.scopes
+                scopes: params.scopes,
+                config: getAuthConfig()
               })
             )
         );
@@ -633,15 +637,21 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
             })
           },
           () =>
-            runWithContext(
-              context,
-              () =>
-                authMethod.getProfile!({
+            runWithContext(context, () => {
+              if (authMethod.type === 'auth.oauth') {
+                return authMethod.getProfile!({
                   output: params.output as any,
                   input: params.input,
-                  scopes: params.scopes
-                })!
-            )
+                  scopes: params.scopes,
+                  config: getAuthConfig()
+                });
+              }
+
+              return authMethod.getProfile!({
+                output: params.output as any,
+                input: params.input
+              })!;
+            })
         );
 
         return withRequestTraces(context, {
@@ -681,15 +691,26 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
             })
           },
           () =>
-            runWithContext(context, () =>
-              authMethod.handleTokenRefresh!({
+            runWithContext(context, () => {
+              if (authMethod.type === 'auth.oauth') {
+                return authMethod.handleTokenRefresh!({
+                  output: params.output as any,
+                  input: params.input,
+                  clientId: params.clientId,
+                  clientSecret: params.clientSecret,
+                  scopes: params.scopes,
+                  config: getAuthConfig()
+                });
+              }
+
+              return authMethod.handleTokenRefresh!({
                 output: params.output as any,
                 input: params.input,
                 clientId: params.clientId,
                 clientSecret: params.clientSecret,
                 scopes: params.scopes
-              })
-            )
+              });
+            })
         );
 
         return withRequestTraces(context, {

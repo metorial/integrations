@@ -302,6 +302,78 @@ let createTriggerTraceSlate = () => {
   });
 };
 
+let createOauthConfigSlate = (seenConfig: Record<string, Record<string, any>>) => {
+  let config = SlateConfig.create(
+    z.object({
+      loginHost: z.string()
+    })
+  );
+
+  let auth = SlateAuth.create<{ token: string; refreshToken?: string }>()
+    .output(
+      z.object({
+        token: z.string(),
+        refreshToken: z.string().optional()
+      })
+    )
+    .addOauth({
+      type: 'auth.oauth',
+      key: 'oauth',
+      name: 'OAuth',
+      scopes: [],
+      inputSchema: z.object({}),
+      getAuthorizationUrl: async ctx => {
+        seenConfig.authorizationUrl = ctx.config;
+        return {
+          url: `https://${ctx.config.loginHost}/authorize`,
+          callbackState: {
+            loginHost: ctx.config.loginHost
+          }
+        };
+      },
+      handleCallback: async ctx => {
+        seenConfig.callback = ctx.config;
+        return {
+          output: {
+            token: `token:${ctx.config.loginHost}`,
+            refreshToken: 'refresh-token'
+          }
+        };
+      },
+      handleTokenRefresh: async ctx => {
+        seenConfig.refresh = ctx.config;
+        return {
+          output: {
+            ...ctx.output,
+            token: `refreshed:${ctx.config.loginHost}`
+          }
+        };
+      },
+      getProfile: async ctx => {
+        seenConfig.profile = ctx.config;
+        return {
+          profile: {
+            loginHost: ctx.config.loginHost
+          }
+        };
+      }
+    });
+
+  let spec = SlateSpecification.create({
+    key: 'oauth-config-slate',
+    name: 'OAuth Config Slate',
+    description: 'A slate that reads config in OAuth callbacks',
+    config,
+    auth
+  });
+
+  return Slate.create({
+    spec,
+    tools: [],
+    triggers: []
+  });
+};
+
 describe('@slates/client local transport', () => {
   it('discovers auth/config and invokes tools with session state', async () => {
     let slate = createDemoSlate();
@@ -500,6 +572,80 @@ describe('@slates/client local transport', () => {
         })
       ])
     );
+  });
+
+  it('passes current profile config into OAuth callbacks', async () => {
+    let seenConfig: Record<string, Record<string, any>> = {};
+    let client = createSlatesClient({
+      transport: createLocalSlateTransport({
+        slate: createOauthConfigSlate(seenConfig)
+      }),
+      state: {
+        config: {
+          loginHost: 'sandbox.example.com'
+        }
+      }
+    });
+
+    let authorizationUrl = await client.getAuthorizationUrl({
+      authenticationMethodId: 'oauth',
+      redirectUri: 'http://localhost:3000/callback',
+      state: 'state-1',
+      input: {},
+      clientId: 'client-id',
+      clientSecret: 'client-secret',
+      scopes: []
+    });
+
+    expect(authorizationUrl.authorizationUrl).toBe('https://sandbox.example.com/authorize');
+    expect(authorizationUrl.callbackState).toEqual({
+      loginHost: 'sandbox.example.com'
+    });
+
+    let callback = await client.handleAuthorizationCallback({
+      authenticationMethodId: 'oauth',
+      code: 'code-1',
+      state: 'state-1',
+      redirectUri: 'http://localhost:3000/callback',
+      input: {},
+      clientId: 'client-id',
+      clientSecret: 'client-secret',
+      scopes: [],
+      callbackState: authorizationUrl.callbackState
+    });
+
+    expect(callback.output).toEqual({
+      token: 'token:sandbox.example.com',
+      refreshToken: 'refresh-token'
+    });
+
+    let refreshed = await client.refreshToken({
+      authenticationMethodId: 'oauth',
+      output: callback.output,
+      input: {},
+      clientId: 'client-id',
+      clientSecret: 'client-secret',
+      scopes: []
+    });
+
+    expect(refreshed.output.token).toBe('refreshed:sandbox.example.com');
+
+    let profile = await client.getAuthProfile({
+      authenticationMethodId: 'oauth',
+      output: refreshed.output,
+      input: {},
+      scopes: []
+    });
+
+    expect(profile.profile).toEqual({
+      loginHost: 'sandbox.example.com'
+    });
+    expect(seenConfig).toEqual({
+      authorizationUrl: { loginHost: 'sandbox.example.com' },
+      callback: { loginHost: 'sandbox.example.com' },
+      refresh: { loginHost: 'sandbox.example.com' },
+      profile: { loginHost: 'sandbox.example.com' }
+    });
   });
 
   it('throws structured protocol errors for provider responses', async () => {
