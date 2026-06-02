@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
+import { elasticsearchServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageSnapshotTool = SlateTool.create(spec, {
@@ -78,8 +79,10 @@ export let manageSnapshotTool = SlateTool.create(spec, {
 
     switch (ctx.input.action) {
       case 'create_repository': {
-        if (!ctx.input.repositoryName) throw new Error('repositoryName is required');
-        if (!ctx.input.repositoryType) throw new Error('repositoryType is required');
+        if (!ctx.input.repositoryName)
+          throw elasticsearchServiceError('repositoryName is required');
+        if (!ctx.input.repositoryType)
+          throw elasticsearchServiceError('repositoryType is required');
         let body = {
           type: ctx.input.repositoryType,
           settings: ctx.input.repositorySettings || {}
@@ -99,7 +102,7 @@ export let manageSnapshotTool = SlateTool.create(spec, {
       }
       case 'create': {
         if (!ctx.input.repositoryName || !ctx.input.snapshotName) {
-          throw new Error('repositoryName and snapshotName are required');
+          throw elasticsearchServiceError('repositoryName and snapshotName are required');
         }
         let body: Record<string, any> = {};
         if (ctx.input.indices) body.indices = ctx.input.indices;
@@ -115,7 +118,7 @@ export let manageSnapshotTool = SlateTool.create(spec, {
       }
       case 'get': {
         if (!ctx.input.repositoryName || !ctx.input.snapshotName) {
-          throw new Error('repositoryName and snapshotName are required');
+          throw elasticsearchServiceError('repositoryName and snapshotName are required');
         }
         let result = await client.getSnapshot(
           ctx.input.repositoryName,
@@ -128,7 +131,7 @@ export let manageSnapshotTool = SlateTool.create(spec, {
       }
       case 'delete': {
         if (!ctx.input.repositoryName || !ctx.input.snapshotName) {
-          throw new Error('repositoryName and snapshotName are required');
+          throw elasticsearchServiceError('repositoryName and snapshotName are required');
         }
         let result = await client.deleteSnapshot(
           ctx.input.repositoryName,
@@ -141,7 +144,7 @@ export let manageSnapshotTool = SlateTool.create(spec, {
       }
       case 'restore': {
         if (!ctx.input.repositoryName || !ctx.input.snapshotName) {
-          throw new Error('repositoryName and snapshotName are required');
+          throw elasticsearchServiceError('repositoryName and snapshotName are required');
         }
         let body: Record<string, any> = {};
         if (ctx.input.restoreOptions) {

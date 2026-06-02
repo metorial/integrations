@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
+import { elasticsearchServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let updateDocumentTool = SlateTool.create(spec, {
@@ -46,6 +47,10 @@ export let updateDocumentTool = SlateTool.create(spec, {
       baseUrl: ctx.auth.baseUrl,
       authHeader: ctx.auth.authHeader
     });
+
+    if (!ctx.input.partialDocument && !ctx.input.script) {
+      throw elasticsearchServiceError('Either partialDocument or script must be provided');
+    }
 
     let scriptParam = ctx.input.script
       ? {

@@ -1,5 +1,20 @@
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
+import { elasticsearchApiError } from './lib/errors';
+
+let loadProfile = async (baseUrl: string, authHeader: string) => {
+  let ax = createAxios({ baseURL: baseUrl });
+
+  try {
+    return await ax.get('/_security/_authenticate', {
+      headers: {
+        Authorization: authHeader
+      }
+    });
+  } catch (error) {
+    throw elasticsearchApiError(error, 'load profile');
+  }
+};
 
 export let auth = SlateAuth.create()
   .output(
@@ -28,11 +43,15 @@ export let auth = SlateAuth.create()
       let baseUrl = ctx.input.elasticsearchUrl.replace(/\/+$/, '');
 
       let ax = createAxios({ baseURL: baseUrl });
-      await ax.get('/', {
-        headers: {
-          Authorization: `Basic ${credentials}`
-        }
-      });
+      try {
+        await ax.get('/', {
+          headers: {
+            Authorization: `Basic ${credentials}`
+          }
+        });
+      } catch (error) {
+        throw elasticsearchApiError(error, 'basic authentication');
+      }
 
       return {
         output: {
@@ -43,12 +62,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: any) => {
-      let ax = createAxios({ baseURL: ctx.output.baseUrl });
-      let response = await ax.get('/_security/_authenticate', {
-        headers: {
-          Authorization: ctx.output.authHeader
-        }
-      });
+      let response = await loadProfile(ctx.output.baseUrl, ctx.output.authHeader);
 
       return {
         profile: {
@@ -81,11 +95,15 @@ export let auth = SlateAuth.create()
       let baseUrl = ctx.input.elasticsearchUrl.replace(/\/+$/, '');
 
       let ax = createAxios({ baseURL: baseUrl });
-      await ax.get('/', {
-        headers: {
-          Authorization: `ApiKey ${ctx.input.token}`
-        }
-      });
+      try {
+        await ax.get('/', {
+          headers: {
+            Authorization: `ApiKey ${ctx.input.token}`
+          }
+        });
+      } catch (error) {
+        throw elasticsearchApiError(error, 'API key authentication');
+      }
 
       return {
         output: {
@@ -96,12 +114,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: any) => {
-      let ax = createAxios({ baseURL: ctx.output.baseUrl });
-      let response = await ax.get('/_security/_authenticate', {
-        headers: {
-          Authorization: ctx.output.authHeader
-        }
-      });
+      let response = await loadProfile(ctx.output.baseUrl, ctx.output.authHeader);
 
       return {
         profile: {
@@ -132,11 +145,15 @@ export let auth = SlateAuth.create()
       let baseUrl = ctx.input.elasticsearchUrl.replace(/\/+$/, '');
 
       let ax = createAxios({ baseURL: baseUrl });
-      await ax.get('/', {
-        headers: {
-          Authorization: `Bearer ${ctx.input.token}`
-        }
-      });
+      try {
+        await ax.get('/', {
+          headers: {
+            Authorization: `Bearer ${ctx.input.token}`
+          }
+        });
+      } catch (error) {
+        throw elasticsearchApiError(error, 'bearer token authentication');
+      }
 
       return {
         output: {
@@ -147,12 +164,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: any) => {
-      let ax = createAxios({ baseURL: ctx.output.baseUrl });
-      let response = await ax.get('/_security/_authenticate', {
-        headers: {
-          Authorization: ctx.output.authHeader
-        }
-      });
+      let response = await loadProfile(ctx.output.baseUrl, ctx.output.authHeader);
 
       return {
         profile: {

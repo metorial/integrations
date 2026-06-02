@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
+import { elasticsearchServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageAliasTool = SlateTool.create(spec, {
@@ -45,7 +46,9 @@ export let manageAliasTool = SlateTool.create(spec, {
     switch (ctx.input.action) {
       case 'create': {
         if (!ctx.input.indexName || !ctx.input.aliasName) {
-          throw new Error('indexName and aliasName are required for create action');
+          throw elasticsearchServiceError(
+            'indexName and aliasName are required for create action'
+          );
         }
         let body: Record<string, any> = {};
         if (ctx.input.filter) body.filter = ctx.input.filter;
@@ -58,7 +61,9 @@ export let manageAliasTool = SlateTool.create(spec, {
       }
       case 'delete': {
         if (!ctx.input.indexName || !ctx.input.aliasName) {
-          throw new Error('indexName and aliasName are required for delete action');
+          throw elasticsearchServiceError(
+            'indexName and aliasName are required for delete action'
+          );
         }
         let result = await client.deleteAlias(ctx.input.indexName, ctx.input.aliasName);
         return {

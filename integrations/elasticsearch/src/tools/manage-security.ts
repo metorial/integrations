@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
+import { elasticsearchServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageSecurityTool = SlateTool.create(spec, {
@@ -85,7 +86,7 @@ export let manageSecurityTool = SlateTool.create(spec, {
             };
           }
           case 'create': {
-            if (!ctx.input.username) throw new Error('username is required');
+            if (!ctx.input.username) throw elasticsearchServiceError('username is required');
             let body: Record<string, any> = {};
             if (ctx.input.password) body.password = ctx.input.password;
             if (ctx.input.roles) body.roles = ctx.input.roles;
@@ -98,7 +99,7 @@ export let manageSecurityTool = SlateTool.create(spec, {
             };
           }
           case 'delete': {
-            if (!ctx.input.username) throw new Error('username is required');
+            if (!ctx.input.username) throw elasticsearchServiceError('username is required');
             let result = await client.deleteUser(ctx.input.username);
             return {
               output: { acknowledged: result.found ?? true },
@@ -106,7 +107,9 @@ export let manageSecurityTool = SlateTool.create(spec, {
             };
           }
           default:
-            throw new Error(`Action "${ctx.input.action}" is not supported for users`);
+            throw elasticsearchServiceError(
+              `Action "${ctx.input.action}" is not supported for users`
+            );
         }
       }
       case 'role': {
@@ -122,7 +125,7 @@ export let manageSecurityTool = SlateTool.create(spec, {
             };
           }
           case 'create': {
-            if (!ctx.input.roleName) throw new Error('roleName is required');
+            if (!ctx.input.roleName) throw elasticsearchServiceError('roleName is required');
             let body: Record<string, any> = {};
             if (ctx.input.clusterPrivileges) body.cluster = ctx.input.clusterPrivileges;
             if (ctx.input.indexPrivileges) {
@@ -138,7 +141,7 @@ export let manageSecurityTool = SlateTool.create(spec, {
             };
           }
           case 'delete': {
-            if (!ctx.input.roleName) throw new Error('roleName is required');
+            if (!ctx.input.roleName) throw elasticsearchServiceError('roleName is required');
             let result = await client.deleteRole(ctx.input.roleName);
             return {
               output: { acknowledged: result.found ?? true },
@@ -146,7 +149,9 @@ export let manageSecurityTool = SlateTool.create(spec, {
             };
           }
           default:
-            throw new Error(`Action "${ctx.input.action}" is not supported for roles`);
+            throw elasticsearchServiceError(
+              `Action "${ctx.input.action}" is not supported for roles`
+            );
         }
       }
       case 'api_key': {
@@ -163,7 +168,8 @@ export let manageSecurityTool = SlateTool.create(spec, {
             };
           }
           case 'create': {
-            if (!ctx.input.apiKeyName) throw new Error('apiKeyName is required');
+            if (!ctx.input.apiKeyName)
+              throw elasticsearchServiceError('apiKeyName is required');
             let body: Record<string, any> = { name: ctx.input.apiKeyName };
             if (ctx.input.apiKeyExpiration) body.expiration = ctx.input.apiKeyExpiration;
             if (ctx.input.apiKeyRoleDescriptors)
@@ -179,6 +185,11 @@ export let manageSecurityTool = SlateTool.create(spec, {
             };
           }
           case 'invalidate': {
+            if (!ctx.input.apiKeyId && !ctx.input.apiKeyName) {
+              throw elasticsearchServiceError(
+                'apiKeyId or apiKeyName is required for invalidate action'
+              );
+            }
             let body: Record<string, any> = {};
             if (ctx.input.apiKeyId) body.ids = [ctx.input.apiKeyId];
             if (ctx.input.apiKeyName) body.name = ctx.input.apiKeyName;
@@ -192,7 +203,9 @@ export let manageSecurityTool = SlateTool.create(spec, {
             };
           }
           default:
-            throw new Error(`Action "${ctx.input.action}" is not supported for API keys`);
+            throw elasticsearchServiceError(
+              `Action "${ctx.input.action}" is not supported for API keys`
+            );
         }
       }
     }

@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { elasticsearchApiError } from './errors';
 
 export class ElasticsearchClient {
   private baseUrl: string;
@@ -10,26 +11,42 @@ export class ElasticsearchClient {
   }
 
   private get axios() {
-    return createAxios({
+    let ax = createAxios({
       baseURL: this.baseUrl,
       headers: {
         Authorization: this.authHeader,
         'Content-Type': 'application/json'
       }
     });
+
+    ax.interceptors.response.use(
+      response => response,
+      error => {
+        throw elasticsearchApiError(error);
+      }
+    );
+
+    return ax;
   }
 
   // ===== Document Management =====
 
-  async indexDocument(index: string, body: Record<string, any>, documentId?: string) {
+  async indexDocument(
+    index: string,
+    body: Record<string, any>,
+    documentId?: string,
+    pipeline?: string
+  ) {
+    let options = pipeline ? { params: { pipeline } } : undefined;
     if (documentId) {
       let response = await this.axios.put(
         `/${encodeURIComponent(index)}/_doc/${encodeURIComponent(documentId)}`,
-        body
+        body,
+        options
       );
       return response.data;
     }
-    let response = await this.axios.post(`/${encodeURIComponent(index)}/_doc`, body);
+    let response = await this.axios.post(`/${encodeURIComponent(index)}/_doc`, body, options);
     return response.data;
   }
 
@@ -147,8 +164,25 @@ export class ElasticsearchClient {
     try {
       await this.axios.head(`/${encodeURIComponent(index)}`);
       return true;
-    } catch {
-      return false;
+    } catch (error) {
+      let status =
+        typeof error === 'object' &&
+        error !== null &&
+        'response' in error &&
+        typeof (error as { response?: { status?: unknown } }).response?.status === 'number'
+          ? (error as { response: { status: number } }).response.status
+          : typeof error === 'object' &&
+              error !== null &&
+              'data' in error &&
+              typeof (error as { data?: { upstreamStatus?: unknown } }).data
+                ?.upstreamStatus === 'number'
+            ? (error as { data: { upstreamStatus: number } }).data.upstreamStatus
+            : undefined;
+      if (status === 404) {
+        return false;
+      }
+
+      throw elasticsearchApiError(error, 'check index existence');
     }
   }
 
@@ -337,6 +371,18 @@ export class ElasticsearchClient {
   ) {
     let response = await this.axios.put(
       `/_inference/${encodeURIComponent(taskType)}/${encodeURIComponent(inferenceId)}`,
+      body
+    );
+    return response.data;
+  }
+
+  async updateInferenceEndpoint(
+    taskType: string,
+    inferenceId: string,
+    body: Record<string, any>
+  ) {
+    let response = await this.axios.put(
+      `/_inference/${encodeURIComponent(taskType)}/${encodeURIComponent(inferenceId)}/_update`,
       body
     );
     return response.data;

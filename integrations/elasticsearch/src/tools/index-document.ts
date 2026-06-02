@@ -43,7 +43,8 @@ export let indexDocumentTool = SlateTool.create(spec, {
     let result = await client.indexDocument(
       ctx.input.indexName,
       ctx.input.document,
-      ctx.input.documentId
+      ctx.input.documentId,
+      ctx.input.pipeline
     );
 
     return {

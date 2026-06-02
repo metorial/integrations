@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
+import { elasticsearchServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let bulkOperationsTool = SlateTool.create(spec, {
@@ -68,6 +69,13 @@ export let bulkOperationsTool = SlateTool.create(spec, {
 
     let ndjsonLines: string[] = [];
     for (let op of ctx.input.operations) {
+      if ((op.action === 'update' || op.action === 'delete') && !op.documentId) {
+        throw elasticsearchServiceError(`documentId is required for ${op.action} operations`);
+      }
+      if (op.action !== 'delete' && !op.document) {
+        throw elasticsearchServiceError(`document is required for ${op.action} operations`);
+      }
+
       let meta: Record<string, any> = { _index: op.indexName };
       if (op.documentId) meta._id = op.documentId;
 

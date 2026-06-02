@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
+import { elasticsearchServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let managePipelineTool = SlateTool.create(spec, {
@@ -59,9 +60,10 @@ export let managePipelineTool = SlateTool.create(spec, {
 
     switch (ctx.input.action) {
       case 'create': {
-        if (!ctx.input.pipelineId) throw new Error('pipelineId is required for create action');
+        if (!ctx.input.pipelineId)
+          throw elasticsearchServiceError('pipelineId is required for create action');
         if (!ctx.input.processors)
-          throw new Error('processors are required for create action');
+          throw elasticsearchServiceError('processors are required for create action');
         let body: Record<string, any> = { processors: ctx.input.processors };
         if (ctx.input.description) body.description = ctx.input.description;
         let result = await client.putPipeline(ctx.input.pipelineId, body);
@@ -71,7 +73,8 @@ export let managePipelineTool = SlateTool.create(spec, {
         };
       }
       case 'delete': {
-        if (!ctx.input.pipelineId) throw new Error('pipelineId is required for delete action');
+        if (!ctx.input.pipelineId)
+          throw elasticsearchServiceError('pipelineId is required for delete action');
         let result = await client.deletePipeline(ctx.input.pipelineId);
         return {
           output: { acknowledged: result.acknowledged ?? true },
@@ -95,7 +98,9 @@ export let managePipelineTool = SlateTool.create(spec, {
       }
       case 'simulate': {
         if (!ctx.input.simulateDocuments)
-          throw new Error('simulateDocuments are required for simulate action');
+          throw elasticsearchServiceError(
+            'simulateDocuments are required for simulate action'
+          );
         let body = { docs: ctx.input.simulateDocuments.map(doc => ({ _source: doc })) };
         let result = await client.simulatePipeline(body, ctx.input.pipelineId);
         return {

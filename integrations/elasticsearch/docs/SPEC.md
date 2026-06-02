@@ -66,6 +66,7 @@ The index APIs enable you to manage individual indices, index settings, aliases,
 - Create, delete, open/close indices
 - Define mappings and field types
 - Configure index settings and aliases
+- Create, retrieve, list, and delete composable index templates
 - The index lifecycle management APIs enable you to set up policies to automatically manage the index lifecycle.
 - The data stream APIs enable you to create and manage data streams and data stream lifecycles.
 

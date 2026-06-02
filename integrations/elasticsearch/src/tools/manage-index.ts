@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { ElasticsearchClient } from '../lib/client';
+import { elasticsearchServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageIndexTool = SlateTool.create(spec, {
@@ -72,12 +73,12 @@ export let manageIndexTool = SlateTool.create(spec, {
         break;
       case 'update_mappings':
         if (!ctx.input.mappings)
-          throw new Error('Mappings are required for update_mappings action');
+          throw elasticsearchServiceError('Mappings are required for update_mappings action');
         result = await client.putMapping(ctx.input.indexName, ctx.input.mappings);
         break;
       case 'update_settings':
         if (!ctx.input.settings)
-          throw new Error('Settings are required for update_settings action');
+          throw elasticsearchServiceError('Settings are required for update_settings action');
         result = await client.putSettings(ctx.input.indexName, ctx.input.settings);
         break;
     }

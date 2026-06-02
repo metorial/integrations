@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/elasticsearch.svg" height="20"> Elasticsearch
 
-Index, search, and analyze documents in Elasticsearch clusters. Create and manage indices with custom mappings and settings. Perform full-text search, structured queries, aggregations, and async search using Query DSL and ES|QL. Manage ingest pipelines to transform data before indexing. Run machine learning inference tasks including text embedding, reranking, completion, and anomaly detection. Monitor cluster health, node stats, and manage snapshots for backups. Configure cross-cluster replication and index lifecycle policies. Manage security including users, roles, API keys, and privileges. Explore graph relationships between terms. Set up Watcher alerts that poll data and trigger actions like emails or webhooks based on conditions.
+Index, search, and analyze documents in Elasticsearch clusters. Create and manage indices, aliases, and composable index templates with custom mappings and settings. Perform full-text search, structured queries, aggregations, async search using Query DSL, and ES|QL queries. Manage ingest pipelines to transform data before indexing. Run machine learning inference tasks including text embedding, sparse embedding, reranking, completion, and chat completion. Monitor cluster health, node stats, and manage snapshots for backups. Manage security including users, roles, API keys, and privileges. Explore graph relationships between terms. Set up Watcher alerts that poll data and trigger actions like emails or webhooks based on conditions.
 
 ## Tools
 
@@ -40,9 +40,17 @@ List all indices in the Elasticsearch cluster with their health status, document
 
 Create, delete, or list index aliases. Aliases provide alternative names for indices or groups of indices, enabling seamless index switching and multi-index queries.
 
+### Manage Async Search
+
+Submit, retrieve, or delete an Elasticsearch asynchronous search. Use this for long-running Query DSL searches when partial results are useful or when results should be retrieved later by ID.
+
 ### Manage Index
 
 Create, configure, open, close, or delete an Elasticsearch index. Supports setting mappings, settings, aliases, and number of replicas/shards during creation. Can also update mappings and settings on existing indices.
+
+### Manage Index Template
+
+Create, retrieve, list, or delete Elasticsearch composable index templates. Index templates define settings, mappings, and aliases that apply automatically when matching indices or data streams are created.
 
 ### Manage Ingest Pipeline
 
@@ -66,7 +74,7 @@ Copy documents from one index to another, optionally applying a query filter or 
 
 ### Run Inference
 
-Execute a machine learning inference task using a configured inference endpoint. Supports text embedding, sparse embedding, reranking, completion, and chat completion tasks. Can also list or manage inference endpoints.
+Execute a machine learning inference task using a configured inference endpoint. Supports text embedding, sparse embedding, reranking, completion, and chat completion tasks. Can also list, create, update, or delete inference endpoints.
 
 ### Search Documents
 
