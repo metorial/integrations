@@ -302,7 +302,25 @@ let createTriggerTraceSlate = () => {
   });
 };
 
-let createOauthConfigSlate = (seenConfig: Record<string, Record<string, any>>) => {
+type OAuthConfig = {
+  loginHost: string;
+};
+
+type OAuthOutput = {
+  token: string;
+  refreshToken?: string;
+};
+
+type SeenOAuthConfig = Partial<
+  Record<'authorizationUrl' | 'callback' | 'refresh' | 'profile', OAuthConfig>
+>;
+
+let getRequiredOAuthConfig = (ctx: { config?: Record<string, unknown> }): OAuthConfig => {
+  expect(ctx.config).toBeDefined();
+  return ctx.config as OAuthConfig;
+};
+
+let createOauthConfigSlate = (seenConfig: SeenOAuthConfig) => {
   let config = SlateConfig.create(
     z.object({
       loginHost: z.string()
@@ -323,37 +341,44 @@ let createOauthConfigSlate = (seenConfig: Record<string, Record<string, any>>) =
       scopes: [],
       inputSchema: z.object({}),
       getAuthorizationUrl: async ctx => {
-        seenConfig.authorizationUrl = ctx.config;
+        let config = getRequiredOAuthConfig(ctx);
+        seenConfig.authorizationUrl = config;
         return {
-          url: `https://${ctx.config.loginHost}/authorize`,
+          url: `https://${config.loginHost}/authorize`,
           callbackState: {
-            loginHost: ctx.config.loginHost
+            loginHost: config.loginHost
           }
         };
       },
       handleCallback: async ctx => {
-        seenConfig.callback = ctx.config;
+        let config = getRequiredOAuthConfig(ctx);
+        seenConfig.callback = config;
         return {
           output: {
-            token: `token:${ctx.config.loginHost}`,
+            token: `token:${config.loginHost}`,
             refreshToken: 'refresh-token'
           }
         };
       },
-      handleTokenRefresh: async ctx => {
-        seenConfig.refresh = ctx.config;
+      handleTokenRefresh: async (ctx: {
+        output: OAuthOutput;
+        config?: Record<string, unknown>;
+      }) => {
+        let config = getRequiredOAuthConfig(ctx);
+        seenConfig.refresh = config;
         return {
           output: {
             ...ctx.output,
-            token: `refreshed:${ctx.config.loginHost}`
+            token: `refreshed:${config.loginHost}`
           }
         };
       },
-      getProfile: async ctx => {
-        seenConfig.profile = ctx.config;
+      getProfile: async (ctx: { config?: Record<string, unknown> }) => {
+        let config = getRequiredOAuthConfig(ctx);
+        seenConfig.profile = config;
         return {
           profile: {
-            loginHost: ctx.config.loginHost
+            loginHost: config.loginHost
           }
         };
       }
@@ -575,7 +600,7 @@ describe('@slates/client local transport', () => {
   });
 
   it('passes current profile config into OAuth callbacks', async () => {
-    let seenConfig: Record<string, Record<string, any>> = {};
+    let seenConfig: SeenOAuthConfig = {};
     let client = createSlatesClient({
       transport: createLocalSlateTransport({
         slate: createOauthConfigSlate(seenConfig)
