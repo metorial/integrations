@@ -104,7 +104,8 @@ export let updateUser = SlateTool.create(spec, {
     let user: any = {};
 
     if (Object.keys(updateData).length > 0) {
-      user = await client.updateUser(ctx.input.userKey, updateData);
+      await client.updateUser(ctx.input.userKey, updateData);
+      user = await client.getUser(ctx.input.userKey);
     } else {
       user = await client.getUser(ctx.input.userKey);
     }

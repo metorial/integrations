@@ -137,9 +137,13 @@ export class Client {
   }
 
   async updateUser(userKey: string, userData: Record<string, any>) {
-    let response = await directoryApi.put(`/users/${encodeURIComponent(userKey)}`, userData, {
-      headers: this.headers
-    });
+    let response = await directoryApi.patch(
+      `/users/${encodeURIComponent(userKey)}`,
+      userData,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
