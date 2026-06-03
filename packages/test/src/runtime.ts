@@ -24,6 +24,12 @@ export interface SlatesRuntimeContext {
 export type SlatesTestClient = ReturnType<typeof createSlatesClient>;
 
 type LocalSlate = Parameters<typeof createLocalSlateTransport>[0]['slate'];
+type SlatesAction = Awaited<ReturnType<SlatesTestClient['listActions']>>['actions'][number];
+type SlatesToolAction = Extract<SlatesAction, { type: 'action.tool' }>;
+type SlatesTriggerAction = Extract<SlatesAction, { type: 'action.trigger' }>;
+type SlateAuthenticationMethod = Awaited<
+  ReturnType<SlatesTestClient['listAuthMethods']>
+>['authenticationMethods'][number];
 
 let selectProfileAuth = (profile: SlatesProfileRecord | null, authMethodId: string | null) => {
   if (!profile || !authMethodId) {
@@ -200,8 +206,12 @@ export let getSlateContract = async (client: SlatesTestClient) => {
   return {
     provider: provider.provider,
     actions: actions.actions,
-    tools: actions.actions.filter(action => action.type === 'action.tool'),
-    triggers: actions.actions.filter(action => action.type === 'action.trigger'),
+    tools: actions.actions.filter(
+      (action: SlatesAction): action is SlatesToolAction => action.type === 'action.tool'
+    ),
+    triggers: actions.actions.filter(
+      (action: SlatesAction): action is SlatesTriggerAction => action.type === 'action.trigger'
+    ),
     authMethods: authMethods.authenticationMethods,
     configSchema: configSchema.schema
   };
@@ -265,27 +275,31 @@ export let expectSlateContract = async (d: {
   }
 
   if (d.toolIds) {
-    expect(contract.tools.map(action => action.id)).toEqual(d.toolIds);
+    expect(contract.tools.map((action: SlatesToolAction) => action.id)).toEqual(d.toolIds);
   }
 
   if (d.triggerIds) {
-    expect(contract.triggers.map(action => action.id)).toEqual(d.triggerIds);
+    expect(contract.triggers.map((action: SlatesTriggerAction) => action.id)).toEqual(
+      d.triggerIds
+    );
   }
 
   if (d.authMethodIds) {
-    expect(contract.authMethods.map(method => method.id)).toEqual(d.authMethodIds);
+    expect(contract.authMethods.map((method: SlateAuthenticationMethod) => method.id)).toEqual(
+      d.authMethodIds
+    );
   }
 
   for (let tool of d.tools ?? []) {
     expectActionMatches(
-      contract.tools.find(action => action.id === tool.id),
+      contract.tools.find((action: SlatesToolAction) => action.id === tool.id),
       tool
     );
   }
 
   for (let trigger of d.triggers ?? []) {
     expectActionMatches(
-      contract.triggers.find(action => action.id === trigger.id),
+      contract.triggers.find((action: SlatesTriggerAction) => action.id === trigger.id),
       trigger
     );
   }
