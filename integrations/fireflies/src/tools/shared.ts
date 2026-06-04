@@ -193,7 +193,16 @@ export let transcriptDetailSchema = transcriptListItemSchema.extend({
       })
     )
     .nullable()
-    .describe('Meeting attendance with join/leave times')
+    .describe('Meeting attendance with join/leave times'),
+  sentenceMode: z
+    .enum(['attachment', 'inline', 'omit'])
+    .describe('How transcript sentences were returned for this response'),
+  sentenceFormat: z
+    .enum(['text', 'jsonl'])
+    .nullable()
+    .describe('Format used when sentenceMode is attachment'),
+  sentenceCount: z.number().describe('Number of transcript sentences available'),
+  attachmentCount: z.number().describe('Number of attachments returned by this tool')
 });
 
 export let biteSchema = z.object({
