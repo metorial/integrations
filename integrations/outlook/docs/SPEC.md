@@ -11,7 +11,7 @@ Microsoft Outlook uses **OAuth 2.0** exclusively for authentication, via the Mic
 ### Prerequisites
 
 1. **App Registration**: Register your application in the Azure Portal under Microsoft Entra ID → App Registrations. You will receive a **Client ID** (Application ID) and must generate a **Client Secret** or certificate.
-2. **Tenant ID**: Required for constructing auth URLs. Use a specific tenant ID for single-org apps, `common` for multi-tenant + personal accounts, or `organizations` for work/school accounts only.
+2. **Account Type**: Choose the Outlook auth method that matches the app registration audience. **Work & Personal** uses the Microsoft identity `common` authority, and **Work Only** uses the `organizations` authority.
 
 ### OAuth 2.0 Flows
 
@@ -26,7 +26,6 @@ Microsoft Graph supports two access scenarios: **delegated access** (app calls o
 
 - **Client ID**: From your app registration.
 - **Client Secret** (or certificate): Generated in the app registration under "Certificates & secrets".
-- **Tenant ID**: Your directory/tenant identifier (or `common`/`organizations`).
 - **Redirect URI**: Configured in the app registration.
 
 ### Scopes

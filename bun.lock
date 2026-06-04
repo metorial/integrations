@@ -8727,7 +8727,7 @@
     },
     "integrations/outlook": {
       "name": "@slates-integrations/microsoft-outlook",
-      "version": "0.2.0-rc.4",
+      "version": "0.2.0-rc.5",
       "dependencies": {
         "@slates/oauth-microsoft": "1.0.0-rc.3",
         "@types/node": "^20",
@@ -8735,8 +8735,10 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.6",
         "@vercel/ncc": "^0.38.4",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/outreach": {

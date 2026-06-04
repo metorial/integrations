@@ -80,6 +80,15 @@ let scopes = [
   { title: 'Email', description: 'Read user email address', scope: 'email' }
 ];
 
+let createMicrosoftOauth = (name: string, key: string, tenant: string) =>
+  createMicrosoftGraphOauth({
+    name,
+    key,
+    tenant,
+    scopes,
+    normalizeRedirectUri: true
+  });
+
 export let auth = SlateAuth.create()
   .output(
     z.object({
@@ -88,21 +97,5 @@ export let auth = SlateAuth.create()
       expiresAt: z.string().optional()
     })
   )
-  .addOauth(
-    createMicrosoftGraphOauth({
-      name: 'Work & Personal',
-      key: 'oauth_common',
-      tenant: 'common',
-      scopes,
-      allowTenantInput: true
-    })
-  )
-  .addOauth(
-    createMicrosoftGraphOauth({
-      name: 'Work Only',
-      key: 'oauth_organizations',
-      tenant: 'organizations',
-      scopes,
-      allowTenantInput: true
-    })
-  );
+  .addOauth(createMicrosoftOauth('Work & Personal', 'oauth_common', 'common'))
+  .addOauth(createMicrosoftOauth('Work Only', 'oauth_organizations', 'organizations'));
