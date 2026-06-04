@@ -1,6 +1,16 @@
 # <img src="logo.jpeg" height="20"> Firecrawl
 
-Scrape, crawl, search, and extract data from any website. Convert web pages into clean markdown, HTML, screenshots, or structured data with JavaScript rendering and anti-bot handling. Crawl entire websites recursively, search the internet for relevant pages, map site architectures, and use AI-powered extraction to transform unstructured web content into organized data via natural language prompts or JSON schemas. Supports browser automation actions like clicking, scrolling, and form filling, as well as batch scraping of multiple URLs and agent-based autonomous data gathering.
+Scrape, crawl, search, parse, monitor, and extract data from the web with Firecrawl v2. Convert pages and uploaded files into markdown, HTML, screenshots, links, summaries, structured JSON, answers, highlights, and media URLs with JavaScript rendering, browser actions, cache controls, proxies, and parser options.
+
+This integration exposes Firecrawl's practical API surface:
+
+- Single-page scraping, scrape status, scrape-bound browser interaction, and file parsing.
+- Website crawling with status, cancellation, errors, active crawl listing, and parameter preview.
+- Web search, image/news source selection, domain filters, and optional result scraping.
+- URL mapping, batch scraping, extraction jobs, and autonomous agent jobs.
+- Browser sandbox sessions for CDP-backed automation.
+- Content monitors with checks, manual runs, webhooks, and notifications.
+- Team credit usage, token usage, queue status, and recent API activity.
 
 ## License
 

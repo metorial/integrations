@@ -1,14 +1,39 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { FirefliesClient } from '../lib/client';
+import { firefliesServiceError } from '../lib/errors';
 import { spec } from '../spec';
+
+let askFredFiltersSchema = z.object({
+  startTime: z
+    .string()
+    .optional()
+    .describe('Start of date range (ISO 8601). Defaults to 30 days before endTime.'),
+  endTime: z.string().optional().describe('End of date range (ISO 8601). Defaults to today.'),
+  channelIds: z.array(z.string()).optional().describe('Filter by channel IDs'),
+  organizers: z.array(z.string()).optional().describe('Filter by organizer emails'),
+  participants: z.array(z.string()).optional().describe('Filter by participant emails'),
+  transcriptIds: z.array(z.string()).optional().describe('Filter by specific transcript IDs')
+});
+
+let hasAnyFilter = (filters: z.infer<typeof askFredFiltersSchema> | undefined) => {
+  if (!filters) return false;
+  return Boolean(
+    filters.startTime ||
+      filters.endTime ||
+      filters.channelIds?.length ||
+      filters.organizers?.length ||
+      filters.participants?.length ||
+      filters.transcriptIds?.length
+  );
+};
 
 export let askFred = SlateTool.create(spec, {
   name: 'Ask Fred',
   key: 'ask_fred',
-  description: `Ask AskFred (Fireflies' AI assistant) a question about your meetings. Creates a new conversation thread for a specific transcript or across meetings with optional filters. Returns an AI-generated answer with suggested follow-up questions. Use the thread ID from the response to continue the conversation with **Continue AskFred Thread**.`,
+  description: `Ask AskFred (Fireflies' AI assistant) a question about your meetings. Creates a new conversation thread for a specific transcript or across meetings with optional filters. Returns an AI-generated answer with suggested follow-up questions. Use the thread ID to continue the conversation.`,
   instructions: [
-    'Provide either a transcriptId for a specific meeting OR use filters to query across multiple meetings — not both.'
+    'Provide either a transcriptId for a specific meeting OR use filters to query across multiple meetings, not both.'
   ],
   constraints: [
     'Requires active AI credits on the account.',
@@ -24,29 +49,9 @@ export let askFred = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Target a specific transcript. Mutually exclusive with filters.'),
-      filters: z
-        .object({
-          startTime: z
-            .string()
-            .optional()
-            .describe('Start of date range (ISO 8601). Defaults to 30 days before endTime.'),
-          endTime: z
-            .string()
-            .optional()
-            .describe('End of date range (ISO 8601). Defaults to today.'),
-          channelIds: z.array(z.string()).optional().describe('Filter by channel IDs'),
-          organizers: z.array(z.string()).optional().describe('Filter by organizer emails'),
-          participants: z
-            .array(z.string())
-            .optional()
-            .describe('Filter by participant emails'),
-          transcriptIds: z
-            .array(z.string())
-            .optional()
-            .describe('Filter by specific transcript IDs')
-        })
+      filters: askFredFiltersSchema
         .optional()
-        .describe('Filters for querying across multiple meetings'),
+        .describe('Filters for querying across meetings'),
       responseLanguage: z
         .string()
         .optional()
@@ -67,6 +72,16 @@ export let askFred = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (!ctx.input.query.trim()) {
+      throw firefliesServiceError('query is required.');
+    }
+    if (ctx.input.query.length > 2000) {
+      throw firefliesServiceError('query must be 2000 characters or fewer.');
+    }
+    if (ctx.input.transcriptId && hasAnyFilter(ctx.input.filters)) {
+      throw firefliesServiceError('transcriptId cannot be combined with filters.');
+    }
+
     let client = new FirefliesClient({ token: ctx.auth.token });
 
     let result = await client.createAskFredThread({

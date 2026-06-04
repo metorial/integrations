@@ -6,11 +6,11 @@ import { spec } from '../spec';
 export let mapWebsiteTool = SlateTool.create(spec, {
   name: 'Map Website',
   key: 'map_website',
-  description: `Rapidly retrieve all URLs associated with a website to get a clear overview of its structure. Returns up to 100,000 URLs.
-Use this to discover all pages on a site before deciding which ones to scrape or crawl.`,
+  description: `Map a website with Firecrawl v2 and retrieve discovered URLs quickly. Use this before scraping or crawling when you need a site inventory or relevant URLs from a domain.`,
   instructions: [
     'Provide the base URL of the website to map.',
-    'Optionally use the search parameter to order results by relevance to a topic.'
+    'Optionally use search to order results by relevance to a topic.',
+    'Use limit and sitemap options to control result size and discovery strategy.'
   ],
   tags: {
     readOnly: true
@@ -19,23 +19,21 @@ Use this to discover all pages on a site before deciding which ones to scrape or
   .input(
     z.object({
       url: z.string().describe('The base URL of the website to map'),
-      search: z.string().optional().describe('Search term to order results by relevance'),
-      includeSubdomains: z
-        .boolean()
-        .optional()
-        .describe('Include URLs from subdomains (default: true)'),
-      ignoreQueryParameters: z
-        .boolean()
-        .optional()
-        .describe('Exclude URLs with query parameters (default: true)'),
-      limit: z
-        .number()
-        .optional()
-        .describe('Maximum number of URLs to return (default: 5000, max: 100000)'),
+      search: z.string().optional().describe('Search term to order URLs by relevance'),
+      includeSubdomains: z.boolean().optional().describe('Include URLs from subdomains'),
+      ignoreQueryParameters: z.boolean().optional().describe('Exclude URL query parameters'),
+      ignoreCache: z.boolean().optional().describe('Bypass cached map results'),
+      limit: z.number().optional().describe('Maximum number of URLs to return'),
+      timeout: z.number().optional().describe('Map timeout in milliseconds'),
       sitemap: z
         .enum(['skip', 'include', 'only'])
         .optional()
-        .describe('How to handle sitemaps: skip, include (default), or only use sitemap URLs')
+        .describe('How to handle sitemaps'),
+      locationCountry: z.string().optional().describe('Country code for mapping location'),
+      locationLanguages: z
+        .array(z.string())
+        .optional()
+        .describe('Language tags for mapping location')
     })
   )
   .output(
@@ -48,25 +46,35 @@ Use this to discover all pages on a site before deciding which ones to scrape or
             description: z.string().optional().describe('Page description if available')
           })
         )
-        .describe('List of discovered URLs')
+        .describe('List of discovered URLs'),
+      success: z.boolean().optional().describe('Whether Firecrawl marked the map successful')
     })
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-
     let result = await client.map({
       url: ctx.input.url,
       search: ctx.input.search,
       includeSubdomains: ctx.input.includeSubdomains,
       ignoreQueryParameters: ctx.input.ignoreQueryParameters,
+      ignoreCache: ctx.input.ignoreCache,
       limit: ctx.input.limit,
-      sitemap: ctx.input.sitemap
+      timeout: ctx.input.timeout,
+      sitemap: ctx.input.sitemap,
+      location:
+        ctx.input.locationCountry || ctx.input.locationLanguages
+          ? {
+              country: ctx.input.locationCountry,
+              languages: ctx.input.locationLanguages
+            }
+          : undefined
     });
 
     let links = (result.links ?? []).map((link: any) => {
       if (typeof link === 'string') {
         return { url: link };
       }
+
       return {
         url: link.url,
         title: link.title,
@@ -76,8 +84,9 @@ Use this to discover all pages on a site before deciding which ones to scrape or
 
     return {
       output: {
-        links
+        links,
+        success: result.success
       },
-      message: `Mapped **${links.length}** URLs from **${ctx.input.url}**${ctx.input.search ? ` filtered by "${ctx.input.search}"` : ''}.`
+      message: `Mapped **${links.length}** URL(s) from **${ctx.input.url}**.`
     };
   });

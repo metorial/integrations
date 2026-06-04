@@ -2,6 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { FirefliesClient } from '../lib/client';
 import { spec } from '../spec';
+import { appOutputSchema, assertLimit, assertNonNegativeSkip, mapAppOutput } from './shared';
 
 export let getAiApps = SlateTool.create(spec, {
   name: 'Get AI App Results',
@@ -18,31 +19,19 @@ export let getAiApps = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Filter results by a specific transcript ID'),
-      limit: z
-        .number()
-        .optional()
-        .describe('Maximum number of results to return (max 10, default 10)'),
+      limit: z.number().optional().describe('Maximum number of results to return (max 10)'),
       skip: z.number().optional().describe('Number of results to skip for pagination')
     })
   )
   .output(
     z.object({
-      outputs: z
-        .array(
-          z.object({
-            transcriptId: z.string().nullable().describe('Associated transcript ID'),
-            userId: z.string().nullable().describe('User who triggered the app'),
-            appId: z.string().nullable().describe('AI App identifier'),
-            createdAt: z.string().nullable().describe('When the result was generated'),
-            title: z.string().nullable().describe('Result title'),
-            prompt: z.string().nullable().describe('The prompt used by the AI App'),
-            response: z.string().nullable().describe('The AI-generated response')
-          })
-        )
-        .describe('AI App output results')
+      outputs: z.array(appOutputSchema).describe('AI App output results')
     })
   )
   .handleInvocation(async ctx => {
+    assertLimit(ctx.input.limit, 'limit', 10);
+    assertNonNegativeSkip(ctx.input.skip);
+
     let client = new FirefliesClient({ token: ctx.auth.token });
 
     let result = await client.getAiApps({
@@ -52,15 +41,7 @@ export let getAiApps = SlateTool.create(spec, {
       skip: ctx.input.skip
     });
 
-    let outputs = (result?.outputs || []).map((o: any) => ({
-      transcriptId: o.transcript_id ?? null,
-      userId: o.user_id ?? null,
-      appId: o.app_id ?? null,
-      createdAt: o.created_at ?? null,
-      title: o.title ?? null,
-      prompt: o.prompt ?? null,
-      response: o.response ?? null
-    }));
+    let outputs = (result?.outputs || []).map((output: any) => mapAppOutput(output));
 
     return {
       output: { outputs },

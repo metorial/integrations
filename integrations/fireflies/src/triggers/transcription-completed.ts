@@ -51,8 +51,9 @@ export let transcriptionCompleted = SlateTrigger.create(spec, {
     handleRequest: async ctx => {
       let data = (await ctx.request.json()) as Record<string, any>;
 
-      let meetingId = data.meetingId || data.meeting_id || '';
-      let eventType = data.eventType || data.event_type || 'Transcription completed';
+      let meetingId = data.meetingId || data.meeting_id || data.transcriptId || '';
+      let eventType =
+        data.eventType || data.event_type || data.event || 'Transcription completed';
       let clientReferenceId = data.clientReferenceId || data.client_reference_id || null;
 
       return {

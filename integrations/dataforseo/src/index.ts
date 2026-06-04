@@ -1,7 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  aiOptimization,
+  amazonProductSearch,
+  appData,
   backlinksAnalysis,
+  businessData,
   contentAnalysis,
   domainAnalytics,
   domainCompetitors,
@@ -12,6 +16,8 @@ import {
   keywordSuggestions,
   keywordsForSite,
   onPageAudit,
+  onPageResults,
+  rankedKeywords,
   serpSearch
 } from './tools';
 import { taskCompleted } from './triggers';
@@ -27,9 +33,15 @@ export let provider = Slate.create({
     domainAnalytics,
     domainCompetitors,
     domainIntersection,
+    rankedKeywords,
     onPageAudit,
+    onPageResults,
     contentAnalysis,
     googleShoppingSearch,
+    amazonProductSearch,
+    appData,
+    businessData,
+    aiOptimization,
     getTaskResult
   ],
   triggers: [taskCompleted]

@@ -46,7 +46,7 @@ export let keywordSuggestions = SlateTool.create(spec, {
       limit: z.number().optional().describe('Maximum number of results'),
       offset: z.number().optional().describe('Pagination offset'),
       filters: z
-        .array(z.string())
+        .array(z.any())
         .optional()
         .describe('Filter results (e.g., ["keyword_info.search_volume",">","100"])'),
       orderBy: z

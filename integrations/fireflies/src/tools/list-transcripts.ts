@@ -1,12 +1,24 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { FirefliesClient } from '../lib/client';
+import { firefliesServiceError } from '../lib/errors';
 import { spec } from '../spec';
+import {
+  assertLimit,
+  assertNonNegativeSkip,
+  mapTranscriptListItem,
+  transcriptListItemSchema
+} from './shared';
+
+let normalizeScope = (scope: string | undefined) => {
+  if (!scope) return undefined;
+  return scope.toLowerCase();
+};
 
 export let listTranscripts = SlateTool.create(spec, {
   name: 'List Transcripts',
   key: 'list_transcripts',
-  description: `Search and list meeting transcripts with filtering options. Filter by keyword, date range, organizers, participants, channel, or show only your own meetings. Returns transcript metadata including title, date, duration, and URLs. Supports pagination with limit and skip parameters (max 50 per request).`,
+  description: `Search and list meeting transcripts with filtering options. Filter by keyword, date range, organizers, participants, channel, or show only your own meetings. Returns transcript metadata, calendar details, summary preview, recent AI App outputs, sharing metadata, and pagination support.`,
   tags: {
     readOnly: true
   }
@@ -20,9 +32,11 @@ export let listTranscripts = SlateTool.create(spec, {
           'Search for keywords in meeting title and/or spoken words (max 255 characters)'
         ),
       scope: z
-        .enum(['TITLE', 'SENTENCES', 'ALL'])
+        .enum(['title', 'sentences', 'all', 'TITLE', 'SENTENCES', 'ALL'])
         .optional()
-        .describe('Search scope for keyword filtering. Defaults to TITLE.'),
+        .describe(
+          'Search scope for keyword filtering. Use title, sentences, or all. Requires keyword.'
+        ),
       fromDate: z
         .string()
         .optional()
@@ -53,34 +67,24 @@ export let listTranscripts = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      transcripts: z
-        .array(
-          z.object({
-            transcriptId: z.string().describe('Unique transcript identifier'),
-            title: z.string().nullable().describe('Meeting title'),
-            date: z.string().nullable().describe('Meeting date'),
-            duration: z.number().nullable().describe('Meeting duration in seconds'),
-            organizerEmail: z.string().nullable().describe('Organizer email'),
-            participants: z
-              .array(z.string())
-              .nullable()
-              .describe('List of participant emails'),
-            privacy: z.string().nullable().describe('Privacy level of the transcript'),
-            transcriptUrl: z.string().nullable().describe('URL to view the transcript'),
-            audioUrl: z.string().nullable().describe('URL to the audio recording'),
-            videoUrl: z.string().nullable().describe('URL to the video recording'),
-            isLive: z.boolean().nullable().describe('Whether the meeting is currently live')
-          })
-        )
-        .describe('List of matching transcripts')
+      transcripts: z.array(transcriptListItemSchema).describe('List of matching transcripts')
     })
   )
   .handleInvocation(async ctx => {
+    if (ctx.input.keyword && ctx.input.keyword.length > 255) {
+      throw firefliesServiceError('keyword must be 255 characters or fewer.');
+    }
+    if (ctx.input.scope && !ctx.input.keyword) {
+      throw firefliesServiceError('keyword is required when scope is provided.');
+    }
+    assertLimit(ctx.input.limit, 'limit', 50);
+    assertNonNegativeSkip(ctx.input.skip);
+
     let client = new FirefliesClient({ token: ctx.auth.token });
 
     let transcripts = await client.getTranscripts({
       keyword: ctx.input.keyword,
-      scope: ctx.input.scope,
+      scope: normalizeScope(ctx.input.scope),
       fromDate: ctx.input.fromDate,
       toDate: ctx.input.toDate,
       limit: ctx.input.limit,
@@ -92,19 +96,9 @@ export let listTranscripts = SlateTool.create(spec, {
       channelId: ctx.input.channelId
     });
 
-    let mapped = (transcripts || []).map((t: any) => ({
-      transcriptId: t.id,
-      title: t.title ?? null,
-      date: t.date ? String(t.date) : null,
-      duration: t.duration ?? null,
-      organizerEmail: t.organizer_email ?? null,
-      participants: t.participants ?? null,
-      privacy: t.privacy ?? null,
-      transcriptUrl: t.transcript_url ?? null,
-      audioUrl: t.audio_url ?? null,
-      videoUrl: t.video_url ?? null,
-      isLive: t.is_live ?? null
-    }));
+    let mapped = (transcripts || []).map((transcript: any) =>
+      mapTranscriptListItem(transcript)
+    );
 
     return {
       output: { transcripts: mapped },

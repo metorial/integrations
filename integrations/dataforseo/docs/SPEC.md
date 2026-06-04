@@ -1,8 +1,8 @@
-# Slates Specification for Dataforseo
+# Slates Specification for DataForSEO
 
 ## Overview
 
-DataForSEO is an API-first platform that provides SEO, SEM, and digital marketing data. It aggregates data from search engines, marketplaces, review platforms, and billions of other websites across the web. Its API suite covers SERP data, keyword research, backlink analysis, on-page audits, domain analytics, business data, ecommerce/merchant data, app store data, content analysis, and AI optimization.
+DataForSEO is an API-first platform that provides SEO, SEM, ecommerce, business, app, content, and AI optimization data. This integration exposes a practical DataForSEO API v3 surface for common Slates workflows rather than every endpoint in the catalog.
 
 ## Authentication
 
@@ -28,15 +28,15 @@ Where `bG9naW46cGFzc3dvcmQ=` is the Base64-encoded string of `login:password`.
 
 ### SERP Data
 
-Retrieve search engine results pages for any keyword, location, and language. All major search engines are supported: Google, Bing, YouTube, Yahoo, Baidu, Naver, and Seznam. Covers organic results, local packs, maps, news, images, jobs, shopping, autocomplete, ads, and more. Results can be filtered by device type (desktop/mobile) and OS.
+Retrieve organic live advanced results for Google, Bing, Yahoo, and YouTube by keyword, location, language, device, and OS.
 
 ### Keyword Data
 
-Obtain keyword metrics including search volume, CPC, competition, and keyword suggestions. The Keywords For Site endpoint relies on Google Ads data and DataForSEO's proprietary SERP database to provide keywords that are highly relevant to the target domain. Supports keyword research across Google, Bing, and Amazon.
+Obtain Google Ads keyword metrics including search volume, CPC, competition, and monthly trends. The Keywords For Site endpoint relies on Google Ads data and DataForSEO's proprietary SERP database to provide keywords that are relevant to the target domain.
 
 ### DataForSEO Labs (Keyword & Domain Intelligence)
 
-DataForSEO Labs API provides data on keywords, SERPs, and domains based on in-house databases. Includes competitor domain analysis, domain intersection (shared keywords between domains), historical rank overviews, keyword suggestions, related keywords, and app store optimization metrics for Google Play and App Store.
+DataForSEO Labs API provides keyword and domain intelligence based on in-house databases. Implemented tools include keyword suggestions, related keywords, ranked keywords, competitor domain analysis, domain rank overview, and domain intersection.
 
 ### Backlinks
 
@@ -44,7 +44,7 @@ Backlinks API provides real-time structured backlink data on virtually any domai
 
 ### On-Page (Site Audit)
 
-Customizable website crawler with JavaScript rendering support, designed for running technical audits at scale and powering on-page SEO tools. Crawl websites to identify technical SEO issues, analyze page resources, and extract on-page data.
+Customizable website crawler with JavaScript rendering support, designed for running technical audits at scale and powering on-page SEO tools. The integration can create OnPage crawl tasks and retrieve summary or page-level results for completed tasks.
 
 ### Domain Analytics
 
@@ -52,15 +52,15 @@ Domain Analytics Whois API offers Whois data enriched with backlink stats, and r
 
 ### Business Data
 
-This API is based on business reviews and business information publicly shared on platforms including Google Business Profile and Google Hotels. Business Data API also encompasses Social Media endpoints providing data on social media interactions associated with a certain page, supporting Facebook, Pinterest, and Reddit.
+Implemented Business Data coverage includes Business Listings live search and Google Reviews task creation. Business Listings supports category, title, description, location, pagination, filters, and ordering.
 
 ### Merchant (Ecommerce)
 
-Merchant API provides essential data and metrics for conducting comprehensive competitor analysis, price monitoring, and market niche research. Covers Google Shopping product catalog and data about prices and sellers on Amazon. Includes product listings, seller data, reviews, and Amazon ASINs.
+Implemented Merchant coverage includes Google Shopping product tasks plus Amazon products and Amazon ASIN task creation. Task results can be retrieved through the documented task result endpoint enum.
 
 ### App Data
 
-With App Data API you can get data on millions of apps published on Google Play or App Store platforms. Review endpoints help collect feedback data on any application, including review ratings, reviewer's profile information, publication dates, and other relevant data. Also supports discovering apps ranking for specific keywords.
+Implemented App Data coverage includes Google Play app search, app info, and app reviews task creation.
 
 ### Content Analysis
 
@@ -68,11 +68,40 @@ Content Analysis API ensures brand monitoring solutions can quickly search for b
 
 ### AI Optimization
 
-AI Optimization API provides data for keyword discovery, conversational optimization, and real-time LLM benchmarking. Enables generating structured responses from leading LLMs (ChatGPT, Claude, Gemini, Perplexity) and retrieving AI-specific keyword search volume data.
+AI Optimization API provides data for keyword discovery, conversational optimization, and real-time LLM benchmarking. Implemented coverage includes AI keyword search volume, LLM Mentions Search for Google AI Overview and ChatGPT mention data, and live LLM Responses for ChatGPT, Claude, Gemini, and Perplexity.
 
 ### Data Retrieval Methods
 
-DataForSEO has two main methods to deliver results: Standard and Live. The Live method delivers instant results, unlike the Standard method which requires making separate POST and GET requests. The Standard method is more affordable; the Live method is suited for real-time needs.
+DataForSEO has two main methods to deliver results: Standard and Live. This integration uses Live endpoints where immediate results are practical, and creates Standard tasks for APIs such as OnPage, Merchant, App Data, and Google Reviews where task-based retrieval is the documented workflow.
+
+## Implemented Tools
+
+- `serp_search`
+- `keyword_research`
+- `keywords_for_site`
+- `keyword_suggestions`
+- `backlinks_analysis`
+- `domain_analytics`
+- `domain_competitors`
+- `domain_intersection`
+- `ranked_keywords`
+- `on_page_audit`
+- `on_page_results`
+- `content_analysis`
+- `google_shopping_search`
+- `amazon_product_search`
+- `app_data`
+- `business_data`
+- `ai_optimization`
+- `get_task_result`
+
+## Live E2E
+
+Live E2E coverage exists under `tests/integrations/dataforseo/tools.e2e.ts`. It uses minimal public inputs because DataForSEO charges for live and task-based API calls.
+
+```bash
+bun run tools:e2e -- dataforseo --profile <profile>
+```
 
 ## Events
 

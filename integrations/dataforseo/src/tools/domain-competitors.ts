@@ -46,7 +46,7 @@ export let domainCompetitors = SlateTool.create(spec, {
       languageCode: z.string().optional().describe('Language code (e.g., "en")'),
       limit: z.number().optional().describe('Maximum number of results (competitors mode)'),
       offset: z.number().optional().describe('Pagination offset'),
-      filters: z.array(z.string()).optional().describe('Filter results'),
+      filters: z.array(z.any()).optional().describe('DataForSEO Labs filters'),
       orderBy: z
         .array(z.string())
         .optional()

@@ -1,12 +1,14 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { FirefliesClient } from '../lib/client';
+import { firefliesServiceError } from '../lib/errors';
 import { spec } from '../spec';
+import { assertEmailList } from './shared';
 
 export let shareMeeting = SlateTool.create(spec, {
   name: 'Share Meeting',
   key: 'share_meeting',
-  description: `Share a meeting transcript with other users via email. Optionally set an expiry period. Only meeting owners or team admins can share meetings.`,
+  description: `Share a meeting transcript with other users via email. Optionally set an expiry period of 7, 14, or 30 days. Only meeting owners or team admins can share meetings.`,
   constraints: [
     'Maximum 50 email addresses per request.',
     'Rate limited to 10 requests per hour.'
@@ -15,10 +17,11 @@ export let shareMeeting = SlateTool.create(spec, {
   .input(
     z.object({
       meetingId: z.string().describe('The meeting/transcript ID to share'),
-      emails: z
-        .array(z.string())
-        .describe('Email addresses to share the meeting with (max 50)'),
-      expiryDays: z.number().optional().describe('Number of days until access expires')
+      emails: z.array(z.string()).describe('Email addresses to share the meeting with'),
+      expiryDays: z
+        .number()
+        .optional()
+        .describe('Access expiry in days. Must be one of 7, 14, or 30.')
     })
   )
   .output(
@@ -28,6 +31,11 @@ export let shareMeeting = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    assertEmailList(ctx.input.emails, 50);
+    if (ctx.input.expiryDays !== undefined && ![7, 14, 30].includes(ctx.input.expiryDays)) {
+      throw firefliesServiceError('expiryDays must be one of 7, 14, or 30.');
+    }
+
     let client = new FirefliesClient({ token: ctx.auth.token });
 
     let result = await client.shareMeeting({

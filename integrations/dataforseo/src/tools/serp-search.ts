@@ -24,8 +24,9 @@ export let serpSearch = SlateTool.create(spec, {
   key: 'serp_search',
   description: `Retrieve Google search engine results pages (SERPs) for any keyword. Returns organic results, featured snippets, local packs, knowledge graphs, and other SERP features with their rankings, URLs, and descriptions. Useful for competitive analysis, rank tracking, and understanding search landscape for specific queries.`,
   instructions: [
-    'Provide a keyword to search for. Optionally specify location, language, device type, and number of results.',
+    'Provide a keyword to search for. Optionally specify search engine, location, language, device type, and number of results.',
     'Location can be specified by name (e.g., "United States") or code. Language can be specified by name (e.g., "English") or code.',
+    'Google is used by default. Bing, Yahoo, and YouTube organic live advanced results are also supported.',
     'The depth parameter controls how many results to retrieve (multiples of 10, e.g., 10, 20, 30, up to 700).'
   ],
   tags: {
@@ -35,7 +36,11 @@ export let serpSearch = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      keyword: z.string().describe('Search keyword or phrase to look up in Google'),
+      searchEngine: z
+        .enum(['google', 'bing', 'yahoo', 'youtube'])
+        .default('google')
+        .describe('Organic SERP search engine to query. Defaults to Google.'),
+      keyword: z.string().describe('Search keyword or phrase to look up'),
       locationName: z
         .string()
         .optional()
@@ -80,7 +85,8 @@ export let serpSearch = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let response = await client.serpGoogleOrganicLive({
+    let response = await client.serpOrganicLive({
+      searchEngine: ctx.input.searchEngine,
       keyword: ctx.input.keyword,
       locationName: ctx.input.locationName,
       locationCode: ctx.input.locationCode,
@@ -97,7 +103,7 @@ export let serpSearch = SlateTool.create(spec, {
       rankGroup: item.rank_group,
       rankAbsolute: item.rank_absolute,
       domain: item.domain,
-      title: item.title,
+      title: item.title ?? item.name ?? item.channel_name,
       url: item.url,
       description: item.description,
       breadcrumb: item.breadcrumb
@@ -106,7 +112,7 @@ export let serpSearch = SlateTool.create(spec, {
     return {
       output: {
         keyword: ctx.input.keyword,
-        searchEngine: 'Google',
+        searchEngine: ctx.input.searchEngine,
         locationName: result?.check_url ? undefined : ctx.input.locationName,
         languageName: ctx.input.languageName,
         totalResults: result?.se_results_count,
@@ -114,7 +120,7 @@ export let serpSearch = SlateTool.create(spec, {
         items,
         cost: response.cost
       },
-      message: `Found **${items.length}** SERP results for keyword **"${ctx.input.keyword}"**${ctx.input.locationName ? ` in ${ctx.input.locationName}` : ''}.`
+      message: `Found **${items.length}** ${ctx.input.searchEngine} SERP results for keyword **"${ctx.input.keyword}"**${ctx.input.locationName ? ` in ${ctx.input.locationName}` : ''}.`
     };
   })
   .build();

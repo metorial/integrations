@@ -2,30 +2,16 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-
-let pageDataSchema = z.object({
-  markdown: z.string().optional().describe('Page content as markdown'),
-  html: z.string().optional().describe('Cleaned HTML content'),
-  links: z.array(z.string()).optional().describe('Links found on the page'),
-  metadata: z
-    .object({
-      title: z.string().optional(),
-      description: z.string().optional(),
-      sourceURL: z.string().optional(),
-      statusCode: z.number().optional()
-    })
-    .optional()
-    .describe('Page metadata')
-});
+import { idStatusOutputShape, pageDataSchema, pagesFrom } from './shared';
 
 export let getBatchScrapeStatusTool = SlateTool.create(spec, {
   name: 'Get Batch Scrape Status',
   key: 'get_batch_scrape_status',
-  description: `Check the status of a batch scrape job and retrieve the scraped page data when available.`,
+  description: `Check a Firecrawl batch scrape job and retrieve available page data. Use this with the batchId returned by Batch Scrape. Use Get Batch Scrape Errors for failed URLs and Cancel Batch Scrape to stop a running job.`,
   instructions: [
-    'Provide the batchId returned by the Batch Scrape tool.',
-    'If status is "scraping", the job is still in progress.',
-    'If results exceed 10MB, a nextUrl will be provided for pagination.'
+    'Provide the batchId returned by Batch Scrape.',
+    'If status is scraping, poll again later.',
+    'If nextUrl is present, Firecrawl has additional paginated data.'
   ],
   tags: {
     readOnly: true
@@ -38,37 +24,22 @@ export let getBatchScrapeStatusTool = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      status: z.string().describe('Current status: scraping, completed, or failed'),
-      total: z.number().optional().describe('Total URLs in the batch'),
+      ...idStatusOutputShape,
+      total: z.number().optional().describe('Total URLs attempted'),
       completed: z.number().optional().describe('URLs successfully scraped'),
-      creditsUsed: z.number().optional().describe('Credits consumed'),
-      expiresAt: z.string().optional().describe('When the results expire'),
-      nextUrl: z.string().optional().describe('URL for retrieving next batch of results'),
-      pages: z.array(pageDataSchema).optional().describe('Array of scraped page data')
+      nextUrl: z.string().optional().describe('URL for retrieving additional result data'),
+      pages: z.array(pageDataSchema).optional().describe('Scraped page data')
     })
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-
     let result = await client.getBatchScrapeStatus(ctx.input.batchId);
-
-    let pages = (result.data ?? []).map((page: any) => ({
-      markdown: page.markdown,
-      html: page.html,
-      links: page.links,
-      metadata: page.metadata
-        ? {
-            title: page.metadata.title,
-            description: page.metadata.description,
-            sourceURL: page.metadata.sourceURL ?? page.metadata.url,
-            statusCode: page.metadata.statusCode
-          }
-        : undefined
-    }));
+    let pages = pagesFrom(result.data);
 
     return {
       output: {
         status: result.status,
+        success: result.success,
         total: result.total,
         completed: result.completed,
         creditsUsed: result.creditsUsed,
@@ -76,6 +47,6 @@ export let getBatchScrapeStatusTool = SlateTool.create(spec, {
         nextUrl: result.next,
         pages
       },
-      message: `Batch scrape \`${ctx.input.batchId}\` is **${result.status}**. Progress: ${result.completed ?? 0}/${result.total ?? '?'} pages. ${pages.length} pages returned.`
+      message: `Batch scrape \`${ctx.input.batchId}\` is **${result.status}**. Progress: ${result.completed ?? 0}/${result.total ?? '?'}.`
     };
   });

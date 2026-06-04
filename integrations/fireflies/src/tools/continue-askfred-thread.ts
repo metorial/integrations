@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { FirefliesClient } from '../lib/client';
+import { firefliesServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let continueAskFredThread = SlateTool.create(spec, {
@@ -33,6 +34,13 @@ export let continueAskFredThread = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (!ctx.input.query.trim()) {
+      throw firefliesServiceError('query is required.');
+    }
+    if (ctx.input.query.length > 2000) {
+      throw firefliesServiceError('query must be 2000 characters or fewer.');
+    }
+
     let client = new FirefliesClient({ token: ctx.auth.token });
 
     let result = await client.continueAskFredThread({

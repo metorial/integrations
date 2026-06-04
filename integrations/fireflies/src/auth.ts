@@ -1,5 +1,6 @@
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
+import { firefliesApiError } from './lib/errors';
 
 let httpClient = createAxios({
   baseURL: 'https://api.fireflies.ai'
@@ -30,27 +31,35 @@ export let auth = SlateAuth.create()
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: { apiKey: string } }) => {
-      let response = await httpClient.post(
-        '/graphql',
-        {
-          query: `query { user { user_id name email } }`
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${ctx.output.token}`,
-            'Content-Type': 'application/json'
+      try {
+        let response = await httpClient.post(
+          '/graphql',
+          {
+            query: `query { user { user_id name email } }`
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${ctx.output.token}`,
+              'Content-Type': 'application/json'
+            }
           }
-        }
-      );
+        );
 
-      let user = response.data.data?.user;
-
-      return {
-        profile: {
-          id: user?.user_id,
-          name: user?.name,
-          email: user?.email
+        if (response.data.errors?.length) {
+          throw firefliesApiError({ data: response.data }, 'get auth profile');
         }
-      };
+
+        let user = response.data.data?.user;
+
+        return {
+          profile: {
+            id: user?.user_id,
+            name: user?.name,
+            email: user?.email
+          }
+        };
+      } catch (error) {
+        throw firefliesApiError(error, 'get auth profile');
+      }
     }
   });
