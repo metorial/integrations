@@ -2,16 +2,26 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { buildNestedScrapeOptions, commonScrapeInputShape } from './shared';
+
+let webhookSchema = z.object({
+  url: z.string().describe('Webhook URL to notify'),
+  headers: z.record(z.string(), z.string()).optional().describe('Headers for webhook calls'),
+  metadata: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Metadata included in webhook payloads'),
+  events: z.array(z.string()).optional().describe('Webhook event names to receive')
+});
 
 export let crawlWebsiteTool = SlateTool.create(spec, {
   name: 'Crawl Website',
   key: 'crawl_website',
-  description: `Start a crawl job to recursively scrape an entire website and extract content from all pages. The crawl runs asynchronously and returns a job ID for tracking progress.
-Use this to extract content from multiple pages across a website. Configure page limits, URL filters, and depth to control scope.`,
+  description: `Start a Firecrawl v2 crawl job to recursively discover and scrape pages from a website. The crawl runs asynchronously and returns a crawl ID for polling, cancellation, error retrieval, and webhook events.`,
   instructions: [
     'Provide the base URL to start crawling from.',
-    'Use includePaths/excludePaths with regex patterns to filter which URLs to crawl.',
-    'The crawl runs asynchronously — use the returned crawlId with the Get Crawl Status tool to check progress and retrieve results.'
+    'Use includePaths/excludePaths, discovery depth, sitemap mode, and limit to keep crawls focused.',
+    'Use scrape option fields to control the content extracted for each crawled page.'
   ],
   tags: {
     readOnly: true
@@ -20,10 +30,11 @@ Use this to extract content from multiple pages across a website. Configure page
   .input(
     z.object({
       url: z.string().describe('The base URL to start crawling from'),
-      limit: z
-        .number()
+      prompt: z
+        .string()
         .optional()
-        .describe('Maximum number of pages to crawl (default: 10000)'),
+        .describe('Natural-language prompt to generate crawl parameters'),
+      limit: z.number().optional().describe('Maximum number of pages to crawl'),
       maxDiscoveryDepth: z
         .number()
         .optional()
@@ -31,56 +42,47 @@ Use this to extract content from multiple pages across a website. Configure page
       includePaths: z
         .array(z.string())
         .optional()
-        .describe('Regex patterns — only crawl URLs matching these patterns'),
+        .describe('URL pathname regex patterns to include'),
       excludePaths: z
         .array(z.string())
         .optional()
-        .describe('Regex patterns — skip URLs matching these patterns'),
+        .describe('URL pathname regex patterns to exclude'),
       allowExternalLinks: z.boolean().optional().describe('Follow links to external domains'),
       allowSubdomains: z.boolean().optional().describe('Follow links to subdomains'),
       crawlEntireDomain: z
         .boolean()
         .optional()
         .describe('Crawl sibling and parent URLs of the start URL'),
+      ignoreQueryParameters: z.boolean().optional().describe('Ignore query parameters'),
+      ignoreRobotsTxt: z.boolean().optional().describe('Ignore robots.txt rules'),
+      regexOnFullURL: z.boolean().optional().describe('Apply path regexes to full URLs'),
+      robotsUserAgent: z.string().optional().describe('robots.txt user agent to evaluate'),
       sitemap: z
         .enum(['skip', 'include', 'only'])
         .optional()
-        .describe(
-          'How to handle the sitemap: skip, include (default), or only use sitemap URLs'
-        ),
-      delay: z
-        .number()
-        .optional()
-        .describe('Seconds to wait between requests for rate limiting'),
+        .describe('How to handle sitemaps'),
+      delay: z.number().optional().describe('Seconds to wait between requests'),
       maxConcurrency: z.number().optional().describe('Maximum concurrent scrape operations'),
-      formats: z
-        .array(z.enum(['markdown', 'html', 'rawHtml', 'screenshot', 'links']))
-        .optional()
-        .describe('Output formats for scraped pages'),
-      onlyMainContent: z
-        .boolean()
-        .optional()
-        .describe('Extract only the main content from each page')
+      webhook: webhookSchema.optional().describe('Webhook configuration for crawl events'),
+      ...commonScrapeInputShape
     })
   )
   .output(
     z.object({
       crawlId: z
         .string()
-        .describe('Unique ID for the crawl job, use to check status and retrieve results'),
-      url: z.string().optional().describe('Status URL for the crawl job')
+        .describe('Unique ID for the crawl job; use status/error/cancel tools with it'),
+      url: z.string().optional().describe('Status URL for the crawl job'),
+      success: z.boolean().optional().describe('Whether Firecrawl accepted the crawl')
     })
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-
-    let scrapeOptions: Record<string, any> = {};
-    if (ctx.input.formats) scrapeOptions.formats = ctx.input.formats;
-    if (ctx.input.onlyMainContent !== undefined)
-      scrapeOptions.onlyMainContent = ctx.input.onlyMainContent;
+    let scrapeOptions = buildNestedScrapeOptions(ctx.input);
 
     let result = await client.startCrawl({
       url: ctx.input.url,
+      prompt: ctx.input.prompt,
       limit: ctx.input.limit,
       maxDiscoveryDepth: ctx.input.maxDiscoveryDepth,
       includePaths: ctx.input.includePaths,
@@ -88,17 +90,24 @@ Use this to extract content from multiple pages across a website. Configure page
       allowExternalLinks: ctx.input.allowExternalLinks,
       allowSubdomains: ctx.input.allowSubdomains,
       crawlEntireDomain: ctx.input.crawlEntireDomain,
+      ignoreQueryParameters: ctx.input.ignoreQueryParameters,
+      ignoreRobotsTxt: ctx.input.ignoreRobotsTxt,
+      regexOnFullURL: ctx.input.regexOnFullURL,
+      robotsUserAgent: ctx.input.robotsUserAgent,
       sitemap: ctx.input.sitemap,
       delay: ctx.input.delay,
       maxConcurrency: ctx.input.maxConcurrency,
-      scrapeOptions: Object.keys(scrapeOptions).length > 0 ? scrapeOptions : undefined
+      webhook: ctx.input.webhook,
+      zeroDataRetention: ctx.input.zeroDataRetention,
+      scrapeOptions: Object.keys(scrapeOptions).length > 0 ? (scrapeOptions as any) : undefined
     });
 
     return {
       output: {
         crawlId: result.id,
-        url: result.url
+        url: result.url,
+        success: result.success
       },
-      message: `Started crawl job for **${ctx.input.url}** with ID \`${result.id}\`. Use the "Get Crawl Status" tool to check progress and retrieve results.`
+      message: `Started crawl job for **${ctx.input.url}** with ID \`${result.id}\`.`
     };
   });

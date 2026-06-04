@@ -3,6 +3,10 @@ import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 
+let optionalString = (value: unknown) => (typeof value === 'string' ? value : undefined);
+let optionalNumber = (value: unknown) => (typeof value === 'number' ? value : undefined);
+let optionalBoolean = (value: unknown) => (typeof value === 'boolean' ? value : undefined);
+
 let backlinkItemSchema = z
   .object({
     type: z.string().optional().describe('Type of backlink (anchor, redirect, etc.)'),
@@ -46,7 +50,11 @@ export let backlinksAnalysis = SlateTool.create(spec, {
       includeIndirectLinks: z
         .boolean()
         .optional()
-        .describe('Include indirect links in summary'),
+        .describe('Include indirect links in the provider dataset'),
+      backlinksStatusType: z
+        .enum(['all', 'live', 'lost'])
+        .optional()
+        .describe('Backlink status dataset to use. Defaults to DataForSEO live backlinks.'),
       limit: z
         .number()
         .optional()
@@ -54,10 +62,18 @@ export let backlinksAnalysis = SlateTool.create(spec, {
           'Maximum number of results to return (for backlinks and referring_domains modes)'
         ),
       offset: z.number().optional().describe('Offset for pagination'),
-      backlinksFilters: z
-        .array(z.string())
+      filters: z
+        .array(z.any())
         .optional()
-        .describe('Filters for backlinks mode (e.g., ["dofollow","=","true"])'),
+        .describe(
+          'Result filters for backlinks and referring_domains modes (e.g., ["rank",">","80"] or ["backlinks",">",100])'
+        ),
+      backlinksFilters: z
+        .array(z.any())
+        .optional()
+        .describe(
+          'Backlink-level filters for summary and referring_domains aggregation (e.g., ["dofollow","=",true]). For backwards compatibility, used as backlinks mode filters when filters is not provided.'
+        ),
       orderBy: z.array(z.string()).optional().describe('Order results (e.g., ["rank,desc"])')
     })
   )
@@ -101,7 +117,9 @@ export let backlinksAnalysis = SlateTool.create(spec, {
       let response = await client.backlinksSummaryLive({
         target: ctx.input.target,
         includeSubdomains: ctx.input.includeSubdomains,
-        includeIndirectLinks: ctx.input.includeIndirectLinks
+        includeIndirectLinks: ctx.input.includeIndirectLinks,
+        backlinksFilters: ctx.input.backlinksFilters,
+        backlinksStatusType: ctx.input.backlinksStatusType
       });
 
       let result = client.extractFirstResult(response);
@@ -109,12 +127,12 @@ export let backlinksAnalysis = SlateTool.create(spec, {
       return {
         output: {
           target: ctx.input.target,
-          totalBacklinks: result?.backlinks,
-          totalReferringDomains: result?.referring_domains,
-          rank: result?.rank,
-          brokenBacklinks: result?.broken_backlinks,
-          referringIps: result?.referring_ips,
-          referringSubnets: result?.referring_subnets,
+          totalBacklinks: optionalNumber(result?.backlinks),
+          totalReferringDomains: optionalNumber(result?.referring_domains),
+          rank: optionalNumber(result?.rank),
+          brokenBacklinks: optionalNumber(result?.broken_backlinks),
+          referringIps: optionalNumber(result?.referring_ips),
+          referringSubnets: optionalNumber(result?.referring_subnets),
           cost: response.cost
         },
         message: `Backlink summary for **${ctx.input.target}**: **${result?.backlinks ?? 0}** backlinks from **${result?.referring_domains ?? 0}** referring domains. Rank: **${result?.rank ?? 'N/A'}**.`
@@ -122,32 +140,35 @@ export let backlinksAnalysis = SlateTool.create(spec, {
     } else if (mode === 'backlinks') {
       let response = await client.backlinksLive({
         target: ctx.input.target,
+        filters: ctx.input.filters,
         limit: ctx.input.limit,
         offset: ctx.input.offset,
         includeSubdomains: ctx.input.includeSubdomains,
+        includeIndirectLinks: ctx.input.includeIndirectLinks,
         backlinksFilters: ctx.input.backlinksFilters,
+        backlinksStatusType: ctx.input.backlinksStatusType,
         orderBy: ctx.input.orderBy
       });
 
       let result = client.extractFirstResult(response);
       let items = (result?.items ?? []).map((item: any) => ({
-        type: item.type,
-        domainFrom: item.domain_from,
-        urlFrom: item.url_from,
-        urlTo: item.url_to,
-        anchor: item.anchor,
-        isLost: item.is_lost,
-        dofollow: item.dofollow,
-        pageFromRank: item.page_from_rank,
-        domainFromRank: item.domain_from_rank,
-        firstSeen: item.first_seen,
-        lastSeen: item.last_seen
+        type: optionalString(item.type),
+        domainFrom: optionalString(item.domain_from),
+        urlFrom: optionalString(item.url_from),
+        urlTo: optionalString(item.url_to),
+        anchor: optionalString(item.anchor),
+        isLost: optionalBoolean(item.is_lost),
+        dofollow: optionalBoolean(item.dofollow),
+        pageFromRank: optionalNumber(item.page_from_rank),
+        domainFromRank: optionalNumber(item.domain_from_rank),
+        firstSeen: optionalString(item.first_seen),
+        lastSeen: optionalString(item.last_seen)
       }));
 
       return {
         output: {
           target: ctx.input.target,
-          totalBacklinks: result?.total_count,
+          totalBacklinks: optionalNumber(result?.total_count),
           backlinks: items,
           cost: response.cost
         },
@@ -158,22 +179,26 @@ export let backlinksAnalysis = SlateTool.create(spec, {
         target: ctx.input.target,
         limit: ctx.input.limit,
         offset: ctx.input.offset,
+        filters: ctx.input.filters,
+        backlinksFilters: ctx.input.backlinksFilters,
         includeSubdomains: ctx.input.includeSubdomains,
+        includeIndirectLinks: ctx.input.includeIndirectLinks,
+        backlinksStatusType: ctx.input.backlinksStatusType,
         orderBy: ctx.input.orderBy
       });
 
       let result = client.extractFirstResult(response);
       let items = (result?.items ?? []).map((item: any) => ({
-        domain: item.domain,
-        rank: item.rank,
-        backlinks: item.backlinks,
-        firstSeen: item.first_seen
+        domain: optionalString(item.domain),
+        rank: optionalNumber(item.rank),
+        backlinks: optionalNumber(item.backlinks),
+        firstSeen: optionalString(item.first_seen)
       }));
 
       return {
         output: {
           target: ctx.input.target,
-          totalReferringDomains: result?.total_count,
+          totalReferringDomains: optionalNumber(result?.total_count),
           referringDomains: items,
           cost: response.cost
         },

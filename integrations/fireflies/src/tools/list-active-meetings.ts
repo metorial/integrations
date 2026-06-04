@@ -6,7 +6,7 @@ import { spec } from '../spec';
 export let listActiveMeetings = SlateTool.create(spec, {
   name: 'List Active Meetings',
   key: 'list_active_meetings',
-  description: `Retrieve meetings currently in progress. Returns real-time information including meeting title, organizer, link, start time, and state (active or paused). Regular users can only see their own meetings; admins can query any team member's active meetings.`,
+  description: `Retrieve meetings currently in progress. Returns real-time information including meeting title, organizer, link, start time, end time, privacy, and state. Regular users can only see their own meetings; admins can query any team member's active meetings.`,
   tags: {
     readOnly: true
   }
@@ -37,7 +37,7 @@ export let listActiveMeetings = SlateTool.create(spec, {
             startTime: z.string().nullable().describe('Meeting start time'),
             endTime: z.string().nullable().describe('Meeting end time'),
             privacy: z.string().nullable().describe('Privacy level'),
-            state: z.string().nullable().describe('Meeting state (active or paused)')
+            state: z.string().nullable().describe('Meeting state')
           })
         )
         .describe('List of active meetings')
@@ -51,15 +51,15 @@ export let listActiveMeetings = SlateTool.create(spec, {
       states: ctx.input.states
     });
 
-    let mapped = (meetings || []).map((m: any) => ({
-      meetingId: m.id,
-      title: m.title ?? null,
-      organizerEmail: m.organizer_email ?? null,
-      meetingLink: m.meeting_link ?? null,
-      startTime: m.start_time ?? null,
-      endTime: m.end_time ?? null,
-      privacy: m.privacy ?? null,
-      state: m.state ?? null
+    let mapped = (meetings || []).map((meeting: any) => ({
+      meetingId: String(meeting?.id ?? ''),
+      title: meeting?.title ?? null,
+      organizerEmail: meeting?.organizer_email ?? null,
+      meetingLink: meeting?.meeting_link ?? null,
+      startTime: meeting?.start_time ?? null,
+      endTime: meeting?.end_time ?? null,
+      privacy: meeting?.privacy ?? null,
+      state: meeting?.state ?? null
     }));
 
     return {

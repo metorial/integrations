@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 
+let optionalNumber = (value: unknown) => (typeof value === 'number' ? value : undefined);
+
 let intersectionKeywordSchema = z
   .object({
     keyword: z.string().describe('Shared keyword'),
@@ -19,10 +21,10 @@ let intersectionKeywordSchema = z
 export let domainIntersection = SlateTool.create(spec, {
   name: 'Domain Intersection',
   key: 'domain_intersection',
-  description: `Find shared keywords between two or more domains to identify keyword overlap and content gaps. Compares organic search keywords that multiple domains rank for simultaneously. Returns keyword metrics and each domain's ranking position. Essential for competitive keyword gap analysis.`,
+  description: `Find shared keywords between two domains to identify keyword overlap and content gaps. Compares organic search keywords that both domains rank for simultaneously, or keywords where the first domain ranks and the second does not. Returns keyword metrics and each domain's ranking position. Essential for competitive keyword gap analysis.`,
   instructions: [
-    'Provide two or more domains as targets to find shared keywords.',
-    'Targets should be provided as a record where keys are indices ("1", "2", etc.) and values are domain names.',
+    'Provide target1 and target2 as domains without https:// or www.',
+    'Set intersections to false for keywords where target1 ranks and target2 does not. It defaults to true.',
     'Filter and sort results to focus on the most valuable keyword opportunities.'
   ],
   tags: {
@@ -32,22 +34,28 @@ export let domainIntersection = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      targets: z
-        .record(z.string(), z.string())
-        .describe('Domains to compare (e.g., {"1": "example.com", "2": "competitor.com"})'),
+      target1: z.string().describe('First domain to compare, without https:// or www.'),
+      target2: z.string().describe('Second domain to compare, without https:// or www.'),
+      intersections: z
+        .boolean()
+        .optional()
+        .describe(
+          'Whether to return keywords where both target domains rank. Defaults to true.'
+        ),
       locationName: z.string().optional().describe('Target location (e.g., "United States")'),
       locationCode: z.number().optional().describe('DataForSEO location code'),
       languageName: z.string().optional().describe('Language name'),
       languageCode: z.string().optional().describe('Language code'),
       limit: z.number().optional().describe('Maximum number of results'),
       offset: z.number().optional().describe('Pagination offset'),
-      filters: z.array(z.string()).optional().describe('Filter results'),
+      filters: z.array(z.any()).optional().describe('DataForSEO Labs filters'),
       orderBy: z.array(z.string()).optional().describe('Order results')
     })
   )
   .output(
     z.object({
-      targets: z.record(z.string(), z.string()).describe('Compared domains'),
+      target1: z.string().describe('First compared domain'),
+      target2: z.string().describe('Second compared domain'),
       totalCount: z.number().optional().describe('Total shared keywords found'),
       keywords: z.array(intersectionKeywordSchema).describe('Shared keywords with metrics'),
       cost: z.number().optional().describe('API cost')
@@ -57,7 +65,9 @@ export let domainIntersection = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.labsDomainIntersectionLive({
-      targets: ctx.input.targets,
+      target1: ctx.input.target1,
+      target2: ctx.input.target2,
+      intersections: ctx.input.intersections,
       locationName: ctx.input.locationName,
       locationCode: ctx.input.locationCode,
       languageName: ctx.input.languageName,
@@ -71,33 +81,34 @@ export let domainIntersection = SlateTool.create(spec, {
     let result = client.extractFirstResult(response);
     let items = (result?.items ?? []).map((item: any) => {
       let positions: Record<string, number> = {};
-      if (item.intersection_result) {
-        for (let [key, val] of Object.entries(item.intersection_result)) {
-          let posVal = val as any;
-          if (posVal?.rank_absolute) {
-            positions[key] = posVal.rank_absolute;
-          }
-        }
+      let firstRank = optionalNumber(item.first_domain_serp_element?.serp_item?.rank_absolute);
+      let secondRank = optionalNumber(
+        item.second_domain_serp_element?.serp_item?.rank_absolute
+      );
+      if (firstRank !== undefined) {
+        positions[ctx.input.target1] = firstRank;
+      }
+      if (secondRank !== undefined) {
+        positions[ctx.input.target2] = secondRank;
       }
       return {
         keyword: item.keyword_data?.keyword ?? '',
-        searchVolume: item.keyword_data?.keyword_info?.search_volume,
-        cpc: item.keyword_data?.keyword_info?.cpc,
-        competition: item.keyword_data?.keyword_info?.competition,
+        searchVolume: optionalNumber(item.keyword_data?.keyword_info?.search_volume),
+        cpc: optionalNumber(item.keyword_data?.keyword_info?.cpc),
+        competition: optionalNumber(item.keyword_data?.keyword_info?.competition),
         domainPositions: Object.keys(positions).length > 0 ? positions : undefined
       };
     });
 
-    let domainNames = Object.values(ctx.input.targets).join(', ');
-
     return {
       output: {
-        targets: ctx.input.targets,
+        target1: ctx.input.target1,
+        target2: ctx.input.target2,
         totalCount: result?.total_count,
         keywords: items,
         cost: response.cost
       },
-      message: `Found **${items.length}** shared keywords between **${domainNames}** (total: ${result?.total_count ?? 'unknown'}).`
+      message: `Found **${items.length}** shared keywords between **${ctx.input.target1}** and **${ctx.input.target2}** (total: ${result?.total_count ?? 'unknown'}).`
     };
   })
   .build();

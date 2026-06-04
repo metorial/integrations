@@ -8,8 +8,8 @@ export let getTaskResult = SlateTool.create(spec, {
   key: 'get_task_result',
   description: `Retrieve the results of a previously submitted asynchronous task by its task ID. Use this after creating tasks via On-Page Audit, Google Shopping Search, or other tools that return a task ID. Returns the full task results once the task is completed.`,
   instructions: [
-    'Provide the task ID from a previously created task and the endpoint type that created it.',
-    'The endpoint type should match the API used (e.g., "on_page", "merchant/google/products", "app_data/google/app_searches").'
+    'Provide the task ID from a previously created task and choose the endpoint enum that created it.',
+    'Use On-Page Results for OnPage audit tasks; OnPage does not use the generic task_get/advanced pattern.'
   ],
   tags: {
     destructive: false,
@@ -20,9 +20,17 @@ export let getTaskResult = SlateTool.create(spec, {
     z.object({
       taskId: z.string().describe('Task ID from a previously created task'),
       endpoint: z
-        .string()
+        .enum([
+          'google_shopping_products',
+          'amazon_products',
+          'amazon_asin',
+          'google_play_app_searches',
+          'google_play_app_info',
+          'google_play_app_reviews',
+          'google_reviews'
+        ])
         .describe(
-          'API endpoint type (e.g., "on_page", "merchant/google/products", "merchant/amazon/products", "app_data/google/app_searches")'
+          'Documented async task endpoint. Use google_shopping_products for Google Shopping, amazon_products or amazon_asin for Amazon Merchant tasks, google_play_* for App Data tasks, and google_reviews for Business Data Google Reviews.'
         )
     })
   )
@@ -31,7 +39,7 @@ export let getTaskResult = SlateTool.create(spec, {
       taskId: z.string().describe('The task ID'),
       statusCode: z.number().describe('Task status code'),
       statusMessage: z.string().describe('Task status message'),
-      results: z.array(z.any()).describe('Task results'),
+      results: z.array(z.any()).describe('Task results when available'),
       cost: z.number().optional().describe('API cost')
     })
   )

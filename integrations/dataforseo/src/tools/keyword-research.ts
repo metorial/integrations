@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 
+let optionalNumber = (value: unknown) => (typeof value === 'number' ? value : undefined);
+
 let keywordMetricsSchema = z
   .object({
     keyword: z.string().describe('The keyword'),
@@ -85,12 +87,12 @@ export let keywordResearch = SlateTool.create(spec, {
     let results = client.extractResults(response);
     let keywords = results.map((item: any) => ({
       keyword: item.keyword,
-      searchVolume: item.search_volume,
-      cpc: item.cpc,
-      competition: item.competition,
+      searchVolume: optionalNumber(item.search_volume),
+      cpc: optionalNumber(item.cpc),
+      competition: optionalNumber(item.competition),
       competitionLevel: item.competition_level,
-      lowTopOfPageBid: item.low_top_of_page_bid,
-      highTopOfPageBid: item.high_top_of_page_bid,
+      lowTopOfPageBid: optionalNumber(item.low_top_of_page_bid),
+      highTopOfPageBid: optionalNumber(item.high_top_of_page_bid),
       monthlySearches: item.monthly_searches?.map((ms: any) => ({
         year: ms.year,
         month: ms.month,

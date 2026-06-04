@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { dataForSEOApiError, dataForSEOServiceError } from './errors';
 
 export interface DataForSEOResponse<T = any> {
   version: string;
@@ -21,6 +22,55 @@ export interface DataForSEOResponse<T = any> {
   }>;
 }
 
+export type SerpSearchEngine = 'google' | 'bing' | 'yahoo' | 'youtube';
+
+export type DataForSEOTaskEndpoint =
+  | 'google_shopping_products'
+  | 'amazon_products'
+  | 'amazon_asin'
+  | 'google_play_app_searches'
+  | 'google_play_app_info'
+  | 'google_play_app_reviews'
+  | 'google_reviews';
+
+let taskResultPaths: Record<DataForSEOTaskEndpoint, string> = {
+  google_shopping_products: 'merchant/google/products/task_get/advanced',
+  amazon_products: 'merchant/amazon/products/task_get/advanced',
+  amazon_asin: 'merchant/amazon/asin/task_get/advanced',
+  google_play_app_searches: 'app_data/google/app_searches/task_get/advanced',
+  google_play_app_info: 'app_data/google/app_info/task_get/advanced',
+  google_play_app_reviews: 'app_data/google/app_reviews/task_get/advanced',
+  google_reviews: 'business_data/google/reviews/task_get'
+};
+
+let removeUndefined = <T extends Record<string, unknown>>(value: T) =>
+  Object.fromEntries(Object.entries(value).filter(([, entry]) => entry !== undefined));
+
+let assertDataForSEOTopLevelOk = (response: DataForSEOResponse, operation: string) => {
+  if (response.status_code === 20000) {
+    return;
+  }
+
+  throw dataForSEOServiceError(
+    `DataForSEO API ${operation} failed: ${response.status_message} (code: ${response.status_code}).`
+  );
+};
+
+let assertDataForSEOTaskOk = (
+  task: DataForSEOResponse['tasks'][number] | undefined,
+  operation: string
+) => {
+  if (!task) {
+    throw dataForSEOServiceError(`DataForSEO API ${operation} did not return a task.`);
+  }
+
+  if (task.status_code >= 40000) {
+    throw dataForSEOServiceError(
+      `DataForSEO API ${operation} task failed: ${task.status_message} (code: ${task.status_code}).`
+    );
+  }
+};
+
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
@@ -34,9 +84,34 @@ export class Client {
     });
   }
 
-  // ─── SERP ────────────────────────────────────────────────────────────
+  private async post<T = any>(
+    path: string,
+    body: Record<string, unknown>[],
+    operation: string
+  ) {
+    try {
+      let response = await this.axios.post<DataForSEOResponse<T>>(path, body);
+      assertDataForSEOTopLevelOk(response.data, operation);
+      return response.data;
+    } catch (error) {
+      throw dataForSEOApiError(error, operation);
+    }
+  }
 
-  async serpGoogleOrganicLive(params: {
+  private async get<T = any>(path: string, operation: string) {
+    try {
+      let response = await this.axios.get<DataForSEOResponse<T>>(path);
+      assertDataForSEOTopLevelOk(response.data, operation);
+      return response.data;
+    } catch (error) {
+      throw dataForSEOApiError(error, operation);
+    }
+  }
+
+  // SERP
+
+  async serpOrganicLive(params: {
+    searchEngine: SerpSearchEngine;
     keyword: string;
     locationName?: string;
     locationCode?: number;
@@ -46,26 +121,33 @@ export class Client {
     os?: string;
     depth?: number;
   }) {
-    let body = [
-      {
-        keyword: params.keyword,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        device: params.device,
-        os: params.os,
-        depth: params.depth
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
-      '/serp/google/organic/live/advanced',
-      body
+    let body = removeUndefined({
+      keyword: params.keyword,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      device: params.device,
+      os: params.os,
+      ...(params.searchEngine === 'youtube'
+        ? { block_depth: params.depth }
+        : { depth: params.depth })
+    });
+
+    return this.post(
+      `/serp/${params.searchEngine}/organic/live/advanced`,
+      [body],
+      `${params.searchEngine} SERP organic live search`
     );
-    return response.data;
   }
 
-  // ─── Keywords Data ───────────────────────────────────────────────────
+  async serpGoogleOrganicLive(
+    params: Omit<Parameters<Client['serpOrganicLive']>[0], 'searchEngine'>
+  ) {
+    return this.serpOrganicLive({ ...params, searchEngine: 'google' });
+  }
+
+  // Keywords Data
 
   async keywordsSearchVolumeLive(params: {
     keywords: string[];
@@ -75,21 +157,20 @@ export class Client {
     languageCode?: string;
     searchPartners?: boolean;
   }) {
-    let body = [
-      {
-        keywords: params.keywords,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        search_partners: params.searchPartners
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      keywords: params.keywords,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      search_partners: params.searchPartners
+    });
+
+    return this.post(
       '/keywords_data/google_ads/search_volume/live',
-      body
+      [body],
+      'keyword search volume'
     );
-    return response.data;
   }
 
   async keywordsForSiteLive(params: {
@@ -102,180 +183,176 @@ export class Client {
     limit?: number;
     offset?: number;
   }) {
-    let body = [
-      {
-        target: params.target,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        include_serp_info: params.includeSerpInfo,
-        limit: params.limit,
-        offset: params.offset
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      target: params.target,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      include_serp_info: params.includeSerpInfo,
+      limit: params.limit,
+      offset: params.offset
+    });
+
+    return this.post(
       '/keywords_data/google_ads/keywords_for_site/live',
-      body
+      [body],
+      'keywords for site'
     );
-    return response.data;
   }
 
-  // ─── Backlinks ───────────────────────────────────────────────────────
+  // Backlinks
 
   async backlinksSummaryLive(params: {
     target: string;
     includeSubdomains?: boolean;
     includeIndirectLinks?: boolean;
+    backlinksFilters?: unknown[];
+    backlinksStatusType?: 'all' | 'live' | 'lost';
   }) {
-    let body = [
-      {
-        target: params.target,
-        include_subdomains: params.includeSubdomains,
-        include_indirect_links: params.includeIndirectLinks
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>('/backlinks/summary/live', body);
-    return response.data;
+    let body = removeUndefined({
+      target: params.target,
+      include_subdomains: params.includeSubdomains,
+      include_indirect_links: params.includeIndirectLinks,
+      backlinks_filters: params.backlinksFilters,
+      backlinks_status_type: params.backlinksStatusType
+    });
+
+    return this.post('/backlinks/summary/live', [body], 'backlinks summary');
   }
 
   async backlinksLive(params: {
     target: string;
     mode?: string;
+    filters?: unknown[];
     limit?: number;
     offset?: number;
     includeSubdomains?: boolean;
-    backlinksFilters?: string[];
+    includeIndirectLinks?: boolean;
+    backlinksFilters?: unknown[];
+    backlinksStatusType?: 'all' | 'live' | 'lost';
     orderBy?: string[];
   }) {
-    let body = [
-      {
-        target: params.target,
-        mode: params.mode,
-        limit: params.limit,
-        offset: params.offset,
-        include_subdomains: params.includeSubdomains,
-        backlinks_filters: params.backlinksFilters,
-        order_by: params.orderBy
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
-      '/backlinks/backlinks/live',
-      body
-    );
-    return response.data;
+    let body = removeUndefined({
+      target: params.target,
+      mode: params.mode,
+      filters: params.filters ?? params.backlinksFilters,
+      limit: params.limit,
+      offset: params.offset,
+      include_subdomains: params.includeSubdomains,
+      include_indirect_links: params.includeIndirectLinks,
+      backlinks_status_type: params.backlinksStatusType,
+      order_by: params.orderBy
+    });
+
+    return this.post('/backlinks/backlinks/live', [body], 'backlinks list');
   }
 
   async backlinksReferringDomainsLive(params: {
     target: string;
     limit?: number;
     offset?: number;
+    filters?: unknown[];
+    backlinksFilters?: unknown[];
     includeSubdomains?: boolean;
+    includeIndirectLinks?: boolean;
+    backlinksStatusType?: 'all' | 'live' | 'lost';
     orderBy?: string[];
   }) {
-    let body = [
-      {
-        target: params.target,
-        limit: params.limit,
-        offset: params.offset,
-        include_subdomains: params.includeSubdomains,
-        order_by: params.orderBy
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      target: params.target,
+      limit: params.limit,
+      offset: params.offset,
+      filters: params.filters,
+      backlinks_filters: params.backlinksFilters,
+      include_subdomains: params.includeSubdomains,
+      include_indirect_links: params.includeIndirectLinks,
+      backlinks_status_type: params.backlinksStatusType,
+      order_by: params.orderBy
+    });
+
+    return this.post(
       '/backlinks/referring_domains/live',
-      body
+      [body],
+      'backlinks referring domains'
     );
-    return response.data;
   }
 
-  // ─── Domain Analytics ────────────────────────────────────────────────
+  // Domain Analytics
 
   async whoisOverviewLive(params: { target: string }) {
-    let body = [
-      {
-        target: params.target
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    return this.post(
       '/domain_analytics/whois/overview/live',
-      body
+      [{ target: params.target }],
+      'whois overview'
     );
-    return response.data;
   }
 
   async technologiesDomainTechnologiesLive(params: { target: string }) {
-    let body = [
-      {
-        target: params.target
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    return this.post(
       '/domain_analytics/technologies/domain_technologies/live',
-      body
+      [{ target: params.target }],
+      'domain technologies'
     );
-    return response.data;
   }
 
-  // ─── On-Page ─────────────────────────────────────────────────────────
+  // OnPage
 
   async onPageTaskPost(params: {
     target: string;
     maxCrawlPages?: number;
     startUrl?: string;
     enableJavascript?: boolean;
-    customJsScript?: string;
-    maxCrawlDepth?: number;
+    enableBrowserRendering?: boolean;
+    calculateKeywordDensity?: boolean;
+    storeRawHtml?: boolean;
+    customJs?: string;
     checkSpell?: boolean;
     loadResources?: boolean;
+    disableCookiePopup?: boolean;
+    checksThreshold?: Record<string, number>;
   }) {
-    let body = [
-      {
-        target: params.target,
-        max_crawl_pages: params.maxCrawlPages,
-        start_url: params.startUrl,
-        enable_javascript: params.enableJavascript,
-        custom_js_script: params.customJsScript,
-        max_crawl_depth: params.maxCrawlDepth,
-        check_spell: params.checkSpell,
-        load_resources: params.loadResources
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>('/on_page/task_post', body);
-    return response.data;
+    let body = removeUndefined({
+      target: params.target,
+      max_crawl_pages: params.maxCrawlPages,
+      start_url: params.startUrl,
+      enable_javascript: params.enableJavascript,
+      enable_browser_rendering: params.enableBrowserRendering,
+      calculate_keyword_density: params.calculateKeywordDensity,
+      store_raw_html: params.storeRawHtml,
+      custom_js: params.customJs,
+      check_spell: params.checkSpell,
+      load_resources: params.loadResources,
+      disable_cookie_popup: params.disableCookiePopup,
+      checks_threshold: params.checksThreshold
+    });
+
+    return this.post('/on_page/task_post', [body], 'on-page task creation');
   }
 
   async onPageSummary(taskId: string) {
-    let body = [
-      {
-        id: taskId
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>('/on_page/summary', body);
-    return response.data;
+    return this.get(`/on_page/summary/${taskId}`, 'on-page summary');
   }
 
-  async onPagePagesLive(params: {
-    target: string;
+  async onPagePages(params: {
+    taskId: string;
     limit?: number;
     offset?: number;
-    filters?: string[];
+    filters?: unknown[];
     orderBy?: string[];
   }) {
-    let body = [
-      {
-        target: params.target,
-        limit: params.limit,
-        offset: params.offset,
-        filters: params.filters,
-        order_by: params.orderBy
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>('/on_page/pages', body);
-    return response.data;
+    let body = removeUndefined({
+      id: params.taskId,
+      limit: params.limit,
+      offset: params.offset,
+      filters: params.filters,
+      order_by: params.orderBy
+    });
+
+    return this.post('/on_page/pages', [body], 'on-page pages');
   }
 
-  // ─── Content Analysis ────────────────────────────────────────────────
+  // Content Analysis
 
   async contentAnalysisSearchLive(params: {
     keyword: string;
@@ -289,25 +366,20 @@ export class Client {
     sentimentConnotation?: string;
     orderBy?: string[];
   }) {
-    let body = [
-      {
-        keyword: params.keyword,
-        keyword_fields: params.keywordFields,
-        page_type: params.pageType,
-        search_mode: params.searchMode,
-        limit: params.limit,
-        offset: params.offset,
-        internal_list_limit: params.internalListLimit,
-        positive_connotation_threshold: params.positiveConnotationThreshold,
-        sentiment_connotation: params.sentimentConnotation,
-        order_by: params.orderBy
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
-      '/content_analysis/search/live',
-      body
-    );
-    return response.data;
+    let body = removeUndefined({
+      keyword: params.keyword,
+      keyword_fields: params.keywordFields,
+      page_type: params.pageType,
+      search_mode: params.searchMode,
+      limit: params.limit,
+      offset: params.offset,
+      internal_list_limit: params.internalListLimit,
+      positive_connotation_threshold: params.positiveConnotationThreshold,
+      sentiment_connotation: params.sentimentConnotation,
+      order_by: params.orderBy
+    });
+
+    return this.post('/content_analysis/search/live', [body], 'content analysis search');
   }
 
   async contentAnalysisSummaryLive(params: {
@@ -316,22 +388,17 @@ export class Client {
     pageType?: string[];
     internalListLimit?: number;
   }) {
-    let body = [
-      {
-        keyword: params.keyword,
-        keyword_fields: params.keywordFields,
-        page_type: params.pageType,
-        internal_list_limit: params.internalListLimit
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
-      '/content_analysis/summary/live',
-      body
-    );
-    return response.data;
+    let body = removeUndefined({
+      keyword: params.keyword,
+      keyword_fields: params.keywordFields,
+      page_type: params.pageType,
+      internal_list_limit: params.internalListLimit
+    });
+
+    return this.post('/content_analysis/summary/live', [body], 'content analysis summary');
   }
 
-  // ─── DataForSEO Labs ────────────────────────────────────────────────
+  // DataForSEO Labs
 
   async labsKeywordSuggestionsLive(params: {
     keyword: string;
@@ -342,28 +409,27 @@ export class Client {
     includeSerpInfo?: boolean;
     limit?: number;
     offset?: number;
-    filters?: string[];
+    filters?: unknown[];
     orderBy?: string[];
   }) {
-    let body = [
-      {
-        keyword: params.keyword,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        include_serp_info: params.includeSerpInfo,
-        limit: params.limit,
-        offset: params.offset,
-        filters: params.filters,
-        order_by: params.orderBy
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      keyword: params.keyword,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      include_serp_info: params.includeSerpInfo,
+      limit: params.limit,
+      offset: params.offset,
+      filters: params.filters,
+      order_by: params.orderBy
+    });
+
+    return this.post(
       '/dataforseo_labs/google/keyword_suggestions/live',
-      body
+      [body],
+      'Labs keyword suggestions'
     );
-    return response.data;
   }
 
   async labsRelatedKeywordsLive(params: {
@@ -375,28 +441,59 @@ export class Client {
     includeSerpInfo?: boolean;
     limit?: number;
     offset?: number;
-    filters?: string[];
+    filters?: unknown[];
     orderBy?: string[];
   }) {
-    let body = [
-      {
-        keyword: params.keyword,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        include_serp_info: params.includeSerpInfo,
-        limit: params.limit,
-        offset: params.offset,
-        filters: params.filters,
-        order_by: params.orderBy
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      keyword: params.keyword,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      include_serp_info: params.includeSerpInfo,
+      limit: params.limit,
+      offset: params.offset,
+      filters: params.filters,
+      order_by: params.orderBy
+    });
+
+    return this.post(
       '/dataforseo_labs/google/related_keywords/live',
-      body
+      [body],
+      'Labs related keywords'
     );
-    return response.data;
+  }
+
+  async labsRankedKeywordsLive(params: {
+    target: string;
+    locationName?: string;
+    locationCode?: number;
+    languageName?: string;
+    languageCode?: string;
+    ignoreSynonyms?: boolean;
+    limit?: number;
+    offset?: number;
+    filters?: unknown[];
+    orderBy?: string[];
+  }) {
+    let body = removeUndefined({
+      target: params.target,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      ignore_synonyms: params.ignoreSynonyms,
+      limit: params.limit,
+      offset: params.offset,
+      filters: params.filters,
+      order_by: params.orderBy
+    });
+
+    return this.post(
+      '/dataforseo_labs/google/ranked_keywords/live',
+      [body],
+      'Labs ranked keywords'
+    );
   }
 
   async labsDomainRankOverviewLive(params: {
@@ -406,20 +503,19 @@ export class Client {
     languageName?: string;
     languageCode?: string;
   }) {
-    let body = [
-      {
-        target: params.target,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      target: params.target,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode
+    });
+
+    return this.post(
       '/dataforseo_labs/google/domain_rank_overview/live',
-      body
+      [body],
+      'Labs domain rank overview'
     );
-    return response.data;
   }
 
   async labsCompetitorsDomainLive(params: {
@@ -430,63 +526,65 @@ export class Client {
     languageCode?: string;
     limit?: number;
     offset?: number;
-    filters?: string[];
+    filters?: unknown[];
     orderBy?: string[];
   }) {
-    let body = [
-      {
-        target: params.target,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        limit: params.limit,
-        offset: params.offset,
-        filters: params.filters,
-        order_by: params.orderBy
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      target: params.target,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      limit: params.limit,
+      offset: params.offset,
+      filters: params.filters,
+      order_by: params.orderBy
+    });
+
+    return this.post(
       '/dataforseo_labs/google/competitors_domain/live',
-      body
+      [body],
+      'Labs domain competitors'
     );
-    return response.data;
   }
 
   async labsDomainIntersectionLive(params: {
-    targets: Record<string, string>;
+    target1: string;
+    target2: string;
+    intersections?: boolean;
     locationName?: string;
     locationCode?: number;
     languageName?: string;
     languageCode?: string;
     limit?: number;
     offset?: number;
-    filters?: string[];
+    filters?: unknown[];
     orderBy?: string[];
   }) {
-    let body = [
-      {
-        targets: params.targets,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        limit: params.limit,
-        offset: params.offset,
-        filters: params.filters,
-        order_by: params.orderBy
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      target1: params.target1,
+      target2: params.target2,
+      intersections: params.intersections,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      limit: params.limit,
+      offset: params.offset,
+      filters: params.filters,
+      order_by: params.orderBy
+    });
+
+    return this.post(
       '/dataforseo_labs/google/domain_intersection/live',
-      body
+      [body],
+      'Labs domain intersection'
     );
-    return response.data;
   }
 
-  // ─── Merchant ────────────────────────────────────────────────────────
+  // Merchant
 
-  async merchantGoogleProductsLive(params: {
+  async merchantGoogleProductsTaskPost(params: {
     keyword: string;
     locationName?: string;
     locationCode?: number;
@@ -497,77 +595,84 @@ export class Client {
     limit?: number;
     offset?: number;
   }) {
-    let body = [
-      {
-        keyword: params.keyword,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        device: params.device,
-        os: params.os,
-        limit: params.limit,
-        offset: params.offset
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      keyword: params.keyword,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      device: params.device,
+      os: params.os,
+      limit: params.limit,
+      offset: params.offset
+    });
+
+    return this.post(
       '/merchant/google/products/task_post',
-      body
+      [body],
+      'Google Shopping product task creation'
     );
-    return response.data;
   }
 
-  async merchantAmazonProductsLive(params: {
+  async merchantGoogleProductsLive(
+    params: Parameters<Client['merchantGoogleProductsTaskPost']>[0]
+  ) {
+    return this.merchantGoogleProductsTaskPost(params);
+  }
+
+  async merchantAmazonProductsTaskPost(params: {
     keyword: string;
     locationName?: string;
     locationCode?: number;
+    locationCoordinate?: string;
     languageName?: string;
     languageCode?: string;
+    seDomain?: string;
     depth?: number;
   }) {
-    let body = [
-      {
-        keyword: params.keyword,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        depth: params.depth
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      keyword: params.keyword,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      location_coordinate: params.locationCoordinate,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      se_domain: params.seDomain,
+      depth: params.depth
+    });
+
+    return this.post(
       '/merchant/amazon/products/task_post',
-      body
+      [body],
+      'Amazon products task creation'
     );
-    return response.data;
   }
 
-  async merchantAmazonAsinLive(params: {
+  async merchantAmazonAsinTaskPost(params: {
     asin: string;
     locationName?: string;
     locationCode?: number;
+    locationCoordinate?: string;
     languageName?: string;
     languageCode?: string;
+    seDomain?: string;
   }) {
-    let body = [
-      {
-        asin: params.asin,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
-      '/merchant/amazon/asin/task_post',
-      body
-    );
-    return response.data;
+    let body = removeUndefined({
+      asin: params.asin,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      location_coordinate: params.locationCoordinate,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      se_domain: params.seDomain
+    });
+
+    return this.post('/merchant/amazon/asin/task_post', [body], 'Amazon ASIN task creation');
   }
 
-  // ─── App Data ────────────────────────────────────────────────────────
+  // App Data
 
-  async appDataGooglePlaySearchLive(params: {
+  async appDataGooglePlaySearchTaskPost(params: {
     keyword: string;
     locationName?: string;
     locationCode?: number;
@@ -575,47 +680,45 @@ export class Client {
     languageCode?: string;
     depth?: number;
   }) {
-    let body = [
-      {
-        keyword: params.keyword,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        depth: params.depth
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      keyword: params.keyword,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      depth: params.depth
+    });
+
+    return this.post(
       '/app_data/google/app_searches/task_post',
-      body
+      [body],
+      'Google Play app search task creation'
     );
-    return response.data;
   }
 
-  async appDataGooglePlayInfoLive(params: {
+  async appDataGooglePlayInfoTaskPost(params: {
     appId: string;
     locationName?: string;
     locationCode?: number;
     languageName?: string;
     languageCode?: string;
   }) {
-    let body = [
-      {
-        app_id: params.appId,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      app_id: params.appId,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode
+    });
+
+    return this.post(
       '/app_data/google/app_info/task_post',
-      body
+      [body],
+      'Google Play app info task creation'
     );
-    return response.data;
   }
 
-  async appDataGooglePlayReviewsLive(params: {
+  async appDataGooglePlayReviewsTaskPost(params: {
     appId: string;
     locationName?: string;
     locationCode?: number;
@@ -624,78 +727,210 @@ export class Client {
     depth?: number;
     sortBy?: string;
   }) {
-    let body = [
-      {
-        app_id: params.appId,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        depth: params.depth,
-        sort_by: params.sortBy
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      app_id: params.appId,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      depth: params.depth,
+      sort_by: params.sortBy
+    });
+
+    return this.post(
       '/app_data/google/app_reviews/task_post',
-      body
+      [body],
+      'Google Play app reviews task creation'
     );
-    return response.data;
   }
 
-  // ─── Business Data ───────────────────────────────────────────────────
+  // Business Data
 
-  async businessDataGoogleReviewsLive(params: {
+  async businessListingsSearchLive(params: {
+    categories?: string[];
+    description?: string;
+    title?: string;
+    isClaimed?: boolean;
+    locationName?: string;
+    locationCode?: number;
+    locationCoordinate?: string;
+    limit?: number;
+    offset?: number;
+    offsetToken?: string;
+    filters?: unknown[];
+    orderBy?: string[];
+  }) {
+    let body = removeUndefined({
+      categories: params.categories,
+      description: params.description,
+      title: params.title,
+      is_claimed: params.isClaimed,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      location_coordinate: params.locationCoordinate,
+      limit: params.limit,
+      offset: params.offset,
+      offset_token: params.offsetToken,
+      filters: params.filters,
+      order_by: params.orderBy
+    });
+
+    return this.post(
+      '/business_data/business_listings/search/live',
+      [body],
+      'business listings search'
+    );
+  }
+
+  async businessDataGoogleReviewsTaskPost(params: {
     keyword: string;
     locationName?: string;
     locationCode?: number;
+    locationCoordinate?: string;
     languageName?: string;
     languageCode?: string;
     depth?: number;
     sortBy?: string;
   }) {
-    let body = [
-      {
-        keyword: params.keyword,
-        location_name: params.locationName,
-        location_code: params.locationCode,
-        language_name: params.languageName,
-        language_code: params.languageCode,
-        depth: params.depth,
-        sort_by: params.sortBy
-      }
-    ];
-    let response = await this.axios.post<DataForSEOResponse>(
+    let body = removeUndefined({
+      keyword: params.keyword,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      location_coordinate: params.locationCoordinate,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      depth: params.depth,
+      sort_by: params.sortBy
+    });
+
+    return this.post(
       '/business_data/google/reviews/task_post',
-      body
+      [body],
+      'Google reviews task creation'
     );
-    return response.data;
   }
 
-  // ─── Tasks ───────────────────────────────────────────────────────────
+  // AI Optimization
 
-  async getTasksReady(endpoint: string) {
-    let response = await this.axios.get<DataForSEOResponse>(`/${endpoint}/tasks_ready`);
-    return response.data;
-  }
+  async aiKeywordSearchVolumeLive(params: {
+    keywords: string[];
+    locationName?: string;
+    locationCode?: number;
+    languageName?: string;
+    languageCode?: string;
+  }) {
+    let body = removeUndefined({
+      keywords: params.keywords,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode
+    });
 
-  async getTaskResult(endpoint: string, taskId: string) {
-    let response = await this.axios.get<DataForSEOResponse>(
-      `/${endpoint}/task_get/advanced/${taskId}`
+    return this.post(
+      '/ai_optimization/ai_keyword_data/keywords_search_volume/live',
+      [body],
+      'AI keyword search volume'
     );
-    return response.data;
   }
 
-  // ─── Utility: Extract results ────────────────────────────────────────
+  async llmMentionsSearchLive(params: {
+    target: Record<string, unknown>[];
+    platform?: 'google' | 'chat_gpt';
+    locationName?: string;
+    locationCode?: number;
+    languageName?: string;
+    languageCode?: string;
+    aiModelName?: string;
+    limit?: number;
+    offset?: number;
+    filters?: unknown[];
+    orderBy?: string[];
+  }) {
+    let body = removeUndefined({
+      target: params.target,
+      platform: params.platform,
+      location_name: params.locationName,
+      location_code: params.locationCode,
+      language_name: params.languageName,
+      language_code: params.languageCode,
+      ai_model_name: params.aiModelName,
+      limit: params.limit,
+      offset: params.offset,
+      filters: params.filters,
+      order_by: params.orderBy
+    });
+
+    return this.post(
+      '/ai_optimization/llm_mentions/search/live',
+      [body],
+      'LLM mentions search'
+    );
+  }
+
+  async llmResponsesLive(params: {
+    platform: 'chat_gpt' | 'claude' | 'gemini' | 'perplexity';
+    userPrompt: string;
+    modelName: string;
+    systemMessage?: string;
+    messageChain?: Array<{ role: string; message: string }>;
+    maxOutputTokens?: number;
+    temperature?: number;
+    topP?: number;
+    webSearch?: boolean;
+    webSearchCountryIsoCode?: string;
+    webSearchCity?: string;
+    useReasoning?: boolean;
+  }) {
+    let body = removeUndefined({
+      user_prompt: params.userPrompt,
+      model_name: params.modelName,
+      system_message: params.systemMessage,
+      message_chain: params.messageChain,
+      max_output_tokens: params.maxOutputTokens,
+      temperature: params.temperature,
+      top_p: params.topP,
+      web_search: params.webSearch,
+      web_search_country_iso_code: params.webSearchCountryIsoCode,
+      web_search_city: params.webSearchCity,
+      use_reasoning: params.useReasoning
+    });
+
+    return this.post(
+      `/ai_optimization/${params.platform}/llm_responses/live`,
+      [body],
+      `${params.platform} LLM response`
+    );
+  }
+
+  // Tasks
+
+  async getTasksReady(endpoint: DataForSEOTaskEndpoint) {
+    let path = taskResultPaths[endpoint].replace(/\/task_get(?:\/advanced)?$/, '');
+    return this.get(`/${path}/tasks_ready`, `${endpoint} tasks ready`);
+  }
+
+  async getTaskResult(endpoint: DataForSEOTaskEndpoint, taskId: string) {
+    let path = taskResultPaths[endpoint];
+    return this.get(`/${path}/${taskId}`, `${endpoint} task result`);
+  }
+
+  // Utility: Extract results
 
   extractResults<T = any>(response: DataForSEOResponse<T>): T[] {
     if (!response.tasks || response.tasks.length === 0) {
       return [];
     }
+
     let task = response.tasks[0];
-    if (!task) return [];
-    if (task.status_code !== 20000) {
-      throw new Error(`Task error: ${task.status_message} (code: ${task.status_code})`);
+    assertDataForSEOTaskOk(task, 'result extraction');
+
+    if (task?.status_code !== 20000) {
+      throw dataForSEOServiceError(
+        `DataForSEO task did not complete successfully: ${task?.status_message ?? 'Unknown'} (code: ${task?.status_code ?? 'N/A'}).`
+      );
     }
+
     return task.result || [];
   }
 
@@ -704,8 +939,14 @@ export class Client {
     return results[0] ?? null;
   }
 
-  extractTaskId(response: DataForSEOResponse): string | null {
-    if (!response.tasks || response.tasks.length === 0) return null;
-    return response.tasks[0]?.id ?? null;
+  extractTaskId(response: DataForSEOResponse): string {
+    let task = response.tasks?.[0];
+    assertDataForSEOTaskOk(task, 'task creation');
+
+    if (!task?.id) {
+      throw dataForSEOServiceError('DataForSEO task creation did not return a task ID.');
+    }
+
+    return task.id;
   }
 }

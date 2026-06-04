@@ -1,4 +1,8 @@
+export * from './ai-optimization';
+export * from './amazon-product-search';
+export * from './app-data';
 export * from './backlinks-analysis';
+export * from './business-data';
 export * from './content-analysis';
 export * from './domain-analytics';
 export * from './domain-competitors';
@@ -9,4 +13,6 @@ export * from './keyword-research';
 export * from './keyword-suggestions';
 export * from './keywords-for-site';
 export * from './on-page-audit';
+export * from './on-page-results';
+export * from './ranked-keywords';
 export * from './serp-search';

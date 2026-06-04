@@ -2,22 +2,12 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { FirefliesClient } from '../lib/client';
 import { spec } from '../spec';
-
-let userSchema = z.object({
-  userId: z.string().describe('Unique user identifier'),
-  email: z.string().nullable().describe('User email address'),
-  name: z.string().nullable().describe('User full name'),
-  numTranscripts: z.number().nullable().describe('Total number of transcripts'),
-  recentMeeting: z.string().nullable().describe('Most recent meeting date'),
-  minutesConsumed: z.number().nullable().describe('Transcription minutes consumed'),
-  isAdmin: z.boolean().nullable().describe('Whether the user has admin privileges'),
-  integrations: z.array(z.string()).nullable().describe('List of connected integrations')
-});
+import { mapUser, userSchema } from './shared';
 
 export let getUser = SlateTool.create(spec, {
   name: 'Get User',
   key: 'get_user',
-  description: `Retrieve information about a specific user or the authenticated user. Returns user profile data including name, email, role, integrations, transcript count, and minutes consumed.`,
+  description: `Retrieve information about a specific user or the authenticated user. Returns profile data including role, integrations, transcript count, minutes consumed, calendar sync status, and user groups.`,
   tags: {
     readOnly: true
   }
@@ -34,17 +24,7 @@ export let getUser = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new FirefliesClient({ token: ctx.auth.token });
     let user = await client.getUser(ctx.input.userId);
-
-    let output = {
-      userId: user.user_id,
-      email: user.email ?? null,
-      name: user.name ?? null,
-      numTranscripts: user.num_transcripts ?? null,
-      recentMeeting: user.recent_meeting ?? null,
-      minutesConsumed: user.minutes_consumed ?? null,
-      isAdmin: user.is_admin ?? null,
-      integrations: user.integrations ?? null
-    };
+    let output = mapUser(user);
 
     return {
       output,

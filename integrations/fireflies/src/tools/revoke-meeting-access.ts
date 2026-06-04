@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { FirefliesClient } from '../lib/client';
+import { firefliesServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let revokeMeetingAccess = SlateTool.create(spec, {
@@ -24,6 +25,10 @@ export let revokeMeetingAccess = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (!ctx.input.email.trim()) {
+      throw firefliesServiceError('email is required.');
+    }
+
     let client = new FirefliesClient({ token: ctx.auth.token });
 
     let result = await client.revokeSharedMeetingAccess(ctx.input.meetingId, ctx.input.email);

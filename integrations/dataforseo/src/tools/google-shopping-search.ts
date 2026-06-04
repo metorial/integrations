@@ -38,7 +38,11 @@ export let googleShoppingSearch = SlateTool.create(spec, {
       locationName: z.string().optional().describe('Target location (e.g., "United States")'),
       locationCode: z.number().optional().describe('DataForSEO location code'),
       languageName: z.string().optional().describe('Language name (e.g., "English")'),
-      languageCode: z.string().optional().describe('Language code (e.g., "en")')
+      languageCode: z.string().optional().describe('Language code (e.g., "en")'),
+      device: z.enum(['desktop', 'mobile']).optional().describe('Device type for the search'),
+      os: z.enum(['windows', 'macos']).optional().describe('Desktop operating system'),
+      limit: z.number().optional().describe('Maximum number of product results requested'),
+      offset: z.number().optional().describe('Pagination offset')
     })
   )
   .output(
@@ -57,7 +61,11 @@ export let googleShoppingSearch = SlateTool.create(spec, {
       locationName: ctx.input.locationName,
       locationCode: ctx.input.locationCode,
       languageName: ctx.input.languageName,
-      languageCode: ctx.input.languageCode
+      languageCode: ctx.input.languageCode,
+      device: ctx.input.device,
+      os: ctx.input.os,
+      limit: ctx.input.limit,
+      offset: ctx.input.offset
     });
 
     let taskId = client.extractTaskId(response);
@@ -65,7 +73,7 @@ export let googleShoppingSearch = SlateTool.create(spec, {
 
     return {
       output: {
-        taskId: taskId ?? '',
+        taskId,
         keyword: ctx.input.keyword,
         statusMessage: task?.status_message ?? 'Task created',
         cost: response.cost

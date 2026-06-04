@@ -6,7 +6,7 @@ export let spec = SlateSpecification.create({
   key: 'firecrawl',
   name: 'Firecrawl',
   description:
-    'Web data extraction platform that converts websites into clean markdown, HTML, or structured data. Handles JavaScript rendering, anti-bot mechanisms, and proxy management.',
+    'Web data platform for scraping, crawling, searching, mapping, parsing files, extracting structured data, running browser sessions, monitoring page changes, and inspecting account usage.',
   metadata: {},
   config,
   auth

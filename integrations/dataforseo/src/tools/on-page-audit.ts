@@ -6,7 +6,7 @@ import { spec } from '../spec';
 export let onPageAudit = SlateTool.create(spec, {
   name: 'On-Page Audit',
   key: 'on_page_audit',
-  description: `Start a website crawl for technical SEO auditing. Crawls the target website to identify technical issues, broken links, missing meta tags, and other on-page SEO problems. Returns a task ID that can be used to retrieve results once the crawl is complete. Supports JavaScript rendering and customizable crawl depth.`,
+  description: `Start a website crawl for technical SEO auditing. Crawls the target website to identify technical issues, broken links, missing meta tags, and other on-page SEO problems. Returns a task ID that can be used to retrieve results once the crawl is complete. Supports JavaScript rendering and customizable page limits.`,
   instructions: [
     'Provide the target website domain to crawl. The crawl runs asynchronously - you will receive a task ID.',
     'Use the task ID with the "Get Task Result" tool to check status and retrieve audit results.',
@@ -28,10 +28,6 @@ export let onPageAudit = SlateTool.create(spec, {
         .number()
         .optional()
         .describe('Maximum number of pages to crawl (default 10, max 100000)'),
-      maxCrawlDepth: z
-        .number()
-        .optional()
-        .describe('Maximum crawl depth (levels of internal links to follow)'),
       startUrl: z
         .string()
         .optional()
@@ -40,11 +36,37 @@ export let onPageAudit = SlateTool.create(spec, {
         .boolean()
         .optional()
         .describe('Enable JavaScript rendering during crawl'),
+      enableBrowserRendering: z
+        .boolean()
+        .optional()
+        .describe(
+          'Emulate browser rendering to measure Core Web Vitals. This enables JavaScript and resource loading.'
+        ),
+      calculateKeywordDensity: z
+        .boolean()
+        .optional()
+        .describe('Calculate keyword density values for crawled pages'),
+      storeRawHtml: z
+        .boolean()
+        .optional()
+        .describe('Store raw HTML so it can be retrieved through OnPage raw HTML endpoints'),
+      customJs: z
+        .string()
+        .optional()
+        .describe('Custom JavaScript code to execute while crawling pages'),
       loadResources: z
         .boolean()
         .optional()
         .describe('Load external resources (CSS, JS, images)'),
-      checkSpell: z.boolean().optional().describe('Enable spell checking')
+      checkSpell: z.boolean().optional().describe('Enable spell checking'),
+      disableCookiePopup: z
+        .boolean()
+        .optional()
+        .describe('Attempt to disable cookie consent popups while crawling'),
+      checksThreshold: z
+        .record(z.string(), z.number())
+        .optional()
+        .describe('Custom threshold values for OnPage checks')
     })
   )
   .output(
@@ -61,11 +83,16 @@ export let onPageAudit = SlateTool.create(spec, {
     let response = await client.onPageTaskPost({
       target: ctx.input.target,
       maxCrawlPages: ctx.input.maxCrawlPages,
-      maxCrawlDepth: ctx.input.maxCrawlDepth,
       startUrl: ctx.input.startUrl,
       enableJavascript: ctx.input.enableJavascript,
+      enableBrowserRendering: ctx.input.enableBrowserRendering,
+      calculateKeywordDensity: ctx.input.calculateKeywordDensity,
+      storeRawHtml: ctx.input.storeRawHtml,
+      customJs: ctx.input.customJs,
       loadResources: ctx.input.loadResources,
-      checkSpell: ctx.input.checkSpell
+      checkSpell: ctx.input.checkSpell,
+      disableCookiePopup: ctx.input.disableCookiePopup,
+      checksThreshold: ctx.input.checksThreshold
     });
 
     let taskId = client.extractTaskId(response);
@@ -73,7 +100,7 @@ export let onPageAudit = SlateTool.create(spec, {
 
     return {
       output: {
-        taskId: taskId ?? '',
+        taskId,
         target: ctx.input.target,
         statusMessage: task?.status_message ?? 'Task created',
         cost: response.cost

@@ -3181,14 +3181,17 @@
     },
     "integrations/dataforseo": {
       "name": "@slates-integrations/dataforseo",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.5",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.11",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.6",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/datagma": {
@@ -4586,8 +4589,9 @@
     },
     "integrations/firecrawl": {
       "name": "@slates-integrations/firecrawl",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.4",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.11",
         "zod": "^4.2",
@@ -4598,14 +4602,17 @@
     },
     "integrations/fireflies": {
       "name": "@slates-integrations/fireflies",
-      "version": "0.2.0-rc.3",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.11",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.6",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/firmao": {

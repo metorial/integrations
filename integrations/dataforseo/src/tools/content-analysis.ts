@@ -3,6 +3,9 @@ import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 
+let isRecord = (value: unknown): value is Record<string, number> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
 let contentItemSchema = z
   .object({
     type: z.string().optional().describe('Type of content (e.g., "page_content")'),
@@ -19,7 +22,10 @@ let contentItemSchema = z
       .record(z.string(), z.number())
       .optional()
       .describe('Breakdown of sentiment connotation types'),
-    pageCategory: z.array(z.string()).optional().describe('Categories of the page'),
+    pageCategory: z
+      .array(z.union([z.string(), z.number()]))
+      .optional()
+      .describe('DataForSEO content category names or IDs for the page'),
     datePublished: z.string().optional().describe('Date content was published'),
     contentQualityScore: z.number().optional().describe('Content quality score')
   })
@@ -117,8 +123,10 @@ export let contentAnalysis = SlateTool.create(spec, {
         mainTitle: item.main_title,
         language: item.language,
         sentimentConnotation: item.sentiment_connotations?.sentiment_connotation,
-        connotationTypes: item.connotation_types,
-        pageCategory: item.page_category,
+        connotationTypes: isRecord(item.connotation_types)
+          ? item.connotation_types
+          : undefined,
+        pageCategory: Array.isArray(item.page_category) ? item.page_category : undefined,
         datePublished: item.date_published,
         contentQualityScore: item.content_quality_score
       }));
