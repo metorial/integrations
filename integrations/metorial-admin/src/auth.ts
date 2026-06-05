@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { createAxios, SlateAuth } from '@slates/provider';
 import { z } from 'zod';
-import { type MetorialConfig, normalizeMetorialConfig } from './config';
+import { type MetorialConfig, normalizeApiUrl, normalizeMetorialConfig } from './config';
 import { metorialOAuthError, metorialValidationError } from './lib/errors';
 
 type TokenResponse = {
@@ -402,4 +402,29 @@ export let auth = SlateAuth.create()
         }
       };
     }
+  })
+  .addTokenAuth({
+    type: 'auth.token',
+    name: 'API Key',
+    key: 'api_key',
+    inputSchema: z.object({
+      apiKey: z
+        .string()
+        .trim()
+        .min(1)
+        .describe('Metorial API key to use as a bearer token for admin API calls.'),
+      apiUrl: z
+        .string()
+        .trim()
+        .optional()
+        .describe(
+          'Optional Metorial API base URL for API key auth. Defaults to the integration apiUrl config.'
+        )
+    }),
+    getOutput: async ctx => ({
+      output: {
+        token: ctx.input.apiKey,
+        ...(ctx.input.apiUrl ? { apiUrl: normalizeApiUrl(ctx.input.apiUrl) } : {})
+      }
+    })
   });

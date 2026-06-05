@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `metorial-admin` integration uses Metorial OAuth to expose a controlled dynamic wrapper for Metorial dashboard instance API endpoints. It does not use the generated Metorial SDK because endpoint discovery and dispatch are driven by runtime introspection.
+The `metorial-admin` integration uses Metorial OAuth or API key authentication to expose a controlled dynamic wrapper for Metorial dashboard instance API endpoints. It does not use the generated Metorial SDK because endpoint discovery and dispatch are driven by runtime introspection.
 
 ## Config
 
@@ -11,7 +11,14 @@ The `metorial-admin` integration uses Metorial OAuth to expose a controlled dyna
 
 ## Auth
 
-The integration uses one OAuth method with key `oauth`.
+The integration supports two auth methods:
+
+- `api_key`: token auth that accepts a Metorial API key and returns it as the shared bearer `token` output.
+- `oauth`: OAuth auth for interactive Metorial authorization.
+
+The `api_key` method accepts optional `apiUrl` input to override the configured API URL for authenticated tool calls. When omitted, tools use the integration config.
+
+For `oauth`:
 
 - Authorization URL: `${apiUrl}/oauth/authorize`
 - Token URL: `${apiUrl}/oauth/token`

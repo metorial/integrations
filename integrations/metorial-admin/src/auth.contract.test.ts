@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { auth } from './auth';
 
-describe('Metorial Admin OAuth', () => {
+describe('Metorial Admin auth', () => {
+  let getApiKey = () => {
+    let apiKey = auth.authStack.find(method => method.key === 'api_key') as
+      | { getOutput: (ctx: any) => Promise<any> }
+      | undefined;
+    expect(apiKey).toBeDefined();
+    return apiKey!;
+  };
+
   let getOauth = () => {
     let oauth = auth.authStack.find(method => method.key === 'oauth') as
       | { getAuthorizationUrl: (ctx: any) => Promise<any> }
@@ -9,6 +17,36 @@ describe('Metorial Admin OAuth', () => {
     expect(oauth).toBeDefined();
     return oauth!;
   };
+
+  it('keeps OAuth as the first auth method and adds API key as an alternative', () => {
+    expect(auth.authStack.map(method => method.key)).toEqual(['oauth', 'api_key']);
+  });
+
+  it('creates API key auth output with the shared bearer token shape', async () => {
+    let result = await getApiKey().getOutput({
+      input: {
+        apiKey: 'metorial-api-key',
+        apiUrl: 'https://api.example.test/'
+      }
+    });
+
+    expect(result.output).toEqual({
+      token: 'metorial-api-key',
+      apiUrl: 'https://api.example.test'
+    });
+  });
+
+  it('does not force the default API URL into API key auth output', async () => {
+    let result = await getApiKey().getOutput({
+      input: {
+        apiKey: 'metorial-api-key'
+      }
+    });
+
+    expect(result.output).toEqual({
+      token: 'metorial-api-key'
+    });
+  });
 
   it('uses S256 PKCE for authorization URLs', async () => {
     let result = await getOauth().getAuthorizationUrl({

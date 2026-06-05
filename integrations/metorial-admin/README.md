@@ -1,6 +1,6 @@
 # <img src="logo.svg" height="20"> Metorial Admin
 
-Metorial Admin exposes a controlled dynamic wrapper around Metorial dashboard instance API endpoints. It lists callable endpoints from Metorial introspection, lists instances available to the authenticated actor, and calls validated dashboard instance endpoints with Metorial OAuth.
+Metorial Admin exposes a controlled dynamic wrapper around Metorial dashboard instance API endpoints. It lists callable endpoints from Metorial introspection, lists instances available to the authenticated actor, and calls validated dashboard instance endpoints with Metorial OAuth or API key authentication.
 
 ## Tools
 
