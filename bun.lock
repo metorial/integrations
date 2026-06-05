@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@metorial/integrations-root",
@@ -7754,6 +7753,20 @@
       },
       "devDependencies": {
         "typescript": "^5",
+      },
+    },
+    "integrations/metorial-admin": {
+      "name": "@slates-integrations/metorial-admin",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.12",
+        "@types/node": "^20",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/mezmo": {
@@ -15709,6 +15722,8 @@
 
     "@slates-integrations/metatextai": ["@slates-integrations/metatextai@workspace:integrations/metatextai"],
 
+    "@slates-integrations/metorial-admin": ["@slates-integrations/metorial-admin@workspace:integrations/metorial-admin"],
+
     "@slates-integrations/mezmo": ["@slates-integrations/mezmo@workspace:integrations/mezmo"],
 
     "@slates-integrations/microsoft-clarity": ["@slates-integrations/microsoft-clarity@workspace:integrations/microsoft-clarity"],
@@ -18980,6 +18995,8 @@
     "@slates-integrations/metabase/slates": ["slates@1.0.0-rc.11", "", { "dependencies": { "@slates/provider": "1.0.0-rc.12" } }, "sha512-PPR3wKW6OriEBawi7ja0UxhBzYOjt0au52mFOMgpKKskKGNmcJl0Rt67hWU7+95/+Ol96UbVpyUR+qdcmpFCig=="],
 
     "@slates-integrations/metatextai/slates": ["slates@1.0.0-rc.11", "", { "dependencies": { "@slates/provider": "1.0.0-rc.12" } }, "sha512-PPR3wKW6OriEBawi7ja0UxhBzYOjt0au52mFOMgpKKskKGNmcJl0Rt67hWU7+95/+Ol96UbVpyUR+qdcmpFCig=="],
+
+    "@slates-integrations/metorial-admin/@slates/provider": ["@slates/provider@1.0.0-rc.12", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l3sOhBv0v7bN5hzn/zF0AP3EdujX3/zqdC9PNyjSXyBYyg8i4WiCuCOR/T3kMRZgxLnJ2exShtwAD+VoVfo+TA=="],
 
     "@slates-integrations/mezmo/slates": ["slates@1.0.0-rc.11", "", { "dependencies": { "@slates/provider": "1.0.0-rc.12" } }, "sha512-PPR3wKW6OriEBawi7ja0UxhBzYOjt0au52mFOMgpKKskKGNmcJl0Rt67hWU7+95/+Ol96UbVpyUR+qdcmpFCig=="],
 
