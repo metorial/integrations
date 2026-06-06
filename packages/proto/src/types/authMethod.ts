@@ -30,7 +30,15 @@ export let slatesAuthenticationMethod = z.object({
     handleChangedInput: z.object({ enabled: z.boolean() }).optional(),
     handleTokenRefresh: z.object({ enabled: z.boolean() }).optional(),
     getProfile: z.object({ enabled: z.boolean() }).optional()
-  })
+  }),
+
+  docs: z.object({
+    oauthDocsLink: z.string().optional(),
+    oauthScopesLink: z.string().optional(),
+    tokenDocsLink: z.string().optional(),
+    serviceAccountDocsLink: z.string().optional(),
+    customAuthDocsLink: z.string().optional()
+  }).optional()
 });
 
 export type SlateAuthenticationMethod = z.infer<typeof slatesAuthenticationMethod>;

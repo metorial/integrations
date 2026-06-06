@@ -22,6 +22,11 @@ export type SlateAuthWithOauth<
     scope: string;
   }[];
 
+  docs?: {
+    oauthDocsLink?: string;
+    oauthScopesLink?: string;
+  };
+
   inputSchema?: z.ZodType<InputType>;
 
   onInputChanged?: (params: {
@@ -92,6 +97,10 @@ export type SlateAuthWithToken<InputType extends {}, OutputType extends { token?
 
   inputSchema?: z.ZodType<InputType>;
 
+  docs?: {
+    tokenDocsLink?: string;
+  };
+
   getOutput: (ctx: { input: InputType }) => Promise<{ output: OutputType }>;
 
   onInputChanged?: (params: {
@@ -114,6 +123,10 @@ export type SlateAuthWithServiceAccount<InputType extends {}, OutputType extends
 
   inputSchema?: z.ZodType<InputType>;
 
+  docs?: {
+    serviceAccountDocsLink?: string;
+  };
+
   getOutput: (ctx: { input: InputType }) => Promise<{ output: OutputType }>;
 
   onInputChanged?: (params: {
@@ -135,6 +148,10 @@ export type SlateAuthWithCustomData<InputType extends {}, OutputType extends {}>
   key: string;
 
   inputSchema?: z.ZodType<InputType>;
+
+  docs?: {
+    customAuthDocsLink?: string;
+  };
 
   getOutput: (ctx: { input: InputType }) => Promise<{ output: OutputType }>;
 
