@@ -17,6 +17,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth 2.0',
     key: 'oauth2',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.atlassian.com/cloud/jira/software/oauth-2-3lo-apps/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developer.atlassian.com/cloud/jira/software/scopes-for-oauth-2-3LO-and-forge-apps/'
+      }
+    ],
 
     scopes: [
       {

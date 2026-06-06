@@ -54,6 +54,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'TikTok OAuth (Consumer)',
     key: 'tiktok_oauth_consumer',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developers.tiktok.com/doc/login-kit-web'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developers.tiktok.com/doc/tiktok-api-scopes'
+      }
+    ],
 
     scopes: [
       {
@@ -215,6 +227,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'TikTok OAuth (Business)',
     key: 'tiktok_oauth_business',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developers.tiktok.com/doc/login-kit-web'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developers.tiktok.com/doc/tiktok-api-scopes'
+      }
+    ],
 
     scopes: [],
 

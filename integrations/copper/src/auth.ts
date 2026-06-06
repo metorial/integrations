@@ -65,6 +65,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.copper.com/introduction/oauth/index.html'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developer.copper.com/introduction/oauth/flow.html'
+      }
+    ],
 
     scopes: [
       {

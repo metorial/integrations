@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 import type { SlateContext } from '../context';
+import type { SlateActionDocsReference } from '../docs';
 import type { SlateSpecification } from '../specification/specification';
 import type { SlateAttachment } from './attachment';
 
@@ -26,6 +27,7 @@ export interface SlateActionParameters {
   };
   metadata?: Record<string, any>;
   scopes?: SlateActionScopes;
+  docs?: SlateActionDocsReference[];
 }
 
 export type SlateToolInvocationHandler<
@@ -202,5 +204,9 @@ export abstract class SlateAction<
 
   get scopes() {
     return this._params.scopes;
+  }
+
+  get docs() {
+    return this._params.docs;
   }
 }

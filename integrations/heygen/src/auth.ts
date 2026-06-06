@@ -13,6 +13,13 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'HeyGen OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.heygen.com/docs/connecting-your-app-to-heygen-with-oauth-20'
+      }
+    ],
 
     scopes: [
       {

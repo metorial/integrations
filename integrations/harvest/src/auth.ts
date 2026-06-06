@@ -17,6 +17,13 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth2',
     key: 'oauth2',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://help.getharvest.com/api-v2/authentication-api/authentication/authentication/'
+      }
+    ],
 
     scopes: [
       {

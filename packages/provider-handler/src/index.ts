@@ -363,7 +363,10 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
     manager.onRequest('slates/config.schema.get', async () => {
       getContextBasic();
 
-      return { schema: toJsonSchema(slate.spec.configSchema) };
+      return {
+        schema: toJsonSchema(slate.spec.configSchema),
+        docs: slate.spec.config.docsReferences ?? []
+      };
     });
 
     manager.onRequest('slates/provider.identify', async () => {
@@ -377,7 +380,8 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
           name: slate.spec.name,
           description: slate.spec.description,
           metadata: slate.spec.parameters.metadata
-        }
+        },
+        docs: slate.spec.docs ?? []
       };
     });
 

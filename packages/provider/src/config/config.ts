@@ -1,7 +1,9 @@
 import type z from 'zod';
+import type { SlateConfigDocsReference } from '../docs';
 
 export class SlateConfig<ConfigType extends {}> {
   #configSchema: z.ZodType<ConfigType>;
+  #docs: SlateConfigDocsReference[] | undefined;
   #configChanged:
     | ((params: {
         previousConfig: ConfigType | null;
@@ -25,6 +27,11 @@ export class SlateConfig<ConfigType extends {}> {
     return this as any as SlateConfig<NewConfigType>;
   }
 
+  docs(docs: SlateConfigDocsReference[]): SlateConfig<ConfigType> {
+    this.#docs = docs;
+    return this;
+  }
+
   onConfigChanged(
     handler: (params: {
       previousConfig: ConfigType | null;
@@ -42,6 +49,10 @@ export class SlateConfig<ConfigType extends {}> {
 
   get configSchema() {
     return this.#configSchema;
+  }
+
+  get docsReferences() {
+    return this.#docs;
   }
 
   get handlers() {

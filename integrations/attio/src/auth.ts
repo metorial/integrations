@@ -11,6 +11,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.attio.com/rest-api/tutorials/connect-an-app-through-oauth'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://docs.attio.com/rest-api/guides/authentication#scopes'
+      }
+    ],
 
     scopes: [
       {

@@ -34,7 +34,14 @@ export let slatesMessageConfigSchemaGetResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
   result: z.object({
-    schema: z.record(z.string(), z.any())
+    schema: z.record(z.string(), z.any()),
+    docs: z.array(
+      z.object({
+        type: z.literal('docs.config.general').optional(),
+        name: z.string(),
+        url: z.string()
+      })
+    )
   })
 });
 

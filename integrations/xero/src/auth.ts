@@ -40,6 +40,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'Xero OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.xero.com/documentation/guides/oauth2/auth-flow/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developer.xero.com/documentation/guides/oauth2/scopes/'
+      }
+    ],
 
     scopes: [
       // OpenID Connect

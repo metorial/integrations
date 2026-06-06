@@ -13,6 +13,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developers.klaviyo.com/en/docs/set_up_oauth'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developers.klaviyo.com/en/docs/authenticate_#set-custom-scopes'
+      }
+    ],
 
     scopes: [
       {

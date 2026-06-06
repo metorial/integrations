@@ -17,6 +17,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'Miro OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developers.miro.com/docs/getting-started-with-oauth'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developers.miro.com/reference/scopes'
+      }
+    ],
 
     scopes: [
       {

@@ -13,6 +13,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'Microsoft OAuth',
     key: 'microsoft_oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://learn.microsoft.com/en-us/graph/permissions-reference'
+      }
+    ],
 
     scopes: [
       {

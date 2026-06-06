@@ -52,6 +52,18 @@ let createMicrosoftOauth = (name: string, key: string, tenant: string) =>
     key,
     tenant,
     scopes,
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://learn.microsoft.com/en-us/graph/permissions-reference'
+      }
+    ],
     normalizeRedirectUri: true,
     missingRefreshTokenMessage:
       'No refresh token available. Ensure "offline_access" scope is included.'

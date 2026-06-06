@@ -39,6 +39,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth 2.0 (Confluence Cloud)',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developer.atlassian.com/cloud/confluence/scopes-for-oauth-2-3LO-and-forge-apps/'
+      }
+    ],
 
     scopes: [
       {

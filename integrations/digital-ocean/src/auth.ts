@@ -58,6 +58,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.digitalocean.com/reference/api/oauth/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://docs.digitalocean.com/reference/api/scopes/'
+      }
+    ],
 
     scopes: [
       {

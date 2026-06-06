@@ -69,6 +69,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth 2.0',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.apollo.io/docs/use-oauth-20-authorization-flow-to-access-apollo-user-information-partners'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://docs.apollo.io/docs/use-oauth-20-authorization-flow-to-access-apollo-user-information-partners'
+      }
+    ],
 
     scopes: [
       {

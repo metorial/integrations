@@ -21,6 +21,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.waveapps.com/hc/en-us/articles/360019493652-OAuth-Guide'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developer.waveapps.com/hc/en-us/articles/360032818132-OAuth-Scopes'
+      }
+    ],
 
     scopes: [
       {

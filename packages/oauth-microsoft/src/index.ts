@@ -16,6 +16,12 @@ export type MicrosoftOauthScope = {
   defaultChecked?: boolean;
 };
 
+export type MicrosoftOauthDocsReference = {
+  type?: 'docs.auth.oauth' | 'docs.auth.oauth_scopes';
+  name: string;
+  url: string;
+};
+
 export type MicrosoftGraphProfile = {
   id?: string;
   email?: string;
@@ -34,6 +40,7 @@ export type MicrosoftGraphOauthOptions = {
   key: string;
   tenant: string;
   scopes: MicrosoftOauthScope[];
+  docs?: MicrosoftOauthDocsReference[];
   allowTenantInput?: boolean;
   missingRefreshTokenMessage?: string;
   /** Normalize loopback redirect URIs for Microsoft app registration compatibility. */
@@ -262,6 +269,7 @@ export let createMicrosoftGraphOauth = ({
   key,
   tenant,
   scopes,
+  docs,
   allowTenantInput = false,
   missingRefreshTokenMessage = 'No refresh token available. Ensure offline_access scope is requested.',
   normalizeRedirectUri: shouldNormalizeRedirectUri = false,
@@ -288,6 +296,7 @@ export let createMicrosoftGraphOauth = ({
     name,
     key,
     scopes,
+    docs,
 
     getAuthorizationUrl: async (ctx: MicrosoftGraphAuthorizationUrlContext) => {
       let resolvedTenant = getTenant(ctx);

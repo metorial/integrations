@@ -16,6 +16,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth2',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.datadoghq.com/extend/authorization/oauth2_endpoints/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://docs.datadoghq.com/api/latest/scopes/'
+      }
+    ],
 
     scopes: [
       {

@@ -27,6 +27,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth2',
     key: 'oauth2',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://discord.com/developers/docs/topics/oauth2'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://discord.com/developers/docs/topics/oauth2#shared-resources-oauth2-scopes'
+      }
+    ],
 
     scopes: [
       {

@@ -23,6 +23,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'Snowflake OAuth',
     key: 'snowflake_oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.snowflake.com/en/user-guide/oauth-custom'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://docs.snowflake.com/en/user-guide/oauth-custom#using-a-scope'
+      }
+    ],
 
     scopes: [
       {

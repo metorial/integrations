@@ -15,6 +15,13 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.clickup.com/docs/authentication'
+      }
+    ],
 
     scopes: [],
 

@@ -23,7 +23,13 @@ export let slatesMessageProviderIdentifyResponse = z.object({
       name: z.string(),
       description: z.string().optional(),
       metadata: z.record(z.string(), z.any()).optional()
-    })
+    }),
+    docs: z.array(
+      z.object({
+        name: z.string(),
+        url: z.string()
+      })
+    )
   })
 });
 

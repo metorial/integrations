@@ -50,7 +50,9 @@ export let mapAuthMethod = <ConfigType extends {}, AuthType extends {}>(
       enabled: !!m.onInputChanged
     },
     getProfile: { enabled: !!m.getProfile }
-  }
+  },
+
+  docs: m.docs ?? []
 });
 
 export let getAction = <ConfigType extends {}, AuthType extends {}>(
@@ -99,6 +101,7 @@ export let mapAction = <ConfigType extends {}, AuthType extends {}>(
     tags: a.tags,
     metadata: a.metadata,
     scopes: a.scopes,
+    docs: a.docs ?? [],
 
     inputSchema: toJsonSchema(a.inputSchema),
     outputSchema: toJsonSchema(a.outputSchema)

@@ -22,6 +22,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://mailchimp.com/developer/marketing/guides/access-user-data-oauth-2/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://mailchimp.com/developer/marketing/guides/access-user-data-oauth-2/'
+      }
+    ],
 
     scopes: [],
 

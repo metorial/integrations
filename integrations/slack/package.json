@@ -9,15 +9,15 @@
   },
   "dependencies": {
     "@lowerdeck/error": "^1.1.0",
-    "@slates/slack-tools": "1.0.0-rc.7",
+    "@slates/slack-tools": "1.0.0-rc.8",
     "@types/node": "^20",
-    "slates": "1.0.0-rc.13",
+    "slates": "1.0.0-rc.14",
     "zod": "^4.2"
   },
   "devDependencies": {
-    "@slates/test": "1.0.0-rc.8",
+    "@slates/test": "1.0.0-rc.9",
     "typescript": "^5",
     "vitest": "^3.1.2"
   },
-  "version": "0.2.0-rc.20"
+  "version": "0.2.0-rc.21"
 }

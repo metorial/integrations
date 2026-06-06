@@ -190,6 +190,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'Slack OAuth (Bot)',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.slack.dev/tools/node-slack-sdk/oauth/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://docs.slack.dev/reference/scopes/'
+      }
+    ],
     scopes: slackBotOAuthScopes,
     getAuthorizationUrl: getAuthorizationUrl('scope'),
 
@@ -245,6 +257,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'Slack OAuth (User)',
     key: 'user_oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.slack.dev/tools/node-slack-sdk/oauth/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://docs.slack.dev/reference/scopes/'
+      }
+    ],
     scopes: slackUserOAuthScopes,
     getAuthorizationUrl: getAuthorizationUrl('user_scope'),
 

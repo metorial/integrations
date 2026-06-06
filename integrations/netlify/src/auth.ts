@@ -16,6 +16,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.netlify.com/api-and-cli-guides/api-guides/get-started-with-api'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://answers.netlify.com/t/netlify-oauth-scopes/112113'
+      }
+    ],
 
     scopes: [
       {

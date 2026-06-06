@@ -32,7 +32,13 @@ let createDemoSlate = () => {
     })
   ).getDefaultConfig(() => ({
     prefix: 'Hello'
-  }));
+  })).docs([
+    {
+      type: 'docs.config.general',
+      name: 'Demo config docs',
+      url: 'https://example.com/docs/config'
+    }
+  ]);
 
   let demoAuth = SlateAuth.create<{ token: string }>()
     .output(
@@ -47,6 +53,13 @@ let createDemoSlate = () => {
       inputSchema: z.object({
         token: z.string()
       }),
+      docs: [
+        {
+          type: 'docs.auth.token',
+          name: 'Demo token auth docs',
+          url: 'https://example.com/docs/auth/token'
+        }
+      ],
       getDefaultInput: async () => ({
         token: 'default-token'
       }),
@@ -71,13 +84,26 @@ let createDemoSlate = () => {
     key: 'demo-slate',
     name: 'Demo Slate',
     description: 'A tiny test slate',
+    docs: [
+      {
+        name: 'Demo provider docs',
+        url: 'https://example.com/docs/provider'
+      }
+    ],
     config: demoConfig,
     auth: demoAuth
   });
 
   let echoTool = SlateTool.create(spec, {
     key: 'echo',
-    name: 'Echo'
+    name: 'Echo',
+    docs: [
+      {
+        type: 'docs.action.general',
+        name: 'Echo tool docs',
+        url: 'https://example.com/docs/actions/echo'
+      }
+    ]
   })
     .input(
       z.object({
@@ -408,10 +434,23 @@ describe('@slates/client local transport', () => {
 
     let provider = await client.identify();
     expect(provider.provider.id).toBe('demo-slate');
+    expect(provider.docs).toEqual([
+      {
+        name: 'Demo provider docs',
+        url: 'https://example.com/docs/provider'
+      }
+    ]);
 
     let actions = await client.listTools();
     expect(actions).toHaveLength(1);
     expect(actions[0]!.id).toBe('echo');
+    expect(actions[0]!.docs).toEqual([
+      {
+        type: 'docs.action.general',
+        name: 'Echo tool docs',
+        url: 'https://example.com/docs/actions/echo'
+      }
+    ]);
     expect(actions[0]!.scopes).toEqual({
       AND: [
         {
@@ -422,6 +461,13 @@ describe('@slates/client local transport', () => {
 
     let configSchema = await client.getConfigSchema();
     expect(configSchema.schema.properties.prefix.type).toBe('string');
+    expect(configSchema.docs).toEqual([
+      {
+        type: 'docs.config.general',
+        name: 'Demo config docs',
+        url: 'https://example.com/docs/config'
+      }
+    ]);
 
     let defaultConfig = await client.getDefaultConfig();
     expect(defaultConfig.config).toEqual({ prefix: 'Hello' });
@@ -429,6 +475,13 @@ describe('@slates/client local transport', () => {
     let authMethods = await client.listAuthMethods();
     expect(authMethods.authenticationMethods).toHaveLength(1);
     expect(authMethods.authenticationMethods[0]!.type).toBe('auth.token');
+    expect(authMethods.authenticationMethods[0]!.docs).toEqual([
+      {
+        type: 'docs.auth.token',
+        name: 'Demo token auth docs',
+        url: 'https://example.com/docs/auth/token'
+      }
+    ]);
 
     let defaultInput = await client.getDefaultAuthInput('token_auth');
     expect(defaultInput.input).toEqual({ token: 'default-token' });

@@ -12,6 +12,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://api.surveymonkey.com/v3/docs/authentication'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://api.surveymonkey.com/v3/docs/scopes'
+      }
+    ],
 
     scopes: [
       { title: 'View Users', description: 'View user account details', scope: 'users_read' },

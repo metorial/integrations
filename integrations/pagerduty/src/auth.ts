@@ -12,6 +12,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'Scoped OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.pagerduty.com/docs/user-oauth-token-via-code-grant'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developer.pagerduty.com/docs/oauth-2-functionality'
+      }
+    ],
 
     scopes: [
       // Incidents

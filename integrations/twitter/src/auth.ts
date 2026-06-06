@@ -18,6 +18,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth 2.0',
     key: 'oauth2',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.x.com/resources/fundamentals/authentication/oauth-2-0/authorization-code'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://docs.x.com/resources/fundamentals/authentication/oauth-2-0/authorization-code#scopes'
+      }
+    ],
 
     scopes: [
       { title: 'Read Posts', description: 'Read posts and timelines', scope: 'tweet.read' },

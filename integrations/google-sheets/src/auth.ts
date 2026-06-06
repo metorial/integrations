@@ -14,6 +14,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://support.google.com/cloud/answer/15544987'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developers.google.com/identity/protocols/oauth2/scopes'
+      }
+    ],
 
     scopes: [
       {

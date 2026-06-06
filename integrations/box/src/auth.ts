@@ -17,6 +17,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth 2.0',
     key: 'oauth2',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.box.com/guides/authentication/oauth2/oauth2-setup/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developer.box.com/guides/api-calls/permissions-and-errors/scopes/'
+      }
+    ],
 
     scopes: [
       {

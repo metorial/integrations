@@ -36,6 +36,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.calendly.com/api-docs/3cefb59b832eb-calendly-o-auth-2-0'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developer.calendly.com/api-docs/3cefb59b832eb-calendly-o-auth-2-0'
+      }
+    ],
 
     scopes: [
       ...calendlyOauthScopes.map(scope => ({

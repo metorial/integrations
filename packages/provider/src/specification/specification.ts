@@ -1,11 +1,13 @@
 import z from 'zod';
 import type { SlateAuth } from '../auth';
 import type { SlateConfig } from '../config';
+import type { SlateProviderDocsReference } from '../docs';
 
 export interface SlateSpecificationParameters {
   key: string;
   name: string;
   description?: string;
+  docs?: SlateProviderDocsReference[];
   metadata?: Record<string, any>;
 }
 
@@ -60,6 +62,10 @@ export class SlateSpecification<ConfigType extends {}, AuthType extends {}> {
 
   get description() {
     return this._params.description;
+  }
+
+  get docs() {
+    return this._params.docs;
   }
 }
 

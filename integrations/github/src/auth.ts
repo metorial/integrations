@@ -143,6 +143,18 @@ function createGithubOauth(opts: {
     type: 'auth.oauth' as const,
     name: opts.name,
     key: opts.key,
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes'
+      }
+    ],
     scopes,
     inputSchema,
 

@@ -129,6 +129,18 @@ function createLeverOauth(name: string, key: string, environment: 'production' |
     type: 'auth.oauth' as const,
     name,
     key,
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://hire.lever.co/developer/documentation#authentication'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://hire.lever.co/developer/documentation#scopes'
+      }
+    ],
     scopes,
 
     getAuthorizationUrl: async (ctx: any) => {

@@ -1,4 +1,5 @@
 import type z from 'zod';
+import type { SlateAuthDocsReference } from '../docs';
 
 type SlateAuthCallbackConfig = Record<string, any>;
 
@@ -22,10 +23,7 @@ export type SlateAuthWithOauth<
     scope: string;
   }[];
 
-  docs?: {
-    oauthDocsLink?: string;
-    oauthScopesLink?: string;
-  };
+  docs?: SlateAuthDocsReference[];
 
   inputSchema?: z.ZodType<InputType>;
 
@@ -97,9 +95,7 @@ export type SlateAuthWithToken<InputType extends {}, OutputType extends { token?
 
   inputSchema?: z.ZodType<InputType>;
 
-  docs?: {
-    tokenDocsLink?: string;
-  };
+  docs?: SlateAuthDocsReference[];
 
   getOutput: (ctx: { input: InputType }) => Promise<{ output: OutputType }>;
 
@@ -123,9 +119,7 @@ export type SlateAuthWithServiceAccount<InputType extends {}, OutputType extends
 
   inputSchema?: z.ZodType<InputType>;
 
-  docs?: {
-    serviceAccountDocsLink?: string;
-  };
+  docs?: SlateAuthDocsReference[];
 
   getOutput: (ctx: { input: InputType }) => Promise<{ output: OutputType }>;
 
@@ -149,9 +143,7 @@ export type SlateAuthWithCustomData<InputType extends {}, OutputType extends {}>
 
   inputSchema?: z.ZodType<InputType>;
 
-  docs?: {
-    customAuthDocsLink?: string;
-  };
+  docs?: SlateAuthDocsReference[];
 
   getOutput: (ctx: { input: InputType }) => Promise<{ output: OutputType }>;
 

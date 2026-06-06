@@ -23,6 +23,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'QuickBooks OAuth',
     key: 'quickbooks_oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developer.intuit.com/app/developer/qbo/docs/learn/scopes'
+      }
+    ],
 
     scopes: [
       {

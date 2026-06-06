@@ -99,6 +99,18 @@ function createGitlabOauth(opts: {
     type: 'auth.oauth' as const,
     name: opts.name,
     key: opts.key,
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://docs.gitlab.com/ee/integration/oauth_provider.html'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://docs.gitlab.com/ee/integration/oauth_provider.html#authorized-applications'
+      }
+    ],
     scopes,
     inputSchema,
 

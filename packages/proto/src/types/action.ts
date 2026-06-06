@@ -25,7 +25,15 @@ export let slatesActionBase = z.object({
   scopes: slatesActionScopes.optional(),
 
   inputSchema: z.record(z.string(), z.any()),
-  outputSchema: z.record(z.string(), z.any())
+  outputSchema: z.record(z.string(), z.any()),
+
+  docs: z.array(
+    z.object({
+      type: z.literal('docs.action.general').optional(),
+      name: z.string(),
+      url: z.string()
+    })
+  )
 });
 
 export let slatesActionTool = slatesActionBase.extend({

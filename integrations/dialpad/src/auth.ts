@@ -42,6 +42,18 @@ function createDialpadOauth(name: string, key: string, environment: 'production'
     type: 'auth.oauth' as const,
     name,
     key,
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developers.dialpad.com/docs/oauth'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developers.dialpad.com/docs/oauth#supported-scopes'
+      }
+    ],
     scopes,
 
     getAuthorizationUrl: async (ctx: any) => {

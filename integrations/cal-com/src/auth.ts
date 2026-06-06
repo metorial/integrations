@@ -13,6 +13,13 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://cal.com/docs/api-reference/v2/oauth'
+      }
+    ],
 
     scopes: [],
 

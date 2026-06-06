@@ -25,6 +25,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://support.atlassian.com/bitbucket-cloud/docs/oauth-endpoints/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://support.atlassian.com/bitbucket-cloud/docs/oauth-endpoints/#bitbucket-oauth-2-0-scopes'
+      }
+    ],
     scopes: [],
 
     getAuthorizationUrl: async (ctx: any) => {

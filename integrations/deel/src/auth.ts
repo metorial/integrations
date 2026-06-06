@@ -14,6 +14,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth 2.0',
     key: 'oauth2',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developer.deel.com/docs/oauth2'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developer.deel.com/docs/scopes-1'
+      }
+    ],
 
     scopes: [
       { title: 'Contracts Read', description: 'Read contract data', scope: 'contracts:read' },

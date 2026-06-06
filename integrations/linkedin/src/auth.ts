@@ -15,6 +15,18 @@ export let auth = SlateAuth.create()
     type: 'auth.oauth',
     name: 'OAuth 2.0',
     key: 'oauth',
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access'
+      }
+    ],
 
     scopes: [
       {

@@ -218,6 +218,18 @@ let createHubSpotOauth = (variant: OAuthVariant) => ({
   type: 'auth.oauth' as const,
   name: variant.name,
   key: variant.key,
+    docs: [
+    {
+      type: 'docs.auth.oauth',
+      name: 'OAuth documentation',
+      url: 'https://developers.hubspot.com/docs/apps/developer-platform/build-apps/authentication/oauth/oauth-quickstart-guide'
+    },
+    {
+      type: 'docs.auth.oauth_scopes',
+      name: 'OAuth scopes',
+      url: 'https://developers.hubspot.com/docs/api/scopes'
+    }
+    ],
 
   // Required HubSpot scopes are always sent automatically. Expose only optional
   // scopes here so CLI scope selection maps cleanly to HubSpot optional_scope.

@@ -62,6 +62,18 @@ function createDocusignOauth(name: string, key: string, environment: 'demo' | 'p
     type: 'auth.oauth' as const,
     name,
     key,
+    docs: [
+      {
+        type: 'docs.auth.oauth',
+        name: 'OAuth documentation',
+        url: 'https://developers.docusign.com/platform/auth/authcode/'
+      },
+      {
+        type: 'docs.auth.oauth_scopes',
+        name: 'OAuth scopes',
+        url: 'https://developers.docusign.com/platform/auth/reference/scopes/'
+      }
+    ],
     scopes,
 
     getAuthorizationUrl: async (ctx: any) => {
