@@ -30,15 +30,17 @@ let createDemoSlate = () => {
     z.object({
       prefix: z.string()
     })
-  ).getDefaultConfig(() => ({
-    prefix: 'Hello'
-  })).docs([
-    {
-      type: 'docs.config.general',
-      name: 'Demo config docs',
-      url: 'https://example.com/docs/config'
-    }
-  ]);
+  )
+    .getDefaultConfig(() => ({
+      prefix: 'Hello'
+    }))
+    .docs([
+      {
+        type: 'docs.config.general',
+        name: 'Demo config docs',
+        url: 'https://example.com/docs/config'
+      }
+    ]);
 
   let demoAuth = SlateAuth.create<{ token: string }>()
     .output(

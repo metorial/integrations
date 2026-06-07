@@ -1,4 +1,4 @@
-import { createAxios, SlateAuth } from 'slates';
+import { createAxios, SlateAuth, type SlateAuthDocsReference } from 'slates';
 import { z } from 'zod';
 import { hubSpotApiError, hubSpotOAuthError, hubSpotServiceError } from './lib/errors';
 import {
@@ -218,7 +218,7 @@ let createHubSpotOauth = (variant: OAuthVariant) => ({
   type: 'auth.oauth' as const,
   name: variant.name,
   key: variant.key,
-    docs: [
+  docs: [
     {
       type: 'docs.auth.oauth',
       name: 'OAuth documentation',
@@ -229,7 +229,7 @@ let createHubSpotOauth = (variant: OAuthVariant) => ({
       name: 'OAuth scopes',
       url: 'https://developers.hubspot.com/docs/api/scopes'
     }
-    ],
+  ] satisfies SlateAuthDocsReference[],
 
   // Required HubSpot scopes are always sent automatically. Expose only optional
   // scopes here so CLI scope selection maps cleanly to HubSpot optional_scope.
