@@ -36,12 +36,12 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
     key,
     docs: [
       {
-        type: 'docs.auth.oauth',
+        type: 'docs.auth.oauth' as const,
         name: 'OAuth documentation',
         url: 'https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow'
       },
       {
-        type: 'docs.auth.oauth_scopes',
+        type: 'docs.auth.oauth_scopes' as const,
         name: 'OAuth scopes',
         url: 'https://learn.microsoft.com/en-us/graph/permissions-reference'
       }
