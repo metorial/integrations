@@ -43,8 +43,6 @@ let SECONDS_TO_MS = 1000;
 let HUBSPOT_DEVELOPER_PLATFORM_OAUTH_METHOD_ID = 'developer_platform_oauth';
 
 let uniqueScopes = (scopes: string[]) => [...new Set(scopes)];
-let requiredScopeSet = new Set(hubSpotRequiredScopeValues);
-let optionalScopeSet = new Set(hubSpotOptionalScopeValues);
 
 let normalizeLoopbackRedirectUri = (redirectUri: string) => {
   let url = new URL(redirectUri);
@@ -191,13 +189,7 @@ let buildAuthorizationUrl = async (ctx: {
   let selectedOptionalScopes = hubSpotOptionalScopeValues.filter(scope =>
     ctx.scopes.includes(scope)
   );
-  let additionalRequiredScopes = ctx.scopes.filter(
-    scope => !requiredScopeSet.has(scope) && !optionalScopeSet.has(scope)
-  );
-  let requiredScopes = uniqueScopes([
-    ...hubSpotRequiredScopeValues,
-    ...additionalRequiredScopes
-  ]);
+  let requiredScopes = uniqueScopes(hubSpotRequiredScopeValues);
   let params = new URLSearchParams({
     client_id: ctx.clientId,
     redirect_uri: ctx.redirectUri,
