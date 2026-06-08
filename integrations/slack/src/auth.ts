@@ -1,6 +1,6 @@
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
-import { slackOAuthError } from './lib/errors';
+import { slackOAuthError, slackServiceError } from './lib/errors';
 import {
   parseSlackGrantedScopes,
   slackBotOAuthScopes,
@@ -52,7 +52,55 @@ type SlackOAuthResponse = {
   error?: string;
 };
 
+type SlackAuthTestResponse = {
+  ok: boolean;
+  user_id?: string;
+  user?: string;
+  team_id?: string;
+  team?: string;
+  url?: string;
+  bot_id?: string;
+  error?: string;
+};
+
 let createSlackApi = () => createAxios({ baseURL: 'https://slack.com/api' });
+
+let getHeader = (headers: unknown, name: string) => {
+  let lowerName = name.toLowerCase();
+
+  if (headers && typeof headers === 'object') {
+    let maybeGet = (headers as { get?: (header: string) => unknown }).get;
+    if (typeof maybeGet === 'function') {
+      let value = maybeGet.call(headers, name);
+      if (typeof value === 'string') return value;
+    }
+
+    let value = (headers as Record<string, unknown>)[lowerName];
+    if (typeof value === 'string') return value;
+  }
+
+  return null;
+};
+
+let getSlackTokenInfo = async (token: string) => {
+  let client = createSlackApi();
+
+  let response = await client.post('/auth.test', null, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  let data = response.data as SlackAuthTestResponse;
+  if (!data.ok) {
+    throw slackServiceError(
+      `Slack token authentication failed: ${data.error || 'Unknown error'}`
+    );
+  }
+
+  return {
+    data,
+    scopes: parseSlackGrantedScopes(getHeader(response.headers, 'x-oauth-scopes'))
+  };
+};
 
 let expiresAtFromSeconds = (expiresIn?: number) =>
   typeof expiresIn === 'number' && Number.isFinite(expiresIn)
@@ -116,20 +164,8 @@ let mergeUserOAuthOutput = (
 };
 
 let getSlackProfile = async (token: string): Promise<SlackProfile> => {
+  let { data } = await getSlackTokenInfo(token);
   let client = createSlackApi();
-
-  let response = await client.get('/auth.test', {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-
-  let data = response.data as {
-    ok: boolean;
-    user_id?: string;
-    user?: string;
-    team_id?: string;
-    team?: string;
-    url?: string;
-  };
 
   let profile: SlackProfile = {
     id: data.user_id,
@@ -329,12 +365,20 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Slack Bot Token (starts with xoxb-)')
     }),
 
-    getOutput: async ctx => ({
-      output: {
-        token: ctx.input.token,
-        actorType: 'bot' as const
-      }
-    }),
+    getOutput: async ctx => {
+      let { data, scopes } = await getSlackTokenInfo(ctx.input.token);
+
+      return {
+        output: {
+          token: ctx.input.token,
+          actorType: 'bot' as const,
+          teamId: data.team_id,
+          teamName: data.team,
+          botUserId: data.user_id
+        },
+        scopes: scopes.length > 0 ? scopes : undefined
+      };
+    },
 
     getProfile: async (ctx: { output: { token: string } }) => ({
       profile: await getSlackProfile(ctx.output.token)
@@ -349,12 +393,20 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Slack User Token (starts with xoxp-)')
     }),
 
-    getOutput: async ctx => ({
-      output: {
-        token: ctx.input.token,
-        actorType: 'user' as const
-      }
-    }),
+    getOutput: async ctx => {
+      let { data, scopes } = await getSlackTokenInfo(ctx.input.token);
+
+      return {
+        output: {
+          token: ctx.input.token,
+          actorType: 'user' as const,
+          teamId: data.team_id,
+          teamName: data.team,
+          userId: data.user_id
+        },
+        scopes: scopes.length > 0 ? scopes : undefined
+      };
+    },
 
     getProfile: async (ctx: { output: { token: string } }) => ({
       profile: await getSlackProfile(ctx.output.token)

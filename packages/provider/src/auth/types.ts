@@ -97,7 +97,10 @@ export type SlateAuthWithToken<InputType extends {}, OutputType extends { token?
 
   docs?: SlateAuthDocsReference[];
 
-  getOutput: (ctx: { input: InputType }) => Promise<{ output: OutputType }>;
+  getOutput: (ctx: { input: InputType }) => Promise<{
+    output: OutputType;
+    scopes?: string[];
+  }>;
 
   onInputChanged?: (params: {
     previousInput: InputType;
@@ -121,7 +124,10 @@ export type SlateAuthWithServiceAccount<InputType extends {}, OutputType extends
 
   docs?: SlateAuthDocsReference[];
 
-  getOutput: (ctx: { input: InputType }) => Promise<{ output: OutputType }>;
+  getOutput: (ctx: { input: InputType }) => Promise<{
+    output: OutputType;
+    scopes?: string[];
+  }>;
 
   onInputChanged?: (params: {
     previousInput: InputType;
@@ -145,7 +151,10 @@ export type SlateAuthWithCustomData<InputType extends {}, OutputType extends {}>
 
   docs?: SlateAuthDocsReference[];
 
-  getOutput: (ctx: { input: InputType }) => Promise<{ output: OutputType }>;
+  getOutput: (ctx: { input: InputType }) => Promise<{
+    output: OutputType;
+    scopes?: string[];
+  }>;
 
   handleTokenRefresh?: (ctx: {
     output: OutputType;

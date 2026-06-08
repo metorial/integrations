@@ -73,7 +73,8 @@ let createDemoSlate = () => {
       getOutput: async (ctx: { input: { token: string } }) => ({
         output: {
           token: ctx.input.token
-        }
+        },
+        scopes: [`scope:${ctx.input.token}`]
       }),
       getProfile: async (ctx: { output: { token: string } }) => ({
         profile: {
@@ -500,6 +501,7 @@ describe('@slates/client local transport', () => {
       input: changedInput.input ?? { token: '' }
     });
     expect(authOutput.output).toEqual({ token: 'trimmed-token' });
+    expect(authOutput.scopes).toEqual(['scope:trimmed-token']);
 
     client.setConfig({ prefix: 'Hi' });
     client.setAuth({
