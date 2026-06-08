@@ -96,10 +96,26 @@ let getSlackTokenInfo = async (token: string) => {
     );
   }
 
+  let scopesHeader = getHeader(response.headers, 'x-oauth-scopes');
+
   return {
     data,
-    scopes: parseSlackGrantedScopes(getHeader(response.headers, 'x-oauth-scopes'))
+    scopes: scopesHeader === null ? null : parseSlackGrantedScopes(scopesHeader)
   };
+};
+
+let assertSlackTokenPrefix = (token: string, prefix: string, name: string) => {
+  if (!token.startsWith(prefix)) {
+    throw slackServiceError(`${name} must start with ${prefix}`);
+  }
+};
+
+let requireSlackGrantedScopes = (scopes: string[] | null, name: string) => {
+  if (scopes === null) {
+    throw slackServiceError(`Slack did not return granted scopes for ${name}`);
+  }
+
+  return scopes;
 };
 
 let expiresAtFromSeconds = (expiresIn?: number) =>
@@ -366,6 +382,7 @@ export let auth = SlateAuth.create()
     }),
 
     getOutput: async ctx => {
+      assertSlackTokenPrefix(ctx.input.token, 'xoxb-', 'Slack Bot Token');
       let { data, scopes } = await getSlackTokenInfo(ctx.input.token);
 
       return {
@@ -376,7 +393,7 @@ export let auth = SlateAuth.create()
           teamName: data.team,
           botUserId: data.user_id
         },
-        scopes: scopes.length > 0 ? scopes : undefined
+        scopes: requireSlackGrantedScopes(scopes, 'Slack Bot Token')
       };
     },
 
@@ -394,6 +411,7 @@ export let auth = SlateAuth.create()
     }),
 
     getOutput: async ctx => {
+      assertSlackTokenPrefix(ctx.input.token, 'xoxp-', 'Slack User Token');
       let { data, scopes } = await getSlackTokenInfo(ctx.input.token);
 
       return {
@@ -404,7 +422,7 @@ export let auth = SlateAuth.create()
           teamName: data.team,
           userId: data.user_id
         },
-        scopes: scopes.length > 0 ? scopes : undefined
+        scopes: requireSlackGrantedScopes(scopes, 'Slack User Token')
       };
     },
 

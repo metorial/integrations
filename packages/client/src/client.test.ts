@@ -126,6 +126,7 @@ let createDemoSlate = () => {
         }
       ]
     })
+    .authMethods(['token_auth'])
     .handleInvocation(async ctx => ({
       output: {
         greeting: `${ctx.config.prefix} ${ctx.input.name}`,
@@ -461,6 +462,7 @@ describe('@slates/client local transport', () => {
         }
       ]
     });
+    expect(actions[0]!.authMethods).toEqual(['token_auth']);
 
     let configSchema = await client.getConfigSchema();
     expect(configSchema.schema.properties.prefix.type).toBe('string');
