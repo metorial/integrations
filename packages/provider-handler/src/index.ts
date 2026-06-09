@@ -500,12 +500,16 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
               inputKeyCount: getObjectKeyCount(input)
             },
             onSuccess: result => ({
-              outputKeyCount: getObjectKeyCount(result.output)
+              outputKeyCount: getObjectKeyCount(result.output),
+              scopeCount: result.scopes?.length ?? 0
             })
           },
           () => runWithContext(context, () => authMethod.getOutput({ input }))
         );
-        return withRequestTraces(context, { output: outputRes.output });
+        return withRequestTraces(context, {
+          output: outputRes.output,
+          scopes: outputRes.scopes
+        });
       }
 
       return { output: input as any };
