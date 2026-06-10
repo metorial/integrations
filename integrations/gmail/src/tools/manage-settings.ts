@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
+import { gmailServiceError } from '../lib/errors';
 import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -232,7 +233,9 @@ export let manageSettings = SlateTool.create(spec, {
 
     if (action === 'create_filter') {
       if (!ctx.input.filterCriteria || !ctx.input.filterAction) {
-        throw new Error('filterCriteria and filterAction are required for create_filter');
+        throw gmailServiceError(
+          'filterCriteria and filterAction are required for create_filter'
+        );
       }
       let filter = await client.createFilter({
         criteria: ctx.input.filterCriteria,
@@ -245,7 +248,8 @@ export let manageSettings = SlateTool.create(spec, {
     }
 
     if (action === 'delete_filter') {
-      if (!ctx.input.filterId) throw new Error('filterId is required for delete_filter');
+      if (!ctx.input.filterId)
+        throw gmailServiceError('filterId is required for delete_filter');
       await client.deleteFilter(ctx.input.filterId);
       return {
         output: { deleted: true },
@@ -280,7 +284,7 @@ export let manageSettings = SlateTool.create(spec, {
 
     if (action === 'update_send_as') {
       if (!ctx.input.sendAsEmail)
-        throw new Error('sendAsEmail is required for update_send_as');
+        throw gmailServiceError('sendAsEmail is required for update_send_as');
       let result = await client.updateSendAs(ctx.input.sendAsEmail, {
         displayName: ctx.input.displayName,
         replyToAddress: ctx.input.replyToAddress,
@@ -297,5 +301,5 @@ export let manageSettings = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw gmailServiceError(`Unknown action: ${action}`);
   });

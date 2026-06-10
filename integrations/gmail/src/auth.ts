@@ -1,6 +1,6 @@
-import { badRequestError, ServiceError } from '@lowerdeck/error';
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
+import { gmailOAuthError, gmailServiceError } from './lib/errors';
 import { gmailScopes } from './scopes';
 
 let googleAxios = createAxios({
@@ -10,8 +10,6 @@ let googleAxios = createAxios({
 let profileAxios = createAxios({
   baseURL: 'https://www.googleapis.com'
 });
-
-let gmailServiceError = (message: string) => new ServiceError(badRequestError({ message }));
 
 export let auth = SlateAuth.create()
   .output(
@@ -134,21 +132,26 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response = await googleAxios.post(
-        '/token',
-        new URLSearchParams({
-          code: ctx.code,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          redirect_uri: ctx.redirectUri,
-          grant_type: 'authorization_code'
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response: any;
+      try {
+        response = await googleAxios.post(
+          '/token',
+          new URLSearchParams({
+            code: ctx.code,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            redirect_uri: ctx.redirectUri,
+            grant_type: 'authorization_code'
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw gmailOAuthError('callback', error);
+      }
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -176,20 +179,25 @@ export let auth = SlateAuth.create()
         throw gmailServiceError('No refresh token available');
       }
 
-      let response = await googleAxios.post(
-        '/token',
-        new URLSearchParams({
-          refresh_token: ctx.output.refreshToken,
-          client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
-          grant_type: 'refresh_token'
-        }).toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+      let response: any;
+      try {
+        response = await googleAxios.post(
+          '/token',
+          new URLSearchParams({
+            refresh_token: ctx.output.refreshToken,
+            client_id: ctx.clientId,
+            client_secret: ctx.clientSecret,
+            grant_type: 'refresh_token'
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        throw gmailOAuthError('refresh', error);
+      }
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -210,11 +218,16 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let response = await profileAxios.get('/oauth2/v2/userinfo', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let response: any;
+      try {
+        response = await profileAxios.get('/oauth2/v2/userinfo', {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        });
+      } catch (error) {
+        throw gmailOAuthError('profile lookup', error);
+      }
 
       let data = response.data;
 

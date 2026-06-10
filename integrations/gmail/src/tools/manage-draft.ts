@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client, parseMessage } from '../lib/client';
+import { gmailServiceError } from '../lib/errors';
 import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -98,7 +99,7 @@ export let manageDraft = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.draftId) throw new Error('draftId is required for update action');
+      if (!ctx.input.draftId) throw gmailServiceError('draftId is required for update action');
 
       let draft = await client.updateDraft(ctx.input.draftId, {
         to: ctx.input.to || [],
@@ -121,7 +122,7 @@ export let manageDraft = SlateTool.create(spec, {
     }
 
     if (action === 'send') {
-      if (!ctx.input.draftId) throw new Error('draftId is required for send action');
+      if (!ctx.input.draftId) throw gmailServiceError('draftId is required for send action');
 
       let message = await client.sendDraft(ctx.input.draftId);
       let parsed = parseMessage(message);
@@ -139,7 +140,7 @@ export let manageDraft = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.draftId) throw new Error('draftId is required for get action');
+      if (!ctx.input.draftId) throw gmailServiceError('draftId is required for get action');
 
       let draft = await client.getDraft(ctx.input.draftId);
       let parsed = parseMessage(draft.message);
@@ -179,7 +180,7 @@ export let manageDraft = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.draftId) throw new Error('draftId is required for delete action');
+      if (!ctx.input.draftId) throw gmailServiceError('draftId is required for delete action');
 
       await client.deleteDraft(ctx.input.draftId);
 
@@ -191,5 +192,5 @@ export let manageDraft = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw gmailServiceError(`Unknown action: ${action}`);
   });

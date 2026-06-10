@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
+import { gmailServiceError } from '../lib/errors';
 import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 
@@ -98,7 +99,7 @@ export let manageLabels = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.name) throw new Error('name is required for create action');
+      if (!ctx.input.name) throw gmailServiceError('name is required for create action');
       let label = await client.createLabel({
         name: ctx.input.name,
         messageListVisibility: ctx.input.messageListVisibility,
@@ -113,7 +114,7 @@ export let manageLabels = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.labelId) throw new Error('labelId is required for update action');
+      if (!ctx.input.labelId) throw gmailServiceError('labelId is required for update action');
       let label = await client.updateLabel(ctx.input.labelId, {
         name: ctx.input.name,
         messageListVisibility: ctx.input.messageListVisibility,
@@ -128,7 +129,7 @@ export let manageLabels = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.labelId) throw new Error('labelId is required for get action');
+      if (!ctx.input.labelId) throw gmailServiceError('labelId is required for get action');
       let label = await client.getLabel(ctx.input.labelId);
       return {
         output: { label: mapLabel(label) },
@@ -137,7 +138,7 @@ export let manageLabels = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.labelId) throw new Error('labelId is required for delete action');
+      if (!ctx.input.labelId) throw gmailServiceError('labelId is required for delete action');
       await client.deleteLabel(ctx.input.labelId);
       return {
         output: { deleted: true },
@@ -145,5 +146,5 @@ export let manageLabels = SlateTool.create(spec, {
       };
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    throw gmailServiceError(`Unknown action: ${action}`);
   });
