@@ -17,6 +17,7 @@ import {
   refreshAuth,
   removeProfile,
   runAllIntegrationTests,
+  runDoctor,
   runVitestWithProfile,
   setConfig,
   setupAuth,
@@ -39,15 +40,18 @@ let printResult = async (cb: () => Promise<unknown>) => {
 
 let cli = sade('slates');
 let argv = process.argv.slice(2);
-let isGlobalTestCommand = argv[0] === 'test';
-let integration = isGlobalTestCommand ? null : argv[0];
+let GLOBAL_COMMANDS = new Set(['test', 'doctor']);
+let isGlobalCommand = GLOBAL_COMMANDS.has(argv[0] ?? '');
+let integration = isGlobalCommand ? null : argv[0];
 
-if (!isGlobalTestCommand && (!integration || integration.startsWith('-'))) {
-  console.error('Usage: slates <integration> <command>\n       slates test');
+if (!isGlobalCommand && (!integration || integration.startsWith('-'))) {
+  console.error(
+    'Usage: slates <integration> <command>\n       slates test\n       slates doctor'
+  );
   process.exit(1);
 }
 
-if (isGlobalTestCommand) {
+if (isGlobalCommand) {
   cli.command('test').action(() =>
     printResult(async () => {
       let separatorIndex = process.argv.indexOf('--');
@@ -56,6 +60,31 @@ if (isGlobalTestCommand) {
       });
     })
   );
+
+  cli
+    .command('doctor')
+    .describe('Audit every integration in the workspace for consistency gaps.')
+    .option('--check', 'Run a single named check (see README for the full list)')
+    .option('--integration', 'Limit the audit to one integration by directory name')
+    .option('--json', 'Emit a machine-readable JSON report instead of the pretty table')
+    .option('--all', 'Show every failing integration instead of only the top 10')
+    .option('--no-color', 'Disable ANSI color in pretty output (auto-detected from TTY)')
+    .option(
+      '--include-test-integrations',
+      'Include integrations under test-integrations/ in the audit'
+    )
+    .action(opts =>
+      printResult(() =>
+        runDoctor({
+          check: opts.check,
+          integration: opts.integration,
+          json: Boolean(opts.json),
+          all: Boolean(opts.all),
+          noColor: opts.color === false,
+          includeTestIntegrations: Boolean(opts['include-test-integrations'])
+        })
+      )
+    );
 
   cli.parse([process.argv[0] ?? 'bun', process.argv[1] ?? 'slates', ...argv]);
 } else {

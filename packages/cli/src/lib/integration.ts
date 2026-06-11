@@ -20,7 +20,7 @@ export interface WorkspaceIntegrationSummary {
 
 let toPosixPath = (value: string) => value.replace(/\\/g, '/');
 
-let pathExists = async (targetPath: string) => {
+export let pathExists = async (targetPath: string) => {
   try {
     await access(targetPath);
     return true;
