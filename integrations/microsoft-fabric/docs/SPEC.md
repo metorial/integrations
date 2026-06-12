@@ -4,7 +4,7 @@
 
 - Package: `@slates-integrations/microsoft-fabric`
 - Integration name: `@microsoft/fabric`
-- Auth: Microsoft Entra delegated OAuth
+- Auth: Work Only Microsoft Entra delegated OAuth
 
 ## OAuth
 

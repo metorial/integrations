@@ -211,8 +211,8 @@ export let auth = SlateAuth.create()
   )
   .addOauth<Record<string, never>>({
     type: 'auth.oauth',
-    name: 'Microsoft Entra',
-    key: 'microsoft_entra',
+    name: 'Work Only',
+    key: 'oauth_organizations',
     docs: [
       {
         type: 'docs.auth.oauth',
