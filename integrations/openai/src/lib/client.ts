@@ -612,7 +612,13 @@ export class Client {
   }
 
   async cancelBatch(batchId: string): Promise<any> {
-    let response = await this.axios.post(`/batches/${batchId}/cancel`);
+    let response = await this.axios.post(
+      `/batches/${batchId}/cancel`,
+      {},
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 

@@ -8647,7 +8647,7 @@
     },
     "integrations/openai": {
       "name": "@slates-integrations/openai",
-      "version": "0.2.0-rc.9",
+      "version": "0.2.0-rc.10",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@slates/provider": "1.0.0-rc.15",
