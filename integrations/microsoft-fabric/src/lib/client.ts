@@ -138,6 +138,25 @@ type FabricCreateDataFactoryItemInput = {
   sensitivityLabelSettings?: unknown;
 };
 
+type FabricListDataFactoryItemsInput = {
+  workspaceId: string;
+  continuationToken?: string;
+  recursive?: boolean;
+  rootFolderId?: string;
+};
+
+type FabricRunDataPipelineInput = {
+  workspaceId: string;
+  pipelineId: string;
+  jobType?: string;
+  executionData?: unknown;
+  parameters?: Array<{
+    name: string;
+    value: unknown;
+    type: string;
+  }>;
+};
+
 export class FabricClient {
   private http: HttpClient;
 
@@ -212,11 +231,15 @@ export class FabricClient {
     };
   }
 
-  async listDataPipelines(workspaceId: string, continuationToken?: string) {
+  async listDataPipelines(input: FabricListDataFactoryItemsInput) {
     return await this.listPaginated(
-      `/workspaces/${encodeURIComponent(workspaceId)}/dataPipelines`,
+      `/workspaces/${encodeURIComponent(input.workspaceId)}/dataPipelines`,
       {
-        continuationToken
+        continuationToken: input.continuationToken,
+        params: {
+          recursive: input.recursive,
+          rootFolderId: input.rootFolderId
+        }
       }
     );
   }
@@ -250,13 +273,18 @@ export class FabricClient {
     return response.data;
   }
 
-  async runDataPipeline(workspaceId: string, pipelineId: string) {
+  async runDataPipeline(input: FabricRunDataPipelineInput) {
+    let body = compactRecord({
+      executionData: input.executionData,
+      parameters: input.parameters
+    });
+
     let response = await this.request('run Data Pipeline', {
       method: 'POST',
-      url: `/workspaces/${encodeURIComponent(workspaceId)}/dataPipelines/${encodeURIComponent(
-        pipelineId
-      )}/jobs/execute/instances`,
-      data: {}
+      url: `/workspaces/${encodeURIComponent(input.workspaceId)}/items/${encodeURIComponent(
+        input.pipelineId
+      )}/jobs/${encodeURIComponent(input.jobType ?? 'DefaultJob')}/instances`,
+      data: Object.keys(body).length > 0 ? body : undefined
     });
 
     return {
@@ -265,11 +293,15 @@ export class FabricClient {
     };
   }
 
-  async listDataflows(workspaceId: string, continuationToken?: string) {
+  async listDataflows(input: FabricListDataFactoryItemsInput) {
     return await this.listPaginated(
-      `/workspaces/${encodeURIComponent(workspaceId)}/dataflows`,
+      `/workspaces/${encodeURIComponent(input.workspaceId)}/dataflows`,
       {
-        continuationToken
+        continuationToken: input.continuationToken,
+        params: {
+          recursive: input.recursive,
+          rootFolderId: input.rootFolderId
+        }
       }
     );
   }

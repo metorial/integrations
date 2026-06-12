@@ -143,6 +143,22 @@ let dataFactoryCreateFields: Record<string, FieldSpec> = {
   sensitivityLabelSettings: sensitivityLabelField
 };
 
+let folderListQueryParameters: Record<string, FieldSpec> = {
+  continuationToken: {
+    type: 'string',
+    description: 'Continuation token from the prior response.'
+  },
+  recursive: {
+    type: 'boolean',
+    description: 'Lists items in nested folders when true. Fabric defaults this to true.'
+  },
+  rootFolderId: {
+    type: 'string uuid',
+    description:
+      'Filters items to a specific root folder. If omitted, the workspace is used as the root folder.'
+  }
+};
+
 export let workloads: FabricDocsWorkload[] = [
   {
     key: 'datapipeline',
@@ -316,12 +332,7 @@ let apiOperations: ApiOperationSpec[] = [
     sourceUrl:
       'https://learn.microsoft.com/en-us/rest/api/fabric/datapipeline/items/list-data-pipelines',
     scopes: genericItemScopes,
-    queryParameters: {
-      continuationToken: {
-        type: 'string',
-        description: 'Continuation token from the prior response.'
-      }
-    },
+    queryParameters: folderListQueryParameters,
     response: {
       successStatus: [200],
       body: 'Paginated object with value array and continuationToken.'
@@ -408,20 +419,32 @@ let apiOperations: ApiOperationSpec[] = [
     area: 'datafactory',
     title: 'Run Data Pipeline on demand',
     method: 'POST',
-    path: '/workspaces/{workspaceId}/dataPipelines/{dataPipelineId}/jobs/execute/instances',
+    path: '/workspaces/{workspaceId}/items/{dataPipelineId}/jobs/{jobType}/instances',
     sourceUrl:
-      'https://learn.microsoft.com/en-us/rest/api/fabric/datapipeline/items/run-on-demand-item-job',
+      'https://learn.microsoft.com/en-us/rest/api/fabric/core/job-scheduler/run-on-demand-item-job',
     scopes: executeScopes,
+    requestFields: {
+      executionData: {
+        type: 'object',
+        description:
+          'Optional fixed execution data for the item job type. The supported shape is defined by Fabric for the specific item job type.'
+      },
+      parameters: {
+        type: 'Parameter[]',
+        description:
+          'Optional per-run item job parameters. Each parameter has name, value, and type. Fabric does not support parameters for every item type or job type.'
+      }
+    },
     response: {
       successStatus: [202],
       lro: true,
-      headers: ['Location', 'x-ms-operation-id', 'Retry-After']
+      headers: ['Location', 'Retry-After']
     },
     examples: [
       {
         name: 'Run Data Pipeline',
         method: 'POST',
-        path: '/workspaces/{workspaceId}/dataPipelines/{dataPipelineId}/jobs/execute/instances'
+        path: '/workspaces/{workspaceId}/items/{dataPipelineId}/jobs/DefaultJob/instances'
       }
     ]
   },
@@ -436,12 +459,7 @@ let apiOperations: ApiOperationSpec[] = [
     sourceUrl:
       'https://learn.microsoft.com/en-us/rest/api/fabric/dataflow/items/list-dataflows',
     scopes: genericItemScopes,
-    queryParameters: {
-      continuationToken: {
-        type: 'string',
-        description: 'Continuation token from the prior response.'
-      }
-    },
+    queryParameters: folderListQueryParameters,
     response: {
       successStatus: [200],
       body: 'Paginated object with value array and continuationToken.'

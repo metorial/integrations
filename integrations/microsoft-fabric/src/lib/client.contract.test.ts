@@ -78,13 +78,31 @@ describe('Microsoft Fabric helper contracts', () => {
     expect(createItemSpec?.requestFields).toHaveProperty('sensitivityLabelSettings');
 
     let workloadPayload = workloadApiResource('DataPipeline').payload as {
-      operations: Array<{ key: string; requestFields?: Record<string, unknown> }>;
+      operations: Array<{
+        key: string;
+        path?: string;
+        queryParameters?: Record<string, unknown>;
+        requestFields?: Record<string, unknown>;
+      }>;
     };
     expect(
       workloadPayload.operations.some(
         operation => operation.key === 'datafactory_create_pipeline'
       )
     ).toBe(true);
+    let listPipelinesSpec = workloadPayload.operations.find(
+      operation => operation.key === 'datafactory_list_pipelines'
+    );
+    expect(listPipelinesSpec?.queryParameters).toHaveProperty('recursive');
+    expect(listPipelinesSpec?.queryParameters).toHaveProperty('rootFolderId');
+    let runPipelineSpec = workloadPayload.operations.find(
+      operation => operation.key === 'datafactory_run_pipeline'
+    );
+    expect(runPipelineSpec?.path).toBe(
+      '/workspaces/{workspaceId}/items/{dataPipelineId}/jobs/{jobType}/instances'
+    );
+    expect(runPipelineSpec?.requestFields).toHaveProperty('executionData');
+    expect(runPipelineSpec?.requestFields).toHaveProperty('parameters');
 
     let definitionsPayload = itemDefinitionsResource('Lakehouse').payload as {
       createItemRequest: { fields: Record<string, unknown> };

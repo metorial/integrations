@@ -31,6 +31,13 @@ The callback first redeems the authorization code for Fabric scopes, then redeem
 
 Data Pipeline and Dataflow create tools support `definition`, `description`, `folderId`, and `sensitivityLabelSettings`.
 
+Data Pipeline and Dataflow list tools support `continuationToken`, `recursive`,
+and `rootFolderId` query parameters. `datafactory_run_pipeline` uses the Fabric
+item job scheduler endpoint
+`/workspaces/{workspaceId}/items/{pipelineId}/jobs/{jobType}/instances`,
+defaults `jobType` to `DefaultJob`, and supports optional `executionData` plus
+per-run `parameters`.
+
 ## Tool Surface
 
 Docs:
@@ -86,5 +93,8 @@ Core and Data Factory:
 - Fabric scopes: `https://learn.microsoft.com/en-us/rest/api/fabric/articles/scopes`
 - Create item: `https://learn.microsoft.com/en-us/rest/api/fabric/core/items/create-item`
 - OneLake access APIs: `https://learn.microsoft.com/en-us/fabric/onelake/onelake-access-api`
+- Data Pipeline list: `https://learn.microsoft.com/en-us/rest/api/fabric/datapipeline/items/list-data-pipelines`
 - Data Pipeline create: `https://learn.microsoft.com/en-us/rest/api/fabric/datapipeline/items/create-data-pipeline`
+- Run on-demand item job: `https://learn.microsoft.com/en-us/rest/api/fabric/core/job-scheduler/run-on-demand-item-job`
+- Dataflow list: `https://learn.microsoft.com/en-us/rest/api/fabric/dataflow/items/list-dataflows`
 - Dataflow execute query: `https://learn.microsoft.com/en-us/rest/api/fabric/dataflow/query-execution/execute-query`

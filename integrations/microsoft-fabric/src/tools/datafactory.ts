@@ -8,6 +8,24 @@ let workspaceInputSchema = {
   workspaceId: z.string().describe('Fabric workspace ID.')
 };
 
+let listItemsInputSchema = {
+  ...workspaceInputSchema,
+  continuationToken: z
+    .string()
+    .optional()
+    .describe('Continuation token from a previous page.'),
+  recursive: z
+    .boolean()
+    .optional()
+    .describe('Whether to include items from nested folders. Fabric defaults this to true.'),
+  rootFolderId: z
+    .string()
+    .optional()
+    .describe(
+      'Optional Fabric folder ID to list from. If omitted, Fabric lists from the workspace root.'
+    )
+};
+
 let createItemInputSchema = {
   ...workspaceInputSchema,
   displayName: z.string().describe('Display name for the new item.'),
@@ -30,15 +48,7 @@ export let datafactoryListPipelines = SlateTool.create(spec, {
     'Official upstream MCP name: datafactory_list-pipelines. List Data Pipelines in a Fabric workspace.',
   tags: { readOnly: true, destructive: false }
 })
-  .input(
-    z.object({
-      ...workspaceInputSchema,
-      continuationToken: z
-        .string()
-        .optional()
-        .describe('Continuation token from a previous page.')
-    })
-  )
+  .input(z.object(listItemsInputSchema))
   .output(
     z.object({
       workspaceId: z.string().describe('Fabric workspace ID.'),
@@ -51,10 +61,7 @@ export let datafactoryListPipelines = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let result = await createFabricClient(ctx).listDataPipelines(
-      ctx.input.workspaceId,
-      ctx.input.continuationToken
-    );
+    let result = await createFabricClient(ctx).listDataPipelines(ctx.input);
 
     return {
       output: {
@@ -144,27 +151,56 @@ export let datafactoryRunPipeline = SlateTool.create(spec, {
   .input(
     z.object({
       ...workspaceInputSchema,
-      pipelineId: z.string().describe('Data Pipeline item ID.')
+      pipelineId: z.string().describe('Data Pipeline item ID.'),
+      jobType: z.string().optional().describe('Fabric item job type. Defaults to DefaultJob.'),
+      executionData: z
+        .unknown()
+        .optional()
+        .describe('Optional job-type-specific execution data for the on-demand run.'),
+      parameters: z
+        .array(
+          z.object({
+            name: z
+              .string()
+              .describe('Parameter name. Fabric requires names to be unique per run.'),
+            value: z.unknown().describe('Parameter value.'),
+            type: z
+              .string()
+              .describe(
+                'Parameter type such as Text, Boolean, Number, Integer, DateTime, Guid, VariableReference, or Automatic.'
+              )
+          })
+        )
+        .optional()
+        .describe(
+          'Optional per-run parameter list. Fabric does not support parameters for every item type or job type.'
+        )
     })
   )
   .output(
     z.object({
       workspaceId: z.string().describe('Fabric workspace ID.'),
       pipelineId: z.string().describe('Data Pipeline item ID.'),
+      jobType: z.string().describe('Fabric item job type used for the run.'),
       result: z.unknown().describe('Run response body, when returned.'),
       operation: operationSchema.describe('HTTP and LRO operation metadata.')
     })
   )
   .handleInvocation(async ctx => {
-    let result = await createFabricClient(ctx).runDataPipeline(
-      ctx.input.workspaceId,
-      ctx.input.pipelineId
-    );
+    let jobType = ctx.input.jobType ?? 'DefaultJob';
+    let result = await createFabricClient(ctx).runDataPipeline({
+      workspaceId: ctx.input.workspaceId,
+      pipelineId: ctx.input.pipelineId,
+      jobType,
+      executionData: ctx.input.executionData,
+      parameters: ctx.input.parameters
+    });
 
     return {
       output: {
         workspaceId: ctx.input.workspaceId,
         pipelineId: ctx.input.pipelineId,
+        jobType,
         result: result.result,
         operation: result.operation
       },
@@ -180,15 +216,7 @@ export let datafactoryListDataflows = SlateTool.create(spec, {
     'Official upstream MCP name: datafactory_list-dataflows. List Dataflows in a Fabric workspace.',
   tags: { readOnly: true, destructive: false }
 })
-  .input(
-    z.object({
-      ...workspaceInputSchema,
-      continuationToken: z
-        .string()
-        .optional()
-        .describe('Continuation token from a previous page.')
-    })
-  )
+  .input(z.object(listItemsInputSchema))
   .output(
     z.object({
       workspaceId: z.string().describe('Fabric workspace ID.'),
@@ -201,10 +229,7 @@ export let datafactoryListDataflows = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let result = await createFabricClient(ctx).listDataflows(
-      ctx.input.workspaceId,
-      ctx.input.continuationToken
-    );
+    let result = await createFabricClient(ctx).listDataflows(ctx.input);
 
     return {
       output: {
