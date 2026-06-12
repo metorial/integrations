@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@metorial/integrations-root",
@@ -7793,6 +7794,21 @@
         "typescript": "^5",
       },
     },
+    "integrations/microsoft-fabric": {
+      "name": "@slates-integrations/microsoft-fabric",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/provider": "1.0.0-rc.15",
+        "@types/node": "^20",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
     "integrations/microsoft-teams": {
       "name": "@slates-integrations/microsoft-teams",
       "version": "0.2.0-rc.10",
@@ -8631,7 +8647,7 @@
     },
     "integrations/openai": {
       "name": "@slates-integrations/openai",
-      "version": "0.2.0-rc.8",
+      "version": "0.2.0-rc.9",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@slates/provider": "1.0.0-rc.15",
@@ -15728,6 +15744,8 @@
 
     "@slates-integrations/microsoft-clarity": ["@slates-integrations/microsoft-clarity@workspace:integrations/microsoft-clarity"],
 
+    "@slates-integrations/microsoft-fabric": ["@slates-integrations/microsoft-fabric@workspace:integrations/microsoft-fabric"],
+
     "@slates-integrations/microsoft-outlook": ["@slates-integrations/microsoft-outlook@workspace:integrations/outlook"],
 
     "@slates-integrations/microsoft-teams": ["@slates-integrations/microsoft-teams@workspace:integrations/microsoft-teams"],
@@ -19001,6 +19019,8 @@
     "@slates-integrations/mezmo/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
 
     "@slates-integrations/microsoft-clarity/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
+
+    "@slates-integrations/microsoft-fabric/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
 
     "@slates-integrations/microsoft-outlook/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
 
