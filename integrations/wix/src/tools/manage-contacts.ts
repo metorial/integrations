@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { wixServiceError } from '../lib/errors';
 import { createWixClient } from '../lib/helpers';
 import { spec } from '../spec';
 
@@ -119,7 +120,8 @@ Contacts include name, emails, phones, addresses, company info, and custom label
 
     switch (ctx.input.action) {
       case 'get': {
-        if (!ctx.input.contactId) throw new Error('contactId is required for get action');
+        if (!ctx.input.contactId)
+          throw wixServiceError('contactId is required for get action');
         let result = await client.getContact(ctx.input.contactId);
         return {
           output: { contact: result.contact },
@@ -140,7 +142,7 @@ Contacts include name, emails, phones, addresses, company info, and custom label
       }
       case 'create': {
         if (!ctx.input.contactInfo)
-          throw new Error('contactInfo is required for create action');
+          throw wixServiceError('contactInfo is required for create action');
         let result = await client.createContact(ctx.input.contactInfo);
         return {
           output: { contact: result.contact },
@@ -148,11 +150,12 @@ Contacts include name, emails, phones, addresses, company info, and custom label
         };
       }
       case 'update': {
-        if (!ctx.input.contactId) throw new Error('contactId is required for update action');
+        if (!ctx.input.contactId)
+          throw wixServiceError('contactId is required for update action');
         if (ctx.input.revision === undefined)
-          throw new Error('revision is required for update action');
+          throw wixServiceError('revision is required for update action');
         if (!ctx.input.contactInfo)
-          throw new Error('contactInfo is required for update action');
+          throw wixServiceError('contactInfo is required for update action');
         let result = await client.updateContact(
           ctx.input.contactId,
           ctx.input.revision,
@@ -164,7 +167,8 @@ Contacts include name, emails, phones, addresses, company info, and custom label
         };
       }
       case 'delete': {
-        if (!ctx.input.contactId) throw new Error('contactId is required for delete action');
+        if (!ctx.input.contactId)
+          throw wixServiceError('contactId is required for delete action');
         await client.deleteContact(ctx.input.contactId);
         return {
           output: {},

@@ -43,7 +43,7 @@ export let getConversation = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId });
+    let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId, tier: ctx.auth.tier });
     let c = await client.getConversation(ctx.input.sessionId);
 
     return {

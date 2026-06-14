@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { wixServiceError } from '../lib/errors';
 import { createWixClient } from '../lib/helpers';
 import { spec } from '../spec';
 
@@ -89,7 +90,8 @@ Blog posts include title, content (rich text), categories, tags, SEO settings, a
         };
       }
       case 'get_post': {
-        if (!ctx.input.postId) throw new Error('postId is required for get_post action');
+        if (!ctx.input.postId)
+          throw wixServiceError('postId is required for get_post action');
         let result = await client.getPost(ctx.input.postId);
         return {
           output: { post: result.post },
@@ -124,7 +126,7 @@ Blog posts include title, content (rich text), categories, tags, SEO settings, a
       }
       case 'update_draft': {
         if (!ctx.input.draftPostId)
-          throw new Error('draftPostId is required for update_draft action');
+          throw wixServiceError('draftPostId is required for update_draft action');
         let draftPost: Record<string, any> = {};
         if (ctx.input.title) draftPost.title = ctx.input.title;
         if (ctx.input.richContent) draftPost.richContent = ctx.input.richContent;
@@ -140,7 +142,7 @@ Blog posts include title, content (rich text), categories, tags, SEO settings, a
       }
       case 'publish_draft': {
         if (!ctx.input.draftPostId)
-          throw new Error('draftPostId is required for publish_draft action');
+          throw wixServiceError('draftPostId is required for publish_draft action');
         let result = await client.publishDraftPost(ctx.input.draftPostId);
         return {
           output: { post: result.post },

@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
+import { taggunServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let confidenceFieldSchema = z
@@ -239,7 +240,11 @@ Use **simple** mode for core fields (total, tax, date, merchant) or **verbose** 
     let hasBase64 = !!ctx.input.image;
 
     if (!hasUrl && !hasBase64) {
-      throw new Error('Either sourceUrl or image (base64) must be provided.');
+      throw taggunServiceError('Either sourceUrl or image (base64) must be provided.');
+    }
+
+    if (hasUrl && hasBase64) {
+      throw taggunServiceError('Provide only one of sourceUrl or image (base64).');
     }
 
     let options = {
@@ -268,7 +273,7 @@ Use **simple** mode for core fields (total, tax, date, merchant) or **verbose** 
         : await client.extractReceiptSimpleFromUrl(urlInput, options);
     } else {
       if (!ctx.input.filename || !ctx.input.contentType) {
-        throw new Error(
+        throw taggunServiceError(
           'filename and contentType are required when using base64 image input.'
         );
       }

@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
+import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageDisks = SlateTool.create(spec, {
@@ -18,7 +19,14 @@ export let manageDisks = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Disk ID (for get/update/delete/list_snapshots/restore_snapshot)'),
-      snapshotId: z.string().optional().describe('Snapshot ID (for restore_snapshot)'),
+      snapshotKey: z
+        .string()
+        .optional()
+        .describe('Snapshot key returned by list_snapshots (for restore_snapshot)'),
+      snapshotId: z
+        .string()
+        .optional()
+        .describe('Deprecated alias for snapshotKey (for restore_snapshot)'),
       name: z.string().optional().describe('Disk name (for add/update)'),
       mountPath: z.string().optional().describe('Mount path (for add/update)'),
       sizeGB: z.number().optional().describe('Disk size in GB (for add/update)')
@@ -65,7 +73,7 @@ export let manageDisks = SlateTool.create(spec, {
     let { action, diskId } = ctx.input;
 
     if (action === 'list') {
-      if (!ctx.input.serviceId) throw new Error('serviceId is required for list');
+      if (!ctx.input.serviceId) throw renderServiceError('serviceId is required for list');
       let data = await client.listDisks(ctx.input.serviceId);
       let disks = (data as any[]).map((item: any) => {
         let d = item.disk || item;
@@ -85,9 +93,9 @@ export let manageDisks = SlateTool.create(spec, {
     }
 
     if (action === 'add') {
-      if (!ctx.input.serviceId) throw new Error('serviceId is required for add');
-      if (!ctx.input.name) throw new Error('name is required for add');
-      if (!ctx.input.mountPath) throw new Error('mountPath is required for add');
+      if (!ctx.input.serviceId) throw renderServiceError('serviceId is required for add');
+      if (!ctx.input.name) throw renderServiceError('name is required for add');
+      if (!ctx.input.mountPath) throw renderServiceError('mountPath is required for add');
       let body: Record<string, any> = {
         serviceId: ctx.input.serviceId,
         name: ctx.input.name,
@@ -104,7 +112,7 @@ export let manageDisks = SlateTool.create(spec, {
       };
     }
 
-    if (!diskId) throw new Error('diskId is required');
+    if (!diskId) throw renderServiceError('diskId is required');
 
     if (action === 'get') {
       let d = await client.getDisk(diskId);
@@ -153,12 +161,13 @@ export let manageDisks = SlateTool.create(spec, {
     }
 
     if (action === 'restore_snapshot') {
-      if (!ctx.input.snapshotId)
-        throw new Error('snapshotId is required for restore_snapshot');
-      await client.restoreDiskSnapshot(diskId, ctx.input.snapshotId);
+      let snapshotKey = ctx.input.snapshotKey ?? ctx.input.snapshotId;
+      if (!snapshotKey)
+        throw renderServiceError('snapshotKey is required for restore_snapshot');
+      await client.restoreDiskSnapshot(diskId, snapshotKey);
       return {
         output: { success: true },
-        message: `Restored disk \`${diskId}\` from snapshot \`${ctx.input.snapshotId}\`.`
+        message: `Restored disk \`${diskId}\` from snapshot \`${snapshotKey}\`.`
       };
     }
 

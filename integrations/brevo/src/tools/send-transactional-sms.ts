@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { brevoServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 
@@ -52,6 +53,14 @@ Use for automated SMS communications like verification codes, order updates, or 
     })
   )
   .handleInvocation(async ctx => {
+    if (!ctx.input.content && ctx.input.templateId === undefined) {
+      throw brevoServiceError('Provide either content or templateId.');
+    }
+
+    if (ctx.input.content && ctx.input.templateId !== undefined) {
+      throw brevoServiceError('Provide either content or templateId, not both.');
+    }
+
     let client = new Client({
       token: ctx.auth.token,
       authType: ctx.auth.authType

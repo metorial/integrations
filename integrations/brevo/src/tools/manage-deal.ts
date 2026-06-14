@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { brevoServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 
@@ -39,6 +40,17 @@ export let createDeal = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (
+      !ctx.input.name &&
+      !ctx.input.attributes &&
+      !ctx.input.linkedContactIds &&
+      !ctx.input.linkedCompanyIds
+    ) {
+      throw brevoServiceError(
+        'Provide at least one of name, attributes, linkedContactIds, or linkedCompanyIds.'
+      );
+    }
+
     let client = new Client({
       token: ctx.auth.token,
       authType: ctx.auth.authType

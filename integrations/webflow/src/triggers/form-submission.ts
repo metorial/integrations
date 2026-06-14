@@ -1,6 +1,7 @@
 import { SlateTrigger } from 'slates';
 import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
+import { webflowServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let formSubmissionTrigger = SlateTrigger.create(spec, {
@@ -36,7 +37,7 @@ export let formSubmissionTrigger = SlateTrigger.create(spec, {
   .webhook({
     autoRegisterWebhook: async ctx => {
       if (!ctx.config.siteId) {
-        throw new Error('siteId is required in config for automatic webhook registration');
+        throw webflowServiceError('siteId is required in config for automatic webhook registration.');
       }
       let client = new WebflowClient(ctx.auth.token);
       let webhook = await client.createWebhook(ctx.config.siteId, {

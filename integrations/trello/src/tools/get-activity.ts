@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { trelloServiceError } from '../lib/errors';
 import { TrelloClient } from '../lib/client';
 import { spec } from '../spec';
 
@@ -70,7 +71,7 @@ export let getActivity = SlateTool.create(spec, {
         before: ctx.input.before
       });
     } else {
-      throw new Error('Either boardId or cardId must be provided');
+      throw trelloServiceError('Either boardId or cardId must be provided.');
     }
 
     let actions = rawActions.map((a: any) => ({

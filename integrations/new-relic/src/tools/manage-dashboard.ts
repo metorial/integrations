@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { NerdGraphClient } from '../lib/client';
+import { newRelicValidationError } from '../lib/errors';
 import { spec } from '../spec';
 
 let widgetSchema = z.object({
@@ -92,7 +93,7 @@ export let manageDashboard = SlateTool.create(spec, {
 
     if (action === 'get') {
       if (!ctx.input.dashboardGuid)
-        throw new Error('dashboardGuid is required for get action');
+        throw newRelicValidationError('dashboardGuid is required for get action');
       ctx.progress('Fetching dashboard...');
       let dashboard = await client.getDashboard(ctx.input.dashboardGuid);
 
@@ -113,7 +114,7 @@ export let manageDashboard = SlateTool.create(spec, {
 
     if (action === 'delete') {
       if (!ctx.input.dashboardGuid)
-        throw new Error('dashboardGuid is required for delete action');
+        throw newRelicValidationError('dashboardGuid is required for delete action');
       ctx.progress('Deleting dashboard...');
       await client.deleteDashboard(ctx.input.dashboardGuid);
       return {
@@ -123,9 +124,9 @@ export let manageDashboard = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.name) throw new Error('name is required for create action');
+      if (!ctx.input.name) throw newRelicValidationError('name is required for create action');
       if (!ctx.input.pages?.length)
-        throw new Error('At least one page is required for create action');
+        throw newRelicValidationError('At least one page is required for create action');
 
       ctx.progress('Creating dashboard...');
       let result = await client.createDashboard({
@@ -152,7 +153,7 @@ export let manageDashboard = SlateTool.create(spec, {
 
     // update
     if (!ctx.input.dashboardGuid)
-      throw new Error('dashboardGuid is required for update action');
+      throw newRelicValidationError('dashboardGuid is required for update action');
 
     ctx.progress('Updating dashboard...');
     let result = await client.updateDashboard(ctx.input.dashboardGuid, {

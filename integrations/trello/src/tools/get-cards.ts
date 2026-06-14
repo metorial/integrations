@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { trelloServiceError } from '../lib/errors';
 import { TrelloClient } from '../lib/client';
 import { spec } from '../spec';
 
@@ -56,7 +57,7 @@ export let getCards = SlateTool.create(spec, {
     } else if (ctx.input.boardId) {
       rawCards = await client.getBoardCards(ctx.input.boardId, ctx.input.filter);
     } else {
-      throw new Error('Either listId or boardId must be provided');
+      throw trelloServiceError('Either listId or boardId must be provided.');
     }
 
     let cards = rawCards.map((c: any) => ({

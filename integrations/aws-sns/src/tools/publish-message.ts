@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { snsServiceError } from '../lib/errors';
 import { SnsClient } from '../lib/client';
 import { spec } from '../spec';
 
@@ -74,6 +75,13 @@ export let publishMessage = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    let destinations = [ctx.input.topicArn, ctx.input.targetArn, ctx.input.phoneNumber].filter(
+      value => value !== undefined && value.length > 0
+    );
+    if (destinations.length !== 1) {
+      throw snsServiceError('Provide exactly one of topicArn, targetArn, or phoneNumber.');
+    }
+
     let client = new SnsClient({
       accessKeyId: ctx.auth.accessKeyId,
       secretAccessKey: ctx.auth.secretAccessKey,

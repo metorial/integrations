@@ -16,14 +16,16 @@
     },
     "integrations/1password": {
       "name": "@slates-integrations/1password",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/21risk": {
@@ -136,8 +138,9 @@
     },
     "integrations/activecampaign": {
       "name": "@slates-integrations/activecampaign",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -196,8 +199,9 @@
     },
     "integrations/adobe-sign": {
       "name": "@slates-integrations/adobe-sign",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -244,14 +248,16 @@
     },
     "integrations/affinda": {
       "name": "@slates-integrations/affinda",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/affinity": {
@@ -557,14 +563,16 @@
     },
     "integrations/amplitude": {
       "name": "@slates-integrations/amplitude",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/anchor-browser": {
@@ -666,14 +674,16 @@
     },
     "integrations/api2pdf": {
       "name": "@slates-integrations/api2pdf",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.7",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/apiflash": {
@@ -835,14 +845,16 @@
     },
     "integrations/asana": {
       "name": "@slates-integrations/asana",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/ascora": {
@@ -871,14 +883,17 @@
     },
     "integrations/assembly-ai": {
       "name": "@slates-integrations/assemblyai",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/astica-ai": {
@@ -919,14 +934,17 @@
     },
     "integrations/auth0": {
       "name": "@slates-integrations/auth0",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/autobound": {
@@ -966,20 +984,24 @@
     },
     "integrations/aws-cognito": {
       "name": "@slates-integrations/aws-cognito",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/aws-dynamodb": {
       "name": "@slates-integrations/aws-dynamodb",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -1021,20 +1043,24 @@
     },
     "integrations/aws-ses": {
       "name": "@slates-integrations/aws-ses",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/aws-sns": {
       "name": "@slates-integrations/aws-sns",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -1045,26 +1071,32 @@
     },
     "integrations/aws-sqs": {
       "name": "@slates-integrations/aws-sqs",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/aws-transcribe": {
       "name": "@slates-integrations/aws-transcribe",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/ayrshare": {
@@ -1136,8 +1168,9 @@
     },
     "integrations/azure-speech": {
       "name": "@slates-integrations/azure-speech",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -1376,14 +1409,16 @@
     },
     "integrations/bigcommerce": {
       "name": "@slates-integrations/bigcommerce",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/bigmailer": {
@@ -1424,8 +1459,9 @@
     },
     "integrations/bigquery": {
       "name": "@slates-integrations/bigquery",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -1677,14 +1713,16 @@
     },
     "integrations/box": {
       "name": "@slates-integrations/box",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/boxhero": {
@@ -1701,8 +1739,9 @@
     },
     "integrations/braintree": {
       "name": "@slates-integrations/braintree",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -1725,14 +1764,16 @@
     },
     "integrations/braze": {
       "name": "@slates-integrations/braze",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/breathehr": {
@@ -1761,8 +1802,9 @@
     },
     "integrations/brevo": {
       "name": "@slates-integrations/brevo",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -1821,26 +1863,31 @@
     },
     "integrations/browserbase-tool": {
       "name": "@slates-integrations/browserbase",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/browserless": {
       "name": "@slates-integrations/browserless",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/btcpay-server": {
@@ -2013,14 +2060,17 @@
     },
     "integrations/cal-com": {
       "name": "@slates-integrations/calcom",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/calendarhero": {
@@ -2386,8 +2436,9 @@
     },
     "integrations/clearbit": {
       "name": "@slates-integrations/clearbit",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -2447,8 +2498,9 @@
     },
     "integrations/clickup": {
       "name": "@slates-integrations/clickup",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -2532,8 +2584,9 @@
     },
     "integrations/cloudflare-workers": {
       "name": "@slates-integrations/cloudflare-workers",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -2580,8 +2633,9 @@
     },
     "integrations/coda": {
       "name": "@slates-integrations/coda",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -2640,20 +2694,24 @@
     },
     "integrations/cohere": {
       "name": "@slates-integrations/cohere",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/coinbase": {
       "name": "@slates-integrations/coinbase",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -2809,14 +2867,16 @@
     },
     "integrations/convertkit": {
       "name": "@slates-integrations/convertkit",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/convex": {
@@ -2917,14 +2977,16 @@
     },
     "integrations/crisp": {
       "name": "@slates-integrations/crisp",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/crowdin": {
@@ -3025,14 +3087,17 @@
     },
     "integrations/customer-io": {
       "name": "@slates-integrations/customerio",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/customgpt": {
@@ -3157,26 +3222,31 @@
     },
     "integrations/databricks": {
       "name": "@slates-integrations/databricks",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/datadog": {
       "name": "@slates-integrations/datadog",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/dataforseo": {
@@ -3293,14 +3363,16 @@
     },
     "integrations/deepgram": {
       "name": "@slates-integrations/deepgram",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.7",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/deepimage": {
@@ -3317,8 +3389,9 @@
     },
     "integrations/deepseek": {
       "name": "@slates-integrations/deepseek",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -3499,8 +3572,9 @@
     },
     "integrations/docker-hub": {
       "name": "@slates-integrations/docker-hub",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -3535,8 +3609,9 @@
     },
     "integrations/docparser": {
       "name": "@slates-integrations/docparser",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -3583,14 +3658,16 @@
     },
     "integrations/docsumo": {
       "name": "@slates-integrations/docsumo",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/docugenerate": {
@@ -3667,14 +3744,16 @@
     },
     "integrations/docusign": {
       "name": "@slates-integrations/docusign",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/doodle": {
@@ -3775,14 +3854,17 @@
     },
     "integrations/drift": {
       "name": "@slates-integrations/drift",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/drip": {
@@ -3823,14 +3905,17 @@
     },
     "integrations/dropbox": {
       "name": "@slates-integrations/dropbox",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/dropcontact": {
@@ -3971,14 +4056,17 @@
     },
     "integrations/eleven-labs": {
       "name": "@slates-integrations/elevenlabs",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/elevenreader": {
@@ -4271,14 +4359,16 @@
     },
     "integrations/evernote": {
       "name": "@slates-integrations/evernote",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/eversign": {
@@ -4701,8 +4791,9 @@
     },
     "integrations/fly-io": {
       "name": "@slates-integrations/flyio",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -4857,44 +4948,51 @@
     },
     "integrations/freshdesk": {
       "name": "@slates-integrations/freshdesk",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/freshsales": {
       "name": "@slates-integrations/freshsales",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/freshservice": {
       "name": "@slates-integrations/freshservice",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/front": {
       "name": "@slates-integrations/front",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -4917,14 +5015,16 @@
     },
     "integrations/fullstory": {
       "name": "@slates-integrations/fullstory",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/gagelist": {
@@ -5646,8 +5746,9 @@
     },
     "integrations/grafana": {
       "name": "@slates-integrations/grafana",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -5718,14 +5819,17 @@
     },
     "integrations/groqcloud": {
       "name": "@slates-integrations/groqcloud",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/gtmetrix": {
@@ -5742,14 +5846,16 @@
     },
     "integrations/gumroad": {
       "name": "@slates-integrations/gumroad",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/gusto": {
@@ -5898,8 +6004,9 @@
     },
     "integrations/hellosign": {
       "name": "@slates-integrations/hellosign",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -5922,8 +6029,9 @@
     },
     "integrations/helpscout": {
       "name": "@slates-integrations/help-scout",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -6116,8 +6224,9 @@
     },
     "integrations/hotjar": {
       "name": "@slates-integrations/hotjar",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -6179,14 +6288,16 @@
     },
     "integrations/huggingface": {
       "name": "@slates-integrations/hugging-face",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/humanitix": {
@@ -6589,14 +6700,16 @@
     },
     "integrations/iterable": {
       "name": "@slates-integrations/iterable",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/jenkins": {
@@ -6759,8 +6872,9 @@
     },
     "integrations/kibana": {
       "name": "@slates-integrations/kibana",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -6783,26 +6897,30 @@
     },
     "integrations/kit": {
       "name": "@slates-integrations/kit",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/klaviyo": {
       "name": "@slates-integrations/klaviyo",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/klazify": {
@@ -6891,8 +7009,9 @@
     },
     "integrations/kubernetes": {
       "name": "@slates-integrations/kubernetes",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -6951,14 +7070,17 @@
     },
     "integrations/langbase": {
       "name": "@slates-integrations/langbase",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/laposta": {
@@ -7083,14 +7205,17 @@
     },
     "integrations/lemon-squeezy": {
       "name": "@slates-integrations/lemon-squeezy",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/lessonspace": {
@@ -7396,8 +7521,9 @@
     },
     "integrations/magento": {
       "name": "@slates-integrations/magento",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -7493,14 +7619,16 @@
     },
     "integrations/mailerlite": {
       "name": "@slates-integrations/mailerlite",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/mailersend": {
@@ -7517,14 +7645,17 @@
     },
     "integrations/mailgun": {
       "name": "@slates-integrations/mailgun",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/mails-so": {
@@ -7722,8 +7853,9 @@
     },
     "integrations/metaads": {
       "name": "@slates-integrations/meta-ads",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -7796,7 +7928,7 @@
     },
     "integrations/microsoft-fabric": {
       "name": "@slates-integrations/microsoft-fabric",
-      "version": "0.1.0-rc.3",
+      "version": "0.1.0-rc.5",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@slates/provider": "1.0.0-rc.15",
@@ -7825,14 +7957,17 @@
     },
     "integrations/midjourney": {
       "name": "@slates-integrations/midjourney",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/minerstat": {
@@ -7873,14 +8008,17 @@
     },
     "integrations/mistral-ai": {
       "name": "@slates-integrations/mistral-ai",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/mixmax": {
@@ -7897,14 +8035,16 @@
     },
     "integrations/mixpanel": {
       "name": "@slates-integrations/mixpanel",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/mocean": {
@@ -7957,14 +8097,17 @@
     },
     "integrations/monday": {
       "name": "@slates-integrations/mondaycom",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/moneybird": {
@@ -7981,26 +8124,31 @@
     },
     "integrations/mongodb": {
       "name": "@slates-integrations/mongodb",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/mongodb-atlas": {
       "name": "@slates-integrations/mongodb-atlas",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/moonclerk": {
@@ -8125,14 +8273,17 @@
     },
     "integrations/mysql": {
       "name": "@slates-integrations/mysql",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
+        "mysql2": "^3.22.5",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/n8n": {
@@ -8161,14 +8312,16 @@
     },
     "integrations/nano-nets": {
       "name": "@slates-integrations/nanonets",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/nasa": {
@@ -8209,14 +8362,16 @@
     },
     "integrations/neon": {
       "name": "@slates-integrations/neon",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/netlify": {
@@ -8282,14 +8437,16 @@
     },
     "integrations/new-relic": {
       "name": "@slates-integrations/new-relic",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/newsdata-io": {
@@ -8475,20 +8632,23 @@
     },
     "integrations/ocr-web-service": {
       "name": "@slates-integrations/ocr-web-service",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/ocrspace": {
       "name": "@slates-integrations/ocrspace",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -8523,8 +8683,9 @@
     },
     "integrations/okta": {
       "name": "@slates-integrations/okta",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -8535,14 +8696,17 @@
     },
     "integrations/ollama": {
       "name": "@slates-integrations/ollama",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/omnisend": {
@@ -8696,26 +8860,31 @@
     },
     "integrations/openrouter": {
       "name": "@slates-integrations/openrouter",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/opsgenie": {
       "name": "@slates-integrations/opsgenie",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/optimizely": {
@@ -8808,26 +8977,30 @@
     },
     "integrations/pagerduty": {
       "name": "@slates-integrations/pagerduty",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/pandadoc": {
       "name": "@slates-integrations/pandadoc",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/paperform": {
@@ -9013,8 +9186,9 @@
     },
     "integrations/pdf-api-io": {
       "name": "@slates-integrations/pdf-apiio",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -9025,8 +9199,9 @@
     },
     "integrations/pdf-co": {
       "name": "@slates-integrations/pdfco",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -9037,14 +9212,16 @@
     },
     "integrations/pdf4me": {
       "name": "@slates-integrations/pdf4me",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/pdfless": {
@@ -9061,26 +9238,30 @@
     },
     "integrations/pdfmonkey": {
       "name": "@slates-integrations/pdfmonkey",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/pendo": {
       "name": "@slates-integrations/pendo",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/penpot": {
@@ -9121,8 +9302,9 @@
     },
     "integrations/perplexityai": {
       "name": "@slates-integrations/perplexity-ai",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -9217,14 +9399,17 @@
     },
     "integrations/pinecone": {
       "name": "@slates-integrations/pinecone",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/pingdom": {
@@ -9327,14 +9512,17 @@
     },
     "integrations/planetscale": {
       "name": "@slates-integrations/planetscale",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/planly": {
@@ -9508,8 +9696,9 @@
     },
     "integrations/posthog": {
       "name": "@slates-integrations/posthog",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -9532,14 +9721,17 @@
     },
     "integrations/postmark": {
       "name": "@slates-integrations/postmark",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/power-bi": {
@@ -9848,8 +10040,9 @@
     },
     "integrations/railway": {
       "name": "@slates-integrations/railway",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -9969,8 +10162,9 @@
     },
     "integrations/redis": {
       "name": "@slates-integrations/redis",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -10053,14 +10247,16 @@
     },
     "integrations/render": {
       "name": "@slates-integrations/render",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/renderform": {
@@ -10101,14 +10297,17 @@
     },
     "integrations/replicate": {
       "name": "@slates-integrations/replicate",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/reply-io": {
@@ -10125,14 +10324,16 @@
     },
     "integrations/resend": {
       "name": "@slates-integrations/resend",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/resistant-ai": {
@@ -10655,14 +10856,16 @@
     },
     "integrations/segment": {
       "name": "@slates-integrations/segment",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/segmetrics": {
@@ -10751,14 +10954,16 @@
     },
     "integrations/sendgrid": {
       "name": "@slates-integrations/sendgrid",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/sendlane": {
@@ -10908,14 +11113,16 @@
     },
     "integrations/servicenow": {
       "name": "@slates-integrations/servicenow",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/sevdesk": {
@@ -11396,8 +11603,9 @@
     },
     "integrations/splunk": {
       "name": "@slates-integrations/splunk",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -11468,8 +11676,9 @@
     },
     "integrations/square": {
       "name": "@slates-integrations/square",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
@@ -11480,14 +11689,17 @@
     },
     "integrations/squarespace": {
       "name": "@slates-integrations/squarespace",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/sslmate-cert-spotter-api": {
@@ -11504,14 +11716,17 @@
     },
     "integrations/stability-ai": {
       "name": "@slates-integrations/stability-ai",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/stack-ai": {
@@ -11775,14 +11990,17 @@
     },
     "integrations/supabase": {
       "name": "@slates-integrations/supabase",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/supadata": {
@@ -11947,14 +12165,16 @@
     },
     "integrations/taggun": {
       "name": "@slates-integrations/taggun",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/talenthr": {
@@ -12440,14 +12660,17 @@
     },
     "integrations/trello": {
       "name": "@slates-integrations/trello",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/triggercmd": {
@@ -12549,14 +12772,16 @@
     },
     "integrations/twilio-sendgrid": {
       "name": "@slates-integrations/twilio-sendgrid",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/twitch": {
@@ -13008,14 +13233,16 @@
     },
     "integrations/webflow": {
       "name": "@slates-integrations/webflow",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/webscraper-io": {
@@ -13140,14 +13367,16 @@
     },
     "integrations/wix": {
       "name": "@slates-integrations/wix",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/wiza": {
@@ -13176,14 +13405,16 @@
     },
     "integrations/woocommerce": {
       "name": "@slates-integrations/woocommerce",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/woodpecker-co": {
@@ -13214,14 +13445,16 @@
     },
     "integrations/wordpress": {
       "name": "@slates-integrations/wordpress",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/workable": {
@@ -13547,14 +13780,16 @@
     },
     "integrations/zoho-crm": {
       "name": "@slates-integrations/zoho-crm",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
         "zod": "^4.2",
       },
       "devDependencies": {
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/zoho-desk": {
@@ -16910,6 +17145,8 @@
 
     "available-typed-arrays": ["available-typed-arrays@1.0.7", "", { "dependencies": { "possible-typed-array-names": "^1.0.0" } }, "sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ=="],
 
+    "aws-ssl-profiles": ["aws-ssl-profiles@1.1.2", "", {}, "sha512-NZKeq9AfyQvEeNlN0zSYAaWrmBffJh3IELMZfRpJVWgrpEbtEpnjvzqBPf+mxoI287JohRDoa+/nsfqqiZmF6g=="],
+
     "axios": ["axios@1.16.0", "", { "dependencies": { "follow-redirects": "^1.16.0", "form-data": "^4.0.5", "proxy-from-env": "^2.1.0" } }, "sha512-6hp5CwvTPlN2A31g5dxnwAX0orzM7pmCRDLnZSX772mv8WDqICwFjowHuPs04Mc8deIld1+ejhtaMn5vp6b+1w=="],
 
     "babel-plugin-macros": ["babel-plugin-macros@3.1.0", "", { "dependencies": { "@babel/runtime": "^7.12.5", "cosmiconfig": "^7.0.0", "resolve": "^1.19.0" } }, "sha512-Cg7TFGpIr01vOQNODXOOaGz2NpCU5gl8x1qJFbb6hbZxR7XrcE2vtbAsTAbJ7/xwJtUuJEw8K8Zr/AE0LHlesg=="],
@@ -17046,6 +17283,8 @@
 
     "delayed-stream": ["delayed-stream@1.0.0", "", {}, "sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ=="],
 
+    "denque": ["denque@2.1.0", "", {}, "sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw=="],
+
     "dom-serializer": ["dom-serializer@1.4.1", "", { "dependencies": { "domelementtype": "^2.0.1", "domhandler": "^4.2.0", "entities": "^2.0.0" } }, "sha512-VHwB3KfrcOOkelEG2ZOfxqLZdfkil8PtJi4P8N2MMXucZq2yLp75ClViUlOVwyoHEDjYU433Aq+5zWP61+RGag=="],
 
     "domelementtype": ["domelementtype@2.3.0", "", {}, "sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw=="],
@@ -17137,6 +17376,8 @@
     "function.prototype.name": ["function.prototype.name@1.1.8", "", { "dependencies": { "call-bind": "^1.0.8", "call-bound": "^1.0.3", "define-properties": "^1.2.1", "functions-have-names": "^1.2.3", "hasown": "^2.0.2", "is-callable": "^1.2.7" } }, "sha512-e5iwyodOHhbMr/yNrc7fDYG4qlbIvI5gajyzPnb5TCwyhjApznQh1BMFou9b30SevY43gCJKXycoCBjMbsuW0Q=="],
 
     "functions-have-names": ["functions-have-names@1.2.3", "", {}, "sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ=="],
+
+    "generate-function": ["generate-function@2.3.1", "", { "dependencies": { "is-property": "^1.0.2" } }, "sha512-eeB5GfMNeevm/GRYq20ShmsaGcmI81kIX2K9XQx5miC8KdHaC6Jm0qQ8ZNeGOi7wYB8OsdxKs+Y2oVuTFuVwKQ=="],
 
     "generator-function": ["generator-function@2.0.1", "", {}, "sha512-SFdFmIJi+ybC0vjlHN0ZGVGHc3lgE0DxPAT0djjVg+kjOnSqclqmj0KQ7ykTOLP6YxoqOvuAODGdcHJn+43q3g=="],
 
@@ -17234,6 +17475,8 @@
 
     "is-number-object": ["is-number-object@1.1.1", "", { "dependencies": { "call-bound": "^1.0.3", "has-tostringtag": "^1.0.2" } }, "sha512-lZhclumE1G6VYD8VHe35wFaIif+CTy5SJIi5+3y4psDgWu4wPDoBhF8NxUOinEc7pHgiTsT6MaBb92rKhhD+Xw=="],
 
+    "is-property": ["is-property@1.0.2", "", {}, "sha512-Ks/IoX00TtClbGQr4TWXemAnktAQvYB7HzcCxDGqEZU6oCmb2INHuOoKxbtR+HFkmYWBKv/dOZtGRiAjDhj92g=="],
+
     "is-reference": ["is-reference@1.2.1", "", { "dependencies": { "@types/estree": "*" } }, "sha512-U82MsXXiFIrjCK4otLT+o2NA2Cd2g5MLoOVXUZjIOhLurrRxpEXzI8O0KZHr3IjLvlAH1kTPYSuqer5T9ZVBKQ=="],
 
     "is-regex": ["is-regex@1.2.1", "", { "dependencies": { "call-bound": "^1.0.2", "gopd": "^1.2.0", "has-tostringtag": "^1.0.2", "hasown": "^2.0.2" } }, "sha512-MjYsKHO5O7mCsmRGxWcLWheFqN9DJ/2TmngvjKXihe6efViPqc274+Fx/4fYj/r03+ESvBdTXK0V6tA3rgez1g=="],
@@ -17296,9 +17539,13 @@
 
     "lodash.uniq": ["lodash.uniq@4.5.0", "", {}, "sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ=="],
 
+    "long": ["long@5.3.2", "", {}, "sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA=="],
+
     "loupe": ["loupe@3.2.1", "", {}, "sha512-CdzqowRJCeLU72bHvWqwRBBlLcMEtIvGrlvef74kMnV2AolS9Y8xUv1I0U/MNAWMhBlKIoyuEgoJ0t/bbwHbLQ=="],
 
     "lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
+
+    "lru.min": ["lru.min@1.1.4", "", {}, "sha512-DqC6n3QQ77zdFpCMASA1a3Jlb64Hv2N2DciFGkO/4L9+q/IpIAuRlKOvCXabtRW6cQf8usbmM6BE/TOPysCdIA=="],
 
     "magic-string": ["magic-string@0.30.21", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.5" } }, "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ=="],
 
@@ -17330,7 +17577,11 @@
 
     "mute-stream": ["mute-stream@2.0.0", "", {}, "sha512-WWdIxpyjEn+FhQJQQv9aQAYlHoNVdzIzUySNV1gHUPDSdZJ3yZn7pAAbQcV7B56Mvu881q9FZV+0Vx2xC44VWA=="],
 
+    "mysql2": ["mysql2@3.22.5", "", { "dependencies": { "aws-ssl-profiles": "^1.1.2", "denque": "^2.1.0", "generate-function": "^2.3.1", "iconv-lite": "^0.7.2", "long": "^5.3.2", "lru.min": "^1.1.4", "named-placeholders": "^1.1.6", "sql-escaper": "^1.3.3" }, "peerDependencies": { "@types/node": ">= 8" } }, "sha512-95uZ2TrPWAZdwpB3vvvDbmEMcNG8yIeNCyu6GUcr/QnWEE/wXm7+mhOCsdQfWQDTV7qYT/PDUZ4U4UPP4AsXqQ=="],
+
     "mz": ["mz@2.7.0", "", { "dependencies": { "any-promise": "^1.0.0", "object-assign": "^4.0.1", "thenify-all": "^1.0.0" } }, "sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q=="],
+
+    "named-placeholders": ["named-placeholders@1.1.6", "", { "dependencies": { "lru.min": "^1.1.0" } }, "sha512-Tz09sEL2EEuv5fFowm419c1+a/jSMiBjI9gHxVLrVdbUkkNUUfjsVYs9pVZu5oCon/kmRh9TfLEObFtkVxmY0w=="],
 
     "nanoid": ["nanoid@3.3.12", "", { "bin": { "nanoid": "bin/nanoid.cjs" } }, "sha512-ZB9RH/39qpq5Vu6Y+NmUaFhQR6pp+M2Xt76XBnEwDaGcVAqhlvxrl3B2bKS5D3NH3QR76v3aSrKaF/Kiy7lEtQ=="],
 
@@ -17567,6 +17818,8 @@
     "source-map-support": ["source-map-support@0.5.21", "", { "dependencies": { "buffer-from": "^1.0.0", "source-map": "^0.6.0" } }, "sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w=="],
 
     "sourcemap-codec": ["sourcemap-codec@1.4.8", "", {}, "sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA=="],
+
+    "sql-escaper": ["sql-escaper@1.3.3", "", {}, "sha512-BsTCV265VpTp8tm1wyIm1xqQCS+Q9NHx2Sr+WcnUrgLrQ6yiDIvHYJV5gHxsj1lMBy2zm5twLaZao8Jd+S8JJw=="],
 
     "ssf": ["ssf@0.11.2", "", { "dependencies": { "frac": "~1.1.2" } }, "sha512-+idbmIXoYET47hH+d7dfm2epdOMUDjqcB4648sTZ+t2JwoyBFL/insLfB/racrDmsKB3diwsDA696pZMieAC5g=="],
 

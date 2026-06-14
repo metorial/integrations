@@ -1,7 +1,16 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
+import { resendServiceError } from '../lib/errors';
 import { spec } from '../spec';
+
+let templateSchema = z.object({
+  id: z.string().describe('Published template ID or alias to send.'),
+  variables: z
+    .record(z.string(), z.union([z.string(), z.number()]))
+    .optional()
+    .describe('Template variables as key-value pairs.')
+});
 
 let emailSchema = z.object({
   from: z.string().describe('Sender email address.'),
@@ -31,6 +40,9 @@ let emailSchema = z.object({
     )
     .optional()
     .describe('Metadata tags.'),
+  template: templateSchema
+    .optional()
+    .describe('Published template to send. Do not provide html or text when template is set.'),
   scheduledAt: z.string().optional().describe('Schedule delivery time in ISO 8601 format.')
 });
 
@@ -61,6 +73,14 @@ export let sendBatchEmails = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
+    for (let email of ctx.input.emails) {
+      if (email.template && (email.html || email.text)) {
+        throw resendServiceError(
+          'Do not provide html or text when sending a Resend template in a batch email.'
+        );
+      }
+    }
+
     let result = await client.sendBatchEmails({
       emails: ctx.input.emails.map(e => ({
         from: e.from,
@@ -73,6 +93,7 @@ export let sendBatchEmails = SlateTool.create(spec, {
         replyTo: e.replyTo,
         headers: e.headers,
         tags: e.tags,
+        template: e.template,
         scheduledAt: e.scheduledAt
       })),
       idempotencyKey: ctx.input.idempotencyKey

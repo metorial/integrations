@@ -1,5 +1,6 @@
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
+import { newRelicApiError, newRelicGraphqlErrors } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -48,9 +49,18 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response = await http.post('/graphql', {
-        query: `{ actor { user { email name id } } }`
-      });
+      let response;
+      try {
+        response = await http.post('/graphql', {
+          query: `{ actor { user { email name id } } }`
+        });
+      } catch (error) {
+        throw newRelicApiError(error, 'profile lookup');
+      }
+
+      if (response.data?.errors?.length) {
+        throw newRelicGraphqlErrors('profile lookup', response.data.errors);
+      }
 
       let user = response.data?.data?.actor?.user;
 

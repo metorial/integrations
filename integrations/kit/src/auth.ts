@@ -1,9 +1,17 @@
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
+import { kitApiError, kitServiceError } from './lib/errors';
 
 let httpClient = createAxios({
   baseURL: 'https://api.kit.com/v4'
 });
+
+httpClient.interceptors.response.use(
+  response => response,
+  error => {
+    throw kitApiError(error, 'auth request');
+  }
+);
 
 export let auth = SlateAuth.create()
   .output(
@@ -67,6 +75,10 @@ export let auth = SlateAuth.create()
     },
 
     handleTokenRefresh: async (ctx: any) => {
+      if (!ctx.output.refreshToken) {
+        throw kitServiceError('Kit refresh token is missing; reconnect the account.');
+      }
+
       let response = await httpClient.post('/oauth/token', {
         grant_type: 'refresh_token',
         refresh_token: ctx.output.refreshToken,

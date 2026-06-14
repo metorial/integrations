@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
+import { webflowServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageCollectionItem = SlateTool.create(spec, {
@@ -49,7 +50,7 @@ export let manageCollectionItem = SlateTool.create(spec, {
     let { collectionId, itemId, action, fieldData, isArchived, isDraft } = ctx.input;
 
     if (action === 'delete') {
-      if (!itemId) throw new Error('itemId is required for delete action');
+      if (!itemId) throw webflowServiceError('itemId is required for delete action.');
       await client.deleteCollectionItem(collectionId, itemId);
       return {
         output: { itemId, deleted: true },
@@ -58,7 +59,7 @@ export let manageCollectionItem = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!itemId) throw new Error('itemId is required for update action');
+      if (!itemId) throw webflowServiceError('itemId is required for update action.');
       let item = await client.updateCollectionItem(collectionId, itemId, {
         fieldData,
         isArchived,
@@ -79,7 +80,7 @@ export let manageCollectionItem = SlateTool.create(spec, {
 
     // create
     if (!fieldData || Object.keys(fieldData).length === 0) {
-      throw new Error('fieldData is required when creating a collection item');
+      throw webflowServiceError('fieldData is required when creating a collection item.');
     }
     let item = await client.createCollectionItem(collectionId, {
       fieldData,

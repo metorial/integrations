@@ -1,9 +1,15 @@
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
+import { hellosignApiError, hellosignServiceError } from './lib/errors';
 
 let api = createAxios({
   baseURL: 'https://api.hellosign.com/v3'
 });
+
+api.interceptors.response.use(
+  response => response,
+  error => Promise.reject(hellosignApiError(error, 'auth request'))
+);
 
 export let auth = SlateAuth.create()
   .output(
@@ -99,6 +105,12 @@ export let auth = SlateAuth.create()
 
       let data = response.data;
 
+      if (!data.access_token) {
+        throw hellosignServiceError(
+          'Dropbox Sign OAuth token exchange did not return an access token.'
+        );
+      }
+
       let expiresAt: string | undefined;
       if (data.expires_in) {
         expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -116,7 +128,7 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available');
+        throw hellosignServiceError('No Dropbox Sign refresh token is available.');
       }
 
       let response = await api.post(
@@ -133,6 +145,12 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
+
+      if (!data.access_token) {
+        throw hellosignServiceError(
+          'Dropbox Sign OAuth refresh did not return an access token.'
+        );
+      }
 
       let expiresAt: string | undefined;
       if (data.expires_in) {

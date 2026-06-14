@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
+import { freshserviceServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let updateTicket = SlateTool.create(spec, {
@@ -58,6 +59,10 @@ Status: 2=Open, 3=Pending, 4=Resolved, 5=Closed.`,
     });
 
     let { ticketId, ...updateParams } = ctx.input;
+    if (!Object.values(updateParams).some(value => value !== undefined)) {
+      throw freshserviceServiceError('Provide at least one field to update a ticket.');
+    }
+
     let ticket = await client.updateTicket(ticketId, updateParams);
 
     return {

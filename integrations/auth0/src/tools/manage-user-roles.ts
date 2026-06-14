@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Auth0Client } from '../lib/client';
+import { auth0ServiceError, requireNonEmptyArray } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageUserRolesTool = SlateTool.create(spec, {
@@ -56,27 +57,23 @@ export let manageUserRolesTool = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'assign') {
-      if (!ctx.input.roleIds?.length) {
-        throw new Error('roleIds are required for assign action');
-      }
-      await client.assignUserRoles(ctx.input.userId, ctx.input.roleIds);
+      let roleIds = requireNonEmptyArray(ctx.input.roleIds, 'roleIds', 'assign');
+      await client.assignUserRoles(ctx.input.userId, roleIds);
       return {
         output: { success: true },
-        message: `Assigned **${ctx.input.roleIds.length}** role(s) to user.`
+        message: `Assigned **${roleIds.length}** role(s) to user.`
       };
     }
 
     if (ctx.input.action === 'remove') {
-      if (!ctx.input.roleIds?.length) {
-        throw new Error('roleIds are required for remove action');
-      }
-      await client.removeUserRoles(ctx.input.userId, ctx.input.roleIds);
+      let roleIds = requireNonEmptyArray(ctx.input.roleIds, 'roleIds', 'remove');
+      await client.removeUserRoles(ctx.input.userId, roleIds);
       return {
         output: { success: true },
-        message: `Removed **${ctx.input.roleIds.length}** role(s) from user.`
+        message: `Removed **${roleIds.length}** role(s) from user.`
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw auth0ServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

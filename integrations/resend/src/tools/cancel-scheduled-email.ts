@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
+import { resendServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let cancelScheduledEmail = SlateTool.create(spec, {
@@ -45,7 +46,7 @@ export let cancelScheduledEmail = SlateTool.create(spec, {
       };
     } else {
       if (!ctx.input.scheduledAt) {
-        throw new Error('scheduledAt is required when rescheduling an email.');
+        throw resendServiceError('scheduledAt is required when rescheduling an email.');
       }
       let result = await client.updateEmail(ctx.input.emailId, {
         scheduledAt: ctx.input.scheduledAt

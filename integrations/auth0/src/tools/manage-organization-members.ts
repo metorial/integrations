@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Auth0Client } from '../lib/client';
+import { auth0ServiceError, requireNonEmptyArray } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageOrganizationMembersTool = SlateTool.create(spec, {
@@ -65,24 +66,23 @@ export let manageOrganizationMembersTool = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'add') {
-      if (!ctx.input.userIds?.length) throw new Error('userIds are required for add action');
-      await client.addOrganizationMembers(ctx.input.organizationId, ctx.input.userIds);
+      let userIds = requireNonEmptyArray(ctx.input.userIds, 'userIds', 'add');
+      await client.addOrganizationMembers(ctx.input.organizationId, userIds);
       return {
         output: { success: true },
-        message: `Added **${ctx.input.userIds.length}** member(s) to organization.`
+        message: `Added **${userIds.length}** member(s) to organization.`
       };
     }
 
     if (ctx.input.action === 'remove') {
-      if (!ctx.input.userIds?.length)
-        throw new Error('userIds are required for remove action');
-      await client.removeOrganizationMembers(ctx.input.organizationId, ctx.input.userIds);
+      let userIds = requireNonEmptyArray(ctx.input.userIds, 'userIds', 'remove');
+      await client.removeOrganizationMembers(ctx.input.organizationId, userIds);
       return {
         output: { success: true },
-        message: `Removed **${ctx.input.userIds.length}** member(s) from organization.`
+        message: `Removed **${userIds.length}** member(s) from organization.`
       };
     }
 
-    throw new Error(`Unknown action: ${ctx.input.action}`);
+    throw auth0ServiceError(`Unknown action: ${ctx.input.action}`);
   })
   .build();

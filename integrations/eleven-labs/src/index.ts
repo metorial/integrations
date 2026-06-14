@@ -3,18 +3,23 @@ import { spec } from './spec';
 import {
   composeMusic,
   createDubbing,
+  createDialogue,
+  createForcedAlignment,
+  deleteDubbing,
   deleteVoice,
   editVoiceSettings,
   generateSoundEffect,
   getAccount,
   getDubbing,
+  getHistoryAudio,
   getVoice,
   isolateAudio,
   listHistory,
   listModels,
   listVoices,
   speechToText,
-  textToSpeech
+  textToSpeech,
+  voiceChanger
 } from './tools';
 import { speechToTextCompletion, voiceAgentCall, voiceRemoval } from './triggers';
 
@@ -27,13 +32,18 @@ export let provider = Slate.create({
     getVoice,
     deleteVoice,
     editVoiceSettings,
+    voiceChanger,
+    createDialogue,
     generateSoundEffect,
     composeMusic,
     createDubbing,
     getDubbing,
+    deleteDubbing,
     isolateAudio,
+    createForcedAlignment,
     listModels,
     listHistory,
+    getHistoryAudio,
     getAccount
   ],
   triggers: [voiceAgentCall, speechToTextCompletion, voiceRemoval]

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { coinbaseOAuthAuthMethods } from '../lib/auth-methods';
 import { AdvancedTradeClient } from '../lib/advanced-trade-client';
 import { spec } from '../spec';
 
@@ -12,6 +13,7 @@ export let getCandles = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .authMethods(coinbaseOAuthAuthMethods)
   .input(
     z.object({
       productId: z.string().describe('Trading pair (e.g., "BTC-USD")'),
@@ -25,6 +27,7 @@ export let getCandles = SlateTool.create(spec, {
           'THIRTY_MINUTE',
           'ONE_HOUR',
           'TWO_HOUR',
+          'FOUR_HOUR',
           'SIX_HOUR',
           'ONE_DAY'
         ])

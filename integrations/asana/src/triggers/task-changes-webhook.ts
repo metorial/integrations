@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import { SlateTrigger } from 'slates';
 import { z } from 'zod';
+import { asanaServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 
@@ -49,7 +50,7 @@ export let taskChangesWebhook = SlateTrigger.create(spec, {
   .webhook({
     autoRegisterWebhook: async ctx => {
       if (!ctx.config.webhookProjectId) {
-        throw new Error(
+        throw asanaServiceError(
           'config.webhookProjectId is required to auto-register Asana webhooks (project GID that will receive task events).'
         );
       }

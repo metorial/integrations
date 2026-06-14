@@ -1,5 +1,9 @@
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
+import {
+  helpscoutServiceError,
+  withHelpScoutErrorHandling
+} from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -53,7 +57,7 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let http = createAxios();
+      let http = withHelpScoutErrorHandling(createAxios(), 'OAuth token exchange');
 
       let response = await http.post(
         'https://api.helpscout.net/v2/oauth2/token',
@@ -88,10 +92,12 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        return { output: ctx.output };
+        throw helpscoutServiceError(
+          'Cannot refresh Help Scout OAuth token because no refresh token was saved.'
+        );
       }
 
-      let http = createAxios();
+      let http = withHelpScoutErrorHandling(createAxios(), 'OAuth token refresh');
 
       let response = await http.post(
         'https://api.helpscout.net/v2/oauth2/token',
@@ -124,12 +130,15 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: any) => {
-      let http = createAxios({
-        baseURL: 'https://api.helpscout.net/v2',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let http = withHelpScoutErrorHandling(
+        createAxios({
+          baseURL: 'https://api.helpscout.net/v2',
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        }),
+        'profile request'
+      );
 
       let response = await http.get('/users/me');
       let user = response.data;
@@ -159,7 +168,7 @@ export let auth = SlateAuth.create()
     }),
 
     getOutput: async ctx => {
-      let http = createAxios();
+      let http = withHelpScoutErrorHandling(createAxios(), 'client credentials token request');
 
       let response = await http.post(
         'https://api.helpscout.net/v2/oauth2/token',
@@ -191,12 +200,15 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: any) => {
-      let http = createAxios({
-        baseURL: 'https://api.helpscout.net/v2',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
-      });
+      let http = withHelpScoutErrorHandling(
+        createAxios({
+          baseURL: 'https://api.helpscout.net/v2',
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`
+          }
+        }),
+        'profile request'
+      );
 
       let response = await http.get('/users/me');
       let user = response.data;
