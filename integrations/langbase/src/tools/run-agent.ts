@@ -3,11 +3,14 @@ import { z } from 'zod';
 import { Client } from '../lib/client';
 import { langbaseServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { functionToolSchema, mapFunctionTools } from './shared';
+import { functionToolSchema, mapFunctionTools, requireExactlyOneDefined } from './shared';
 
 let inputMessageSchema = z.object({
   role: z.enum(['user', 'assistant', 'system', 'tool']).describe('Role of the message sender'),
-  content: z.string().nullable().describe('Content of the message. Tool messages may use null.'),
+  content: z
+    .string()
+    .nullable()
+    .describe('Content of the message. Tool messages may use null.'),
   name: z.string().optional().describe('Name identifier'),
   toolCallId: z.string().optional().describe('Tool call ID for tool response messages')
 });
@@ -86,13 +89,14 @@ export let runAgent = SlateTool.create(spec, {
       model: ctx.input.model
     };
 
-    let hasInputText = ctx.input.inputText !== undefined;
-    let hasMessages = ctx.input.messages !== undefined;
-    if (hasInputText === hasMessages) {
-      throw langbaseServiceError('Provide exactly one of inputText or messages.');
-    }
+    let inputSource = requireExactlyOneDefined(
+      ctx.input,
+      'inputText',
+      'messages',
+      'Provide exactly one of inputText or messages.'
+    );
 
-    if (ctx.input.inputText !== undefined) {
+    if (inputSource === 'inputText') {
       body.input = ctx.input.inputText;
     } else {
       body.input = (ctx.input.messages ?? []).map(m => ({
@@ -106,9 +110,13 @@ export let runAgent = SlateTool.create(spec, {
     if (ctx.input.instructions !== undefined) body.instructions = ctx.input.instructions;
     if (ctx.input.tools !== undefined) body.tools = mapFunctionTools(ctx.input.tools);
     if (ctx.input.toolChoiceFunctionName !== undefined) {
-      let matchingTool = ctx.input.tools?.some(tool => tool.name === ctx.input.toolChoiceFunctionName);
+      let matchingTool = ctx.input.tools?.some(
+        tool => tool.name === ctx.input.toolChoiceFunctionName
+      );
       if (!matchingTool) {
-        throw langbaseServiceError('toolChoiceFunctionName must match one of the provided tools.');
+        throw langbaseServiceError(
+          'toolChoiceFunctionName must match one of the provided tools.'
+        );
       }
       body.tool_choice = {
         type: 'function',

@@ -1,6 +1,11 @@
-import { createAxios, SlateAuth } from 'slates';
+import {
+  createApiServiceError,
+  createAxios,
+  normalizeOAuthTokenResponse,
+  SlateAuth
+} from 'slates';
 import { z } from 'zod';
-import { klaviyoApiError, klaviyoServiceError } from './lib/errors';
+import { klaviyoApiError } from './lib/errors';
 
 const KLAVIYO_API_REVISION = '2026-04-15';
 
@@ -222,35 +227,34 @@ export let auth = SlateAuth.create()
         client_secret: ctx.clientSecret
       });
 
-      let response;
-      try {
-        response = await axios.post('https://a.klaviyo.com/oauth/token', body.toString(), {
+      let response = await axios
+        .post('https://a.klaviyo.com/oauth/token', body.toString(), {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
+        })
+        .catch(error => {
+          throw klaviyoApiError(error, 'OAuth token exchange');
         });
-      } catch (error) {
-        throw klaviyoApiError(error, 'OAuth token exchange');
-      }
 
-      let data = response.data;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
+      let token = normalizeOAuthTokenResponse(response.data, {
+        providerLabel: 'Klaviyo',
+        operation: 'token exchange'
+      });
 
       return {
         output: {
-          token: data.access_token,
+          token: token.token,
           authType: 'oauth' as const,
-          refreshToken: data.refresh_token ?? undefined,
-          expiresAt
+          refreshToken: token.refreshToken,
+          expiresAt: token.expiresAt
         }
       };
     },
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        throw klaviyoServiceError(
+        throw createApiServiceError(
           'Klaviyo OAuth token refresh requires a stored refresh token. Reconnect the account.'
         );
       }
@@ -264,28 +268,28 @@ export let auth = SlateAuth.create()
         client_secret: ctx.clientSecret
       });
 
-      let response;
-      try {
-        response = await axios.post('https://a.klaviyo.com/oauth/token', body.toString(), {
+      let response = await axios
+        .post('https://a.klaviyo.com/oauth/token', body.toString(), {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
+        })
+        .catch(error => {
+          throw klaviyoApiError(error, 'OAuth token refresh');
         });
-      } catch (error) {
-        throw klaviyoApiError(error, 'OAuth token refresh');
-      }
 
-      let data = response.data;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
+      let token = normalizeOAuthTokenResponse(response.data, {
+        providerLabel: 'Klaviyo',
+        operation: 'token refresh',
+        previousRefreshToken: ctx.output.refreshToken
+      });
 
       return {
         output: {
-          token: data.access_token,
+          token: token.token,
           authType: 'oauth' as const,
-          refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt
+          refreshToken: token.refreshToken,
+          expiresAt: token.expiresAt
         }
       };
     },
@@ -300,12 +304,9 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response;
-      try {
-        response = await axios.get('/accounts/');
-      } catch (error) {
+      let response = await axios.get('/accounts/').catch(error => {
         throw klaviyoApiError(error, 'account profile lookup');
-      }
+      });
       let account = response.data?.data?.[0];
 
       return {
@@ -345,12 +346,9 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response;
-      try {
-        response = await axios.get('/accounts/');
-      } catch (error) {
+      let response = await axios.get('/accounts/').catch(error => {
         throw klaviyoApiError(error, 'account profile lookup');
-      }
+      });
       let account = response.data?.data?.[0];
 
       return {

@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { createWixClient } from '../lib/helpers';
-import { wixServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let productOptionSchema = z
@@ -123,7 +122,7 @@ Supports Wix Stores Catalog V1 and Catalog V3; use \`catalogVersion: "auto"\` to
     switch (ctx.input.action) {
       case 'get': {
         if (!ctx.input.productId)
-          throw wixServiceError('productId is required for get action');
+          throw createApiServiceError('productId is required for get action');
         let result = await client.getProduct(ctx.input.productId, catalogVersion);
         return {
           output: { product: result.product, catalogVersion: result.catalogVersion },
@@ -131,11 +130,14 @@ Supports Wix Stores Catalog V1 and Catalog V3; use \`catalogVersion: "auto"\` to
         };
       }
       case 'list': {
-        let result = await client.queryProducts({
-          filter: ctx.input.filter,
-          sort: ctx.input.sort,
-          paging: { limit: ctx.input.limit, offset: ctx.input.offset }
-        }, catalogVersion);
+        let result = await client.queryProducts(
+          {
+            filter: ctx.input.filter,
+            sort: ctx.input.sort,
+            paging: { limit: ctx.input.limit, offset: ctx.input.offset }
+          },
+          catalogVersion
+        );
         let products = result.products || [];
         return {
           output: {
@@ -168,7 +170,7 @@ Supports Wix Stores Catalog V1 and Catalog V3; use \`catalogVersion: "auto"\` to
       }
       case 'update': {
         if (!ctx.input.productId)
-          throw wixServiceError('productId is required for update action');
+          throw createApiServiceError('productId is required for update action');
         let productData: Record<string, any> = { ...(ctx.input.productData || {}) };
         if (ctx.input.name) productData.name = ctx.input.name;
         if (ctx.input.description) productData.description = ctx.input.description;
@@ -181,7 +183,11 @@ Supports Wix Stores Catalog V1 and Catalog V3; use \`catalogVersion: "auto"\` to
         if (ctx.input.productOptions) productData.productOptions = ctx.input.productOptions;
         if (ctx.input.manageVariants !== undefined)
           productData.manageVariants = ctx.input.manageVariants;
-        let result = await client.updateProduct(ctx.input.productId, productData, catalogVersion);
+        let result = await client.updateProduct(
+          ctx.input.productId,
+          productData,
+          catalogVersion
+        );
         return {
           output: { product: result.product, catalogVersion: result.catalogVersion },
           message: `Updated product **${result.product?.name || ctx.input.productId}**`
@@ -189,7 +195,7 @@ Supports Wix Stores Catalog V1 and Catalog V3; use \`catalogVersion: "auto"\` to
       }
       case 'delete': {
         if (!ctx.input.productId)
-          throw wixServiceError('productId is required for delete action');
+          throw createApiServiceError('productId is required for delete action');
         let result = await client.deleteProduct(ctx.input.productId, catalogVersion);
         return {
           output: { catalogVersion: result.catalogVersion },

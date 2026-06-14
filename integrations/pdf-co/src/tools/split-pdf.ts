@@ -1,7 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { pdfCoApiError, pdfCoServiceError } from '../lib/errors';
+import { pdfCoApiError } from '../lib/errors';
 import { spec } from '../spec';
 import { createPdfCoAttachment } from './shared';
 
@@ -79,7 +79,7 @@ When splitting by pages, specify comma-separated page ranges. When splitting by 
 
     if (ctx.input.splitMode === 'pages') {
       if (!ctx.input.pages) {
-        throw pdfCoServiceError('Pages parameter is required for page-based splitting.');
+        throw createApiServiceError('Pages parameter is required for page-based splitting.');
       }
       result = await client.splitPdfByPages({
         url: ctx.input.sourceUrl,
@@ -89,7 +89,7 @@ When splitting by pages, specify comma-separated page ranges. When splitting by 
       });
     } else {
       if (!ctx.input.searchString) {
-        throw pdfCoServiceError(
+        throw createApiServiceError(
           'Search string is required for text/barcode-based splitting.'
         );
       }

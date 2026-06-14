@@ -1,6 +1,5 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { wixServiceError } from '../lib/errors';
 import { createWixClient } from '../lib/helpers';
 import { spec } from '../spec';
 
@@ -77,7 +76,7 @@ Services represent appointments, classes, or courses. Bookings are customer rese
       }
       case 'get_service': {
         if (!ctx.input.serviceId)
-          throw wixServiceError('serviceId is required for get_service action');
+          throw createApiServiceError('serviceId is required for get_service action');
         let result = await client.getService(ctx.input.serviceId);
         return {
           output: { service: result.service },
@@ -98,7 +97,7 @@ Services represent appointments, classes, or courses. Bookings are customer rese
       }
       case 'get_booking': {
         if (!ctx.input.bookingId)
-          throw wixServiceError('bookingId is required for get_booking action');
+          throw createApiServiceError('bookingId is required for get_booking action');
         let result = await client.getBooking(ctx.input.bookingId);
         return {
           output: { booking: result.booking },
@@ -107,7 +106,7 @@ Services represent appointments, classes, or courses. Bookings are customer rese
       }
       case 'create_booking': {
         if (!ctx.input.bookingData)
-          throw wixServiceError('bookingData is required for create_booking action');
+          throw createApiServiceError('bookingData is required for create_booking action');
         let result = await client.createBooking(ctx.input.bookingData);
         return {
           output: { booking: result.booking },

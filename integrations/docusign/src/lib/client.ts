@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios, getResponseHeaderValue } from 'slates';
 import { docusignApiError } from './errors';
 
 export interface ClientConfig {
@@ -131,14 +131,6 @@ let toBuffer = (data: unknown) => {
   return Buffer.from(data as any);
 };
 
-let getHeaderValue = (headers: Record<string, any>, name: string) => {
-  let value = headers[name] ?? headers[name.toLowerCase()];
-  if (Array.isArray(value)) {
-    return value[0];
-  }
-  return typeof value === 'string' ? value : undefined;
-};
-
 let getFileNameFromDisposition = (contentDisposition?: string) => {
   if (!contentDisposition) {
     return undefined;
@@ -265,9 +257,9 @@ export class Client {
     });
     let content = toBuffer(response.data);
     let headers = response.headers as Record<string, any>;
-    let contentDisposition = getHeaderValue(headers, 'content-disposition');
+    let contentDisposition = getResponseHeaderValue(headers, 'content-disposition');
     let mimeType =
-      getHeaderValue(headers, 'content-type') ?? fallbackDocumentMimeType(documentId);
+      getResponseHeaderValue(headers, 'content-type') ?? fallbackDocumentMimeType(documentId);
 
     return {
       contentBase64: content.toString('base64'),

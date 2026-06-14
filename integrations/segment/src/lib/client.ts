@@ -1,25 +1,20 @@
-import { createAxios } from 'slates';
+import { createAuthenticatedAxios } from 'slates';
 import { segmentApiError } from './errors';
 
 export class SegmentClient {
-  private http: ReturnType<typeof createAxios>;
+  private http: ReturnType<typeof createAuthenticatedAxios>;
 
   constructor(token: string, region: string = 'us') {
     let baseURL =
       region === 'eu' ? 'https://eu1.api.segmentapis.com' : 'https://api.segmentapis.com';
 
-    this.http = createAxios({
+    this.http = createAuthenticatedAxios({
       baseURL,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+      authHeader: {
+        value: `Bearer ${token}`
+      },
+      errorAdapter: error => segmentApiError(error, 'request')
     });
-
-    this.http.interceptors.response.use(
-      (response: any) => response,
-      (error: unknown) => Promise.reject(segmentApiError(error, 'request'))
-    );
   }
 
   // ─── Workspace ──────────────────────────────────────────────────

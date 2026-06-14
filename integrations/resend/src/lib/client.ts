@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
-import { resendApiError, resendServiceError } from './errors';
+import { createApiServiceError, createAuthenticatedAxios } from 'slates';
+import { resendApiError } from './errors';
 
 type EmailTemplate = {
   id: string;
@@ -31,22 +31,19 @@ type AutomationConnection = {
 type EventSchema = Record<string, 'string' | 'number' | 'boolean' | 'date'>;
 
 export class Client {
-  private axios: ReturnType<typeof createAxios>;
+  private axios: ReturnType<typeof createAuthenticatedAxios>;
 
   constructor(config: { token: string }) {
-    this.axios = createAxios({
+    this.axios = createAuthenticatedAxios({
       baseURL: 'https://api.resend.com',
+      authHeader: {
+        value: `Bearer ${config.token}`
+      },
       headers: {
-        Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
         'User-Agent': 'slates-resend/0.2.0-rc.6'
-      }
+      },
+      errorAdapter: resendApiError
     });
-
-    this.axios.interceptors.response.use(
-      response => response,
-      error => Promise.reject(resendApiError(error))
-    );
   }
 
   // ── Emails ──────────────────────────────────────────────
@@ -178,7 +175,7 @@ export class Client {
     try {
       let response = await fetch(downloadUrl);
       if (!response.ok) {
-        throw resendServiceError(
+        throw createApiServiceError(
           `Resend attachment download failed: HTTP ${response.status} ${response.statusText}`.trim()
         );
       }

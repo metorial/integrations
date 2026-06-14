@@ -1,7 +1,6 @@
-import { createTextAttachment, SlateTool } from 'slates';
+import { createApiServiceError, createTextAttachment, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageEnvGroups = SlateTool.create(spec, {
@@ -75,10 +74,7 @@ export let manageEnvGroups = SlateTool.create(spec, {
         })
         .optional()
         .describe('Secret file metadata'),
-      attachmentCount: z
-        .number()
-        .optional()
-        .describe('Number of Slate attachments returned'),
+      attachmentCount: z.number().optional().describe('Number of Slate attachments returned'),
       success: z.boolean().describe('Whether the action succeeded')
     })
   )
@@ -108,8 +104,8 @@ export let manageEnvGroups = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.ownerId) throw renderServiceError('ownerId is required for create');
-      if (!ctx.input.name) throw renderServiceError('name is required for create');
+      if (!ctx.input.ownerId) throw createApiServiceError('ownerId is required for create');
+      if (!ctx.input.name) throw createApiServiceError('name is required for create');
       let body: Record<string, any> = { ownerId: ctx.input.ownerId, name: ctx.input.name };
       let eg = await client.createEnvGroup(body);
       return {
@@ -121,7 +117,7 @@ export let manageEnvGroups = SlateTool.create(spec, {
       };
     }
 
-    if (!envGroupId) throw renderServiceError('envGroupId is required');
+    if (!envGroupId) throw createApiServiceError('envGroupId is required');
 
     if (action === 'get') {
       let eg = await client.getEnvGroup(envGroupId);
@@ -154,7 +150,7 @@ export let manageEnvGroups = SlateTool.create(spec, {
 
     if (action === 'link_service') {
       if (!ctx.input.serviceId)
-        throw renderServiceError('serviceId is required for link_service');
+        throw createApiServiceError('serviceId is required for link_service');
       await client.linkServiceToEnvGroup(envGroupId, ctx.input.serviceId);
       return {
         output: { success: true },
@@ -164,7 +160,7 @@ export let manageEnvGroups = SlateTool.create(spec, {
 
     if (action === 'unlink_service') {
       if (!ctx.input.serviceId)
-        throw renderServiceError('serviceId is required for unlink_service');
+        throw createApiServiceError('serviceId is required for unlink_service');
       await client.unlinkServiceFromEnvGroup(envGroupId, ctx.input.serviceId);
       return {
         output: { success: true },
@@ -173,9 +169,9 @@ export let manageEnvGroups = SlateTool.create(spec, {
     }
 
     if (action === 'set_var') {
-      if (!ctx.input.varName) throw renderServiceError('varName is required for set_var');
+      if (!ctx.input.varName) throw createApiServiceError('varName is required for set_var');
       if (ctx.input.varValue === undefined)
-        throw renderServiceError('varValue is required for set_var');
+        throw createApiServiceError('varValue is required for set_var');
       await client.setEnvGroupVar(envGroupId, ctx.input.varName, ctx.input.varValue);
       return {
         output: { success: true },
@@ -184,7 +180,8 @@ export let manageEnvGroups = SlateTool.create(spec, {
     }
 
     if (action === 'delete_var') {
-      if (!ctx.input.varName) throw renderServiceError('varName is required for delete_var');
+      if (!ctx.input.varName)
+        throw createApiServiceError('varName is required for delete_var');
       await client.deleteEnvGroupVar(envGroupId, ctx.input.varName);
       return {
         output: { success: true },
@@ -194,7 +191,7 @@ export let manageEnvGroups = SlateTool.create(spec, {
 
     if (action === 'get_secret_file') {
       if (!ctx.input.secretFileName)
-        throw renderServiceError('secretFileName is required for get_secret_file');
+        throw createApiServiceError('secretFileName is required for get_secret_file');
       let secretFile = await client.getEnvGroupSecretFile(
         envGroupId,
         ctx.input.secretFileName
@@ -212,9 +209,9 @@ export let manageEnvGroups = SlateTool.create(spec, {
 
     if (action === 'set_secret_file') {
       if (!ctx.input.secretFileName)
-        throw renderServiceError('secretFileName is required for set_secret_file');
+        throw createApiServiceError('secretFileName is required for set_secret_file');
       if (ctx.input.secretFileContent === undefined)
-        throw renderServiceError('secretFileContent is required for set_secret_file');
+        throw createApiServiceError('secretFileContent is required for set_secret_file');
       let secretFile = await client.setEnvGroupSecretFile(
         envGroupId,
         ctx.input.secretFileName,
@@ -231,7 +228,7 @@ export let manageEnvGroups = SlateTool.create(spec, {
 
     if (action === 'delete_secret_file') {
       if (!ctx.input.secretFileName)
-        throw renderServiceError('secretFileName is required for delete_secret_file');
+        throw createApiServiceError('secretFileName is required for delete_secret_file');
       await client.deleteEnvGroupSecretFile(envGroupId, ctx.input.secretFileName);
       return {
         output: { success: true },

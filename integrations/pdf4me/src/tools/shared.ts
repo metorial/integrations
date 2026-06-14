@@ -1,4 +1,4 @@
-import { createBase64Attachment } from 'slates';
+import { createBase64Attachment, getBase64ByteLength } from 'slates';
 import { z } from 'zod';
 
 export type Pdf4meFileResult = {
@@ -73,10 +73,12 @@ export let mimeTypeForFileName = (fileName: string) => {
   }
 };
 
-export let byteLengthFromBase64 = (contentBase64: string) =>
-  Buffer.from(contentBase64, 'base64').byteLength;
+export let byteLengthFromBase64 = getBase64ByteLength;
 
-export let fileOutput = (file: Pdf4meFileResult, mimeType = mimeTypeForFileName(file.fileName)) => ({
+export let fileOutput = (
+  file: Pdf4meFileResult,
+  mimeType = mimeTypeForFileName(file.fileName)
+) => ({
   fileName: file.fileName,
   mimeType,
   byteLength: byteLengthFromBase64(file.fileContent),

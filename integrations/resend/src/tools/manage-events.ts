@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { resendServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let eventFieldTypeSchema = z.enum(['string', 'number', 'boolean', 'date']);
@@ -35,7 +34,9 @@ export let createEvent = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      name: z.string().describe('Event name. Dot notation is recommended, such as user.created.'),
+      name: z
+        .string()
+        .describe('Event name. Dot notation is recommended, such as user.created.'),
       schema: eventSchemaSchema.optional().describe('Optional flat payload schema.')
     })
   )
@@ -77,7 +78,9 @@ export let sendEvent = SlateTool.create(spec, {
       email: z
         .string()
         .optional()
-        .describe('Email address to associate with this event. Do not provide with contactId.'),
+        .describe(
+          'Email address to associate with this event. Do not provide with contactId.'
+        ),
       payload: z
         .record(z.string(), z.any())
         .optional()
@@ -90,8 +93,13 @@ export let sendEvent = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    if ((ctx.input.contactId && ctx.input.email) || (!ctx.input.contactId && !ctx.input.email)) {
-      throw resendServiceError('Provide exactly one of contactId or email when sending an event.');
+    if (
+      (ctx.input.contactId && ctx.input.email) ||
+      (!ctx.input.contactId && !ctx.input.email)
+    ) {
+      throw createApiServiceError(
+        'Provide exactly one of contactId or email when sending an event.'
+      );
     }
 
     let client = new Client({ token: ctx.auth.token });

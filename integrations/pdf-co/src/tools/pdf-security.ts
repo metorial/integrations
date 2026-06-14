@@ -1,7 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { pdfCoApiError, pdfCoServiceError } from '../lib/errors';
+import { pdfCoApiError } from '../lib/errors';
 import { spec } from '../spec';
 import {
   createPdfCoAttachment,
@@ -91,7 +91,7 @@ Use "add" action to protect a PDF, or "remove" action to unlock a protected PDF.
       });
     } else {
       if (!ctx.input.currentPassword) {
-        throw pdfCoServiceError('Current password is required to remove PDF protection.');
+        throw createApiServiceError('Current password is required to remove PDF protection.');
       }
       result = await client.removePassword({
         url: ctx.input.sourceUrl,

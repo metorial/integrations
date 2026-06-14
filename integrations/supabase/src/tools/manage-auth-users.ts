@@ -1,7 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
-import { requireProjectRef, supabaseServiceError } from '../lib/errors';
+import { requireProjectRef } from '../lib/errors';
 import { ProjectClient } from '../lib/project-client';
 import { spec } from '../spec';
 
@@ -82,7 +82,7 @@ export let manageAuthUsers = SlateTool.create(spec, {
     let apiKey = serviceKey?.api_key;
 
     if (!apiKey) {
-      throw supabaseServiceError('Could not retrieve service_role API key for the project');
+      throw createApiServiceError('Could not retrieve service_role API key for the project');
     }
 
     let projectClient = new ProjectClient(projectRef, apiKey);
@@ -113,7 +113,7 @@ export let manageAuthUsers = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.userId) throw supabaseServiceError('userId is required for get action');
+      if (!ctx.input.userId) throw createApiServiceError('userId is required for get action');
       let u = await projectClient.getAuthUser(ctx.input.userId);
       return {
         output: { user: mapUser(u) },
@@ -123,7 +123,7 @@ export let manageAuthUsers = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.email && !ctx.input.phone) {
-        throw supabaseServiceError('email or phone is required for create action');
+        throw createApiServiceError('email or phone is required for create action');
       }
       let u = await projectClient.createAuthUser({
         email: ctx.input.email,
@@ -141,7 +141,7 @@ export let manageAuthUsers = SlateTool.create(spec, {
 
     if (action === 'update') {
       if (!ctx.input.userId)
-        throw supabaseServiceError('userId is required for update action');
+        throw createApiServiceError('userId is required for update action');
       let u = await projectClient.updateAuthUser(ctx.input.userId, {
         email: ctx.input.email,
         phone: ctx.input.phone,
@@ -158,7 +158,7 @@ export let manageAuthUsers = SlateTool.create(spec, {
     }
 
     // delete
-    if (!ctx.input.userId) throw supabaseServiceError('userId is required for delete action');
+    if (!ctx.input.userId) throw createApiServiceError('userId is required for delete action');
     await projectClient.deleteAuthUser(ctx.input.userId);
     return {
       output: { deleted: true },

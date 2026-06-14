@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer';
-import { createAxios } from 'slates';
+import { createAxios, getResponseHeaderValue } from 'slates';
 import { ocrspaceApiError, ocrspaceUpstreamError } from './errors';
 
 export interface OcrParseOptions {
@@ -110,14 +110,6 @@ let normalizeErrorMessage = (value: string[] | string | null | undefined) => {
   }
 
   return value || null;
-};
-
-let getHeader = (headers: Record<string, unknown> | undefined, name: string) => {
-  if (!headers) return undefined;
-
-  let value = headers[name] ?? headers[name.toLowerCase()];
-  if (Array.isArray(value)) return value[0];
-  return typeof value === 'string' ? value : undefined;
 };
 
 let toBuffer = (value: unknown) => {
@@ -253,8 +245,7 @@ export class Client {
       });
       let content = toBuffer(response.data);
       let mimeType =
-        getHeader(response.headers as Record<string, unknown>, 'content-type') ||
-        fallbackMimeType;
+        getResponseHeaderValue(response.headers, 'content-type') || fallbackMimeType;
 
       return {
         contentBase64: content.toString('base64'),

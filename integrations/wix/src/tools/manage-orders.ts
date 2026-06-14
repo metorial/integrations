@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { createWixClient } from '../lib/helpers';
-import { wixServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageOrders = SlateTool.create(spec, {
@@ -63,7 +62,8 @@ Orders contain purchase details, line items, pricing, shipping/billing info, pay
 
     switch (ctx.input.action) {
       case 'get': {
-        if (!ctx.input.orderId) throw wixServiceError('orderId is required for get action');
+        if (!ctx.input.orderId)
+          throw createApiServiceError('orderId is required for get action');
         let result = await client.getOrder(ctx.input.orderId);
         return {
           output: { order: result.order },
@@ -87,7 +87,7 @@ Orders contain purchase details, line items, pricing, shipping/billing info, pay
       }
       case 'create': {
         if (!ctx.input.orderData)
-          throw wixServiceError('orderData is required for create action');
+          throw createApiServiceError('orderData is required for create action');
         let result = await client.createOrder(ctx.input.orderData);
         return {
           output: { order: result.order },
@@ -96,9 +96,9 @@ Orders contain purchase details, line items, pricing, shipping/billing info, pay
       }
       case 'update': {
         if (!ctx.input.orderId)
-          throw wixServiceError('orderId is required for update action');
+          throw createApiServiceError('orderId is required for update action');
         if (!ctx.input.orderData)
-          throw wixServiceError('orderData is required for update action');
+          throw createApiServiceError('orderData is required for update action');
         let result = await client.updateOrder(ctx.input.orderId, ctx.input.orderData);
         return {
           output: { order: result.order },
@@ -107,7 +107,7 @@ Orders contain purchase details, line items, pricing, shipping/billing info, pay
       }
       case 'cancel': {
         if (!ctx.input.orderId)
-          throw wixServiceError('orderId is required for cancel action');
+          throw createApiServiceError('orderId is required for cancel action');
         let result = await client.cancelOrder(ctx.input.orderId, ctx.input.cancelReason);
         return {
           output: { order: result.order, cancellation: result },

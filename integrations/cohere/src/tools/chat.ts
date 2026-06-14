@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { CohereClient } from '../lib/client';
-import { cohereServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let messageSchema = z.object({
@@ -170,11 +169,11 @@ export let chatTool = SlateTool.create(spec, {
     let client = new CohereClient({ token: ctx.auth.token });
 
     if (ctx.input.responseFormat && (ctx.input.tools || ctx.input.documents)) {
-      throw cohereServiceError('responseFormat is not supported with tools or documents.');
+      throw createApiServiceError('responseFormat is not supported with tools or documents.');
     }
 
     if (ctx.input.safetyMode && (ctx.input.tools || ctx.input.documents)) {
-      throw cohereServiceError('safetyMode is not supported with tools or documents.');
+      throw createApiServiceError('safetyMode is not supported with tools or documents.');
     }
 
     let thinking: Record<string, any> | undefined;

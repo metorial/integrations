@@ -1,5 +1,5 @@
+import { createApiServiceError } from 'slates';
 import { ConnectClient } from './client';
-import { onePasswordServiceError } from './errors';
 
 type ConnectToolContext = {
   auth: {
@@ -13,13 +13,13 @@ type ConnectToolContext = {
 
 export let createConnectClient = (ctx: ConnectToolContext) => {
   if (ctx.auth.authType !== 'connect') {
-    throw onePasswordServiceError(
+    throw createApiServiceError(
       'This tool requires the 1Password Connect Server Token auth method. Service Account and Events API tokens cannot call the Connect REST API.'
     );
   }
 
   if (!ctx.config.connectServerUrl) {
-    throw onePasswordServiceError(
+    throw createApiServiceError(
       'Connect server URL is required. Set connectServerUrl in the integration configuration.'
     );
   }

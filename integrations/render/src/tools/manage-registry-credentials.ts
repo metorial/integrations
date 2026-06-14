@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let registryCredentialSchema = z.object({
@@ -80,7 +79,7 @@ export let manageRegistryCredentials = SlateTool.create(spec, {
 
     if (action === 'create') {
       for (let field of ['ownerId', 'name', 'registry', 'username', 'authToken'] as const) {
-        if (!ctx.input[field]) throw renderServiceError(`${field} is required for create`);
+        if (!ctx.input[field]) throw createApiServiceError(`${field} is required for create`);
       }
       let credential = mapCredential(
         await client.createRegistryCredential({
@@ -98,11 +97,13 @@ export let manageRegistryCredentials = SlateTool.create(spec, {
     }
 
     if (!ctx.input.credentialId) {
-      throw renderServiceError('credentialId is required');
+      throw createApiServiceError('credentialId is required');
     }
 
     if (action === 'get') {
-      let credential = mapCredential(await client.getRegistryCredential(ctx.input.credentialId));
+      let credential = mapCredential(
+        await client.getRegistryCredential(ctx.input.credentialId)
+      );
       return {
         output: { credential, success: true },
         message: `Registry credential **${credential.name || credential.credentialId}**.`
@@ -111,7 +112,7 @@ export let manageRegistryCredentials = SlateTool.create(spec, {
 
     if (action === 'update') {
       for (let field of ['name', 'registry', 'username', 'authToken'] as const) {
-        if (!ctx.input[field]) throw renderServiceError(`${field} is required for update`);
+        if (!ctx.input[field]) throw createApiServiceError(`${field} is required for update`);
       }
       let credential = mapCredential(
         await client.updateRegistryCredential(ctx.input.credentialId, {

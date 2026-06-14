@@ -1,7 +1,6 @@
-import { SlateTrigger } from 'slates';
+import { createApiServiceError, SlateTrigger } from 'slates';
 import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
-import { webflowServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let USER_TRIGGER_TYPES = [
@@ -37,7 +36,9 @@ export let userAccountEventsTrigger = SlateTrigger.create(spec, {
   .webhook({
     autoRegisterWebhook: async ctx => {
       if (!ctx.config.siteId) {
-        throw webflowServiceError('siteId is required in config for automatic webhook registration.');
+        throw createApiServiceError(
+          'siteId is required in config for automatic webhook registration.'
+        );
       }
       let client = new WebflowClient(ctx.auth.token);
       let registeredWebhookIds: string[] = [];

@@ -1,7 +1,5 @@
-import { badRequestError, ServiceError } from '@lowerdeck/error';
-
-export let pdfCoServiceError = (message: string) =>
-  new ServiceError(badRequestError({ message }));
+import { ServiceError } from '@lowerdeck/error';
+import { createApiServiceError } from 'slates';
 
 export let pdfCoUpstreamError = (
   message: string,
@@ -11,15 +9,11 @@ export let pdfCoUpstreamError = (
     parent?: unknown;
   } = {}
 ) => {
-  let error = pdfCoServiceError(message);
-  error.data.reason = options.reason ?? 'pdfco_upstream_error';
-  error.data.upstreamStatus = options.status;
-
-  if (options.parent instanceof Error) {
-    error.setParent(options.parent);
-  }
-
-  return error;
+  return createApiServiceError(message, {
+    reason: options.reason ?? 'pdfco_upstream_error',
+    upstreamStatus: options.status,
+    parent: options.parent
+  });
 };
 
 export let pdfCoApiError = (

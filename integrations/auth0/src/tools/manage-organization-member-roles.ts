@@ -1,8 +1,9 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Auth0Client } from '../lib/client';
-import { auth0ServiceError, requireNonEmptyArray } from '../lib/errors';
+import { requireNonEmptyArray } from '../lib/errors';
 import { spec } from '../spec';
+import { dispatchAuth0Action } from './shared';
 
 let mapRole = (role: any) => ({
   roleId: role.id,
@@ -53,48 +54,48 @@ export let manageOrganizationMemberRolesTool = SlateTool.create(spec, {
       domain: ctx.auth.domain
     });
 
-    if (ctx.input.action === 'list') {
-      let result = await client.getOrganizationMemberRoles(
-        ctx.input.organizationId,
-        ctx.input.userId,
-        {
-          page: ctx.input.page,
-          perPage: ctx.input.perPage
-        }
-      );
-      let roles = (Array.isArray(result) ? result : (result.roles ?? [])).map(mapRole);
-      return {
-        output: { roles, success: true },
-        message: `Organization member has **${roles.length}** role(s).`
-      };
-    }
+    return dispatchAuth0Action(ctx.input.action, {
+      list: async () => {
+        let result = await client.getOrganizationMemberRoles(
+          ctx.input.organizationId,
+          ctx.input.userId,
+          {
+            page: ctx.input.page,
+            perPage: ctx.input.perPage
+          }
+        );
+        let roles = (Array.isArray(result) ? result : (result.roles ?? [])).map(mapRole);
+        return {
+          output: { roles, success: true },
+          message: `Organization member has **${roles.length}** role(s).`
+        };
+      },
 
-    if (ctx.input.action === 'assign') {
-      let roleIds = requireNonEmptyArray(ctx.input.roleIds, 'roleIds', 'assign');
-      await client.assignOrganizationMemberRoles(
-        ctx.input.organizationId,
-        ctx.input.userId,
-        roleIds
-      );
-      return {
-        output: { success: true },
-        message: `Assigned **${roleIds.length}** organization member role(s).`
-      };
-    }
+      assign: async () => {
+        let roleIds = requireNonEmptyArray(ctx.input.roleIds, 'roleIds', 'assign');
+        await client.assignOrganizationMemberRoles(
+          ctx.input.organizationId,
+          ctx.input.userId,
+          roleIds
+        );
+        return {
+          output: { success: true },
+          message: `Assigned **${roleIds.length}** organization member role(s).`
+        };
+      },
 
-    if (ctx.input.action === 'remove') {
-      let roleIds = requireNonEmptyArray(ctx.input.roleIds, 'roleIds', 'remove');
-      await client.removeOrganizationMemberRoles(
-        ctx.input.organizationId,
-        ctx.input.userId,
-        roleIds
-      );
-      return {
-        output: { success: true },
-        message: `Removed **${roleIds.length}** organization member role(s).`
-      };
-    }
-
-    throw auth0ServiceError(`Unknown action: ${ctx.input.action}`);
+      remove: async () => {
+        let roleIds = requireNonEmptyArray(ctx.input.roleIds, 'roleIds', 'remove');
+        await client.removeOrganizationMemberRoles(
+          ctx.input.organizationId,
+          ctx.input.userId,
+          roleIds
+        );
+        return {
+          output: { success: true },
+          message: `Removed **${roleIds.length}** organization member role(s).`
+        };
+      }
+    });
   })
   .build();

@@ -1,6 +1,5 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { wixServiceError } from '../lib/errors';
 import { createWixClient } from '../lib/helpers';
 import { spec } from '../spec';
 
@@ -58,7 +57,7 @@ Collections are groups of products (categories) used to organize a store catalog
       }
       case 'get': {
         if (!ctx.input.collectionId)
-          throw wixServiceError('collectionId is required for get action');
+          throw createApiServiceError('collectionId is required for get action');
         let result = await client.getCollection(ctx.input.collectionId);
         return {
           output: { collection: result.collection },

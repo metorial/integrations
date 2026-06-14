@@ -1,6 +1,5 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { wixServiceError } from '../lib/errors';
 import { createWixClient } from '../lib/helpers';
 import { spec } from '../spec';
 
@@ -58,7 +57,8 @@ Uses the current Wix Pricing Plans V3 API.`,
         };
       }
       case 'get': {
-        if (!ctx.input.planId) throw wixServiceError('planId is required for get action');
+        if (!ctx.input.planId)
+          throw createApiServiceError('planId is required for get action');
         let result = await client.getPricingPlan(ctx.input.planId);
         return {
           output: { plan: result.plan },

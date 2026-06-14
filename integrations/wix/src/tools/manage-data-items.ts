@@ -1,6 +1,5 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { wixServiceError } from '../lib/errors';
 import { createWixClient } from '../lib/helpers';
 import { spec } from '../spec';
 
@@ -58,7 +57,8 @@ Works with any Wix content management database collection by specifying the coll
 
     switch (ctx.input.action) {
       case 'get': {
-        if (!ctx.input.itemId) throw wixServiceError('itemId is required for get action');
+        if (!ctx.input.itemId)
+          throw createApiServiceError('itemId is required for get action');
         let result = await client.getDataItem(ctx.input.collectionId, ctx.input.itemId);
         return {
           output: { dataItem: result.dataItem },
@@ -79,7 +79,7 @@ Works with any Wix content management database collection by specifying the coll
       }
       case 'create': {
         if (!ctx.input.itemData)
-          throw wixServiceError('itemData is required for create action');
+          throw createApiServiceError('itemData is required for create action');
         let result = await client.insertDataItem(ctx.input.collectionId, ctx.input.itemData);
         return {
           output: { dataItem: result.dataItem },
@@ -88,9 +88,9 @@ Works with any Wix content management database collection by specifying the coll
       }
       case 'update': {
         if (!ctx.input.itemId)
-          throw wixServiceError('itemId is required for update action');
+          throw createApiServiceError('itemId is required for update action');
         if (!ctx.input.itemData)
-          throw wixServiceError('itemData is required for update action');
+          throw createApiServiceError('itemData is required for update action');
         let result = await client.updateDataItem(
           ctx.input.collectionId,
           ctx.input.itemId,
@@ -103,7 +103,7 @@ Works with any Wix content management database collection by specifying the coll
       }
       case 'delete': {
         if (!ctx.input.itemId)
-          throw wixServiceError('itemId is required for delete action');
+          throw createApiServiceError('itemId is required for delete action');
         await client.deleteDataItem(ctx.input.collectionId, ctx.input.itemId);
         return {
           output: {},

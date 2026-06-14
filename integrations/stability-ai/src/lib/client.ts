@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer';
-import { createAxios } from 'slates';
+import { createAxios, getBase64ByteLength } from 'slates';
 import { stabilityApiError, stabilityServiceError } from './errors';
 
 export type ImageOutputFormat = 'png' | 'jpeg' | 'webp';
@@ -62,7 +62,11 @@ export class Client {
     let normalized = base64.includes(',') ? base64.slice(base64.indexOf(',') + 1) : base64;
     normalized = normalized.replace(/\s+/g, '');
 
-    if (!normalized || normalized.length % 4 === 1 || !/^[A-Za-z0-9+/]*={0,2}$/.test(normalized)) {
+    if (
+      !normalized ||
+      normalized.length % 4 === 1 ||
+      !/^[A-Za-z0-9+/]*={0,2}$/.test(normalized)
+    ) {
       throw stabilityServiceError(`${label} must be valid non-empty base64 data.`);
     }
 
@@ -111,7 +115,7 @@ export class Client {
     return {
       contentBase64,
       mimeType,
-      byteLength: Buffer.from(contentBase64, 'base64').byteLength,
+      byteLength: getBase64ByteLength(contentBase64),
       seed: typeof data.seed === 'number' ? data.seed : undefined,
       finishReason: data.finish_reason,
       generationId
@@ -225,7 +229,9 @@ export class Client {
 
   private assertGenerationId(response: GenerationStart, operation: string) {
     if (!response.id) {
-      throw stabilityServiceError(`Stability AI ${operation} response did not include a generation ID.`);
+      throw stabilityServiceError(
+        `Stability AI ${operation} response did not include a generation ID.`
+      );
     }
 
     return response.id;
@@ -291,7 +297,14 @@ export class Client {
     this.appendOptional(formData, 'style_preset', params.stylePreset);
     this.appendOptional(formData, 'strength', params.strength);
     if (params.image) {
-      this.appendBase64File(formData, 'image', 'referenceImage', params.image, 'reference.png', 'image/png');
+      this.appendBase64File(
+        formData,
+        'image',
+        'referenceImage',
+        params.image,
+        'reference.png',
+        'image/png'
+      );
     }
 
     let response = await this.postFormJson<StabilityMediaJson>(
@@ -300,7 +313,11 @@ export class Client {
       'generate image ultra'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async generateImageCore(params: {
@@ -325,7 +342,11 @@ export class Client {
       'generate image core'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async generateImageSD3(params: {
@@ -352,7 +373,14 @@ export class Client {
     this.appendOptional(formData, 'cfg_scale', params.cfgScale);
     this.appendOptional(formData, 'style_preset', params.stylePreset);
     if (params.image) {
-      this.appendBase64File(formData, 'image', 'referenceImage', params.image, 'reference.png', 'image/png');
+      this.appendBase64File(
+        formData,
+        'image',
+        'referenceImage',
+        params.image,
+        'reference.png',
+        'image/png'
+      );
     }
 
     let response = await this.postFormJson<StabilityMediaJson>(
@@ -361,7 +389,11 @@ export class Client {
       'generate image sd3'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async eraseImage(params: {
@@ -388,7 +420,11 @@ export class Client {
       'erase image'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async inpaintImage(params: {
@@ -419,7 +455,11 @@ export class Client {
       'inpaint image'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async outpaintImage(params: {
@@ -452,7 +492,11 @@ export class Client {
       'outpaint image'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async searchAndReplace(params: {
@@ -481,7 +525,11 @@ export class Client {
       'search and replace'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async searchAndRecolor(params: {
@@ -510,7 +558,11 @@ export class Client {
       'search and recolor'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async removeBackground(params: {
@@ -527,7 +579,11 @@ export class Client {
       'remove background'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async replaceBackgroundAndRelight(params: {
@@ -582,7 +638,9 @@ export class Client {
     this.appendOptional(
       formData,
       'keep_original_background',
-      params.keepOriginalBackground === undefined ? undefined : String(params.keepOriginalBackground)
+      params.keepOriginalBackground === undefined
+        ? undefined
+        : String(params.keepOriginalBackground)
     );
     this.appendOptional(formData, 'light_source_direction', params.lightSourceDirection);
     this.appendOptional(formData, 'light_source_strength', params.lightSourceStrength);
@@ -619,7 +677,11 @@ export class Client {
       'fast upscale'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async upscaleConservative(params: {
@@ -644,7 +706,11 @@ export class Client {
       'conservative upscale'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async upscaleCreative(params: {
@@ -705,7 +771,11 @@ export class Client {
       'control sketch'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async controlStructure(params: {
@@ -732,7 +802,11 @@ export class Client {
       'control structure'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async controlStyle(params: {
@@ -759,7 +833,11 @@ export class Client {
       'control style'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async styleTransfer(params: {
@@ -774,7 +852,14 @@ export class Client {
     outputFormat?: ImageOutputFormat;
   }): Promise<MediaResult> {
     let formData = new FormData();
-    this.appendBase64File(formData, 'init_image', 'image', params.initImage, 'init-image.png', 'image/png');
+    this.appendBase64File(
+      formData,
+      'init_image',
+      'image',
+      params.initImage,
+      'init-image.png',
+      'image/png'
+    );
     this.appendBase64File(
       formData,
       'style_image',
@@ -797,7 +882,11 @@ export class Client {
       'style transfer'
     );
 
-    return this.mediaResultFromJson(response, 'image', this.imageMimeType(params.outputFormat));
+    return this.mediaResultFromJson(
+      response,
+      'image',
+      this.imageMimeType(params.outputFormat)
+    );
   }
 
   async generateAudio(params: {
@@ -828,7 +917,14 @@ export class Client {
     this.appendOptional(formData, 'mask_start', params.maskStart);
     this.appendOptional(formData, 'mask_end', params.maskEnd);
     if (params.audio) {
-      this.appendBase64File(formData, 'audio', 'audio', params.audio, 'audio.wav', 'audio/wav');
+      this.appendBase64File(
+        formData,
+        'audio',
+        'audio',
+        params.audio,
+        'audio.wav',
+        'audio/wav'
+      );
     }
 
     let response = await this.postFormJson<GenerationStart>(

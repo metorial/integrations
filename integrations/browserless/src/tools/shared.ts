@@ -1,4 +1,4 @@
-import { createBase64Attachment } from 'slates';
+import { createBase64Attachment, getBase64ByteLength } from 'slates';
 import { z } from 'zod';
 import type { FileResponse } from '../lib/client';
 import { browserlessServiceError } from '../lib/errors';
@@ -48,8 +48,7 @@ export let fileAttachment = (file: FileResponse) =>
 export let base64FileAttachment = (contentBase64: string, mimeType: string) =>
   createBase64Attachment(contentBase64, mimeType);
 
-export let base64ByteLength = (contentBase64: string) =>
-  Buffer.from(contentBase64, 'base64').byteLength;
+export let base64ByteLength = getBase64ByteLength;
 
 export let requireHttpUrl = (value: string | undefined, label = 'url') => {
   if (!value) {
@@ -83,6 +82,8 @@ export let requireExactlyOneSource = (input: { url?: string; html?: string }) =>
 
 export let requireSmartScrapeSuccess = (result: { ok?: boolean; message?: string | null }) => {
   if (result.ok === false) {
-    throw browserlessServiceError(result.message || 'Browserless smart scrape did not succeed.');
+    throw browserlessServiceError(
+      result.message || 'Browserless smart scrape did not succeed.'
+    );
   }
 };

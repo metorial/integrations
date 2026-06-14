@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios, setIfDefined } from 'slates';
 import { gumroadApiError, gumroadServiceError } from './errors';
 
 type GumroadData = Record<string, any>;
@@ -28,10 +28,6 @@ export type ProductMutationParams = {
   richContent?: unknown[];
   files?: unknown[];
   hasSameRichContentForAllVariants?: boolean;
-};
-
-let setIfDefined = (body: Record<string, unknown>, key: string, value: unknown) => {
-  if (value !== undefined) body[key] = value;
 };
 
 let buildProductBody = (params: ProductMutationParams) => {
@@ -194,9 +190,7 @@ export class GumroadClient {
 
   async getOfferCode(productId: string, offerCodeId: string): Promise<any> {
     return this.request('get offer code', async () => {
-      let response = await this.axios.get(
-        `/products/${productId}/offer_codes/${offerCodeId}`
-      );
+      let response = await this.axios.get(`/products/${productId}/offer_codes/${offerCodeId}`);
       return this.unwrap(response.data, 'get offer code').offer_code;
     });
   }
@@ -691,16 +685,13 @@ export class GumroadClient {
         resource_name: resourceName,
         post_url: postUrl
       });
-      return this.unwrap(response.data, 'create resource subscription')
-        .resource_subscription;
+      return this.unwrap(response.data, 'create resource subscription').resource_subscription;
     });
   }
 
   async deleteResourceSubscription(subscriptionId: string): Promise<void> {
     await this.request('delete resource subscription', async () => {
-      let response = await this.axios.delete(
-        `/resource_subscriptions/${subscriptionId}`
-      );
+      let response = await this.axios.delete(`/resource_subscriptions/${subscriptionId}`);
       this.unwrap(response.data, 'delete resource subscription');
     });
   }

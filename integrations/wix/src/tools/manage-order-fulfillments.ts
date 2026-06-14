@@ -1,6 +1,5 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { wixServiceError } from '../lib/errors';
 import { createWixClient } from '../lib/helpers';
 import { spec } from '../spec';
 
@@ -57,9 +56,12 @@ Fulfillments track delivery of specific line items and optional tracking informa
       }
       case 'create': {
         if (!ctx.input.fulfillmentData) {
-          throw wixServiceError('fulfillmentData is required for create action');
+          throw createApiServiceError('fulfillmentData is required for create action');
         }
-        let result = await client.createFulfillment(ctx.input.orderId, ctx.input.fulfillmentData);
+        let result = await client.createFulfillment(
+          ctx.input.orderId,
+          ctx.input.fulfillmentData
+        );
         return {
           output: { fulfillment: result.fulfillment, result },
           message: `Created fulfillment for order **${ctx.input.orderId}**`
@@ -67,10 +69,10 @@ Fulfillments track delivery of specific line items and optional tracking informa
       }
       case 'update': {
         if (!ctx.input.fulfillmentId) {
-          throw wixServiceError('fulfillmentId is required for update action');
+          throw createApiServiceError('fulfillmentId is required for update action');
         }
         if (!ctx.input.fulfillmentData) {
-          throw wixServiceError('fulfillmentData is required for update action');
+          throw createApiServiceError('fulfillmentData is required for update action');
         }
         let result = await client.updateFulfillment(
           ctx.input.orderId,
@@ -84,9 +86,12 @@ Fulfillments track delivery of specific line items and optional tracking informa
       }
       case 'delete': {
         if (!ctx.input.fulfillmentId) {
-          throw wixServiceError('fulfillmentId is required for delete action');
+          throw createApiServiceError('fulfillmentId is required for delete action');
         }
-        let result = await client.deleteFulfillment(ctx.input.orderId, ctx.input.fulfillmentId);
+        let result = await client.deleteFulfillment(
+          ctx.input.orderId,
+          ctx.input.fulfillmentId
+        );
         return {
           output: { result },
           message: `Deleted fulfillment **${ctx.input.fulfillmentId}** for order **${ctx.input.orderId}**`

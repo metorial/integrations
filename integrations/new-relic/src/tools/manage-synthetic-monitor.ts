@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { NerdGraphClient } from '../lib/client';
-import { newRelicValidationError } from '../lib/errors';
 import { spec } from '../spec';
 
 let monitorOutputSchema = z.object({
@@ -112,7 +111,7 @@ Supports ping monitors, simple browser monitors, scripted browser tests, and scr
 
     if (action === 'delete') {
       if (!ctx.input.monitorGuid)
-        throw newRelicValidationError('monitorGuid is required for delete action');
+        throw createApiServiceError('monitorGuid is required for delete action');
       ctx.progress('Deleting synthetic monitor...');
       await client.deleteSyntheticMonitor(ctx.input.monitorGuid);
       return {
@@ -123,9 +122,9 @@ Supports ping monitors, simple browser monitors, scripted browser tests, and scr
 
     if (action === 'update') {
       if (!ctx.input.monitorGuid)
-        throw newRelicValidationError('monitorGuid is required for update action');
+        throw createApiServiceError('monitorGuid is required for update action');
       if (!ctx.input.monitorType)
-        throw newRelicValidationError('monitorType is required for update action');
+        throw createApiServiceError('monitorType is required for update action');
 
       ctx.progress('Updating synthetic monitor...');
       let result = await client.updateSyntheticMonitor(ctx.input.monitorGuid, {
@@ -156,23 +155,23 @@ Supports ping monitors, simple browser monitors, scripted browser tests, and scr
       };
     }
 
-    if (!ctx.input.name) throw newRelicValidationError('name is required for create action');
+    if (!ctx.input.name) throw createApiServiceError('name is required for create action');
     if (!ctx.input.monitorType)
-      throw newRelicValidationError('monitorType is required for create action');
-    if (!ctx.input.period) throw newRelicValidationError('period is required for create action');
+      throw createApiServiceError('monitorType is required for create action');
+    if (!ctx.input.period) throw createApiServiceError('period is required for create action');
     if (!ctx.input.locations?.length)
-      throw newRelicValidationError('At least one location is required for create action');
+      throw createApiServiceError('At least one location is required for create action');
     if (
       (ctx.input.monitorType === 'SIMPLE' || ctx.input.monitorType === 'SIMPLE_BROWSER') &&
       !ctx.input.uri
     ) {
-      throw newRelicValidationError('uri is required for SIMPLE and SIMPLE_BROWSER monitors');
+      throw createApiServiceError('uri is required for SIMPLE and SIMPLE_BROWSER monitors');
     }
     if (
       (ctx.input.monitorType === 'SCRIPT_BROWSER' || ctx.input.monitorType === 'SCRIPT_API') &&
       !ctx.input.script
     ) {
-      throw newRelicValidationError(
+      throw createApiServiceError(
         'script is required for SCRIPT_BROWSER and SCRIPT_API monitors'
       );
     }

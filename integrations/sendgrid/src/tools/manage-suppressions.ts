@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { sendgridServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 // ── Suppression Groups ──
@@ -138,7 +137,7 @@ export let updateSuppressionGroup = SlateTool.create(spec, {
       ctx.input.description === undefined &&
       ctx.input.isDefault === undefined
     ) {
-      throw sendgridServiceError(
+      throw createApiServiceError(
         'Provide at least one of name, description, or isDefault when updating a suppression group.'
       );
     }
@@ -259,9 +258,7 @@ export let removeSuppressedEmail = SlateTool.create(spec, {
     switch (ctx.input.suppressionType) {
       case 'group':
         if (!ctx.input.groupId)
-          throw sendgridServiceError(
-            'groupId is required when suppressionType is "group".'
-          );
+          throw createApiServiceError('groupId is required when suppressionType is "group".');
         await client.deleteSuppressedEmail(ctx.input.groupId, ctx.input.email);
         break;
       case 'global':
@@ -354,9 +351,7 @@ export let listSuppressions = SlateTool.create(spec, {
         break;
       case 'group':
         if (!ctx.input.groupId)
-          throw sendgridServiceError(
-            'groupId is required when suppressionType is "group".'
-          );
+          throw createApiServiceError('groupId is required when suppressionType is "group".');
         items = await client.listSuppressedEmails(ctx.input.groupId);
         break;
       default:

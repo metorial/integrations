@@ -1,6 +1,5 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { awsSesServiceError } from '../lib/errors';
 import { SesClient } from '../lib/client';
 import { spec } from '../spec';
 
@@ -46,18 +45,18 @@ let validateBulkEmailInput = (input: {
   }[];
 }) => {
   if (!input.templateName && !input.templateArn) {
-    throw awsSesServiceError('templateName or templateArn is required for bulk emails.');
+    throw createApiServiceError('templateName or templateArn is required for bulk emails.');
   }
   if (input.templateName && input.templateArn) {
-    throw awsSesServiceError('Provide only one of templateName or templateArn.');
+    throw createApiServiceError('Provide only one of templateName or templateArn.');
   }
   if (input.entries.length === 0) {
-    throw awsSesServiceError('entries must contain at least one recipient group.');
+    throw createApiServiceError('entries must contain at least one recipient group.');
   }
 
   input.entries.forEach((entry, index) => {
     if (recipientCount(entry) === 0) {
-      throw awsSesServiceError(
+      throw createApiServiceError(
         `entries[${index}] must include at least one To, Cc, or Bcc recipient.`
       );
     }

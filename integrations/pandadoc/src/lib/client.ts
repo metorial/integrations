@@ -1,25 +1,10 @@
-import { createAxios } from 'slates';
+import { createAxios, getResponseHeaderValue } from 'slates';
 import { pandadocApiError, pandadocServiceError } from './errors';
 
 export interface ClientConfig {
   token: string;
   authType: 'oauth' | 'api_key';
 }
-
-let getHeader = (headers: unknown, key: string) => {
-  if (!headers || typeof headers !== 'object') {
-    return undefined;
-  }
-
-  let lowerKey = key.toLowerCase();
-  for (let [headerKey, value] of Object.entries(headers as Record<string, unknown>)) {
-    if (headerKey.toLowerCase() === lowerKey) {
-      return Array.isArray(value) ? value[0] : value;
-    }
-  }
-
-  return undefined;
-};
 
 let toBuffer = (data: unknown) => {
   if (Buffer.isBuffer(data)) {
@@ -112,13 +97,13 @@ export class PandaDocClient {
     });
 
     if (response.status === 202) {
-      let retryAfter = getHeader(response.headers, 'retry-after');
+      let retryAfter = getResponseHeaderValue(response.headers, 'retry-after');
       throw pandadocServiceError(
         `PandaDoc is still preparing the document download. Retry${retryAfter ? ` after ${retryAfter} seconds` : ' later'}.`
       );
     }
 
-    let contentType = getHeader(response.headers, 'content-type');
+    let contentType = getResponseHeaderValue(response.headers, 'content-type');
     let mimeType =
       typeof contentType === 'string' && contentType
         ? contentType.split(';')[0]!

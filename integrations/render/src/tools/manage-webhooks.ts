@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let webhookSchema = z.object({
@@ -40,7 +39,10 @@ export let manageWebhooks = SlateTool.create(spec, {
       action: z
         .enum(['list', 'get', 'create', 'update', 'delete', 'list_events'])
         .describe('Webhook action'),
-      webhookId: z.string().optional().describe('Webhook ID for get/update/delete/list_events'),
+      webhookId: z
+        .string()
+        .optional()
+        .describe('Webhook ID for get/update/delete/list_events'),
       ownerId: z.string().optional().describe('Workspace ID for list/create'),
       name: z.string().optional().describe('Webhook name for create/update'),
       url: z.string().optional().describe('Webhook URL for create/update'),
@@ -48,8 +50,13 @@ export let manageWebhooks = SlateTool.create(spec, {
       eventFilter: z
         .array(z.string())
         .optional()
-        .describe('Event types that trigger the webhook. Empty or omitted means all events on create.'),
-      sentBefore: z.string().optional().describe('Filter webhook events sent before this time'),
+        .describe(
+          'Event types that trigger the webhook. Empty or omitted means all events on create.'
+        ),
+      sentBefore: z
+        .string()
+        .optional()
+        .describe('Filter webhook events sent before this time'),
       sentAfter: z.string().optional().describe('Filter webhook events sent after this time'),
       limit: z.number().optional().describe('Maximum results'),
       cursor: z.string().optional().describe('Pagination cursor')
@@ -86,9 +93,9 @@ export let manageWebhooks = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.ownerId) throw renderServiceError('ownerId is required for create');
-      if (!ctx.input.name) throw renderServiceError('name is required for create');
-      if (!ctx.input.url) throw renderServiceError('url is required for create');
+      if (!ctx.input.ownerId) throw createApiServiceError('ownerId is required for create');
+      if (!ctx.input.name) throw createApiServiceError('name is required for create');
+      if (!ctx.input.url) throw createApiServiceError('url is required for create');
       let webhook = mapWebhook(
         await client.createWebhook({
           ownerId: ctx.input.ownerId,
@@ -105,7 +112,7 @@ export let manageWebhooks = SlateTool.create(spec, {
     }
 
     if (!ctx.input.webhookId) {
-      throw renderServiceError('webhookId is required');
+      throw createApiServiceError('webhookId is required');
     }
 
     if (action === 'get') {

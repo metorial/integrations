@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageKeyValue = SlateTool.create(spec, {
@@ -102,7 +101,7 @@ export let manageKeyValue = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.ownerId) throw renderServiceError('ownerId is required for create');
+      if (!ctx.input.ownerId) throw createApiServiceError('ownerId is required for create');
       let body: Record<string, any> = { ownerId: ctx.input.ownerId };
       if (ctx.input.name) body.name = ctx.input.name;
       if (ctx.input.plan) body.plan = ctx.input.plan;
@@ -124,7 +123,7 @@ export let manageKeyValue = SlateTool.create(spec, {
       };
     }
 
-    if (!keyValueId) throw renderServiceError('keyValueId is required');
+    if (!keyValueId) throw createApiServiceError('keyValueId is required');
 
     if (action === 'get') {
       let kv = await client.getKeyValue(keyValueId);

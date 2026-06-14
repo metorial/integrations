@@ -1,7 +1,7 @@
-import { createTextAttachment, SlateTool } from 'slates';
+import { createApiServiceError, createTextAttachment, SlateTool } from 'slates';
 import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
-import { requireProjectRef, supabaseServiceError } from '../lib/errors';
+import { requireProjectRef } from '../lib/errors';
 import { spec } from '../spec';
 
 let formatTimestamp = (value: unknown) =>
@@ -110,14 +110,18 @@ export let manageEdgeFunctions = SlateTool.create(spec, {
 
     if (action === 'get') {
       if (!ctx.input.functionSlug)
-        throw supabaseServiceError('functionSlug is required for get action');
+        throw createApiServiceError('functionSlug is required for get action');
       let f = await client.getEdgeFunction(projectRef, ctx.input.functionSlug);
       let body =
         ctx.input.includeBody === true
           ? await client.getEdgeFunctionBody(projectRef, ctx.input.functionSlug)
           : undefined;
       let bodyText =
-        body === undefined ? undefined : typeof body === 'string' ? body : JSON.stringify(body);
+        body === undefined
+          ? undefined
+          : typeof body === 'string'
+            ? body
+            : JSON.stringify(body);
       return {
         output: {
           functionDetails: {
@@ -142,7 +146,7 @@ export let manageEdgeFunctions = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.name || !ctx.input.slug || !ctx.input.body) {
-        throw supabaseServiceError('name, slug, and body are required for create action');
+        throw createApiServiceError('name, slug, and body are required for create action');
       }
       let f = await client.createEdgeFunction(projectRef, {
         name: ctx.input.name,
@@ -170,7 +174,7 @@ export let manageEdgeFunctions = SlateTool.create(spec, {
 
     if (action === 'update') {
       if (!ctx.input.functionSlug)
-        throw supabaseServiceError('functionSlug is required for update action');
+        throw createApiServiceError('functionSlug is required for update action');
       let f = await client.updateEdgeFunction(projectRef, ctx.input.functionSlug, {
         name: ctx.input.name,
         body: ctx.input.body,
@@ -195,7 +199,7 @@ export let manageEdgeFunctions = SlateTool.create(spec, {
 
     // delete
     if (!ctx.input.functionSlug)
-      throw supabaseServiceError('functionSlug is required for delete action');
+      throw createApiServiceError('functionSlug is required for delete action');
     await client.deleteEdgeFunction(projectRef, ctx.input.functionSlug);
     return {
       output: { deleted: true },

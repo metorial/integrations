@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { resendServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let templateSchema = z.object({
@@ -97,7 +96,9 @@ export let sendEmail = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.template && (ctx.input.html || ctx.input.text)) {
-      throw resendServiceError('Do not provide html or text when sending a Resend template.');
+      throw createApiServiceError(
+        'Do not provide html or text when sending a Resend template.'
+      );
     }
 
     let result = await client.sendEmail({

@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios, getResponseHeaderValue } from 'slates';
 import { dropboxApiError } from './errors';
 
 type UploadMode = 'add' | 'overwrite' | 'update';
@@ -36,11 +36,6 @@ let toBase64 = (data: unknown) => {
   }
   if (typeof data === 'string') return Buffer.from(data, 'binary').toString('base64');
   return Buffer.from(String(data)).toString('base64');
-};
-
-let getHeader = (headers: Record<string, unknown>, key: string) => {
-  let value = headers[key] ?? headers[key.toLowerCase()];
-  return typeof value === 'string' ? value : undefined;
 };
 
 export class DropboxClient {
@@ -103,7 +98,11 @@ export class DropboxClient {
   }
 
   async listFolderContinue(cursor: string) {
-    return await this.apiPost('/files/list_folder/continue', { cursor }, 'continue folder listing');
+    return await this.apiPost(
+      '/files/list_folder/continue',
+      { cursor },
+      'continue folder listing'
+    );
   }
 
   async getMetadata(path: string) {
@@ -216,12 +215,12 @@ export class DropboxClient {
       'download file'
     );
     let headers = response.headers as Record<string, unknown>;
-    let metadata = getHeader(headers, 'dropbox-api-result');
+    let metadata = getResponseHeaderValue(headers, 'dropbox-api-result');
     let parsedMetadata = metadata ? JSON.parse(metadata) : {};
     return {
       metadata: parsedMetadata,
       contentBase64: toBase64(response.data),
-      contentType: getHeader(headers, 'content-type')
+      contentType: getResponseHeaderValue(headers, 'content-type')
     };
   }
 
@@ -263,12 +262,12 @@ export class DropboxClient {
       'get thumbnail'
     );
     let headers = response.headers as Record<string, unknown>;
-    let metadata = getHeader(headers, 'dropbox-api-result');
+    let metadata = getResponseHeaderValue(headers, 'dropbox-api-result');
     let parsedMetadata = metadata ? JSON.parse(metadata) : {};
     return {
       metadata: parsedMetadata.file_metadata ?? parsedMetadata.link_metadata ?? {},
       contentBase64: toBase64(response.data),
-      contentType: getHeader(headers, 'content-type')
+      contentType: getResponseHeaderValue(headers, 'content-type')
     };
   }
 
@@ -505,7 +504,11 @@ export class DropboxClient {
     let body: Record<string, any> = { shared_folder_id: sharedFolderId };
     if (limit) body.limit = limit;
 
-    return await this.apiPost('/sharing/list_folder_members', body, 'list shared folder members');
+    return await this.apiPost(
+      '/sharing/list_folder_members',
+      body,
+      'list shared folder members'
+    );
   }
 
   // File requests
@@ -547,11 +550,7 @@ export class DropboxClient {
   }
 
   async getFileRequest(fileRequestId: string) {
-    return await this.apiPost(
-      '/file_requests/get',
-      { id: fileRequestId },
-      'get file request'
-    );
+    return await this.apiPost('/file_requests/get', { id: fileRequestId }, 'get file request');
   }
 
   async updateFileRequest(

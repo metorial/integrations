@@ -1,7 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { awsSesServiceError, requireAwsSesString } from '../lib/errors';
 import { SesClient } from '../lib/client';
+import { requireAwsSesString } from '../lib/errors';
 import { spec } from '../spec';
 
 let headerSchema = z.object({
@@ -56,37 +56,45 @@ let determineContentMode = (input: {
   let modeCount = [rawMode, templateMode, simpleMode].filter(Boolean).length;
 
   if (modeCount !== 1) {
-    throw awsSesServiceError(
+    throw createApiServiceError(
       'Provide exactly one email content mode: rawData, templateName/templateArn, or simple subject/body fields.'
     );
   }
 
   if (rawMode) {
     if ((input.headers?.length ?? 0) > 0 || (input.attachments?.length ?? 0) > 0) {
-      throw awsSesServiceError('headers and attachments can only be used with simple or template emails.');
+      throw createApiServiceError(
+        'headers and attachments can only be used with simple or template emails.'
+      );
     }
     return 'raw' as const;
   }
 
   if (templateMode) {
     if (!input.templateName && !input.templateArn) {
-      throw awsSesServiceError('templateName or templateArn is required for template emails.');
+      throw createApiServiceError(
+        'templateName or templateArn is required for template emails.'
+      );
     }
     if (input.templateName && input.templateArn) {
-      throw awsSesServiceError('Provide only one of templateName or templateArn.');
+      throw createApiServiceError('Provide only one of templateName or templateArn.');
     }
     if (recipientCount(input) === 0) {
-      throw awsSesServiceError('At least one To, Cc, or Bcc recipient is required for template emails.');
+      throw createApiServiceError(
+        'At least one To, Cc, or Bcc recipient is required for template emails.'
+      );
     }
     return 'template' as const;
   }
 
   requireAwsSesString(input.subject, 'subject', 'simple email');
   if (!input.textBody && !input.htmlBody) {
-    throw awsSesServiceError('textBody or htmlBody is required for simple emails.');
+    throw createApiServiceError('textBody or htmlBody is required for simple emails.');
   }
   if (recipientCount(input) === 0) {
-    throw awsSesServiceError('At least one To, Cc, or Bcc recipient is required for simple emails.');
+    throw createApiServiceError(
+      'At least one To, Cc, or Bcc recipient is required for simple emails.'
+    );
   }
 
   return 'simple' as const;

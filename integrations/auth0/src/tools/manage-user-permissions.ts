@@ -1,8 +1,9 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Auth0Client } from '../lib/client';
-import { auth0ServiceError, requireNonEmptyArray } from '../lib/errors';
+import { requireNonEmptyArray } from '../lib/errors';
 import { spec } from '../spec';
+import { dispatchAuth0Action } from './shared';
 
 let permissionSchema = z.object({
   resourceServerIdentifier: z
@@ -61,38 +62,38 @@ export let manageUserPermissionsTool = SlateTool.create(spec, {
       domain: ctx.auth.domain
     });
 
-    if (ctx.input.action === 'list') {
-      let result = await client.getUserPermissions(ctx.input.userId, {
-        page: ctx.input.page,
-        perPage: ctx.input.perPage
-      });
-      let permissions = (Array.isArray(result) ? result : (result.permissions ?? [])).map(
-        mapPermission
-      );
-      return {
-        output: { permissions, success: true },
-        message: `User has **${permissions.length}** direct permission(s).`
-      };
-    }
+    return dispatchAuth0Action(ctx.input.action, {
+      list: async () => {
+        let result = await client.getUserPermissions(ctx.input.userId, {
+          page: ctx.input.page,
+          perPage: ctx.input.perPage
+        });
+        let permissions = (Array.isArray(result) ? result : (result.permissions ?? [])).map(
+          mapPermission
+        );
+        return {
+          output: { permissions, success: true },
+          message: `User has **${permissions.length}** direct permission(s).`
+        };
+      },
 
-    if (ctx.input.action === 'assign') {
-      let permissions = requireNonEmptyArray(ctx.input.permissions, 'permissions', 'assign');
-      await client.assignUserPermissions(ctx.input.userId, permissions);
-      return {
-        output: { success: true },
-        message: `Assigned **${permissions.length}** direct permission(s) to user.`
-      };
-    }
+      assign: async () => {
+        let permissions = requireNonEmptyArray(ctx.input.permissions, 'permissions', 'assign');
+        await client.assignUserPermissions(ctx.input.userId, permissions);
+        return {
+          output: { success: true },
+          message: `Assigned **${permissions.length}** direct permission(s) to user.`
+        };
+      },
 
-    if (ctx.input.action === 'remove') {
-      let permissions = requireNonEmptyArray(ctx.input.permissions, 'permissions', 'remove');
-      await client.removeUserPermissions(ctx.input.userId, permissions);
-      return {
-        output: { success: true },
-        message: `Removed **${permissions.length}** direct permission(s) from user.`
-      };
-    }
-
-    throw auth0ServiceError(`Unknown action: ${ctx.input.action}`);
+      remove: async () => {
+        let permissions = requireNonEmptyArray(ctx.input.permissions, 'permissions', 'remove');
+        await client.removeUserPermissions(ctx.input.userId, permissions);
+        return {
+          output: { success: true },
+          message: `Removed **${permissions.length}** direct permission(s) from user.`
+        };
+      }
+    });
   })
   .build();

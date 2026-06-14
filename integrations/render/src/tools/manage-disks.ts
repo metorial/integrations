@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageDisks = SlateTool.create(spec, {
@@ -73,7 +72,7 @@ export let manageDisks = SlateTool.create(spec, {
     let { action, diskId } = ctx.input;
 
     if (action === 'list') {
-      if (!ctx.input.serviceId) throw renderServiceError('serviceId is required for list');
+      if (!ctx.input.serviceId) throw createApiServiceError('serviceId is required for list');
       let data = await client.listDisks(ctx.input.serviceId);
       let disks = (data as any[]).map((item: any) => {
         let d = item.disk || item;
@@ -93,9 +92,9 @@ export let manageDisks = SlateTool.create(spec, {
     }
 
     if (action === 'add') {
-      if (!ctx.input.serviceId) throw renderServiceError('serviceId is required for add');
-      if (!ctx.input.name) throw renderServiceError('name is required for add');
-      if (!ctx.input.mountPath) throw renderServiceError('mountPath is required for add');
+      if (!ctx.input.serviceId) throw createApiServiceError('serviceId is required for add');
+      if (!ctx.input.name) throw createApiServiceError('name is required for add');
+      if (!ctx.input.mountPath) throw createApiServiceError('mountPath is required for add');
       let body: Record<string, any> = {
         serviceId: ctx.input.serviceId,
         name: ctx.input.name,
@@ -112,7 +111,7 @@ export let manageDisks = SlateTool.create(spec, {
       };
     }
 
-    if (!diskId) throw renderServiceError('diskId is required');
+    if (!diskId) throw createApiServiceError('diskId is required');
 
     if (action === 'get') {
       let d = await client.getDisk(diskId);
@@ -163,7 +162,7 @@ export let manageDisks = SlateTool.create(spec, {
     if (action === 'restore_snapshot') {
       let snapshotKey = ctx.input.snapshotKey ?? ctx.input.snapshotId;
       if (!snapshotKey)
-        throw renderServiceError('snapshotKey is required for restore_snapshot');
+        throw createApiServiceError('snapshotKey is required for restore_snapshot');
       await client.restoreDiskSnapshot(diskId, snapshotKey);
       return {
         output: { success: true },

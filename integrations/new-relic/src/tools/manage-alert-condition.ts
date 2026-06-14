@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { NerdGraphClient } from '../lib/client';
-import { newRelicValidationError } from '../lib/errors';
 import { spec } from '../spec';
 
 let thresholdSchema = z.object({
@@ -125,7 +124,7 @@ Supports both **static** (fixed threshold) and **baseline** (anomaly detection) 
 
     if (action === 'delete') {
       if (!ctx.input.conditionId)
-        throw newRelicValidationError('conditionId is required for delete action');
+        throw createApiServiceError('conditionId is required for delete action');
       ctx.progress('Deleting alert condition...');
       await client.deleteAlertCondition(ctx.input.conditionId);
       return {
@@ -136,13 +135,11 @@ Supports both **static** (fixed threshold) and **baseline** (anomaly detection) 
 
     if (action === 'create') {
       if (!ctx.input.policyId)
-        throw newRelicValidationError('policyId is required for create action');
-      if (!ctx.input.name) throw newRelicValidationError('name is required for create action');
-      if (!ctx.input.nrql) throw newRelicValidationError('nrql is required for create action');
+        throw createApiServiceError('policyId is required for create action');
+      if (!ctx.input.name) throw createApiServiceError('name is required for create action');
+      if (!ctx.input.nrql) throw createApiServiceError('nrql is required for create action');
       if (!ctx.input.critical && !ctx.input.warning) {
-        throw newRelicValidationError(
-          'At least one threshold is required for create action'
-        );
+        throw createApiServiceError('At least one threshold is required for create action');
       }
 
       ctx.progress('Creating alert condition...');
@@ -175,7 +172,7 @@ Supports both **static** (fixed threshold) and **baseline** (anomaly detection) 
 
     // update
     if (!ctx.input.conditionId)
-      throw newRelicValidationError('conditionId is required for update action');
+      throw createApiServiceError('conditionId is required for update action');
 
     ctx.progress('Updating alert condition...');
     let result = await client.updateNrqlAlertCondition(ctx.input.conditionId, {

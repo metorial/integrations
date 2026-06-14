@@ -1,6 +1,6 @@
-import { createAxios, SlateAuth } from 'slates';
+import { createApiServiceError, createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
-import { supabaseApiError, supabaseServiceError } from './lib/errors';
+import { supabaseApiError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -178,7 +178,7 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        throw supabaseServiceError('Supabase OAuth refresh requires a refresh token.');
+        throw createApiServiceError('Supabase OAuth refresh requires a refresh token.');
       }
 
       let http = createAxios();

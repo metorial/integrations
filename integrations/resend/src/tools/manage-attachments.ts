@@ -1,7 +1,6 @@
-import { createBase64Attachment, SlateTool } from 'slates';
+import { createApiServiceError, createBase64Attachment, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { resendServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let attachmentOutputSchema = z.object({
@@ -99,7 +98,7 @@ export let downloadEmailAttachment = SlateTool.create(spec, {
         : await client.getReceivedEmailAttachment(ctx.input.emailId, ctx.input.attachmentId);
 
     if (!metadata.download_url) {
-      throw resendServiceError('Resend did not return a download URL for this attachment.');
+      throw createApiServiceError('Resend did not return a download URL for this attachment.');
     }
 
     let downloaded = await client.downloadAttachment(metadata.download_url);

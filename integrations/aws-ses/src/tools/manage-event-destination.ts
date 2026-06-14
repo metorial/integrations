@@ -1,11 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import {
-  awsSesServiceError,
-  requireAwsSesArray,
-  requireAwsSesString
-} from '../lib/errors';
 import { SesClient } from '../lib/client';
+import { requireAwsSesArray, requireAwsSesString } from '../lib/errors';
 import { spec } from '../spec';
 
 let destinationCount = (input: {
@@ -54,7 +50,7 @@ let validateEventDestinationMutation = (
   let destinations = destinationCount(input);
 
   if (destinations !== 1) {
-    throw awsSesServiceError(
+    throw createApiServiceError(
       `Exactly one destination type is required for "${action}": snsTopicArn, eventBusArn, cloudWatchDimensions, kinesisFirehose*, or pinpointApplicationArn.`
     );
   }

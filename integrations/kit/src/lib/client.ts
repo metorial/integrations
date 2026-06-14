@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios, pickDefined } from 'slates';
 import { kitApiError, kitServiceError } from './errors';
 import type {
   KitAccount,
@@ -53,9 +53,6 @@ let applyPagination = (query: Record<string, any>, params?: PaginationParams) =>
   }
 };
 
-let removeUndefined = (value: Record<string, any>) =>
-  Object.fromEntries(Object.entries(value).filter(([, child]) => child !== undefined));
-
 export class Client {
   private http: ReturnType<typeof createAxios>;
 
@@ -103,7 +100,7 @@ export class Client {
     ending?: string;
   }): Promise<{ stats: KitAccountGrowthStats }> {
     let response = await this.http.get('/account/growth_stats', {
-      params: removeUndefined({
+      params: pickDefined({
         starting: params?.starting,
         ending: params?.ending
       })
@@ -111,18 +108,20 @@ export class Client {
     return response.data;
   }
 
-  async listSubscribers(params?: PaginationParams & {
-    status?: string;
-    sortField?: string;
-    sortOrder?: string;
-    createdAfter?: string;
-    createdBefore?: string;
-    updatedAfter?: string;
-    updatedBefore?: string;
-    emailAddress?: string;
-    include?: string[];
-    slim?: boolean;
-  }): Promise<KitPaginatedResponse<KitSubscriber>> {
+  async listSubscribers(
+    params?: PaginationParams & {
+      status?: string;
+      sortField?: string;
+      sortOrder?: string;
+      createdAfter?: string;
+      createdBefore?: string;
+      updatedAfter?: string;
+      updatedBefore?: string;
+      emailAddress?: string;
+      include?: string[];
+      slim?: boolean;
+    }
+  ): Promise<KitPaginatedResponse<KitSubscriber>> {
     let query: Record<string, any> = {};
     applyPagination(query, params);
     if (params?.status) query.status = params.status;
@@ -153,7 +152,7 @@ export class Client {
   }): Promise<{ subscriber: KitSubscriber }> {
     let response = await this.http.post(
       '/subscribers',
-      removeUndefined({
+      pickDefined({
         email_address: data.emailAddress,
         first_name: data.firstName,
         state: data.state,
@@ -173,7 +172,7 @@ export class Client {
   ): Promise<{ subscriber: KitSubscriber }> {
     let response = await this.http.put(
       `/subscribers/${subscriberId}`,
-      removeUndefined({
+      pickDefined({
         email_address: data.emailAddress,
         first_name: data.firstName,
         fields: data.fields
@@ -195,7 +194,7 @@ export class Client {
     }
   ): Promise<{ subscriber: { id: number; stats: KitSubscriberStats } }> {
     let response = await this.http.get(`/subscribers/${subscriberId}/stats`, {
-      params: removeUndefined({
+      params: pickDefined({
         email_sent_after: params?.emailSentAfter,
         email_sent_before: params?.emailSentBefore
       })
@@ -292,10 +291,12 @@ export class Client {
     await this.http.delete(`/custom_fields/${customFieldId}`);
   }
 
-  async listForms(params?: PaginationParams & {
-    type?: string;
-    status?: string;
-  }): Promise<KitPaginatedResponse<KitForm>> {
+  async listForms(
+    params?: PaginationParams & {
+      type?: string;
+      status?: string;
+    }
+  ): Promise<KitPaginatedResponse<KitForm>> {
     let query: Record<string, any> = {};
     applyPagination(query, params);
     if (params?.type) query.type = params.type;
@@ -337,7 +338,9 @@ export class Client {
     return paginated<KitSubscriber>(response.data, 'subscribers');
   }
 
-  async listBroadcasts(params?: PaginationParams): Promise<KitPaginatedResponse<KitBroadcast>> {
+  async listBroadcasts(
+    params?: PaginationParams
+  ): Promise<KitPaginatedResponse<KitBroadcast>> {
     let query: Record<string, any> = {};
     applyPagination(query, params);
 
@@ -367,7 +370,7 @@ export class Client {
   }): Promise<{ broadcast: KitBroadcast }> {
     let response = await this.http.post(
       '/broadcasts',
-      removeUndefined({
+      pickDefined({
         subject: data.subject,
         content: data.content,
         description: data.description,
@@ -406,7 +409,7 @@ export class Client {
   ): Promise<{ broadcast: KitBroadcast }> {
     let response = await this.http.put(
       `/broadcasts/${broadcastId}`,
-      removeUndefined({
+      pickDefined({
         subject: data.subject,
         content: data.content,
         description: data.description,
@@ -495,7 +498,7 @@ export class Client {
   }): Promise<{ sequence: KitSequence }> {
     let response = await this.http.post(
       '/sequences',
-      removeUndefined({
+      pickDefined({
         name: data.name,
         email_address: data.emailAddress,
         email_template_id: data.emailTemplateId,
@@ -528,7 +531,7 @@ export class Client {
   ): Promise<{ sequence: KitSequence }> {
     let response = await this.http.put(
       `/sequences/${sequenceId}`,
-      removeUndefined({
+      pickDefined({
         name: data.name,
         email_address: data.emailAddress,
         email_template_id: data.emailTemplateId,
@@ -552,7 +555,9 @@ export class Client {
     sequenceId: number,
     subscriberId: number
   ): Promise<{ subscriber: KitSubscriber }> {
-    let response = await this.http.post(`/sequences/${sequenceId}/subscribers/${subscriberId}`);
+    let response = await this.http.post(
+      `/sequences/${sequenceId}/subscribers/${subscriberId}`
+    );
     return response.data;
   }
 
@@ -622,7 +627,7 @@ export class Client {
   ): Promise<{ email: KitSequenceEmail }> {
     let response = await this.http.post(
       `/sequences/${sequenceId}/emails`,
-      removeUndefined({
+      pickDefined({
         subject: data.subject,
         delay_value: data.delayValue,
         delay_unit: data.delayUnit,
@@ -654,7 +659,7 @@ export class Client {
   ): Promise<{ email: KitSequenceEmail }> {
     let response = await this.http.put(
       `/sequences/${sequenceId}/emails/${emailId}`,
-      removeUndefined({
+      pickDefined({
         subject: data.subject,
         delay_value: data.delayValue,
         delay_unit: data.delayUnit,
@@ -715,7 +720,7 @@ export class Client {
   }): Promise<{ purchase: KitPurchase }> {
     let response = await this.http.post(
       '/purchases',
-      removeUndefined({
+      pickDefined({
         email_address: data.emailAddress,
         transaction_id: data.transactionId,
         currency: data.currency,
@@ -726,7 +731,7 @@ export class Client {
         total: data.total,
         status: data.status,
         products: data.products.map(p =>
-          removeUndefined({
+          pickDefined({
             name: p.name,
             sku: p.sku,
             pid: p.pid,
@@ -798,7 +803,7 @@ export class Client {
   }): Promise<{ snippet: KitSnippet }> {
     let response = await this.http.post(
       '/snippets',
-      removeUndefined({
+      pickDefined({
         name: data.name,
         snippet_type: data.snippetType,
         content: data.content,
@@ -821,7 +826,7 @@ export class Client {
   ): Promise<{ snippet: KitSnippet }> {
     let response = await this.http.put(
       `/snippets/${snippetId}`,
-      removeUndefined({
+      pickDefined({
         name: data.name,
         snippet_type: data.snippetType,
         archived: data.archived,
@@ -846,7 +851,7 @@ export class Client {
   ): Promise<{ webhook: KitWebhook }> {
     let response = await this.http.post('/webhooks', {
       target_url: targetUrl,
-      event: removeUndefined({
+      event: pickDefined({
         name: event.name,
         form_id: event.formId,
         sequence_id: event.sequenceId,

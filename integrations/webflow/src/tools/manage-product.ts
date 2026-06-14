@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
-import { webflowServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageProduct = SlateTool.create(spec, {
@@ -46,7 +45,9 @@ export let manageProduct = SlateTool.create(spec, {
       publishStatus: z
         .enum(['staging', 'live'])
         .optional()
-        .describe('Whether created or updated product changes should remain staged or publish live')
+        .describe(
+          'Whether created or updated product changes should remain staged or publish live'
+        )
     })
   )
   .output(
@@ -94,16 +95,16 @@ export let manageProduct = SlateTool.create(spec, {
       if (publishStatus) updatePayload.publishStatus = publishStatus;
 
       if (Object.keys(updatePayload).length === 0) {
-        throw webflowServiceError('Provide product, sku, or publishStatus to update.');
+        throw createApiServiceError('Provide product, sku, or publishStatus to update.');
       }
 
       result = await client.updateProduct(siteId, productId, updatePayload);
     } else {
       if (!product?.name) {
-        throw webflowServiceError('Product name is required when creating a new product.');
+        throw createApiServiceError('Product name is required when creating a new product.');
       }
       if (!skuPayload) {
-        throw webflowServiceError('sku is required when creating a new product.');
+        throw createApiServiceError('sku is required when creating a new product.');
       }
       result = await client.createProduct(siteId, {
         product: productPayload,

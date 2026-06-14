@@ -1,9 +1,11 @@
-import { createAxios, SlateAuth } from 'slates';
-import { z } from 'zod';
 import {
-  helpscoutServiceError,
-  withHelpScoutErrorHandling
-} from './lib/errors';
+  createApiServiceError,
+  createAxios,
+  normalizeOAuthTokenResponse,
+  SlateAuth
+} from 'slates';
+import { z } from 'zod';
+import { withHelpScoutErrorHandling } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(
@@ -72,18 +74,16 @@ export let auth = SlateAuth.create()
         }
       );
 
-      let data = response.data;
-
-      let expiresAt: string | undefined;
-      if (data.expires_in) {
-        expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
-      }
+      let token = normalizeOAuthTokenResponse(response.data, {
+        providerLabel: 'Help Scout',
+        operation: 'token exchange'
+      });
 
       return {
         output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt,
+          token: token.token,
+          refreshToken: token.refreshToken,
+          expiresAt: token.expiresAt,
           docsApiKey: ctx.input.docsApiKey || undefined
         },
         input: ctx.input
@@ -92,7 +92,7 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        throw helpscoutServiceError(
+        throw createApiServiceError(
           'Cannot refresh Help Scout OAuth token because no refresh token was saved.'
         );
       }
@@ -112,18 +112,17 @@ export let auth = SlateAuth.create()
         }
       );
 
-      let data = response.data;
-
-      let expiresAt: string | undefined;
-      if (data.expires_in) {
-        expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
-      }
+      let token = normalizeOAuthTokenResponse(response.data, {
+        providerLabel: 'Help Scout',
+        operation: 'token refresh',
+        previousRefreshToken: ctx.output.refreshToken
+      });
 
       return {
         output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
+          token: token.token,
+          refreshToken: token.refreshToken,
+          expiresAt: token.expiresAt,
           docsApiKey: ctx.output.docsApiKey
         }
       };
@@ -182,18 +181,16 @@ export let auth = SlateAuth.create()
         }
       );
 
-      let data = response.data;
-
-      let expiresAt: string | undefined;
-      if (data.expires_in) {
-        expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
-      }
+      let token = normalizeOAuthTokenResponse(response.data, {
+        providerLabel: 'Help Scout',
+        operation: 'client credentials token request'
+      });
 
       return {
         output: {
-          token: data.access_token,
+          token: token.token,
           refreshToken: undefined,
-          expiresAt,
+          expiresAt: token.expiresAt,
           docsApiKey: ctx.input.docsApiKey || undefined
         }
       };

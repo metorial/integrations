@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
-import { hotjarApiError, hotjarServiceError } from './errors';
+import { createApiServiceError, createAxios, normalizeOAuthTokenResponse } from 'slates';
+import { hotjarApiError } from './errors';
 
 export type HotjarToken = {
   accessToken: string;
@@ -26,16 +26,26 @@ export let requestHotjarAccessToken = async (
       }
     });
 
-    let data = response.data;
-    if (!data?.access_token || typeof data.expires_in !== 'number') {
-      throw hotjarServiceError(
+    let token = normalizeOAuthTokenResponse(response.data, {
+      providerLabel: 'Hotjar',
+      operation: 'token exchange',
+      required: true,
+      expiresInType: 'number',
+      accessTokenMessage:
+        'Hotjar OAuth token response did not include access_token and expires_in.',
+      expiresInMessage:
+        'Hotjar OAuth token response did not include access_token and expires_in.'
+    });
+
+    if (!token.expiresAt) {
+      throw createApiServiceError(
         'Hotjar OAuth token response did not include access_token and expires_in.'
       );
     }
 
     return {
-      accessToken: data.access_token,
-      expiresAt: new Date(Date.now() + data.expires_in * 1000).toISOString()
+      accessToken: token.token,
+      expiresAt: token.expiresAt
     };
   } catch (error) {
     throw hotjarApiError(error, 'OAuth token exchange');

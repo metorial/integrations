@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageProjects = SlateTool.create(spec, {
@@ -103,8 +102,8 @@ export let manageProjects = SlateTool.create(spec, {
     }
 
     if (action === 'create') {
-      if (!ctx.input.ownerId) throw renderServiceError('ownerId is required for create');
-      if (!ctx.input.name) throw renderServiceError('name is required for create');
+      if (!ctx.input.ownerId) throw createApiServiceError('ownerId is required for create');
+      if (!ctx.input.name) throw createApiServiceError('name is required for create');
       let body: Record<string, any> = { ownerId: ctx.input.ownerId, name: ctx.input.name };
       if (ctx.input.description) body.description = ctx.input.description;
       let p = await client.createProject(body);
@@ -123,7 +122,7 @@ export let manageProjects = SlateTool.create(spec, {
       ) &&
       !projectId
     ) {
-      throw renderServiceError('projectId is required');
+      throw createApiServiceError('projectId is required');
     }
 
     if (action === 'get') {
@@ -173,7 +172,7 @@ export let manageProjects = SlateTool.create(spec, {
 
     if (action === 'create_environment') {
       if (!ctx.input.name)
-        throw renderServiceError('name is required for create_environment');
+        throw createApiServiceError('name is required for create_environment');
       let e = await client.createEnvironment(projectId!, { name: ctx.input.name });
       return {
         output: {
@@ -186,7 +185,7 @@ export let manageProjects = SlateTool.create(spec, {
 
     if (action === 'get_environment') {
       if (!ctx.input.environmentId)
-        throw renderServiceError('environmentId is required for get_environment');
+        throw createApiServiceError('environmentId is required for get_environment');
       let e = await client.getEnvironment(ctx.input.environmentId);
       return {
         output: {
@@ -199,7 +198,7 @@ export let manageProjects = SlateTool.create(spec, {
 
     if (action === 'update_environment') {
       if (!ctx.input.environmentId)
-        throw renderServiceError('environmentId is required for update_environment');
+        throw createApiServiceError('environmentId is required for update_environment');
       let body: Record<string, any> = {};
       if (ctx.input.name) body.name = ctx.input.name;
       let e = await client.updateEnvironment(ctx.input.environmentId, body);
@@ -214,7 +213,7 @@ export let manageProjects = SlateTool.create(spec, {
 
     if (action === 'delete_environment') {
       if (!ctx.input.environmentId)
-        throw renderServiceError('environmentId is required for delete_environment');
+        throw createApiServiceError('environmentId is required for delete_environment');
       await client.deleteEnvironment(ctx.input.environmentId);
       return {
         output: { success: true },
@@ -224,9 +223,9 @@ export let manageProjects = SlateTool.create(spec, {
 
     if (action === 'add_resources') {
       if (!ctx.input.environmentId)
-        throw renderServiceError('environmentId is required for add_resources');
+        throw createApiServiceError('environmentId is required for add_resources');
       if (!ctx.input.resourceIds || ctx.input.resourceIds.length === 0)
-        throw renderServiceError('resourceIds is required for add_resources');
+        throw createApiServiceError('resourceIds is required for add_resources');
       await client.addResourcesToEnvironment(ctx.input.environmentId, ctx.input.resourceIds);
       return {
         output: { success: true },
@@ -236,9 +235,9 @@ export let manageProjects = SlateTool.create(spec, {
 
     if (action === 'remove_resources') {
       if (!ctx.input.environmentId)
-        throw renderServiceError('environmentId is required for remove_resources');
+        throw createApiServiceError('environmentId is required for remove_resources');
       if (!ctx.input.resourceIds || ctx.input.resourceIds.length === 0)
-        throw renderServiceError('resourceIds is required for remove_resources');
+        throw createApiServiceError('resourceIds is required for remove_resources');
       await client.removeResourcesFromEnvironment(
         ctx.input.environmentId,
         ctx.input.resourceIds

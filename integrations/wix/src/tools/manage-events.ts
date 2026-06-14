@@ -1,6 +1,5 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { wixServiceError } from '../lib/errors';
 import { createWixClient } from '../lib/helpers';
 import { spec } from '../spec';
 
@@ -66,7 +65,8 @@ Events include details like title, description, location, scheduling, RSVP/ticke
         };
       }
       case 'get': {
-        if (!ctx.input.eventId) throw wixServiceError('eventId is required for get action');
+        if (!ctx.input.eventId)
+          throw createApiServiceError('eventId is required for get action');
         let result = await client.getEvent(ctx.input.eventId);
         return {
           output: { event: result.event },

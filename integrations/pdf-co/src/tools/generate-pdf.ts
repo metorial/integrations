@@ -1,7 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { pdfCoApiError, pdfCoServiceError } from '../lib/errors';
+import { pdfCoApiError } from '../lib/errors';
 import { spec } from '../spec';
 import {
   createPdfCoAttachment,
@@ -78,7 +78,7 @@ Supports configurable paper size, margins, orientation, and custom headers/foote
 
     if (ctx.input.sourceType === 'html') {
       if (!ctx.input.html) {
-        throw pdfCoServiceError('HTML content is required when sourceType is "html".');
+        throw createApiServiceError('HTML content is required when sourceType is "html".');
       }
       result = await client.convertHtmlToPdf({
         html: ctx.input.html,
@@ -93,7 +93,7 @@ Supports configurable paper size, margins, orientation, and custom headers/foote
       });
     } else if (ctx.input.sourceType === 'url') {
       if (!ctx.input.sourceUrl) {
-        throw pdfCoServiceError('Source URL is required when sourceType is "url".');
+        throw createApiServiceError('Source URL is required when sourceType is "url".');
       }
       result = await client.convertUrlToPdf({
         url: ctx.input.sourceUrl,
@@ -109,7 +109,7 @@ Supports configurable paper size, margins, orientation, and custom headers/foote
       });
     } else if (ctx.input.sourceType === 'document') {
       if (!ctx.input.sourceUrl) {
-        throw pdfCoServiceError('Source URL is required when sourceType is "document".');
+        throw createApiServiceError('Source URL is required when sourceType is "document".');
       }
       result = await client.convertDocumentToPdf({
         url: ctx.input.sourceUrl,
@@ -117,7 +117,7 @@ Supports configurable paper size, margins, orientation, and custom headers/foote
       });
     } else {
       if (!ctx.input.sourceUrl) {
-        throw pdfCoServiceError('Source URL is required when sourceType is "image".');
+        throw createApiServiceError('Source URL is required when sourceType is "image".');
       }
       result = await client.convertImageToPdf({
         url: ctx.input.sourceUrl,

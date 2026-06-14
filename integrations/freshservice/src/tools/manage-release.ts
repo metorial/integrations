@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { freshserviceServiceError } from '../lib/errors';
+import { requireAtLeastOneDefined } from '../lib/validation';
 import { spec } from '../spec';
 
 const releaseFields = {
@@ -67,12 +67,6 @@ let mapRelease = (release: Record<string, any>) => ({
   createdAt: release.created_at ?? null,
   updatedAt: release.updated_at ?? null
 });
-
-let assertHasUpdate = (updates: Record<string, unknown>) => {
-  if (!Object.values(updates).some(value => value !== undefined)) {
-    throw freshserviceServiceError('Provide at least one field to update a release.');
-  }
-};
 
 export let createRelease = SlateTool.create(spec, {
   name: 'Create Release',
@@ -145,10 +139,7 @@ export let listReleases = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      filterName: z
-        .string()
-        .optional()
-        .describe('Optional Freshservice release filter name'),
+      filterName: z.string().optional().describe('Optional Freshservice release filter name'),
       workspaceId: z
         .number()
         .optional()
@@ -197,7 +188,7 @@ export let updateRelease = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { releaseId, ...updates } = ctx.input;
-    assertHasUpdate(updates);
+    requireAtLeastOneDefined(updates, 'Provide at least one field to update a release.');
     let release = await client.updateRelease(releaseId, updates);
 
     return {

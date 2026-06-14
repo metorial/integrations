@@ -1,4 +1,4 @@
-import { createBase64Attachment, SlateTool } from 'slates';
+import { createBase64Attachment, getBase64ByteLength, SlateTool } from 'slates';
 import { z } from 'zod';
 import { DropboxClient } from '../lib/client';
 import { spec } from '../spec';
@@ -75,7 +75,7 @@ export let getThumbnail = SlateTool.create(spec, {
       excludeMediaInfo: ctx.input.excludeMediaInfo
     });
     let mimeType = result.contentType ?? `image/${format === 'jpeg' ? 'jpeg' : format}`;
-    let thumbnailSizeBytes = Buffer.byteLength(result.contentBase64, 'base64');
+    let thumbnailSizeBytes = getBase64ByteLength(result.contentBase64);
 
     return {
       output: {

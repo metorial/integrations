@@ -1,6 +1,5 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { wixServiceError } from '../lib/errors';
 import { createWixClient } from '../lib/helpers';
 import { spec } from '../spec';
 
@@ -57,7 +56,8 @@ Members are registered users of the site with login credentials, profiles, and a
         };
       }
       case 'get': {
-        if (!ctx.input.memberId) throw wixServiceError('memberId is required for get action');
+        if (!ctx.input.memberId)
+          throw createApiServiceError('memberId is required for get action');
         let result = await client.getMember(ctx.input.memberId);
         return {
           output: { member: result.member },

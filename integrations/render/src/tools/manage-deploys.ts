@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageDeploys = SlateTool.create(spec, {
@@ -51,12 +50,12 @@ export let manageDeploys = SlateTool.create(spec, {
         break;
       }
       case 'cancel': {
-        if (!deployId) throw renderServiceError('deployId is required for cancel action');
+        if (!deployId) throw createApiServiceError('deployId is required for cancel action');
         result = await client.cancelDeploy(serviceId, deployId);
         break;
       }
       case 'rollback': {
-        if (!deployId) throw renderServiceError('deployId is required for rollback action');
+        if (!deployId) throw createApiServiceError('deployId is required for rollback action');
         result = await client.rollbackDeploy(serviceId, deployId);
         break;
       }

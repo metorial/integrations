@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAxios, pickDefined } from 'slates';
 import { squarespaceApiError } from './errors';
 
 let apiV1 = createAxios({
@@ -227,15 +227,10 @@ let present = <T>(value: T | undefined) =>
         value
       };
 
-let compact = <T extends object>(value: T) =>
-  Object.fromEntries(
-    Object.entries(value).filter(([, entryValue]) => entryValue !== undefined)
-  ) as Partial<T> & Record<string, unknown>;
-
 let buildPricingUpdate = (pricing?: UpdateProductParams['pricing']) => {
   if (!pricing) return undefined;
 
-  let payload = compact({
+  let payload = pickDefined({
     basePrice: present(pricing.basePrice),
     onSale: present(pricing.onSale),
     salePrice: present(pricing.salePrice)
@@ -355,7 +350,7 @@ export class Client {
 
   async updateProduct(productId: string, updates: UpdateProductParams): Promise<any> {
     let pricing = buildPricingUpdate(updates.pricing);
-    let payload = compact({
+    let payload = pickDefined({
       name: present(updates.name),
       description: present(updates.description),
       urlSlug: present(updates.urlSlug),
@@ -393,7 +388,7 @@ export class Client {
     updates: UpdateProductVariantParams
   ): Promise<any> {
     let pricing = buildPricingUpdate(updates.pricing);
-    let payload = compact({
+    let payload = pickDefined({
       sku: present(updates.sku),
       attributes: present(updates.attributes),
       shippingMeasurements: present(updates.shippingMeasurements),
@@ -418,7 +413,11 @@ export class Client {
 
   // ---- Product Images ----
 
-  async uploadProductImage(productId: string, imageUrl: string, fileName: string): Promise<any> {
+  async uploadProductImage(
+    productId: string,
+    imageUrl: string,
+    fileName: string
+  ): Promise<any> {
     let response = await apiV2.post(
       `/commerce/products/${productId}/images`,
       {
@@ -474,7 +473,10 @@ export class Client {
     return response.data.inventory || [response.data];
   }
 
-  async adjustInventory(adjustments: InventoryAdjustment, idempotencyKey: string): Promise<void> {
+  async adjustInventory(
+    adjustments: InventoryAdjustment,
+    idempotencyKey: string
+  ): Promise<void> {
     await apiV1.post('/commerce/inventory/adjustments', adjustments, {
       headers: {
         ...this.headers,
@@ -488,7 +490,7 @@ export class Client {
   async listContacts(
     params: ListContactsParams = {}
   ): Promise<{ contacts: any[]; pagination: PaginationResponse }> {
-    let response = await apiCurrentV1.post('/contacts/query', compact(params), {
+    let response = await apiCurrentV1.post('/contacts/query', pickDefined(params), {
       headers: this.headers
     });
 
@@ -513,7 +515,7 @@ export class Client {
   }
 
   async updateContact(contactId: string, updates: ContactInput): Promise<any> {
-    let response = await apiCurrentV1.patch(`/contacts/${contactId}`, compact(updates), {
+    let response = await apiCurrentV1.patch(`/contacts/${contactId}`, pickDefined(updates), {
       headers: {
         ...this.headers,
         'Content-Type': 'application/merge-patch+json'
@@ -554,10 +556,7 @@ export class Client {
     return response.data.addressBookEntry || response.data;
   }
 
-  async createContactAddress(
-    contactId: string,
-    entry: AddressBookEntryInput
-  ): Promise<any> {
+  async createContactAddress(contactId: string, entry: AddressBookEntryInput): Promise<any> {
     let response = await apiCurrentV1.post(`/contacts/${contactId}/address-book`, entry, {
       headers: this.headers
     });

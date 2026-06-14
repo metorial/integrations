@@ -1,7 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
-import { requireProjectRef, supabaseServiceError } from '../lib/errors';
+import { requireProjectRef } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageSecrets = SlateTool.create(spec, {
@@ -64,7 +64,7 @@ export let manageSecrets = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.secrets || ctx.input.secrets.length === 0) {
-        throw supabaseServiceError('secrets array is required for create action');
+        throw createApiServiceError('secrets array is required for create action');
       }
       let secretsToCreate = ctx.input.secrets.map(s => ({
         name: s.name,
@@ -79,7 +79,7 @@ export let manageSecrets = SlateTool.create(spec, {
 
     // delete
     if (!ctx.input.secrets || ctx.input.secrets.length === 0) {
-      throw supabaseServiceError('secrets array with names is required for delete action');
+      throw createApiServiceError('secrets array with names is required for delete action');
     }
     let names = ctx.input.secrets.map(s => s.name);
     await client.deleteSecrets(projectRef, names);

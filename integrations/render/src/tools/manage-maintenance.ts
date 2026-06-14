@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let maintenanceRunSchema = z.object({
@@ -30,16 +29,36 @@ export let manageMaintenance = SlateTool.create(spec, {
   .input(
     z.object({
       action: z.enum(['list', 'get', 'update', 'trigger']).describe('Maintenance action'),
-      maintenanceId: z.string().optional().describe('Maintenance run ID for get/update/trigger'),
+      maintenanceId: z
+        .string()
+        .optional()
+        .describe('Maintenance run ID for get/update/trigger'),
       resourceId: z.string().optional().describe('Filter list by resource ID'),
       ownerId: z.string().optional().describe('Filter list by workspace ID'),
       state: z
-        .enum(['scheduled', 'in_progress', 'user_fix_required', 'cancelled', 'succeeded', 'failed'])
+        .enum([
+          'scheduled',
+          'in_progress',
+          'user_fix_required',
+          'cancelled',
+          'succeeded',
+          'failed'
+        ])
         .optional()
         .describe('Filter list by maintenance state'),
       scheduledAt: z.string().optional().describe('New scheduled time for update'),
-      limit: z.number().optional().describe('Accepted for schema consistency; Render maintenance list is not cursor-paginated'),
-      cursor: z.string().optional().describe('Accepted for schema consistency; Render maintenance list is not cursor-paginated')
+      limit: z
+        .number()
+        .optional()
+        .describe(
+          'Accepted for schema consistency; Render maintenance list is not cursor-paginated'
+        ),
+      cursor: z
+        .string()
+        .optional()
+        .describe(
+          'Accepted for schema consistency; Render maintenance list is not cursor-paginated'
+        )
     })
   )
   .output(
@@ -67,7 +86,7 @@ export let manageMaintenance = SlateTool.create(spec, {
     }
 
     if (!ctx.input.maintenanceId) {
-      throw renderServiceError('maintenanceId is required');
+      throw createApiServiceError('maintenanceId is required');
     }
 
     if (action === 'get') {
@@ -80,7 +99,7 @@ export let manageMaintenance = SlateTool.create(spec, {
 
     if (action === 'update') {
       if (!ctx.input.scheduledAt)
-        throw renderServiceError('scheduledAt is required for update');
+        throw createApiServiceError('scheduledAt is required for update');
       let run = mapMaintenanceRun(
         await client.updateMaintenanceRun(ctx.input.maintenanceId, {
           scheduledAt: ctx.input.scheduledAt

@@ -1,7 +1,6 @@
-import { createTextAttachment, SlateTool } from 'slates';
+import { createApiServiceError, createTextAttachment, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let secretFileSummarySchema = z.object({
@@ -41,10 +40,7 @@ export let manageSecretFiles = SlateTool.create(spec, {
     z.object({
       secretFiles: z.array(secretFileSummarySchema).optional().describe('Secret files'),
       secretFile: secretFileSummarySchema.optional().describe('Single secret file metadata'),
-      attachmentCount: z
-        .number()
-        .optional()
-        .describe('Number of Slate attachments returned'),
+      attachmentCount: z.number().optional().describe('Number of Slate attachments returned'),
       success: z.boolean().describe('Whether the operation succeeded')
     })
   )
@@ -68,7 +64,7 @@ export let manageSecretFiles = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!ctx.input.fileName) throw renderServiceError('fileName is required for get');
+      if (!ctx.input.fileName) throw createApiServiceError('fileName is required for get');
       let secretFile = await client.getServiceSecretFile(serviceId, ctx.input.fileName);
       return {
         output: {
@@ -82,9 +78,9 @@ export let manageSecretFiles = SlateTool.create(spec, {
     }
 
     if (action === 'set') {
-      if (!ctx.input.fileName) throw renderServiceError('fileName is required for set');
+      if (!ctx.input.fileName) throw createApiServiceError('fileName is required for set');
       if (ctx.input.content === undefined)
-        throw renderServiceError('content is required for set');
+        throw createApiServiceError('content is required for set');
       let secretFile = await client.setServiceSecretFile(
         serviceId,
         ctx.input.fileName,
@@ -100,7 +96,7 @@ export let manageSecretFiles = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!ctx.input.fileName) throw renderServiceError('fileName is required for delete');
+      if (!ctx.input.fileName) throw createApiServiceError('fileName is required for delete');
       await client.deleteServiceSecretFile(serviceId, ctx.input.fileName);
       return {
         output: { success: true },
@@ -109,7 +105,7 @@ export let manageSecretFiles = SlateTool.create(spec, {
     }
 
     if (!ctx.input.files || ctx.input.files.length === 0) {
-      throw renderServiceError('files is required for replace_all');
+      throw createApiServiceError('files is required for replace_all');
     }
 
     await client.updateServiceSecretFiles(serviceId, ctx.input.files);

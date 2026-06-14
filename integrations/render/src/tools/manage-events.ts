@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let eventSchema = z.object({
@@ -53,7 +52,7 @@ export let manageEvents = SlateTool.create(spec, {
     let client = new RenderClient(ctx.auth.token);
 
     if (ctx.input.action === 'get') {
-      if (!ctx.input.eventId) throw renderServiceError('eventId is required for get');
+      if (!ctx.input.eventId) throw createApiServiceError('eventId is required for get');
       let event = mapEvent(await client.getEvent(ctx.input.eventId));
       return {
         output: { event, success: true },
@@ -61,7 +60,7 @@ export let manageEvents = SlateTool.create(spec, {
       };
     }
 
-    if (!ctx.input.serviceId) throw renderServiceError('serviceId is required for list');
+    if (!ctx.input.serviceId) throw createApiServiceError('serviceId is required for list');
     let params: Record<string, any> = {};
     if (ctx.input.eventType) params.eventType = [ctx.input.eventType];
     if (ctx.input.startTime) params.startTime = ctx.input.startTime;

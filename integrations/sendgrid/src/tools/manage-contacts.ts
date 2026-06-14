@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { sendgridServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let contactSchema = z.object({
@@ -98,7 +97,10 @@ export let getContactImportStatus = SlateTool.create(spec, {
     z.object({
       jobId: z.string().describe('Contact import/delete job ID'),
       status: z.string().describe('Job status such as pending, completed, errored, or failed'),
-      results: z.record(z.string(), z.any()).optional().describe('Provider job result details'),
+      results: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Provider job result details'),
       errorsUrl: z.string().optional().describe('URL with detailed import errors if provided')
     })
   )
@@ -257,7 +259,7 @@ export let deleteContacts = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, region: ctx.config.region });
     if (!ctx.input.deleteAll && (!ctx.input.contactIds || ctx.input.contactIds.length === 0)) {
-      throw sendgridServiceError(
+      throw createApiServiceError(
         'Provide contactIds or set deleteAll to true when deleting contacts.'
       );
     }

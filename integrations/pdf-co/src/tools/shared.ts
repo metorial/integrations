@@ -1,7 +1,7 @@
-import { createBase64Attachment } from 'slates';
+import { createApiServiceError, createBase64Attachment } from 'slates';
 import { z } from 'zod';
 import type { Client } from '../lib/client';
-import { pdfCoApiError, pdfCoServiceError } from '../lib/errors';
+import { pdfCoApiError } from '../lib/errors';
 import type { PdfCoBaseResponse, PdfCoDownloadedFile, PdfCoFileResponse } from '../lib/types';
 
 export let fileAttachmentOutputFields = {
@@ -37,7 +37,7 @@ export let downloadPdfCoOutput = async (
   fallbackMimeType: string
 ) => {
   if (!result.url) {
-    throw pdfCoServiceError('PDF.co did not return an output URL for the generated file.');
+    throw createApiServiceError('PDF.co did not return an output URL for the generated file.');
   }
 
   return client.downloadFileUrl(result.url, fallbackMimeType);

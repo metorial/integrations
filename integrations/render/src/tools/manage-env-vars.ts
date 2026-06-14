@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageEnvVars = SlateTool.create(spec, {
@@ -60,7 +59,7 @@ export let manageEnvVars = SlateTool.create(spec, {
 
     if (action === 'set') {
       if (!variables || variables.length === 0)
-        throw renderServiceError('Variables are required for set action');
+        throw createApiServiceError('Variables are required for set action');
       let envVars = variables.map(v => ({ key: v.key, value: v.value || '' }));
       await client.updateServiceEnvVars(serviceId, envVars);
 
@@ -72,7 +71,7 @@ export let manageEnvVars = SlateTool.create(spec, {
 
     if (action === 'delete') {
       if (!variables || variables.length === 0)
-        throw renderServiceError('Variables are required for delete action');
+        throw createApiServiceError('Variables are required for delete action');
       for (let v of variables) {
         await client.deleteServiceEnvVar(serviceId, v.key);
       }

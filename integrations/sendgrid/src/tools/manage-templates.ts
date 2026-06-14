@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { sendgridServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let templateVersionSchema = z.object({
@@ -231,7 +230,7 @@ export let updateTemplate = SlateTool.create(spec, {
     let actions: string[] = [];
 
     if (!ctx.input.name && !ctx.input.createVersion && !ctx.input.updateVersion) {
-      throw sendgridServiceError(
+      throw createApiServiceError(
         'Provide name, createVersion, or updateVersion when updating a template.'
       );
     }

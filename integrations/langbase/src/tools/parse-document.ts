@@ -1,24 +1,8 @@
-import { Buffer } from 'node:buffer';
 import { createTextAttachment, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { langbaseServiceError } from '../lib/errors';
 import { spec } from '../spec';
-
-let parseContentFromInput = (input: { contentBase64?: string; contentText?: string }) => {
-  let hasBase64 = input.contentBase64 !== undefined;
-  let hasText = input.contentText !== undefined;
-
-  if (hasBase64 === hasText) {
-    throw langbaseServiceError('Provide exactly one of contentBase64 or contentText.');
-  }
-
-  if (input.contentBase64 !== undefined) {
-    return Buffer.from(input.contentBase64, 'base64');
-  }
-
-  return input.contentText ?? '';
-};
+import { parseContentFromInput } from './shared';
 
 export let parseDocument = SlateTool.create(spec, {
   name: 'Parse Document',

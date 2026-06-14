@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
-import { webflowServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let listCustomCode = SlateTool.create(spec, {
@@ -32,7 +31,7 @@ export let listCustomCode = SlateTool.create(spec, {
 
     if (ctx.input.target === 'site') {
       if (!ctx.input.siteId) {
-        throw webflowServiceError('siteId is required when target is site.');
+        throw createApiServiceError('siteId is required when target is site.');
       }
       let data = await client.listSiteCustomCode(ctx.input.siteId);
       let scripts = data.scripts ?? data.customCode ?? [];
@@ -43,7 +42,7 @@ export let listCustomCode = SlateTool.create(spec, {
     }
 
     if (!ctx.input.pageId) {
-      throw webflowServiceError('pageId is required when target is page.');
+      throw createApiServiceError('pageId is required when target is page.');
     }
     let data = await client.listPageCustomCode(ctx.input.pageId);
     let scripts = data.scripts ?? data.customCode ?? [];

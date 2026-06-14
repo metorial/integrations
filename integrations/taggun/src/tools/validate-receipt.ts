@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { taggunServiceError } from '../lib/errors';
+import { requireReceiptSource } from '../lib/validation';
 import { spec } from '../spec';
 
 export let validateReceipt = SlateTool.create(spec, {
@@ -157,17 +157,7 @@ Useful for loyalty programs, cashback campaigns, rebate promotions, and warranty
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-
-    let hasUrl = !!ctx.input.sourceUrl;
-    let hasBase64 = !!ctx.input.image;
-
-    if (!hasUrl && !hasBase64) {
-      throw taggunServiceError('Either sourceUrl or image (base64) must be provided.');
-    }
-
-    if (hasUrl && hasBase64) {
-      throw taggunServiceError('Provide only one of sourceUrl or image (base64).');
-    }
+    let source = requireReceiptSource(ctx.input);
 
     let validationOptions = {
       campaignId: ctx.input.campaignId,
@@ -183,19 +173,14 @@ Useful for loyalty programs, cashback campaigns, rebate promotions, and warranty
 
     let result: any;
 
-    if (hasUrl) {
-      result = await client.validateReceiptFromUrl(ctx.input.sourceUrl!, validationOptions);
+    if (source.type === 'url') {
+      result = await client.validateReceiptFromUrl(source.sourceUrl, validationOptions);
     } else {
-      if (!ctx.input.filename || !ctx.input.contentType) {
-        throw taggunServiceError(
-          'filename and contentType are required when using base64 image input.'
-        );
-      }
       result = await client.validateReceiptFromBase64(
         {
-          image: ctx.input.image!,
-          filename: ctx.input.filename,
-          contentType: ctx.input.contentType
+          image: source.image,
+          filename: source.filename,
+          contentType: source.contentType
         },
         validationOptions
       );

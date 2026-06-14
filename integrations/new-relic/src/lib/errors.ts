@@ -1,85 +1,39 @@
-import { badRequestError, ServiceError } from '@lowerdeck/error';
+import { buildApiServiceError, createApiServiceError, extractApiErrorMessage } from 'slates';
 
-type ErrorResponse = {
-  status?: number;
-  statusText?: string;
-  data?: unknown;
+let newRelicMessageOptions = {
+  detailKeys: ['message', 'description', 'details', 'error_description', 'error', 'type'],
+  includeNumbers: false,
+  nestedKeys: ['errors']
 };
 
-let isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null;
-
-let pushMessage = (messages: string[], value: unknown) => {
-  if (typeof value !== 'string') return;
-
-  let trimmed = value.trim();
-  if (trimmed && !messages.includes(trimmed)) {
-    messages.push(trimmed);
-  }
-};
-
-let collectMessages = (value: unknown, messages: string[]) => {
-  if (Array.isArray(value)) {
-    for (let item of value) collectMessages(item, messages);
-    return;
-  }
-
-  if (!isRecord(value)) {
-    pushMessage(messages, value);
-    return;
-  }
-
-  for (let key of ['message', 'description', 'details', 'error_description', 'error', 'type']) {
-    pushMessage(messages, value[key]);
-  }
-
-  if (Array.isArray(value.errors)) {
-    for (let error of value.errors) collectMessages(error, messages);
-  }
-};
-
-let extractMessage = (error: unknown) => {
-  let messages: string[] = [];
-  let response = isRecord(error) ? (error.response as ErrorResponse | undefined) : undefined;
-  collectMessages(response?.data ?? error, messages);
-
-  if (messages.length > 0) return messages.join(' - ');
-  if (error instanceof Error && error.message) return error.message;
-
-  return 'Unknown error';
-};
-
-export let newRelicServiceError = (message: string) =>
-  new ServiceError(badRequestError({ message }));
-
-export let newRelicValidationError = (message: string) => newRelicServiceError(message);
-
-export let newRelicApiError = (error: unknown, operation = 'request') => {
-  if (error instanceof ServiceError) return error;
-
-  let response = isRecord(error) ? (error.response as ErrorResponse | undefined) : undefined;
-  let status = response?.status;
-  let statusLabel =
-    status !== undefined
-      ? `HTTP ${status}${response?.statusText ? ` ${response.statusText}` : ''}: `
-      : '';
-
-  let serviceError = newRelicServiceError(
-    `New Relic ${operation} failed: ${statusLabel}${extractMessage(error)}`
-  );
-  serviceError.data.reason = 'new_relic_api_error';
-  serviceError.data.upstreamStatus = status;
-
-  if (error instanceof Error) {
-    serviceError.setParent(error);
-  }
-
-  return serviceError;
-};
+export let newRelicApiError = (error: unknown, operation = 'request') =>
+  buildApiServiceError(error, {
+    providerLabel: 'New Relic',
+    operation,
+    reason: 'new_relic_api_error',
+    ...newRelicMessageOptions,
+    extractMessage: (input, helpers) => {
+      let response = helpers.getResponse(input);
+      return extractApiErrorMessage(input, {
+        ...newRelicMessageOptions,
+        response: {
+          ...response,
+          data: response?.data ?? input
+        }
+      });
+    },
+    formatMessage: ({ operation: apiOperation, statusLabel, message }) =>
+      `New Relic ${apiOperation} failed: ${statusLabel}${message}`
+  });
 
 export let newRelicGraphqlErrors = (operation: string, errors: unknown[]) => {
-  let message = extractMessage(errors);
-  let serviceError = newRelicServiceError(`New Relic ${operation} failed: ${message}`);
-  serviceError.data.reason = 'new_relic_graphql_error';
-  return serviceError;
+  let message = extractApiErrorMessage(errors, {
+    ...newRelicMessageOptions,
+    response: {
+      data: errors
+    }
+  });
+  return createApiServiceError(`New Relic ${operation} failed: ${message}`, {
+    reason: 'new_relic_graphql_error'
+  });
 };

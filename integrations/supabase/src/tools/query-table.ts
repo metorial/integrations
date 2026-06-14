@@ -1,7 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
-import { requireProjectRef, supabaseServiceError } from '../lib/errors';
+import { requireProjectRef } from '../lib/errors';
 import { ProjectClient } from '../lib/project-client';
 import { spec } from '../spec';
 
@@ -64,7 +64,7 @@ export let queryTable = SlateTool.create(spec, {
     let apiKey = serviceKey?.api_key ?? anonKey?.api_key;
 
     if (!apiKey) {
-      throw supabaseServiceError('Could not retrieve API keys for the project');
+      throw createApiServiceError('Could not retrieve API keys for the project');
     }
 
     let projectClient = new ProjectClient(projectRef, apiKey);

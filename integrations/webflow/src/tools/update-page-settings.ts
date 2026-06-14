@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
-import { webflowServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let updatePageSettings = SlateTool.create(spec, {
@@ -18,10 +17,7 @@ export let updatePageSettings = SlateTool.create(spec, {
         .describe('Optional locale ID for localized page metadata'),
       title: z.string().optional().describe('New page title'),
       slug: z.string().optional().describe('New URL slug for the page'),
-      description: z
-        .string()
-        .optional()
-        .describe('Convenience alias for seo.description'),
+      description: z.string().optional().describe('Convenience alias for seo.description'),
       seo: z
         .object({
           title: z.string().optional().describe('SEO title tag'),
@@ -75,7 +71,7 @@ export let updatePageSettings = SlateTool.create(spec, {
     if (openGraph !== undefined) body.openGraph = openGraph;
 
     if (Object.keys(body).length === 0) {
-      throw webflowServiceError('Provide at least one page setting to update.');
+      throw createApiServiceError('Provide at least one page setting to update.');
     }
 
     let page = await client.updatePageSettings(pageId, body, { localeId });

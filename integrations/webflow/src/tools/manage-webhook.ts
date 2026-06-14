@@ -1,6 +1,5 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { webflowServiceError } from '../lib/errors';
 import { WebflowClient } from '../lib/client';
 import { spec } from '../spec';
 
@@ -48,10 +47,7 @@ export let manageWebhook = SlateTool.create(spec, {
       action: z
         .enum(['list', 'get', 'create', 'delete'])
         .describe('Webhook management action to perform'),
-      siteId: z
-        .string()
-        .optional()
-        .describe('Site ID required for list and create actions'),
+      siteId: z.string().optional().describe('Site ID required for list and create actions'),
       webhookId: z
         .string()
         .optional()
@@ -78,7 +74,7 @@ export let manageWebhook = SlateTool.create(spec, {
     let { action, siteId, webhookId, triggerType, url, filter } = ctx.input;
 
     if (action === 'list') {
-      if (!siteId) throw webflowServiceError('siteId is required for list action.');
+      if (!siteId) throw createApiServiceError('siteId is required for list action.');
       let data = await client.listWebhooks(siteId);
       let webhooks = (data.webhooks ?? []).map((webhook: any) => ({
         webhookId: webhook.id ?? webhook._id,
@@ -97,7 +93,7 @@ export let manageWebhook = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!webhookId) throw webflowServiceError('webhookId is required for get action.');
+      if (!webhookId) throw createApiServiceError('webhookId is required for get action.');
       let webhook = await client.getWebhook(webhookId);
       return {
         output: {
@@ -116,7 +112,7 @@ export let manageWebhook = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      if (!webhookId) throw webflowServiceError('webhookId is required for delete action.');
+      if (!webhookId) throw createApiServiceError('webhookId is required for delete action.');
       await client.deleteWebhook(webhookId);
       return {
         output: { webhook: { webhookId }, deleted: true },
@@ -124,9 +120,10 @@ export let manageWebhook = SlateTool.create(spec, {
       };
     }
 
-    if (!siteId) throw webflowServiceError('siteId is required for create action.');
-    if (!triggerType) throw webflowServiceError('triggerType is required for create action.');
-    if (!url) throw webflowServiceError('url is required for create action.');
+    if (!siteId) throw createApiServiceError('siteId is required for create action.');
+    if (!triggerType)
+      throw createApiServiceError('triggerType is required for create action.');
+    if (!url) throw createApiServiceError('url is required for create action.');
 
     let webhook = await client.createWebhook(siteId, { triggerType, url, filter });
     return {

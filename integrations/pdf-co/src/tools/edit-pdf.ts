@@ -1,7 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { pdfCoApiError, pdfCoServiceError } from '../lib/errors';
+import { pdfCoApiError } from '../lib/errors';
 import { spec } from '../spec';
 import {
   createPdfCoAttachment,
@@ -166,7 +166,7 @@ Combines multiple editing capabilities in a single tool — specify which operat
     }
 
     if (!result) {
-      throw pdfCoServiceError(
+      throw createApiServiceError(
         'No editing operations specified. Please provide at least one edit action.'
       );
     }

@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { CohereClient } from '../lib/client';
-import { cohereServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let embedInputSchema = z.object({
@@ -104,7 +103,7 @@ export let embedTool = SlateTool.create(spec, {
     ).length;
 
     if (inputSourceCount !== 1) {
-      throw cohereServiceError('Provide exactly one of texts, images, or inputs.');
+      throw createApiServiceError('Provide exactly one of texts, images, or inputs.');
     }
 
     let result = await client.embed({

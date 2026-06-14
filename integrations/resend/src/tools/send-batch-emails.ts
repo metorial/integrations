@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { resendServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let templateSchema = z.object({
@@ -75,7 +74,7 @@ export let sendBatchEmails = SlateTool.create(spec, {
 
     for (let email of ctx.input.emails) {
       if (email.template && (email.html || email.text)) {
-        throw resendServiceError(
+        throw createApiServiceError(
           'Do not provide html or text when sending a Resend template in a batch email.'
         );
       }

@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let blueprintSchema = z.object({
@@ -85,7 +84,7 @@ export let manageBlueprints = SlateTool.create(spec, {
     }
 
     if (!ctx.input.blueprintId) {
-      throw renderServiceError('blueprintId is required');
+      throw createApiServiceError('blueprintId is required');
     }
 
     if (action === 'get') {

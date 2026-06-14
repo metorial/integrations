@@ -1,6 +1,6 @@
-import { createAxios, SlateAuth } from 'slates';
+import { createApiServiceError, createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
-import { webflowApiError, webflowServiceError } from './lib/errors';
+import { webflowApiError } from './lib/errors';
 
 let getProfileFromToken = async (token: string, operation: string) => {
   let http = createAxios({
@@ -198,7 +198,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.webflow.com'
       });
 
-      let response;
+      let response: { data: unknown };
       try {
         response = await http.post('/oauth/access_token', {
           client_id: ctx.clientId,
@@ -213,7 +213,9 @@ export let auth = SlateAuth.create()
 
       let data = response.data as { access_token: string };
       if (!data.access_token) {
-        throw webflowServiceError('Webflow OAuth token response did not include an access token.');
+        throw createApiServiceError(
+          'Webflow OAuth token response did not include an access token.'
+        );
       }
 
       return {

@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { NerdGraphClient } from '../lib/client';
-import { newRelicValidationError } from '../lib/errors';
 import { spec } from '../spec';
 
 let incidentPreferenceSchema = z
@@ -32,8 +31,13 @@ export let manageAlertPolicy = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Action to perform'),
-      policyId: z.string().optional().describe('Alert policy ID for get/update/delete actions'),
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
+      policyId: z
+        .string()
+        .optional()
+        .describe('Alert policy ID for get/update/delete actions'),
       policyIds: z
         .array(z.string())
         .optional()
@@ -42,7 +46,10 @@ export let manageAlertPolicy = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Policy name for create/update, or exact name filter for list'),
-      nameLike: z.string().optional().describe('Case-insensitive partial name filter for list'),
+      nameLike: z
+        .string()
+        .optional()
+        .describe('Case-insensitive partial name filter for list'),
       incidentPreference: incidentPreferenceSchema
         .optional()
         .describe('Incident grouping preference for create/update actions'),
@@ -90,7 +97,8 @@ export let manageAlertPolicy = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'get') {
-      if (!ctx.input.policyId) throw newRelicValidationError('policyId is required for get action');
+      if (!ctx.input.policyId)
+        throw createApiServiceError('policyId is required for get action');
       ctx.progress('Fetching alert policy...');
       let policy = await client.getAlertPolicy(ctx.input.policyId);
 
@@ -115,7 +123,7 @@ export let manageAlertPolicy = SlateTool.create(spec, {
 
     if (ctx.input.action === 'delete') {
       if (!ctx.input.policyId)
-        throw newRelicValidationError('policyId is required for delete action');
+        throw createApiServiceError('policyId is required for delete action');
       ctx.progress('Deleting alert policy...');
       let result = await client.deleteAlertPolicy(ctx.input.policyId);
       let deletedPolicyId = result?.id?.toString() || ctx.input.policyId;
@@ -127,7 +135,7 @@ export let manageAlertPolicy = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.name) throw newRelicValidationError('name is required for create action');
+      if (!ctx.input.name) throw createApiServiceError('name is required for create action');
       ctx.progress('Creating alert policy...');
       let policy = await client.createAlertPolicy({
         name: ctx.input.name,
@@ -146,9 +154,10 @@ export let manageAlertPolicy = SlateTool.create(spec, {
       };
     }
 
-    if (!ctx.input.policyId) throw newRelicValidationError('policyId is required for update action');
+    if (!ctx.input.policyId)
+      throw createApiServiceError('policyId is required for update action');
     if (ctx.input.name === undefined && ctx.input.incidentPreference === undefined) {
-      throw newRelicValidationError('Provide name or incidentPreference for update action');
+      throw createApiServiceError('Provide name or incidentPreference for update action');
     }
 
     ctx.progress('Updating alert policy...');

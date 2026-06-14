@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { NerdGraphClient } from '../lib/client';
-import { newRelicValidationError } from '../lib/errors';
 import { spec } from '../spec';
 
 let tagInput = z.object({
@@ -53,7 +52,7 @@ export let manageEntityTags = SlateTool.create(spec, {
 
     if (action === 'add') {
       if (!ctx.input.tags?.length)
-        throw newRelicValidationError('tags are required for add action');
+        throw createApiServiceError('tags are required for add action');
       ctx.progress('Adding tags...');
       await client.addEntityTags(entityGuid, ctx.input.tags);
       return {
@@ -64,7 +63,7 @@ export let manageEntityTags = SlateTool.create(spec, {
 
     if (action === 'replace') {
       if (!ctx.input.tags?.length)
-        throw newRelicValidationError('tags are required for replace action');
+        throw createApiServiceError('tags are required for replace action');
       ctx.progress('Replacing tags...');
       await client.replaceEntityTags(entityGuid, ctx.input.tags);
       return {
@@ -75,7 +74,7 @@ export let manageEntityTags = SlateTool.create(spec, {
 
     // delete
     if (!ctx.input.tagKeys?.length)
-      throw newRelicValidationError('tagKeys are required for delete action');
+      throw createApiServiceError('tagKeys are required for delete action');
     ctx.progress('Deleting tags...');
     await client.deleteEntityTags(entityGuid, ctx.input.tagKeys);
     return {

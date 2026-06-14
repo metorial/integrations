@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer';
-import { createAxios } from 'slates';
+import { createAxios, requestAxios, requestAxiosData } from 'slates';
 import { replicateApiError } from './errors';
 
 let axios = createAxios({
@@ -61,20 +61,15 @@ export class Client {
   }
 
   private async request<T = any>(operation: string, config: Record<string, any>): Promise<T> {
-    try {
-      let response = await axios.request(config);
-      return response.data as T;
-    } catch (error) {
-      throw replicateApiError(error, operation);
-    }
+    return await requestAxiosData<T>(
+      operation,
+      () => axios.request(config),
+      replicateApiError
+    );
   }
 
   private async requestRaw(operation: string, config: Record<string, any>): Promise<any> {
-    try {
-      return await axios.request(config);
-    } catch (error) {
-      throw replicateApiError(error, operation);
-    }
+    return await requestAxios(operation, () => axios.request(config), replicateApiError);
   }
 
   private predictionHeaders(params: Pick<PredictionParams, 'waitSeconds' | 'cancelAfter'>) {
@@ -490,7 +485,7 @@ export class Client {
     let content =
       params.contentBase64 !== undefined
         ? Buffer.from(params.contentBase64, 'base64')
-        : params.contentText ?? '';
+        : (params.contentText ?? '');
 
     form.append('content', new Blob([content], { type: contentType }), params.filename);
     form.append('filename', params.filename);

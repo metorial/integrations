@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
-import { wixApiError, wixServiceError } from './errors';
+import { createApiServiceError, createAxios } from 'slates';
+import { wixApiError } from './errors';
 
 export interface WixClientConfig {
   token: string;
@@ -36,7 +36,9 @@ export class WixClient {
 
   constructor(config: WixClientConfig) {
     if (config.siteId && config.accountId) {
-      throw wixServiceError('Use either siteId or accountId for Wix API calls, not both.');
+      throw createApiServiceError(
+        'Use either siteId or accountId for Wix API calls, not both.'
+      );
     }
 
     let headers: Record<string, string> = {
@@ -51,10 +53,7 @@ export class WixClient {
     });
   }
 
-  private async request<T>(
-    operation: string,
-    run: () => Promise<{ data: T }>
-  ): Promise<T> {
+  private async request<T>(operation: string, run: () => Promise<{ data: T }>): Promise<T> {
     try {
       let response = await run();
       return response.data;
@@ -73,7 +72,7 @@ export class WixClient {
       normalizeCatalogVersion(result.catalog?.version);
 
     if (!resolved) {
-      throw wixServiceError('Wix catalog version response did not include V1 or V3.');
+      throw createApiServiceError('Wix catalog version response did not include V1 or V3.');
     }
 
     return resolved;
@@ -89,10 +88,7 @@ export class WixClient {
 
   // --- Products (Stores Catalog V1/V3) ---
 
-  async queryProducts(
-    query?: WixQuery,
-    catalogVersion: WixCatalogVersion = 'v1'
-  ) {
+  async queryProducts(query?: WixQuery, catalogVersion: WixCatalogVersion = 'v1') {
     let version = await this.resolveCatalogVersion(catalogVersion);
 
     if (version === 'v3') {
@@ -192,7 +188,9 @@ export class WixClient {
 
   // --- eCommerce Orders ---
 
-  async searchOrders(search?: WixQuery & { search?: { expression?: string; fields?: string[] } }) {
+  async searchOrders(
+    search?: WixQuery & { search?: { expression?: string; fields?: string[] } }
+  ) {
     return this.request<Record<string, any>>('search orders', () =>
       this.axios.post('/ecom/v1/orders/search', search || {})
     );

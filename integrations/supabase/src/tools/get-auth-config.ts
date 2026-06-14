@@ -1,7 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
-import { requireProjectRef, supabaseServiceError } from '../lib/errors';
+import { requireProjectRef } from '../lib/errors';
 import { spec } from '../spec';
 
 export let getAuthConfig = SlateTool.create(spec, {
@@ -39,7 +39,7 @@ export let getAuthConfig = SlateTool.create(spec, {
 
     if (ctx.input.action === 'update') {
       if (!ctx.input.settings) {
-        throw supabaseServiceError('settings are required for update action');
+        throw createApiServiceError('settings are required for update action');
       }
       let result = await client.updateAuthConfig(projectRef, ctx.input.settings);
       return {

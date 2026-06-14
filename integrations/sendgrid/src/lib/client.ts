@@ -1,4 +1,4 @@
-import { createAxios } from 'slates';
+import { createAuthenticatedAxios } from 'slates';
 import { sendgridApiError } from './errors';
 
 type ContactInput = {
@@ -23,8 +23,7 @@ let mapContactInput = (contact: ContactInput) => {
   if (contact.addressLine1) mapped.address_line_1 = contact.addressLine1;
   if (contact.addressLine2) mapped.address_line_2 = contact.addressLine2;
   if (contact.city) mapped.city = contact.city;
-  if (contact.stateProvinceRegion)
-    mapped.state_province_region = contact.stateProvinceRegion;
+  if (contact.stateProvinceRegion) mapped.state_province_region = contact.stateProvinceRegion;
   if (contact.postalCode) mapped.postal_code = contact.postalCode;
   if (contact.country) mapped.country = contact.country;
   if (contact.phone) mapped.phone_number = contact.phone;
@@ -34,7 +33,7 @@ let mapContactInput = (contact: ContactInput) => {
 };
 
 export class Client {
-  private http: ReturnType<typeof createAxios>;
+  private http: ReturnType<typeof createAuthenticatedAxios>;
 
   constructor(config: { token: string; region?: string }) {
     let baseURL =
@@ -42,18 +41,13 @@ export class Client {
         ? 'https://api.eu.sendgrid.com/v3'
         : 'https://api.sendgrid.com/v3';
 
-    this.http = createAxios({
+    this.http = createAuthenticatedAxios({
       baseURL,
-      headers: {
-        Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json'
-      }
+      authHeader: {
+        value: `Bearer ${config.token}`
+      },
+      errorAdapter: sendgridApiError
     });
-
-    this.http.interceptors.response.use(
-      response => response,
-      error => Promise.reject(sendgridApiError(error))
-    );
   }
 
   // ── Mail Send ──
@@ -286,10 +280,7 @@ export class Client {
 
   // ── Contacts ──
 
-  async upsertContacts(
-    contacts: ContactInput[],
-    listIds?: string[]
-  ) {
+  async upsertContacts(contacts: ContactInput[], listIds?: string[]) {
     let body: Record<string, any> = {
       contacts: contacts.map(mapContactInput)
     };

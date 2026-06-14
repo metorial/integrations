@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
-import { supabaseServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageProject = SlateTool.create(spec, {
@@ -51,7 +50,7 @@ export let manageProject = SlateTool.create(spec, {
         !ctx.input.region ||
         !ctx.input.dbPass
       ) {
-        throw supabaseServiceError(
+        throw createApiServiceError(
           'name, organizationId, region, and dbPass are required for creating a project'
         );
       }
@@ -75,7 +74,9 @@ export let manageProject = SlateTool.create(spec, {
     }
 
     if (!ctx.input.projectRef) {
-      throw supabaseServiceError('projectRef is required for pause, restore, and delete actions');
+      throw createApiServiceError(
+        'projectRef is required for pause, restore, and delete actions'
+      );
     }
 
     if (action === 'pause') {

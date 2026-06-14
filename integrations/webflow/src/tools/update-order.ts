@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { WebflowClient } from '../lib/client';
-import { webflowServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let updateOrder = SlateTool.create(spec, {
@@ -23,7 +22,9 @@ export let updateOrder = SlateTool.create(spec, {
       sendOrderFulfilledEmail: z
         .boolean()
         .optional()
-        .describe('Whether to send the Webflow order fulfilled email when status is fulfilled'),
+        .describe(
+          'Whether to send the Webflow order fulfilled email when status is fulfilled'
+        ),
       refundReason: z
         .enum(['duplicate', 'fraudulent', 'requested'])
         .optional()
@@ -73,14 +74,16 @@ export let updateOrder = SlateTool.create(spec, {
           reason: updateData.refundReason
         });
       } else {
-        throw webflowServiceError(
+        throw createApiServiceError(
           `Webflow does not expose an API transition to "${updateData.status}". Supported status transitions are fulfilled, unfulfilled, and refunded.`
         );
       }
     }
 
     if (!order) {
-      throw webflowServiceError('Provide at least one order field or supported status transition.');
+      throw createApiServiceError(
+        'Provide at least one order field or supported status transition.'
+      );
     }
 
     return {

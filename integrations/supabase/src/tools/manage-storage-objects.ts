@@ -1,7 +1,7 @@
-import { createBase64Attachment, SlateTool } from 'slates';
+import { createApiServiceError, createBase64Attachment, SlateTool } from 'slates';
 import { z } from 'zod';
 import { ManagementClient } from '../lib/client';
-import { requireProjectRef, supabaseServiceError } from '../lib/errors';
+import { requireProjectRef } from '../lib/errors';
 import { ProjectClient } from '../lib/project-client';
 import { spec } from '../spec';
 
@@ -9,8 +9,11 @@ let normalizeBase64 = (value: string) => value.replace(/\s+/g, '').replace(/=+$/
 
 let decodeBase64Content = (value: string, label: string) => {
   let buffer = Buffer.from(value, 'base64');
-  if (buffer.length === 0 || normalizeBase64(buffer.toString('base64')) !== normalizeBase64(value)) {
-    throw supabaseServiceError(`${label} must be valid non-empty base64 data.`);
+  if (
+    buffer.length === 0 ||
+    normalizeBase64(buffer.toString('base64')) !== normalizeBase64(value)
+  ) {
+    throw createApiServiceError(`${label} must be valid non-empty base64 data.`);
   }
 
   return buffer;
@@ -18,7 +21,7 @@ let decodeBase64Content = (value: string, label: string) => {
 
 let getObjectContent = (input: { content?: string; contentBase64?: string }) => {
   if (input.content && input.contentBase64) {
-    throw supabaseServiceError('Provide only one of content or contentBase64.');
+    throw createApiServiceError('Provide only one of content or contentBase64.');
   }
 
   if (input.contentBase64) {
@@ -29,7 +32,7 @@ let getObjectContent = (input: { content?: string; contentBase64?: string }) => 
     return input.content;
   }
 
-  throw supabaseServiceError('content or contentBase64 is required for this action.');
+  throw createApiServiceError('content or contentBase64 is required for this action.');
 };
 
 let mapObject = (o: any) => {
@@ -100,15 +103,14 @@ export let manageStorageObjects = SlateTool.create(spec, {
       contentBase64: z
         .string()
         .optional()
-        .describe('Base64-encoded content to upload or update. Use either content or contentBase64.'),
+        .describe(
+          'Base64-encoded content to upload or update. Use either content or contentBase64.'
+        ),
       contentType: z
         .string()
         .optional()
         .describe('MIME type for upload or update (defaults to application/octet-stream)'),
-      cacheControl: z
-        .string()
-        .optional()
-        .describe('Cache-Control value for upload or update'),
+      cacheControl: z.string().optional().describe('Cache-Control value for upload or update'),
       upsert: z
         .boolean()
         .optional()
@@ -168,7 +170,7 @@ export let manageStorageObjects = SlateTool.create(spec, {
     let apiKey = serviceKey?.api_key;
 
     if (!apiKey) {
-      throw supabaseServiceError('Could not retrieve service_role API key for the project');
+      throw createApiServiceError('Could not retrieve service_role API key for the project');
     }
 
     let projectClient = new ProjectClient(projectRef, apiKey);
@@ -190,8 +192,10 @@ export let manageStorageObjects = SlateTool.create(spec, {
     }
 
     if (action === 'info') {
-      if (!ctx.input.path) throw supabaseServiceError('path is required for info action');
-      let object = mapObject(await projectClient.getStorageObjectInfo(bucketId, ctx.input.path));
+      if (!ctx.input.path) throw createApiServiceError('path is required for info action');
+      let object = mapObject(
+        await projectClient.getStorageObjectInfo(bucketId, ctx.input.path)
+      );
       return {
         output: { object },
         message: `Retrieved object info for **${ctx.input.path}** in bucket **${bucketId}**.`
@@ -199,7 +203,7 @@ export let manageStorageObjects = SlateTool.create(spec, {
     }
 
     if (action === 'upload') {
-      if (!ctx.input.path) throw supabaseServiceError('path is required for upload action');
+      if (!ctx.input.path) throw createApiServiceError('path is required for upload action');
       let content = getObjectContent(ctx.input);
       let result = await projectClient.uploadStorageObject(bucketId, ctx.input.path, content, {
         contentType: ctx.input.contentType,
@@ -213,7 +217,7 @@ export let manageStorageObjects = SlateTool.create(spec, {
     }
 
     if (action === 'update') {
-      if (!ctx.input.path) throw supabaseServiceError('path is required for update action');
+      if (!ctx.input.path) throw createApiServiceError('path is required for update action');
       let content = getObjectContent(ctx.input);
       let result = await projectClient.updateStorageObject(bucketId, ctx.input.path, content, {
         contentType: ctx.input.contentType,
@@ -226,7 +230,7 @@ export let manageStorageObjects = SlateTool.create(spec, {
     }
 
     if (action === 'download') {
-      if (!ctx.input.path) throw supabaseServiceError('path is required for download action');
+      if (!ctx.input.path) throw createApiServiceError('path is required for download action');
       let result = await projectClient.downloadStorageObject(bucketId, ctx.input.path);
       return {
         output: {
@@ -242,7 +246,9 @@ export let manageStorageObjects = SlateTool.create(spec, {
 
     if (action === 'move') {
       if (!ctx.input.sourceKey || !ctx.input.destinationKey) {
-        throw supabaseServiceError('sourceKey and destinationKey are required for move action');
+        throw createApiServiceError(
+          'sourceKey and destinationKey are required for move action'
+        );
       }
       await projectClient.moveStorageObject(
         bucketId,
@@ -257,7 +263,9 @@ export let manageStorageObjects = SlateTool.create(spec, {
 
     if (action === 'copy') {
       if (!ctx.input.sourceKey || !ctx.input.destinationKey) {
-        throw supabaseServiceError('sourceKey and destinationKey are required for copy action');
+        throw createApiServiceError(
+          'sourceKey and destinationKey are required for copy action'
+        );
       }
       await projectClient.copyStorageObject(
         bucketId,
@@ -272,7 +280,7 @@ export let manageStorageObjects = SlateTool.create(spec, {
 
     if (action === 'delete') {
       if (!ctx.input.paths || ctx.input.paths.length === 0) {
-        throw supabaseServiceError('paths are required for delete action');
+        throw createApiServiceError('paths are required for delete action');
       }
       await projectClient.deleteStorageObjects(bucketId, ctx.input.paths);
       return {
@@ -283,7 +291,7 @@ export let manageStorageObjects = SlateTool.create(spec, {
 
     if (action === 'get_public_url') {
       if (!ctx.input.path)
-        throw supabaseServiceError('path is required for get_public_url action');
+        throw createApiServiceError('path is required for get_public_url action');
       let url = await projectClient.getPublicUrl(bucketId, ctx.input.path);
       return {
         output: { url },
@@ -293,7 +301,7 @@ export let manageStorageObjects = SlateTool.create(spec, {
 
     // create_signed_url
     if (!ctx.input.path)
-      throw supabaseServiceError('path is required for create_signed_url action');
+      throw createApiServiceError('path is required for create_signed_url action');
     let result = await projectClient.createSignedUrl(
       bucketId,
       ctx.input.path,

@@ -1,8 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { type PatchOperation } from '../lib/client';
+import type { PatchOperation } from '../lib/client';
 import { createConnectClient } from '../lib/connect-tool';
-import { onePasswordServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let updateItem = SlateTool.create(spec, {
@@ -108,7 +107,7 @@ export let updateItem = SlateTool.create(spec, {
       }));
       result = await client.patchItem(ctx.input.vaultId, ctx.input.itemId, ops);
     } else {
-      throw onePasswordServiceError(
+      throw createApiServiceError(
         'No updates provided. Specify at least one of title, tags, favorite, urls, or patchOperations.'
       );
     }

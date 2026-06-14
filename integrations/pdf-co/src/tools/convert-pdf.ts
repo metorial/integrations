@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { pdfCoServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import {
   assertPdfCoSuccess,
@@ -88,7 +87,7 @@ Use this to extract tabular data (CSV/Excel), structured content (JSON/XML), pla
 
     result = assertPdfCoSuccess(result, 'PDF conversion failed');
     if (!('url' in result)) {
-      throw pdfCoServiceError('PDF.co returned inline content instead of a file URL.');
+      throw createApiServiceError('PDF.co returned inline content instead of a file URL.');
     }
     let file = await downloadPdfCoOutput(
       client,

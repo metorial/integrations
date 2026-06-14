@@ -1,7 +1,7 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
-import { awsSesServiceError, requireAwsSesString } from '../lib/errors';
 import { SesClient } from '../lib/client';
+import { requireAwsSesString } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageConfigurationSet = SlateTool.create(spec, {
@@ -199,7 +199,7 @@ export let manageConfigurationSet = SlateTool.create(spec, {
         ctx.input.tlsPolicy === undefined &&
         ctx.input.maxDeliverySeconds === undefined
       ) {
-        throw awsSesServiceError(
+        throw createApiServiceError(
           'sendingPoolName, tlsPolicy, or maxDeliverySeconds is required for "updateDelivery".'
         );
       }
@@ -226,7 +226,7 @@ export let manageConfigurationSet = SlateTool.create(spec, {
       );
       return {
         output: { configurationSetName },
-        message: `Sending ${ctx.input.sendingEnabled ?? true ? 'enabled' : 'disabled'} for **${configurationSetName}**.`
+        message: `Sending ${(ctx.input.sendingEnabled ?? true) ? 'enabled' : 'disabled'} for **${configurationSetName}**.`
       };
     }
 
@@ -242,7 +242,7 @@ export let manageConfigurationSet = SlateTool.create(spec, {
       );
       return {
         output: { configurationSetName },
-        message: `Reputation metrics ${ctx.input.reputationMetricsEnabled ?? true ? 'enabled' : 'disabled'} for **${configurationSetName}**.`
+        message: `Reputation metrics ${(ctx.input.reputationMetricsEnabled ?? true) ? 'enabled' : 'disabled'} for **${configurationSetName}**.`
       };
     }
 

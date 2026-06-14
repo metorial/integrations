@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
-import { cohereApiError, cohereServiceError } from './errors';
+import { createApiServiceError, createAxios } from 'slates';
+import { cohereApiError } from './errors';
 
 let http = createAxios({
   baseURL: 'https://api.cohere.com'
@@ -53,13 +53,13 @@ let decodeFileContent = (params: {
   let required = params.required ?? true;
 
   if (hasContent && hasBase64) {
-    throw cohereServiceError(
+    throw createApiServiceError(
       `Provide only one of ${params.fieldName} or ${params.fieldName}Base64.`
     );
   }
 
   if (required && !hasContent && !hasBase64) {
-    throw cohereServiceError(
+    throw createApiServiceError(
       `Provide one of ${params.fieldName} or ${params.fieldName}Base64.`
     );
   }
@@ -263,7 +263,7 @@ export class CohereClient {
       fieldName: 'fileContent'
     });
     if (fileContent === undefined) {
-      throw cohereServiceError('Provide one of fileContent or fileContentBase64.');
+      throw createApiServiceError('Provide one of fileContent or fileContentBase64.');
     }
 
     let multipart = buildMultipartBody({
@@ -381,7 +381,7 @@ export class CohereClient {
       fieldName: 'fileContent'
     });
     if (dataContent === undefined) {
-      throw cohereServiceError('Provide one of fileContent or fileContentBase64.');
+      throw createApiServiceError('Provide one of fileContent or fileContentBase64.');
     }
     let evalContent = decodeFileContent({
       content: params.evalFileContent,

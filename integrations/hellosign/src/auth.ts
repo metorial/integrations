@@ -1,6 +1,11 @@
-import { createAxios, SlateAuth } from 'slates';
+import {
+  createApiServiceError,
+  createAxios,
+  normalizeOAuthTokenResponse,
+  SlateAuth
+} from 'slates';
 import { z } from 'zod';
-import { hellosignApiError, hellosignServiceError } from './lib/errors';
+import { hellosignApiError } from './lib/errors';
 
 let api = createAxios({
   baseURL: 'https://api.hellosign.com/v3'
@@ -103,24 +108,17 @@ export let auth = SlateAuth.create()
         grant_type: 'authorization_code'
       });
 
-      let data = response.data;
-
-      if (!data.access_token) {
-        throw hellosignServiceError(
-          'Dropbox Sign OAuth token exchange did not return an access token.'
-        );
-      }
-
-      let expiresAt: string | undefined;
-      if (data.expires_in) {
-        expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
-      }
+      let token = normalizeOAuthTokenResponse(response.data, {
+        providerLabel: 'Dropbox Sign',
+        operation: 'token exchange',
+        accessTokenMessage: 'Dropbox Sign OAuth token exchange did not return an access token.'
+      });
 
       return {
         output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token,
-          expiresAt,
+          token: token.token,
+          refreshToken: token.refreshToken,
+          expiresAt: token.expiresAt,
           authMethod: 'oauth' as const
         }
       };
@@ -128,7 +126,7 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        throw hellosignServiceError('No Dropbox Sign refresh token is available.');
+        throw createApiServiceError('No Dropbox Sign refresh token is available.');
       }
 
       let response = await api.post(
@@ -144,24 +142,19 @@ export let auth = SlateAuth.create()
         }
       );
 
-      let data = response.data;
-
-      if (!data.access_token) {
-        throw hellosignServiceError(
-          'Dropbox Sign OAuth refresh did not return an access token.'
-        );
-      }
-
-      let expiresAt: string | undefined;
-      if (data.expires_in) {
-        expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
-      }
+      let token = normalizeOAuthTokenResponse(response.data, {
+        providerLabel: 'Dropbox Sign',
+        operation: 'token refresh',
+        previousRefreshToken: ctx.output.refreshToken,
+        refreshTokenFallbackMode: 'falsy',
+        accessTokenMessage: 'Dropbox Sign OAuth refresh did not return an access token.'
+      });
 
       return {
         output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
+          token: token.token,
+          refreshToken: token.refreshToken,
+          expiresAt: token.expiresAt,
           authMethod: 'oauth' as const
         }
       };

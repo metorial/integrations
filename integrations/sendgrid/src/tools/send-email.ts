@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { sendgridServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let emailAddressSchema = z.object({
@@ -103,13 +102,13 @@ export let sendEmail = SlateTool.create(spec, {
 
     let hasInlineContent = Boolean(ctx.input.textContent || ctx.input.htmlContent);
     if (hasInlineContent && ctx.input.templateId) {
-      throw sendgridServiceError(
+      throw createApiServiceError(
         'Provide either inline content or templateId when sending email, not both.'
       );
     }
 
     if (!hasInlineContent && !ctx.input.templateId) {
-      throw sendgridServiceError(
+      throw createApiServiceError(
         'Provide textContent, htmlContent, or templateId when sending email.'
       );
     }
@@ -119,7 +118,7 @@ export let sendEmail = SlateTool.create(spec, {
       !ctx.input.subject &&
       ctx.input.personalizations.some(personalization => !personalization.subject)
     ) {
-      throw sendgridServiceError(
+      throw createApiServiceError(
         'subject is required unless every personalization has its own subject or a templateId is used.'
       );
     }

@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageJobs = SlateTool.create(spec, {
@@ -24,7 +23,9 @@ export let manageJobs = SlateTool.create(spec, {
       serviceId: z
         .string()
         .optional()
-        .describe('Service ID (required for one-off job actions; accepted as cronJobId fallback for cron actions)'),
+        .describe(
+          'Service ID (required for one-off job actions; accepted as cronJobId fallback for cron actions)'
+        ),
       cronJobId: z
         .string()
         .optional()
@@ -69,7 +70,7 @@ export let manageJobs = SlateTool.create(spec, {
 
     if (action === 'trigger_cron') {
       let cronJobId = ctx.input.cronJobId ?? ctx.input.serviceId;
-      if (!cronJobId) throw renderServiceError('cronJobId is required for trigger_cron');
+      if (!cronJobId) throw createApiServiceError('cronJobId is required for trigger_cron');
       let result = await client.triggerCronJobRun(cronJobId);
       return {
         output: { jobId: result.id, status: result.status, success: true },
@@ -79,7 +80,7 @@ export let manageJobs = SlateTool.create(spec, {
 
     if (action === 'cancel_cron') {
       let cronJobId = ctx.input.cronJobId ?? ctx.input.serviceId;
-      if (!cronJobId) throw renderServiceError('cronJobId is required for cancel_cron');
+      if (!cronJobId) throw createApiServiceError('cronJobId is required for cancel_cron');
       await client.cancelCronJobRun(cronJobId);
       return {
         output: { jobId: ctx.input.runId, success: true },
@@ -88,7 +89,8 @@ export let manageJobs = SlateTool.create(spec, {
     }
 
     if (action === 'list_jobs') {
-      if (!ctx.input.serviceId) throw renderServiceError('serviceId is required for list_jobs');
+      if (!ctx.input.serviceId)
+        throw createApiServiceError('serviceId is required for list_jobs');
       let params: Record<string, any> = {};
       if (ctx.input.status) params.status = [ctx.input.status];
       if (ctx.input.limit) params.limit = ctx.input.limit;
@@ -111,9 +113,10 @@ export let manageJobs = SlateTool.create(spec, {
     }
 
     if (action === 'create_job') {
-      if (!ctx.input.serviceId) throw renderServiceError('serviceId is required for create_job');
+      if (!ctx.input.serviceId)
+        throw createApiServiceError('serviceId is required for create_job');
       if (!ctx.input.startCommand)
-        throw renderServiceError('startCommand is required for create_job');
+        throw createApiServiceError('startCommand is required for create_job');
       let body: Record<string, any> = {
         startCommand: ctx.input.startCommand
       };
@@ -126,8 +129,9 @@ export let manageJobs = SlateTool.create(spec, {
     }
 
     if (action === 'get_job') {
-      if (!ctx.input.serviceId) throw renderServiceError('serviceId is required for get_job');
-      if (!ctx.input.jobId) throw renderServiceError('jobId is required for get_job');
+      if (!ctx.input.serviceId)
+        throw createApiServiceError('serviceId is required for get_job');
+      if (!ctx.input.jobId) throw createApiServiceError('jobId is required for get_job');
       let j = await client.getJob(ctx.input.serviceId, ctx.input.jobId);
       return {
         output: { jobId: j.id, status: j.status, success: true },
@@ -136,8 +140,9 @@ export let manageJobs = SlateTool.create(spec, {
     }
 
     if (action === 'cancel_job') {
-      if (!ctx.input.serviceId) throw renderServiceError('serviceId is required for cancel_job');
-      if (!ctx.input.jobId) throw renderServiceError('jobId is required for cancel_job');
+      if (!ctx.input.serviceId)
+        throw createApiServiceError('serviceId is required for cancel_job');
+      if (!ctx.input.jobId) throw createApiServiceError('jobId is required for cancel_job');
       await client.cancelJob(ctx.input.serviceId, ctx.input.jobId);
       return {
         output: { jobId: ctx.input.jobId, success: true },

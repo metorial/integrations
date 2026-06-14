@@ -1,7 +1,6 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { RenderClient } from '../lib/client';
-import { renderServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let managePostgres = SlateTool.create(spec, {
@@ -116,7 +115,7 @@ export let managePostgres = SlateTool.create(spec, {
     let { action, postgresId } = ctx.input;
 
     if (action === 'create') {
-      if (!ctx.input.ownerId) throw renderServiceError('ownerId is required for create');
+      if (!ctx.input.ownerId) throw createApiServiceError('ownerId is required for create');
       let body: Record<string, any> = {
         ownerId: ctx.input.ownerId,
         name: ctx.input.name,
@@ -144,7 +143,7 @@ export let managePostgres = SlateTool.create(spec, {
       };
     }
 
-    if (!postgresId) throw renderServiceError('postgresId is required');
+    if (!postgresId) throw createApiServiceError('postgresId is required');
 
     if (action === 'get') {
       let pg = await client.getPostgres(postgresId);
@@ -231,7 +230,7 @@ export let managePostgres = SlateTool.create(spec, {
 
     if (action === 'recover') {
       if (!ctx.input.restoreTime)
-        throw renderServiceError('restoreTime is required for recover');
+        throw createApiServiceError('restoreTime is required for recover');
       let body: Record<string, any> = { restoreTime: ctx.input.restoreTime };
       if (ctx.input.restoreName) body.restoreName = ctx.input.restoreName;
       if (ctx.input.plan) body.plan = ctx.input.plan;
@@ -268,7 +267,7 @@ export let managePostgres = SlateTool.create(spec, {
 
     if (action === 'create_user') {
       if (!ctx.input.username)
-        throw renderServiceError('username is required for create_user');
+        throw createApiServiceError('username is required for create_user');
       let user = await client.createPostgresUser(postgresId, ctx.input.username);
       let credential = user.user || user.credential || user;
       return {
@@ -289,7 +288,7 @@ export let managePostgres = SlateTool.create(spec, {
 
     if (action === 'delete_user') {
       if (!ctx.input.username)
-        throw renderServiceError('username is required for delete_user');
+        throw createApiServiceError('username is required for delete_user');
       await client.deletePostgresUser(postgresId, ctx.input.username);
       return {
         output: { postgresId, success: true },
