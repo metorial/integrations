@@ -22,14 +22,15 @@ export let getWebsiteAvailability = SlateTool.create(spec, {
         .boolean()
         .optional()
         .describe('Whether the support team is currently online'),
-      since: z
-        .number()
-        .optional()
-        .describe('Timestamp since the availability status changed')
+      since: z.number().optional().describe('Timestamp since the availability status changed')
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId, tier: ctx.auth.tier });
+    let client = new Client({
+      token: ctx.auth.token,
+      websiteId: ctx.config.websiteId,
+      tier: ctx.auth.tier
+    });
     let result = await client.getWebsiteAvailability();
 
     return {

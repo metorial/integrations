@@ -162,9 +162,7 @@ export let alertAction = SlateTool.create(spec, {
         break;
       case 'delete':
         if (idType === 'alias') {
-          throw opsgenieServiceError(
-            'Alert delete only supports id or tiny identifierType.'
-          );
+          throw opsgenieServiceError('Alert delete only supports id or tiny identifierType.');
         }
         response = await client.deleteAlert(id, idType, {
           user: ctx.input.user,

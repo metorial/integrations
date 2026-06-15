@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brazeServiceError, requireBrazeString } from '../lib/errors';
 import { BrazeClient } from '../lib/client';
+import { brazeServiceError, requireBrazeString } from '../lib/errors';
 import { spec } from '../spec';
 
 let requireAnyUpdate = (fields: Record<string, unknown>, action: string) => {

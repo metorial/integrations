@@ -1,10 +1,11 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  addContactToSegment,
   cancelScheduledEmail,
-  createAutomation,
   createApiKey,
   createAudience,
+  createAutomation,
   createBroadcast,
   createContact,
   createContactProperty,
@@ -42,18 +43,17 @@ import {
   getTemplate,
   getTopic,
   getWebhook,
-  addContactToSegment,
-  listContactSegments,
-  listContactTopics,
-  listEmailAttachments,
   listApiKeys,
+  listAudiences,
   listAutomationRuns,
   listAutomations,
-  listAudiences,
   listBroadcasts,
   listContactProperties,
+  listContactSegments,
   listContacts,
+  listContactTopics,
   listDomains,
+  listEmailAttachments,
   listEvents,
   listLogs,
   listReceivedEmails,
@@ -71,6 +71,7 @@ import {
   sendEvent,
   stopAutomation,
   updateAutomation,
+  updateBroadcast,
   updateContact,
   updateContactProperty,
   updateContactTopics,
@@ -79,7 +80,6 @@ import {
   updateTemplate,
   updateTopic,
   updateWebhook,
-  updateBroadcast,
   verifyDomain
 } from './tools';
 import { contactEvents, domainEvents, emailEvents } from './triggers';

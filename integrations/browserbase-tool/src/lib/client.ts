@@ -73,7 +73,11 @@ let buildMultipartFileBody = (params: {
 let decodeBase64File = (contentBase64: string, fieldName = 'contentBase64') => {
   let normalized = contentBase64.replace(/\s+/g, '');
 
-  if (!normalized || normalized.length % 4 === 1 || !/^[A-Za-z0-9+/]*={0,2}$/.test(normalized)) {
+  if (
+    !normalized ||
+    normalized.length % 4 === 1 ||
+    !/^[A-Za-z0-9+/]*={0,2}$/.test(normalized)
+  ) {
     throw browserbaseServiceError(`${fieldName} must be valid non-empty base64 data.`);
   }
 
@@ -142,7 +146,9 @@ export class Client {
     let params: Record<string, string> = {};
     if (options?.status) params.status = options.status;
     if (options?.query) params.q = options.query;
-    let res = await this.request('list sessions', () => this.http.get('/sessions', { params }));
+    let res = await this.request('list sessions', () =>
+      this.http.get('/sessions', { params })
+    );
     return (res.data as unknown[]).map((s: unknown) => this.mapSession(s));
   }
 
@@ -206,7 +212,9 @@ export class Client {
   // Contexts
 
   async createContext(projectId: string): Promise<ContextCreateResponse> {
-    let res = await this.request('create context', () => this.http.post('/contexts', { projectId }));
+    let res = await this.request('create context', () =>
+      this.http.post('/contexts', { projectId })
+    );
     return this.mapContextCreateResponse(res.data);
   }
 
@@ -216,7 +224,9 @@ export class Client {
   }
 
   async updateContext(contextId: string): Promise<ContextUpdateResponse> {
-    let res = await this.request('update context', () => this.http.put(`/contexts/${contextId}`));
+    let res = await this.request('update context', () =>
+      this.http.put(`/contexts/${contextId}`)
+    );
     return this.mapContextCreateResponse(res.data);
   }
 
@@ -251,7 +261,9 @@ export class Client {
   }
 
   async deleteExtension(extensionId: string): Promise<void> {
-    await this.request('delete extension', () => this.http.delete(`/extensions/${extensionId}`));
+    await this.request('delete extension', () =>
+      this.http.delete(`/extensions/${extensionId}`)
+    );
   }
 
   // Projects

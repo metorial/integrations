@@ -23,7 +23,9 @@ export let getTraining = SlateTool.create(spec, {
       version: z.string().optional().describe('Base model version'),
       status: z
         .string()
-        .describe('Current status: starting, processing, succeeded, failed, canceled, or aborted'),
+        .describe(
+          'Current status: starting, processing, succeeded, failed, canceled, or aborted'
+        ),
       input: z.any().optional().describe('Training input parameters'),
       output: z.any().optional().describe('Training output (version info and weights URL)'),
       error: z.string().optional().nullable().describe('Error message if training failed'),

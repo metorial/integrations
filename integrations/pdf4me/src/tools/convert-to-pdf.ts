@@ -85,7 +85,9 @@ Supports **.docx, .xlsx, .pptx, .png, .jpg, .html, .md** and more. For HTML/Mark
       });
     } else if (ctx.input.source === 'html') {
       if (!ctx.input.fileContent || !ctx.input.fileName) {
-        throw pdf4meServiceError('File content and file name are required for HTML source type');
+        throw pdf4meServiceError(
+          'File content and file name are required for HTML source type'
+        );
       }
       result = await client.convertHtmlToPdf({
         docContent: ctx.input.fileContent,
@@ -108,7 +110,9 @@ Supports **.docx, .xlsx, .pptx, .png, .jpg, .html, .md** and more. For HTML/Mark
       });
     } else {
       if (!ctx.input.fileContent || !ctx.input.fileName) {
-        throw pdf4meServiceError('File content and file name are required for file source type');
+        throw pdf4meServiceError(
+          'File content and file name are required for file source type'
+        );
       }
       result = await client.convertToPdf({
         docContent: ctx.input.fileContent,

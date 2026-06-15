@@ -26,10 +26,7 @@ export class Client {
     });
   }
 
-  private async request<T>(
-    operation: string,
-    run: () => Promise<{ data: T }>
-  ): Promise<T> {
+  private async request<T>(operation: string, run: () => Promise<{ data: T }>): Promise<T> {
     try {
       let response = await run();
       return response.data;
@@ -200,9 +197,7 @@ export class Client {
   async listWorkspaces(organization: string, name?: string): Promise<any> {
     let params: Record<string, any> = { organization };
     if (name) params.name = name;
-    return this.request('list workspaces', () =>
-      this.axios.get('/workspaces', { params })
-    );
+    return this.request('list workspaces', () => this.axios.get('/workspaces', { params }));
   }
 
   async getWorkspace(identifier: string): Promise<any> {

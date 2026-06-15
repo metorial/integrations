@@ -18,7 +18,9 @@ export let smartScrape = SlateTool.create(spec, {
     'Screenshot and PDF formats are returned through Slate attachments, not inline base64 fields.',
     'Use BrowserQL instead for submitting forms behind embedded CAPTCHAs.'
   ],
-  constraints: ['Smart Scrape may consume more units when it escalates to browser or proxy strategies.'],
+  constraints: [
+    'Smart Scrape may consume more units when it escalates to browser or proxy strategies.'
+  ],
   tags: {
     readOnly: true
   }
@@ -52,12 +54,26 @@ export let smartScrape = SlateTool.create(spec, {
       contentType: z.string().nullable().optional().describe('Target content type'),
       headers: z.record(z.string(), z.string()).optional().describe('Target response headers'),
       strategy: z.string().optional().describe('Strategy that produced the scrape result'),
-      attempted: z.array(z.string()).optional().describe('Strategies attempted by Browserless'),
-      message: z.string().nullable().optional().describe('Browserless error or status message'),
+      attempted: z
+        .array(z.string())
+        .optional()
+        .describe('Strategies attempted by Browserless'),
+      message: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Browserless error or status message'),
       markdown: z.string().nullable().optional().describe('Markdown output, when requested'),
-      links: z.array(z.string()).nullable().optional().describe('Links output, when requested'),
+      links: z
+        .array(z.string())
+        .nullable()
+        .optional()
+        .describe('Links output, when requested'),
       screenshotMimeType: z.string().optional().describe('Screenshot attachment MIME type'),
-      screenshotByteLength: z.number().optional().describe('Screenshot attachment byte length'),
+      screenshotByteLength: z
+        .number()
+        .optional()
+        .describe('Screenshot attachment byte length'),
       pdfMimeType: z.string().optional().describe('PDF attachment MIME type'),
       pdfByteLength: z.number().optional().describe('PDF attachment byte length'),
       attachmentCount: z.number().describe('Number of Slate attachments returned')
@@ -84,7 +100,7 @@ export let smartScrape = SlateTool.create(spec, {
     );
     requireSmartScrapeSuccess(result);
 
-    let attachments = [];
+    let attachments: ReturnType<typeof base64FileAttachment>[] = [];
     if (result.screenshot) {
       attachments.push(base64FileAttachment(result.screenshot, 'image/png'));
     }
@@ -105,7 +121,9 @@ export let smartScrape = SlateTool.create(spec, {
         markdown: result.markdown,
         links: result.links,
         screenshotMimeType: result.screenshot ? 'image/png' : undefined,
-        screenshotByteLength: result.screenshot ? base64ByteLength(result.screenshot) : undefined,
+        screenshotByteLength: result.screenshot
+          ? base64ByteLength(result.screenshot)
+          : undefined,
         pdfMimeType: result.pdf ? 'application/pdf' : undefined,
         pdfByteLength: result.pdf ? base64ByteLength(result.pdf) : undefined,
         attachmentCount: attachments.length

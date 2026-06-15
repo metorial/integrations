@@ -62,10 +62,7 @@ export let manageScheduledSends = SlateTool.create(spec, {
         .describe(
           'Batch ID. Required for validate_batch, get, pause, cancel, update_status, and clear_status.'
         ),
-      status: z
-        .enum(['pause', 'cancel'])
-        .optional()
-        .describe('New status for update_status')
+      status: z.enum(['pause', 'cancel']).optional().describe('New status for update_status')
     })
   )
   .output(
@@ -116,9 +113,10 @@ export let manageScheduledSends = SlateTool.create(spec, {
       case 'get': {
         let batchId = requireBatchId();
         let result = await client.getScheduledSend(batchId);
-        let scheduledSends = (scheduledSendEntriesFor(result).length > 0
-          ? scheduledSendEntriesFor(result)
-          : [result]
+        let scheduledSends = (
+          scheduledSendEntriesFor(result).length > 0
+            ? scheduledSendEntriesFor(result)
+            : [result]
         ).map(mapScheduledSend);
         return {
           output: { batchId, scheduledSends, success: true },

@@ -46,7 +46,10 @@ export let getModel = SlateTool.create(spec, {
       architecture: z
         .object({
           modality: z.string().optional().describe('Input/output modality'),
-          inputModalities: z.array(z.string()).optional().describe('Supported input modalities'),
+          inputModalities: z
+            .array(z.string())
+            .optional()
+            .describe('Supported input modalities'),
           outputModalities: z
             .array(z.string())
             .optional()

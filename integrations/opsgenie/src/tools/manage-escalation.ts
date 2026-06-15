@@ -96,14 +96,10 @@ export let manageEscalation = SlateTool.create(spec, {
     switch (ctx.input.action) {
       case 'create': {
         if (!ctx.input.name) {
-          throw opsgenieServiceError(
-            'name is required when creating an escalation policy.'
-          );
+          throw opsgenieServiceError('name is required when creating an escalation policy.');
         }
         if (!ctx.input.rules || ctx.input.rules.length === 0) {
-          throw opsgenieServiceError(
-            'rules are required when creating an escalation policy.'
-          );
+          throw opsgenieServiceError('rules are required when creating an escalation policy.');
         }
         let escalation = await client.createEscalation({
           name: ctx.input.name,

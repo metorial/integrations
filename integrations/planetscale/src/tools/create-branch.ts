@@ -74,7 +74,9 @@ export let createBranch = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     if (ctx.input.backupId && !ctx.input.clusterSize) {
-      throw planetscaleServiceError('clusterSize is required when creating a branch from backupId.');
+      throw planetscaleServiceError(
+        'clusterSize is required when creating a branch from backupId.'
+      );
     }
 
     if (ctx.input.createDatabaseIfMissing && !ctx.input.kind) {

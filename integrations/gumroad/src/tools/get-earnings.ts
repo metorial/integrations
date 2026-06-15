@@ -13,11 +13,7 @@ export let getEarnings = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      year: z
-        .number()
-        .int()
-        .min(2000)
-        .describe('4-digit tax year to retrieve, such as 2025')
+      year: z.number().int().min(2000).describe('4-digit tax year to retrieve, such as 2025')
     })
   )
   .output(

@@ -42,11 +42,10 @@ export let manageRuleSnooze = SlateTool.create(spec, {
     z.object({
       action: z.enum(['schedule', 'delete']).describe('Action to perform'),
       ruleId: z.string().describe('ID of the rule'),
-      scheduleId: z
-        .string()
+      scheduleId: z.string().optional().describe('Snooze schedule ID. Required for delete.'),
+      schedule: snoozeScheduleSchema
         .optional()
-        .describe('Snooze schedule ID. Required for delete.'),
-      schedule: snoozeScheduleSchema.optional().describe('Snooze schedule. Required for schedule.')
+        .describe('Snooze schedule. Required for schedule.')
     })
   )
   .output(

@@ -82,7 +82,7 @@ export class Client {
     }
 
     let authToken = options?.pipeApiKey ?? this.token;
-    let res;
+    let res: any;
     try {
       res = await http.post(
         '/pipes/run',
@@ -164,7 +164,7 @@ export class Client {
     let content =
       params.contentBase64 !== undefined
         ? Buffer.from(params.contentBase64, 'base64')
-        : params.contentText ?? '';
+        : (params.contentText ?? '');
 
     let response: Response;
     try {

@@ -7,18 +7,30 @@ let alertIssueSchema = z.object({
   issueId: z.string().describe('Alert issue ID'),
   title: z.string().optional().describe('Primary issue title'),
   titles: z.array(z.string()).optional().describe('All issue titles returned by New Relic'),
-  state: z.string().optional().describe('Issue state, such as CREATED, ACTIVATED, DEACTIVATED, or CLOSED'),
-  priority: z.string().optional().describe('Issue priority, such as LOW, MEDIUM, HIGH, or CRITICAL'),
+  state: z
+    .string()
+    .optional()
+    .describe('Issue state, such as CREATED, ACTIVATED, DEACTIVATED, or CLOSED'),
+  priority: z
+    .string()
+    .optional()
+    .describe('Issue priority, such as LOW, MEDIUM, HIGH, or CRITICAL'),
   createdAt: z.number().optional().describe('Issue creation time in epoch milliseconds'),
   activatedAt: z.number().optional().describe('Issue activation time in epoch milliseconds'),
   closedAt: z.number().optional().describe('Issue close time in epoch milliseconds'),
-  acknowledgedAt: z.number().optional().describe('Issue acknowledgement time in epoch milliseconds'),
+  acknowledgedAt: z
+    .number()
+    .optional()
+    .describe('Issue acknowledgement time in epoch milliseconds'),
   updatedAt: z.number().optional().describe('Issue update time in epoch milliseconds'),
   entityGuids: z.array(z.string()).optional().describe('Related entity GUIDs'),
   entityNames: z.array(z.string()).optional().describe('Related entity names'),
   entityTypes: z.array(z.string()).optional().describe('Related entity types'),
   sources: z.array(z.string()).optional().describe('Issue sources'),
-  totalIncidents: z.number().optional().describe('Number of incidents correlated into the issue')
+  totalIncidents: z
+    .number()
+    .optional()
+    .describe('Number of incidents correlated into the issue')
 });
 
 let toStringArray = (value: unknown) =>

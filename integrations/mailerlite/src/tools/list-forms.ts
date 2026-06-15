@@ -26,10 +26,7 @@ export let listForms = SlateTool.create(spec, {
         .describe('Filter form subscribers by status (only when formId is provided)'),
       limit: z.number().optional().describe('Number of results per page'),
       page: z.number().optional().describe('Page number'),
-      cursor: z
-        .string()
-        .optional()
-        .describe('Pagination cursor for form subscriber results'),
+      cursor: z.string().optional().describe('Pagination cursor for form subscriber results'),
       sort: z.string().optional().describe('Sort field')
     })
   )

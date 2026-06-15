@@ -293,7 +293,8 @@ export class SesClient {
     if (dt.templateName) body.DefaultContent.Template.TemplateName = dt.templateName;
     if (dt.templateArn) body.DefaultContent.Template.TemplateArn = dt.templateArn;
     if (dt.templateData) body.DefaultContent.Template.TemplateData = dt.templateData;
-    if (dt.headers && dt.headers.length > 0) body.DefaultContent.Template.Headers = mapHeaders(dt.headers);
+    if (dt.headers && dt.headers.length > 0)
+      body.DefaultContent.Template.Headers = mapHeaders(dt.headers);
     if (dt.attachments && dt.attachments.length > 0)
       body.DefaultContent.Template.Attachments = mapAttachments(dt.attachments);
 
@@ -1412,8 +1413,7 @@ export class SesClient {
       dedicatedIpAutoWarmupEnabled: result.DedicatedIpAutoWarmupEnabled || false,
       details: result.Details
         ? {
-            additionalContactEmailAddresses:
-              result.Details.AdditionalContactEmailAddresses,
+            additionalContactEmailAddresses: result.Details.AdditionalContactEmailAddresses,
             contactLanguage: result.Details.ContactLanguage,
             mailType: result.Details.MailType,
             reviewDetails: result.Details.ReviewDetails
@@ -1439,24 +1439,23 @@ export class SesClient {
             suppressedReasons: result.SuppressionAttributes.SuppressedReasons || [],
             validationAttributes: result.SuppressionAttributes.ValidationAttributes
               ? {
-                  conditionThreshold:
-                    result.SuppressionAttributes.ValidationAttributes.ConditionThreshold
-                      ? {
-                          conditionThresholdEnabled:
-                            result.SuppressionAttributes.ValidationAttributes.ConditionThreshold
-                              .ConditionThresholdEnabled,
-                          overallConfidenceThreshold:
-                            result.SuppressionAttributes.ValidationAttributes.ConditionThreshold
-                              .OverallConfidenceThreshold
-                              ? {
-                                  confidenceVerdictThreshold:
-                                    result.SuppressionAttributes.ValidationAttributes
-                                      .ConditionThreshold.OverallConfidenceThreshold
-                                      .ConfidenceVerdictThreshold
-                                }
-                              : undefined
-                        }
-                      : undefined
+                  conditionThreshold: result.SuppressionAttributes.ValidationAttributes
+                    .ConditionThreshold
+                    ? {
+                        conditionThresholdEnabled:
+                          result.SuppressionAttributes.ValidationAttributes.ConditionThreshold
+                            .ConditionThresholdEnabled,
+                        overallConfidenceThreshold: result.SuppressionAttributes
+                          .ValidationAttributes.ConditionThreshold.OverallConfidenceThreshold
+                          ? {
+                              confidenceVerdictThreshold:
+                                result.SuppressionAttributes.ValidationAttributes
+                                  .ConditionThreshold.OverallConfidenceThreshold
+                                  .ConfidenceVerdictThreshold
+                            }
+                          : undefined
+                      }
+                    : undefined
                 }
               : undefined
           }
@@ -1513,8 +1512,7 @@ export class SesClient {
               ? {
                   hasValidDnsRecords: evaluations.HasValidDnsRecords
                     ? {
-                        confidenceVerdict:
-                          evaluations.HasValidDnsRecords.ConfidenceVerdict
+                        confidenceVerdict: evaluations.HasValidDnsRecords.ConfidenceVerdict
                       }
                     : undefined,
                   hasValidSyntax: evaluations.HasValidSyntax

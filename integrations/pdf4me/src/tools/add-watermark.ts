@@ -85,7 +85,9 @@ Use text watermarks for labels like "DRAFT" or "CONFIDENTIAL", or image watermar
 
     if (ctx.input.watermarkType === 'image') {
       if (!ctx.input.imageContent || !ctx.input.imageName) {
-        throw pdf4meServiceError('imageContent and imageName are required for image watermarks');
+        throw pdf4meServiceError(
+          'imageContent and imageName are required for image watermarks'
+        );
       }
       result = await client.imageStamp({
         docContent: ctx.input.fileContent,

@@ -1,6 +1,6 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client, type CampaignSettings } from '../lib/client';
+import { type CampaignSettings, Client } from '../lib/client';
 import { taggunServiceError } from '../lib/errors';
 import { spec } from '../spec';
 

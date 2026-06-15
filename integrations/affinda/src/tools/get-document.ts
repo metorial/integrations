@@ -35,7 +35,10 @@ export let getDocument = SlateTool.create(spec, {
       ready: z.boolean().optional().describe('Whether the document has finished processing.'),
       failed: z.boolean().optional().describe('Whether parsing has failed.'),
       reviewUrl: z.string().optional().describe('Affinda validation/review URL.'),
-      pdfUrl: z.string().optional().describe('Temporary URL for the source PDF, if available.'),
+      pdfUrl: z
+        .string()
+        .optional()
+        .describe('Temporary URL for the source PDF, if available.'),
       workspaceIdentifier: z
         .string()
         .optional()

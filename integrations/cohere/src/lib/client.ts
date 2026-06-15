@@ -193,7 +193,7 @@ export class CohereClient {
     inputType: string;
     texts?: string[];
     images?: string[];
-    inputs?: Array<Record<string, any>>;
+    inputs?: Record<string, any>[];
     embeddingTypes?: string[];
     outputDimension?: number;
     maxTokens?: number;

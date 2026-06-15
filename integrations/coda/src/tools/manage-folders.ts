@@ -116,7 +116,9 @@ export let createFolderTool = SlateTool.create(spec, {
   .input(
     z.object({
       name: z.string().describe('Name for the new folder'),
-      workspaceId: z.string().describe('ID of the workspace where the folder should be created'),
+      workspaceId: z
+        .string()
+        .describe('ID of the workspace where the folder should be created'),
       description: z.string().optional().describe('Description for the folder')
     })
   )

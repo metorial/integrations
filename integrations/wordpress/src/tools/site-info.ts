@@ -95,7 +95,10 @@ export let updateSiteSettingsTool = SlateTool.create(spec, {
     z.object({
       siteTitle: z.string().optional().describe('New site title'),
       siteDescription: z.string().optional().describe('New site tagline or description'),
-      timezone: z.string().optional().describe('Timezone identifier, such as "America/New_York"'),
+      timezone: z
+        .string()
+        .optional()
+        .describe('Timezone identifier, such as "America/New_York"'),
       dateFormat: z.string().optional().describe('Date format string'),
       timeFormat: z.string().optional().describe('Time format string'),
       startOfWeek: z.number().optional().describe('Start-of-week day number, 0 for Sunday'),
@@ -111,7 +114,8 @@ export let updateSiteSettingsTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let updates: Record<string, any> = {};
     if (ctx.input.siteTitle !== undefined) updates.title = ctx.input.siteTitle;
-    if (ctx.input.siteDescription !== undefined) updates.description = ctx.input.siteDescription;
+    if (ctx.input.siteDescription !== undefined)
+      updates.description = ctx.input.siteDescription;
     if (ctx.input.timezone !== undefined) updates.timezone = ctx.input.timezone;
     if (ctx.input.dateFormat !== undefined) updates.date_format = ctx.input.dateFormat;
     if (ctx.input.timeFormat !== undefined) updates.time_format = ctx.input.timeFormat;

@@ -173,7 +173,10 @@ let createHttpsAgent = (config: KubeClientConfig) => {
     config.skipTlsVerify === true;
   if (!hasTlsOptions) return undefined;
 
-  if ((config.clientCertificate && !config.clientKey) || (!config.clientCertificate && config.clientKey)) {
+  if (
+    (config.clientCertificate && !config.clientKey) ||
+    (!config.clientCertificate && config.clientKey)
+  ) {
     throw kubernetesServiceError(
       'Kubernetes client certificate authentication requires both clientCertificate and clientKey.'
     );
@@ -584,9 +587,7 @@ export class KubeClient {
     let ns = info.namespaced ? this.resolveNamespace(namespace) : undefined;
     let path = `${this.buildResourcePath(rt, ns, resourceName)}/status`;
 
-    return await this.request(`get ${rt}/${resourceName} status`, () =>
-      this.axios.get(path)
-    );
+    return await this.request(`get ${rt}/${resourceName} status`, () => this.axios.get(path));
   }
 }
 

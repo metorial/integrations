@@ -21,7 +21,7 @@ export interface WorkerScriptUploadParams {
   contentType?: string;
   compatibilityDate?: string;
   compatibilityFlags?: string[];
-  bindings?: Array<Record<string, any>>;
+  bindings?: Record<string, any>[];
   usageModel?: string;
   logpush?: boolean;
   observability?: {
@@ -229,7 +229,9 @@ export class CloudflareClient {
 
   async getScriptContent(scriptName: string) {
     let response = await this.http.get(`${this.basePath}/scripts/${scriptName}/content/v2`, {
-      headers: { Accept: 'application/javascript, text/javascript, application/json, text/plain' },
+      headers: {
+        Accept: 'application/javascript, text/javascript, application/json, text/plain'
+      },
       responseType: 'text',
       transformResponse: data => data
     });

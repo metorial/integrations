@@ -27,7 +27,10 @@ export let getDocumentStatus = SlateTool.create(spec, {
       pages: z.number().optional().describe('Detected page count'),
       supported: z.boolean().optional().describe('Whether Docparser supports this document'),
       importingInProgress: z.boolean().optional().describe('Whether import is still running'),
-      processingInProgress: z.boolean().optional().describe('Whether parsing is still running'),
+      processingInProgress: z
+        .boolean()
+        .optional()
+        .describe('Whether parsing is still running'),
       webhookDispatchingInProgress: z
         .boolean()
         .optional()

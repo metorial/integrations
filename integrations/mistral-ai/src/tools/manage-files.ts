@@ -130,7 +130,9 @@ export let listFilesTool = SlateTool.create(spec, {
       pageSize: z.number().optional().describe('Number of files per page'),
       includeTotal: z.boolean().optional().describe('Whether to include total count'),
       sampleType: z
-        .array(z.enum(['pretrain', 'instruct', 'batch_request', 'batch_result', 'batch_error']))
+        .array(
+          z.enum(['pretrain', 'instruct', 'batch_request', 'batch_result', 'batch_error'])
+        )
         .optional()
         .describe('Filter by sample type'),
       source: z
@@ -215,7 +217,9 @@ export let downloadFileTool = SlateTool.create(spec, {
   name: 'Download File',
   key: 'download_file',
   description: `Download file content from Mistral AI and return it as a Slate attachment. Use this for batch output/error files, uploaded documents, or other downloadable files.`,
-  instructions: ['The file bytes are returned in response attachments, not inline output fields.'],
+  instructions: [
+    'The file bytes are returned in response attachments, not inline output fields.'
+  ],
   tags: {
     readOnly: true
   }

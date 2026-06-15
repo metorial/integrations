@@ -86,14 +86,16 @@ Optionally provide a reference image for image-to-image generation (Ultra and SD
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.model === 'core' && ctx.input.referenceImage) {
-      throw stabilityServiceError('referenceImage is only supported with Ultra and SD3.5 models.');
+      throw stabilityServiceError(
+        'referenceImage is only supported with Ultra and SD3.5 models.'
+      );
     }
 
     if (ctx.input.strength !== undefined && !ctx.input.referenceImage) {
       throw stabilityServiceError('strength requires referenceImage.');
     }
 
-    let result;
+    let result: any;
     if (ctx.input.model === 'ultra') {
       result = await client.generateImageUltra({
         prompt: ctx.input.prompt,

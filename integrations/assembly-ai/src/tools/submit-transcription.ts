@@ -35,9 +35,7 @@ Returns the transcript object with a status of "queued" — poll using the **Get
       languageCodes: z
         .array(z.string())
         .optional()
-        .describe(
-          'Language codes for code-switching audio that contains multiple languages.'
-        ),
+        .describe('Language codes for code-switching audio that contains multiple languages.'),
       languageDetection: z
         .boolean()
         .optional()
@@ -49,9 +47,7 @@ Returns the transcript object with a status of "queued" — poll using the **Get
       speechModel: z
         .string()
         .optional()
-        .describe(
-          'Deprecated AssemblyAI speech_model parameter. Prefer speechModels.'
-        ),
+        .describe('Deprecated AssemblyAI speech_model parameter. Prefer speechModels.'),
       speechModels: z
         .array(z.string())
         .optional()
@@ -125,9 +121,7 @@ Returns the transcript object with a status of "queued" — poll using the **Get
       keytermsPrompt: z
         .array(z.string())
         .optional()
-        .describe(
-          'Domain-specific words or phrases to improve recognition accuracy.'
-        ),
+        .describe('Domain-specific words or phrases to improve recognition accuracy.'),
       summarization: z
         .boolean()
         .optional()
@@ -232,9 +226,7 @@ Returns the transcript object with a status of "queued" — poll using the **Get
     });
 
     if (ctx.input.languageCode && ctx.input.languageCodes?.length) {
-      throw assemblyAiServiceError(
-        'Provide either languageCode or languageCodes, not both.'
-      );
+      throw assemblyAiServiceError('Provide either languageCode or languageCodes, not both.');
     }
 
     if (ctx.input.speechModel && ctx.input.speechModels?.length) {

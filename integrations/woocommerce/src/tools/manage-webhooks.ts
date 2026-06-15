@@ -29,10 +29,7 @@ export let manageWebhooks = SlateTool.create(spec, {
       action: z
         .enum(['list', 'get', 'create', 'update', 'delete'])
         .describe('Operation to perform'),
-      webhookId: z
-        .number()
-        .optional()
-        .describe('Webhook ID (required for get/update/delete)'),
+      webhookId: z.number().optional().describe('Webhook ID (required for get/update/delete)'),
       page: z.number().optional().default(1).describe('Page number for list'),
       perPage: z.number().optional().default(10).describe('Results per page for list'),
       search: z.string().optional().describe('Search webhook names'),
@@ -94,7 +91,8 @@ export let manageWebhooks = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.name) throw woocommerceServiceError('name is required for create action');
-      if (!ctx.input.topic) throw woocommerceServiceError('topic is required for create action');
+      if (!ctx.input.topic)
+        throw woocommerceServiceError('topic is required for create action');
       if (!ctx.input.deliveryUrl)
         throw woocommerceServiceError('deliveryUrl is required for create action');
 

@@ -44,7 +44,11 @@ export let searchModels = SlateTool.create(spec, {
             slug: z.string().describe('Collection slug'),
             collectionName: z.string().describe('Collection display name'),
             description: z.string().optional().describe('Collection description'),
-            models: z.array(z.string()).optional().nullable().describe('Model IDs in the collection')
+            models: z
+              .array(z.string())
+              .optional()
+              .nullable()
+              .describe('Model IDs in the collection')
           })
         )
         .optional()

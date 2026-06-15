@@ -59,15 +59,11 @@ Returns the URL of the newly created queue. If a queue with the same name and id
           deduplicationScope: z
             .string()
             .optional()
-            .describe(
-              'FIFO high-throughput deduplication scope: "messageGroup" or "queue"'
-            ),
+            .describe('FIFO high-throughput deduplication scope: "messageGroup" or "queue"'),
           fifoThroughputLimit: z
             .string()
             .optional()
-            .describe(
-              'FIFO throughput quota mode: "perQueue" or "perMessageGroupId"'
-            ),
+            .describe('FIFO throughput quota mode: "perQueue" or "perMessageGroupId"'),
           kmsMasterKeyId: z
             .string()
             .optional()

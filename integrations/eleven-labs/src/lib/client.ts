@@ -67,7 +67,10 @@ let responseHeader = (headers: unknown, name: string) => {
   return typeof value === 'string' ? value : undefined;
 };
 
-let responseToAudio = (response: { data: unknown; headers?: unknown }, fallbackType: string) => {
+let responseToAudio = (
+  response: { data: unknown; headers?: unknown },
+  fallbackType: string
+) => {
   let content = responseDataToBuffer(response.data);
   return {
     contentBase64: content.toString('base64'),

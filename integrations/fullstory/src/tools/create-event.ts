@@ -61,7 +61,10 @@ export let createEvent = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    if (ctx.input.sessionId && (ctx.input.userId || ctx.input.uid || ctx.input.useMostRecent)) {
+    if (
+      ctx.input.sessionId &&
+      (ctx.input.userId || ctx.input.uid || ctx.input.useMostRecent)
+    ) {
       throw fullStoryServiceError(
         'Provide sessionId by itself. FullStory rejects events that combine session.id with user fields or useMostRecent.'
       );

@@ -74,9 +74,7 @@ export let mongodbApiError = (error: unknown, operation = 'request') => {
     (isRecord(error) && typeof error.status === 'number' ? error.status : undefined);
   let statusText =
     response?.statusText ??
-    (isRecord(error) && typeof error.statusText === 'string'
-      ? error.statusText
-      : undefined);
+    (isRecord(error) && typeof error.statusText === 'string' ? error.statusText : undefined);
   let statusLabel =
     status !== undefined ? `HTTP ${status}${statusText ? ` ${statusText}` : ''}: ` : '';
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { coinbaseOAuthAuthMethods } from '../lib/auth-methods';
 import { AdvancedTradeClient } from '../lib/advanced-trade-client';
+import { coinbaseOAuthAuthMethods } from '../lib/auth-methods';
 import { spec } from '../spec';
 
 export let getCandles = SlateTool.create(spec, {

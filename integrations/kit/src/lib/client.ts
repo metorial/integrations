@@ -494,7 +494,7 @@ export class Client {
     active?: boolean;
     repeat?: boolean;
     hold?: boolean;
-    excludeSubscriberSources?: Array<Record<string, unknown>>;
+    excludeSubscriberSources?: Record<string, unknown>[];
   }): Promise<{ sequence: KitSequence }> {
     let response = await this.http.post(
       '/sequences',
@@ -526,7 +526,7 @@ export class Client {
       active?: boolean;
       repeat?: boolean;
       hold?: boolean;
-      excludeSubscriberSources?: Array<Record<string, unknown>>;
+      excludeSubscriberSources?: Record<string, unknown>[];
     }
   ): Promise<{ sequence: KitSequence }> {
     let response = await this.http.put(

@@ -78,7 +78,9 @@ Supports search filters (domain, recency, language), structured JSON output, and
 
     let choice = response.choices[0];
     if (!choice) {
-      throw perplexityServiceError('Perplexity Sonar response did not include a completion choice.');
+      throw perplexityServiceError(
+        'Perplexity Sonar response did not include a completion choice.'
+      );
     }
 
     let contentPreview = choice.message.content.substring(0, 200);

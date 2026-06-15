@@ -11,9 +11,7 @@ export let pdfDeliverySchema = z
   );
 
 export let pdfOutputSchema = z.object({
-  delivery: z
-    .enum(['attachment', 'url'])
-    .describe('How the generated PDF was returned'),
+  delivery: z.enum(['attachment', 'url']).describe('How the generated PDF was returned'),
   downloadUrl: z
     .string()
     .nullable()

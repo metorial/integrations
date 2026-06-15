@@ -172,7 +172,7 @@ export let auth = SlateAuth.create()
       let site = ctx.input.site || 'datadoghq.com';
       let http = createAxios({ baseURL: `https://api.${site}` });
 
-      let response;
+      let response: any;
       try {
         response = await http.post(
           '/oauth2/v1/token',
@@ -217,7 +217,7 @@ export let auth = SlateAuth.create()
         );
       }
 
-      let response;
+      let response: any;
       try {
         response = await http.post(
           '/oauth2/v1/token',
@@ -296,7 +296,7 @@ export let auth = SlateAuth.create()
       let site = ctx.input.site || 'datadoghq.com';
       let http = createAxios({ baseURL: `https://api.${site}` });
 
-      let response;
+      let response: any;
       try {
         response = await http.get('/api/v1/validate', {
           headers: {

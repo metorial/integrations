@@ -70,7 +70,8 @@ export let manageSearchIndexesTool = SlateTool.create(spec, {
 
     if (ctx.input.action === 'list') {
       if (!ctx.input.database) throw mongodbServiceError('database is required for list');
-      if (!ctx.input.collectionName) throw mongodbServiceError('collectionName is required for list');
+      if (!ctx.input.collectionName)
+        throw mongodbServiceError('collectionName is required for list');
       let result = await client.listSearchIndexes(
         projectId,
         ctx.input.clusterName,

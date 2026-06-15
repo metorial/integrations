@@ -113,10 +113,7 @@ export class ConnectClient {
     });
   }
 
-  private async request<T>(
-    operation: string,
-    run: () => Promise<{ data: T }>
-  ): Promise<T> {
+  private async request<T>(operation: string, run: () => Promise<{ data: T }>): Promise<T> {
     try {
       let res = await run();
       return res.data;
@@ -232,9 +229,7 @@ export class ConnectClient {
     let params: Record<string, string | number> = {};
     if (limit !== undefined) params.limit = limit;
     if (offset !== undefined) params.offset = offset;
-    return this.request('list API activity', () =>
-      this.apiHttp.get('/activity', { params })
-    );
+    return this.request('list API activity', () => this.apiHttp.get('/activity', { params }));
   }
 
   // ---- Health ----

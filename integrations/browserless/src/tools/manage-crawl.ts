@@ -53,7 +53,12 @@ export let manageCrawl = SlateTool.create(spec, {
       cursor: z.string().optional().describe('Pagination cursor for action "list"'),
       status: crawlStatusSchema.optional().describe('Status filter for action "list"'),
       maxDepth: z.number().min(0).max(20).optional().describe('Maximum link-follow depth'),
-      maxRetries: z.number().min(0).max(5).optional().describe('Retry attempts per failed page'),
+      maxRetries: z
+        .number()
+        .min(0)
+        .max(5)
+        .optional()
+        .describe('Retry attempts per failed page'),
       allowExternalLinks: z.boolean().optional().describe('Follow links to external domains'),
       allowSubdomains: z.boolean().optional().describe('Follow links to subdomains'),
       sitemap: z

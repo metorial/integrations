@@ -164,7 +164,9 @@ export class DeepgramClient {
     });
   }
 
-  async transcribeAudio(params: TranscriptionParams & { audioData: string; mimetype: string }) {
+  async transcribeAudio(
+    params: TranscriptionParams & { audioData: string; mimetype: string }
+  ) {
     return this.request('transcribe audio bytes', async () => {
       let queryParams = this.buildTranscriptionParams(params);
       let audio = bufferFromBase64(params.audioData);
@@ -205,7 +207,8 @@ export class DeepgramClient {
     if (params.uttSplit !== undefined) searchParams.set('utt_split', String(params.uttSplit));
     if (params.mipOptOut) searchParams.set('mip_opt_out', 'true');
     if (params.customTopicMode) searchParams.set('custom_topic_mode', params.customTopicMode);
-    if (params.customIntentMode) searchParams.set('custom_intent_mode', params.customIntentMode);
+    if (params.customIntentMode)
+      searchParams.set('custom_intent_mode', params.customIntentMode);
     if (params.tag) searchParams.set('tag', params.tag);
     if (params.callback) searchParams.set('callback', params.callback);
     if (params.callbackMethod) searchParams.set('callback_method', params.callbackMethod);
@@ -293,7 +296,8 @@ export class DeepgramClient {
       if (params.topics) searchParams.set('topics', 'true');
       if (params.intents) searchParams.set('intents', 'true');
       if (params.sentiment) searchParams.set('sentiment', 'true');
-      if (params.customTopicMode) searchParams.set('custom_topic_mode', params.customTopicMode);
+      if (params.customTopicMode)
+        searchParams.set('custom_topic_mode', params.customTopicMode);
       if (params.customIntentMode) {
         searchParams.set('custom_intent_mode', params.customIntentMode);
       }
@@ -547,9 +551,7 @@ export class DeepgramClient {
 
   async getProjectRequest(projectId: string, requestId: string) {
     return this.request('get project request', async () => {
-      let response = await this.axios.get(
-        `/v1/projects/${projectId}/requests/${requestId}`
-      );
+      let response = await this.axios.get(`/v1/projects/${projectId}/requests/${requestId}`);
       return response.data;
     });
   }
@@ -589,9 +591,7 @@ export class DeepgramClient {
 
   async getBalance(projectId: string, balanceId: string) {
     return this.request('get balance', async () => {
-      let response = await this.axios.get(
-        `/v1/projects/${projectId}/balances/${balanceId}`
-      );
+      let response = await this.axios.get(`/v1/projects/${projectId}/balances/${balanceId}`);
       return response.data;
     });
   }
@@ -677,9 +677,7 @@ export class DeepgramClient {
 
   async getProjectModel(projectId: string, modelId: string) {
     return this.request('get project model', async () => {
-      let response = await this.axios.get(
-        `/v1/projects/${projectId}/models/${modelId}`
-      );
+      let response = await this.axios.get(`/v1/projects/${projectId}/models/${modelId}`);
       return response.data;
     });
   }

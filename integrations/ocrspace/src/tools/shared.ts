@@ -35,10 +35,7 @@ export let languageEnum = z.enum([
 let hasValue = (value: string | undefined) =>
   typeof value === 'string' && value.trim().length > 0;
 
-export let validateSingleSource = (input: {
-  sourceUrl?: string;
-  base64Image?: string;
-}) => {
+export let validateSingleSource = (input: { sourceUrl?: string; base64Image?: string }) => {
   let sourceCount = Number(hasValue(input.sourceUrl)) + Number(hasValue(input.base64Image));
 
   if (sourceCount !== 1) {

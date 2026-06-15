@@ -35,7 +35,9 @@ export let startCallAnalyticsJob = SlateTool.create(spec, {
       redactedMediaFileUri: z
         .string()
         .optional()
-        .describe('S3 URI where AWS should write redacted source audio when using PII redaction'),
+        .describe(
+          'S3 URI where AWS should write redacted source audio when using PII redaction'
+        ),
       dataAccessRoleArn: z
         .string()
         .optional()

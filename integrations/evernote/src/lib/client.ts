@@ -1,5 +1,6 @@
 // Evernote API Client - communicates via Thrift Binary Protocol over HTTP
 import { axios } from 'slates';
+import { EvernoteError, evernoteApiError } from './errors';
 import {
   readEDAMNotFoundException,
   readEDAMSystemException,
@@ -21,14 +22,13 @@ import {
   writeTag
 } from './serializers';
 import { ThriftReader, ThriftWriter, TMessageType, TType } from './thrift';
-import { evernoteApiError, EvernoteError } from './errors';
 import type {
   EvernoteNote,
   EvernoteNotebook,
   EvernoteNoteFilter,
+  EvernoteNoteResultSpec,
   EvernoteNotesMetadataList,
   EvernoteNotesMetadataResultSpec,
-  EvernoteNoteResultSpec,
   EvernoteResource,
   EvernoteSavedSearch,
   EvernoteSyncState,
@@ -94,7 +94,7 @@ export class Client {
 
     let payload = w.toUint8Array();
 
-    let response;
+    let response: any;
     try {
       response = await axios.post(this.noteStoreUrl, payload, {
         headers: {
@@ -157,7 +157,7 @@ export class Client {
 
     let payload = w.toUint8Array();
 
-    let response;
+    let response: any;
     try {
       response = await axios.post(userStoreUrl, payload, {
         headers: {

@@ -9,7 +9,9 @@ let validateDimensions = (model: string, dimensions: number | undefined) => {
 
   let maxDimensions = model === 'pplx-embed-v1-0.6b' ? 1024 : 2560;
   if (dimensions > maxDimensions) {
-    throw perplexityServiceError(`${model} supports dimensions between 128 and ${maxDimensions}.`);
+    throw perplexityServiceError(
+      `${model} supports dimensions between 128 and ${maxDimensions}.`
+    );
   }
 };
 

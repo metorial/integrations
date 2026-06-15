@@ -49,7 +49,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response;
+      let response: any;
       try {
         response = await http.post('/graphql', {
           query: `{ actor { user { email name id } } }`

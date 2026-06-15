@@ -17,7 +17,9 @@ export let parseDocument = SlateTool.create(spec, {
       fileContent: z
         .string()
         .optional()
-        .describe('Base64-encoded PDF file content. If omitted, PDF4me resolves the document by fileName.'),
+        .describe(
+          'Base64-encoded PDF file content. If omitted, PDF4me resolves the document by fileName.'
+        ),
       fileName: z.string().describe('PDF file name to parse'),
       templateId: z.string().describe('PDF4me parse template GUID from the dashboard'),
       parseId: z.string().describe('Unique GUID for this parsing operation'),

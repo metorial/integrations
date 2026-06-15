@@ -14,9 +14,7 @@ export let listCases = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      casetypeId: z
-        .string()
-        .describe('Case type ID. Get this from the List Agents tool.'),
+      casetypeId: z.string().describe('Case type ID. Get this from the List Agents tool.'),
       limit: z
         .number()
         .optional()
@@ -33,10 +31,7 @@ export let listCases = SlateTool.create(spec, {
         .describe('Sort field and direction'),
       stageIds: z.array(z.string()).optional().describe('Stage IDs to filter by'),
       assignedTo: z.array(z.string()).optional().describe('User IDs to filter by assignee'),
-      workflowStates: z
-        .array(z.string())
-        .optional()
-        .describe('Workflow states to filter by'),
+      workflowStates: z.array(z.string()).optional().describe('Workflow states to filter by'),
       createdDateFrom: z
         .string()
         .optional()

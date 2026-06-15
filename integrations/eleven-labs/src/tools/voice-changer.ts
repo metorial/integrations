@@ -2,7 +2,12 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { spec } from '../spec';
-import { audioAttachment, audioOutput, audioOutputSchema, voiceSettingsSchema } from './shared';
+import {
+  audioAttachment,
+  audioOutput,
+  audioOutputSchema,
+  voiceSettingsSchema
+} from './shared';
 
 export let voiceChanger = SlateTool.create(spec, {
   name: 'Voice Changer',

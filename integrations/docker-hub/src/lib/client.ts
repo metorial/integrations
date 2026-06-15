@@ -598,10 +598,7 @@ export class Client {
       is_active?: boolean;
     }
   ): Promise<OrgAccessToken> {
-    let response = await this.http.patch(
-      `/v2/orgs/${orgName}/access-tokens/${tokenId}`,
-      data
-    );
+    let response = await this.http.patch(`/v2/orgs/${orgName}/access-tokens/${tokenId}`, data);
     return response.data as OrgAccessToken;
   }
 

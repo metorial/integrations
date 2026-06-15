@@ -44,7 +44,9 @@ Also manages Ingress resources for HTTP(S) routing.`,
       externalName: z
         .string()
         .optional()
-        .describe('DNS name for ExternalName services. Required when serviceType is ExternalName.'),
+        .describe(
+          'DNS name for ExternalName services. Required when serviceType is ExternalName.'
+        ),
       selector: z
         .record(z.string(), z.string())
         .optional()
@@ -160,10 +162,7 @@ Also manages Ingress resources for HTTP(S) routing.`,
           patch.metadata = patch.metadata || {};
           patch.metadata.annotations = ctx.input.annotations;
         }
-        if (
-          Object.keys(patch.spec).length === 0 &&
-          !patch.metadata
-        ) {
+        if (Object.keys(patch.spec).length === 0 && !patch.metadata) {
           throw kubernetesServiceError(
             'Provide serviceType, externalName, selector, ports, labels, or annotations when updating a service.'
           );

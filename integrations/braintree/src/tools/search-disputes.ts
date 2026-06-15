@@ -75,7 +75,8 @@ export let searchDisputes = SlateTool.create(spec, {
     if (ctx.input.reason) input.reason = { in: [ctx.input.reason] };
     if (ctx.input.transactionId || ctx.input.customerId) {
       input.transaction = {};
-      if (ctx.input.transactionId) input.transaction.transactionId = { is: ctx.input.transactionId };
+      if (ctx.input.transactionId)
+        input.transaction.transactionId = { is: ctx.input.transactionId };
       if (ctx.input.customerId) input.transaction.customerId = { is: ctx.input.customerId };
     }
     let receivedDate = dateRangeFilter(ctx.input.receivedDate);

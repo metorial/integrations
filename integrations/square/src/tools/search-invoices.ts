@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { createClient } from '../lib/helpers';
 import { squareServiceError } from '../lib/errors';
+import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { invoiceSummaryOutputSchema, mapInvoiceSummary } from './shared';
 
@@ -17,7 +17,9 @@ export let searchInvoices = SlateTool.create(spec, {
       locationId: z
         .string()
         .optional()
-        .describe('Location ID to search invoices in. Required unless query.filter.location_ids is provided.'),
+        .describe(
+          'Location ID to search invoices in. Required unless query.filter.location_ids is provided.'
+        ),
       customerId: z.string().optional().describe('Optional customer ID to filter invoices'),
       sortField: z
         .enum(['INVOICE_SORT_DATE'])
@@ -27,7 +29,9 @@ export let searchInvoices = SlateTool.create(spec, {
       query: z
         .record(z.string(), z.any())
         .optional()
-        .describe('Advanced Square InvoiceQuery object. Convenience filter/sort fields are merged into this query.'),
+        .describe(
+          'Advanced Square InvoiceQuery object. Convenience filter/sort fields are merged into this query.'
+        ),
       cursor: z.string().optional().describe('Pagination cursor from a previous response'),
       limit: z.number().optional().describe('Maximum number of invoices to return (max 200)')
     })
@@ -45,7 +49,9 @@ export let searchInvoices = SlateTool.create(spec, {
       );
     }
     if (!ctx.input.locationId && !ctx.input.query?.filter?.location_ids) {
-      throw squareServiceError('locationId is required unless query.filter.location_ids is provided.');
+      throw squareServiceError(
+        'locationId is required unless query.filter.location_ids is provided.'
+      );
     }
 
     let client = createClient(ctx.auth, ctx.config);

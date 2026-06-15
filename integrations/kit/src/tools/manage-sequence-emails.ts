@@ -41,12 +41,23 @@ export let manageSequenceEmails = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('The operation to perform'),
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('The operation to perform'),
       sequenceId: z.number().describe('Sequence ID'),
-      emailId: z.number().optional().describe('Sequence email ID (required for get, update, delete)'),
+      emailId: z
+        .number()
+        .optional()
+        .describe('Sequence email ID (required for get, update, delete)'),
       subject: z.string().optional().describe('Subject line (required for create)'),
-      delayValue: z.number().optional().describe('Number of days or hours to wait before sending'),
-      delayUnit: z.enum(['days', 'hours']).optional().describe('Delay unit (required for create)'),
+      delayValue: z
+        .number()
+        .optional()
+        .describe('Number of days or hours to wait before sending'),
+      delayUnit: z
+        .enum(['days', 'hours'])
+        .optional()
+        .describe('Delay unit (required for create)'),
       previewText: z.string().nullable().optional().describe('Email preview text'),
       content: z.string().nullable().optional().describe('HTML email body'),
       emailTemplateId: z.number().nullable().optional().describe('Email template ID'),

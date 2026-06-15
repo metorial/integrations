@@ -40,10 +40,7 @@ export let listOrgVolumes = SlateTool.create(spec, {
             region: z.string().describe('Region code'),
             zone: z.string().describe('Hardware zone'),
             encrypted: z.boolean().describe('Whether the volume is encrypted'),
-            attachedMachineId: z
-              .string()
-              .nullable()
-              .describe('Attached machine ID, if any'),
+            attachedMachineId: z.string().nullable().describe('Attached machine ID, if any'),
             autoBackupEnabled: z.boolean().describe('Whether automatic backups are enabled'),
             snapshotRetention: z.number().describe('Snapshot retention in days'),
             createdAt: z.string().describe('Creation timestamp'),

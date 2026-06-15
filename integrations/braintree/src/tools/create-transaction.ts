@@ -107,14 +107,22 @@ Requires a payment method ID (from the Braintree vault or a single-use nonce) an
     let transaction: any;
 
     if (ctx.input.type === 'authorize') {
-      let result = await client.query(AUTHORIZE_PAYMENT_METHOD, {
-        input
-      }, 'authorize payment method');
+      let result = await client.query(
+        AUTHORIZE_PAYMENT_METHOD,
+        {
+          input
+        },
+        'authorize payment method'
+      );
       transaction = result.authorizePaymentMethod.transaction;
     } else {
-      let result = await client.query(CHARGE_PAYMENT_METHOD, {
-        input
-      }, 'charge payment method');
+      let result = await client.query(
+        CHARGE_PAYMENT_METHOD,
+        {
+          input
+        },
+        'charge payment method'
+      );
       transaction = result.chargePaymentMethod.transaction;
     }
 

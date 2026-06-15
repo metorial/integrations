@@ -119,7 +119,9 @@ export let manageSpaceSecretsTool = SlateTool.create(spec, {
   .input(
     z.object({
       repoId: z.string().describe('Full Space ID (e.g. "username/space-name")'),
-      action: z.enum(['list', 'add', 'delete']).describe('Whether to list, add, or delete a secret'),
+      action: z
+        .enum(['list', 'add', 'delete'])
+        .describe('Whether to list, add, or delete a secret'),
       key: z.string().optional().describe('Secret key name (required for add/delete)'),
       value: z.string().optional().describe('Secret value (required when adding)'),
       description: z.string().optional().describe('Optional description when adding a secret')
@@ -200,10 +202,15 @@ export let manageSpaceVariablesTool = SlateTool.create(spec, {
   .input(
     z.object({
       repoId: z.string().describe('Full Space ID (e.g. "username/space-name")'),
-      action: z.enum(['list', 'add', 'delete']).describe('Whether to list, add, or delete a variable'),
+      action: z
+        .enum(['list', 'add', 'delete'])
+        .describe('Whether to list, add, or delete a variable'),
       key: z.string().optional().describe('Variable key name (required for add/delete)'),
       value: z.string().optional().describe('Variable value (required when adding)'),
-      description: z.string().optional().describe('Optional description when adding a variable')
+      description: z
+        .string()
+        .optional()
+        .describe('Optional description when adding a variable')
     })
   )
   .output(

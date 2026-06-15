@@ -270,9 +270,7 @@ export let getUsageBreakdownTool = SlateTool.create(spec, {
       projectId: z.string().describe('ID of the project.'),
       start: z.string().optional().describe('Start date in YYYY-MM-DD format.'),
       end: z.string().optional().describe('End date in YYYY-MM-DD format.'),
-      grouping: usageGroupingSchema
-        .optional()
-        .describe('Dimension to group usage by.'),
+      grouping: usageGroupingSchema.optional().describe('Dimension to group usage by.'),
       accessor: z.string().optional().describe('Filter by API key/accessor ID.'),
       tag: z.string().optional().describe('Filter by request tag.'),
       method: methodSchema.optional().describe('Filter by request method.'),

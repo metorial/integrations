@@ -120,7 +120,9 @@ export let createServiceTool = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token, tokenHeader: ctx.auth.tokenHeader });
     let source: { repo?: string; image?: string } | undefined;
     if (ctx.input.repo && ctx.input.image) {
-      throw railwayServiceError('Provide either repo or image when creating a Railway service, not both.');
+      throw railwayServiceError(
+        'Provide either repo or image when creating a Railway service, not both.'
+      );
     }
 
     if (ctx.input.repo) {

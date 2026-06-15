@@ -131,14 +131,18 @@ let chatCompletionInputSchema = z.object({
     .max(512)
     .regex(/^[a-zA-Z0-9_-]+$/)
     .optional()
-    .describe('Optional privacy-safe user identifier for safety, cache, and scheduling isolation')
+    .describe(
+      'Optional privacy-safe user identifier for safety, cache, and scheduling isolation'
+    )
 });
 
 type ChatCompletionInput = z.infer<typeof chatCompletionInputSchema>;
 
 let assertValidChatInput = (input: ChatCompletionInput) => {
   if (input.reasoningEffort && input.thinkingMode !== 'enabled') {
-    throw deepSeekServiceError('reasoningEffort can only be used when thinkingMode is enabled.');
+    throw deepSeekServiceError(
+      'reasoningEffort can only be used when thinkingMode is enabled.'
+    );
   }
 
   if (
@@ -335,7 +339,9 @@ export let chatCompletion = SlateTool.create(spec, {
 
     let choice = result.choices[0];
     if (!choice) {
-      throw deepSeekServiceError('DeepSeek chat completion response did not include a choice.');
+      throw deepSeekServiceError(
+        'DeepSeek chat completion response did not include a choice.'
+      );
     }
 
     let outputToolCalls = choice.message.tool_calls?.map(tc => ({

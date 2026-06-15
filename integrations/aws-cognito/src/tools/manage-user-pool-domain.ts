@@ -21,9 +21,7 @@ export let manageUserPoolDomain = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('User pool ID (required for create, update, delete)'),
-      domain: z
-        .string()
-        .describe('Domain prefix or custom fully-qualified domain name'),
+      domain: z.string().describe('Domain prefix or custom fully-qualified domain name'),
       certificateArn: z
         .string()
         .optional()

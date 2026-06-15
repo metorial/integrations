@@ -205,10 +205,7 @@ let parseKubeconfig = (
     }
     if (inTargetCluster && line.includes('certificate-authority-data:')) {
       let b64 = line.split('certificate-authority-data:')[1] || '';
-      result.caCertificate = decodeKubeconfigBase64(
-        b64.trim(),
-        'certificate-authority-data'
-      );
+      result.caCertificate = decodeKubeconfigBase64(b64.trim(), 'certificate-authority-data');
     }
     if (
       inClusters &&

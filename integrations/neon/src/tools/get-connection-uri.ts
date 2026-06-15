@@ -24,10 +24,7 @@ export let getConnectionUri = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Endpoint ID. Defaults to the read-write endpoint for the branch.'),
-      pooled: z
-        .boolean()
-        .optional()
-        .describe('Whether to return a pooled connection URI')
+      pooled: z.boolean().optional().describe('Whether to return a pooled connection URI')
     })
   )
   .output(

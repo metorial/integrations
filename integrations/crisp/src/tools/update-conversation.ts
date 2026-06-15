@@ -40,10 +40,7 @@ export let updateConversation = SlateTool.create(spec, {
         .optional()
         .describe('Assign conversation to operator by user ID'),
       unassign: z.boolean().optional().describe('Unassign the conversation from any operator'),
-      inboxId: z
-        .string()
-        .optional()
-        .describe('Move the conversation to this inbox ID'),
+      inboxId: z.string().optional().describe('Move the conversation to this inbox ID'),
       moveToMainInbox: z
         .boolean()
         .optional()
@@ -58,7 +55,11 @@ export let updateConversation = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId, tier: ctx.auth.tier });
+    let client = new Client({
+      token: ctx.auth.token,
+      websiteId: ctx.config.websiteId,
+      tier: ctx.auth.tier
+    });
     let updated: string[] = [];
     let { sessionId } = ctx.input;
 

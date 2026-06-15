@@ -6,14 +6,11 @@ import { spec } from '../spec';
 export let deleteIpAssignment = SlateTool.create(spec, {
   name: 'Delete IP Assignment',
   key: 'delete_ip_assignment',
-  description:
-    'Remove an IP assignment from a Fly App.',
+  description: 'Remove an IP assignment from a Fly App.',
   tags: {
     destructive: true
   },
-  constraints: [
-    'Only remove IPs that are known to belong to the app and are safe to release.'
-  ]
+  constraints: ['Only remove IPs that are known to belong to the app and are safe to release.']
 })
   .input(
     z.object({

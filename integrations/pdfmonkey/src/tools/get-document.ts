@@ -70,7 +70,10 @@ export let getDocument = SlateTool.create(spec, {
       publicShareLink: doc.public_share_link ? String(doc.public_share_link) : null,
       filename: doc.filename ? String(doc.filename) : null,
       outputType: doc.output_type ? String(doc.output_type) : null,
-      meta: doc.meta && typeof doc.meta === 'object' ? (doc.meta as Record<string, unknown>) : null,
+      meta:
+        doc.meta && typeof doc.meta === 'object'
+          ? (doc.meta as Record<string, unknown>)
+          : null,
       failureCause: doc.failure_cause ? String(doc.failure_cause) : null,
       checksum: doc.checksum ? String(doc.checksum) : null,
       generationLogs: logs

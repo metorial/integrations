@@ -114,7 +114,10 @@ export let listAdAccounts = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      limit: z.number().optional().describe('Max number of ad accounts to return (default 25)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Max number of ad accounts to return (default 25)'),
       afterCursor: z.string().optional().describe('Pagination cursor')
     })
   )

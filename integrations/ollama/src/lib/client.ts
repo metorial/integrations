@@ -435,9 +435,7 @@ export class Client {
   }
 
   async listRunningModels(): Promise<RunningModelInfo[]> {
-    let data = await this.request<any>('list running models', () =>
-      this.axios.get('/api/ps')
-    );
+    let data = await this.request<any>('list running models', () => this.axios.get('/api/ps'));
     let models = data.models || [];
     return models.map((m: any) => ({
       ...mapModelInfo(m),

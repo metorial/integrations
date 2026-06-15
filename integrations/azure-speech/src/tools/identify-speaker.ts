@@ -46,7 +46,9 @@ Uses text-independent identification — the speaker can say anything.`,
     });
 
     if (ctx.input.profileIds.length > 50) {
-      throw azureSpeechServiceError('Maximum 50 candidate profiles per identification request.');
+      throw azureSpeechServiceError(
+        'Maximum 50 candidate profiles per identification request.'
+      );
     }
 
     if (ctx.input.profileIds.length === 0) {

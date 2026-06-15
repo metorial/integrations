@@ -71,7 +71,9 @@ export let updateTemplate = SlateTool.create(spec, {
       pdfEngineId: z
         .string()
         .optional()
-        .describe('PDF engine ID used for generated documents. Omit to keep the current engine.'),
+        .describe(
+          'PDF engine ID used for generated documents. Omit to keep the current engine.'
+        ),
       pdfEngineDraftId: z
         .string()
         .optional()

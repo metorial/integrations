@@ -62,10 +62,7 @@ export let putScriptContent = SlateTool.create(spec, {
         .describe(
           'Filename for the uploaded script part. Defaults to index.js for module syntax and worker.js for service-worker syntax.'
         ),
-      contentType: z
-        .string()
-        .optional()
-        .describe('MIME type for the uploaded code part')
+      contentType: z.string().optional().describe('MIME type for the uploaded code part')
     })
   )
   .output(

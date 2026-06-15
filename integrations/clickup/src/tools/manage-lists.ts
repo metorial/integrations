@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { clickupServiceError } from '../lib/errors';
 import { ClickUpClient } from '../lib/client';
+import { clickupServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let getLists = SlateTool.create(spec, {

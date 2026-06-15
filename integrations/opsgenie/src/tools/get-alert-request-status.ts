@@ -14,9 +14,7 @@ export let getAlertRequestStatus = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      requestId: z
-        .string()
-        .describe('Request ID returned by an asynchronous alert operation')
+      requestId: z.string().describe('Request ID returned by an asynchronous alert operation')
     })
   )
   .output(

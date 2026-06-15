@@ -37,7 +37,9 @@ export let updateCampaign = SlateTool.create(spec, {
       segmentIds: z
         .array(z.string())
         .optional()
-        .describe('Updated target segment IDs. If provided with groups, MailerLite uses segments.'),
+        .describe(
+          'Updated target segment IDs. If provided with groups, MailerLite uses segments.'
+        ),
       ecommerceTracking: z
         .boolean()
         .optional()

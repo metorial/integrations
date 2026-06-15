@@ -31,7 +31,7 @@ export let deleteFiles = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new NanonetsClient(ctx.auth.token);
-    let responses = [];
+    let responses: any[] = [];
 
     for (let fileId of ctx.input.fileIds) {
       responses.push(await client.deleteFile(ctx.input.modelId, fileId));

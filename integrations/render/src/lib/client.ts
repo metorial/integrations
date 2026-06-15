@@ -662,12 +662,9 @@ export class RenderClient {
   }
 
   async getEnvGroupSecretFile(envGroupId: string, name: string) {
-    let response = await this.axios.get(
-      `/env-groups/${envGroupId}/secret-files/${name}`,
-      {
-        headers: this.headers
-      }
-    );
+    let response = await this.axios.get(`/env-groups/${envGroupId}/secret-files/${name}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -683,12 +680,9 @@ export class RenderClient {
   }
 
   async deleteEnvGroupSecretFile(envGroupId: string, name: string) {
-    let response = await this.axios.delete(
-      `/env-groups/${envGroupId}/secret-files/${name}`,
-      {
-        headers: this.headers
-      }
-    );
+    let response = await this.axios.delete(`/env-groups/${envGroupId}/secret-files/${name}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -739,9 +733,13 @@ export class RenderClient {
   }
 
   async createEnvironment(projectId: string, body: Record<string, any>) {
-    let response = await this.axios.post('/environments', { ...body, projectId }, {
-      headers: this.headers
-    });
+    let response = await this.axios.post(
+      '/environments',
+      { ...body, projectId },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -950,7 +948,11 @@ export class RenderClient {
 
   // ─── Maintenance ─────────────────────────────────────
 
-  async listMaintenance(params?: { resourceId?: string[]; ownerId?: string[]; state?: string[] }) {
+  async listMaintenance(params?: {
+    resourceId?: string[];
+    ownerId?: string[];
+    state?: string[];
+  }) {
     let response = await this.axios.get('/maintenance', {
       headers: this.headers,
       params

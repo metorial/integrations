@@ -11,7 +11,7 @@ let mondayAuth = createAxios({
 });
 
 let getProfile = async (token: string) => {
-  let response;
+  let response: any;
   try {
     response = await mondayApi.post(
       '',
@@ -152,7 +152,7 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response;
+      let response: any;
       try {
         response = await mondayAuth.post('/oauth2/token', {
           client_id: ctx.clientId,

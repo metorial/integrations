@@ -111,7 +111,11 @@ let mapChromeImageOptions = (options?: ChromeImageOptions) => {
 };
 
 let stringValue = (value: unknown) =>
-  typeof value === 'string' ? value : value === undefined || value === null ? '' : String(value);
+  typeof value === 'string'
+    ? value
+    : value === undefined || value === null
+      ? ''
+      : String(value);
 
 let numberValue = (value: unknown) => {
   let parsed = typeof value === 'number' ? value : Number(value ?? 0);

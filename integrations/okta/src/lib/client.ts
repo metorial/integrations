@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { applyOktaErrorInterceptor } from './errors';
 import type {
   OktaApplication,
   OktaEventHook,
@@ -9,7 +10,6 @@ import type {
   OktaUser,
   PaginatedResponse
 } from './types';
-import { applyOktaErrorInterceptor } from './errors';
 
 export type OktaAuthMethod = 'api_token' | 'oauth';
 

@@ -6,8 +6,7 @@ import { spec } from '../spec';
 export let getMachineMemory = SlateTool.create(spec, {
   name: 'Get Machine Memory',
   key: 'get_machine_memory',
-  description:
-    'Get the current memory limit and available capacity for a Fly Machine.',
+  description: 'Get the current memory limit and available capacity for a Fly Machine.',
   tags: {
     readOnly: true
   }

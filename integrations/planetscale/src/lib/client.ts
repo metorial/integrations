@@ -75,10 +75,7 @@ export class Client {
     };
   }
 
-  private async request<T>(
-    operation: string,
-    run: () => Promise<{ data: T }>
-  ): Promise<T> {
+  private async request<T>(operation: string, run: () => Promise<{ data: T }>): Promise<T> {
     try {
       let response = await run();
       return response.data;
@@ -182,8 +179,10 @@ export class Client {
     if (data.newName !== undefined) body.new_name = data.newName;
     if (data.automaticMigrations !== undefined)
       body.automatic_migrations = data.automaticMigrations;
-    if (data.migrationFramework !== undefined) body.migration_framework = data.migrationFramework;
-    if (data.migrationTableName !== undefined) body.migration_table_name = data.migrationTableName;
+    if (data.migrationFramework !== undefined)
+      body.migration_framework = data.migrationFramework;
+    if (data.migrationTableName !== undefined)
+      body.migration_table_name = data.migrationTableName;
     if (data.requireApprovalForDeploy !== undefined)
       body.require_approval_for_deploy = data.requireApprovalForDeploy;
     if (data.restrictBranchRegion !== undefined)
@@ -192,7 +191,8 @@ export class Client {
       body.allow_foreign_key_constraints = data.allowForeignKeyConstraints;
     if (data.allowDataBranching !== undefined)
       body.allow_data_branching = data.allowDataBranching;
-    if (data.insightsRawQueries !== undefined) body.insights_raw_queries = data.insightsRawQueries;
+    if (data.insightsRawQueries !== undefined)
+      body.insights_raw_queries = data.insightsRawQueries;
     if (data.productionBranchWebConsole !== undefined)
       body.production_branch_web_console = data.productionBranchWebConsole;
     if (data.defaultBranch !== undefined) body.default_branch = data.defaultBranch;
@@ -314,7 +314,11 @@ export class Client {
 
   async lintBranchSchema(database: string, branch: string): Promise<any> {
     return await this.request('lint branch schema', () =>
-      api.post(this.branchPath(database, branch, '/schema/lint'), {}, { headers: this.headers })
+      api.post(
+        this.branchPath(database, branch, '/schema/lint'),
+        {},
+        { headers: this.headers }
+      )
     );
   }
 
@@ -386,9 +390,13 @@ export class Client {
 
   async cancelDeployRequest(database: string, number: number): Promise<any> {
     return await this.request('cancel deploy request', () =>
-      api.post(this.dbPath(database, `/deploy-requests/${number}/cancel`), {}, {
-        headers: this.headers
-      })
+      api.post(
+        this.dbPath(database, `/deploy-requests/${number}/cancel`),
+        {},
+        {
+          headers: this.headers
+        }
+      )
     );
   }
 
@@ -406,17 +414,25 @@ export class Client {
 
   async skipRevertPeriod(database: string, number: number): Promise<any> {
     return await this.request('skip deploy request revert period', () =>
-      api.post(this.dbPath(database, `/deploy-requests/${number}/skip-revert-period`), {}, {
-        headers: this.headers
-      })
+      api.post(
+        this.dbPath(database, `/deploy-requests/${number}/skip-revert-period`),
+        {},
+        {
+          headers: this.headers
+        }
+      )
     );
   }
 
   async completeRevert(database: string, number: number): Promise<any> {
     return await this.request('complete deploy request revert', () =>
-      api.post(this.dbPath(database, `/deploy-requests/${number}/complete-revert`), {}, {
-        headers: this.headers
-      })
+      api.post(
+        this.dbPath(database, `/deploy-requests/${number}/complete-revert`),
+        {},
+        {
+          headers: this.headers
+        }
+      )
     );
   }
 
@@ -549,9 +565,13 @@ export class Client {
 
   async renewPassword(database: string, branch: string, passwordId: string): Promise<any> {
     return await this.request('renew password', () =>
-      api.post(this.branchPath(database, branch, `/passwords/${passwordId}/renew`), {}, {
-        headers: this.headers
-      })
+      api.post(
+        this.branchPath(database, branch, `/passwords/${passwordId}/renew`),
+        {},
+        {
+          headers: this.headers
+        }
+      )
     );
   }
 
@@ -709,9 +729,13 @@ export class Client {
 
   async testWebhook(database: string, webhookId: string): Promise<any> {
     return await this.request('test webhook', () =>
-      api.post(this.dbPath(database, `/webhooks/${webhookId}/test`), {}, {
-        headers: this.headers
-      })
+      api.post(
+        this.dbPath(database, `/webhooks/${webhookId}/test`),
+        {},
+        {
+          headers: this.headers
+        }
+      )
     );
   }
 

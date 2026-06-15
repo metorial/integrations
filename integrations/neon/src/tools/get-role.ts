@@ -22,7 +22,11 @@ export let getRole = SlateTool.create(spec, {
   .output(roleSchema)
   .handleInvocation(async ctx => {
     let client = new NeonClient({ token: ctx.auth.token });
-    let result = await client.getRole(ctx.input.projectId, ctx.input.branchId, ctx.input.roleName);
+    let result = await client.getRole(
+      ctx.input.projectId,
+      ctx.input.branchId,
+      ctx.input.roleName
+    );
     let role = mapRole(result.role);
 
     return {

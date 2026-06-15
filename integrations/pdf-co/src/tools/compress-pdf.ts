@@ -32,7 +32,6 @@ let garbageValue = (level: z.infer<typeof garbageCollectionLevel>) => {
       return 2;
     case 'merge_duplicate_objects':
       return 3;
-    case 'dedupe_streams':
     default:
       return 4;
   }
@@ -109,10 +108,7 @@ export let compressPdf = SlateTool.create(spec, {
   .input(
     z.object({
       sourceUrl: z.string().describe('URL of the source PDF file to compress'),
-      pages: z
-        .string()
-        .optional()
-        .describe('Page indices to process, e.g. "0,1,2" or "0-5"'),
+      pages: z.string().optional().describe('Page indices to process, e.g. "0,1,2" or "0-5"'),
       password: z.string().optional().describe('Password for protected PDF files'),
       outputFileName: z.string().optional().describe('Name for the compressed PDF file'),
       expirationMinutes: z

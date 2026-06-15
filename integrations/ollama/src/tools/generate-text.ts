@@ -1,7 +1,12 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import { keepAliveSchema, logprobSchema, modelOptionsSchema, thinkSchema } from '../lib/schemas';
+import {
+  keepAliveSchema,
+  logprobSchema,
+  modelOptionsSchema,
+  thinkSchema
+} from '../lib/schemas';
 import { spec } from '../spec';
 
 export let generateText = SlateTool.create(spec, {

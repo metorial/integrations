@@ -83,11 +83,7 @@ let guardrailOutputSchema = z.object({
   allowedProviders: z.array(z.string()).nullable().optional().describe('Allowed providers'),
   ignoredProviders: z.array(z.string()).nullable().optional().describe('Ignored providers'),
   enforceZdr: z.boolean().nullable().optional().describe('Deprecated global ZDR setting'),
-  enforceZdrAnthropic: z
-    .boolean()
-    .nullable()
-    .optional()
-    .describe('Anthropic ZDR enforcement'),
+  enforceZdrAnthropic: z.boolean().nullable().optional().describe('Anthropic ZDR enforcement'),
   enforceZdrGoogle: z.boolean().nullable().optional().describe('Google ZDR enforcement'),
   enforceZdrOpenAI: z.boolean().nullable().optional().describe('OpenAI ZDR enforcement'),
   enforceZdrOther: z
@@ -106,7 +102,8 @@ let normalizeGuardrail = (data: Record<string, unknown>) => ({
   guardrailId: (data.id as string) || undefined,
   name: (data.name as string) || undefined,
   workspaceId: (data.workspace_id as string) || undefined,
-  description: data.description !== undefined ? (data.description as string | null) : undefined,
+  description:
+    data.description !== undefined ? (data.description as string | null) : undefined,
   limitUsd: data.limit_usd !== undefined ? (data.limit_usd as number | null) : undefined,
   resetInterval: (data.reset_interval as string) || undefined,
   allowedModels:

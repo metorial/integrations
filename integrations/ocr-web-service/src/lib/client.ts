@@ -130,7 +130,10 @@ export class Client {
     return Buffer.from(normalized, 'base64');
   }
 
-  private async downloadUrl(url: string, operation: string): Promise<{
+  private async downloadUrl(
+    url: string,
+    operation: string
+  ): Promise<{
     buffer: Buffer;
     mimeType: string;
   }> {

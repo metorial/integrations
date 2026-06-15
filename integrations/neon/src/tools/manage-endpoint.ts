@@ -30,7 +30,10 @@ let endpointSchema = z.object({
     .optional()
     .describe('Seconds of inactivity before the endpoint is suspended'),
   disabled: z.boolean().optional().describe('Whether connections are disabled'),
-  passwordlessAccess: z.boolean().optional().describe('Whether passwordless access is enabled'),
+  passwordlessAccess: z
+    .boolean()
+    .optional()
+    .describe('Whether passwordless access is enabled'),
   createdAt: z.string().describe('Timestamp when the endpoint was created'),
   updatedAt: z.string().describe('Timestamp when the endpoint was last updated')
 });

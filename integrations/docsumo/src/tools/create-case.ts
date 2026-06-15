@@ -32,9 +32,7 @@ export let createCase = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      casetypeId: z
-        .string()
-        .describe('Case type ID. Get this from the List Agents tool.'),
+      casetypeId: z.string().describe('Case type ID. Get this from the List Agents tool.'),
       caseId: z
         .string()
         .optional()

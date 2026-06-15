@@ -269,10 +269,7 @@ export class WebflowClient {
     orderId: string,
     data: { sendOrderFulfilledEmail?: boolean } = {}
   ): Promise<any> {
-    let response = await this.http.post(
-      `/sites/${siteId}/orders/${orderId}/fulfill`,
-      data
-    );
+    let response = await this.http.post(`/sites/${siteId}/orders/${orderId}/fulfill`, data);
     return response.data;
   }
 

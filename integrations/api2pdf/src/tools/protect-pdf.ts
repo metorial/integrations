@@ -55,11 +55,7 @@ export let protectPdf = SlateTool.create(spec, {
       extraHTTPHeaders: ctx.input.extraHttpHeaders
     });
 
-    let file = await fetchApi2PdfAttachment(
-      client,
-      result,
-      'PDF password protection failed'
-    );
+    let file = await fetchApi2PdfAttachment(client, result, 'PDF password protection failed');
 
     return {
       output: fileOutput(result, file),

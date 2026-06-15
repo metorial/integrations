@@ -107,13 +107,9 @@ export class DatadogClient {
       }))
     };
 
-    let response = await this.http.post(
-      '/api/v2/series',
-      body,
-      {
-        headers: this.getApiKeyOnlyHeaders()
-      }
-    );
+    let response = await this.http.post('/api/v2/series', body, {
+      headers: this.getApiKeyOnlyHeaders()
+    });
     return response.data;
   }
 
@@ -690,10 +686,7 @@ export class DatadogClient {
 
   // ─── Downtime ──────────────────────────────────────────
 
-  async listDowntimes(params?: {
-    pageLimit?: number;
-    pageOffset?: number;
-  }): Promise<any> {
+  async listDowntimes(params?: { pageLimit?: number; pageOffset?: number }): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.pageLimit !== undefined) queryParams['page[limit]'] = params.pageLimit;
     if (params?.pageOffset !== undefined) queryParams['page[offset]'] = params.pageOffset;

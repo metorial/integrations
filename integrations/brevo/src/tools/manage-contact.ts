@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brevoServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
+import { brevoServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let createOrUpdateContact = SlateTool.create(spec, {

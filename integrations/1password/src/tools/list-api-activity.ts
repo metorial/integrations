@@ -43,7 +43,10 @@ export let listApiActivity = SlateTool.create(spec, {
           resourceType: z.string().optional().describe('Type of resource accessed'),
           vaultId: z.string().optional().describe('Vault ID associated with the request'),
           itemId: z.string().optional().describe('Item ID associated with the request'),
-          itemVersion: z.number().optional().describe('Item version associated with the request')
+          itemVersion: z
+            .number()
+            .optional()
+            .describe('Item version associated with the request')
         })
       )
     })

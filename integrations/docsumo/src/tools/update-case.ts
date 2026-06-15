@@ -21,9 +21,7 @@ export let updateCase = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      casetypeId: z
-        .string()
-        .describe('Case type ID. Get this from the List Agents tool.'),
+      casetypeId: z.string().describe('Case type ID. Get this from the List Agents tool.'),
       caseId: z.string().describe('Case ID to update'),
       stageId: z.string().optional().describe('Stage ID to move the case to'),
       caseFields: z
@@ -41,10 +39,7 @@ export let updateCase = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      caseMetadata: z
-        .record(z.string(), z.any())
-        .optional()
-        .describe('Updated case metadata'),
+      caseMetadata: z.record(z.string(), z.any()).optional().describe('Updated case metadata'),
       caseFields: z
         .array(z.record(z.string(), z.any()))
         .optional()

@@ -23,10 +23,7 @@ export let panImage = SlateTool.create(spec, {
       direction: z
         .enum(['up', 'down', 'left', 'right'])
         .describe('Direction to expand the image canvas'),
-      prompt: z
-        .string()
-        .optional()
-        .describe('Optional prompt to guide the generated area'),
+      prompt: z.string().optional().describe('Optional prompt to guide the generated area'),
       waitForResult: z
         .boolean()
         .optional()

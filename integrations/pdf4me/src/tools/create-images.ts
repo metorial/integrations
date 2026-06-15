@@ -32,9 +32,7 @@ export let createImagesFromPdf = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      images: z
-        .array(attachmentMetadataSchema)
-        .describe('Generated images'),
+      images: z.array(attachmentMetadataSchema).describe('Generated images'),
       imageCount: z.number().describe('Number of images generated'),
       attachmentCount: z.number().describe('Number of image attachments returned')
     })

@@ -456,7 +456,8 @@ export class MetaAdsClient {
     let response = await this.axios.get('/me/adaccounts', {
       params: {
         fields:
-          params?.fields || 'id,account_id,name,account_status,currency,timezone_name,business',
+          params?.fields ||
+          'id,account_id,name,account_status,currency,timezone_name,business',
         limit: params?.limit || 25,
         after: params?.after
       }

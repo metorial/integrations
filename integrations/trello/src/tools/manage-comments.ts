@@ -1,20 +1,14 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import {
-  requireAtLeastOneTrelloField,
-  requireTrelloString
-} from '../lib/errors';
 import { TrelloClient } from '../lib/client';
+import { requireAtLeastOneTrelloField, requireTrelloString } from '../lib/errors';
 import { spec } from '../spec';
 
 let commentSchema = z.object({
   commentId: z.string().describe('ID of the comment action'),
   cardId: z.string().optional().describe('Card the comment belongs to'),
   text: z.string().optional().describe('Comment text'),
-  memberCreatorId: z
-    .string()
-    .optional()
-    .describe('ID of the member who created the comment'),
+  memberCreatorId: z.string().optional().describe('ID of the member who created the comment'),
   createdAt: z.string().optional().describe('When the comment was created')
 });
 
@@ -41,7 +35,10 @@ export let manageComments = SlateTool.create(spec, {
     z.object({
       action: z.enum(['list', 'add', 'update', 'delete']).describe('Action to perform'),
       cardId: z.string().optional().describe('Card ID (required for all actions)'),
-      commentId: z.string().optional().describe('Comment action ID (required for update/delete)'),
+      commentId: z
+        .string()
+        .optional()
+        .describe('Comment action ID (required for update/delete)'),
       text: z.string().optional().describe('Comment text (required for add/update)'),
       limit: z
         .number()

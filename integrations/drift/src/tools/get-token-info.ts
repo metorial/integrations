@@ -9,9 +9,7 @@ let parseOrgId = (authenticatedUserId: unknown) =>
     : undefined;
 
 let parseScopes = (scope: unknown) =>
-  typeof scope === 'string' && scope.trim()
-    ? scope.split(/\s+/).filter(Boolean)
-    : [];
+  typeof scope === 'string' && scope.trim() ? scope.split(/\s+/).filter(Boolean) : [];
 
 export let getTokenInfo = SlateTool.create(spec, {
   name: 'Get Token Info',
@@ -26,10 +24,19 @@ export let getTokenInfo = SlateTool.create(spec, {
     z.object({
       tokenId: z.string().optional().describe('Unique Drift token identifier'),
       orgId: z.string().optional().describe('Drift organization ID'),
-      credentialId: z.string().optional().describe('App credential ID associated with the token'),
+      credentialId: z
+        .string()
+        .optional()
+        .describe('App credential ID associated with the token'),
       tokenType: z.string().optional().describe('Token type'),
-      expiresIn: z.number().optional().describe('Milliseconds until expiration, or 0 for non-expiring tokens'),
-      createdAt: z.number().optional().describe('Token creation timestamp in epoch milliseconds'),
+      expiresIn: z
+        .number()
+        .optional()
+        .describe('Milliseconds until expiration, or 0 for non-expiring tokens'),
+      createdAt: z
+        .number()
+        .optional()
+        .describe('Token creation timestamp in epoch milliseconds'),
       scopes: z.array(z.string()).describe('Scopes granted to the current token')
     })
   )

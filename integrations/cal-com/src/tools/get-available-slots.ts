@@ -34,10 +34,7 @@ export let getAvailableSlots = SlateTool.create(spec, {
         .describe('Usernames to check for collective or round-robin event types'),
       start: z.string().optional().describe('Start of the date range (ISO 8601)'),
       end: z.string().optional().describe('End of the date range (ISO 8601)'),
-      startTime: z
-        .string()
-        .optional()
-        .describe('Deprecated alias for start. Prefer start.'),
+      startTime: z.string().optional().describe('Deprecated alias for start. Prefer start.'),
       endTime: z.string().optional().describe('Deprecated alias for end. Prefer end.'),
       timeZone: z
         .string()

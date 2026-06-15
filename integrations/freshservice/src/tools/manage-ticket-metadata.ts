@@ -226,7 +226,8 @@ export let getTicketActivities = SlateTool.create(spec, {
 export let listFormFields = SlateTool.create(spec, {
   name: 'List Form Fields',
   key: 'list_form_fields',
-  description: 'List Freshservice form field metadata for tickets, problems, changes, releases, requesters, agents, or departments.',
+  description:
+    'List Freshservice form field metadata for tickets, problems, changes, releases, requesters, agents, or departments.',
   tags: {
     destructive: false,
     readOnly: true

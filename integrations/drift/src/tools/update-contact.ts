@@ -42,7 +42,9 @@ export let updateContact = SlateTool.create(spec, {
     if (ctx.input.phone) attributes.phone = ctx.input.phone;
 
     if (Object.keys(attributes).length === 0) {
-      throw driftServiceError('At least one contact attribute is required to update a contact.');
+      throw driftServiceError(
+        'At least one contact attribute is required to update a contact.'
+      );
     }
 
     let contact = await client.updateContact(ctx.input.contactId, attributes);

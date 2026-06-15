@@ -1,7 +1,11 @@
 import { z } from 'zod';
 
 export let payoutSchema = z.object({
-  payoutId: z.string().nullable().optional().describe('Payout ID. Upcoming payouts may be null.'),
+  payoutId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Payout ID. Upcoming payouts may be null.'),
   amount: z.string().optional().describe('Payout amount as returned by Gumroad'),
   currency: z.string().optional().describe('Payout currency'),
   status: z.string().optional().describe('Payout status'),

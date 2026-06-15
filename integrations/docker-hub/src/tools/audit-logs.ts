@@ -1,6 +1,6 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { Client, type AuditLogAction, type AuditLogActionGroup } from '../lib/client';
+import { type AuditLogAction, type AuditLogActionGroup, Client } from '../lib/client';
 import { spec } from '../spec';
 
 let flattenAuditActions = (

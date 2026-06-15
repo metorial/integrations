@@ -32,11 +32,15 @@ export let getWorkspaces = SlateTool.create(spec, {
       workspaceId: z
         .string()
         .optional()
-        .describe('Workspace/organization ID to retrieve. If omitted, lists accessible workspaces'),
+        .describe(
+          'Workspace/organization ID to retrieve. If omitted, lists accessible workspaces'
+        ),
       memberId: z
         .string()
         .optional()
-        .describe('Member ID whose workspaces should be listed. Defaults to the authenticated user ("me")')
+        .describe(
+          'Member ID whose workspaces should be listed. Defaults to the authenticated user ("me")'
+        )
     })
   )
   .output(

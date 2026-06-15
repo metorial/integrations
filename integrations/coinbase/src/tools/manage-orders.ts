@@ -51,7 +51,10 @@ let manageOrdersInputSchema = z.object({
     .describe(
       'Trading pair, e.g., "BTC-USD" (required for preview/create, optional filter for list)'
     ),
-  side: z.enum(['BUY', 'SELL']).optional().describe('Order side (required for preview/create)'),
+  side: z
+    .enum(['BUY', 'SELL'])
+    .optional()
+    .describe('Order side (required for preview/create)'),
   orderType: z
     .enum(['market', 'limit_gtc', 'limit_gtd', 'stop_limit_gtc', 'stop_limit_gtd'])
     .optional()
@@ -103,19 +106,13 @@ let buildOrderConfiguration = (input: ManageOrdersInput) => {
       return { market_market_ioc: { quote_size: quoteSize } };
     }
 
-    let baseSize = requireValue(
-      input.baseSize,
-      'baseSize is required for market sell orders'
-    );
+    let baseSize = requireValue(input.baseSize, 'baseSize is required for market sell orders');
     return { market_market_ioc: { base_size: baseSize } };
   }
 
   if (orderType === 'limit_gtc' || orderType === 'limit_gtd') {
     let baseSize = requireValue(input.baseSize, 'baseSize is required for limit orders');
-    let limitPrice = requireValue(
-      input.limitPrice,
-      'limitPrice is required for limit orders'
-    );
+    let limitPrice = requireValue(input.limitPrice, 'limitPrice is required for limit orders');
 
     let limitConfig: Record<string, string | boolean> = {
       base_size: baseSize,
@@ -140,10 +137,7 @@ let buildOrderConfiguration = (input: ManageOrdersInput) => {
     input.limitPrice,
     'limitPrice is required for stop-limit orders'
   );
-  let stopPrice = requireValue(
-    input.stopPrice,
-    'stopPrice is required for stop-limit orders'
-  );
+  let stopPrice = requireValue(input.stopPrice, 'stopPrice is required for stop-limit orders');
   let stopDirection = requireValue(
     input.stopDirection,
     'stopDirection is required for stop-limit orders'

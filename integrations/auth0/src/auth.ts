@@ -34,7 +34,7 @@ export let auth = SlateAuth.create()
         baseURL: `https://${domain}`
       });
 
-      let response;
+      let response: any;
       try {
         response = await http.post('/oauth/token', {
           grant_type: 'client_credentials',

@@ -105,7 +105,8 @@ export let manageProductAttributes = SlateTool.create(spec, {
     }
 
     if (action === 'create_attribute') {
-      if (!ctx.input.name) throw woocommerceServiceError('name is required for create_attribute');
+      if (!ctx.input.name)
+        throw woocommerceServiceError('name is required for create_attribute');
       let data = buildAttributeData(ctx.input);
       data.name = ctx.input.name;
       let attribute = await client.createProductAttribute(data);
@@ -117,7 +118,10 @@ export let manageProductAttributes = SlateTool.create(spec, {
 
     if (action === 'update_attribute') {
       let attributeId = requireAttributeId(ctx.input.attributeId, action);
-      let attribute = await client.updateProductAttribute(attributeId, buildAttributeData(ctx.input));
+      let attribute = await client.updateProductAttribute(
+        attributeId,
+        buildAttributeData(ctx.input)
+      );
       return {
         output: { attribute: mapProductAttribute(attribute) },
         message: `Updated product attribute **"${attribute.name}"** (ID: ${attribute.id}).`
@@ -178,7 +182,11 @@ export let manageProductAttributes = SlateTool.create(spec, {
     if (action === 'update_term') {
       let attributeId = requireAttributeId(ctx.input.attributeId, action);
       let termId = requireTermId(ctx.input.termId, action);
-      let term = await client.updateProductAttributeTerm(attributeId, termId, buildTermData(ctx.input));
+      let term = await client.updateProductAttributeTerm(
+        attributeId,
+        termId,
+        buildTermData(ctx.input)
+      );
       return {
         output: { term: mapProductAttributeTerm(term) },
         message: `Updated product attribute term **"${term.name}"** (ID: ${term.id}).`

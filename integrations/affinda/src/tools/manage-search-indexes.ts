@@ -34,10 +34,7 @@ let requireIndexName = (indexName: string | undefined, action: string) => {
   return indexName;
 };
 
-let requireDocumentIdentifier = (
-  documentIdentifier: string | undefined,
-  action: string
-) => {
+let requireDocumentIdentifier = (documentIdentifier: string | undefined, action: string) => {
   if (!documentIdentifier) {
     throw affindaServiceError(`documentIdentifier is required for "${action}".`);
   }

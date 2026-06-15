@@ -104,7 +104,9 @@ export let createIndexTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let client = new PineconeControlPlaneClient({ token: ctx.auth.token });
 
-    let specCount = [ctx.input.serverless, ctx.input.byoc, ctx.input.pod].filter(Boolean).length;
+    let specCount = [ctx.input.serverless, ctx.input.byoc, ctx.input.pod].filter(
+      Boolean
+    ).length;
     if (specCount !== 1) {
       throw pineconeServiceError(
         'Provide exactly one index deployment specification: serverless, byoc, or pod.'
@@ -143,7 +145,10 @@ export let createIndexTool = SlateTool.create(spec, {
             ? { mode: ctx.input.serverless.readCapacityMode }
             : undefined;
 
-      if (ctx.input.serverless.readCapacityMode === 'Dedicated' && !ctx.input.serverless.readNodeType) {
+      if (
+        ctx.input.serverless.readCapacityMode === 'Dedicated' &&
+        !ctx.input.serverless.readNodeType
+      ) {
         throw pineconeServiceError(
           'serverless.readNodeType is required when readCapacityMode is Dedicated.'
         );

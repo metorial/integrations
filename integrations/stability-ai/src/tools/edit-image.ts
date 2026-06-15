@@ -114,11 +114,12 @@ export let editImage = SlateTool.create(spec, {
     let client = new Client({ token: ctx.auth.token });
     let input = ctx.input;
 
-    let result;
+    let result: any;
 
     switch (input.operation) {
       case 'erase':
-        if (!input.prompt) throw stabilityServiceError('Prompt is required for erase operation.');
+        if (!input.prompt)
+          throw stabilityServiceError('Prompt is required for erase operation.');
         result = await client.eraseImage({
           image: input.image,
           prompt: input.prompt,
@@ -130,7 +131,8 @@ export let editImage = SlateTool.create(spec, {
         break;
 
       case 'inpaint':
-        if (!input.prompt) throw stabilityServiceError('Prompt is required for inpaint operation.');
+        if (!input.prompt)
+          throw stabilityServiceError('Prompt is required for inpaint operation.');
         result = await client.inpaintImage({
           image: input.image,
           prompt: input.prompt,
@@ -172,7 +174,9 @@ export let editImage = SlateTool.create(spec, {
         if (!input.prompt)
           throw stabilityServiceError('Prompt is required for search_and_replace operation.');
         if (!input.searchPrompt)
-          throw stabilityServiceError('searchPrompt is required for search_and_replace operation.');
+          throw stabilityServiceError(
+            'searchPrompt is required for search_and_replace operation.'
+          );
         result = await client.searchAndReplace({
           image: input.image,
           prompt: input.prompt,
@@ -189,7 +193,9 @@ export let editImage = SlateTool.create(spec, {
         if (!input.prompt)
           throw stabilityServiceError('Prompt is required for search_and_recolor operation.');
         if (!input.selectPrompt)
-          throw stabilityServiceError('selectPrompt is required for search_and_recolor operation.');
+          throw stabilityServiceError(
+            'selectPrompt is required for search_and_recolor operation.'
+          );
         result = await client.searchAndRecolor({
           image: input.image,
           prompt: input.prompt,
@@ -204,7 +210,9 @@ export let editImage = SlateTool.create(spec, {
 
       case 'remove_background':
         if (input.outputFormat === 'jpeg') {
-          throw stabilityServiceError('remove_background only supports png or webp outputFormat.');
+          throw stabilityServiceError(
+            'remove_background only supports png or webp outputFormat.'
+          );
         }
         result = await client.removeBackground({
           image: input.image,

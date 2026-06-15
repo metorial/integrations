@@ -30,7 +30,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
-      let response;
+      let response: any;
       try {
         response = await axios.get('/account', {
           headers: {

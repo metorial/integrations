@@ -75,7 +75,9 @@ Sketch, structure, and style guide require a reference image and prompt. Style t
         .min(0)
         .max(1)
         .optional()
-        .describe('How closely the output follows the input composition. Used by style_transfer.'),
+        .describe(
+          'How closely the output follows the input composition. Used by style_transfer.'
+        ),
       changeStrength: z
         .number()
         .min(0.1)
@@ -92,7 +94,7 @@ Sketch, structure, and style guide require a reference image and prompt. Style t
     let client = new Client({ token: ctx.auth.token });
     let input = ctx.input;
 
-    let result;
+    let result: any;
 
     switch (input.mode) {
       case 'sketch':
@@ -109,7 +111,8 @@ Sketch, structure, and style guide require a reference image and prompt. Style t
         break;
 
       case 'structure':
-        if (!input.prompt) throw stabilityServiceError('prompt is required for structure mode.');
+        if (!input.prompt)
+          throw stabilityServiceError('prompt is required for structure mode.');
         result = await client.controlStructure({
           image: input.image,
           prompt: input.prompt,

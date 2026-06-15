@@ -41,7 +41,10 @@ export let textToSpeechTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Audio container format, for example "wav", "ogg", or "none".'),
-      speed: z.number().optional().describe('Speech speed multiplier supported by Deepgram TTS.'),
+      speed: z
+        .number()
+        .optional()
+        .describe('Speech speed multiplier supported by Deepgram TTS.'),
       tag: z.string().optional().describe('Tag for tracking the request in usage reports.'),
       mipOptOut: z.boolean().optional().describe('Opt out of model improvement processing.'),
       callbackUrl: z

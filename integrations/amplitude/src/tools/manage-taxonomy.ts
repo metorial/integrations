@@ -305,6 +305,8 @@ export let manageTaxonomyTool = SlateTool.create(spec, {
       }
     }
 
-    throw amplitudeServiceError(`Unsupported action "${action}" for resource type "${resourceType}".`);
+    throw amplitudeServiceError(
+      `Unsupported action "${action}" for resource type "${resourceType}".`
+    );
   })
   .build();

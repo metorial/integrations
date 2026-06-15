@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { asanaServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
+import { asanaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let formatTimeTrackingEntry = (entry: any) => ({
@@ -64,9 +64,7 @@ export let listTimeTrackingEntries = SlateTool.create(spec, {
     }
 
     if (!ctx.input.taskId) {
-      throw asanaServiceError(
-        'taskId is required when timeTrackingEntryId is not provided.'
-      );
+      throw asanaServiceError('taskId is required when timeTrackingEntryId is not provided.');
     }
 
     let result = await client.listTimeTrackingEntries(ctx.input.taskId, {

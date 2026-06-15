@@ -75,7 +75,8 @@ export let createRefund = SlateTool.create(spec, {
       };
     }
 
-    if (!ctx.input.amount) throw woocommerceServiceError('amount is required for create action');
+    if (!ctx.input.amount)
+      throw woocommerceServiceError('amount is required for create action');
 
     let data: Record<string, any> = {
       amount: ctx.input.amount,

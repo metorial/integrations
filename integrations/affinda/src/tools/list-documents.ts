@@ -24,10 +24,7 @@ export let listDocuments = SlateTool.create(spec, {
         .enum(['uploaded', 'review', 'validated', 'archived', 'rejected'])
         .optional()
         .describe('Filter by document state.'),
-      tagIds: z
-        .array(z.number())
-        .optional()
-        .describe('Filter by tag IDs.'),
+      tagIds: z.array(z.number()).optional().describe('Filter by tag IDs.'),
       search: z.string().optional().describe('Search by filename or tag name.'),
       createdDate: z
         .enum(['today', 'yesterday', 'week', 'month', 'year'])
@@ -42,9 +39,7 @@ export let listDocuments = SlateTool.create(spec, {
       ordering: z
         .array(z.string())
         .optional()
-        .describe(
-          'Sort fields, e.g. ["created_dt"] or ["-created_dt", "file_name"].'
-        ),
+        .describe('Sort fields, e.g. ["created_dt"] or ["-created_dt", "file_name"].'),
       includeData: z
         .boolean()
         .optional()

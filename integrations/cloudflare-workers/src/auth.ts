@@ -1,9 +1,6 @@
 import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
-import {
-  cloudflareWorkersApiError,
-  cloudflareWorkersApiResponseError
-} from './lib/errors';
+import { cloudflareWorkersApiError, cloudflareWorkersApiResponseError } from './lib/errors';
 
 let ensureSuccessfulCloudflareResponse = (response: {
   data?: unknown;

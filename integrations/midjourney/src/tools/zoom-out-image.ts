@@ -24,7 +24,9 @@ export let zoomOutImage = SlateTool.create(spec, {
         .number()
         .min(1)
         .max(2)
-        .describe('Zoom out ratio. Use 1 to make square, or a value greater than 1 and up to 2.'),
+        .describe(
+          'Zoom out ratio. Use 1 to make square, or a value greater than 1 and up to 2.'
+        ),
       aspectRatio: z
         .string()
         .optional()

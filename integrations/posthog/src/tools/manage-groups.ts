@@ -220,7 +220,9 @@ export let deleteGroupPropertyTool = SlateTool.create(spec, {
       groupProperties: z
         .array(z.string())
         .optional()
-        .describe('Property names to delete. If omitted, PostHog receives only the group identity.')
+        .describe(
+          'Property names to delete. If omitted, PostHog receives only the group identity.'
+        )
     })
   )
   .output(

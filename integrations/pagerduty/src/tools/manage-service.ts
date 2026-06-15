@@ -66,9 +66,7 @@ export let manageService = SlateTool.create(spec, {
       if (!ctx.input.name)
         throw pagerDutyServiceError('name is required for creating a service');
       if (!ctx.input.escalationPolicyId)
-        throw pagerDutyServiceError(
-          'escalationPolicyId is required for creating a service'
-        );
+        throw pagerDutyServiceError('escalationPolicyId is required for creating a service');
 
       let service = await client.createService({
         name: ctx.input.name,

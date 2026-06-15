@@ -2,13 +2,13 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   analyzeTextTool,
-  createTemporaryTokenTool,
   createKeyTool,
+  createTemporaryTokenTool,
   deleteInvitationTool,
   deleteKeyTool,
   deleteProjectTool,
-  getBalanceTool,
   getBalancesTool,
+  getBalanceTool,
   getBillingBreakdownTool,
   getBillingFieldsTool,
   getKeyTool,

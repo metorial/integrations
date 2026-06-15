@@ -43,10 +43,7 @@ export let uploadWorkerModule = SlateTool.create(spec, {
         .describe(
           'Filename for the uploaded code part. Defaults to index.js for module syntax and worker.js for service-worker syntax.'
         ),
-      contentType: z
-        .string()
-        .optional()
-        .describe('MIME type for the uploaded code part'),
+      contentType: z.string().optional().describe('MIME type for the uploaded code part'),
       compatibilityDate: z
         .string()
         .optional()
@@ -70,11 +67,7 @@ export let uploadWorkerModule = SlateTool.create(spec, {
         .max(1000)
         .optional()
         .describe('Human-readable annotation for the uploaded version'),
-      tag: z
-        .string()
-        .max(100)
-        .optional()
-        .describe('User-provided version tag annotation'),
+      tag: z.string().max(100).optional().describe('User-provided version tag annotation'),
       bindingsInheritStrict: z
         .boolean()
         .optional()
@@ -86,7 +79,10 @@ export let uploadWorkerModule = SlateTool.create(spec, {
       scriptId: z.string().describe('Worker script identifier'),
       createdOn: z.string().optional().describe('ISO 8601 creation timestamp'),
       modifiedOn: z.string().optional().describe('ISO 8601 last modified timestamp'),
-      handlers: z.array(z.string()).optional().describe('Event handlers defined by the Worker'),
+      handlers: z
+        .array(z.string())
+        .optional()
+        .describe('Event handlers defined by the Worker'),
       hasModules: z.boolean().optional().describe('Whether the Worker uses ES modules'),
       compatibilityDate: z.string().optional().describe('Compatibility date'),
       compatibilityFlags: z.array(z.string()).optional().describe('Compatibility flags'),

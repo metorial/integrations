@@ -12,9 +12,7 @@ let mapLanguageIdSettings = (settings: Record<string, LanguageIdSetting>) =>
     Object.entries(settings).map(([languageCode, setting]) => [
       languageCode,
       {
-        ...(setting.languageModelName
-          ? { LanguageModelName: setting.languageModelName }
-          : {}),
+        ...(setting.languageModelName ? { LanguageModelName: setting.languageModelName } : {}),
         ...(setting.vocabularyName ? { VocabularyName: setting.vocabularyName } : {}),
         ...(setting.vocabularyFilterName
           ? { VocabularyFilterName: setting.vocabularyFilterName }
@@ -333,9 +331,7 @@ export class TranscribeClient {
 
   // ---- Call Analytics Categories ----
 
-  async createCallAnalyticsCategory(
-    params: CreateCallAnalyticsCategoryParams
-  ): Promise<any> {
+  async createCallAnalyticsCategory(params: CreateCallAnalyticsCategoryParams): Promise<any> {
     let payload: Record<string, any> = {
       CategoryName: params.categoryName,
       Rules: params.rules.map(mapCallAnalyticsRule)
@@ -347,9 +343,7 @@ export class TranscribeClient {
     return this.request('CreateCallAnalyticsCategory', payload);
   }
 
-  async updateCallAnalyticsCategory(
-    params: UpdateCallAnalyticsCategoryParams
-  ): Promise<any> {
+  async updateCallAnalyticsCategory(params: UpdateCallAnalyticsCategoryParams): Promise<any> {
     let payload: Record<string, any> = {
       CategoryName: params.categoryName,
       Rules: params.rules.map(mapCallAnalyticsRule)
@@ -370,9 +364,7 @@ export class TranscribeClient {
     });
   }
 
-  async listCallAnalyticsCategories(
-    params?: ListCallAnalyticsCategoriesParams
-  ): Promise<any> {
+  async listCallAnalyticsCategories(params?: ListCallAnalyticsCategoriesParams): Promise<any> {
     let payload: Record<string, any> = {};
     if (params?.maxResults) payload.MaxResults = params.maxResults;
     if (params?.nextToken) payload.NextToken = params.nextToken;
@@ -533,9 +525,7 @@ export class TranscribeClient {
     });
   }
 
-  async listMedicalVocabularies(
-    params?: ListMedicalVocabulariesParams
-  ): Promise<any> {
+  async listMedicalVocabularies(params?: ListMedicalVocabulariesParams): Promise<any> {
     let payload: Record<string, any> = {};
     if (params?.stateEquals) payload.StateEquals = params.stateEquals;
     if (params?.nameContains) payload.NameContains = params.nameContains;

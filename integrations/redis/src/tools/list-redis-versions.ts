@@ -41,7 +41,9 @@ export let listRedisVersions = SlateTool.create(spec, {
     let data: any;
     if (ctx.input.type === 'essentials') {
       if (subscriptionId === undefined) {
-        throw redisServiceError('subscriptionId is required to list Essentials Redis versions.');
+        throw redisServiceError(
+          'subscriptionId is required to list Essentials Redis versions.'
+        );
       }
       data = await client.listEssentialsRedisVersions(subscriptionId);
     } else {

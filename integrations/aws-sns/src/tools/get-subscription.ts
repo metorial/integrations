@@ -51,9 +51,7 @@ export let getSubscription = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('IAM role ARN for Firehose subscriptions'),
-      attributes: z
-        .record(z.string(), z.string())
-        .describe('Raw SNS subscription attributes')
+      attributes: z.record(z.string(), z.string()).describe('Raw SNS subscription attributes')
     })
   )
   .handleInvocation(async ctx => {

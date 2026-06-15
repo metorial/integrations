@@ -16,7 +16,11 @@ let transcriptionSegmentSchema = z.object({
   text: z.string().optional().describe('Segment text'),
   start: z.number().optional().describe('Segment start time in seconds'),
   end: z.number().optional().describe('Segment end time in seconds'),
-  speakerId: z.string().nullable().optional().describe('Speaker ID when diarization is enabled')
+  speakerId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Speaker ID when diarization is enabled')
 });
 
 let voiceSchema = z.object({
@@ -55,7 +59,6 @@ let speechMimeType = (format: string | undefined) => {
       return 'audio/opus';
     case 'pcm':
       return 'audio/L16';
-    case 'mp3':
     default:
       return 'audio/mpeg';
   }
@@ -141,7 +144,9 @@ export let transcribeAudioTool = SlateTool.create(spec, {
         throw mistralServiceError('filename is required when sourceType is "file_content"');
       }
       if (!ctx.input.contentBase64) {
-        throw mistralServiceError('contentBase64 is required when sourceType is "file_content"');
+        throw mistralServiceError(
+          'contentBase64 is required when sourceType is "file_content"'
+        );
       }
       decodeBase64('contentBase64', ctx.input.contentBase64);
     }

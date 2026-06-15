@@ -24,7 +24,12 @@ export let webSearch = SlateTool.create(spec, {
         .array(z.enum(['web', 'news', 'images']))
         .optional()
         .describe('Search sources to query'),
-      limit: z.number().min(1).max(20).optional().describe('Maximum number of results to return'),
+      limit: z
+        .number()
+        .min(1)
+        .max(20)
+        .optional()
+        .describe('Maximum number of results to return'),
       lang: z
         .string()
         .optional()

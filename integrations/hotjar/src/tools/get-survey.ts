@@ -33,7 +33,9 @@ export let getSurvey = SlateTool.create(spec, {
           isEnabled: z.boolean().describe('Whether the survey is currently active.'),
           createdTime: z.string().describe('When the survey was created.'),
           updatedTime: z.string().optional().describe('When the survey was last updated.'),
-          sentimentAnalysisEnabled: z.boolean().describe('Whether sentiment analysis is enabled.'),
+          sentimentAnalysisEnabled: z
+            .boolean()
+            .describe('Whether sentiment analysis is enabled.'),
           questions: z
             .array(
               z.object({

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { api2PdfServiceError } from '../lib/errors';
 import { Api2PdfClient } from '../lib/client';
+import { api2PdfServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import {
   api2PdfFileOutputSchema,

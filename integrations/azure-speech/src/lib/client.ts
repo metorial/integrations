@@ -73,7 +73,9 @@ export class SpeechToTextClient {
           ? 'True'
           : 'False'
       });
-      reqHeaders['Pronunciation-Assessment'] = Buffer.from(pronJson, 'utf8').toString('base64');
+      reqHeaders['Pronunciation-Assessment'] = Buffer.from(pronJson, 'utf8').toString(
+        'base64'
+      );
     }
 
     try {

@@ -108,7 +108,8 @@ export let manageIpAccessListTool = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.entryValue) throw mongodbServiceError('entryValue is required for delete action');
+      if (!ctx.input.entryValue)
+        throw mongodbServiceError('entryValue is required for delete action');
       await client.deleteIpAccessListEntry(projectId, ctx.input.entryValue);
       return {
         output: { deleted: true },

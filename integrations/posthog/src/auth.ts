@@ -93,7 +93,11 @@ export let auth = SlateAuth.create()
         description: 'Create and update insights',
         scope: 'insight:write'
       },
-      { title: 'Read Groups', description: 'Read groups and group types', scope: 'group:read' },
+      {
+        title: 'Read Groups',
+        description: 'Read groups and group types',
+        scope: 'group:read'
+      },
       {
         title: 'Write Groups',
         description: 'Create and update group properties',
@@ -176,7 +180,7 @@ export let auth = SlateAuth.create()
       let baseUrl = getOAuthBaseUrl(ctx.input);
       let http = createAxios({ baseURL: baseUrl });
 
-      let response;
+      let response: any;
       try {
         response = await http.post('/oauth/token', {
           grant_type: 'authorization_code',
@@ -207,13 +211,15 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        throw postHogServiceError('PostHog OAuth refresh token is missing. Reconnect the account.');
+        throw postHogServiceError(
+          'PostHog OAuth refresh token is missing. Reconnect the account.'
+        );
       }
 
       let baseUrl = getOAuthBaseUrl(ctx.input);
       let http = createAxios({ baseURL: baseUrl });
 
-      let response;
+      let response: any;
       try {
         response = await http.post('/oauth/token', {
           grant_type: 'refresh_token',
@@ -248,7 +254,7 @@ export let auth = SlateAuth.create()
         headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
-      let response;
+      let response: any;
       try {
         response = await http.get('/api/users/@me/');
       } catch (error) {

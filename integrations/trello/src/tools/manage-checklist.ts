@@ -1,10 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import {
-  requireAtLeastOneTrelloField,
-  requireTrelloString
-} from '../lib/errors';
 import { TrelloClient } from '../lib/client';
+import { requireAtLeastOneTrelloField, requireTrelloString } from '../lib/errors';
 import { spec } from '../spec';
 
 let checkItemSchema = z.object({
@@ -108,11 +105,7 @@ export let manageChecklist = SlateTool.create(spec, {
     if (action === 'create_checklist') {
       let cardId = requireTrelloString(ctx.input.cardId, 'cardId', action);
       let name = requireTrelloString(ctx.input.name, 'name', action);
-      let cl = await client.createChecklist(
-        cardId,
-        name,
-        ctx.input.position
-      );
+      let cl = await client.createChecklist(cardId, name, ctx.input.position);
       return {
         output: {
           checklist: {
@@ -178,11 +171,7 @@ export let manageChecklist = SlateTool.create(spec, {
       if (ctx.input.state !== undefined) updateData.state = ctx.input.state;
       if (ctx.input.position !== undefined) updateData.pos = ctx.input.position;
 
-      let item = await client.updateCheckItem(
-        cardId,
-        checkItemId,
-        updateData
-      );
+      let item = await client.updateCheckItem(cardId, checkItemId, updateData);
       return {
         output: {
           checkItem: {

@@ -139,9 +139,7 @@ export let manageMetadata = SlateTool.create(spec, {
 
     if (action === 'get_template') {
       if (!scope || !templateKey)
-        throw boxServiceError(
-          'scope and templateKey are required for get_template action'
-        );
+        throw boxServiceError('scope and templateKey are required for get_template action');
       let tmpl = await client.getMetadataTemplate(scope, templateKey);
       return {
         output: {

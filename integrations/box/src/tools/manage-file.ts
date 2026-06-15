@@ -61,8 +61,7 @@ export let manageFile = SlateTool.create(spec, {
     }
 
     if (action === 'move') {
-      if (!parentFolderId)
-        throw boxServiceError('parentFolderId is required for move action');
+      if (!parentFolderId) throw boxServiceError('parentFolderId is required for move action');
       let updates: Record<string, any> = { parent: { id: parentFolderId } };
       if (name) updates.name = name;
       let file = await client.updateFile(fileId, updates);
@@ -73,8 +72,7 @@ export let manageFile = SlateTool.create(spec, {
     }
 
     if (action === 'copy') {
-      if (!parentFolderId)
-        throw boxServiceError('parentFolderId is required for copy action');
+      if (!parentFolderId) throw boxServiceError('parentFolderId is required for copy action');
       let file = await client.copyFile(fileId, parentFolderId, name);
       return {
         output: { fileId: file.id, name: file.name, parentFolderId: file.parent?.id },

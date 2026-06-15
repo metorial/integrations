@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brazeServiceError, requireBrazeArray } from '../lib/errors';
 import { BrazeClient } from '../lib/client';
+import { brazeServiceError, requireBrazeArray } from '../lib/errors';
 import { spec } from '../spec';
 
 let userAliasSchema = z.object({

@@ -172,7 +172,9 @@ export let auth = SlateAuth.create()
     },
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        throw brevoServiceError('Brevo OAuth refresh token is missing. Reconnect the account.');
+        throw brevoServiceError(
+          'Brevo OAuth refresh token is missing. Reconnect the account.'
+        );
       }
 
       try {

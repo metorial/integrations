@@ -17,10 +17,7 @@ export let listOrgMachines = SlateTool.create(spec, {
       orgSlug: z.string().describe('Fly.io organization slug'),
       includeDeleted: z.boolean().optional().describe('Include deleted machines'),
       region: z.string().optional().describe('Filter by region code'),
-      state: z
-        .string()
-        .optional()
-        .describe('Comma-separated machine states to include'),
+      state: z.string().optional().describe('Comma-separated machine states to include'),
       summary: z.boolean().optional().describe('Omit machine config details from responses'),
       updatedAfter: z
         .string()

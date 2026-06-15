@@ -1,10 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import {
-  requireAtLeastOneTrelloField,
-  requireTrelloString
-} from '../lib/errors';
 import { TrelloClient } from '../lib/client';
+import { requireAtLeastOneTrelloField, requireTrelloString } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageList = SlateTool.create(spec, {

@@ -23,7 +23,9 @@ export let rerollImage = SlateTool.create(spec, {
       prompt: z
         .string()
         .optional()
-        .describe('Optional replacement prompt for the reroll. Defaults to the original prompt.'),
+        .describe(
+          'Optional replacement prompt for the reroll. Defaults to the original prompt.'
+        ),
       aspectRatio: z
         .string()
         .optional()

@@ -1,5 +1,5 @@
-import * as mysql from 'mysql2/promise';
 import type { ConnectionOptions, FieldPacket, ResultSetHeader } from 'mysql2/promise';
+import * as mysql from 'mysql2/promise';
 import { mysqlApiError } from './errors';
 
 export interface ConnectionConfig {
@@ -23,34 +23,34 @@ export interface QueryResult {
 }
 
 let mysqlTypeNames: Record<number, string> = {
-  0x00: 'decimal',
-  0x01: 'tinyint',
-  0x02: 'smallint',
-  0x03: 'int',
-  0x04: 'float',
-  0x05: 'double',
-  0x06: 'null',
-  0x07: 'timestamp',
-  0x08: 'bigint',
-  0x09: 'mediumint',
-  0x0a: 'date',
-  0x0b: 'time',
-  0x0c: 'datetime',
-  0x0d: 'year',
-  0x0e: 'date',
-  0x0f: 'varchar',
-  0x10: 'bit',
-  0xf5: 'json',
-  0xf6: 'decimal',
-  0xf7: 'enum',
-  0xf8: 'set',
-  0xf9: 'tinyblob',
-  0xfa: 'mediumblob',
-  0xfb: 'longblob',
-  0xfc: 'blob',
-  0xfd: 'varchar',
-  0xfe: 'char',
-  0xff: 'geometry'
+  0: 'decimal',
+  1: 'tinyint',
+  2: 'smallint',
+  3: 'int',
+  4: 'float',
+  5: 'double',
+  6: 'null',
+  7: 'timestamp',
+  8: 'bigint',
+  9: 'mediumint',
+  10: 'date',
+  11: 'time',
+  12: 'datetime',
+  13: 'year',
+  14: 'date',
+  15: 'varchar',
+  16: 'bit',
+  245: 'json',
+  246: 'decimal',
+  247: 'enum',
+  248: 'set',
+  249: 'tinyblob',
+  250: 'mediumblob',
+  251: 'longblob',
+  252: 'blob',
+  253: 'varchar',
+  254: 'char',
+  255: 'geometry'
 };
 
 let guessCommand = (sql: string): string => {

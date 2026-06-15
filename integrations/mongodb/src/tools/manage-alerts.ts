@@ -127,7 +127,8 @@ export let manageAlertsTool = SlateTool.create(spec, {
 
     if (ctx.input.action === 'acknowledge') {
       if (!ctx.input.alertId) throw mongodbServiceError('alertId is required');
-      if (!ctx.input.acknowledgedUntil) throw mongodbServiceError('acknowledgedUntil is required');
+      if (!ctx.input.acknowledgedUntil)
+        throw mongodbServiceError('acknowledgedUntil is required');
       let a = await client.acknowledgeAlert(projectId, ctx.input.alertId, {
         acknowledgedUntil: ctx.input.acknowledgedUntil,
         acknowledgementComment: ctx.input.acknowledgementComment

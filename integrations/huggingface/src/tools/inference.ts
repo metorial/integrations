@@ -156,12 +156,17 @@ export let featureExtractionTool = SlateTool.create(spec, {
     z.object({
       model: z
         .string()
-        .describe('Feature-extraction model ID (e.g. "sentence-transformers/all-MiniLM-L6-v2")'),
+        .describe(
+          'Feature-extraction model ID (e.g. "sentence-transformers/all-MiniLM-L6-v2")'
+        ),
       inputs: z
         .union([z.string(), z.array(z.string())])
         .describe('Text or list of texts to embed'),
       normalize: z.boolean().optional().describe('Whether to normalize returned embeddings'),
-      truncate: z.boolean().optional().describe('Whether to truncate inputs that exceed model limits'),
+      truncate: z
+        .boolean()
+        .optional()
+        .describe('Whether to truncate inputs that exceed model limits'),
       promptName: z
         .string()
         .optional()

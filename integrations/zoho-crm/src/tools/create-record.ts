@@ -63,15 +63,11 @@ Optionally control which workflow triggers fire upon creation.`,
       apiBaseUrl: ctx.auth.apiBaseUrl
     });
 
-    let result = await client.createRecords(
-      ctx.input.module,
-      ctx.input.records,
-      {
-        triggers: ctx.input.triggers,
-        applyFeatureExecution: ctx.input.applyFeatureExecution,
-        skipFeatureExecution: ctx.input.skipFeatureExecution
-      }
-    );
+    let result = await client.createRecords(ctx.input.module, ctx.input.records, {
+      triggers: ctx.input.triggers,
+      applyFeatureExecution: ctx.input.applyFeatureExecution,
+      skipFeatureExecution: ctx.input.skipFeatureExecution
+    });
 
     let results = (result?.data || []).map((item: any) => ({
       recordId: item?.details?.id,

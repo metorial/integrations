@@ -16,7 +16,9 @@ export let getHistoryAudio = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      historyItemId: z.string().describe('ID of the history item whose audio should be returned')
+      historyItemId: z
+        .string()
+        .describe('ID of the history item whose audio should be returned')
     })
   )
   .output(audioOutputSchema)

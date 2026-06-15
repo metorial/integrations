@@ -147,10 +147,7 @@ export let sendChatCompletion = SlateTool.create(spec, {
         .number()
         .optional()
         .describe('Top-K sampling: limits token selection to K most likely tokens'),
-      topA: z
-        .number()
-        .optional()
-        .describe('Top-A sampling threshold for supported providers'),
+      topA: z.number().optional().describe('Top-A sampling threshold for supported providers'),
       minP: z
         .number()
         .optional()

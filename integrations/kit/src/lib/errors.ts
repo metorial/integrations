@@ -44,7 +44,12 @@ let collectDetails = (value: unknown, details: string[], prefix?: string) => {
   pushDetail(details, value.code);
 
   for (let [key, child] of Object.entries(value)) {
-    if (key === 'message' || key === 'error' || key === 'error_description' || key === 'code') {
+    if (
+      key === 'message' ||
+      key === 'error' ||
+      key === 'error_description' ||
+      key === 'code'
+    ) {
       continue;
     }
 

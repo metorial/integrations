@@ -1,10 +1,14 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brevoServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
+import { brevoServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
-let buildSender = (input: { senderId?: number; senderEmail?: string; senderName?: string }) => {
+let buildSender = (input: {
+  senderId?: number;
+  senderEmail?: string;
+  senderName?: string;
+}) => {
   let hasSenderId = input.senderId !== undefined;
   let hasSenderEmail = Boolean(input.senderEmail);
 
@@ -174,11 +178,7 @@ export let updateEmailCampaign = SlateTool.create(spec, {
       assertSingleContentSource(ctx.input);
     }
 
-    if (
-      ctx.input.senderName &&
-      ctx.input.senderId === undefined &&
-      !ctx.input.senderEmail
-    ) {
+    if (ctx.input.senderName && ctx.input.senderId === undefined && !ctx.input.senderEmail) {
       throw brevoServiceError('senderName can only be used with senderEmail.');
     }
 

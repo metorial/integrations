@@ -39,7 +39,11 @@ export let updatePerson = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId, tier: ctx.auth.tier });
+    let client = new Client({
+      token: ctx.auth.token,
+      websiteId: ctx.config.websiteId,
+      tier: ctx.auth.tier
+    });
     let updated: string[] = [];
 
     let profile: Record<string, any> = {};

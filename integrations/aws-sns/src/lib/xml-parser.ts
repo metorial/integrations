@@ -52,9 +52,7 @@ let parseElement = (xml: string, target: Record<string, any>): void => {
         let entryMatch: RegExpExecArray | null;
         while ((entryMatch = entryRegex.exec(content)) !== null) {
           let keyMatch = /<key(?:\s[^>]*)?>([\s\S]*?)<\/key>/.exec(entryMatch[1]!);
-          let valueMatch = /<value(?:\s[^>]*)?>([\s\S]*?)<\/value>/.exec(
-            entryMatch[1]!
-          );
+          let valueMatch = /<value(?:\s[^>]*)?>([\s\S]*?)<\/value>/.exec(entryMatch[1]!);
           if (keyMatch && valueMatch) {
             entries[decodeXmlEntities(keyMatch[1]!.trim())] = decodeXmlEntities(
               valueMatch[1]!.trim()

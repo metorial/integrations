@@ -155,7 +155,7 @@ Use this for performance reporting that is scoped to Klaviyo marketing assets ra
       pageCursor: input.pageCursor
     };
 
-    let report;
+    let report: any;
     if (input.report === 'campaign_values') {
       report = await client.queryCampaignValues(attributes, params);
     } else if (input.report === 'flow_values') {

@@ -98,7 +98,7 @@ export let auth = SlateAuth.create()
     handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response;
+      let response: any;
       try {
         response = await httpClient.post(
           '/oauth/token',
@@ -141,7 +141,7 @@ export let auth = SlateAuth.create()
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response;
+      let response: any;
       try {
         response = await httpClient.post(
           '/oauth/token',
@@ -179,7 +179,7 @@ export let auth = SlateAuth.create()
       input: Record<string, never>;
       scopes: string[];
     }) => {
-      let response;
+      let response: any;
       try {
         response = await httpClient.get('/oauth/me', {
           headers: {
@@ -233,7 +233,7 @@ export let auth = SlateAuth.create()
       input: { token: string; tokenType?: 'account_or_workspace' | 'project' };
     }) => {
       let isProjectToken = ctx.output.tokenHeader === 'project-access-token';
-      let response;
+      let response: any;
 
       try {
         response = await httpClient.post(
@@ -264,7 +264,8 @@ export let auth = SlateAuth.create()
 
         return {
           profile: {
-            id: token?.id ?? `${token?.projectId ?? 'project'}:${token?.environmentId ?? 'env'}`,
+            id:
+              token?.id ?? `${token?.projectId ?? 'project'}:${token?.environmentId ?? 'env'}`,
             name: token?.name ?? 'Railway Project Token'
           }
         };

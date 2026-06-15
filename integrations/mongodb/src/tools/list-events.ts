@@ -75,7 +75,8 @@ export let listEventsTool = SlateTool.create(spec, {
       result = await client.listProjectEvents(projectId, params);
     } else {
       let orgId = ctx.input.organizationId || ctx.config.organizationId;
-      if (!orgId) throw mongodbServiceError('organizationId is required for organization scope');
+      if (!orgId)
+        throw mongodbServiceError('organizationId is required for organization scope');
       result = await client.listOrganizationEvents(orgId, params);
     }
 

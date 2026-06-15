@@ -21,7 +21,11 @@ export let createPerson = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId, tier: ctx.auth.tier });
+    let client = new Client({
+      token: ctx.auth.token,
+      websiteId: ctx.config.websiteId,
+      tier: ctx.auth.tier
+    });
 
     if (!ctx.input.email && !ctx.input.nickname) {
       throw crispServiceError('Provide at least one of email or nickname.');

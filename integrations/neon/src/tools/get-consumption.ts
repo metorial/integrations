@@ -35,9 +35,7 @@ export let getConsumption = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      from: z
-        .string()
-        .describe('Start date-time for the metrics period in ISO 8601 format'),
+      from: z.string().describe('Start date-time for the metrics period in ISO 8601 format'),
       to: z.string().describe('End date-time for the metrics period in ISO 8601 format'),
       granularity: z
         .enum(['hourly', 'daily', 'monthly'])

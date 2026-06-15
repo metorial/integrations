@@ -20,7 +20,9 @@ export let listTrackTypes = SlateTool.create(spec, {
       expandAll: z
         .boolean()
         .optional()
-        .describe('Set to true to return track types from all apps in a multi-app subscription')
+        .describe(
+          'Set to true to return track types from all apps in a multi-app subscription'
+        )
     })
   )
   .output(
@@ -45,11 +47,13 @@ export let listTrackTypes = SlateTool.create(spec, {
       expandAll: ctx.input.expandAll
     });
 
-    let mappedTrackTypes = (Array.isArray(trackTypes) ? trackTypes : []).map((trackType: any) => ({
-      trackTypeId: trackType.id || trackType.trackTypeId || '',
-      name: trackType.name || trackType.event || '',
-      raw: trackType
-    }));
+    let mappedTrackTypes = (Array.isArray(trackTypes) ? trackTypes : []).map(
+      (trackType: any) => ({
+        trackTypeId: trackType.id || trackType.trackTypeId || '',
+        name: trackType.name || trackType.event || '',
+        raw: trackType
+      })
+    );
 
     return {
       output: {

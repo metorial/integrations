@@ -42,8 +42,13 @@ export let searchCustomers = SlateTool.create(spec, {
       query: z
         .record(z.string(), z.any())
         .optional()
-        .describe('Advanced Square CustomerQuery object. Convenience filters are merged into this query.'),
-      count: z.boolean().optional().describe('Whether Square should return the total match count'),
+        .describe(
+          'Advanced Square CustomerQuery object. Convenience filters are merged into this query.'
+        ),
+      count: z
+        .boolean()
+        .optional()
+        .describe('Whether Square should return the total match count'),
       cursor: z.string().optional().describe('Pagination cursor from a previous response'),
       limit: z.number().optional().describe('Maximum number of results per page (1-100)')
     })

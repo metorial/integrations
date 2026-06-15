@@ -20,7 +20,10 @@ Both the resume and job description must already be uploaded and parsed in Affin
         .string()
         .describe('Identifier of the parsed job description document.'),
       indexName: z.string().optional().describe('Specific index to use for matching.'),
-      searchExpression: z.string().optional().describe('Keywords to add to the search criteria.'),
+      searchExpression: z
+        .string()
+        .optional()
+        .describe('Keywords to add to the search criteria.'),
       jobTitlesWeight: z.number().optional().describe('Weight for job titles (0 to 1).'),
       skillsWeight: z.number().optional().describe('Weight for skills (0 to 1).'),
       educationWeight: z.number().optional().describe('Weight for education (0 to 1).'),

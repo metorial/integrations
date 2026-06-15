@@ -158,7 +158,9 @@ export let createContact = SlateTool.create(spec, {
       handles: z
         .array(handleSchema)
         .optional()
-        .describe('Contact handles. Front requires at least one handle when creating a contact.'),
+        .describe(
+          'Contact handles. Front requires at least one handle when creating a contact.'
+        ),
       listNames: z
         .array(z.string())
         .optional()

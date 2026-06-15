@@ -91,7 +91,9 @@ export let manageAppClient = SlateTool.create(spec, {
       enablePropagateAdditionalUserContextData: z
         .boolean()
         .optional()
-        .describe('Allow additional user context data such as source IP for threat protection'),
+        .describe(
+          'Allow additional user context data such as source IP for threat protection'
+        ),
       preventUserExistenceErrors: z.enum(['ENABLED', 'LEGACY']).optional(),
       readAttributes: z.array(z.string()).optional(),
       writeAttributes: z.array(z.string()).optional(),
@@ -206,8 +208,7 @@ export let manageAppClient = SlateTool.create(spec, {
       if (ctx.input.refreshTokenRotation) {
         params.RefreshTokenRotation = {
           Feature: ctx.input.refreshTokenRotation.feature,
-          RetryGracePeriodSeconds:
-            ctx.input.refreshTokenRotation.retryGracePeriodSeconds
+          RetryGracePeriodSeconds: ctx.input.refreshTokenRotation.retryGracePeriodSeconds
         };
       }
       if (ctx.input.enableTokenRevocation !== undefined)

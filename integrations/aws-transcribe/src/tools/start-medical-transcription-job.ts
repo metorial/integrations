@@ -43,9 +43,7 @@ export let startMedicalTranscriptionJob = SlateTool.create(spec, {
         .optional()
         .describe('KMS key ID for encrypting the output'),
       kmsEncryptionContext: kmsEncryptionContextSchema,
-      mediaFormat: mediaFormatSchema
-        .optional()
-        .describe('Format of the media file'),
+      mediaFormat: mediaFormatSchema.optional().describe('Format of the media file'),
       mediaSampleRateHertz: z.number().optional().describe('Sample rate of the audio in Hz'),
       settings: z
         .object({

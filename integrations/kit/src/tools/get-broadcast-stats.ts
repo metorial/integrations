@@ -29,8 +29,14 @@ export let getBroadcastStats = SlateTool.create(spec, {
       showTotalClicks: z.boolean().describe('Whether total click count is available'),
       status: z.string().describe('Broadcast status'),
       progress: z.number().describe('Send progress'),
-      openTrackingDisabled: z.boolean().optional().describe('Whether open tracking is disabled'),
-      clickTrackingDisabled: z.boolean().optional().describe('Whether click tracking is disabled')
+      openTrackingDisabled: z
+        .boolean()
+        .optional()
+        .describe('Whether open tracking is disabled'),
+      clickTrackingDisabled: z
+        .boolean()
+        .optional()
+        .describe('Whether click tracking is disabled')
     })
   )
   .handleInvocation(async ctx => {

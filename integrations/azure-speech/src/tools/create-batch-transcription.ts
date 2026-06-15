@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { azureSpeechServiceError } from '../lib/errors';
 import { SpeechToTextClient } from '../lib/client';
+import { azureSpeechServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let createBatchTranscription = SlateTool.create(spec, {
@@ -110,7 +110,9 @@ The job runs asynchronously — use the **Get Batch Transcription** tool to chec
     let input = ctx.input;
 
     if (!input.contentUrls?.length && !input.contentContainerUrl) {
-      throw azureSpeechServiceError('Either contentUrls or contentContainerUrl must be provided.');
+      throw azureSpeechServiceError(
+        'Either contentUrls or contentContainerUrl must be provided.'
+      );
     }
 
     if (input.contentUrls?.length && input.contentContainerUrl) {

@@ -24,10 +24,7 @@ export let manageExport = SlateTool.create(spec, {
       action: z
         .enum(['create_customer_export', 'list', 'get', 'download'])
         .describe('Export operation to perform'),
-      exportId: z
-        .number()
-        .optional()
-        .describe('Export ID. Required for get and download.'),
+      exportId: z.number().optional().describe('Export ID. Required for get and download.'),
       filters: z
         .record(z.string(), z.unknown())
         .optional()
@@ -111,9 +108,7 @@ export let manageExport = SlateTool.create(spec, {
         byteLength: downloaded.byteLength,
         attachmentCount: 1
       },
-      attachments: [
-        createBase64Attachment(downloaded.contentBase64, downloaded.mimeType)
-      ],
+      attachments: [createBase64Attachment(downloaded.contentBase64, downloaded.mimeType)],
       message: `Downloaded export **${ctx.input.exportId}** as an attachment.`
     };
   })

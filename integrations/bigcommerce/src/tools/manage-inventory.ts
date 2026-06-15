@@ -106,9 +106,7 @@ export let manageInventory = SlateTool.create(spec, {
         item.variantId === undefined &&
         item.productId === undefined
       ) {
-        throw bigcommerceServiceError(
-          `items[${index}] requires sku, variantId, or productId`
-        );
+        throw bigcommerceServiceError(`items[${index}] requires sku, variantId, or productId`);
       }
 
       let mapped: Record<string, any> = {

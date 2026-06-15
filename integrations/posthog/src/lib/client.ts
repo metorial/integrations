@@ -705,11 +705,7 @@ export class PostHogClient {
   // Query (HogQL)
 
   async runQuery(query: JsonRecord) {
-    return this.privatePost(
-      this.envPath('/query/', 'run a query'),
-      { query },
-      'run query'
-    );
+    return this.privatePost(this.envPath('/query/', 'run a query'), { query }, 'run query');
   }
 
   // Event Definitions

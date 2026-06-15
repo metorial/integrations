@@ -14,9 +14,9 @@ import {
   deleteProject,
   deleteRole,
   deleteSnapshot,
-  getConsumption,
   getBranch,
   getConnectionUri,
+  getConsumption,
   getDatabase,
   getEndpoint,
   getOperation,
@@ -32,15 +32,15 @@ import {
   listSnapshots,
   recoverBranch,
   recoverProject,
-  revealRolePassword,
   resetRolePassword,
   restoreBranch,
   restoreSnapshot,
+  revealRolePassword,
   setDefaultBranch,
+  updateBranch,
   updateDatabase,
   updateEndpoint,
   updateProject,
-  updateBranch,
   updateSnapshot
 } from './tools';
 

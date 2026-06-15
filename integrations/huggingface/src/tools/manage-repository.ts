@@ -111,12 +111,17 @@ export let duplicateRepositoryTool = SlateTool.create(spec, {
       repoType: z
         .enum(['space'])
         .default('space')
-        .describe('Repository type to duplicate. Hugging Face currently supports Space duplication.'),
+        .describe(
+          'Repository type to duplicate. Hugging Face currently supports Space duplication.'
+        ),
       sourceRepoId: z.string().describe('Source Space ID (e.g. "owner/source-space")'),
       destinationRepoId: z
         .string()
         .describe('Destination Space ID or name for the duplicated repository'),
-      private: z.boolean().optional().describe('Whether the duplicated Space should be private'),
+      private: z
+        .boolean()
+        .optional()
+        .describe('Whether the duplicated Space should be private'),
       visibility: z
         .enum(['private', 'public', 'protected'])
         .optional()

@@ -36,7 +36,12 @@ export let signPdf = SlateTool.create(spec, {
       marginYInMM: z.string().optional().describe('Vertical margin in millimeters'),
       marginXInPx: z.string().optional().describe('Horizontal margin in pixels'),
       marginYInPx: z.string().optional().describe('Vertical margin in pixels'),
-      opacity: z.number().min(0).max(100).default(100).describe('Signature opacity from 0-100'),
+      opacity: z
+        .number()
+        .min(0)
+        .max(100)
+        .default(100)
+        .describe('Signature opacity from 0-100'),
       showOnlyInPrint: z.boolean().optional().describe('Show signature only when printing'),
       isBackground: z.boolean().optional().describe('Place the signature behind page content')
     })

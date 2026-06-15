@@ -157,8 +157,7 @@ export let manageDocs = SlateTool.create(spec, {
       }
 
       case 'get_collection': {
-        if (!ctx.input.collectionId)
-          throw helpscoutServiceError('Collection ID is required');
+        if (!ctx.input.collectionId) throw helpscoutServiceError('Collection ID is required');
         let data = await client.getCollection(ctx.input.collectionId);
         let c = data?.collection ?? data;
         return {
@@ -194,8 +193,7 @@ export let manageDocs = SlateTool.create(spec, {
       }
 
       case 'update_collection': {
-        if (!ctx.input.collectionId)
-          throw helpscoutServiceError('Collection ID is required');
+        if (!ctx.input.collectionId) throw helpscoutServiceError('Collection ID is required');
         await client.updateCollection(ctx.input.collectionId, {
           name: ctx.input.name,
           visibility: ctx.input.visibility,
@@ -208,8 +206,7 @@ export let manageDocs = SlateTool.create(spec, {
       }
 
       case 'delete_collection': {
-        if (!ctx.input.collectionId)
-          throw helpscoutServiceError('Collection ID is required');
+        if (!ctx.input.collectionId) throw helpscoutServiceError('Collection ID is required');
         await client.deleteCollection(ctx.input.collectionId);
         return {
           output: { success: true },
@@ -218,8 +215,7 @@ export let manageDocs = SlateTool.create(spec, {
       }
 
       case 'list_categories': {
-        if (!ctx.input.collectionId)
-          throw helpscoutServiceError('Collection ID is required');
+        if (!ctx.input.collectionId) throw helpscoutServiceError('Collection ID is required');
         let data = await client.listCategories(ctx.input.collectionId, {
           page: ctx.input.page
         });
@@ -272,8 +268,7 @@ export let manageDocs = SlateTool.create(spec, {
       }
 
       case 'list_articles': {
-        if (!ctx.input.collectionId)
-          throw helpscoutServiceError('Collection ID is required');
+        if (!ctx.input.collectionId) throw helpscoutServiceError('Collection ID is required');
         let data = await client.listArticles(ctx.input.collectionId, {
           page: ctx.input.page,
           status: ctx.input.status,

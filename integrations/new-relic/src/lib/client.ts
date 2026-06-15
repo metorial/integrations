@@ -279,10 +279,7 @@ export class NerdGraphClient {
     return data?.actor?.account?.alerts?.policy;
   }
 
-  async createAlertPolicy(params: {
-    name: string;
-    incidentPreference: string;
-  }): Promise<any> {
+  async createAlertPolicy(params: { name: string; incidentPreference: string }): Promise<any> {
     let data = await this.query(
       `mutation($accountId: Int!, $policy: AlertsPolicyInput!) {
         alertsPolicyCreate(accountId: $accountId, policy: $policy) {
@@ -682,7 +679,8 @@ export class NerdGraphClient {
       locations: params.locations
     };
     if (params.apdexTarget !== undefined) monitorInput.apdexTarget = params.apdexTarget;
-    if (params.advancedOptions !== undefined) monitorInput.advancedOptions = params.advancedOptions;
+    if (params.advancedOptions !== undefined)
+      monitorInput.advancedOptions = params.advancedOptions;
 
     if (monitorType === 'SIMPLE_BROWSER') {
       monitorInput = {
@@ -692,7 +690,9 @@ export class NerdGraphClient {
         devices: params.devices || ['DESKTOP'],
         runtime: {
           ...defaultRuntime(monitorType),
-          ...(params.runtimeTypeVersion ? { runtimeTypeVersion: params.runtimeTypeVersion } : {})
+          ...(params.runtimeTypeVersion
+            ? { runtimeTypeVersion: params.runtimeTypeVersion }
+            : {})
         }
       };
 
@@ -727,7 +727,9 @@ export class NerdGraphClient {
         script: params.script,
         runtime: {
           ...defaultRuntime(monitorType),
-          ...(params.runtimeTypeVersion ? { runtimeTypeVersion: params.runtimeTypeVersion } : {})
+          ...(params.runtimeTypeVersion
+            ? { runtimeTypeVersion: params.runtimeTypeVersion }
+            : {})
         },
         ...(monitorType === 'SCRIPT_BROWSER'
           ? {
@@ -804,7 +806,8 @@ export class NerdGraphClient {
     if (params.locations !== undefined) monitorInput.locations = params.locations;
     if (params.script !== undefined) monitorInput.script = params.script;
     if (params.apdexTarget !== undefined) monitorInput.apdexTarget = params.apdexTarget;
-    if (params.advancedOptions !== undefined) monitorInput.advancedOptions = params.advancedOptions;
+    if (params.advancedOptions !== undefined)
+      monitorInput.advancedOptions = params.advancedOptions;
 
     if (params.runtimeTypeVersion !== undefined) {
       monitorInput.runtime = {

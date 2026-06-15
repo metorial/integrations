@@ -37,7 +37,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.trello.com/1'
       });
 
-      let response;
+      let response: any;
       try {
         response = await http.get('/members/me', {
           params: {

@@ -43,10 +43,7 @@ export let downloadFiles = SlateTool.create(spec, {
     let result: { contentBase64: string; mimeType: string; byteLength: number };
 
     if (ctx.input.resourceType === 'signature_request') {
-      result = await client.getSignatureRequestFiles(
-        ctx.input.resourceId,
-        ctx.input.fileType
-      );
+      result = await client.getSignatureRequestFiles(ctx.input.resourceId, ctx.input.fileType);
     } else {
       result = await client.getTemplateFiles(ctx.input.resourceId, ctx.input.fileType);
     }

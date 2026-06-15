@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { frontServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
+import { frontServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let addComment = SlateTool.create(spec, {
@@ -42,7 +42,9 @@ export let addComment = SlateTool.create(spec, {
     let comment: any;
     if (ctx.input.parentCommentId) {
       if (ctx.input.isPinned !== undefined) {
-        throw frontServiceError('isPinned can only be used when adding a comment to a conversation.');
+        throw frontServiceError(
+          'isPinned can only be used when adding a comment to a conversation.'
+        );
       }
 
       comment = await client.replyToComment(ctx.input.parentCommentId, {

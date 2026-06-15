@@ -109,7 +109,9 @@ export let adjustInventory = SlateTool.create(spec, {
 
     for (let [index, change] of ctx.input.changes.entries()) {
       if (change.type === 'PHYSICAL_COUNT' && !change.physicalCount) {
-        throw squareServiceError(`changes[${index}].physicalCount is required for PHYSICAL_COUNT.`);
+        throw squareServiceError(
+          `changes[${index}].physicalCount is required for PHYSICAL_COUNT.`
+        );
       }
       if (change.type === 'ADJUSTMENT' && !change.adjustment) {
         throw squareServiceError(`changes[${index}].adjustment is required for ADJUSTMENT.`);

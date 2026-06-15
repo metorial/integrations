@@ -28,7 +28,9 @@ export let getDatabaseSchema = SlateTool.create(spec, {
       includedSchemas: z
         .string()
         .optional()
-        .describe('Comma-separated schemas for TypeScript type generation (defaults to public)')
+        .describe(
+          'Comma-separated schemas for TypeScript type generation (defaults to public)'
+        )
     })
   )
   .output(

@@ -30,8 +30,14 @@ export let manageProductTags = SlateTool.create(spec, {
       perPage: z.number().optional().default(10).describe('Results per page for list'),
       search: z.string().optional().describe('Search term for list'),
       slug: z.string().optional().describe('Tag slug, or slug filter for list'),
-      product: z.number().optional().describe('Limit list results to tags assigned to product ID'),
-      hideEmpty: z.boolean().optional().describe('Whether to hide tags not assigned to products'),
+      product: z
+        .number()
+        .optional()
+        .describe('Limit list results to tags assigned to product ID'),
+      hideEmpty: z
+        .boolean()
+        .optional()
+        .describe('Whether to hide tags not assigned to products'),
       orderby: z
         .enum(['id', 'include', 'name', 'slug', 'term_group', 'description', 'count'])
         .optional()

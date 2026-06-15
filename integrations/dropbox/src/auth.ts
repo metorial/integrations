@@ -98,7 +98,7 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response;
+      let response: any;
       try {
         let params = new URLSearchParams({
           code: ctx.code,
@@ -138,7 +138,7 @@ export let auth = SlateAuth.create()
         );
       }
 
-      let response;
+      let response: any;
       try {
         let params = new URLSearchParams({
           grant_type: 'refresh_token',
@@ -175,7 +175,7 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let response;
+      let response: any;
       try {
         response = await apiAxios.post('/2/users/get_current_account', null, {
           headers: {

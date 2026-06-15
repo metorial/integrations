@@ -2,11 +2,7 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { BrowserlessClient } from '../lib/client';
 import { spec } from '../spec';
-import {
-  base64ByteLength,
-  base64FileAttachment,
-  requireHttpUrl
-} from './shared';
+import { base64ByteLength, base64FileAttachment, requireHttpUrl } from './shared';
 
 export let unblockPage = SlateTool.create(spec, {
   name: 'Unblock Page',
@@ -110,7 +106,9 @@ export let unblockPage = SlateTool.create(spec, {
         cookies: result.cookies ?? [],
         browserWSEndpoint: result.browserWSEndpoint ?? null,
         screenshotMimeType: result.screenshot ? 'image/png' : undefined,
-        screenshotByteLength: result.screenshot ? base64ByteLength(result.screenshot) : undefined,
+        screenshotByteLength: result.screenshot
+          ? base64ByteLength(result.screenshot)
+          : undefined,
         attachmentCount: attachments.length
       },
       attachments,

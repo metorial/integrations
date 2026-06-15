@@ -1,5 +1,5 @@
-export * from './get-database-schema';
 export * from './get-auth-config';
+export * from './get-database-schema';
 export * from './get-project';
 export * from './get-project-health';
 export * from './get-project-logs';

@@ -47,7 +47,9 @@ export let projectEventsTrigger = SlateTrigger.create(spec, {
     pollEvents: async ctx => {
       let projectId = ctx.config.projectId;
       if (!projectId)
-        throw mongodbServiceError('projectId is required in configuration for project events polling');
+        throw mongodbServiceError(
+          'projectId is required in configuration for project events polling'
+        );
 
       let client = new AtlasClient(ctx.auth);
 

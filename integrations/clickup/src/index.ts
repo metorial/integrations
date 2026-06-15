@@ -1,9 +1,9 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  createComment,
   createChecklist,
   createChecklistItem,
+  createComment,
   createFolder,
   createGoal,
   createList,
@@ -33,11 +33,11 @@ import {
   getTimeEntries,
   getWorkspaceMembers,
   getWorkspaces,
+  removeCustomFieldValue,
   searchTasks,
   setCustomFieldValue,
   startTimer,
   stopTimer,
-  removeCustomFieldValue,
   updateChecklist,
   updateChecklistItem,
   updateComment,
@@ -46,8 +46,8 @@ import {
   updateList,
   updateSpace,
   updateSpaceTag,
-  updateTimeEntry,
-  updateTask
+  updateTask,
+  updateTimeEntry
 } from './tools';
 import { taskEvents, workspaceEvents } from './triggers';
 

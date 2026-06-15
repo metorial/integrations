@@ -94,7 +94,9 @@ export let getAsyncChatCompletion = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      requestId: z.string().describe('Async request identifier returned by create_async_chat_completion')
+      requestId: z
+        .string()
+        .describe('Async request identifier returned by create_async_chat_completion')
     })
   )
   .output(

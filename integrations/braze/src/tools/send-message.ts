@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brazeServiceError } from '../lib/errors';
 import { BrazeClient } from '../lib/client';
+import { brazeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let userAliasSchema = z.object({
@@ -77,10 +77,7 @@ export let sendMessage = SlateTool.create(spec, {
         .array(z.string())
         .optional()
         .describe('List of external user IDs to send to'),
-      userAliases: z
-        .array(userAliasSchema)
-        .optional()
-        .describe('User aliases to send to'),
+      userAliases: z.array(userAliasSchema).optional().describe('User aliases to send to'),
       broadcast: z
         .boolean()
         .optional()

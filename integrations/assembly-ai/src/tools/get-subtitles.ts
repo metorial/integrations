@@ -45,8 +45,7 @@ Optionally limit the number of characters per caption line.`,
     );
 
     let content = typeof result === 'string' ? result : JSON.stringify(result);
-    let contentType =
-      ctx.input.subtitleFormat === 'srt' ? 'application/x-subrip' : 'text/vtt';
+    let contentType = ctx.input.subtitleFormat === 'srt' ? 'application/x-subrip' : 'text/vtt';
 
     return {
       output: {

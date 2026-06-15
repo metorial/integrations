@@ -28,7 +28,9 @@ export let manageNamespacesTool = SlateTool.create(spec, {
       schema: z
         .record(z.string(), z.any())
         .optional()
-        .describe('Optional namespace schema for create, such as { fields: { fieldName: { filterable: true } } }'),
+        .describe(
+          'Optional namespace schema for create, such as { fields: { fieldName: { filterable: true } } }'
+        ),
       limit: z.number().int().min(1).optional().describe('Maximum namespaces to list'),
       paginationToken: z.string().optional().describe('Token for the next list page')
     })

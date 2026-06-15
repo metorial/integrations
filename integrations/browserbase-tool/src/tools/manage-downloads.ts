@@ -28,8 +28,14 @@ export let listDownloads = SlateTool.create(spec, {
       mimeType: z.string().optional().describe('Filter by MIME type'),
       minSize: z.number().min(0).optional().describe('Minimum file size in bytes'),
       maxSize: z.number().min(0).optional().describe('Maximum file size in bytes'),
-      createdAfter: z.string().optional().describe('Filter downloads created after this ISO timestamp'),
-      createdBefore: z.string().optional().describe('Filter downloads created before this ISO timestamp'),
+      createdAfter: z
+        .string()
+        .optional()
+        .describe('Filter downloads created after this ISO timestamp'),
+      createdBefore: z
+        .string()
+        .optional()
+        .describe('Filter downloads created before this ISO timestamp'),
       limit: z.number().int().min(1).max(100).optional().describe('Maximum results to return'),
       offset: z.number().int().min(0).optional().describe('Number of results to skip')
     })

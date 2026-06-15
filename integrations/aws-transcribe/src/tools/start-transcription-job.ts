@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { transcribeServiceError } from '../lib/errors';
 import { TranscribeClient } from '../lib/client';
+import { transcribeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import {
   ensureExactlyOne,

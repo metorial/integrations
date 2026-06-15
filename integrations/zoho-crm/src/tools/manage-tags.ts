@@ -80,11 +80,7 @@ Set **action** to "list" to view available tags for a module, "add" to tag recor
     if (ctx.input.action === 'remove') {
       let recordIds = requireZohoCrmArray(ctx.input.recordIds, 'recordIds', 'remove');
       let tagNames = requireZohoCrmArray(ctx.input.tagNames, 'tagNames', 'remove');
-      let result = await client.removeTagsFromRecords(
-        ctx.input.module,
-        recordIds,
-        tagNames
-      );
+      let result = await client.removeTagsFromRecords(ctx.input.module, recordIds, tagNames);
       return {
         output: { results: result?.data || [] },
         message: `Removed tags [${tagNames.join(', ')}] from **${recordIds.length}** record(s).`

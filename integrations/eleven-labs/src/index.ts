@@ -2,8 +2,8 @@ import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   composeMusic,
-  createDubbing,
   createDialogue,
+  createDubbing,
   createForcedAlignment,
   deleteDubbing,
   deleteVoice,

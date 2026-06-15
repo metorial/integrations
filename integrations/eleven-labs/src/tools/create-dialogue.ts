@@ -3,7 +3,12 @@ import { z } from 'zod';
 import { ElevenLabsClient } from '../lib/client';
 import { elevenLabsServiceError } from '../lib/errors';
 import { spec } from '../spec';
-import { audioAttachment, audioOutput, audioOutputSchema, voiceSettingsSchema } from './shared';
+import {
+  audioAttachment,
+  audioOutput,
+  audioOutputSchema,
+  voiceSettingsSchema
+} from './shared';
 
 export let createDialogue = SlateTool.create(spec, {
   name: 'Create Dialogue',

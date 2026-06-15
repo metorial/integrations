@@ -56,7 +56,11 @@ export let sendMessage = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId, tier: ctx.auth.tier });
+    let client = new Client({
+      token: ctx.auth.token,
+      websiteId: ctx.config.websiteId,
+      tier: ctx.auth.tier
+    });
 
     if (['text', 'note'].includes(ctx.input.type) && typeof ctx.input.content !== 'string') {
       throw crispServiceError(`${ctx.input.type} messages require string content.`);

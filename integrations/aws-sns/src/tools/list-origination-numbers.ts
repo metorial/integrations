@@ -10,7 +10,10 @@ let originationNumberSchema = z.object({
     .array(z.string())
     .describe('Capabilities for the number, such as SMS or VOICE'),
   phoneNumber: z.string().describe('Origination phone number'),
-  routeType: z.string().optional().describe('Route type, such as Promotional or Transactional'),
+  routeType: z
+    .string()
+    .optional()
+    .describe('Route type, such as Promotional or Transactional'),
   status: z.string().optional().describe('SNS origination number status')
 });
 

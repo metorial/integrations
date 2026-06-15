@@ -25,7 +25,9 @@ export let fileRevisions = SlateTool.create(spec, {
       mode: z
         .enum(['path', 'id'])
         .optional()
-        .describe('For "list", whether to return revisions for the current path or stable file ID'),
+        .describe(
+          'For "list", whether to return revisions for the current path or stable file ID'
+        ),
       limit: z
         .number()
         .optional()

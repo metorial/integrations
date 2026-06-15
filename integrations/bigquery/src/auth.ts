@@ -126,13 +126,16 @@ export let auth = SlateAuth.create()
 
         let data = response.data;
         if (typeof data.access_token !== 'string' || data.access_token.length === 0) {
-          throw bigQueryServiceError('Google OAuth token response did not include an access token.');
+          throw bigQueryServiceError(
+            'Google OAuth token response did not include an access token.'
+          );
         }
 
         return {
           output: {
             token: data.access_token,
-            refreshToken: typeof data.refresh_token === 'string' ? data.refresh_token : undefined,
+            refreshToken:
+              typeof data.refresh_token === 'string' ? data.refresh_token : undefined,
             expiresAt: expiresAtFrom(data.expires_in)
           }
         };
@@ -143,7 +146,9 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        throw bigQueryServiceError('No refresh token is available for this BigQuery auth method.');
+        throw bigQueryServiceError(
+          'No refresh token is available for this BigQuery auth method.'
+        );
       }
 
       try {

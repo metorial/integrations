@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brazeServiceError, requireBrazeString } from '../lib/errors';
 import { BrazeClient } from '../lib/client';
+import { brazeServiceError, requireBrazeString } from '../lib/errors';
 import { spec } from '../spec';
 import { assertHasMessageChannel, mapMessageChannels } from './send-message';
 
@@ -163,11 +163,7 @@ export let scheduleMessage = SlateTool.create(spec, {
       );
     }
 
-    let scheduledTime = requireBrazeString(
-      ctx.input.scheduledTime,
-      'scheduledTime',
-      'create'
-    );
+    let scheduledTime = requireBrazeString(ctx.input.scheduledTime, 'scheduledTime', 'create');
     let messages = mapMessageChannels(ctx.input.messages ?? {});
     assertHasMessageChannel(messages);
 

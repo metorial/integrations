@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { asanaServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
+import { asanaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let enumOptionInputSchema = z.object({
@@ -48,7 +48,7 @@ let buildCustomFieldData = (input: {
   name?: string;
   fieldType?: string;
   description?: string | null;
-  enumOptions?: Array<z.infer<typeof enumOptionInputSchema>>;
+  enumOptions?: z.infer<typeof enumOptionInputSchema>[];
   precision?: number;
   format?: string;
   currencyCode?: string;
@@ -89,10 +89,7 @@ export let manageCustomFields = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Custom field GID for get/update/enum option actions.'),
-      enumOptionId: z
-        .string()
-        .optional()
-        .describe('Enum option GID for update_enum_option.'),
+      enumOptionId: z.string().optional().describe('Enum option GID for update_enum_option.'),
       name: z.string().optional().describe('Custom field name for create/update.'),
       fieldType: z
         .enum(['text', 'enum', 'multi_enum', 'number', 'date', 'people'])
@@ -188,9 +185,11 @@ export let manageCustomFields = SlateTool.create(spec, {
         'customFieldId',
         ctx.input.action
       );
-      let data = buildCustomFieldData(ctx.input);
-      delete data.resource_subtype;
-      delete data.enum_options;
+      let {
+        resource_subtype: _resourceSubtype,
+        enum_options: _enumOptions,
+        ...data
+      } = buildCustomFieldData(ctx.input);
 
       if (Object.keys(data).length === 0) {
         throw asanaServiceError('Provide at least one custom field property to update.');
@@ -222,11 +221,7 @@ export let manageCustomFields = SlateTool.create(spec, {
       };
     }
 
-    let enumOptionId = requireField(
-      ctx.input.enumOptionId,
-      'enumOptionId',
-      ctx.input.action
-    );
+    let enumOptionId = requireField(ctx.input.enumOptionId, 'enumOptionId', ctx.input.action);
     let enumData: Record<string, any> = {};
     if (ctx.input.enumOptionName !== undefined) enumData.name = ctx.input.enumOptionName;
     if (ctx.input.enumOptionColor !== undefined) enumData.color = ctx.input.enumOptionColor;

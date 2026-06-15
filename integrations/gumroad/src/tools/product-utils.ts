@@ -18,7 +18,10 @@ export let productSchema = z.object({
   salesCount: z.number().optional().describe('Total number of sales'),
   salesUsdCents: z.number().optional().describe('Total sales revenue in USD cents'),
   tags: z.array(z.string()).optional().describe('Product tags'),
-  customFields: z.array(z.any()).optional().describe('Custom fields configured on the product'),
+  customFields: z
+    .array(z.any())
+    .optional()
+    .describe('Custom fields configured on the product'),
   variantCategories: z.array(z.any()).optional().describe('Variant categories and options'),
   files: z.array(z.any()).optional().describe('Files attached to the product'),
   richContent: z.array(z.any()).optional().describe('Product rich content pages')

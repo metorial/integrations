@@ -18,23 +18,19 @@ export let createIntegratedIndexTool = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      indexName: z
-        .string()
-        .min(1)
-        .max(45)
-        .describe('Name for the new index'),
+      indexName: z.string().min(1).max(45).describe('Name for the new index'),
       cloud: z.enum(['aws', 'gcp', 'azure']).describe('Cloud provider'),
       region: z.string().describe('Cloud region (e.g. us-east-1)'),
-      model: z
-        .string()
-        .describe('Hosted embedding model (for example llama-text-embed-v2)'),
+      model: z.string().describe('Hosted embedding model (for example llama-text-embed-v2)'),
       metric: z
         .enum(['cosine', 'euclidean', 'dotproduct'])
         .optional()
         .describe('Similarity metric for the generated vectors'),
       fieldMap: z
         .record(z.string(), z.string())
-        .describe('Maps embedding input names to source text fields, for example { "text": "chunk_text" }'),
+        .describe(
+          'Maps embedding input names to source text fields, for example { "text": "chunk_text" }'
+        ),
       readParameters: z
         .record(z.string(), z.any())
         .optional()
@@ -72,7 +68,9 @@ export let createIntegratedIndexTool = SlateTool.create(spec, {
   .handleInvocation(async ctx => {
     let fieldMapEntries = Object.entries(ctx.input.fieldMap);
     if (fieldMapEntries.length === 0) {
-      throw pineconeServiceError('fieldMap must include at least one embedding input mapping.');
+      throw pineconeServiceError(
+        'fieldMap must include at least one embedding input mapping.'
+      );
     }
 
     let client = new PineconeControlPlaneClient({ token: ctx.auth.token });

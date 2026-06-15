@@ -31,9 +31,7 @@ export let updateReviewStatus = SlateTool.create(spec, {
       strict: z
         .boolean()
         .optional()
-        .describe(
-          'When action is "end", fail if validation errors remain in document fields'
-        )
+        .describe('When action is "end", fail if validation errors remain in document fields')
     })
   )
   .output(

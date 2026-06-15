@@ -8,8 +8,8 @@ import {
   getCampaignReport,
   getSubscriber,
   getSubscriberActivity,
-  listCampaignLanguages,
   listAutomations,
+  listCampaignLanguages,
   listCampaigns,
   listForms,
   listGroups,
@@ -20,8 +20,8 @@ import {
   manageGroup,
   manageGroupSubscribers,
   manageWebhook,
-  updateCampaign,
-  scheduleOrSendCampaign
+  scheduleOrSendCampaign,
+  updateCampaign
 } from './tools';
 import { campaignEvents, subscriberEvents } from './triggers';
 

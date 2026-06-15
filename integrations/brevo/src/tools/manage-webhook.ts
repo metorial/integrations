@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brevoServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
+import { brevoServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let webhookEventSchema = z.enum([
@@ -78,18 +78,21 @@ let mapWebhook = (webhook: any) => ({
   domain: webhook.domain
 });
 
-let buildWebhookPayload = (input: {
-  url?: string;
-  type?: 'transactional' | 'marketing' | 'inbound';
-  channel?: 'email' | 'sms';
-  events?: string[];
-  description?: string;
-  batched?: boolean;
-  authType?: 'basic' | 'bearer';
-  authToken?: string;
-  headers?: { key: string; value: string }[];
-  domain?: string;
-}, options: { requireCreateFields?: boolean } = {}) => {
+let buildWebhookPayload = (
+  input: {
+    url?: string;
+    type?: 'transactional' | 'marketing' | 'inbound';
+    channel?: 'email' | 'sms';
+    events?: string[];
+    description?: string;
+    batched?: boolean;
+    authType?: 'basic' | 'bearer';
+    authToken?: string;
+    headers?: { key: string; value: string }[];
+    domain?: string;
+  },
+  options: { requireCreateFields?: boolean } = {}
+) => {
   let type = input.type ?? (options.requireCreateFields ? 'transactional' : undefined);
   if (type && type !== 'inbound' && !input.events?.length) {
     throw brevoServiceError('events is required for transactional and marketing webhooks.');

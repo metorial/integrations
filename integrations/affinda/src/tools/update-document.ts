@@ -19,9 +19,18 @@ export let updateDocument = SlateTool.create(spec, {
   .input(
     z.object({
       documentIdentifier: z.string().describe('Identifier of the document to update.'),
-      workspaceIdentifier: z.string().optional().describe('Move the document to this workspace.'),
-      collectionIdentifier: z.string().optional().describe('Move the document to this collection.'),
-      documentTypeIdentifier: z.string().optional().describe('Set the document type identifier.'),
+      workspaceIdentifier: z
+        .string()
+        .optional()
+        .describe('Move the document to this workspace.'),
+      collectionIdentifier: z
+        .string()
+        .optional()
+        .describe('Move the document to this collection.'),
+      documentTypeIdentifier: z
+        .string()
+        .optional()
+        .describe('Set the document type identifier.'),
       fileName: z.string().optional().describe('New document file name.'),
       expiryTime: z
         .string()
@@ -43,7 +52,9 @@ export let updateDocument = SlateTool.create(spec, {
       llmHint: z
         .string()
         .optional()
-        .describe('Optional hint inserted into the LLM prompt while processing this document.'),
+        .describe(
+          'Optional hint inserted into the LLM prompt while processing this document.'
+        ),
       compact: z
         .boolean()
         .optional()

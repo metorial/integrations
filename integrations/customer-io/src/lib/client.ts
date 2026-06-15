@@ -235,9 +235,7 @@ export class AppClient {
   }
 
   async getSegment(segmentId: number) {
-    return await this.request('get segment', () =>
-      this.axios.get(`/segments/${segmentId}`)
-    );
+    return await this.request('get segment', () => this.axios.get(`/segments/${segmentId}`));
   }
 
   async getSegmentMembership(segmentId: number, start?: string, limit?: number) {

@@ -160,7 +160,7 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response;
+      let response: any;
       try {
         response = await authAxios.post(
           '/oauth/token',
@@ -184,7 +184,9 @@ export let auth = SlateAuth.create()
 
       let data = response.data;
       if (!data.access_token) {
-        throw planetscaleServiceError('PlanetScale OAuth callback did not return an access token.');
+        throw planetscaleServiceError(
+          'PlanetScale OAuth callback did not return an access token.'
+        );
       }
 
       let expiresAt = data.expires_in
@@ -206,7 +208,7 @@ export let auth = SlateAuth.create()
         throw planetscaleServiceError('No PlanetScale OAuth refresh token is available.');
       }
 
-      let response;
+      let response: any;
       try {
         response = await authAxios.post(
           '/oauth/token',
@@ -229,7 +231,9 @@ export let auth = SlateAuth.create()
 
       let data = response.data;
       if (!data.access_token) {
-        throw planetscaleServiceError('PlanetScale OAuth refresh did not return an access token.');
+        throw planetscaleServiceError(
+          'PlanetScale OAuth refresh did not return an access token.'
+        );
       }
 
       let expiresAt = data.expires_in
@@ -247,7 +251,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: any; scopes: string[] }) => {
-      let response;
+      let response: any;
       try {
         response = await apiAxios.get('/user', {
           headers: {
@@ -261,7 +265,9 @@ export let auth = SlateAuth.create()
 
       let user = response.data;
       if (!user.id) {
-        throw planetscaleServiceError('PlanetScale profile response did not include a user id.');
+        throw planetscaleServiceError(
+          'PlanetScale profile response did not include a user id.'
+        );
       }
 
       return {

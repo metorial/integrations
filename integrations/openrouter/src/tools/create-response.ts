@@ -43,7 +43,9 @@ export let createResponse = SlateTool.create(spec, {
     'Use text for structured-output configuration and reasoning for extended-thinking model settings.',
     'Set sessionId when related calls should prefer the same upstream provider.'
   ],
-  constraints: ['Streaming is not supported through this tool; responses are returned in full.'],
+  constraints: [
+    'Streaming is not supported through this tool; responses are returned in full.'
+  ],
   tags: {
     readOnly: false
   }
@@ -175,9 +177,7 @@ export let createResponse = SlateTool.create(spec, {
               inputTokens:
                 (usage.input_tokens as number) ?? (usage.prompt_tokens as number) ?? 0,
               outputTokens:
-                (usage.output_tokens as number) ??
-                (usage.completion_tokens as number) ??
-                0,
+                (usage.output_tokens as number) ?? (usage.completion_tokens as number) ?? 0,
               totalTokens: (usage.total_tokens as number) ?? 0
             }
           }

@@ -51,12 +51,23 @@ export let manageEventHookTool = SlateTool.create(spec, {
   .input(
     z.object({
       action: z
-        .enum(['create', 'get', 'update', 'delete', 'list', 'activate', 'deactivate', 'verify'])
+        .enum([
+          'create',
+          'get',
+          'update',
+          'delete',
+          'list',
+          'activate',
+          'deactivate',
+          'verify'
+        ])
         .describe('Event hook operation to perform'),
       eventHookId: z
         .string()
         .optional()
-        .describe('Event hook ID. Required for get, update, delete, activate, deactivate, and verify actions'),
+        .describe(
+          'Event hook ID. Required for get, update, delete, activate, deactivate, and verify actions'
+        ),
       name: z
         .string()
         .optional()
@@ -68,7 +79,9 @@ export let manageEventHookTool = SlateTool.create(spec, {
       eventTypes: z
         .array(z.string())
         .optional()
-        .describe('Okta event types to subscribe to. Required for create and optional for update'),
+        .describe(
+          'Okta event types to subscribe to. Required for create and optional for update'
+        ),
       authorizationHeaderValue: z
         .string()
         .optional()
@@ -90,8 +103,7 @@ export let manageEventHookTool = SlateTool.create(spec, {
       authMethod: ctx.auth.authMethod
     });
 
-    let { action, eventHookId, name, url, eventTypes, authorizationHeaderValue } =
-      ctx.input;
+    let { action, eventHookId, name, url, eventTypes, authorizationHeaderValue } = ctx.input;
 
     if (action === 'list') {
       let hooks = await client.listEventHooks();

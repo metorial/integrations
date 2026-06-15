@@ -11,7 +11,10 @@ let wordSchema = z.object({
 });
 
 let phraseSchema = z.object({
-  channel: z.number().optional().describe('Audio channel index when channel separation is used'),
+  channel: z
+    .number()
+    .optional()
+    .describe('Audio channel index when channel separation is used'),
   speaker: z.number().optional().describe('Speaker label when diarization is enabled'),
   offsetMilliseconds: z.number().optional().describe('Phrase start offset in milliseconds'),
   durationMilliseconds: z.number().optional().describe('Phrase duration in milliseconds'),

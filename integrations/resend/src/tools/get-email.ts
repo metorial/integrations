@@ -98,11 +98,7 @@ export let listSentEmails = SlateTool.create(spec, {
             subject: z.string().describe('Email subject.'),
             cc: z.array(z.string()).optional().nullable().describe('CC recipients.'),
             bcc: z.array(z.string()).optional().nullable().describe('BCC recipients.'),
-            replyTo: z
-              .array(z.string())
-              .optional()
-              .nullable()
-              .describe('Reply-to addresses.'),
+            replyTo: z.array(z.string()).optional().nullable().describe('Reply-to addresses.'),
             lastEvent: z.string().optional().nullable().describe('Last delivery event.'),
             createdAt: z.string().describe('When the email was created.'),
             scheduledAt: z.string().optional().nullable().describe('Scheduled delivery time.')

@@ -3,7 +3,14 @@ import { z } from 'zod';
 import { NeonClient } from '../lib/client';
 import { neonValidationError } from '../lib/errors';
 import { spec } from '../spec';
-import { branchSchema, mapBranch, mapOperation, mapSnapshot, operationSchema, snapshotSchema } from './shared';
+import {
+  branchSchema,
+  mapBranch,
+  mapOperation,
+  mapSnapshot,
+  operationSchema,
+  snapshotSchema
+} from './shared';
 
 export let listSnapshots = SlateTool.create(spec, {
   name: 'List Snapshots',
@@ -64,7 +71,9 @@ export let createSnapshot = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     if (ctx.input.lsn && ctx.input.timestamp) {
-      throw neonValidationError('Provide either lsn or timestamp when creating a snapshot, not both.');
+      throw neonValidationError(
+        'Provide either lsn or timestamp when creating a snapshot, not both.'
+      );
     }
 
     let client = new NeonClient({ token: ctx.auth.token });

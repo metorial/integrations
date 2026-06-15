@@ -34,10 +34,7 @@ export let codeCompletionTool = SlateTool.create(spec, {
         .describe('Stop sequence(s)'),
       randomSeed: z.number().optional().describe('Seed for deterministic output'),
       metadata: z.record(z.string(), z.any()).optional().describe('Request metadata'),
-      promptCacheKey: z
-        .string()
-        .optional()
-        .describe('Cache key for reusable prompt prefixes')
+      promptCacheKey: z.string().optional().describe('Cache key for reusable prompt prefixes')
     })
   )
   .output(

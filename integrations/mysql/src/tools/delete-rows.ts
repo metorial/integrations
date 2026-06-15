@@ -32,7 +32,12 @@ Requires a WHERE clause to target specific rows unless confirmDeleteAll is expli
         .optional()
         .default(false)
         .describe('Set to true to confirm deleting all rows when no WHERE clause is provided'),
-      limit: z.number().int().positive().optional().describe('Maximum number of rows to delete')
+      limit: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe('Maximum number of rows to delete')
     })
   )
   .output(

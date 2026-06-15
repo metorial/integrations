@@ -24,7 +24,9 @@ export let manageMessageStatus = SlateTool.create(spec, {
         .enum(['user', 'operator'])
         .optional()
         .default('user')
-        .describe('Sender side for mark_read. mark_unread uses user; mark_delivered uses operator.'),
+        .describe(
+          'Sender side for mark_read. mark_unread uses user; mark_delivered uses operator.'
+        ),
       origin: z
         .string()
         .optional()
@@ -44,7 +46,11 @@ export let manageMessageStatus = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId, tier: ctx.auth.tier });
+    let client = new Client({
+      token: ctx.auth.token,
+      websiteId: ctx.config.websiteId,
+      tier: ctx.auth.tier
+    });
     let fingerprints = ctx.input.fingerprints ?? [];
 
     if (ctx.input.action === 'mark_unread') {

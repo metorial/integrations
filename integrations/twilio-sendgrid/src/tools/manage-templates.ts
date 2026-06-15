@@ -317,14 +317,18 @@ export let manageTemplateVersion = SlateTool.create(spec, {
             'Provide at least one field to update a template version.'
           );
         }
-        version = await client.updateTemplateVersion(ctx.input.templateId, ctx.input.versionId, {
-          name: ctx.input.name,
-          subject: ctx.input.subject,
-          htmlContent: ctx.input.htmlContent,
-          plainContent: ctx.input.plainContent,
-          active: ctx.input.active === undefined ? undefined : ctx.input.active ? 1 : 0,
-          testData: ctx.input.testData
-        });
+        version = await client.updateTemplateVersion(
+          ctx.input.templateId,
+          ctx.input.versionId,
+          {
+            name: ctx.input.name,
+            subject: ctx.input.subject,
+            htmlContent: ctx.input.htmlContent,
+            plainContent: ctx.input.plainContent,
+            active: ctx.input.active === undefined ? undefined : ctx.input.active ? 1 : 0,
+            testData: ctx.input.testData
+          }
+        );
         break;
       }
       case 'activate': {

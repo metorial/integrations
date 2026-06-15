@@ -1,8 +1,10 @@
 import { createAxios } from 'slates';
+import { pdfCoUpstreamError, toPdfCoServiceError } from './errors';
 import type {
   PdfCoBarcodeReadResponse,
   PdfCoClassifierResponse,
   PdfCoDocumentParserResponse,
+  PdfCoDownloadedFile,
   PdfCoFileResponse,
   PdfCoFindTextResponse,
   PdfCoInfoResponse,
@@ -11,8 +13,6 @@ import type {
   PdfCoSplitResponse,
   PdfCoUploadResponse
 } from './types';
-import type { PdfCoDownloadedFile } from './types';
-import { pdfCoUpstreamError, toPdfCoServiceError } from './errors';
 
 export class Client {
   private http;
@@ -62,8 +62,7 @@ export class Client {
 
       let content = Buffer.from(await response.arrayBuffer());
       let mimeType =
-        response.headers.get('content-type')?.split(';')[0]?.trim() ||
-        fallbackMimeType;
+        response.headers.get('content-type')?.split(';')[0]?.trim() || fallbackMimeType;
 
       return {
         contentBase64: content.toString('base64'),

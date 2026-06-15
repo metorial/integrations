@@ -100,11 +100,7 @@ export let requireTrelloString = (
   return value;
 };
 
-export let requireTrelloValue = <T>(
-  value: T | undefined,
-  label: string,
-  action?: string
-) => {
+export let requireTrelloValue = <T>(value: T | undefined, label: string, action?: string) => {
   if (value === undefined || value === null) {
     throw trelloServiceError(`${label} is required${action ? ` for "${action}"` : ''}.`);
   }

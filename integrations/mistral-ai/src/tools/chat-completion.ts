@@ -131,10 +131,7 @@ export let chatCompletionTool = SlateTool.create(spec, {
         .array(z.record(z.string(), z.any()))
         .optional()
         .describe('Guardrail configurations to apply to this request'),
-      promptCacheKey: z
-        .string()
-        .optional()
-        .describe('Cache key for reusable prompt prefixes')
+      promptCacheKey: z.string().optional().describe('Cache key for reusable prompt prefixes')
     })
   )
   .output(

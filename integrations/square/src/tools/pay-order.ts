@@ -17,12 +17,19 @@ export let payOrder = SlateTool.create(spec, {
       paymentIds: z
         .array(z.string())
         .optional()
-        .describe('Approved payment IDs to collect. Use an empty array for a zero-total order.'),
-      orderVersion: z.number().optional().describe('Order version to pay; latest is used if omitted'),
+        .describe(
+          'Approved payment IDs to collect. Use an empty array for a zero-total order.'
+        ),
+      orderVersion: z
+        .number()
+        .optional()
+        .describe('Order version to pay; latest is used if omitted'),
       idempotencyKey: z
         .string()
         .optional()
-        .describe('Unique key to prevent duplicate payment attempts. Auto-generated if omitted')
+        .describe(
+          'Unique key to prevent duplicate payment attempts. Auto-generated if omitted'
+        )
     })
   )
   .output(orderSummaryOutputSchema)

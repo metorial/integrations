@@ -58,9 +58,9 @@ describe('Crisp tool validation', () => {
       invoke(manageHelpdeskArticle, { localeId: 'en', delete: true })
     ).rejects.toBeInstanceOf(ServiceError);
 
-    await expect(
-      invoke(manageHelpdeskArticle, { localeId: 'en' })
-    ).rejects.toBeInstanceOf(ServiceError);
+    await expect(invoke(manageHelpdeskArticle, { localeId: 'en' })).rejects.toBeInstanceOf(
+      ServiceError
+    );
 
     await expect(
       invoke(manageHelpdeskArticle, { localeId: 'en', articleId: 'article-id' })

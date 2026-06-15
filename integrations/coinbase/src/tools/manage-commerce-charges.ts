@@ -99,9 +99,7 @@ export let manageCommerceCharges = SlateTool.create(spec, {
         ctx.input.pricingType === 'fixed_price' &&
         (!ctx.input.amount || !ctx.input.currency)
       ) {
-        throw coinbaseServiceError(
-          'amount and currency are required for fixed_price charges'
-        );
+        throw coinbaseServiceError('amount and currency are required for fixed_price charges');
       }
 
       let localPrice =

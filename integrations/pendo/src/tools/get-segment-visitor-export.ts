@@ -56,7 +56,10 @@ export let getSegmentVisitorExport = SlateTool.create(spec, {
       };
     }
 
-    let content = await client.getSegmentVisitorExportResults(ctx.input.segmentId, ctx.input.jobId);
+    let content = await client.getSegmentVisitorExportResults(
+      ctx.input.segmentId,
+      ctx.input.jobId
+    );
 
     return {
       output: {

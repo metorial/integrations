@@ -75,15 +75,11 @@ export let manageQueue = SlateTool.create(spec, {
           deduplicationScope: z
             .string()
             .optional()
-            .describe(
-              'FIFO high-throughput deduplication scope: "messageGroup" or "queue"'
-            ),
+            .describe('FIFO high-throughput deduplication scope: "messageGroup" or "queue"'),
           fifoThroughputLimit: z
             .string()
             .optional()
-            .describe(
-              'FIFO throughput quota mode: "perQueue" or "perMessageGroupId"'
-            )
+            .describe('FIFO throughput quota mode: "perQueue" or "perMessageGroupId"')
         })
         .optional()
         .describe('Attributes to update on the queue'),
@@ -99,7 +95,9 @@ export let manageQueue = SlateTool.create(spec, {
         .object({
           label: z
             .string()
-            .describe('Unique permission label, up to 80 alphanumeric/hyphen/underscore chars'),
+            .describe(
+              'Unique permission label, up to 80 alphanumeric/hyphen/underscore chars'
+            ),
           awsAccountIds: z
             .array(z.string())
             .describe('AWS account IDs that receive the permission'),
@@ -199,7 +197,9 @@ export let manageQueue = SlateTool.create(spec, {
     let permissionsUpdated = false;
     if (ctx.input.addPermission) {
       if (ctx.input.addPermission.awsAccountIds.length === 0) {
-        throw sqsServiceError('addPermission.awsAccountIds must include at least one AWS account ID.');
+        throw sqsServiceError(
+          'addPermission.awsAccountIds must include at least one AWS account ID.'
+        );
       }
       if (ctx.input.addPermission.actions.length === 0) {
         throw sqsServiceError('addPermission.actions must include at least one SQS action.');

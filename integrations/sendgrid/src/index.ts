@@ -1,8 +1,8 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  addSuppressedEmails,
   addContactsToList,
+  addSuppressedEmails,
   createContactList,
   createSuppressionGroup,
   createTemplate,
@@ -20,8 +20,8 @@ import {
   getEmailStats,
   getSuppressionGroup,
   getTemplate,
-  listEventWebhooks,
   listContactLists,
+  listEventWebhooks,
   listSuppressionGroups,
   listSuppressions,
   listTemplates,

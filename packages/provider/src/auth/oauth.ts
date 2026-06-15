@@ -51,7 +51,11 @@ export let getOAuthExpiresAtFromExpiresIn = (
     if (required) {
       throw createApiServiceError(
         message ??
-          formatOAuthTokenResponseMessage('a valid expires_in value', providerLabel, operation),
+          formatOAuthTokenResponseMessage(
+            'a valid expires_in value',
+            providerLabel,
+            operation
+          ),
         { reason: 'oauth_token_response' }
       );
     }

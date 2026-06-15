@@ -20,7 +20,9 @@ export let manageIdentityPoolRoles = SlateTool.create(spec, {
       roles: z
         .record(z.string(), z.string())
         .optional()
-        .describe('IAM role ARN map required for set. Use authenticated and/or unauthenticated keys.'),
+        .describe(
+          'IAM role ARN map required for set. Use authenticated and/or unauthenticated keys.'
+        ),
       roleMappings: z
         .record(z.string(), z.record(z.string(), z.any()))
         .optional()

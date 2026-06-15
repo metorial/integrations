@@ -70,7 +70,11 @@ export let getModelVersion = SlateTool.create(spec, {
     z.object({
       versionId: z.string().describe('Version ID'),
       createdAt: z.string().describe('When the version was created'),
-      cogVersion: z.string().optional().nullable().describe('Cog version used to build this version'),
+      cogVersion: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Cog version used to build this version'),
       openapiSchema: z
         .record(z.string(), z.any())
         .optional()

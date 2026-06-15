@@ -6,7 +6,16 @@ export let tagSchema = z.object({
   value: z.string().describe('Tag value')
 });
 
-export let mediaFormatSchema = z.enum(['mp3', 'mp4', 'wav', 'flac', 'ogg', 'amr', 'webm', 'm4a']);
+export let mediaFormatSchema = z.enum([
+  'mp3',
+  'mp4',
+  'wav',
+  'flac',
+  'ogg',
+  'amr',
+  'webm',
+  'm4a'
+]);
 
 export let kmsEncryptionContextSchema = z
   .record(z.string(), z.string())
@@ -39,11 +48,15 @@ export let timeRangeSchema = z.object({
   first: z
     .number()
     .optional()
-    .describe('Beginning of the range, in milliseconds for absolute ranges or percent for relative ranges'),
+    .describe(
+      'Beginning of the range, in milliseconds for absolute ranges or percent for relative ranges'
+    ),
   last: z
     .number()
     .optional()
-    .describe('End of the range, in milliseconds for absolute ranges or percent for relative ranges')
+    .describe(
+      'End of the range, in milliseconds for absolute ranges or percent for relative ranges'
+    )
 });
 
 export let callAnalyticsRuleSchema = z.object({
@@ -98,7 +111,7 @@ export let requireArray = <T>(value: T[] | undefined, message: string): T[] => {
   return value;
 };
 
-export let ensureExactlyOne = (checks: Array<[string, boolean]>, message: string) => {
+export let ensureExactlyOne = (checks: [string, boolean][], message: string) => {
   let present = checks.filter(([, value]) => value).map(([label]) => label);
   if (present.length !== 1) {
     throw transcribeServiceError(`${message} Received: ${present.join(', ') || 'none'}.`);
@@ -127,11 +140,15 @@ export let validateLanguageIdSettings = (
 
   let entries = Object.entries(languageIdSettings);
   if (entries.length < 2 || entries.length > 5) {
-    throw transcribeServiceError('languageIdSettings must include between 2 and 5 language codes.');
+    throw transcribeServiceError(
+      'languageIdSettings must include between 2 and 5 language codes.'
+    );
   }
 
   if (!languageOptions?.length) {
-    throw transcribeServiceError('languageOptions is required when languageIdSettings is provided.');
+    throw transcribeServiceError(
+      'languageOptions is required when languageIdSettings is provided.'
+    );
   }
 
   for (let [languageCode, value] of entries) {
@@ -191,7 +208,10 @@ export let validateVocabularySource = (
 export let validateCallAnalyticsRules = (
   rules: z.infer<typeof callAnalyticsRuleSchema>[] | undefined
 ) => {
-  let providedRules = requireArray(rules, 'At least one Call Analytics category rule is required.');
+  let providedRules = requireArray(
+    rules,
+    'At least one Call Analytics category rule is required.'
+  );
 
   if (providedRules.length > 20) {
     throw transcribeServiceError('A Call Analytics category can include at most 20 rules.');

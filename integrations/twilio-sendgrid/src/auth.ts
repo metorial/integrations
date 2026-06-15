@@ -33,7 +33,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response;
+      let response: any;
       try {
         response = await http.get('/user/profile');
       } catch (error) {

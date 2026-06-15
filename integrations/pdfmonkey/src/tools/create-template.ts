@@ -82,7 +82,9 @@ export let createTemplate = SlateTool.create(spec, {
       pdfEngineId: z
         .string()
         .optional()
-        .describe('PDF engine ID used for generated documents. Omit to use the latest engine.'),
+        .describe(
+          'PDF engine ID used for generated documents. Omit to use the latest engine.'
+        ),
       pdfEngineDraftId: z
         .string()
         .optional()

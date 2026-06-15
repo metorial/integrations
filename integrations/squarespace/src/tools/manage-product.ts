@@ -70,7 +70,9 @@ export let manageProduct = SlateTool.create(spec, {
 
     if (action === 'create') {
       if (!ctx.input.storePageId || !ctx.input.productType) {
-        throw squarespaceServiceError('storePageId and productType are required to create a product');
+        throw squarespaceServiceError(
+          'storePageId and productType are required to create a product'
+        );
       }
 
       if (ctx.input.productType !== 'DIGITAL' && !ctx.input.variants?.length) {
@@ -140,7 +142,9 @@ export let manageProduct = SlateTool.create(spec, {
         ctx.input.isVisible !== undefined;
 
       if (!hasUpdates) {
-        throw squarespaceServiceError('At least one product field is required to update a product');
+        throw squarespaceServiceError(
+          'At least one product field is required to update a product'
+        );
       }
 
       let product = await client.updateProduct(ctx.input.productId, {

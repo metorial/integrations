@@ -505,7 +505,7 @@ export class PineconeDataPlaneClient {
       rank_fields?: string[];
     };
   }): Promise<{
-    result?: { hits?: Array<Record<string, any>> };
+    result?: { hits?: Record<string, any>[] };
     usage?: Record<string, any>;
   }> {
     return await this.request('search records', () =>
@@ -604,7 +604,8 @@ export class PineconeDataPlaneClient {
     if (params.prefix) queryParams.append('prefix', params.prefix);
     if (params.limit !== undefined) queryParams.append('limit', params.limit.toString());
     if (params.paginationToken) queryParams.append('paginationToken', params.paginationToken);
-    let path = queryParams.size > 0 ? `/vectors/list?${queryParams.toString()}` : '/vectors/list';
+    let path =
+      queryParams.size > 0 ? `/vectors/list?${queryParams.toString()}` : '/vectors/list';
 
     return await this.request('list record IDs', () =>
       this.axios().get(path, {
@@ -817,10 +818,7 @@ export class PineconeAssistantClient {
     );
   }
 
-  async deleteFile(
-    assistantName: string,
-    fileId: string
-  ): Promise<AssistantOperationModel> {
+  async deleteFile(assistantName: string, fileId: string): Promise<AssistantOperationModel> {
     return await this.request('delete assistant file', () =>
       this.axios().delete(
         `/assistant/files/${encodePath(assistantName)}/${encodePath(fileId)}`,

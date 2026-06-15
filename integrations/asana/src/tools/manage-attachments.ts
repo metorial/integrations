@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { asanaServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
+import { asanaServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let attachmentSchema = z.object({
@@ -69,14 +69,8 @@ export let manageAttachments = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Parent task, project, or project brief GID for list/create actions.'),
-      attachmentId: z
-        .string()
-        .optional()
-        .describe('Attachment GID for get/delete actions.'),
-      name: z
-        .string()
-        .optional()
-        .describe('Display name for an external attachment.'),
+      attachmentId: z.string().optional().describe('Attachment GID for get/delete actions.'),
+      name: z.string().optional().describe('Display name for an external attachment.'),
       url: z.string().optional().describe('Public URL for an external attachment.'),
       connectToApp: z
         .boolean()

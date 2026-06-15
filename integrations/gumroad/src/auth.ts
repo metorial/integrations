@@ -36,7 +36,8 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Edit Products',
-        description: 'Create and manage products, offer codes, variants, custom fields, and files',
+        description:
+          'Create and manage products, offer codes, variants, custom fields, and files',
         scope: 'edit_products'
       },
       {

@@ -84,7 +84,9 @@ export let createSpeechUnderstanding = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let hasTranslation = Boolean(ctx.input.targetLanguages?.length);
-    let hasSpeakerIdentification = Boolean(ctx.input.speakerType || ctx.input.speakers?.length);
+    let hasSpeakerIdentification = Boolean(
+      ctx.input.speakerType || ctx.input.speakers?.length
+    );
     let hasCustomFormatting =
       ctx.input.customFormatting !== undefined &&
       Object.values(ctx.input.customFormatting).some(value => value !== undefined);

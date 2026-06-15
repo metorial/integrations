@@ -13,7 +13,9 @@ export let updateDocument = SlateTool.create(spec, {
   name: 'Update Document',
   key: 'update_document',
   description: `Update a draft PandaDoc document with supported mutable values such as name, recipients, fields, tokens, tags, metadata, pricing tables, tables, text blocks, or image blocks.`,
-  constraints: ['PandaDoc only allows document content updates while the document is in draft status.'],
+  constraints: [
+    'PandaDoc only allows document content updates while the document is in draft status.'
+  ],
   tags: {
     readOnly: false,
     destructive: false
@@ -43,7 +45,10 @@ export let updateDocument = SlateTool.create(spec, {
         .describe('Pricing table data to update in the document'),
       tables: z.array(z.any()).optional().describe('Table data to update in the document'),
       texts: z.array(z.any()).optional().describe('Text block data to update in the document'),
-      images: z.array(z.any()).optional().describe('Image block data to update in the document')
+      images: z
+        .array(z.any())
+        .optional()
+        .describe('Image block data to update in the document')
     })
   )
   .output(

@@ -9,7 +9,10 @@ let uploadApi = createAxios({
   baseURL: 'https://upload.box.com/api/2.0'
 });
 
-let applyBoxApiErrorInterceptor = (http: ReturnType<typeof createAxios>, operation: string) => {
+let applyBoxApiErrorInterceptor = (
+  http: ReturnType<typeof createAxios>,
+  operation: string
+) => {
   http.interceptors.response.use(
     response => response,
     error => Promise.reject(boxApiError(error, operation))
@@ -112,7 +115,10 @@ export class Client {
     return response.headers?.location || response.request?.responseURL || '';
   }
 
-  async downloadFile(fileId: string, version?: string): Promise<{
+  async downloadFile(
+    fileId: string,
+    version?: string
+  ): Promise<{
     file: any;
     contentBase64: string;
     mimeType: string;

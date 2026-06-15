@@ -90,9 +90,19 @@ let repoRoute = (prefix: string, repoId: string, ...segments: string[]) => {
 };
 
 let discussionRoute = (repoType: RepoType, repoId: string, ...segments: string[]) =>
-  repoRoute(repoType === 'model' ? 'models' : `${repoType}s`, repoId, 'discussions', ...segments);
+  repoRoute(
+    repoType === 'model' ? 'models' : `${repoType}s`,
+    repoId,
+    'discussions',
+    ...segments
+  );
 
-let repoResolveRoute = (repoType: RepoType, repoId: string, revision: string, filePath: string) => {
+let repoResolveRoute = (
+  repoType: RepoType,
+  repoId: string,
+  revision: string,
+  filePath: string
+) => {
   let { namespace, repo } = splitRepoId(repoId);
   let prefix = repoType === 'model' ? '' : `/${repoType}s`;
 
@@ -401,7 +411,12 @@ export class HubClient {
       'download repository file',
       async () => {
         let res = await hubAxios.get(
-          repoResolveRoute(params.repoType, params.repoId, params.revision || 'main', params.filePath),
+          repoResolveRoute(
+            params.repoType,
+            params.repoId,
+            params.revision || 'main',
+            params.filePath
+          ),
           {
             headers: this.headers(),
             responseType: 'text'
@@ -503,9 +518,12 @@ export class HubClient {
     discussionNum: number;
   }): Promise<any> {
     return await this.request('get discussion', async () =>
-      hubAxios.get(discussionRoute(params.repoType, params.repoId, String(params.discussionNum)), {
-        headers: this.headers()
-      })
+      hubAxios.get(
+        discussionRoute(params.repoType, params.repoId, String(params.discussionNum)),
+        {
+          headers: this.headers()
+        }
+      )
     );
   }
 
@@ -539,7 +557,12 @@ export class HubClient {
   }): Promise<any> {
     return await this.request('comment on discussion', async () =>
       hubAxios.post(
-        discussionRoute(params.repoType, params.repoId, String(params.discussionNum), 'comment'),
+        discussionRoute(
+          params.repoType,
+          params.repoId,
+          String(params.discussionNum),
+          'comment'
+        ),
         { comment: params.comment },
         { headers: this.jsonHeaders() }
       )
@@ -555,7 +578,12 @@ export class HubClient {
   }): Promise<any> {
     return await this.request('update discussion status', async () =>
       hubAxios.post(
-        discussionRoute(params.repoType, params.repoId, String(params.discussionNum), 'status'),
+        discussionRoute(
+          params.repoType,
+          params.repoId,
+          String(params.discussionNum),
+          'status'
+        ),
         { status: params.status, comment: params.comment || '' },
         { headers: this.jsonHeaders() }
       )
@@ -703,7 +731,11 @@ export class HubClient {
 
   async pauseSpace(params: { repoId: string }): Promise<any> {
     return await this.request('pause Space', async () =>
-      hubAxios.post(repoRoute('spaces', params.repoId, 'pause'), {}, { headers: this.jsonHeaders() })
+      hubAxios.post(
+        repoRoute('spaces', params.repoId, 'pause'),
+        {},
+        { headers: this.jsonHeaders() }
+      )
     );
   }
 
@@ -929,9 +961,13 @@ export class HubClient {
     if (params.returnFullText !== undefined) body.return_full_text = params.returnFullText;
 
     let result = await this.request<any>('generate text', async () =>
-      routerAxios.post(`/hf-inference/models/${encodePath(params.model)}/v1/completions`, body, {
-        headers: this.jsonHeaders()
-      })
+      routerAxios.post(
+        `/hf-inference/models/${encodePath(params.model)}/v1/completions`,
+        body,
+        {
+          headers: this.jsonHeaders()
+        }
+      )
     );
 
     if (result?.choices?.[0]?.text !== undefined) {

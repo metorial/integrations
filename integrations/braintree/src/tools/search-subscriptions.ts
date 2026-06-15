@@ -77,7 +77,8 @@ export let searchSubscriptions = SlateTool.create(spec, {
     if (ctx.input.subscriptionId) input.id = { is: ctx.input.subscriptionId };
     if (ctx.input.planId) input.planId = { is: ctx.input.planId };
     if (ctx.input.statuses?.length) input.status = ctx.input.statuses;
-    if (ctx.input.merchantAccountId) input.merchantAccountId = { is: ctx.input.merchantAccountId };
+    if (ctx.input.merchantAccountId)
+      input.merchantAccountId = { is: ctx.input.merchantAccountId };
     if (ctx.input.inTrialPeriod !== undefined) input.inTrialPeriod = ctx.input.inTrialPeriod;
     if (ctx.input.transactionId) input.transactionId = { is: ctx.input.transactionId };
     let createdAt = dateRangeFilter(ctx.input.createdAt);

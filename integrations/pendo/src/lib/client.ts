@@ -41,10 +41,7 @@ export class PendoClient {
     });
   }
 
-  private async request<T>(
-    operation: string,
-    run: () => Promise<{ data: T }>
-  ): Promise<T> {
+  private async request<T>(operation: string, run: () => Promise<{ data: T }>): Promise<T> {
     try {
       let response = await run();
       return response.data;
@@ -150,11 +147,9 @@ export class PendoClient {
     );
   }
 
-  async listGuides(options: {
-    appId?: string;
-    expandAll?: boolean;
-    summarizeContent?: boolean;
-  } = {}): Promise<any[]> {
+  async listGuides(
+    options: { appId?: string; expandAll?: boolean; summarizeContent?: boolean } = {}
+  ): Promise<any[]> {
     let params = this.listParams(options);
     if (options.summarizeContent) params.summarizeContent = 'true';
     return this.request('list guides', () => this.axios.get('/guide', { params }));
@@ -163,9 +158,7 @@ export class PendoClient {
   // --- Pages ---
 
   async getPage(pageId: string): Promise<any> {
-    return this.request('get page', () =>
-      this.axios.get('/page', { params: { id: pageId } })
-    );
+    return this.request('get page', () => this.axios.get('/page', { params: { id: pageId } }));
   }
 
   async listPages(options: { appId?: string; expandAll?: boolean } = {}): Promise<any[]> {
@@ -249,10 +242,7 @@ export class PendoClient {
     return this.request('list segments', () => this.axios.get('/segment'));
   }
 
-  async createSegment(segment: {
-    name: string;
-    visitorIds: string[];
-  }): Promise<any> {
+  async createSegment(segment: { name: string; visitorIds: string[] }): Promise<any> {
     return this.request('create segment', () =>
       this.axios.post('/segment/upload', {
         name: segment.name,

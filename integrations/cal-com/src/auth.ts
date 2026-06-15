@@ -21,7 +21,9 @@ let exchangeOAuthToken = async (body: Record<string, unknown>, operation: string
     let data = response.data;
 
     if (!data?.access_token) {
-      throw calComServiceError('Cal.com OAuth token response did not include an access token.');
+      throw calComServiceError(
+        'Cal.com OAuth token response did not include an access token.'
+      );
     }
 
     return data;

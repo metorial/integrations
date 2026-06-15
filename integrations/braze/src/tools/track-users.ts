@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brazeServiceError } from '../lib/errors';
 import { BrazeClient } from '../lib/client';
+import { brazeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let userAliasSchema = z.object({
@@ -70,10 +70,7 @@ let purchaseSchema = userIdentifierSchema.extend({
     .describe('Custom properties for the purchase')
 });
 
-let validateUserIdentifier = (
-  item: z.infer<typeof userIdentifierSchema>,
-  label: string
-) => {
+let validateUserIdentifier = (item: z.infer<typeof userIdentifierSchema>, label: string) => {
   let primaryCount =
     (item.externalId ? 1 : 0) + (item.brazeId ? 1 : 0) + (item.userAlias ? 1 : 0);
 

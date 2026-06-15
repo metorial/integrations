@@ -119,8 +119,7 @@ export let manageSignRequest = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!signRequestId)
-        throw boxServiceError('signRequestId is required for get action');
+      if (!signRequestId) throw boxServiceError('signRequestId is required for get action');
       let sr = await client.getSignRequest(signRequestId);
       return {
         output: {
@@ -138,8 +137,7 @@ export let manageSignRequest = SlateTool.create(spec, {
     }
 
     if (action === 'cancel') {
-      if (!signRequestId)
-        throw boxServiceError('signRequestId is required for cancel action');
+      if (!signRequestId) throw boxServiceError('signRequestId is required for cancel action');
       await client.cancelSignRequest(signRequestId);
       return {
         output: { signRequestId, cancelled: true },
@@ -152,8 +150,7 @@ export let manageSignRequest = SlateTool.create(spec, {
       throw boxServiceError('signers are required for create action');
     if (!sourceFileIds || sourceFileIds.length === 0)
       throw boxServiceError('sourceFileIds are required for create action');
-    if (!parentFolderId)
-      throw boxServiceError('parentFolderId is required for create action');
+    if (!parentFolderId) throw boxServiceError('parentFolderId is required for create action');
 
     let sr = await client.createSignRequest({
       signers,

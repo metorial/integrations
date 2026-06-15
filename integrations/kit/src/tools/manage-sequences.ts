@@ -50,18 +50,31 @@ export let manageSequences = SlateTool.create(spec, {
   .input(
     z.object({
       action: z
-        .enum(['list', 'get', 'create', 'update', 'delete', 'add_subscriber', 'list_subscribers'])
+        .enum([
+          'list',
+          'get',
+          'create',
+          'update',
+          'delete',
+          'add_subscriber',
+          'list_subscribers'
+        ])
         .describe('The operation to perform'),
       sequenceId: z
         .number()
         .optional()
-        .describe('Sequence ID (required for get, update, delete, add_subscriber, list_subscribers)'),
+        .describe(
+          'Sequence ID (required for get, update, delete, add_subscriber, list_subscribers)'
+        ),
       name: z.string().optional().describe('Sequence name (required for create)'),
       senderEmailAddress: z
         .string()
         .optional()
         .describe('Sending email address for create/update'),
-      emailTemplateId: z.number().optional().describe('Default email template ID for create/update'),
+      emailTemplateId: z
+        .number()
+        .optional()
+        .describe('Default email template ID for create/update'),
       sendDays: z.array(daySchema).optional().describe('Days this sequence can send'),
       sendHour: z.number().optional().describe('Hour of day, 0 through 23'),
       timeZone: z.string().optional().describe('IANA time zone for the sequence'),

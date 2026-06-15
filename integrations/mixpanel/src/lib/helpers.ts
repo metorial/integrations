@@ -10,7 +10,8 @@ type MixpanelContext = {
   };
 };
 
-let hasText = (value: string | undefined) => typeof value === 'string' && value.trim().length > 0;
+let hasText = (value: string | undefined) =>
+  typeof value === 'string' && value.trim().length > 0;
 
 export let requireProjectToken = (ctx: MixpanelContext) => {
   if (!hasText(ctx.auth.projectToken)) {

@@ -31,7 +31,9 @@ export let createEmbedding = SlateTool.create(spec, {
       inputType: z
         .string()
         .optional()
-        .describe('Input type hint for supported models, such as "search_query" or "search_document"'),
+        .describe(
+          'Input type hint for supported models, such as "search_query" or "search_document"'
+        ),
       provider: z
         .record(z.string(), z.unknown())
         .optional()

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { requireAwsSesString } from '../lib/errors';
 import { SesClient } from '../lib/client';
+import { requireAwsSesString } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageEmailIdentity = SlateTool.create(spec, {
@@ -107,7 +107,11 @@ export let manageEmailIdentity = SlateTool.create(spec, {
     let { action } = ctx.input;
 
     if (action === 'create') {
-      let emailIdentity = requireAwsSesString(ctx.input.emailIdentity, 'emailIdentity', action);
+      let emailIdentity = requireAwsSesString(
+        ctx.input.emailIdentity,
+        'emailIdentity',
+        action
+      );
       let result = await client.createEmailIdentity({
         emailIdentity,
         configurationSetName: ctx.input.configurationSetName
@@ -123,7 +127,11 @@ export let manageEmailIdentity = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      let emailIdentity = requireAwsSesString(ctx.input.emailIdentity, 'emailIdentity', action);
+      let emailIdentity = requireAwsSesString(
+        ctx.input.emailIdentity,
+        'emailIdentity',
+        action
+      );
       let result = await client.getEmailIdentity(emailIdentity);
       return {
         output: result,
@@ -132,7 +140,11 @@ export let manageEmailIdentity = SlateTool.create(spec, {
     }
 
     if (action === 'delete') {
-      let emailIdentity = requireAwsSesString(ctx.input.emailIdentity, 'emailIdentity', action);
+      let emailIdentity = requireAwsSesString(
+        ctx.input.emailIdentity,
+        'emailIdentity',
+        action
+      );
       await client.deleteEmailIdentity(emailIdentity);
       return {
         output: { identityName: emailIdentity },
@@ -155,12 +167,13 @@ export let manageEmailIdentity = SlateTool.create(spec, {
     }
 
     if (action === 'configureDkim') {
-      let emailIdentity = requireAwsSesString(ctx.input.emailIdentity, 'emailIdentity', action);
-      let signingEnabled = ctx.input.dkimSigningEnabled ?? true;
-      await client.putEmailIdentityDkimAttributes(
-        emailIdentity,
-        signingEnabled
+      let emailIdentity = requireAwsSesString(
+        ctx.input.emailIdentity,
+        'emailIdentity',
+        action
       );
+      let signingEnabled = ctx.input.dkimSigningEnabled ?? true;
+      await client.putEmailIdentityDkimAttributes(emailIdentity, signingEnabled);
       return {
         output: { identityName: emailIdentity },
         message: `DKIM signing ${signingEnabled ? 'enabled' : 'disabled'} for **${emailIdentity}**.`
@@ -168,7 +181,11 @@ export let manageEmailIdentity = SlateTool.create(spec, {
     }
 
     if (action === 'configureMailFrom') {
-      let emailIdentity = requireAwsSesString(ctx.input.emailIdentity, 'emailIdentity', action);
+      let emailIdentity = requireAwsSesString(
+        ctx.input.emailIdentity,
+        'emailIdentity',
+        action
+      );
       await client.putEmailIdentityMailFromAttributes(
         emailIdentity,
         ctx.input.mailFromDomain,
@@ -181,12 +198,13 @@ export let manageEmailIdentity = SlateTool.create(spec, {
     }
 
     if (action === 'configureFeedback') {
-      let emailIdentity = requireAwsSesString(ctx.input.emailIdentity, 'emailIdentity', action);
-      let emailForwardingEnabled = ctx.input.emailForwardingEnabled ?? true;
-      await client.putEmailIdentityFeedbackAttributes(
-        emailIdentity,
-        emailForwardingEnabled
+      let emailIdentity = requireAwsSesString(
+        ctx.input.emailIdentity,
+        'emailIdentity',
+        action
       );
+      let emailForwardingEnabled = ctx.input.emailForwardingEnabled ?? true;
+      await client.putEmailIdentityFeedbackAttributes(emailIdentity, emailForwardingEnabled);
       return {
         output: { identityName: emailIdentity },
         message: `Feedback forwarding ${emailForwardingEnabled ? 'enabled' : 'disabled'} for **${emailIdentity}**.`

@@ -29,7 +29,7 @@ export class Client {
   }
 
   private async graphql<T = any>(query: string, variables?: Record<string, any>): Promise<T> {
-    let response;
+    let response: any;
 
     try {
       response = await httpClient.post(

@@ -14,10 +14,7 @@ export let getAccountStats = SlateTool.create(spec, {
   .input(
     z.object({
       statsType: z.enum(['email', 'growth']).describe('Which account stats endpoint to call'),
-      starting: z
-        .string()
-        .optional()
-        .describe('Growth stats start date in yyyy-mm-dd format'),
+      starting: z.string().optional().describe('Growth stats start date in yyyy-mm-dd format'),
       ending: z.string().optional().describe('Growth stats end date in yyyy-mm-dd format')
     })
   )
@@ -29,7 +26,10 @@ export let getAccountStats = SlateTool.create(spec, {
       clicked: z.number().optional().describe('Emails clicked'),
       emailStatsMode: z.string().optional().describe('Email stats window'),
       openTrackingEnabled: z.boolean().optional().describe('Whether open tracking is enabled'),
-      clickTrackingEnabled: z.boolean().optional().describe('Whether click tracking is enabled'),
+      clickTrackingEnabled: z
+        .boolean()
+        .optional()
+        .describe('Whether click tracking is enabled'),
       cancellations: z.number().optional().describe('Subscriber cancellations'),
       netNewSubscribers: z.number().optional().describe('Net new subscribers'),
       newSubscribers: z.number().optional().describe('New subscribers'),

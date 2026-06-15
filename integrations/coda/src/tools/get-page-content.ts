@@ -169,7 +169,9 @@ export let deletePageContentTool = SlateTool.create(spec, {
       elementIds: z
         .array(z.string())
         .optional()
-        .describe('IDs of page content elements to delete. Omit or pass an empty array to delete all content.')
+        .describe(
+          'IDs of page content elements to delete. Omit or pass an empty array to delete all content.'
+        )
     })
   )
   .output(

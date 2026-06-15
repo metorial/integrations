@@ -23,7 +23,9 @@ export let getPrediction = SlateTool.create(spec, {
       version: z.string().optional().describe('Model version ID used'),
       status: z
         .string()
-        .describe('Current status: starting, processing, succeeded, failed, canceled, or aborted'),
+        .describe(
+          'Current status: starting, processing, succeeded, failed, canceled, or aborted'
+        ),
       input: z.any().optional().describe('Input provided to the model'),
       output: z.any().optional().describe('Model output'),
       error: z.string().optional().nullable().describe('Error message if prediction failed'),

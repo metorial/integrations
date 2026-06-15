@@ -52,7 +52,7 @@ let appendMultipartFile = (
 };
 
 let buildMultipartBody = (params: {
-  fields: Array<[string, string | number | boolean]>;
+  fields: [string, string | number | boolean][];
   files?: Array<{ fieldName: string; file: MailgunMessageFile }>;
 }) => {
   let boundary = `----SlatesMailgunBoundary${Date.now()}${Math.random().toString(16).slice(2)}`;
@@ -125,7 +125,7 @@ export class MailgunClient {
       inlineAttachments?: MailgunMessageFile[];
     }
   ) {
-    let fields: Array<[string, string | number | boolean]> = [];
+    let fields: [string, string | number | boolean][] = [];
     fields.push(['from', params.from]);
 
     for (let recipient of params.to) {
@@ -252,9 +252,7 @@ export class MailgunClient {
   }
 
   async deleteDomain(domainName: string) {
-    let response = await this.axios.delete(
-      `/v3/domains/${encodeURIComponent(domainName)}`
-    );
+    let response = await this.axios.delete(`/v3/domains/${encodeURIComponent(domainName)}`);
     return response.data;
   }
 
@@ -691,10 +689,9 @@ export class MailgunClient {
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.pivot) queryParams.p = params.pivot;
 
-    let response = await this.axios.get(
-      `/v3/${domain}/templates/${templateName}/versions`,
-      { params: queryParams }
-    );
+    let response = await this.axios.get(`/v3/${domain}/templates/${templateName}/versions`, {
+      params: queryParams
+    });
     return response.data as { template: { versions: TemplateVersionItem[] } };
   }
 
@@ -1126,7 +1123,7 @@ export type LogsQuery = {
 export type LogsResponse = {
   start: string;
   end: string;
-  items: Array<Record<string, unknown>>;
+  items: Record<string, unknown>[];
   pagination: Record<string, unknown>;
   aggregates?: Record<string, unknown>;
 };

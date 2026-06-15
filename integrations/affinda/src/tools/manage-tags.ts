@@ -80,7 +80,9 @@ export let manageTags = SlateTool.create(spec, {
       tagId: z
         .number()
         .optional()
-        .describe('Required for get, update, delete, add_to_documents, and remove_from_documents.'),
+        .describe(
+          'Required for get, update, delete, add_to_documents, and remove_from_documents.'
+        ),
       name: z
         .string()
         .optional()

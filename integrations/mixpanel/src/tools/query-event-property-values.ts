@@ -33,7 +33,9 @@ export let queryEventPropertyValues = SlateTool.create(spec, {
       interval: z
         .number()
         .optional()
-        .describe('Number of recent units to return. Provide either interval or fromDate/toDate.'),
+        .describe(
+          'Number of recent units to return. Provide either interval or fromDate/toDate.'
+        ),
       fromDate: z
         .string()
         .optional()

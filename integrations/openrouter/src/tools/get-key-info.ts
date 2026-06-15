@@ -75,17 +75,15 @@ export let getKeyInfo = SlateTool.create(spec, {
         data.include_byok_in_limit !== undefined
           ? (data.include_byok_in_limit as boolean)
           : undefined,
-      isFreeTier:
-        data.is_free_tier !== undefined ? (data.is_free_tier as boolean) : undefined,
+      isFreeTier: data.is_free_tier !== undefined ? (data.is_free_tier as boolean) : undefined,
       isManagementKey:
-        data.is_management_key !== undefined
-          ? (data.is_management_key as boolean)
-          : undefined,
+        data.is_management_key !== undefined ? (data.is_management_key as boolean) : undefined,
       isProvisioningKey:
         data.is_provisioning_key !== undefined
           ? (data.is_provisioning_key as boolean)
           : undefined,
-      expiresAt: data.expires_at !== undefined ? (data.expires_at as string | null) : undefined,
+      expiresAt:
+        data.expires_at !== undefined ? (data.expires_at as string | null) : undefined,
       rateLimitRequests: rateLimit ? (rateLimit.requests as number) || undefined : undefined,
       rateLimitInterval: rateLimit ? (rateLimit.interval as string) || undefined : undefined
     };

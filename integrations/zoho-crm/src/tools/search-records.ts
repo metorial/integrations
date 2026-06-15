@@ -46,9 +46,12 @@ Use **criteria** for field-based filters, **email**/**phone** for contact lookup
       apiBaseUrl: ctx.auth.apiBaseUrl
     });
 
-    let searchInputs = [ctx.input.criteria, ctx.input.email, ctx.input.phone, ctx.input.word]
-      .filter(value => typeof value === 'string' && value.length > 0)
-      .length;
+    let searchInputs = [
+      ctx.input.criteria,
+      ctx.input.email,
+      ctx.input.phone,
+      ctx.input.word
+    ].filter(value => typeof value === 'string' && value.length > 0).length;
     if (searchInputs !== 1) {
       throw zohoCrmServiceError(
         'Provide exactly one search mode: criteria, email, phone, or word.'

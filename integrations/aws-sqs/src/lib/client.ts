@@ -185,9 +185,7 @@ export class SqsClient {
     });
   }
 
-  async sendMessage(
-    params: SendMessageParams
-  ): Promise<{
+  async sendMessage(params: SendMessageParams): Promise<{
     messageId: string;
     md5OfMessageBody: string;
     md5OfMessageAttributes?: string;

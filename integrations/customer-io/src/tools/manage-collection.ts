@@ -64,7 +64,9 @@ export let manageCollection = SlateTool.create(spec, {
         throw customerIoServiceError('Provide only one of jsonData or dataUrl.');
       }
       if (!ctx.input.jsonData && !ctx.input.dataUrl) {
-        throw customerIoServiceError('jsonData or dataUrl is required to create a collection.');
+        throw customerIoServiceError(
+          'jsonData or dataUrl is required to create a collection.'
+        );
       }
 
       let data = ctx.input.jsonData ?? ctx.input.dataUrl!;

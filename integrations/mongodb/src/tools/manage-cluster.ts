@@ -147,7 +147,8 @@ export let manageClusterTool = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.clusterType) throw mongodbServiceError('clusterType is required for create');
+      if (!ctx.input.clusterType)
+        throw mongodbServiceError('clusterType is required for create');
       let payload: Record<string, any> = {
         name: ctx.input.clusterName,
         clusterType: ctx.input.clusterType

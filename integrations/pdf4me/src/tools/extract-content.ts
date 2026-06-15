@@ -47,10 +47,7 @@ Use this to pull structured data out of PDFs for further processing.`,
         .array(attachmentMetadataSchema)
         .optional()
         .describe('Extracted image attachment metadata'),
-      attachmentCount: z
-        .number()
-        .optional()
-        .describe('Number of returned image attachments'),
+      attachmentCount: z.number().optional().describe('Number of returned image attachments'),
       tables: z
         .array(
           z.object({
@@ -83,7 +80,9 @@ Use this to pull structured data out of PDFs for further processing.`,
 
     if (ctx.input.extractType === 'regex') {
       if (!ctx.input.regexExpression || !ctx.input.pages) {
-        throw pdf4meServiceError('regexExpression and pages are required for regex extraction');
+        throw pdf4meServiceError(
+          'regexExpression and pages are required for regex extraction'
+        );
       }
       let result = await client.extractTextByExpression({
         docContent: ctx.input.fileContent,

@@ -11,8 +11,8 @@ export {
   deleteCollectionTool,
   getCollectionTool,
   listCollectionsTool,
-  updateCollectionTool,
-  removeCollectionItemTool
+  removeCollectionItemTool,
+  updateCollectionTool
 } from './manage-collections';
 export {
   commentOnDiscussionTool,

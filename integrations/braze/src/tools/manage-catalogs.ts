@@ -1,12 +1,14 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brazeServiceError, requireBrazeArray, requireBrazeString } from '../lib/errors';
 import { BrazeClient } from '../lib/client';
+import { brazeServiceError, requireBrazeArray, requireBrazeString } from '../lib/errors';
 import { spec } from '../spec';
 
 let catalogFieldSchema = z.object({
   name: z.string().describe('Catalog field name'),
-  type: z.string().describe('Braze catalog field type, such as string, number, boolean, or time')
+  type: z
+    .string()
+    .describe('Braze catalog field type, such as string, number, boolean, or time')
 });
 
 let requireFields = (value: Record<string, any> | undefined, action: string) => {

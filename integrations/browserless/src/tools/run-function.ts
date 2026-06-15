@@ -41,10 +41,19 @@ export let runFunction = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      result: z.any().optional().describe('Return value from the executed function in json mode'),
+      result: z
+        .any()
+        .optional()
+        .describe('Return value from the executed function in json mode'),
       mimeType: z.string().optional().describe('MIME type of the returned Slate attachment'),
-      byteLength: z.number().optional().describe('Decoded byte length of the returned attachment'),
-      filename: z.string().optional().describe('Filename reported by Browserless, when available'),
+      byteLength: z
+        .number()
+        .optional()
+        .describe('Decoded byte length of the returned attachment'),
+      filename: z
+        .string()
+        .optional()
+        .describe('Filename reported by Browserless, when available'),
       attachmentCount: z.number().describe('Number of Slate attachments returned')
     })
   )
@@ -71,7 +80,10 @@ export let runFunction = SlateTool.create(spec, {
       };
     }
 
-    let result = await client.runFunction({ code: ctx.input.code, context: ctx.input.context });
+    let result = await client.runFunction({
+      code: ctx.input.code,
+      context: ctx.input.context
+    });
 
     return {
       output: { result, attachmentCount: 0 },

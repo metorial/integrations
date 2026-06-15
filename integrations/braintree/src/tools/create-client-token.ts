@@ -61,7 +61,8 @@ export let createClientToken = SlateTool.create(spec, {
 
     let clientToken: Record<string, any> = {};
     if (ctx.input.customerId) clientToken.customerId = ctx.input.customerId;
-    if (ctx.input.merchantAccountId) clientToken.merchantAccountId = ctx.input.merchantAccountId;
+    if (ctx.input.merchantAccountId)
+      clientToken.merchantAccountId = ctx.input.merchantAccountId;
     if (ctx.input.version !== undefined) clientToken.version = ctx.input.version;
     if (ctx.input.domains) clientToken.domains = ctx.input.domains;
     if (ctx.input.failOnDuplicatePaymentMethodForCustomer !== undefined) {

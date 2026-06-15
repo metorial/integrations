@@ -116,7 +116,9 @@ export let manageAccount = SlateTool.create(spec, {
         if (ctx.input.customProperties)
           updateData.customProperties = ctx.input.customProperties;
         if (Object.keys(updateData).length === 0) {
-          throw driftServiceError('At least one account field is required to update an account.');
+          throw driftServiceError(
+            'At least one account field is required to update an account.'
+          );
         }
         let account = await client.updateAccount(ctx.input.accountId, updateData);
         return {

@@ -130,10 +130,7 @@ export let createSession = SlateTool.create(spec, {
       };
     }
 
-    if (
-      (ctx.input.viewportWidth === undefined) !==
-      (ctx.input.viewportHeight === undefined)
-    ) {
+    if ((ctx.input.viewportWidth === undefined) !== (ctx.input.viewportHeight === undefined)) {
       throw browserbaseServiceError('Provide both viewportWidth and viewportHeight together.');
     }
 

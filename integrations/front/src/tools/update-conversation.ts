@@ -27,7 +27,9 @@ export let updateConversation = SlateTool.create(spec, {
       statusId: z
         .string()
         .optional()
-        .describe('Ticketing status ID to set. Do not provide with status. Requires Front ticketing.'),
+        .describe(
+          'Ticketing status ID to set. Do not provide with status. Requires Front ticketing.'
+        ),
       assigneeId: z
         .string()
         .optional()
@@ -40,7 +42,9 @@ export let updateConversation = SlateTool.create(spec, {
       clearDescription: z
         .boolean()
         .optional()
-        .describe('Set true to clear the task conversation description. Do not provide with description.'),
+        .describe(
+          'Set true to clear the task conversation description. Do not provide with description.'
+        ),
       customFields: z
         .record(z.string(), z.string())
         .optional()
@@ -56,7 +60,9 @@ export let updateConversation = SlateTool.create(spec, {
         .array(z.string())
         .max(10)
         .optional()
-        .describe('Link IDs to add to the conversation. Do not provide with addLinkExternalUrls.'),
+        .describe(
+          'Link IDs to add to the conversation. Do not provide with addLinkExternalUrls.'
+        ),
       addLinkExternalUrls: z
         .array(z.string())
         .max(10)
@@ -119,7 +125,9 @@ export let updateConversation = SlateTool.create(spec, {
     }
 
     if (
-      (input.reminderScheduledAt !== undefined || input.clearReminder || input.reminderStatusId) &&
+      (input.reminderScheduledAt !== undefined ||
+        input.clearReminder ||
+        input.reminderStatusId) &&
       !input.reminderTeammateId
     ) {
       throw frontServiceError(
@@ -128,7 +136,9 @@ export let updateConversation = SlateTool.create(spec, {
     }
 
     if (input.reminderScheduledAt !== undefined && input.clearReminder) {
-      throw frontServiceError('Provide either reminderScheduledAt or clearReminder, not both.');
+      throw frontServiceError(
+        'Provide either reminderScheduledAt or clearReminder, not both.'
+      );
     }
 
     if (
@@ -136,9 +146,7 @@ export let updateConversation = SlateTool.create(spec, {
       input.reminderScheduledAt === undefined &&
       !input.clearReminder
     ) {
-      throw frontServiceError(
-        'reminderScheduledAt is required unless clearReminder is true.'
-      );
+      throw frontServiceError('reminderScheduledAt is required unless clearReminder is true.');
     }
 
     let updateData: Record<string, any> = {};

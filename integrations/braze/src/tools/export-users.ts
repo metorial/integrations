@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brazeServiceError } from '../lib/errors';
 import { BrazeClient } from '../lib/client';
+import { brazeServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let exportUsers = SlateTool.create(spec, {
@@ -73,7 +73,10 @@ export let exportUsers = SlateTool.create(spec, {
       );
     }
 
-    if ((ctx.input.externalIds?.length ?? 0) > 50 || (ctx.input.userAliases?.length ?? 0) > 50) {
+    if (
+      (ctx.input.externalIds?.length ?? 0) > 50 ||
+      (ctx.input.userAliases?.length ?? 0) > 50
+    ) {
       throw brazeServiceError('externalIds and userAliases can include at most 50 values.');
     }
 

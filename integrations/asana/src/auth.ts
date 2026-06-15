@@ -19,7 +19,7 @@ let outputSchema = z.object({
 type AuthOutput = z.infer<typeof outputSchema>;
 
 let fetchProfile = async (token: string) => {
-  let response;
+  let response: any;
   try {
     response = await asanaApi.get('/users/me', {
       headers: {
@@ -208,7 +208,7 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response;
+      let response: any;
       try {
         response = await asanaAuth.post(
           '/-/oauth_token',
@@ -252,7 +252,7 @@ export let auth = SlateAuth.create()
         throw asanaServiceError('No Asana refresh token is available.');
       }
 
-      let response;
+      let response: any;
       try {
         response = await asanaAuth.post(
           '/-/oauth_token',

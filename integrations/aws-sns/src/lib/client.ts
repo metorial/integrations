@@ -365,16 +365,13 @@ export class SnsClient {
       params[`${prefix}.Id`] = entry.id;
       params[`${prefix}.Message`] = entry.message;
       if (entry.subject) params[`${prefix}.Subject`] = entry.subject;
-      if (entry.messageStructure) params[`${prefix}.MessageStructure`] = entry.messageStructure;
+      if (entry.messageStructure)
+        params[`${prefix}.MessageStructure`] = entry.messageStructure;
       if (entry.messageGroupId) params[`${prefix}.MessageGroupId`] = entry.messageGroupId;
       if (entry.messageDeduplicationId) {
         params[`${prefix}.MessageDeduplicationId`] = entry.messageDeduplicationId;
       }
-      addMessageAttributes(
-        params,
-        `${prefix}.MessageAttributes`,
-        entry.messageAttributes
-      );
+      addMessageAttributes(params, `${prefix}.MessageAttributes`, entry.messageAttributes);
     });
 
     let result = await this.request(params);

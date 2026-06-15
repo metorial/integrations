@@ -62,9 +62,7 @@ let requireEvents = (events: string[] | undefined, action: string) => {
 let requiresBatchable = (events: string[] | undefined) =>
   events?.some(
     event =>
-      event === 'campaign.open' ||
-      event === 'campaign.click' ||
-      event === 'subscriber.deleted'
+      event === 'campaign.open' || event === 'campaign.click' || event === 'subscriber.deleted'
   ) ?? false;
 
 export let manageWebhook = SlateTool.create(spec, {
@@ -98,7 +96,9 @@ export let manageWebhook = SlateTool.create(spec, {
   .output(
     z.object({
       webhooks: z.array(webhookOutputSchema).optional().describe('Webhook list'),
-      webhook: webhookOutputSchema.optional().describe('Created, retrieved, or updated webhook'),
+      webhook: webhookOutputSchema
+        .optional()
+        .describe('Created, retrieved, or updated webhook'),
       success: z.boolean().describe('Whether the action succeeded')
     })
   )

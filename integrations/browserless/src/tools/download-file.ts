@@ -22,7 +22,9 @@ export let downloadFile = SlateTool.create(spec, {
     z.object({
       code: z
         .string()
-        .describe('JavaScript code that navigates, interacts with the page, and triggers a download'),
+        .describe(
+          'JavaScript code that navigates, interacts with the page, and triggers a download'
+        ),
       context: z
         .record(z.string(), z.any())
         .optional()

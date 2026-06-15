@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { trelloServiceError } from '../lib/errors';
 import { TrelloClient } from '../lib/client';
+import { trelloServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let actionSchema = z.object({

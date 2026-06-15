@@ -23,10 +23,7 @@ export let listProfiles = SlateTool.create(spec, {
         .enum(['createdOn', 'id', 'email', 'lastName'])
         .optional()
         .describe('Profile field to sort by'),
-      sortDirection: z
-        .enum(['asc', 'dsc'])
-        .optional()
-        .describe('Sort direction: asc or dsc')
+      sortDirection: z.enum(['asc', 'dsc']).optional().describe('Sort direction: asc or dsc')
     })
   )
   .output(

@@ -447,7 +447,9 @@ export class RedisCloudClient {
   }
 
   async listDatabaseModules() {
-    return await this.request('list database modules', () => this.http.get('/database-modules'));
+    return await this.request('list database modules', () =>
+      this.http.get('/database-modules')
+    );
   }
 
   async listDataPersistenceOptions() {

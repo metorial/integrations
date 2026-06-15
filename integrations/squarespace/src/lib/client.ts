@@ -80,8 +80,8 @@ export interface CreateOrderParams {
   shippingTotal?: MoneyAmount;
   discountTotal?: MoneyAmount;
   taxTotal?: MoneyAmount;
-  shippingLines?: Array<Record<string, any>>;
-  discountLines?: Array<Record<string, any>>;
+  shippingLines?: Record<string, any>[];
+  discountLines?: Record<string, any>[];
 }
 
 export interface ListProductsParams {

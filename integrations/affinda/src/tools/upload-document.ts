@@ -61,10 +61,7 @@ Set **wait** to \`true\` to receive parsed results immediately, or \`false\` to 
         .string()
         .optional()
         .describe('File name for file uploads or override file name for URL uploads.'),
-      fileMimeType: z
-        .string()
-        .optional()
-        .describe('MIME type for fileContentBase64 uploads.'),
+      fileMimeType: z.string().optional().describe('MIME type for fileContentBase64 uploads.'),
       expiryTime: z
         .string()
         .optional()
@@ -99,7 +96,9 @@ Set **wait** to \`true\` to receive parsed results immediately, or \`false\` to 
       llmHint: z
         .string()
         .optional()
-        .describe('Optional hint inserted into the LLM prompt while processing this document.'),
+        .describe(
+          'Optional hint inserted into the LLM prompt while processing this document.'
+        ),
       limitToExamples: z
         .array(z.string())
         .optional()
@@ -113,8 +112,14 @@ Set **wait** to \`true\` to receive parsed results immediately, or \`false\` to 
       state: z.string().optional().describe('Current processing state of the document.'),
       ready: z.boolean().optional().describe('Whether the document has finished processing.'),
       failed: z.boolean().optional().describe('Whether parsing has failed.'),
-      customIdentifier: z.string().optional().describe('Custom identifier assigned to the document.'),
-      reviewUrl: z.string().optional().describe('Affinda validation/review URL for the document.'),
+      customIdentifier: z
+        .string()
+        .optional()
+        .describe('Custom identifier assigned to the document.'),
+      reviewUrl: z
+        .string()
+        .optional()
+        .describe('Affinda validation/review URL for the document.'),
       extractedData: z
         .any()
         .optional()

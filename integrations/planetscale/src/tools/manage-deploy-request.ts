@@ -92,14 +92,10 @@ export let manageDeployRequest = SlateTool.create(spec, {
     }
 
     if (action === 'operations') {
-      let result = await client.listDeployOperations(
-        databaseName,
-        deployRequestNumber,
-        {
-          page: ctx.input.page,
-          perPage: ctx.input.perPage
-        }
-      );
+      let result = await client.listDeployOperations(databaseName, deployRequestNumber, {
+        page: ctx.input.page,
+        perPage: ctx.input.perPage
+      });
       return {
         output: {
           number: deployRequestNumber,
@@ -112,7 +108,10 @@ export let manageDeployRequest = SlateTool.create(spec, {
     }
 
     if (action === 'storage_check') {
-      let storageCheck = await client.checkDeployRequestStorage(databaseName, deployRequestNumber);
+      let storageCheck = await client.checkDeployRequestStorage(
+        databaseName,
+        deployRequestNumber
+      );
       return {
         output: { number: deployRequestNumber, storageCheck },
         message: `Checked storage for deploy request **#${deployRequestNumber}**.`

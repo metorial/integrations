@@ -58,12 +58,7 @@ Describe the desired audio including genre, mood, instruments, tempo, and style 
         .max(8)
         .optional()
         .describe('Generation steps. Stable Audio 3 supports 4-8.'),
-      cfgScale: z
-        .number()
-        .min(1)
-        .max(25)
-        .optional()
-        .describe('Prompt adherence scale.'),
+      cfgScale: z.number().min(1).max(25).optional().describe('Prompt adherence scale.'),
       audio: z
         .string()
         .optional()
@@ -98,10 +93,15 @@ Describe the desired audio including genre, mood, instruments, tempo, and style 
       | 'inpaint';
 
     if (ctx.input.model !== 'stable-audio-3' && (ctx.input.duration ?? 190) > 190) {
-      throw stabilityServiceError('Stable Audio 2 and 2.5 duration must be 190 seconds or less.');
+      throw stabilityServiceError(
+        'Stable Audio 2 and 2.5 duration must be 190 seconds or less.'
+      );
     }
 
-    if ((ctx.input.mode === 'audio_to_audio' || ctx.input.mode === 'inpaint') && !ctx.input.audio) {
+    if (
+      (ctx.input.mode === 'audio_to_audio' || ctx.input.mode === 'inpaint') &&
+      !ctx.input.audio
+    ) {
       throw stabilityServiceError('audio is required for audio_to_audio and inpaint modes.');
     }
 

@@ -254,7 +254,8 @@ export class Client {
 
   async downloadDocumentFile(documentId: string): Promise<DownloadedDocumentFile> {
     let document = await this.getDocumentCard(documentId);
-    let status = typeof document.status === 'string' ? document.status : String(document.status);
+    let status =
+      typeof document.status === 'string' ? document.status : String(document.status);
 
     if (status !== 'success') {
       throw pdfmonkeyServiceError(

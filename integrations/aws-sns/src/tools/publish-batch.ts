@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { snsServiceError } from '../lib/errors';
 import { SnsClient } from '../lib/client';
+import { snsServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let messageAttributesSchema = z
@@ -39,22 +39,14 @@ export let publishBatch = SlateTool.create(spec, {
       entries: z
         .array(
           z.object({
-            id: z
-              .string()
-              .describe('Unique entry ID within this batch, max 80 characters'),
+            id: z.string().describe('Unique entry ID within this batch, max 80 characters'),
             message: z.string().describe('Message body for this entry'),
-            subject: z
-              .string()
-              .optional()
-              .describe('Subject line for email notifications'),
+            subject: z.string().optional().describe('Subject line for email notifications'),
             messageStructure: z
               .enum(['json'])
               .optional()
               .describe('Set to "json" to send protocol-specific messages'),
-            messageGroupId: z
-              .string()
-              .optional()
-              .describe('Message group ID for FIFO topics'),
+            messageGroupId: z.string().optional().describe('Message group ID for FIFO topics'),
             messageDeduplicationId: z
               .string()
               .optional()
@@ -84,9 +76,7 @@ export let publishBatch = SlateTool.create(spec, {
             id: z.string().describe('Entry ID from the request'),
             code: z.string().describe('SNS batch error code'),
             message: z.string().optional().describe('SNS batch error message'),
-            senderFault: z
-              .boolean()
-              .describe('Whether the failure was caused by the request')
+            senderFault: z.boolean().describe('Whether the failure was caused by the request')
           })
         )
         .describe('Entries that SNS rejected')

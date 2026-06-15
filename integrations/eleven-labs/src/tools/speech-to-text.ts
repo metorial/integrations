@@ -84,7 +84,9 @@ export let speechToText = SlateTool.create(spec, {
         .min(0.1)
         .max(0.4)
         .optional()
-        .describe('Speaker diarization threshold. Only valid with diarize=true and no numSpeakers.'),
+        .describe(
+          'Speaker diarization threshold. Only valid with diarize=true and no numSpeakers.'
+        ),
       fileFormat: z
         .enum(['pcm_s16le_16', 'other'])
         .optional()
@@ -105,7 +107,9 @@ export let speechToText = SlateTool.create(spec, {
       useMultiChannel: z
         .boolean()
         .optional()
-        .describe('Transcribe each audio channel independently when input has multiple channels')
+        .describe(
+          'Transcribe each audio channel independently when input has multiple channels'
+        )
     })
   )
   .output(

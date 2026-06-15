@@ -288,7 +288,10 @@ export let addContactToSegment = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let result = await client.addContactToSegment(ctx.input.contactIdOrEmail, ctx.input.segmentId);
+    let result = await client.addContactToSegment(
+      ctx.input.contactIdOrEmail,
+      ctx.input.segmentId
+    );
 
     return {
       output: { segmentId: result.id },
@@ -430,9 +433,7 @@ export let updateContactTopics = SlateTool.create(spec, {
         .array(
           z.object({
             id: z.string().describe('Topic ID.'),
-            subscription: z
-              .enum(['opt_in', 'opt_out'])
-              .describe('New subscription status.')
+            subscription: z.enum(['opt_in', 'opt_out']).describe('New subscription status.')
           })
         )
         .describe('Topic subscription updates.')

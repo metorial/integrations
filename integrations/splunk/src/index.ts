@@ -1,10 +1,10 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  controlSearchJob,
   createIndex,
   createKVStoreCollection,
   createSavedSearch,
-  controlSearchJob,
   deleteKVStoreCollection,
   deleteKVStoreRecords,
   deleteSavedSearch,

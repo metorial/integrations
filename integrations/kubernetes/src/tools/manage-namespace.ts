@@ -103,9 +103,7 @@ export let manageNamespace = SlateTool.create(spec, {
     }
 
     if (Object.keys(patch).length === 0) {
-      throw kubernetesServiceError(
-        'Provide labels or annotations when updating a namespace.'
-      );
+      throw kubernetesServiceError('Provide labels or annotations when updating a namespace.');
     }
 
     let result = await client.patchResource(

@@ -126,7 +126,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: any; scopes: string[] }) => {
-      let response;
+      let response: any;
       try {
         response = await hfAxios.get('/api/whoami-v2', {
           headers: {
@@ -168,7 +168,7 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
-      let response;
+      let response: any;
       try {
         response = await hfAxios.get('/api/whoami-v2', {
           headers: {

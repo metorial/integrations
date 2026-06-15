@@ -42,7 +42,9 @@ let collectDetails = (value: unknown, details: string[]) => {
 
 let extractMessage = (error: unknown) => {
   let response = isRecord(error) ? (error.response as ErrorResponse | undefined) : undefined;
-  let slateData = isRecord(error) ? (error.data as Record<string, unknown> | undefined) : undefined;
+  let slateData = isRecord(error)
+    ? (error.data as Record<string, unknown> | undefined)
+    : undefined;
   let details: string[] = [];
 
   collectDetails(response?.data, details);

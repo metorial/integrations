@@ -67,10 +67,7 @@ export let auth = SlateAuth.create()
         .enum(['disabled', 'preferred', 'required'])
         .default('preferred')
         .describe('SSL connection mode'),
-      sslCa: z
-        .string()
-        .optional()
-        .describe('PEM-encoded CA certificate for SSL connections'),
+      sslCa: z.string().optional().describe('PEM-encoded CA certificate for SSL connections'),
       sslRejectUnauthorized: z
         .boolean()
         .optional()

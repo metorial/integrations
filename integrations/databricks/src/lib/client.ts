@@ -145,12 +145,7 @@ export class DatabricksClient {
   // ─── Jobs ────────────────────────────────────────────────────────────
 
   async listJobs(
-    params: {
-      limit?: number;
-      pageToken?: string;
-      name?: string;
-      expandTasks?: boolean;
-    } = {}
+    params: { limit?: number; pageToken?: string; name?: string; expandTasks?: boolean } = {}
   ) {
     let query: Record<string, any> = {};
     if (params.limit !== undefined) query.limit = params.limit;

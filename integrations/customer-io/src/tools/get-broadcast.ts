@@ -19,14 +19,8 @@ export let getBroadcast = SlateTool.create(spec, {
       includeActions: z.boolean().optional().describe('Also fetch broadcast actions'),
       includeMetrics: z.boolean().optional().describe('Also fetch broadcast metrics'),
       includeTriggers: z.boolean().optional().describe('Also fetch broadcast trigger history'),
-      triggerId: z
-        .number()
-        .optional()
-        .describe('Specific trigger ID to fetch status for'),
-      includeTriggerErrors: z
-        .boolean()
-        .optional()
-        .describe('Also fetch errors for triggerId'),
+      triggerId: z.number().optional().describe('Specific trigger ID to fetch status for'),
+      includeTriggerErrors: z.boolean().optional().describe('Also fetch errors for triggerId'),
       triggerErrorsCursor: z
         .string()
         .optional()
@@ -80,7 +74,10 @@ export let getBroadcast = SlateTool.create(spec, {
       triggers = triggersResult?.triggers ?? [];
     }
     if (ctx.input.triggerId) {
-      trigger = await appClient.getBroadcastTrigger(ctx.input.broadcastId, ctx.input.triggerId);
+      trigger = await appClient.getBroadcastTrigger(
+        ctx.input.broadcastId,
+        ctx.input.triggerId
+      );
       if (ctx.input.includeTriggerErrors) {
         let errorsResult = await appClient.getBroadcastTriggerErrors(
           ctx.input.broadcastId,

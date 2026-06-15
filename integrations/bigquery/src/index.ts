@@ -18,15 +18,15 @@ import {
   getRoutine,
   getTable,
   insertRows,
-  listModels,
   listDatasets,
   listJobs,
+  listModels,
   listRoutines,
   listTables,
   loadData,
   readTableData,
-  updateModel,
   updateDataset,
+  updateModel,
   updateTable
 } from './tools';
 import { datasetUpdated, inboundWebhook, jobCompleted } from './triggers';

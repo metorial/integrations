@@ -46,8 +46,8 @@ import {
   listRequesters,
   listServiceCatalogItems,
   listServiceCategories,
-  listTickets,
   listTicketConversations,
+  listTickets,
   listVendors,
   placeServiceRequest,
   reactivateRequester,
@@ -64,8 +64,8 @@ import {
   updateProblem,
   updateRelease,
   updateRequester,
-  updateTicketConversation,
-  updateTicket
+  updateTicket,
+  updateTicketConversation
 } from './tools';
 import { changeUpdates, inboundWebhook, ticketUpdates } from './triggers';
 

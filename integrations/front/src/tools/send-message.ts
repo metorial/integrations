@@ -38,14 +38,13 @@ export let sendMessage = SlateTool.create(spec, {
         .optional()
         .describe('Quoted body for a reply. Only used when conversationId is provided.'),
       senderName: z.string().optional().describe('Display name of the sender'),
-      signatureId: z
-        .string()
-        .optional()
-        .describe('Signature ID to attach for email channels'),
+      signatureId: z.string().optional().describe('Signature ID to attach for email channels'),
       shouldAddDefaultSignature: z
         .boolean()
         .optional()
-        .describe('Whether Front should try to resolve the default signature for email channels')
+        .describe(
+          'Whether Front should try to resolve the default signature for email channels'
+        )
     })
   )
   .output(
@@ -70,12 +69,7 @@ export let sendMessage = SlateTool.create(spec, {
       throw frontServiceError('quoteBody can only be used when replying with conversationId.');
     }
 
-    if (
-      input.channelId &&
-      !input.to?.length &&
-      !input.cc?.length &&
-      !input.bcc?.length
-    ) {
+    if (input.channelId && !input.to?.length && !input.cc?.length && !input.bcc?.length) {
       throw frontServiceError('At least one of to, cc, or bcc is required for a new message.');
     }
 

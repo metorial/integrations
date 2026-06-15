@@ -84,11 +84,18 @@ export let manageAssistantFilesTool = SlateTool.create(spec, {
             name: z.string().optional().describe('File name'),
             size: z.number().optional().describe('File size in bytes'),
             status: z.string().optional().describe('File processing status'),
-            metadata: z.record(z.string(), z.any()).nullable().optional().describe('File metadata'),
+            metadata: z
+              .record(z.string(), z.any())
+              .nullable()
+              .optional()
+              .describe('File metadata'),
             createdOn: z.string().optional().describe('Creation timestamp'),
             updatedOn: z.string().optional().describe('Last update timestamp'),
             signedUrl: z.string().optional().describe('Signed URL when requested'),
-            multimodal: z.boolean().optional().describe('Whether multimodal processing is enabled')
+            multimodal: z
+              .boolean()
+              .optional()
+              .describe('Whether multimodal processing is enabled')
           })
         )
         .optional()
@@ -106,7 +113,9 @@ export let manageAssistantFilesTool = SlateTool.create(spec, {
           })
         )
         .optional()
-        .describe('Assistant operations returned by upload/delete/list/describe operation actions'),
+        .describe(
+          'Assistant operations returned by upload/delete/list/describe operation actions'
+        ),
       nextPaginationToken: z.string().optional().describe('Token for the next list page'),
       deleted: z.boolean().optional().describe('Whether a delete was accepted')
     })
@@ -178,7 +187,9 @@ export let manageAssistantFilesTool = SlateTool.create(spec, {
 
     if (ctx.input.action === 'upload' || ctx.input.action === 'upsert') {
       if (!ctx.input.fileName || !ctx.input.fileBase64) {
-        throw pineconeServiceError('fileName and fileBase64 are required for upload and upsert.');
+        throw pineconeServiceError(
+          'fileName and fileBase64 are required for upload and upsert.'
+        );
       }
       if (ctx.input.action === 'upsert' && !ctx.input.fileId) {
         throw pineconeServiceError('fileId is required for upsert.');
@@ -205,9 +216,13 @@ export let manageAssistantFilesTool = SlateTool.create(spec, {
       if (!ctx.input.fileId) {
         throw pineconeServiceError('fileId is required for describe.');
       }
-      let file = await assistantClient.describeFile(ctx.input.assistantName, ctx.input.fileId, {
-        includeUrl: ctx.input.includeUrl
-      });
+      let file = await assistantClient.describeFile(
+        ctx.input.assistantName,
+        ctx.input.fileId,
+        {
+          includeUrl: ctx.input.includeUrl
+        }
+      );
       return {
         output: {
           files: [toFileOutput(file)]
@@ -220,7 +235,10 @@ export let manageAssistantFilesTool = SlateTool.create(spec, {
       if (!ctx.input.fileId) {
         throw pineconeServiceError('fileId is required for delete.');
       }
-      let operation = await assistantClient.deleteFile(ctx.input.assistantName, ctx.input.fileId);
+      let operation = await assistantClient.deleteFile(
+        ctx.input.assistantName,
+        ctx.input.fileId
+      );
       return {
         output: {
           deleted: true,

@@ -21,7 +21,9 @@ export let manageBackup = SlateTool.create(spec, {
     z.object({
       databaseName: z.string().describe('Name of the database'),
       branchName: z.string().describe('Name of the branch'),
-      action: z.enum(['list', 'create', 'get', 'update', 'delete']).describe('Action to perform'),
+      action: z
+        .enum(['list', 'create', 'get', 'update', 'delete'])
+        .describe('Action to perform'),
       backupId: z.string().optional().describe('Backup ID (required for get, update, delete)'),
       name: z.string().optional().describe('Name for the backup (used with create)'),
       retentionUnit: z
@@ -36,7 +38,10 @@ export let manageBackup = SlateTool.create(spec, {
         .boolean()
         .optional()
         .describe('Trigger immediate backup, PostgreSQL only (used with create)'),
-      protected: z.boolean().optional().describe('Whether the backup is protected from deletion'),
+      protected: z
+        .boolean()
+        .optional()
+        .describe('Whether the backup is protected from deletion'),
       all: z
         .boolean()
         .optional()
@@ -100,18 +105,23 @@ export let manageBackup = SlateTool.create(spec, {
     let { databaseName, branchName, action } = ctx.input;
 
     if (action === 'list') {
-      let result = await client.listBackups(databaseName, branchName, {
-        page: ctx.input.page,
-        perPage: ctx.input.perPage
-      }, {
-        all: ctx.input.all,
-        state: ctx.input.state,
-        policy: ctx.input.policy,
-        from: ctx.input.from,
-        to: ctx.input.to,
-        runningAt: ctx.input.runningAt,
-        production: ctx.input.production
-      });
+      let result = await client.listBackups(
+        databaseName,
+        branchName,
+        {
+          page: ctx.input.page,
+          perPage: ctx.input.perPage
+        },
+        {
+          all: ctx.input.all,
+          state: ctx.input.state,
+          policy: ctx.input.policy,
+          from: ctx.input.from,
+          to: ctx.input.to,
+          runningAt: ctx.input.runningAt,
+          production: ctx.input.production
+        }
+      );
 
       let backups = result.data.map((b: any) => ({
         backupId: b.id,

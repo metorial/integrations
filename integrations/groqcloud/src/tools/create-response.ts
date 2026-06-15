@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { groqCloudServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
+import { groqCloudServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let responseMessageSchema = z.object({
@@ -57,8 +57,7 @@ let buildTextConfig = (responseFormat?: string, jsonSchema?: Record<string, unkn
     );
   }
 
-  let hasFullConfig =
-    typeof jsonSchema.name === 'string' && jsonSchema.schema !== undefined;
+  let hasFullConfig = typeof jsonSchema.name === 'string' && jsonSchema.schema !== undefined;
 
   return {
     format: {
@@ -147,9 +146,7 @@ export let createResponse = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      model: z
-        .string()
-        .describe('Model ID to use, such as "openai/gpt-oss-20b"'),
+      model: z.string().describe('Model ID to use, such as "openai/gpt-oss-20b"'),
       input: z
         .string()
         .optional()
@@ -177,7 +174,9 @@ export let createResponse = SlateTool.create(spec, {
       jsonSchema: z
         .record(z.string(), z.unknown())
         .optional()
-        .describe('JSON Schema or full json_schema config when responseFormat is "json_schema"'),
+        .describe(
+          'JSON Schema or full json_schema config when responseFormat is "json_schema"'
+        ),
       reasoningEffort: z
         .enum(['none', 'default', 'low', 'medium', 'high'])
         .optional()

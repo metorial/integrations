@@ -1,8 +1,8 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
-  addBarcodeToPdf,
   addAttachmentsToPdf,
+  addBarcodeToPdf,
   addFormFieldToPdf,
   addHeaderFooter,
   addMarginToPdf,
@@ -16,8 +16,8 @@ import {
   createImagesFromPdf,
   createPdfA,
   deletePages,
-  extractContent,
   extractAttachmentsFromPdf,
+  extractContent,
   extractPages,
   extractPdfFormData,
   fillPdfForm,

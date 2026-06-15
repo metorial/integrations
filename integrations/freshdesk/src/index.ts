@@ -6,11 +6,11 @@ import {
   createCompany,
   createContact,
   createTicket,
+  createTimeEntry,
   deleteCompany,
   deleteContact,
-  deleteTimeEntry,
-  createTimeEntry,
   deleteTicket,
+  deleteTimeEntry,
   getAccount,
   getArticle,
   getCompany,
@@ -38,8 +38,8 @@ import {
   searchTickets,
   updateCompany,
   updateContact,
-  updateTimeEntry,
-  updateTicket
+  updateTicket,
+  updateTimeEntry
 } from './tools';
 import { contactEvents, ticketEvents, ticketEventsWebhook } from './triggers';
 

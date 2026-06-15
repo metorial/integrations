@@ -793,7 +793,11 @@ export class Client {
     return response.data.release;
   }
 
-  async listReleases(pagination?: PaginationParams, filterName?: string, workspaceId?: number) {
+  async listReleases(
+    pagination?: PaginationParams,
+    filterName?: string,
+    workspaceId?: number
+  ) {
     let params: Record<string, string | number> = {};
     if (pagination?.page) params.page = pagination.page;
     if (pagination?.perPage) params.per_page = pagination.perPage;

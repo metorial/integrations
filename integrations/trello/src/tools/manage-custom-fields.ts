@@ -1,12 +1,12 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { TrelloClient } from '../lib/client';
 import {
   requireAtLeastOneTrelloField,
   requireTrelloString,
   requireTrelloValue,
   trelloServiceError
 } from '../lib/errors';
-import { TrelloClient } from '../lib/client';
 import { spec } from '../spec';
 
 let customFieldOptionSchema = z.object({
@@ -22,7 +22,10 @@ let customFieldSchema = z.object({
   name: z.string().optional().describe('Custom field name'),
   type: z.string().optional().describe('Custom field type'),
   position: z.number().optional().describe('Custom field position'),
-  displayOnCardFront: z.boolean().optional().describe('Whether the field displays on card fronts'),
+  displayOnCardFront: z
+    .boolean()
+    .optional()
+    .describe('Whether the field displays on card fronts'),
   options: z.array(customFieldOptionSchema).optional().describe('List field options')
 });
 
@@ -80,7 +83,9 @@ let buildCustomFieldValue = (input: {
 }) => {
   switch (input.valueType) {
     case 'text':
-      return { value: { text: requireTrelloString(input.textValue, 'textValue', 'set_card_value') } };
+      return {
+        value: { text: requireTrelloString(input.textValue, 'textValue', 'set_card_value') }
+      };
     case 'number':
       return {
         value: {
@@ -88,7 +93,9 @@ let buildCustomFieldValue = (input: {
         }
       };
     case 'date':
-      return { value: { date: requireTrelloString(input.dateValue, 'dateValue', 'set_card_value') } };
+      return {
+        value: { date: requireTrelloString(input.dateValue, 'dateValue', 'set_card_value') }
+      };
     case 'checked':
       return {
         value: {
@@ -141,7 +148,9 @@ export let manageCustomFields = SlateTool.create(spec, {
       customFieldId: z
         .string()
         .optional()
-        .describe('Custom field ID (required for update_field, delete_field, and set_card_value)'),
+        .describe(
+          'Custom field ID (required for update_field, delete_field, and set_card_value)'
+        ),
       name: z.string().optional().describe('Custom field name for create_field/update_field'),
       fieldType: z
         .enum(['checkbox', 'date', 'list', 'number', 'text'])
@@ -221,7 +230,11 @@ export let manageCustomFields = SlateTool.create(spec, {
     }
 
     if (action === 'update_field') {
-      let customFieldId = requireTrelloString(ctx.input.customFieldId, 'customFieldId', action);
+      let customFieldId = requireTrelloString(
+        ctx.input.customFieldId,
+        'customFieldId',
+        action
+      );
       requireAtLeastOneTrelloField(
         {
           name: ctx.input.name,
@@ -247,7 +260,11 @@ export let manageCustomFields = SlateTool.create(spec, {
     }
 
     if (action === 'delete_field') {
-      let customFieldId = requireTrelloString(ctx.input.customFieldId, 'customFieldId', action);
+      let customFieldId = requireTrelloString(
+        ctx.input.customFieldId,
+        'customFieldId',
+        action
+      );
       await client.deleteCustomField(customFieldId);
 
       return {

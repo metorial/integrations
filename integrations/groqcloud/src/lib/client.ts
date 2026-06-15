@@ -129,7 +129,7 @@ export interface ChatCompletionRequest {
 
 export interface ResponseRequest {
   model: string;
-  input: string | Array<Record<string, unknown>>;
+  input: string | Record<string, unknown>[];
   instructions?: string;
   temperature?: number;
   topP?: number;
@@ -365,8 +365,7 @@ export class Client {
     if (req.toolChoice !== undefined) body.tool_choice = req.toolChoice;
     if (req.text !== undefined) body.text = req.text;
     if (req.reasoning !== undefined) body.reasoning = req.reasoning;
-    if (req.parallelToolCalls !== undefined)
-      body.parallel_tool_calls = req.parallelToolCalls;
+    if (req.parallelToolCalls !== undefined) body.parallel_tool_calls = req.parallelToolCalls;
     if (req.serviceTier !== undefined) body.service_tier = req.serviceTier;
     if (req.truncation !== undefined) body.truncation = req.truncation;
     if (req.store !== undefined) body.store = req.store;

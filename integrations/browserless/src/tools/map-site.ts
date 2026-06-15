@@ -29,12 +29,18 @@ export let mapSite = SlateTool.create(spec, {
         .optional()
         .describe('Whether to include, skip, or exclusively use sitemap URLs'),
       includeSubdomains: z.boolean().optional().describe('Include URLs from subdomains'),
-      ignoreQueryParameters: z.boolean().optional().describe('Deduplicate URLs ignoring query strings'),
+      ignoreQueryParameters: z
+        .boolean()
+        .optional()
+        .describe('Deduplicate URLs ignoring query strings'),
       country: z
         .string()
         .optional()
         .describe('Country code for proxy routing, e.g. "us", "gb", or "de"'),
-      languages: z.array(z.string()).optional().describe('Preferred languages for the request'),
+      languages: z
+        .array(z.string())
+        .optional()
+        .describe('Preferred languages for the request'),
       proxy: z
         .enum(['residential', 'datacenter'])
         .optional()

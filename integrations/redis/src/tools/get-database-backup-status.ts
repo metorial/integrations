@@ -32,9 +32,13 @@ export let getDatabaseBackupStatus = SlateTool.create(spec, {
             ctx.input.subscriptionId,
             ctx.input.databaseId
           )
-        : await client.getDatabaseBackupStatus(ctx.input.subscriptionId, ctx.input.databaseId, {
-            regionName: ctx.input.regionName
-          });
+        : await client.getDatabaseBackupStatus(
+            ctx.input.subscriptionId,
+            ctx.input.databaseId,
+            {
+              regionName: ctx.input.regionName
+            }
+          );
 
     let output = extractTaskState(task);
 

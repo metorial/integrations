@@ -101,7 +101,7 @@ export class MixpanelClient {
     let response = data as IngestionResponse | undefined;
     let reason =
       response && typeof response === 'object'
-        ? response.error ?? response.status ?? 'not accepted'
+        ? (response.error ?? response.status ?? 'not accepted')
         : 'not accepted';
 
     throw mixpanelServiceError(`Mixpanel ${operation} failed: ${String(reason)}`);
@@ -665,14 +665,10 @@ export class MixpanelClient {
       bodyParams.filter_by_cohort = JSON.stringify({ id: params.filterByCohort });
 
     let response = await this.request('query profiles', () =>
-      this.queryAxios.post(
-        '/query/engage',
-        new URLSearchParams(bodyParams).toString(),
-        {
-          params: { project_id: this.config.projectId },
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }
-      )
+      this.queryAxios.post('/query/engage', new URLSearchParams(bodyParams).toString(), {
+        params: { project_id: this.config.projectId },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
     );
     return {
       page: response.data.page ?? 0,
@@ -949,9 +945,7 @@ export class MixpanelClient {
 
   async deleteAnnotation(annotationId: number): Promise<void> {
     await this.request('delete annotation', () =>
-      this.appAxios.delete(
-        `/projects/${this.config.projectId}/annotations/${annotationId}`
-      )
+      this.appAxios.delete(`/projects/${this.config.projectId}/annotations/${annotationId}`)
     );
   }
 

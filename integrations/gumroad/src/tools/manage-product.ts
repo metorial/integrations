@@ -85,7 +85,16 @@ export let manageProduct = SlateTool.create(spec, {
         .enum(['create', 'update', 'enable', 'disable', 'delete'])
         .describe('Action to perform on the product'),
       nativeType: z
-        .enum(['digital', 'course', 'ebook', 'membership', 'bundle', 'coffee', 'call', 'commission'])
+        .enum([
+          'digital',
+          'course',
+          'ebook',
+          'membership',
+          'bundle',
+          'coffee',
+          'call',
+          'commission'
+        ])
         .optional()
         .describe('Product type for create. Cannot be changed later.'),
       name: z.string().optional().describe('Product name. Required for create.'),
@@ -134,7 +143,10 @@ export let manageProduct = SlateTool.create(spec, {
         .int()
         .optional()
         .describe('Numeric category ID from list_categories. Cannot be sent with category.'),
-      tags: z.array(z.string()).optional().describe('Product tags. Full replacement on update.'),
+      tags: z
+        .array(z.string())
+        .optional()
+        .describe('Product tags. Full replacement on update.'),
       customReceipt: z.string().optional().describe('Custom receipt text'),
       customSummary: z.string().optional().describe('Custom summary shown to buyers'),
       customHtml: z.string().optional().describe('Custom landing page HTML'),

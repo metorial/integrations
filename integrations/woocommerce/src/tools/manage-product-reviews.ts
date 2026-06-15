@@ -102,7 +102,8 @@ export let manageProductReviews = SlateTool.create(spec, {
         throw woocommerceServiceError('reviewer is required for create action');
       if (!ctx.input.reviewerEmail)
         throw woocommerceServiceError('reviewerEmail is required for create action');
-      if (!ctx.input.review) throw woocommerceServiceError('review is required for create action');
+      if (!ctx.input.review)
+        throw woocommerceServiceError('review is required for create action');
       if (ctx.input.rating === undefined)
         throw woocommerceServiceError('rating is required for create action');
 

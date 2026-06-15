@@ -1,10 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { Client } from '../lib/client';
-import {
-  requireZohoCrmString,
-  zohoCrmServiceError
-} from '../lib/errors';
+import { requireZohoCrmString, zohoCrmServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageNotes = SlateTool.create(spec, {

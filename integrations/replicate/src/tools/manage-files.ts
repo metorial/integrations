@@ -22,7 +22,10 @@ export let createFile = SlateTool.create(spec, {
   name: 'Create File',
   key: 'create_file',
   description: `Upload a file to Replicate for use as model input. Files expire after 24 hours.`,
-  constraints: ['Maximum file size is 100MiB.', 'Provide exactly one of contentBase64 or contentText.'],
+  constraints: [
+    'Maximum file size is 100MiB.',
+    'Provide exactly one of contentBase64 or contentText.'
+  ],
   tags: {
     destructive: false
   }

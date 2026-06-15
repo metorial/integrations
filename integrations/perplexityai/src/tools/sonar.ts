@@ -71,8 +71,14 @@ export let sonarInputSchema = z.object({
     .optional()
     .describe('Limit returned images to specific domains'),
   returnImages: z.boolean().optional().describe('Include images in the response'),
-  returnRelatedQuestions: z.boolean().optional().describe('Include related follow-up questions'),
-  disableSearch: z.boolean().optional().describe('Disable web search and answer from model context only'),
+  returnRelatedQuestions: z
+    .boolean()
+    .optional()
+    .describe('Include related follow-up questions'),
+  disableSearch: z
+    .boolean()
+    .optional()
+    .describe('Disable web search and answer from model context only'),
   enableSearchClassifier: z
     .boolean()
     .optional()
@@ -95,12 +101,16 @@ export type SonarInput = z.infer<typeof sonarInputSchema>;
 
 let buildResponseFormat = (input: SonarInput) => {
   if (input.responseFormat !== 'json_schema' && input.jsonSchema !== undefined) {
-    throw perplexityServiceError('jsonSchema can only be used with responseFormat "json_schema".');
+    throw perplexityServiceError(
+      'jsonSchema can only be used with responseFormat "json_schema".'
+    );
   }
 
   if (input.responseFormat === 'json_schema') {
     if (!input.jsonSchema || Object.keys(input.jsonSchema).length === 0) {
-      throw perplexityServiceError('jsonSchema is required when responseFormat is "json_schema".');
+      throw perplexityServiceError(
+        'jsonSchema is required when responseFormat is "json_schema".'
+      );
     }
 
     return {

@@ -1,8 +1,8 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { RedisCloudClient } from '../lib/client';
-import { spec } from '../spec';
 import { redisServiceError } from '../lib/errors';
+import { spec } from '../spec';
 import { subscriptionTypeSchema } from './common';
 
 export let importDatabase = SlateTool.create(spec, {

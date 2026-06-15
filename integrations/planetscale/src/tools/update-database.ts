@@ -16,7 +16,9 @@ export let updateDatabase = SlateTool.create(spec, {
       automaticMigrations: z
         .boolean()
         .optional()
-        .describe('Automatically manage Rails migration data during deploy requests (Vitess only)'),
+        .describe(
+          'Automatically manage Rails migration data during deploy requests (Vitess only)'
+        ),
       migrationFramework: z
         .string()
         .optional()

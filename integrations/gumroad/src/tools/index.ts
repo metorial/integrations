@@ -1,6 +1,6 @@
 export * from './get-earnings';
-export * from './get-product';
 export * from './get-payout';
+export * from './get-product';
 export * from './get-sale';
 export * from './get-subscriber';
 export * from './get-upcoming-payouts';

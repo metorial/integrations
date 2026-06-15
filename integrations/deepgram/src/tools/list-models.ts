@@ -10,9 +10,15 @@ let modelSchema = z.object({
   architecture: z.string().optional().describe('Model architecture.'),
   version: z.string().optional().describe('Model version.'),
   languages: z.array(z.string()).optional().describe('Supported languages.'),
-  batch: z.boolean().optional().describe('Whether the model supports batch/pre-recorded audio.'),
+  batch: z
+    .boolean()
+    .optional()
+    .describe('Whether the model supports batch/pre-recorded audio.'),
   streaming: z.boolean().optional().describe('Whether the model supports streaming audio.'),
-  formattedOutput: z.boolean().optional().describe('Whether the model supports formatted output.'),
+  formattedOutput: z
+    .boolean()
+    .optional()
+    .describe('Whether the model supports formatted output.'),
   metadata: z.any().optional().describe('Additional model metadata.')
 });
 
@@ -29,8 +35,7 @@ let mapModel = (m: any): z.infer<typeof modelSchema> => ({
   metadata: m.metadata
 });
 
-let mapModels = (models: any[]): z.infer<typeof modelSchema>[] =>
-  (models || []).map(mapModel);
+let mapModels = (models: any[]): z.infer<typeof modelSchema>[] => (models || []).map(mapModel);
 
 let modelsOutputSchema = z.object({
   sttModels: z.array(modelSchema).optional().describe('Available speech-to-text models.'),

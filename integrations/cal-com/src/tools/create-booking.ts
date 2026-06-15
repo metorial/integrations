@@ -28,7 +28,9 @@ export let createBooking = SlateTool.create(spec, {
       teamSlug: z
         .string()
         .optional()
-        .describe('Team slug of the event type owner (used with eventTypeSlug for team event types)'),
+        .describe(
+          'Team slug of the event type owner (used with eventTypeSlug for team event types)'
+        ),
       organizationSlug: z
         .string()
         .optional()
@@ -54,7 +56,9 @@ export let createBooking = SlateTool.create(spec, {
       location: z
         .any()
         .optional()
-        .describe('Cal.com location object, for example { "type": "address", "address": "..." }'),
+        .describe(
+          'Cal.com location object, for example { "type": "address", "address": "..." }'
+        ),
       meetingUrl: z.string().optional().describe('Custom meeting URL'),
       notes: z.string().optional().describe('Additional notes or comments for the booking'),
       lengthInMinutes: z
@@ -74,7 +78,10 @@ export let createBooking = SlateTool.create(spec, {
         .boolean()
         .optional()
         .describe('Allow booking outside the configured event bounds'),
-      instant: z.boolean().optional().describe('Create an instant meeting for supported team event types'),
+      instant: z
+        .boolean()
+        .optional()
+        .describe('Create an instant meeting for supported team event types'),
       metadata: z
         .record(z.string(), z.any())
         .optional()
@@ -132,8 +139,7 @@ export let createBooking = SlateTool.create(spec, {
     if (ctx.input.routing) body.routing = ctx.input.routing;
     if (ctx.input.emailVerificationCode)
       body.emailVerificationCode = ctx.input.emailVerificationCode;
-    if (ctx.input.allowConflicts !== undefined)
-      body.allowConflicts = ctx.input.allowConflicts;
+    if (ctx.input.allowConflicts !== undefined) body.allowConflicts = ctx.input.allowConflicts;
     if (ctx.input.allowBookingOutOfBounds !== undefined)
       body.allowBookingOutOfBounds = ctx.input.allowBookingOutOfBounds;
     if (ctx.input.instant !== undefined) body.instant = ctx.input.instant;

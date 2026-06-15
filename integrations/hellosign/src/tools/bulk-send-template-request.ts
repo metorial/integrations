@@ -57,7 +57,10 @@ export let bulkSendTemplateRequest = SlateTool.create(spec, {
       subject: z.string().optional().describe('Subject line of the email'),
       message: z.string().optional().describe('Message body of the email'),
       ccs: z.array(bulkCcSchema).optional().describe('CC recipients mapped to template roles'),
-      metadata: z.record(z.string(), z.string()).optional().describe('Key-value metadata pairs'),
+      metadata: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Key-value metadata pairs'),
       signingRedirectUrl: z
         .string()
         .optional()
@@ -74,7 +77,10 @@ export let bulkSendTemplateRequest = SlateTool.create(spec, {
     z.object({
       bulkSendJobId: z.string().describe('Unique identifier of the created bulk send job'),
       total: z.number().optional().describe('Number of signature requests in the job'),
-      isCreator: z.boolean().optional().describe('Whether the authenticated account created it'),
+      isCreator: z
+        .boolean()
+        .optional()
+        .describe('Whether the authenticated account created it'),
       createdAt: z.string().optional().describe('Creation timestamp (ISO 8601)')
     })
   )

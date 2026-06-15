@@ -25,10 +25,7 @@ export let uploadVersion = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Filename for the uploaded main module. Defaults to index.js.'),
-      contentType: z
-        .string()
-        .optional()
-        .describe('MIME type for the uploaded module'),
+      contentType: z.string().optional().describe('MIME type for the uploaded module'),
       compatibilityDate: z
         .string()
         .optional()

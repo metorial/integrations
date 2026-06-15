@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { mailgunServiceError } from '../lib/errors';
 import { MailgunClient } from '../lib/client';
+import { mailgunServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let templateSchema = z.object({
@@ -441,11 +441,16 @@ export let updateTemplateVersion = SlateTool.create(spec, {
     }
 
     let client = new MailgunClient({ token: ctx.auth.token, region: ctx.config.region });
-    await client.updateTemplateVersion(ctx.input.domain, ctx.input.templateName, ctx.input.tag, {
-      template: ctx.input.content,
-      comment: ctx.input.comment,
-      active: ctx.input.active
-    });
+    await client.updateTemplateVersion(
+      ctx.input.domain,
+      ctx.input.templateName,
+      ctx.input.tag,
+      {
+        template: ctx.input.content,
+        comment: ctx.input.comment,
+        active: ctx.input.active
+      }
+    );
 
     return {
       output: { success: true },
@@ -476,7 +481,11 @@ export let deleteTemplateVersion = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new MailgunClient({ token: ctx.auth.token, region: ctx.config.region });
-    await client.deleteTemplateVersion(ctx.input.domain, ctx.input.templateName, ctx.input.tag);
+    await client.deleteTemplateVersion(
+      ctx.input.domain,
+      ctx.input.templateName,
+      ctx.input.tag
+    );
 
     return {
       output: { success: true },

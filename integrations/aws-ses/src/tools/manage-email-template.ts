@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { requireAwsSesString } from '../lib/errors';
 import { SesClient } from '../lib/client';
+import { requireAwsSesString } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageEmailTemplate = SlateTool.create(spec, {
@@ -135,7 +135,10 @@ Use the **testRender** action to preview how a template renders with sample data
 
     if (action === 'testRender') {
       let templateName = requireAwsSesString(ctx.input.templateName, 'templateName', action);
-      let result = await client.testRenderEmailTemplate(templateName, ctx.input.templateData || '{}');
+      let result = await client.testRenderEmailTemplate(
+        templateName,
+        ctx.input.templateData || '{}'
+      );
       return {
         output: {
           templateName,

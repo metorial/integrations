@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { api2PdfServiceError } from '../lib/errors';
 import { Api2PdfClient } from '../lib/client';
+import { api2PdfServiceError } from '../lib/errors';
 import { spec } from '../spec';
 import {
   api2PdfFileOutputSchema,
@@ -55,10 +55,7 @@ let chromePdfOptionsSchema = z
       .describe('Omit default white background for transparent PDFs'),
     tagged: z.boolean().optional().describe('Generate a tagged, accessible PDF'),
     outline: z.boolean().optional().describe('Embed a document outline/bookmarks'),
-    usePrintCss: z
-      .boolean()
-      .optional()
-      .describe('Use print media CSS styles while rendering'),
+    usePrintCss: z.boolean().optional().describe('Use print media CSS styles while rendering'),
     puppeteerWaitForMethod: z
       .string()
       .optional()

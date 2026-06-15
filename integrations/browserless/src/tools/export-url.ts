@@ -35,9 +35,15 @@ export let exportUrl = SlateTool.create(spec, {
       waitForTimeout: z.number().optional().describe('Wait a fixed number of milliseconds'),
       bestAttempt: z.boolean().optional().describe('Proceed even when async events fail'),
       rejectResourceTypes: z.array(z.string()).optional().describe('Resource types to block'),
-      rejectRequestPattern: z.array(z.string()).optional().describe('Request URL patterns to block'),
+      rejectRequestPattern: z
+        .array(z.string())
+        .optional()
+        .describe('Request URL patterns to block'),
       userAgent: z.string().optional().describe('Custom User-Agent string'),
-      headers: z.record(z.string(), z.string()).optional().describe('Additional request headers')
+      headers: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Additional request headers')
     })
   )
   .output(fileOutputSchema)

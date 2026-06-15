@@ -5,8 +5,8 @@ import type {
   PagerDutyBusinessService,
   PagerDutyEscalationPolicy,
   PagerDutyIncident,
-  PagerDutyIntegration,
   PagerDutyIncidentNote,
+  PagerDutyIntegration,
   PagerDutyMaintenanceWindow,
   PagerDutyOnCall,
   PagerDutyPriority,
@@ -530,7 +530,11 @@ export class PagerDutyClient {
     teamIds?: string[];
     limit?: number;
     offset?: number;
-  }): Promise<{ business_services: PagerDutyBusinessService[]; more: boolean; total: number }> {
+  }): Promise<{
+    business_services: PagerDutyBusinessService[];
+    more: boolean;
+    total: number;
+  }> {
     let query: Record<string, any> = {};
     if (params?.query) query.query = params.query;
     if (params?.teamIds) query['team_ids[]'] = params.teamIds;

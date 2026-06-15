@@ -54,7 +54,9 @@ let transcriptionOptionsSchema = z.object({
   encoding: z
     .string()
     .optional()
-    .describe('Expected input audio encoding, for example "linear16", "flac", "mulaw", or "opus".'),
+    .describe(
+      'Expected input audio encoding, for example "linear16", "flac", "mulaw", or "opus".'
+    ),
   fillerWords: z
     .boolean()
     .optional()

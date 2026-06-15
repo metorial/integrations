@@ -22,7 +22,9 @@ export let listMachines = SlateTool.create(spec, {
       state: z
         .string()
         .optional()
-        .describe('Comma-separated machine states to include (created, started, stopped, suspended)'),
+        .describe(
+          'Comma-separated machine states to include (created, started, stopped, suspended)'
+        ),
       summary: z
         .boolean()
         .optional()

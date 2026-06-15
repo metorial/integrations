@@ -47,7 +47,9 @@ export let upscaleImage = SlateTool.create(spec, {
         .min(0.1)
         .max(0.5)
         .optional()
-        .describe('Creativity level. Conservative requires 0.2-0.5; creative supports 0.1-0.5.'),
+        .describe(
+          'Creativity level. Conservative requires 0.2-0.5; creative supports 0.1-0.5.'
+        ),
       seed: z
         .number()
         .optional()
@@ -74,11 +76,15 @@ export let upscaleImage = SlateTool.create(spec, {
     }
 
     if (!input.prompt)
-      throw stabilityServiceError('Prompt is required for conservative and creative upscale modes.');
+      throw stabilityServiceError(
+        'Prompt is required for conservative and creative upscale modes.'
+      );
 
     if (input.mode === 'conservative') {
       if (input.creativity !== undefined && input.creativity < 0.2) {
-        throw stabilityServiceError('Conservative upscale creativity must be between 0.2 and 0.5.');
+        throw stabilityServiceError(
+          'Conservative upscale creativity must be between 0.2 and 0.5.'
+        );
       }
 
       let result = await client.upscaleConservative({

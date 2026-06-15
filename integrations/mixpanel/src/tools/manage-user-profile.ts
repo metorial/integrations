@@ -1,12 +1,12 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { mixpanelServiceError } from '../lib/errors';
 import {
   createClientFromContext,
   requireNonEmptyRecord,
   requireNonEmptyStringArray,
   requireProjectToken
 } from '../lib/helpers';
-import { mixpanelServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageUserProfile = SlateTool.create(spec, {

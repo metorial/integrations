@@ -6,8 +6,7 @@ import { spec } from '../spec';
 export let extendVideo = SlateTool.create(spec, {
   name: 'Extend Video',
   key: 'extend_video',
-  description:
-    'Extend a previously generated Midjourney video using APIFRAME.',
+  description: 'Extend a previously generated Midjourney video using APIFRAME.',
   instructions: [
     'Provide the parent task ID of a prior video generation task.',
     'Use index "1" to "4" to select which video result to extend.',
@@ -38,7 +37,9 @@ export let extendVideo = SlateTool.create(spec, {
         .boolean()
         .optional()
         .default(false)
-        .describe('If true, polls until the video extension task completes and returns video URLs')
+        .describe(
+          'If true, polls until the video extension task completes and returns video URLs'
+        )
     })
   )
   .output(

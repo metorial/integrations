@@ -103,7 +103,9 @@ export let manageWebhookTool = SlateTool.create(spec, {
         throw lemonSqueezyServiceError('url is required for create action.');
       }
       if (!ctx.input.events || ctx.input.events.length === 0) {
-        throw lemonSqueezyServiceError('events must include at least one event for create action.');
+        throw lemonSqueezyServiceError(
+          'events must include at least one event for create action.'
+        );
       }
       if (!ctx.input.secret) {
         throw lemonSqueezyServiceError('secret is required for create action.');
@@ -140,7 +142,9 @@ export let manageWebhookTool = SlateTool.create(spec, {
         if (ctx.input.url !== undefined) attributes.url = ctx.input.url;
         if (ctx.input.events !== undefined) {
           if (ctx.input.events.length === 0) {
-            throw lemonSqueezyServiceError('events must include at least one event when updating.');
+            throw lemonSqueezyServiceError(
+              'events must include at least one event when updating.'
+            );
           }
           attributes.events = ctx.input.events;
         }

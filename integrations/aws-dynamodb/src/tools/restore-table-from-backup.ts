@@ -7,8 +7,7 @@ import { spec } from '../spec';
 export let restoreTableFromBackup = SlateTool.create(spec, {
   name: 'Restore Table From Backup',
   key: 'restore_table_from_backup',
-  description:
-    'Create a new DynamoDB table by restoring an existing on-demand backup.',
+  description: 'Create a new DynamoDB table by restoring an existing on-demand backup.',
   tags: {
     destructive: false
   }
@@ -63,10 +62,8 @@ export let restoreTableFromBackup = SlateTool.create(spec, {
       billingModeOverride: ctx.input.billingModeOverride,
       provisionedThroughputOverride: ctx.input.provisionedThroughputOverride
         ? {
-            ReadCapacityUnits:
-              ctx.input.provisionedThroughputOverride.readCapacityUnits,
-            WriteCapacityUnits:
-              ctx.input.provisionedThroughputOverride.writeCapacityUnits
+            ReadCapacityUnits: ctx.input.provisionedThroughputOverride.readCapacityUnits,
+            WriteCapacityUnits: ctx.input.provisionedThroughputOverride.writeCapacityUnits
           }
         : undefined
     });

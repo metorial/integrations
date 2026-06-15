@@ -186,8 +186,7 @@ export let manageVariants = SlateTool.create(spec, {
     if (action === 'create_variant') {
       if (!variantCategoryId)
         throw gumroadServiceError('variantCategoryId is required for create_variant.');
-      if (!ctx.input.name)
-        throw gumroadServiceError('name is required for create_variant.');
+      if (!ctx.input.name) throw gumroadServiceError('name is required for create_variant.');
       let v = await client.createVariant(productId, variantCategoryId, {
         name: ctx.input.name,
         priceDifferenceCents: ctx.input.priceDifferenceCents,
@@ -209,8 +208,7 @@ export let manageVariants = SlateTool.create(spec, {
     if (action === 'update_variant') {
       if (!variantCategoryId)
         throw gumroadServiceError('variantCategoryId is required for update_variant.');
-      if (!variantId)
-        throw gumroadServiceError('variantId is required for update_variant.');
+      if (!variantId) throw gumroadServiceError('variantId is required for update_variant.');
       let v = await client.updateVariant(productId, variantCategoryId, variantId, {
         name: ctx.input.name,
         priceDifferenceCents: ctx.input.priceDifferenceCents,
@@ -232,8 +230,7 @@ export let manageVariants = SlateTool.create(spec, {
     if (action === 'delete_variant') {
       if (!variantCategoryId)
         throw gumroadServiceError('variantCategoryId is required for delete_variant.');
-      if (!variantId)
-        throw gumroadServiceError('variantId is required for delete_variant.');
+      if (!variantId) throw gumroadServiceError('variantId is required for delete_variant.');
       await client.deleteVariant(productId, variantCategoryId, variantId);
       return {
         output: { deleted: true },

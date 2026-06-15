@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { snsServiceError } from '../lib/errors';
 import { SnsClient } from '../lib/client';
+import { snsServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let publishMessage = SlateTool.create(spec, {

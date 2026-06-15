@@ -43,7 +43,8 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Write conversations',
-        description: 'Update conversation status, assignment, tags, followers, links, and reminders',
+        description:
+          'Update conversation status, assignment, tags, followers, links, and reminders',
         scope: 'conversations:write'
       },
       {
@@ -213,7 +214,9 @@ export let auth = SlateAuth.create()
         let data = response.data;
 
         if (!data.access_token) {
-          throw frontServiceError('Front OAuth token response did not include an access token.');
+          throw frontServiceError(
+            'Front OAuth token response did not include an access token.'
+          );
         }
 
         return {
@@ -230,7 +233,9 @@ export let auth = SlateAuth.create()
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        throw frontServiceError('Front OAuth refresh token is missing. Reconnect the account.');
+        throw frontServiceError(
+          'Front OAuth refresh token is missing. Reconnect the account.'
+        );
       }
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
@@ -253,7 +258,9 @@ export let auth = SlateAuth.create()
         let data = response.data;
 
         if (!data.access_token) {
-          throw frontServiceError('Front OAuth refresh response did not include an access token.');
+          throw frontServiceError(
+            'Front OAuth refresh response did not include an access token.'
+          );
         }
 
         return {

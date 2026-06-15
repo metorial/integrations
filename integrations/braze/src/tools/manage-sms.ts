@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { requireBrazeArray } from '../lib/errors';
 import { BrazeClient } from '../lib/client';
+import { requireBrazeArray } from '../lib/errors';
 import { spec } from '../spec';
 
 export let manageSmsInvalidPhoneNumbers = SlateTool.create(spec, {

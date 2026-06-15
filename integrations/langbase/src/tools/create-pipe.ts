@@ -111,7 +111,8 @@ export let createPipe = SlateTool.create(spec, {
     if (ctx.input.toolChoice !== undefined) body.tool_choice = ctx.input.toolChoice;
     if (ctx.input.parallelToolCalls !== undefined)
       body.parallel_tool_calls = ctx.input.parallelToolCalls;
-    if (ctx.input.memoryNames !== undefined) body.memory = mapMemoryNames(ctx.input.memoryNames);
+    if (ctx.input.memoryNames !== undefined)
+      body.memory = mapMemoryNames(ctx.input.memoryNames);
     if (ctx.input.responseFormat !== undefined)
       body.response_format = { type: ctx.input.responseFormat };
     if (ctx.input.upsert !== undefined) body.upsert = ctx.input.upsert;

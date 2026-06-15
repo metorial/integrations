@@ -7,8 +7,8 @@ import type {
   ExtendVideoRequest,
   FetchManyResponse,
   FetchTaskResponse,
-  ImagineVideoRequest,
   ImagineRequest,
+  ImagineVideoRequest,
   InpaintRequest,
   OutpaintRequest,
   PanRequest,
@@ -55,38 +55,54 @@ export class Client {
   }
 
   async imagine(req: ImagineRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/imagine', {
-      prompt: req.prompt,
-      ...(req.aspectRatio ? { aspect_ratio: req.aspectRatio } : {}),
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'imagine');
+    return await this.post<TaskSubmitResponse>(
+      '/imagine',
+      {
+        prompt: req.prompt,
+        ...(req.aspectRatio ? { aspect_ratio: req.aspectRatio } : {}),
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'imagine'
+    );
   }
 
   async variations(req: VariationsRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/variations', {
-      parent_task_id: req.parentTaskId,
-      index: req.index,
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'create variations');
+    return await this.post<TaskSubmitResponse>(
+      '/variations',
+      {
+        parent_task_id: req.parentTaskId,
+        index: req.index,
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'create variations'
+    );
   }
 
   async blend(req: BlendRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/blend', {
-      image_urls: req.imageUrls,
-      ...(req.dimension ? { dimension: req.dimension } : {}),
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'blend images');
+    return await this.post<TaskSubmitResponse>(
+      '/blend',
+      {
+        image_urls: req.imageUrls,
+        ...(req.dimension ? { dimension: req.dimension } : {}),
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'blend images'
+    );
   }
 
   async describe(req: DescribeRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/describe', {
-      image_url: req.imageUrl,
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'describe image');
+    return await this.post<TaskSubmitResponse>(
+      '/describe',
+      {
+        image_url: req.imageUrl,
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'describe image'
+    );
   }
 
   async upscale(req: UpscaleRequest): Promise<TaskSubmitResponse> {
@@ -133,86 +149,122 @@ export class Client {
   }
 
   async reroll(req: RerollRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/reroll', {
-      parent_task_id: req.parentTaskId,
-      ...(req.prompt ? { prompt: req.prompt } : {}),
-      ...(req.aspectRatio ? { aspect_ratio: req.aspectRatio } : {}),
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'reroll image');
+    return await this.post<TaskSubmitResponse>(
+      '/reroll',
+      {
+        parent_task_id: req.parentTaskId,
+        ...(req.prompt ? { prompt: req.prompt } : {}),
+        ...(req.aspectRatio ? { aspect_ratio: req.aspectRatio } : {}),
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'reroll image'
+    );
   }
 
   async pan(req: PanRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/pan', {
-      parent_task_id: req.parentTaskId,
-      direction: req.direction,
-      ...(req.prompt ? { prompt: req.prompt } : {}),
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'pan image');
+    return await this.post<TaskSubmitResponse>(
+      '/pan',
+      {
+        parent_task_id: req.parentTaskId,
+        direction: req.direction,
+        ...(req.prompt ? { prompt: req.prompt } : {}),
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'pan image'
+    );
   }
 
   async outpaint(req: OutpaintRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/outpaint', {
-      parent_task_id: req.parentTaskId,
-      zoom_ratio: req.zoomRatio,
-      ...(req.aspectRatio ? { aspect_ratio: req.aspectRatio } : {}),
-      ...(req.prompt ? { prompt: req.prompt } : {}),
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'zoom out image');
+    return await this.post<TaskSubmitResponse>(
+      '/outpaint',
+      {
+        parent_task_id: req.parentTaskId,
+        zoom_ratio: req.zoomRatio,
+        ...(req.aspectRatio ? { aspect_ratio: req.aspectRatio } : {}),
+        ...(req.prompt ? { prompt: req.prompt } : {}),
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'zoom out image'
+    );
   }
 
   async inpaint(req: InpaintRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/inpaint', {
-      parent_task_id: req.parentTaskId,
-      mask: req.mask,
-      ...(req.prompt ? { prompt: req.prompt } : {}),
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'inpaint image');
+    return await this.post<TaskSubmitResponse>(
+      '/inpaint',
+      {
+        parent_task_id: req.parentTaskId,
+        mask: req.mask,
+        ...(req.prompt ? { prompt: req.prompt } : {}),
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'inpaint image'
+    );
   }
 
   async getSeed(req: SeedRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/seed', {
-      task_id: req.taskId,
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'get seed');
+    return await this.post<TaskSubmitResponse>(
+      '/seed',
+      {
+        task_id: req.taskId,
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'get seed'
+    );
   }
 
   async imagineVideo(req: ImagineVideoRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/imagine-video', {
-      prompt: req.prompt,
-      image_url: req.imageUrl,
-      ...(req.motion ? { motion: req.motion } : {}),
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'generate video');
+    return await this.post<TaskSubmitResponse>(
+      '/imagine-video',
+      {
+        prompt: req.prompt,
+        image_url: req.imageUrl,
+        ...(req.motion ? { motion: req.motion } : {}),
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'generate video'
+    );
   }
 
   async extendVideo(req: ExtendVideoRequest): Promise<TaskSubmitResponse> {
-    return await this.post<TaskSubmitResponse>('/imagine-video-extend', {
-      parent_task_id: req.parentTaskId,
-      index: req.index,
-      prompt: req.prompt,
-      ...(req.imageUrl ? { image_url: req.imageUrl } : {}),
-      ...(req.motion ? { motion: req.motion } : {}),
-      ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
-    }, 'extend video');
+    return await this.post<TaskSubmitResponse>(
+      '/imagine-video-extend',
+      {
+        parent_task_id: req.parentTaskId,
+        index: req.index,
+        prompt: req.prompt,
+        ...(req.imageUrl ? { image_url: req.imageUrl } : {}),
+        ...(req.motion ? { motion: req.motion } : {}),
+        ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
+        ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
+      },
+      'extend video'
+    );
   }
 
   async fetchTask(taskId: string): Promise<FetchTaskResponse> {
-    return await this.post<FetchTaskResponse>('/fetch', {
-      task_id: taskId
-    }, 'fetch task');
+    return await this.post<FetchTaskResponse>(
+      '/fetch',
+      {
+        task_id: taskId
+      },
+      'fetch task'
+    );
   }
 
   async fetchMany(taskIds: string[]): Promise<FetchManyResponse> {
-    return await this.post<FetchManyResponse>('/fetch-many', {
-      task_ids: taskIds
-    }, 'fetch many tasks');
+    return await this.post<FetchManyResponse>(
+      '/fetch-many',
+      {
+        task_ids: taskIds
+      },
+      'fetch many tasks'
+    );
   }
 
   async getAccountInfo(): Promise<AccountInfoResponse> {

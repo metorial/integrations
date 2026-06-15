@@ -181,7 +181,9 @@ export let manageEventWebhooks = SlateTool.create(spec, {
       }
       case 'update': {
         if (!ctx.input.webhookId) {
-          throw twilioSendGridServiceError('webhookId is required to update an Event Webhook.');
+          throw twilioSendGridServiceError(
+            'webhookId is required to update an Event Webhook.'
+          );
         }
         if (
           ctx.input.url === undefined &&
@@ -212,7 +214,9 @@ export let manageEventWebhooks = SlateTool.create(spec, {
       }
       case 'delete': {
         if (!ctx.input.webhookId) {
-          throw twilioSendGridServiceError('webhookId is required to delete an Event Webhook.');
+          throw twilioSendGridServiceError(
+            'webhookId is required to delete an Event Webhook.'
+          );
         }
         await client.deleteEventWebhook(ctx.input.webhookId);
         return {

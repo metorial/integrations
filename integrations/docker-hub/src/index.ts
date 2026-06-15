@@ -30,11 +30,11 @@ import {
   removeOrgMember,
   searchRepositories,
   updateAccessToken,
-  updateOrgMemberRole,
   updateOrgAccessToken,
+  updateOrgMemberRole,
+  updateRepository,
   updateRepositoryImmutableTags,
-  verifyRepositoryImmutableTags,
-  updateRepository
+  verifyRepositoryImmutableTags
 } from './tools';
 import { imagePush } from './triggers';
 

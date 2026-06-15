@@ -88,8 +88,7 @@ export let manageOfferCodes = SlateTool.create(spec, {
     }
 
     if (action === 'get') {
-      if (!offerCodeId)
-        throw gumroadServiceError('offerCodeId is required for get action.');
+      if (!offerCodeId) throw gumroadServiceError('offerCodeId is required for get action.');
       let code = await client.getOfferCode(productId, offerCodeId);
       return {
         output: {

@@ -103,7 +103,11 @@ export let manageServiceToken = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      let serviceTokenId = requireField(ctx.input.serviceTokenId, 'serviceTokenId', 'delete action');
+      let serviceTokenId = requireField(
+        ctx.input.serviceTokenId,
+        'serviceTokenId',
+        'delete action'
+      );
       await client.deleteServiceToken(serviceTokenId);
       return {
         output: { deleted: true },

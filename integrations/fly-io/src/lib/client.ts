@@ -707,9 +707,9 @@ export interface MachineConfig {
     persist?: 'never' | 'always' | 'restart';
     sizeGb?: number;
   };
-  files?: Array<Record<string, any>>;
-  processes?: Array<Record<string, any>>;
-  containers?: Array<Record<string, any>>;
+  files?: Record<string, any>[];
+  processes?: Record<string, any>[];
+  containers?: Record<string, any>[];
   cacheDrive?: Record<string, any>;
   spot?: Record<string, any>;
 }
@@ -1023,9 +1023,12 @@ let mapRegion = (data: any): FlyRegion => ({
   deprecated: data.deprecated ?? false
 });
 
-let buildOrgInventoryParams = (params?: OrgInventoryParams): Record<string, string | number | boolean> => {
+let buildOrgInventoryParams = (
+  params?: OrgInventoryParams
+): Record<string, string | number | boolean> => {
   let queryParams: Record<string, string | number | boolean> = {};
-  if (params?.includeDeleted !== undefined) queryParams.include_deleted = params.includeDeleted;
+  if (params?.includeDeleted !== undefined)
+    queryParams.include_deleted = params.includeDeleted;
   if (params?.region) queryParams.region = params.region;
   if (params?.state) queryParams.state = params.state;
   if (params?.summary !== undefined) queryParams.summary = params.summary;
@@ -1068,11 +1071,7 @@ let buildMachineConfig = (config: MachineConfig): Record<string, any> => {
       internal_port: s.internalPort,
       autostop:
         s.autostop ??
-        (s.autoStopMachines === undefined
-          ? undefined
-          : s.autoStopMachines
-            ? 'stop'
-            : 'off'),
+        (s.autoStopMachines === undefined ? undefined : s.autoStopMachines ? 'stop' : 'off'),
       autostart: s.autostart ?? s.autoStartMachines,
       min_machines_running: s.minMachinesRunning,
       concurrency: s.concurrency
@@ -1102,7 +1101,8 @@ let buildMachineConfig = (config: MachineConfig): Record<string, any> => {
     if (config.init.entrypoint) result.init.entrypoint = config.init.entrypoint;
     if (config.init.cmd) result.init.cmd = config.init.cmd;
     if (config.init.kernelArgs) result.init.kernel_args = config.init.kernelArgs;
-    if (config.init.swapSizeMb !== undefined) result.init.swap_size_mb = config.init.swapSizeMb;
+    if (config.init.swapSizeMb !== undefined)
+      result.init.swap_size_mb = config.init.swapSizeMb;
     if (config.init.tty !== undefined) result.init.tty = config.init.tty;
   }
   if (config.restart) {

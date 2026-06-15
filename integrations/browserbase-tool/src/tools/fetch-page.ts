@@ -41,7 +41,9 @@ export let fetchPage = SlateTool.create(spec, {
       fetchId: z.string().describe('Unique fetch request identifier'),
       statusCode: z.number().describe('HTTP status code of the fetched response'),
       headers: z.record(z.string(), z.string()).describe('Response headers'),
-      content: z.unknown().describe('Response body content as string, or structured JSON for json format'),
+      content: z
+        .unknown()
+        .describe('Response body content as string, or structured JSON for json format'),
       contentType: z.string().describe('MIME type of the response'),
       encoding: z.string().describe('Character encoding')
     })

@@ -501,9 +501,7 @@ export class Client {
 
   async getOperation(operationId: string): Promise<FullStoryOperation> {
     return this.request('get operation', async () => {
-      let response = await this.axios.get(
-        `/operations/v1/${encodeURIComponent(operationId)}`
-      );
+      let response = await this.axios.get(`/operations/v1/${encodeURIComponent(operationId)}`);
       let data = response.data;
       return {
         operationId: data.id || '',

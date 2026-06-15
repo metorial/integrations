@@ -109,7 +109,12 @@ export class Client {
     docContent: string;
     docName: string;
   }): Promise<Pdf4meFileResult> {
-    return this.postFile('Convert to PDF failed', '/api/v2/ConvertToPdf', params, 'converted.pdf');
+    return this.postFile(
+      'Convert to PDF failed',
+      '/api/v2/ConvertToPdf',
+      params,
+      'converted.pdf'
+    );
   }
 
   async convertMarkdownToPdf(params: {
@@ -204,10 +209,7 @@ export class Client {
     );
   }
 
-  async merge(params: {
-    docContent: string[];
-    docName: string;
-  }): Promise<Pdf4meFileResult> {
+  async merge(params: { docContent: string[]; docName: string }): Promise<Pdf4meFileResult> {
     return this.postFile('Merge PDFs failed', '/api/v2/Merge', params, params.docName);
   }
 
@@ -563,10 +565,7 @@ export class Client {
     return this.postFile('Flatten PDF failed', '/api/v2/FlattenPdf', params, params.docName);
   }
 
-  async repairPdf(params: {
-    docContent: string;
-    docName: string;
-  }): Promise<Pdf4meFileResult> {
+  async repairPdf(params: { docContent: string; docName: string }): Promise<Pdf4meFileResult> {
     return this.postFile('Repair PDF failed', '/api/v2/RepairPdf', params, params.docName);
   }
 
@@ -618,10 +617,9 @@ export class Client {
     );
   }
 
-  async extractPdfFormData(params: {
-    docContent: string;
-    docName: string;
-  }): Promise<{ formFields: Array<{ fieldName: string; fieldValue: string; fieldType: string }> }> {
+  async extractPdfFormData(params: { docContent: string; docName: string }): Promise<{
+    formFields: Array<{ fieldName: string; fieldValue: string; fieldType: string }>;
+  }> {
     return this.post('Extract PDF form data failed', '/api/v2/ExtractPdfFormData', params);
   }
 

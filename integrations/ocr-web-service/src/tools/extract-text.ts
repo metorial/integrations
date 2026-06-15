@@ -161,9 +161,7 @@ export let extractText = SlateTool.create(spec, {
     }
 
     if (hasFile && !ctx.input.fileName) {
-      throw ocrWebServiceServiceError(
-        'fileName is required when providing fileContent.'
-      );
+      throw ocrWebServiceServiceError('fileName is required when providing fileContent.');
     }
 
     let params = {

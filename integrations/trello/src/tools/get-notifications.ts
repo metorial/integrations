@@ -44,15 +44,14 @@ export let getNotifications = SlateTool.create(spec, {
       memberId: z
         .string()
         .optional()
-        .describe('Member ID to list notifications for. Defaults to the authenticated user ("me")'),
+        .describe(
+          'Member ID to list notifications for. Defaults to the authenticated user ("me")'
+        ),
       readFilter: z
         .enum(['all', 'read', 'unread'])
         .optional()
         .describe('Filter notifications by read status. Defaults to "all"'),
-      limit: z
-        .number()
-        .optional()
-        .describe('Maximum notifications to return. Defaults to 50')
+      limit: z.number().optional().describe('Maximum notifications to return. Defaults to 50')
     })
   )
   .output(

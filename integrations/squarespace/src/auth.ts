@@ -32,7 +32,9 @@ let expiresAtFromTokenResponse = (data: any) => {
 let outputFromTokenResponse = (data: any, fallbackRefreshToken?: string) => {
   let token = data.access_token || data.token;
   if (!token) {
-    throw squarespaceServiceError('Squarespace OAuth token response did not include an access token.');
+    throw squarespaceServiceError(
+      'Squarespace OAuth token response did not include an access token.'
+    );
   }
 
   return {

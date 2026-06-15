@@ -14,14 +14,19 @@ export let voiceSettingsSchema = z.object({
     .min(0)
     .max(1)
     .optional()
-    .describe('Similarity boost (0-1). Higher values are more faithful to the original voice.'),
+    .describe(
+      'Similarity boost (0-1). Higher values are more faithful to the original voice.'
+    ),
   style: z
     .number()
     .min(0)
     .max(1)
     .optional()
     .describe('Style exaggeration (0-1). Higher values amplify the voice style.'),
-  useSpeakerBoost: z.boolean().optional().describe('Enable speaker boost for enhanced clarity'),
+  useSpeakerBoost: z
+    .boolean()
+    .optional()
+    .describe('Enable speaker boost for enhanced clarity'),
   speed: z
     .number()
     .min(0.25)

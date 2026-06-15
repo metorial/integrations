@@ -9,7 +9,9 @@ let validateDimensions = (model: string, dimensions: number | undefined) => {
 
   let maxDimensions = model === 'pplx-embed-context-v1-0.6b' ? 1024 : 2560;
   if (dimensions > maxDimensions) {
-    throw perplexityServiceError(`${model} supports dimensions between 128 and ${maxDimensions}.`);
+    throw perplexityServiceError(
+      `${model} supports dimensions between 128 and ${maxDimensions}.`
+    );
   }
 };
 
@@ -40,7 +42,9 @@ Available models:
         .array(z.array(z.string()).min(1))
         .min(1)
         .max(512)
-        .describe('Nested document chunks; each inner array contains chunks from one document'),
+        .describe(
+          'Nested document chunks; each inner array contains chunks from one document'
+        ),
       model: z
         .enum(['pplx-embed-context-v1-0.6b', 'pplx-embed-context-v1-4b'])
         .default('pplx-embed-context-v1-4b')

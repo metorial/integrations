@@ -3,7 +3,10 @@ import { z } from 'zod';
 import { freshserviceApiError, freshserviceServiceError } from './lib/errors';
 
 let normalizeFreshworksDomain = (domain: string) => {
-  let normalized = domain.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+  let normalized = domain
+    .trim()
+    .replace(/^https?:\/\//, '')
+    .replace(/\/$/, '');
   if (!normalized || !/^[a-z0-9][a-z0-9.-]*$/i.test(normalized)) {
     throw freshserviceServiceError(
       'Freshworks organization domain must be a host such as "mycompany.myfreshworks.com".'
@@ -277,7 +280,7 @@ export let auth = SlateAuth.create()
       let axios = createAxios();
 
       let encoded = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
-      let response;
+      let response: any;
       try {
         response = await axios.post(
           `https://${domain}/oauth/token`,
@@ -322,7 +325,7 @@ export let auth = SlateAuth.create()
       let axios = createAxios();
 
       let encoded = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
-      let response;
+      let response: any;
       try {
         response = await axios.post(
           `https://${domain}/oauth/token`,

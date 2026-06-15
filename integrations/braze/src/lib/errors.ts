@@ -99,11 +99,7 @@ export let requireBrazeNumber = (value: unknown, label: string, action?: string)
   throw brazeServiceError(`${label} is required${action ? ` for "${action}"` : ''}.`);
 };
 
-export let requireBrazeArray = <T>(
-  value: T[] | undefined,
-  label: string,
-  action?: string
-) => {
+export let requireBrazeArray = <T>(value: T[] | undefined, label: string, action?: string) => {
   if (Array.isArray(value) && value.length > 0) {
     return value;
   }

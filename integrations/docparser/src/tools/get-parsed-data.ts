@@ -108,15 +108,7 @@ export let getParsedData = SlateTool.create(spec, {
     let results: any[];
 
     if (documentId) {
-      if (
-        list ||
-        date ||
-        remoteId ||
-        sortBy ||
-        sortOrder ||
-        limit ||
-        includeProcessingQueue
-      ) {
+      if (list || date || remoteId || sortBy || sortOrder || limit || includeProcessingQueue) {
         throw docparserServiceError(
           'list, date, remoteId, sortBy, sortOrder, limit, and includeProcessingQueue apply only when documentId is omitted.'
         );
@@ -128,7 +120,9 @@ export let getParsedData = SlateTool.create(spec, {
       });
     } else {
       if (includeChildren) {
-        throw docparserServiceError('includeChildren applies only when documentId is provided.');
+        throw docparserServiceError(
+          'includeChildren applies only when documentId is provided.'
+        );
       }
 
       if ((list === 'uploaded_after' || list === 'processed_after') && !date) {

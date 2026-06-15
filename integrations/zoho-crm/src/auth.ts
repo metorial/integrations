@@ -297,7 +297,8 @@ function createCrmOauth(name: string, key: string, dc: keyof typeof accountsBase
           profile: {
             id: user?.id,
             email: user?.email,
-            name: user?.full_name || `${user?.first_name || ''} ${user?.last_name || ''}`.trim(),
+            name:
+              user?.full_name || `${user?.first_name || ''} ${user?.last_name || ''}`.trim(),
             imageUrl: user?.image_link,
             role: user?.role?.name,
             profileName: user?.profile?.name

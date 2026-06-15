@@ -182,7 +182,10 @@ export class Client {
   async userLookup(organizationId: string, request: UserLookupRequest): Promise<any> {
     try {
       let http = await this.createHttp();
-      let response = await http.post(`/v1/organizations/${organizationId}/user-lookup`, request);
+      let response = await http.post(
+        `/v1/organizations/${organizationId}/user-lookup`,
+        request
+      );
       return response.data;
     } catch (error) {
       throw hotjarApiError(error, 'user lookup');

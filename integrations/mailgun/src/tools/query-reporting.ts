@@ -4,7 +4,9 @@ import { MailgunClient } from '../lib/client';
 import { spec } from '../spec';
 
 let filterSchema = z.object({
-  attribute: z.string().describe('Mailgun filter attribute, such as domain, tag, or recipient'),
+  attribute: z
+    .string()
+    .describe('Mailgun filter attribute, such as domain, tag, or recipient'),
   comparator: z
     .string()
     .describe('Filter comparator supported by Mailgun, such as =, !=, contains'),
@@ -150,10 +152,7 @@ export let queryLogs = SlateTool.create(spec, {
     z.object({
       start: z.string().optional().describe('Start date in RFC 2822 format'),
       end: z.string().optional().describe('End date in RFC 2822 format'),
-      duration: z
-        .string()
-        .default('1d')
-        .describe('Relative duration, such as "1d" or "2h"'),
+      duration: z.string().default('1d').describe('Relative duration, such as "1d" or "2h"'),
       events: z
         .array(
           z.enum([

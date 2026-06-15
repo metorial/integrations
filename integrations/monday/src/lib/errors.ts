@@ -93,16 +93,19 @@ export let mondayGraphQLError = (errors: MondayGraphQLError[], operation = 'requ
     .map(error => {
       let parts = [error.message || 'Unknown GraphQL error'];
       if (error.extensions?.code) parts.push(`code=${error.extensions.code}`);
-      if (error.extensions?.error_code) parts.push(`error_code=${error.extensions.error_code}`);
+      if (error.extensions?.error_code)
+        parts.push(`error_code=${error.extensions.error_code}`);
       return parts.join(' ');
     })
     .join(', ');
 
   let serviceError = mondayServiceError(`monday.com API ${operation} failed: ${message}`);
   serviceError.data.reason = 'monday_graphql_error';
-  serviceError.data.upstreamStatus = errors.find(error => error.extensions?.status_code)
-    ?.extensions?.status_code;
-  serviceError.data.requestId = errors.find(error => error.extensions?.request_id)?.extensions
-    ?.request_id;
+  serviceError.data.upstreamStatus = errors.find(
+    error => error.extensions?.status_code
+  )?.extensions?.status_code;
+  serviceError.data.requestId = errors.find(
+    error => error.extensions?.request_id
+  )?.extensions?.request_id;
   return serviceError;
 };

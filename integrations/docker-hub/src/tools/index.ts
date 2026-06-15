@@ -1,5 +1,5 @@
-export { listAuditLogActions, listAuditLogs } from './audit-logs';
 export { assignRepositoryTeam } from './assign-repository-team';
+export { listAuditLogActions, listAuditLogs } from './audit-logs';
 export { createRepository } from './create-repository';
 export { deleteRepository } from './delete-repository';
 export { deleteTag } from './delete-tag';

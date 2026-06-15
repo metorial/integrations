@@ -247,7 +247,7 @@ export let auth = SlateAuth.create()
     handleCallback: async ctx => {
       let client = createAxios({ baseURL: 'https://app.pagerduty.com' });
 
-      let response;
+      let response: any;
       try {
         response = await client.post(
           '/oauth/token',
@@ -298,7 +298,7 @@ export let auth = SlateAuth.create()
         throw pagerDutyServiceError('No PagerDuty refresh token is available.');
       }
 
-      let response;
+      let response: any;
       try {
         response = await client.post(
           '/oauth/token',

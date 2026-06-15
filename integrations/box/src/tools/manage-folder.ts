@@ -79,8 +79,7 @@ export let manageFolder = SlateTool.create(spec, {
     }
 
     if (action === 'move') {
-      if (!parentFolderId)
-        throw boxServiceError('parentFolderId is required for move action');
+      if (!parentFolderId) throw boxServiceError('parentFolderId is required for move action');
       let updates: Record<string, any> = { parent: { id: parentFolderId } };
       if (name) updates.name = name;
       let folder = await client.updateFolder(folderId, updates);

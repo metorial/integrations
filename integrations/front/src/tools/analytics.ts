@@ -34,7 +34,9 @@ export let createAnalyticsExport = SlateTool.create(spec, {
       type: z
         .enum(['messages'])
         .optional()
-        .describe('Export type. Front currently allows messages exports. Defaults to messages.'),
+        .describe(
+          'Export type. Front currently allows messages exports. Defaults to messages.'
+        ),
       columns: z
         .array(z.string())
         .optional()

@@ -19,7 +19,10 @@ let predictionSchema = z.object({
     .record(z.string(), z.any())
     .optional()
     .describe('Prediction metrics like predict_time and total_time'),
-  dataRemoved: z.boolean().optional().describe('Whether the prediction output has been deleted'),
+  dataRemoved: z
+    .boolean()
+    .optional()
+    .describe('Whether the prediction output has been deleted'),
   source: z.enum(['api', 'web']).optional().describe('How the prediction was created'),
   deadline: z
     .string()

@@ -54,7 +54,7 @@ export class MondayClient {
       body.variables = variables;
     }
 
-    let response;
+    let response: any;
     try {
       response = await api.post('', body, {
         headers: this.headers
@@ -586,7 +586,9 @@ export class MondayClient {
     }
     if (options?.defaults !== undefined) {
       variables.defaults =
-        typeof options.defaults === 'string' ? options.defaults : JSON.stringify(options.defaults);
+        typeof options.defaults === 'string'
+          ? options.defaults
+          : JSON.stringify(options.defaults);
       varDefs.push('$defaults: JSON');
       args.push('defaults: $defaults');
     }

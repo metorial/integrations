@@ -77,10 +77,7 @@ You can reference a pre-built template by its transactional message ID, or provi
         .describe('Sender email address for email or verified phone number for SMS'),
       replyTo: z.string().optional().describe('Reply-to email address (email only)'),
       bcc: z.string().optional().describe('BCC email address (email only)'),
-      title: z
-        .string()
-        .optional()
-        .describe('Push notification title override (push only)'),
+      title: z.string().optional().describe('Push notification title override (push only)'),
       message: z
         .string()
         .optional()
@@ -103,7 +100,9 @@ You can reference a pre-built template by its transactional message ID, or provi
       autoCreate: z
         .boolean()
         .optional()
-        .describe('If true, Customer.io can create an empty transactional record for a string trigger name')
+        .describe(
+          'If true, Customer.io can create an empty transactional record for a string trigger name'
+        )
     })
   )
   .output(

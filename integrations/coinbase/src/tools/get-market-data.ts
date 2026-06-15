@@ -35,10 +35,7 @@ export let getMarketData = SlateTool.create(spec, {
       action: z.enum(['ticker', 'book']).describe('Market data view to retrieve'),
       productId: z.string().describe('Trading pair (e.g., BTC-USD)'),
       limit: z.number().optional().describe('Number of trades or order book levels'),
-      start: z
-        .string()
-        .optional()
-        .describe('Unix timestamp start filter for ticker trades'),
+      start: z.string().optional().describe('Unix timestamp start filter for ticker trades'),
       end: z.string().optional().describe('Unix timestamp end filter for ticker trades'),
       aggregationPriceIncrement: z
         .string()

@@ -86,7 +86,10 @@ export let createMachine = SlateTool.create(spec, {
         .boolean()
         .optional()
         .describe('Create the machine without registering services with Fly Proxy'),
-      skipSecrets: z.boolean().optional().describe('Do not inject app secrets into the machine'),
+      skipSecrets: z
+        .boolean()
+        .optional()
+        .describe('Do not inject app secrets into the machine'),
       minSecretsVersion: z
         .number()
         .optional()

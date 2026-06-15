@@ -132,7 +132,9 @@ export let manageCustomerTool = SlateTool.create(spec, {
         if (ctx.input.country !== undefined) attributes.country = ctx.input.country;
 
         if (Object.keys(attributes).length === 0) {
-          throw lemonSqueezyServiceError('Provide at least one customer field for update action.');
+          throw lemonSqueezyServiceError(
+            'Provide at least one customer field for update action.'
+          );
         }
       }
 

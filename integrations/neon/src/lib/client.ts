@@ -666,12 +666,9 @@ export class NeonClient {
   }
 
   async deleteSnapshot(projectId: string, snapshotId: string) {
-    let response = await this.axios.delete(
-      `/projects/${projectId}/snapshots/${snapshotId}`,
-      {
-        headers: this.headers
-      }
-    );
+    let response = await this.axios.delete(`/projects/${projectId}/snapshots/${snapshotId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 

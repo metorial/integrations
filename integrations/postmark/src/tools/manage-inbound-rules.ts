@@ -29,10 +29,7 @@ export let manageInboundRules = SlateTool.create(spec, {
         .enum(['list', 'create', 'delete'])
         .describe('Inbound rule operation to perform.'),
       ruleId: z.number().optional().describe('Inbound rule ID for delete.'),
-      rule: z
-        .string()
-        .optional()
-        .describe('Email address or domain to block for create.'),
+      rule: z.string().optional().describe('Email address or domain to block for create.'),
       count: z
         .number()
         .min(1)

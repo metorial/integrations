@@ -16,8 +16,8 @@ import {
   listEmbedJobsTool,
   listModelsTool,
   rerankTool,
-  transcribeAudioTool,
-  tokenizeTool
+  tokenizeTool,
+  transcribeAudioTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';

@@ -190,9 +190,7 @@ export let convertDocument = SlateTool.create(spec, {
     }
 
     if (hasFile && !ctx.input.fileName) {
-      throw ocrWebServiceServiceError(
-        'fileName is required when providing fileContent.'
-      );
+      throw ocrWebServiceServiceError('fileName is required when providing fileContent.');
     }
 
     let params = {
@@ -221,7 +219,10 @@ export let convertDocument = SlateTool.create(spec, {
 
     let downloadedFiles = await Promise.all(
       outputFileUrls.map((url, index) =>
-        client.downloadOutputFile(url, mimeTypeForOutputFormat(ctx.input.outputFormats[index]!))
+        client.downloadOutputFile(
+          url,
+          mimeTypeForOutputFormat(ctx.input.outputFormats[index]!)
+        )
       )
     );
 

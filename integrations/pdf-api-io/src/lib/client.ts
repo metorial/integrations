@@ -69,9 +69,7 @@ let normalizePdfResponse = (
   operation: string
 ): PdfResult => {
   if (typeof response.status === 'number' && response.status >= 400) {
-    throw pdfApiIoServiceError(
-      `PDF-API.io API ${operation} failed: HTTP ${response.status}.`
-    );
+    throw pdfApiIoServiceError(`PDF-API.io API ${operation} failed: HTTP ${response.status}.`);
   }
 
   if (output === 'url') {
@@ -92,9 +90,7 @@ let normalizePdfResponse = (
   }
 
   if (typeof response.data !== 'string' || response.data.length === 0) {
-    throw pdfApiIoServiceError(
-      `PDF-API.io API ${operation} did not return PDF content.`
-    );
+    throw pdfApiIoServiceError(`PDF-API.io API ${operation} did not return PDF content.`);
   }
 
   return {

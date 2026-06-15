@@ -15,9 +15,7 @@ export let assignIpAddress = SlateTool.create(spec, {
   .input(
     z.object({
       appName: z.string().describe('Name of the Fly App'),
-      type: z
-        .string()
-        .describe('Fly.io IP assignment type, such as shared_v4, v4, or v6'),
+      type: z.string().describe('Fly.io IP assignment type, such as shared_v4, v4, or v6'),
       orgSlug: z.string().optional().describe('Organization slug for the assignment'),
       region: z.string().optional().describe('Region code for regional assignments'),
       network: z.string().optional().describe('Network name for private networking'),

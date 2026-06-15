@@ -1,4 +1,4 @@
-import { type PendoRegion, PendoClient } from '../lib/client';
+import { PendoClient, type PendoRegion } from '../lib/client';
 import { pendoServiceError } from '../lib/errors';
 
 type ToolContext = {
@@ -32,10 +32,7 @@ export let asArray = (value: any): any[] => {
 
 export let firstPendoRecord = (value: any) => asArray(value)[0] ?? value;
 
-export let requireAtLeastOne = (
-  values: Array<[string, unknown]>,
-  actionDescription: string
-) => {
+export let requireAtLeastOne = (values: [string, unknown][], actionDescription: string) => {
   if (
     values.every(([, value]) => {
       if (Array.isArray(value)) return value.length === 0;

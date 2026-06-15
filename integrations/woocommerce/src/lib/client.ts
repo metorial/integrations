@@ -202,10 +202,17 @@ export class WooCommerceClient {
     return response.data;
   }
 
-  async deleteProductAttributeTerm(attributeId: number, termId: number, force: boolean = true) {
-    let response = await this.ax.delete(`/products/attributes/${attributeId}/terms/${termId}`, {
-      params: { force }
-    });
+  async deleteProductAttributeTerm(
+    attributeId: number,
+    termId: number,
+    force: boolean = true
+  ) {
+    let response = await this.ax.delete(
+      `/products/attributes/${attributeId}/terms/${termId}`,
+      {
+        params: { force }
+      }
+    );
     return response.data;
   }
 

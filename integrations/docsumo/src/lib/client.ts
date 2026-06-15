@@ -111,7 +111,11 @@ export interface ListCasesParams {
   casetypeId: string;
   limit?: number;
   offset?: number;
-  sortBy?: 'created_date.asc' | 'created_date.desc' | 'modified_date.asc' | 'modified_date.desc';
+  sortBy?:
+    | 'created_date.asc'
+    | 'created_date.desc'
+    | 'modified_date.asc'
+    | 'modified_date.desc';
   stageIds?: string[];
   assignedTo?: string[];
   workflowStates?: string[];
@@ -219,7 +223,9 @@ let mapDocument = (doc: any): DocsumoDocument => ({
 });
 
 let mapDocumentType = (docType: any): DocumentType => ({
-  docTypeId: String(docType.id ?? docType.doc_type_id ?? docType.value ?? docType.doc_type ?? ''),
+  docTypeId: String(
+    docType.id ?? docType.doc_type_id ?? docType.value ?? docType.doc_type ?? ''
+  ),
   title: String(docType.title ?? ''),
   docType: String(docType.doc_type ?? docType.value ?? ''),
   canUpload: docType.can_upload,
@@ -328,7 +334,9 @@ export class Client {
       this.axios.get('/api/v1/mew/documents/types/')
     );
 
-    return asArray(data.document ?? data.documents ?? data.document_types).map(mapDocumentType);
+    return asArray(data.document ?? data.documents ?? data.document_types).map(
+      mapDocumentType
+    );
   }
 
   async getDocumentsSummary(): Promise<{
@@ -614,7 +622,10 @@ export class Client {
     );
   }
 
-  async runCaseWorkflow(casetypeId: string, caseId: string): Promise<{
+  async runCaseWorkflow(
+    casetypeId: string,
+    caseId: string
+  ): Promise<{
     status: string;
     statusCode: number;
     message?: string;

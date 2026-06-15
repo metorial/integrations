@@ -66,9 +66,7 @@ export let manageCohortsTool = SlateTool.create(spec, {
                 ids: z.array(z.string()).min(1).describe('IDs to add or remove.'),
                 idType: z
                   .enum(['BY_ID', 'BY_NAME'])
-                  .describe(
-                    'BY_ID is Amplitude ID/group ID; BY_NAME is user ID/group name.'
-                  ),
+                  .describe('BY_ID is Amplitude ID/group ID; BY_NAME is user ID/group name.'),
                 operation: z.enum(['ADD', 'REMOVE']).describe('Membership operation.')
               })
             )
@@ -174,9 +172,7 @@ export let manageCohortsTool = SlateTool.create(spec, {
 
     if (ctx.input.action === 'update_membership') {
       if (!ctx.input.cohortId) {
-        throw amplitudeServiceError(
-          'cohortId is required for "update_membership" action.'
-        );
+        throw amplitudeServiceError('cohortId is required for "update_membership" action.');
       }
       if (!ctx.input.membership) {
         throw amplitudeServiceError(

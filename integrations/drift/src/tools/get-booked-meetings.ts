@@ -61,7 +61,9 @@ export let getBookedMeetings = SlateTool.create(spec, {
     let maxMs = new Date(ctx.input.maxStartTime).getTime();
 
     if (!Number.isFinite(minMs) || !Number.isFinite(maxMs)) {
-      throw driftServiceError('minStartTime and maxStartTime must be valid ISO 8601 datetimes.');
+      throw driftServiceError(
+        'minStartTime and maxStartTime must be valid ISO 8601 datetimes.'
+      );
     }
 
     if (minMs > maxMs) {

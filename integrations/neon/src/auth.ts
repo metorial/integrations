@@ -30,7 +30,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://console.neon.tech/api/v2'
       });
 
-      let response;
+      let response: any;
 
       try {
         response = await axios.get('/users/me', {

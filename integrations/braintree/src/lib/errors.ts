@@ -99,7 +99,8 @@ export let braintreeGraphQLError = (
       let parts = [error.message || 'Unknown GraphQL error'];
       if (error.extensions?.errorClass) parts.push(`class=${error.extensions.errorClass}`);
       if (error.extensions?.legacyCode) parts.push(`code=${error.extensions.legacyCode}`);
-      if (error.extensions?.inputPath) parts.push(`input=${error.extensions.inputPath.join('.')}`);
+      if (error.extensions?.inputPath)
+        parts.push(`input=${error.extensions.inputPath.join('.')}`);
       if (error.path) parts.push(`path=${error.path.join('.')}`);
       return parts.join(' ');
     })

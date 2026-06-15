@@ -44,9 +44,7 @@ export let manageService = SlateTool.create(spec, {
     switch (ctx.input.action) {
       case 'create': {
         if (!ctx.input.name || !ctx.input.teamId) {
-          throw opsgenieServiceError(
-            'name and teamId are required when creating a service.'
-          );
+          throw opsgenieServiceError('name and teamId are required when creating a service.');
         }
         let service = await client.createService({
           name: ctx.input.name,

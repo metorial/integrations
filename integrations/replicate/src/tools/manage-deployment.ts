@@ -62,7 +62,9 @@ export let createDeployment = SlateTool.create(spec, {
   .output(deploymentOutputSchema)
   .handleInvocation(async ctx => {
     if (ctx.input.maxInstances < ctx.input.minInstances) {
-      throw replicateServiceError('maxInstances must be greater than or equal to minInstances.');
+      throw replicateServiceError(
+        'maxInstances must be greater than or equal to minInstances.'
+      );
     }
 
     let client = new Client({ token: ctx.auth.token });
@@ -193,7 +195,9 @@ export let updateDeployment = SlateTool.create(spec, {
       ctx.input.maxInstances !== undefined &&
       ctx.input.maxInstances < ctx.input.minInstances
     ) {
-      throw replicateServiceError('maxInstances must be greater than or equal to minInstances.');
+      throw replicateServiceError(
+        'maxInstances must be greater than or equal to minInstances.'
+      );
     }
 
     let client = new Client({ token: ctx.auth.token });

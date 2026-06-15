@@ -85,7 +85,10 @@ export let manageAttachments = SlateTool.create(spec, {
         .describe('Attachment metadata for "list".'),
       moreRecords: z.boolean().optional().describe('Whether more attachments are available.'),
       results: z.array(resultSchema).optional().describe('Mutation results.'),
-      attachmentId: z.string().optional().describe('Attachment ID for download/delete actions.'),
+      attachmentId: z
+        .string()
+        .optional()
+        .describe('Attachment ID for download/delete actions.'),
       fileName: z.string().optional().describe('Downloaded file name, when available.'),
       mimeType: z.string().optional().describe('MIME type of the returned Slate attachment.'),
       size: z.number().optional().describe('Downloaded attachment size in bytes.'),
@@ -160,7 +163,11 @@ export let manageAttachments = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'download') {
-      let attachmentId = requireZohoCrmString(ctx.input.attachmentId, 'attachmentId', 'download');
+      let attachmentId = requireZohoCrmString(
+        ctx.input.attachmentId,
+        'attachmentId',
+        'download'
+      );
       let result = await client.downloadAttachment(
         ctx.input.module,
         ctx.input.recordId,
@@ -182,8 +189,16 @@ export let manageAttachments = SlateTool.create(spec, {
     }
 
     if (ctx.input.action === 'delete') {
-      let attachmentId = requireZohoCrmString(ctx.input.attachmentId, 'attachmentId', 'delete');
-      let result = await client.deleteAttachment(ctx.input.module, ctx.input.recordId, attachmentId);
+      let attachmentId = requireZohoCrmString(
+        ctx.input.attachmentId,
+        'attachmentId',
+        'delete'
+      );
+      let result = await client.deleteAttachment(
+        ctx.input.module,
+        ctx.input.recordId,
+        attachmentId
+      );
       let results = mapMutationResults(result);
 
       return {

@@ -61,12 +61,7 @@ Both models output UV-unwrapped and textured GLB files ready for use in 3D appli
         .max(20000)
         .optional()
         .describe('SPAR3D target count for vertices or faces.'),
-      guidanceScale: z
-        .number()
-        .min(1)
-        .max(10)
-        .optional()
-        .describe('SPAR3D guidance scale.'),
+      guidanceScale: z.number().min(1).max(10).optional().describe('SPAR3D guidance scale.'),
       seed: z.number().optional().describe('SPAR3D seed for reproducible results.')
     })
   )
@@ -75,14 +70,18 @@ Both models output UV-unwrapped and textured GLB files ready for use in 3D appli
     let client = new Client({ token: ctx.auth.token });
     let input = ctx.input;
 
-    let result;
+    let result: any;
 
     if (input.model === 'stable-fast-3d') {
       if (input.foregroundRatio !== undefined && input.foregroundRatio < 0.1) {
-        throw stabilityServiceError('stable-fast-3d foregroundRatio must be between 0.1 and 1.0.');
+        throw stabilityServiceError(
+          'stable-fast-3d foregroundRatio must be between 0.1 and 1.0.'
+        );
       }
       if (input.foregroundRatio !== undefined && input.foregroundRatio > 1) {
-        throw stabilityServiceError('stable-fast-3d foregroundRatio must be between 0.1 and 1.0.');
+        throw stabilityServiceError(
+          'stable-fast-3d foregroundRatio must be between 0.1 and 1.0.'
+        );
       }
       result = await client.generateFast3D({
         image: input.image,

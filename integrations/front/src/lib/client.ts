@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { frontApiError } from './errors';
 import type {
   FrontAccount,
   FrontAnalyticsExport,
@@ -22,7 +23,6 @@ import type {
   FrontTeam,
   FrontTeammate
 } from './types';
-import { frontApiError } from './errors';
 
 export class Client {
   private axios;

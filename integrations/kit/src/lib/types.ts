@@ -130,7 +130,7 @@ export interface KitSequence {
   send_days?: string[];
   send_hour?: number;
   time_zone?: string;
-  exclude_subscriber_sources?: Array<Record<string, unknown>>;
+  exclude_subscriber_sources?: Record<string, unknown>[];
 }
 
 export interface KitSequenceEmail {

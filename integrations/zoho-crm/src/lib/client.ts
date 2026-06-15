@@ -271,7 +271,9 @@ export class Client {
     if (page) params.page = String(page);
     if (perPage) params.per_page = String(perPage);
     params.fields = (
-      fields?.length ? fields : ['id', 'Note_Title', 'Note_Content', 'Created_Time', 'Parent_Id']
+      fields?.length
+        ? fields
+        : ['id', 'Note_Title', 'Note_Content', 'Created_Time', 'Parent_Id']
     ).join(',');
 
     let response = await this.request('get notes', () =>

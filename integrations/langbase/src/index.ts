@@ -21,9 +21,9 @@ import {
   retryDocumentEmbeddings,
   runAgent,
   runPipe,
-  uploadDocument,
   updatePipe,
   updateThread,
+  uploadDocument,
   webCrawl,
   webSearch
 } from './tools';

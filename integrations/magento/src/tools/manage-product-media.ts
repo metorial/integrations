@@ -42,7 +42,9 @@ let requireReplacementContent = (input: {
     input.fileName !== undefined;
 
   if (hasAnyContent && !hasAllContent) {
-    throw magentoServiceError('imageBase64, mimeType, and fileName must be provided together.');
+    throw magentoServiceError(
+      'imageBase64, mimeType, and fileName must be provided together.'
+    );
   }
 };
 

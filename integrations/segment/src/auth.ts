@@ -46,7 +46,7 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let response;
+      let response: any;
       try {
         response = await http.get('/v1/workspace');
       } catch (error) {

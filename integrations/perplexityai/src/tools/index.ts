@@ -1,5 +1,5 @@
-export * from './async-chat-completion';
 export * from './agent-completion';
+export * from './async-chat-completion';
 export * from './chat-completion';
 export * from './generate-contextualized-embeddings';
 export * from './generate-embeddings';

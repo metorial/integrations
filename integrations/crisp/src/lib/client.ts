@@ -266,13 +266,9 @@ export class Client {
     let body: Record<string, unknown> = { from, origin };
     if (fingerprints !== undefined) body.fingerprints = fingerprints;
 
-    await axios.patch(
-      this.url(`/conversation/${sessionId}/read`),
-      body,
-      {
-        headers: this.headers()
-      }
-    );
+    await axios.patch(this.url(`/conversation/${sessionId}/read`), body, {
+      headers: this.headers()
+    });
   }
 
   async markConversationUnread(sessionId: string, from: 'user') {

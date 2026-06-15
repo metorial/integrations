@@ -44,11 +44,7 @@ Pipeline steps include **source** (required first step), **filter**, **group**, 
   )
   .handleInvocation(async ctx => {
     let firstStep = ctx.input.pipeline[0];
-    if (
-      typeof firstStep !== 'object' ||
-      firstStep === null ||
-      !('source' in firstStep)
-    ) {
+    if (typeof firstStep !== 'object' || firstStep === null || !('source' in firstStep)) {
       throw pendoServiceError('Pendo aggregation pipelines must start with a source step.');
     }
 

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { requireTrelloString } from '../lib/errors';
 import { TrelloClient } from '../lib/client';
+import { requireTrelloString } from '../lib/errors';
 import { spec } from '../spec';
 
 let attachmentSchema = z.object({

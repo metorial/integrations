@@ -84,7 +84,7 @@ export let auth = SlateAuth.create()
     handleCallback: async ctx => {
       let axios = createAxios({ baseURL: 'https://driftapi.com' });
 
-      let response;
+      let response: any;
       try {
         response = await axios.post(
           '/oauth2/token',
@@ -125,7 +125,7 @@ export let auth = SlateAuth.create()
 
       let axios = createAxios({ baseURL: 'https://driftapi.com' });
 
-      let response;
+      let response: any;
       try {
         response = await axios.post(
           '/oauth2/token',
@@ -162,7 +162,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
       let axios = createAxios({ baseURL: 'https://driftapi.com' });
 
-      let response;
+      let response: any;
       try {
         response = await axios.post('/app/token_info', {
           access_token: ctx.output.token
@@ -205,7 +205,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let axios = createAxios({ baseURL: 'https://driftapi.com' });
 
-      let response;
+      let response: any;
       try {
         response = await axios.post('/app/token_info', {
           access_token: ctx.output.token

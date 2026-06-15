@@ -772,9 +772,7 @@ export class AmplitudeClient {
       responseType: 'arraybuffer'
     });
 
-    let buffer = Buffer.isBuffer(response.data)
-      ? response.data
-      : Buffer.from(response.data);
+    let buffer = Buffer.isBuffer(response.data) ? response.data : Buffer.from(response.data);
     let contentTypeHeader = response.headers?.['content-type'];
     let contentType =
       typeof contentTypeHeader === 'string'

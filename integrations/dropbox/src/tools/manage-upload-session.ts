@@ -41,7 +41,9 @@ export let manageUploadSession = SlateTool.create(spec, {
       contentEncoding: z
         .enum(['text', 'base64'])
         .optional()
-        .describe('How to decode content. Use "base64" for binary chunks. Defaults to "text".'),
+        .describe(
+          'How to decode content. Use "base64" for binary chunks. Defaults to "text".'
+        ),
       close: z
         .boolean()
         .optional()
@@ -53,7 +55,10 @@ export let manageUploadSession = SlateTool.create(spec, {
       rev: z.string().optional().describe('Existing file revision required for update mode'),
       autorename: z.boolean().optional().describe('For "finish", autorename on conflicts'),
       mute: z.boolean().optional().describe('For "finish", suppress Dropbox notifications'),
-      contentHash: z.string().optional().describe('Optional Dropbox content hash for this call'),
+      contentHash: z
+        .string()
+        .optional()
+        .describe('Optional Dropbox content hash for this call'),
       clientModified: z
         .string()
         .optional()
@@ -79,7 +84,10 @@ export let manageUploadSession = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let content = decodeDropboxContent(ctx.input.content ?? '', ctx.input.contentEncoding ?? 'text');
+    let content = decodeDropboxContent(
+      ctx.input.content ?? '',
+      ctx.input.contentEncoding ?? 'text'
+    );
     let contentLength = getDropboxContentLength(content);
     let client = new DropboxClient(ctx.auth.token);
 

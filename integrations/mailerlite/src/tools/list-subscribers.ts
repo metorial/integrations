@@ -21,7 +21,9 @@ export let listSubscribers = SlateTool.create(spec, {
       limit: z
         .number()
         .optional()
-        .describe('Number of subscribers to return per page. Use 0 to fetch total count only.'),
+        .describe(
+          'Number of subscribers to return per page. Use 0 to fetch total count only.'
+        ),
       cursor: z.string().optional().describe('Pagination cursor from a previous response'),
       includeGroups: z
         .boolean()
@@ -38,13 +40,19 @@ export let listSubscribers = SlateTool.create(spec, {
             email: z.string().describe('Email address'),
             status: z.string().describe('Subscriber status'),
             fields: z.record(z.string(), z.any()).optional().describe('Custom field values'),
-            groups: z.array(z.any()).optional().describe('Groups included for this subscriber'),
+            groups: z
+              .array(z.any())
+              .optional()
+              .describe('Groups included for this subscriber'),
             subscribedAt: z.string().optional().describe('Subscription timestamp'),
             createdAt: z.string().optional().describe('Creation timestamp')
           })
         )
         .describe('List of subscribers'),
-      total: z.number().optional().describe('Total subscriber count when returned by MailerLite'),
+      total: z
+        .number()
+        .optional()
+        .describe('Total subscriber count when returned by MailerLite'),
       nextCursor: z
         .string()
         .optional()

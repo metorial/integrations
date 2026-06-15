@@ -28,7 +28,9 @@ export let createBatch = SlateTool.create(spec, {
       inputFileId: z
         .string()
         .optional()
-        .describe('Existing uploaded batch file ID. Provide either inputFileId or jsonlContent'),
+        .describe(
+          'Existing uploaded batch file ID. Provide either inputFileId or jsonlContent'
+        ),
       jsonlContent: z
         .string()
         .optional()

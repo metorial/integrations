@@ -9,10 +9,7 @@ let booleanValue = (value: unknown) => (typeof value === 'boolean' ? value : und
 
 let apiKeyOutputSchema = z.object({
   keyHash: z.string().optional().describe('Hash identifier for the key'),
-  key: z
-    .string()
-    .optional()
-    .describe('New API key secret, returned only when creating a key'),
+  key: z.string().optional().describe('New API key secret, returned only when creating a key'),
   name: z.string().optional().describe('API key name'),
   label: z.string().optional().describe('API key label'),
   usage: z.number().optional().describe('Total credits used by this key'),
@@ -100,10 +97,7 @@ export let listApiKeys = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      includeDisabled: z
-        .boolean()
-        .optional()
-        .describe('Whether to include disabled API keys'),
+      includeDisabled: z.boolean().optional().describe('Whether to include disabled API keys'),
       offset: z.number().min(0).optional().describe('Number of API keys to skip'),
       workspaceId: z.string().optional().describe('Filter API keys by workspace ID')
     })

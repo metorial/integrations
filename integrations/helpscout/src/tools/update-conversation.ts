@@ -75,9 +75,7 @@ export let updateConversation = SlateTool.create(spec, {
     }
 
     if (updated.length === 0) {
-      throw helpscoutServiceError(
-        'Provide at least one conversation field to update.'
-      );
+      throw helpscoutServiceError('Provide at least one conversation field to update.');
     }
 
     return {

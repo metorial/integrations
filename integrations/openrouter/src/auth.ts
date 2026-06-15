@@ -76,7 +76,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://openrouter.ai/api/v1'
       });
 
-      let response;
+      let response: any;
       try {
         response = await axios.post('/auth/keys', {
           code: ctx.code

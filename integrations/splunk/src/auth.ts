@@ -81,7 +81,7 @@ export let auth = SlateAuth.create()
     }) => {
       let baseURL = `${ctx.input.scheme}://${ctx.input.host}:${ctx.input.managementPort}`;
       let axiosInstance = createAxios({ baseURL });
-      let response;
+      let response: any;
       try {
         response = await axiosInstance.post(
           '/services/auth/login',

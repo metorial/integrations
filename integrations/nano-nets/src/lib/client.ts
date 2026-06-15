@@ -8,11 +8,7 @@ type PredictByUrlOptions = {
   pagesToProcess?: string;
 };
 
-let appendFormValues = (
-  form: URLSearchParams,
-  key: string,
-  values: string[] | undefined
-) => {
+let appendFormValues = (form: URLSearchParams, key: string, values: string[] | undefined) => {
   for (let value of values ?? []) {
     form.append(key, value);
   }
@@ -204,26 +200,19 @@ export class NanonetsClient {
     });
   }
 
-  async assignFiles(
-    modelId: string,
-    fileIds: string[],
-    memberEmail: string
-  ): Promise<any> {
+  async assignFiles(modelId: string, fileIds: string[], memberEmail: string): Promise<any> {
     return this.request('assign files', async () => {
-      let response = await this.axiosV2.post(
-        `/team/members/model/${modelId}/assign/files`,
-        {
-          member: memberEmail,
-          file_ids: fileIds
-        }
-      );
+      let response = await this.axiosV2.post(`/team/members/model/${modelId}/assign/files`, {
+        member: memberEmail,
+        file_ids: fileIds
+      });
       return response.data;
     });
   }
 
   async updateFileFields(
     modelId: string,
-    moderatedBoxes: Array<Record<string, unknown>>,
+    moderatedBoxes: Record<string, unknown>[],
     useUiVersion = true
   ): Promise<any> {
     return this.request('update file fields', async () => {

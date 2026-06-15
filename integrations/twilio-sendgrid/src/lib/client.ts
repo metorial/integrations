@@ -561,10 +561,9 @@ export class Client {
   }
 
   async toggleEventWebhookSignatureVerification(webhookId: string, enabled: boolean) {
-    let response = await this.http.patch(
-      `/user/webhooks/event/settings/signed/${webhookId}`,
-      { enabled }
-    );
+    let response = await this.http.patch(`/user/webhooks/event/settings/signed/${webhookId}`, {
+      enabled
+    });
     return response.data;
   }
 

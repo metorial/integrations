@@ -23,10 +23,7 @@ export let searchRecordsTool = SlateTool.create(spec, {
       namespace: z.string().describe('Namespace to search'),
       queryMode: z.enum(['text', 'vector', 'id']).describe('How to query records'),
       topK: z.number().int().min(1).max(10000).describe('Number of records to retrieve'),
-      queryText: z
-        .string()
-        .optional()
-        .describe('Text query, required when queryMode is text'),
+      queryText: z.string().optional().describe('Text query, required when queryMode is text'),
       vector: z
         .array(z.number())
         .optional()
@@ -70,7 +67,10 @@ export let searchRecordsTool = SlateTool.create(spec, {
           })
         )
         .describe('Search hits'),
-      usage: z.record(z.string(), z.any()).optional().describe('Usage metrics returned by Pinecone')
+      usage: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Usage metrics returned by Pinecone')
     })
   )
   .handleInvocation(async ctx => {
@@ -79,13 +79,19 @@ export let searchRecordsTool = SlateTool.create(spec, {
     let hasId = Boolean(ctx.input.recordId);
 
     if (ctx.input.queryMode === 'text' && (!hasText || hasVector || hasId)) {
-      throw pineconeServiceError('queryMode "text" requires queryText and no vector or recordId.');
+      throw pineconeServiceError(
+        'queryMode "text" requires queryText and no vector or recordId.'
+      );
     }
     if (ctx.input.queryMode === 'vector' && (!hasVector || hasText || hasId)) {
-      throw pineconeServiceError('queryMode "vector" requires vector and no queryText or recordId.');
+      throw pineconeServiceError(
+        'queryMode "vector" requires vector and no queryText or recordId.'
+      );
     }
     if (ctx.input.queryMode === 'id' && (!hasId || hasText || hasVector)) {
-      throw pineconeServiceError('queryMode "id" requires recordId and no queryText or vector.');
+      throw pineconeServiceError(
+        'queryMode "id" requires recordId and no queryText or vector.'
+      );
     }
     if (ctx.input.sparseVector && ctx.input.queryMode !== 'vector') {
       throw pineconeServiceError('sparseVector can only be used when queryMode is "vector".');

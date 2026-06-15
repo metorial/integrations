@@ -1,6 +1,7 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  clearItemUpdatesTool,
   createBoardTool,
   createColumnTool,
   createFolderTool,
@@ -10,7 +11,6 @@ import {
   createUpdateTool,
   createWebhookTool,
   createWorkspaceTool,
-  clearItemUpdatesTool,
   deleteColumnTool,
   deleteFolderTool,
   deleteUpdateTool,

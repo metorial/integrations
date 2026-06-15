@@ -1,7 +1,7 @@
 import { SlateAuth } from 'slates';
 import { z } from 'zod';
-import { evernoteServiceError } from './lib/errors';
 import { Client } from './lib/client';
+import { evernoteServiceError } from './lib/errors';
 
 export let auth = SlateAuth.create()
   .output(

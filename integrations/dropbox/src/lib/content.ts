@@ -19,7 +19,9 @@ export let decodeDropboxContent = (
     !base64Pattern.test(normalized) ||
     (firstPadding !== -1 && firstPadding < normalized.length - 2)
   ) {
-    throw dropboxServiceError('content must be valid base64 when contentEncoding is "base64".');
+    throw dropboxServiceError(
+      'content must be valid base64 when contentEncoding is "base64".'
+    );
   }
 
   return Buffer.from(normalized, 'base64');

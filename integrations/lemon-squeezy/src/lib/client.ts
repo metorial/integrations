@@ -60,7 +60,9 @@ export class Client {
   // Products
 
   async getProduct(productId: string) {
-    return await this.request('retrieve product', () => this.http.get(`/products/${productId}`));
+    return await this.request('retrieve product', () =>
+      this.http.get(`/products/${productId}`)
+    );
   }
 
   async listProducts(params?: ListParams & { storeId?: string }) {
@@ -74,7 +76,9 @@ export class Client {
   // Variants
 
   async getVariant(variantId: string) {
-    return await this.request('retrieve variant', () => this.http.get(`/variants/${variantId}`));
+    return await this.request('retrieve variant', () =>
+      this.http.get(`/variants/${variantId}`)
+    );
   }
 
   async listVariants(params?: ListParams & { productId?: string }) {
@@ -257,7 +261,8 @@ export class Client {
     if (params?.storeId) queryParams['filter[store_id]'] = params.storeId;
     if (params?.subscriptionId) queryParams['filter[subscription_id]'] = params.subscriptionId;
     if (params?.status) queryParams['filter[status]'] = params.status;
-    if (params?.refunded !== undefined) queryParams['filter[refunded]'] = String(params.refunded);
+    if (params?.refunded !== undefined)
+      queryParams['filter[refunded]'] = String(params.refunded);
     return await this.request('list subscription invoices', () =>
       this.http.get('/subscription-invoices', { params: queryParams })
     );
@@ -351,7 +356,9 @@ export class Client {
   }
 
   async deleteDiscount(discountId: string) {
-    await this.requestVoid('delete discount', () => this.http.delete(`/discounts/${discountId}`));
+    await this.requestVoid('delete discount', () =>
+      this.http.delete(`/discounts/${discountId}`)
+    );
   }
 
   // Discount Redemptions

@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { requireBrazeNumber, requireBrazeString } from '../lib/errors';
 import { BrazeClient } from '../lib/client';
+import { requireBrazeNumber, requireBrazeString } from '../lib/errors';
 import { spec } from '../spec';
 
 export let getKpiAnalytics = SlateTool.create(spec, {
@@ -141,11 +141,7 @@ export let getCustomEventAnalytics = SlateTool.create(spec, {
     } else {
       let eventName = requireBrazeString(ctx.input.eventName, 'eventName', 'analytics');
       let length = requireBrazeNumber(ctx.input.length, 'length', 'analytics');
-      let result = await client.getCustomEventAnalytics(
-        eventName,
-        length,
-        ctx.input.endingAt
-      );
+      let result = await client.getCustomEventAnalytics(eventName, length, ctx.input.endingAt);
       return {
         output: {
           dataSeries: result.data ?? [],

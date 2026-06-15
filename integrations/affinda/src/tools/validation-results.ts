@@ -5,7 +5,10 @@ import { spec } from '../spec';
 
 let validationResultSchema = z.object({
   validationResultId: z.number().describe('Affinda validation result ID.'),
-  annotationIds: z.array(z.number()).optional().describe('Annotation IDs that were validated.'),
+  annotationIds: z
+    .array(z.number())
+    .optional()
+    .describe('Annotation IDs that were validated.'),
   passed: z.boolean().nullable().optional().describe('Whether validation passed.'),
   ruleSlug: z.string().optional().describe('Validation rule slug.'),
   message: z.string().optional().describe('Validation message.'),

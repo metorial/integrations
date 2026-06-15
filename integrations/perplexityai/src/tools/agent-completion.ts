@@ -59,12 +59,16 @@ let buildResponseFormat = (
   jsonSchema: Record<string, unknown> | undefined
 ) => {
   if (responseFormat !== 'json_schema' && jsonSchema !== undefined) {
-    throw perplexityServiceError('jsonSchema can only be used with responseFormat "json_schema".');
+    throw perplexityServiceError(
+      'jsonSchema can only be used with responseFormat "json_schema".'
+    );
   }
 
   if (responseFormat === 'json_schema') {
     if (!jsonSchema || Object.keys(jsonSchema).length === 0) {
-      throw perplexityServiceError('jsonSchema is required when responseFormat is "json_schema".');
+      throw perplexityServiceError(
+        'jsonSchema is required when responseFormat is "json_schema".'
+      );
     }
 
     return {
@@ -159,7 +163,9 @@ You can use presets as-is or override supported parameters. Models use the \`pro
       enableSandbox: z
         .boolean()
         .optional()
-        .describe('Enable the Perplexity sandbox tool for code execution inside the Agent API'),
+        .describe(
+          'Enable the Perplexity sandbox tool for code execution inside the Agent API'
+        ),
       webSearchContextSize: z
         .enum(['low', 'medium', 'high'])
         .optional()
@@ -278,7 +284,7 @@ You can use presets as-is or override supported parameters. Models use the \`pro
         ? {
             effort: ctx.input.reasoningEffort,
             budget_tokens: ctx.input.reasoningBudgetTokens
-        }
+          }
         : undefined;
     let maxOutputTokens = validateMaxOutputTokens(
       ctx.input.maxOutputTokens,

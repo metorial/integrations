@@ -1,6 +1,6 @@
 export * from './compose-music';
-export * from './create-dubbing';
 export * from './create-dialogue';
+export * from './create-dubbing';
 export * from './create-forced-alignment';
 export * from './delete-dubbing';
 export * from './delete-voice';

@@ -34,7 +34,10 @@ export let createContactProperty = SlateTool.create(spec, {
     z.object({
       key: z.string().describe('Property key, such as company_name.'),
       type: contactPropertyTypeSchema.describe('Property value type.'),
-      fallbackValue: z.any().optional().describe('Fallback value used when a contact has no value.')
+      fallbackValue: z
+        .any()
+        .optional()
+        .describe('Fallback value used when a contact has no value.')
     })
   )
   .output(

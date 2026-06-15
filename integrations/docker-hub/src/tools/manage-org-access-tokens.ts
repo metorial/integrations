@@ -16,13 +16,18 @@ let orgAccessTokenResourceSchema = z.object({
   scopes: z
     .array(z.string())
     .min(1)
-    .describe('Docker organization token scopes for this resource, such as "scope-image-pull".')
+    .describe(
+      'Docker organization token scopes for this resource, such as "scope-image-pull".'
+    )
 });
 
 let orgAccessTokenOutput = z.object({
   tokenId: z.string().describe('Organization access token ID.'),
   label: z.string().describe('Token label.'),
-  description: z.string().optional().describe('Token description when returned by Docker Hub.'),
+  description: z
+    .string()
+    .optional()
+    .describe('Token description when returned by Docker Hub.'),
   createdBy: z.string().describe('Docker Hub username that created the token.'),
   isActive: z.boolean().describe('Whether the token is active.'),
   createdAt: z.string().describe('ISO timestamp when the token was created.'),

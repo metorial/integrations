@@ -87,9 +87,9 @@ export let downloadDocument = SlateTool.create(spec, {
         ? 'Combined Documents'
         : targetId === 'archive'
           ? 'Document Archive'
-        : targetId === 'certificate'
-          ? 'Certificate of Completion'
-          : `Document ${targetId}`);
+          : targetId === 'certificate'
+            ? 'Certificate of Completion'
+            : `Document ${targetId}`);
 
     return {
       output: {

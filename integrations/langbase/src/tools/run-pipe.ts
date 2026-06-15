@@ -6,7 +6,10 @@ import { functionToolSchema, mapFunctionTools, mapMemoryNames } from './shared';
 
 let messageSchema = z.object({
   role: z.enum(['user', 'assistant', 'system', 'tool']).describe('Role of the message sender'),
-  content: z.string().nullable().describe('Content of the message. Tool messages may use null.'),
+  content: z
+    .string()
+    .nullable()
+    .describe('Content of the message. Tool messages may use null.'),
   name: z.string().optional().describe('Name identifier'),
   toolCallId: z.string().optional().describe('Tool call ID for tool response messages')
 });

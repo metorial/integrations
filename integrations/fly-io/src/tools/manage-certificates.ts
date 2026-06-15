@@ -99,8 +99,7 @@ export let manageCertificates = SlateTool.create(spec, {
         };
       }
       case 'request_acme': {
-        if (!hostname)
-          throw flyIoServiceError('hostname is required for request_acme action');
+        if (!hostname) throw flyIoServiceError('hostname is required for request_acme action');
         let cert = await client.requestAcmeCertificate(appName, hostname);
         return {
           output: { certificate: cert },

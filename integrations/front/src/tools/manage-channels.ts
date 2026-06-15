@@ -51,9 +51,7 @@ export let getChannel = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      channelId: z
-        .string()
-        .describe('Channel ID or channel address alias to retrieve')
+      channelId: z.string().describe('Channel ID or channel address alias to retrieve')
     })
   )
   .output(channelOutputSchema)

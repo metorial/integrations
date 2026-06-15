@@ -15,7 +15,15 @@ export let typeaheadSearch = SlateTool.create(spec, {
     z.object({
       workspaceId: z.string().describe('Workspace GID to search in.'),
       resourceType: z
-        .enum(['custom_field', 'project', 'project_template', 'portfolio', 'tag', 'task', 'user'])
+        .enum([
+          'custom_field',
+          'project',
+          'project_template',
+          'portfolio',
+          'tag',
+          'task',
+          'user'
+        ])
         .describe('Type of Asana resource to search for.'),
       query: z
         .string()

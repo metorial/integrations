@@ -24,8 +24,8 @@ import {
   removeSuppression,
   searchContacts,
   sendEmail,
-  updateTemplate,
   updateList,
+  updateTemplate,
   validateDomain,
   validateEmail
 } from './tools';

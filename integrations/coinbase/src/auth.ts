@@ -230,9 +230,7 @@ export let auth = SlateAuth.create()
 
       let data = response.data;
       if (!data.access_token) {
-        throw coinbaseServiceError(
-          'Coinbase OAuth response did not include an access token.'
-        );
+        throw coinbaseServiceError('Coinbase OAuth response did not include an access token.');
       }
 
       return {

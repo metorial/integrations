@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { TrackingClient } from '../lib/tracking';
 import { segmentServiceError } from '../lib/errors';
+import { TrackingClient } from '../lib/tracking';
 import { spec } from '../spec';
 
 export let batchEvents = SlateTool.create(spec, {

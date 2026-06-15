@@ -44,7 +44,9 @@ Useful for discovering field API names, data types, picklist values, and module 
       layoutId: z
         .string()
         .optional()
-        .describe('Layout ID to filter related list metadata when includeRelatedLists is true.')
+        .describe(
+          'Layout ID to filter related list metadata when includeRelatedLists is true.'
+        )
     })
   )
   .output(

@@ -110,7 +110,9 @@ export let analyzeTextTool = SlateTool.create(spec, {
     }
 
     if (ctx.input.customIntentMode && (ctx.input.customIntents?.length ?? 0) === 0) {
-      throw deepgramServiceError('customIntentMode requires at least one customIntents value.');
+      throw deepgramServiceError(
+        'customIntentMode requires at least one customIntents value.'
+      );
     }
 
     if (ctx.input.callbackMethod && !ctx.input.callbackUrl) {
@@ -137,7 +139,9 @@ export let analyzeTextTool = SlateTool.create(spec, {
     });
 
     let requestId =
-      result.metadata?.metadata?.request_id || result.metadata?.request_id || result.request_id;
+      result.metadata?.metadata?.request_id ||
+      result.metadata?.request_id ||
+      result.request_id;
 
     if (ctx.input.callbackUrl && !result.results) {
       return {

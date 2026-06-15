@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { brevoServiceError } from '../lib/errors';
 import { Client } from '../lib/client';
+import { brevoServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 export let trackEvent = SlateTool.create(spec, {
@@ -19,7 +19,10 @@ export let trackEvent = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Email address of the contact to associate the event with'),
-      contactId: z.number().optional().describe('Brevo contact ID to associate the event with'),
+      contactId: z
+        .number()
+        .optional()
+        .describe('Brevo contact ID to associate the event with'),
       extId: z.string().optional().describe('External ID to associate the event with'),
       phone: z
         .string()

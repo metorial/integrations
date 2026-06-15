@@ -36,7 +36,10 @@ export let uploadFile = SlateTool.create(spec, {
         .describe(
           'Upload mode: "add" creates new file, "overwrite" replaces existing, "update" overwrites only if rev matches'
         ),
-      rev: z.string().optional().describe('Existing file revision required when mode is "update"'),
+      rev: z
+        .string()
+        .optional()
+        .describe('Existing file revision required when mode is "update"'),
       autorename: z
         .boolean()
         .optional()

@@ -404,8 +404,16 @@ export class BrowserlessClient {
     return await this.postBinary('function', '/function', request);
   }
 
-  async smartScrape(request: SmartScrapeRequest, query?: { timeout?: number; profile?: string }) {
-    return await this.postJson<SmartScrapeResponse>('smart scrape', '/smart-scrape', request, query);
+  async smartScrape(
+    request: SmartScrapeRequest,
+    query?: { timeout?: number; profile?: string }
+  ) {
+    return await this.postJson<SmartScrapeResponse>(
+      'smart scrape',
+      '/smart-scrape',
+      request,
+      query
+    );
   }
 
   async exportUrl(request: ExportRequest): Promise<FileResponse> {
@@ -425,7 +433,9 @@ export class BrowserlessClient {
   }
 
   async getCrawl(crawlId: string, skip?: number) {
-    return await this.getJson<any>('get crawl', `/crawl/${encodeURIComponent(crawlId)}`, { skip });
+    return await this.getJson<any>('get crawl', `/crawl/${encodeURIComponent(crawlId)}`, {
+      skip
+    });
   }
 
   async listCrawls(query: CrawlListQuery) {

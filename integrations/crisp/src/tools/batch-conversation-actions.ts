@@ -30,7 +30,11 @@ export let batchConversationActions = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId, tier: ctx.auth.tier });
+    let client = new Client({
+      token: ctx.auth.token,
+      websiteId: ctx.config.websiteId,
+      tier: ctx.auth.tier
+    });
 
     if (ctx.input.sessionIds.length === 0) {
       throw crispServiceError('Provide at least one conversation session ID.');

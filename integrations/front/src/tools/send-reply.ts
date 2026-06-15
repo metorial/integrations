@@ -26,14 +26,13 @@ export let sendReply = SlateTool.create(spec, {
         .optional()
         .describe('Quoted body that the reply references. Only available on email channels.'),
       channelId: z.string().optional().describe('Channel ID to send the reply from'),
-      signatureId: z
-        .string()
-        .optional()
-        .describe('Signature ID to attach for email channels'),
+      signatureId: z.string().optional().describe('Signature ID to attach for email channels'),
       shouldAddDefaultSignature: z
         .boolean()
         .optional()
-        .describe('Whether Front should try to resolve the default signature for email channels')
+        .describe(
+          'Whether Front should try to resolve the default signature for email channels'
+        )
     })
   )
   .output(

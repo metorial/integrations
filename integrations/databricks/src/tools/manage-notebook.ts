@@ -12,7 +12,6 @@ let mimeTypeForNotebookFormat = (format?: string) => {
       return 'application/x-ipynb+json';
     case 'DBC':
       return 'application/octet-stream';
-    case 'SOURCE':
     default:
       return 'text/plain';
   }

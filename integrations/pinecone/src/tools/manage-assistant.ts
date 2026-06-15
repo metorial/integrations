@@ -130,7 +130,9 @@ export let manageAssistantTool = SlateTool.create(spec, {
         throw pineconeServiceError('assistantName is required for update.');
       }
       if (!ctx.input.instructions && !ctx.input.metadata) {
-        throw pineconeServiceError('Provide instructions or metadata when updating an assistant.');
+        throw pineconeServiceError(
+          'Provide instructions or metadata when updating an assistant.'
+        );
       }
       let result = await client.updateAssistant(ctx.input.assistantName, {
         instructions: ctx.input.instructions,

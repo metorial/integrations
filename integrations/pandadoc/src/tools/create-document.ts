@@ -90,10 +90,7 @@ export let createDocument = SlateTool.create(spec, {
         .optional()
         .describe('UUID of the folder to place the document in'),
       ownerEmail: z.string().optional().describe('Email of the document owner'),
-      ownerMembershipId: z
-        .string()
-        .optional()
-        .describe('Membership ID of the document owner'),
+      ownerMembershipId: z.string().optional().describe('Membership ID of the document owner'),
       detectTitleVariables: z
         .boolean()
         .optional()
@@ -107,8 +104,14 @@ export let createDocument = SlateTool.create(spec, {
         .optional()
         .describe('Pricing table data to populate in the document'),
       tables: z.array(z.any()).optional().describe('Table data to populate in the document'),
-      texts: z.array(z.any()).optional().describe('Text block data to populate in the document'),
-      images: z.array(z.any()).optional().describe('Image block data to populate in the document'),
+      texts: z
+        .array(z.any())
+        .optional()
+        .describe('Text block data to populate in the document'),
+      images: z
+        .array(z.any())
+        .optional()
+        .describe('Image block data to populate in the document'),
       contentPlaceholders: z
         .array(
           z.object({
@@ -140,8 +143,7 @@ export let createDocument = SlateTool.create(spec, {
       authType: ctx.auth.authType
     });
 
-    let sourceType =
-      ctx.input.sourceType ?? (ctx.input.templateId ? 'template' : 'pdf_url');
+    let sourceType = ctx.input.sourceType ?? (ctx.input.templateId ? 'template' : 'pdf_url');
 
     if (sourceType === 'template' && !ctx.input.templateId) {
       throw pandadocServiceError('templateId is required when sourceType is "template".');
@@ -163,7 +165,9 @@ export let createDocument = SlateTool.create(spec, {
       recipient => !recipient.email && !recipient.phone
     );
     if (recipientWithoutDelivery) {
-      throw pandadocServiceError('Each recipient must include at least one of email or phone.');
+      throw pandadocServiceError(
+        'Each recipient must include at least one of email or phone.'
+      );
     }
 
     let fieldsPayload: Record<string, { value: any }> | undefined;

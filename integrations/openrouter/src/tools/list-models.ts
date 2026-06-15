@@ -39,10 +39,7 @@ export let modelSchema = z.object({
         .optional()
         .describe('Model modality (e.g., "text->text", "text+image->text")'),
       inputModalities: z.array(z.string()).optional().describe('Supported input modalities'),
-      outputModalities: z
-        .array(z.string())
-        .optional()
-        .describe('Supported output modalities'),
+      outputModalities: z.array(z.string()).optional().describe('Supported output modalities'),
       tokenizer: z.string().optional().describe('Tokenizer used'),
       instructType: z.string().optional().describe('Instruction type')
     })
@@ -79,8 +76,7 @@ export let normalizeModel = (m: Record<string, unknown>) => {
       ? {
           topProvider: {
             contextLength: (topProvider.context_length as number) || undefined,
-            maxCompletionTokens:
-              (topProvider.max_completion_tokens as number) || undefined,
+            maxCompletionTokens: (topProvider.max_completion_tokens as number) || undefined,
             isModerated: (topProvider.is_moderated as boolean) || undefined
           }
         }

@@ -355,9 +355,7 @@ export class Client {
   }
 
   async createWebhook(data: Record<string, any>) {
-    return await this.request<any>('create webhook', () =>
-      this.http.post('/webhooks', data)
-    );
+    return await this.request<any>('create webhook', () => this.http.post('/webhooks', data));
   }
 
   async updateWebhook(webhookId: number, data: Record<string, any>) {

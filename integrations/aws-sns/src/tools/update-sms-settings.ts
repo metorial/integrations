@@ -1,7 +1,7 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
-import { snsServiceError } from '../lib/errors';
 import { SnsClient } from '../lib/client';
+import { snsServiceError } from '../lib/errors';
 import { spec } from '../spec';
 
 let smsTypeSchema = z.enum(['Promotional', 'Transactional']);
@@ -21,10 +21,7 @@ export let updateSmsSettings = SlateTool.create(spec, {
 })
   .input(
     z.object({
-      monthlySpendLimit: z
-        .string()
-        .optional()
-        .describe('Monthly SMS spend limit in USD'),
+      monthlySpendLimit: z.string().optional().describe('Monthly SMS spend limit in USD'),
       deliveryStatusIAMRole: z
         .string()
         .optional()
@@ -48,9 +45,7 @@ export let updateSmsSettings = SlateTool.create(spec, {
   )
   .output(
     z.object({
-      updatedAttributes: z
-        .array(z.string())
-        .describe('SMS settings changed by this request')
+      updatedAttributes: z.array(z.string()).describe('SMS settings changed by this request')
     })
   )
   .handleInvocation(async ctx => {

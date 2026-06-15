@@ -138,7 +138,10 @@ export let updateAutomation = SlateTool.create(spec, {
     z.object({
       automationId: z.string().describe('Automation ID.'),
       name: z.string().optional().describe('Updated automation name.'),
-      status: z.enum(['enabled', 'disabled']).optional().describe('Updated automation status.'),
+      status: z
+        .enum(['enabled', 'disabled'])
+        .optional()
+        .describe('Updated automation status.'),
       steps: z.array(automationStepSchema).optional().describe('Updated automation steps.'),
       connections: z
         .array(automationConnectionSchema)

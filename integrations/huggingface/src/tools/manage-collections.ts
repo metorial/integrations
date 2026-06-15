@@ -40,12 +40,13 @@ export let listCollectionsTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Filter by contained item, for example "models/owner/model-name"'),
-      sort: z
-        .enum(['upvotes', 'lastModified', 'trending'])
-        .optional()
-        .describe('Sort field'),
+      sort: z.enum(['upvotes', 'lastModified', 'trending']).optional().describe('Sort field'),
       cursor: z.string().optional().describe('Pagination cursor from a previous response'),
-      limit: z.number().optional().default(10).describe('Maximum number of collections to return')
+      limit: z
+        .number()
+        .optional()
+        .default(10)
+        .describe('Maximum number of collections to return')
     })
   )
   .output(

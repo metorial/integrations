@@ -30,7 +30,10 @@ export let getProjectLogs = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Inclusive ISO timestamp start for the log query'),
-      endTimestamp: z.string().optional().describe('Exclusive ISO timestamp end for the log query')
+      endTimestamp: z
+        .string()
+        .optional()
+        .describe('Exclusive ISO timestamp end for the log query')
     })
   )
   .output(

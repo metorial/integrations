@@ -255,7 +255,9 @@ export let createCustomAudience = SlateTool.create(spec, {
     }
 
     if (ctx.input.subtype === 'LOOKALIKE' && !ctx.input.lookalikeSpec) {
-      throw metaAdsServiceError('lookalikeSpec is required when creating a LOOKALIKE audience.');
+      throw metaAdsServiceError(
+        'lookalikeSpec is required when creating a LOOKALIKE audience.'
+      );
     }
 
     if (ctx.input.subtype !== 'LOOKALIKE' && ctx.input.lookalikeSpec) {

@@ -46,7 +46,10 @@ export let mediaAttachmentOutputSchema = z.object({
   mimeType: z.string().describe('MIME type of the generated attachment.'),
   byteLength: z.number().describe('Decoded byte length of the generated attachment.'),
   seed: z.number().optional().describe('Seed used for the generation, when returned.'),
-  finishReason: z.string().optional().describe('Reason the generation finished, when returned.'),
+  finishReason: z
+    .string()
+    .optional()
+    .describe('Reason the generation finished, when returned.'),
   generationId: z
     .string()
     .optional()

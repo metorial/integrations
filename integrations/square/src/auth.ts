@@ -222,7 +222,9 @@ export let auth = SlateAuth.create()
 
       let data = response.data;
       if (!data.access_token) {
-        throw squareServiceError('Square OAuth refresh response did not include an access token.');
+        throw squareServiceError(
+          'Square OAuth refresh response did not include an access token.'
+        );
       }
 
       let expiresAt = data.expires_at ? new Date(data.expires_at).toISOString() : undefined;
