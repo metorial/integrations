@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { IngestClient } from '../lib/client';
 import { spec } from '../spec';
@@ -91,7 +91,7 @@ Requires a License Key to be configured in authentication.`,
   )
   .handleInvocation(async ctx => {
     if (!ctx.auth.licenseKey) {
-      throw new Error(
+      throw createApiServiceError(
         'License Key is required for data ingestion. Please configure it in authentication settings.'
       );
     }
@@ -106,7 +106,7 @@ Requires a License Key to be configured in authentication.`,
 
     if (dataType === 'metrics') {
       if (!ctx.input.metrics?.length)
-        throw new Error('metrics array is required when dataType is "metrics"');
+        throw createApiServiceError('metrics array is required when dataType is "metrics"');
       ctx.progress(`Ingesting ${ctx.input.metrics.length} metric(s)...`);
       let result = await ingestClient.ingestMetrics(ctx.input.metrics);
       return {
@@ -121,7 +121,7 @@ Requires a License Key to be configured in authentication.`,
 
     if (dataType === 'events') {
       if (!ctx.input.events?.length)
-        throw new Error('events array is required when dataType is "events"');
+        throw createApiServiceError('events array is required when dataType is "events"');
       ctx.progress(`Ingesting ${ctx.input.events.length} event(s)...`);
       let result = await ingestClient.ingestEvents(ctx.input.events);
       return {
@@ -136,7 +136,7 @@ Requires a License Key to be configured in authentication.`,
 
     if (dataType === 'logs') {
       if (!ctx.input.logs?.length)
-        throw new Error('logs array is required when dataType is "logs"');
+        throw createApiServiceError('logs array is required when dataType is "logs"');
       ctx.progress(`Ingesting ${ctx.input.logs.length} log(s)...`);
       let result = await ingestClient.ingestLogs(ctx.input.logs);
       return {
@@ -151,7 +151,7 @@ Requires a License Key to be configured in authentication.`,
 
     // traces
     if (!ctx.input.traces?.length)
-      throw new Error('traces array is required when dataType is "traces"');
+      throw createApiServiceError('traces array is required when dataType is "traces"');
     ctx.progress(`Ingesting ${ctx.input.traces.length} span(s)...`);
     let result = await ingestClient.ingestTraces(ctx.input.traces);
     return {
