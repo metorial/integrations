@@ -13964,7 +13964,7 @@
         "@smithy/querystring-builder": "^4.2.14",
         "@smithy/types": "^4.14.1",
         "axios": "^1.13.2",
-        "slates": "1.0.0-rc.14",
+        "slates": "1.0.0-rc.15",
       },
       "devDependencies": {
         "@slates/tsconfig": "1.0.0-rc.1",
@@ -14010,7 +14010,7 @@
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@slates/tool-recipes": "1.0.0-rc.4",
-        "slates": "1.0.0-rc.14",
+        "slates": "1.0.0-rc.15",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -14023,7 +14023,7 @@
       "name": "@slates/oauth-microsoft",
       "version": "1.0.0-rc.5",
       "dependencies": {
-        "slates": "1.0.0-rc.14",
+        "slates": "1.0.0-rc.15",
       },
       "devDependencies": {
         "@slates/tsconfig": "1.0.0-rc.1",
@@ -14101,7 +14101,7 @@
       "version": "1.0.0-rc.8",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
-        "slates": "1.0.0-rc.14",
+        "slates": "1.0.0-rc.15",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -14143,7 +14143,7 @@
       "name": "@slates/tool-recipes",
       "version": "1.0.0-rc.4",
       "dependencies": {
-        "slates": "1.0.0-rc.14",
+        "slates": "1.0.0-rc.15",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -20064,16 +20064,6 @@
 
     "@slates-integrations/zyte-api/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
 
-    "@slates/aws-sdk-http-handler/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
-
-    "@slates/google-people-recipes/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
-
-    "@slates/oauth-microsoft/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
-
-    "@slates/slack-tools/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
-
-    "@slates/tool-recipes/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
-
     "@slates/tsconfig/@types/node": ["@types/node@22.19.19", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-dyh/xO2Fh5bYrfWaaqGrRQQGkNdmYw6AmaAUvYeUMNTWQtvb796ikLdmTchRmOlOiIJ1TDXfWgVx1QkUlQ6Hew=="],
 
     "@smithy/util-buffer-from/@smithy/is-array-buffer": ["@smithy/is-array-buffer@2.2.0", "", { "dependencies": { "tslib": "^2.6.2" } }, "sha512-GGP3O9QFD24uGeAXYUjwSTXARoqpZykHadOmA8G5vfJPK0/DC67qa//0qvqrJzL1xc8WQWX7/yc7fwudjPHPhA=="],
@@ -22083,16 +22073,6 @@
     "@slates-integrations/zylvie/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
 
     "@slates-integrations/zyte-api/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
-
-    "@slates/aws-sdk-http-handler/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
-
-    "@slates/google-people-recipes/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
-
-    "@slates/oauth-microsoft/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
-
-    "@slates/slack-tools/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
-
-    "@slates/tool-recipes/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
 
     "cliui/strip-ansi/ansi-regex": ["ansi-regex@5.0.1", "", {}, "sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ=="],
 
