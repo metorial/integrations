@@ -1,5 +1,6 @@
 import { ServiceError } from '@lowerdeck/error';
 import { describe, expect, it } from 'vitest';
+import type { ApiServiceError } from '../error/api';
 import { getOAuthExpiresAtFromExpiresIn, normalizeOAuthTokenResponse } from './oauth';
 
 describe('OAuth auth helpers', () => {
@@ -59,7 +60,7 @@ describe('OAuth auth helpers', () => {
       call();
     } catch (error) {
       expect(error).toBeInstanceOf(ServiceError);
-      expect((error as ServiceError).data.reason).toBe('oauth_token_response');
+      expect((error as ApiServiceError).data.reason).toBe('oauth_token_response');
     }
   });
 
