@@ -1,6 +1,6 @@
-import * as crypto from 'crypto';
-import * as net from 'net';
-import * as tls from 'tls';
+import * as crypto from 'node:crypto';
+import * as net from 'node:net';
+import * as tls from 'node:tls';
 import {
   postgresFieldsError,
   postgresServiceError,
