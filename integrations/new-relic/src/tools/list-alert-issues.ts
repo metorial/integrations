@@ -23,9 +23,16 @@ let alertIssueSchema = z.object({
     .optional()
     .describe('Issue acknowledgement time in epoch milliseconds'),
   updatedAt: z.number().optional().describe('Issue update time in epoch milliseconds'),
+  accountIds: z.array(z.number()).optional().describe('Accounts associated with this issue'),
   entityGuids: z.array(z.string()).optional().describe('Related entity GUIDs'),
   entityNames: z.array(z.string()).optional().describe('Related entity names'),
   entityTypes: z.array(z.string()).optional().describe('Related entity types'),
+  isCorrelated: z.boolean().optional().describe('Whether New Relic correlated this issue'),
+  mutingState: z
+    .string()
+    .optional()
+    .describe('Issue muting state, such as NOT_MUTED, FULLY_MUTED, or PARTIALLY_MUTED'),
+  policyIds: z.array(z.number()).optional().describe('Alert policy IDs related to this issue'),
   sources: z.array(z.string()).optional().describe('Issue sources'),
   totalIncidents: z
     .number()
@@ -43,7 +50,8 @@ export let listAlertIssues = SlateTool.create(spec, {
     'List and filter New Relic alert issues for the configured account. Use this to inspect active, deactivated, and closed issue state from incident intelligence.',
   instructions: [
     'Leave filters empty to list recent issues.',
-    'Use `states`, `priorities`, `entityGuids`, `entityTypes`, or `issueIds` to narrow results.',
+    'Use filters such as `states`, `priorities`, `entityGuids`, `entityTypes`, `issueIds`, `policyIds`, `conditionIds`, `sources`, `mutingStates`, `contains`, `isAcknowledged`, or `isCorrelated` to narrow results.',
+    'Use `timeWindow.startTime` and `timeWindow.endTime` in epoch milliseconds to constrain the issue search window.',
     'Use `nextCursor` from the output as `cursor` to fetch another page.'
   ],
   tags: {
@@ -63,6 +71,34 @@ export let listAlertIssues = SlateTool.create(spec, {
       entityGuids: z.array(z.string()).optional().describe('Entity GUIDs to filter issues by'),
       entityTypes: z.array(z.string()).optional().describe('Entity types to filter issues by'),
       issueIds: z.array(z.string()).optional().describe('Specific issue IDs to retrieve'),
+      conditionIds: z
+        .array(z.number())
+        .optional()
+        .describe('Alert condition IDs to filter issues by'),
+      contains: z
+        .string()
+        .optional()
+        .describe('Text search term used by New Relic to match issue content'),
+      isAcknowledged: z.boolean().optional().describe('Filter by acknowledgement state'),
+      isCorrelated: z.boolean().optional().describe('Filter by correlation state'),
+      mutingStates: z
+        .array(z.enum(['FULLY_MUTED', 'NOT_MUTED', 'PARTIALLY_MUTED']))
+        .optional()
+        .describe('Issue muting states to include'),
+      policyIds: z
+        .array(z.number())
+        .optional()
+        .describe('Alert policy IDs to filter issues by'),
+      sources: z.array(z.string()).optional().describe('Issue sources to filter by'),
+      timeWindow: z
+        .object({
+          startTime: z
+            .number()
+            .describe('Start of the issue search window in epoch milliseconds'),
+          endTime: z.number().describe('End of the issue search window in epoch milliseconds')
+        })
+        .optional()
+        .describe('Time window used to filter issues'),
       cursor: z.string().optional().describe('Pagination cursor')
     })
   )
@@ -87,8 +123,16 @@ export let listAlertIssues = SlateTool.create(spec, {
         priorities: ctx.input.priorities,
         entityGuids: ctx.input.entityGuids,
         entityTypes: ctx.input.entityTypes,
-        issueIds: ctx.input.issueIds
-      }
+        issueIds: ctx.input.issueIds,
+        conditionIds: ctx.input.conditionIds,
+        contains: ctx.input.contains,
+        isAcknowledged: ctx.input.isAcknowledged,
+        isCorrelated: ctx.input.isCorrelated,
+        mutingStates: ctx.input.mutingStates,
+        policyIds: ctx.input.policyIds,
+        sources: ctx.input.sources
+      },
+      timeWindow: ctx.input.timeWindow
     });
 
     let issues = (result?.issues || []).map((issue: any) => {
@@ -104,9 +148,13 @@ export let listAlertIssues = SlateTool.create(spec, {
         closedAt: issue.closedAt,
         acknowledgedAt: issue.acknowledgedAt,
         updatedAt: issue.updatedAt,
+        accountIds: issue.accountIds,
         entityGuids: issue.entityGuids,
         entityNames: issue.entityNames,
         entityTypes: issue.entityTypes,
+        isCorrelated: issue.isCorrelated,
+        mutingState: issue.mutingState,
+        policyIds: issue.policyIds,
         sources: issue.sources,
         totalIncidents: issue.totalIncidents
       };

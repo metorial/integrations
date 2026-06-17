@@ -2,6 +2,8 @@ import { createAxios, SlateAuth } from 'slates';
 import { z } from 'zod';
 import { newRelicApiError, newRelicGraphqlErrors } from './lib/errors';
 
+let profileLookupBaseUrls = ['https://api.eu.newrelic.com', 'https://api.newrelic.com'];
+
 export let auth = SlateAuth.create()
   .output(
     z.object({
@@ -41,35 +43,39 @@ export let auth = SlateAuth.create()
       output: { token: string; licenseKey?: string };
       input: { userApiKey: string; licenseKey?: string };
     }) => {
-      let http = createAxios({
-        baseURL: 'https://api.newrelic.com',
-        headers: {
-          'API-Key': ctx.output.token,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      let response: any;
-      try {
-        response = await http.post('/graphql', {
-          query: `{ actor { user { email name id } } }`
+      let lastError: unknown;
+      for (let baseURL of profileLookupBaseUrls) {
+        let http = createAxios({
+          baseURL,
+          headers: {
+            'API-Key': ctx.output.token,
+            'Content-Type': 'application/json'
+          }
         });
-      } catch (error) {
-        throw newRelicApiError(error, 'profile lookup');
-      }
 
-      if (response.data?.errors?.length) {
-        throw newRelicGraphqlErrors('profile lookup', response.data.errors);
-      }
+        try {
+          let response = await http.post('/graphql', {
+            query: `{ actor { user { email name id } } }`
+          });
 
-      let user = response.data?.data?.actor?.user;
+          if (response.data?.errors?.length) {
+            throw newRelicGraphqlErrors('profile lookup', response.data.errors);
+          }
 
-      return {
-        profile: {
-          id: user?.id?.toString(),
-          email: user?.email,
-          name: user?.name
+          let user = response.data?.data?.actor?.user;
+
+          return {
+            profile: {
+              id: user?.id?.toString(),
+              email: user?.email,
+              name: user?.name
+            }
+          };
+        } catch (error) {
+          lastError = error;
         }
-      };
+      }
+
+      throw newRelicApiError(lastError, 'profile lookup');
     }
   });

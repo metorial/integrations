@@ -10,7 +10,8 @@ export let ingestData = SlateTool.create(spec, {
 Requires a License Key to be configured in authentication.`,
   instructions: [
     'Choose a `dataType` and provide the corresponding data array.',
-    'Metrics require `name`, `type` (gauge, count, summary), and `value`.',
+    'Metrics require `name`, `type` (gauge, count, summary), and `value`; count and summary metrics also require `intervalMs`.',
+    'Summary metric `value` must be an object with numeric `count`, `sum`, `min`, and `max` fields.',
     'Events require an `eventType` field and arbitrary key-value attributes.',
     'Logs require a `message` field.',
     'Traces require `traceId`, `spanId`, `serviceName`, `name`, and `durationMs`.'
@@ -33,8 +34,18 @@ Requires a License Key to be configured in authentication.`,
           z.object({
             name: z.string().describe('Metric name'),
             type: z.enum(['gauge', 'count', 'summary']).describe('Metric type'),
-            value: z.number().describe('Metric value'),
+            value: z
+              .any()
+              .describe(
+                'Metric value. Use a number for gauge/count, or { count, sum, min, max } for summary.'
+              ),
             timestamp: z.number().optional().describe('Unix timestamp in seconds'),
+            intervalMs: z
+              .number()
+              .optional()
+              .describe(
+                'Metric interval length in milliseconds. Required for count and summary metrics.'
+              ),
             attributes: z
               .record(z.string(), z.any())
               .optional()
@@ -47,7 +58,7 @@ Requires a License Key to be configured in authentication.`,
         .array(z.record(z.string(), z.any()))
         .optional()
         .describe(
-          'Event objects, each must include an "eventType" field (required when dataType is "events")'
+          'Event objects. Each must include a string "eventType"; other values must be strings or numbers.'
         ),
       logs: z
         .array(
