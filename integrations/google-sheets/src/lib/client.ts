@@ -32,7 +32,18 @@ export class SheetsClient {
 
   async getSpreadsheet(spreadsheetId: string, includeGridData?: boolean) {
     let response = await this.axios.get(`/spreadsheets/${spreadsheetId}`, {
-      params: { includeGridData: includeGridData ?? false }
+      params: {
+        includeGridData: includeGridData ?? false,
+        fields: includeGridData
+          ? undefined
+          : [
+              'spreadsheetId',
+              'spreadsheetUrl',
+              'properties(title,locale,timeZone)',
+              'sheets(properties(sheetId,title,index,sheetType,gridProperties(rowCount,columnCount,frozenRowCount,frozenColumnCount)))',
+              'namedRanges(namedRangeId,name,range(sheetId,startRowIndex,endRowIndex,startColumnIndex,endColumnIndex))'
+            ].join(',')
+      }
     });
     return response.data;
   }
