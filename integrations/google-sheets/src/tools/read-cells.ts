@@ -1,4 +1,4 @@
-import { SlateTool } from 'slates';
+import { createApiServiceError, SlateTool } from 'slates';
 import { z } from 'zod';
 import { SheetsClient } from '../lib/client';
 import { googleSheetsActionScopes } from '../scopes';
@@ -95,7 +95,7 @@ export let readCells = SlateTool.create(spec, {
 
     let range = ctx.input.range;
     if (!range) {
-      throw new Error('Either "range" or "ranges" must be provided');
+      throw createApiServiceError('Either "range" or "ranges" must be provided');
     }
 
     let result = await client.getValues(ctx.input.spreadsheetId, range, options);

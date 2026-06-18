@@ -1,9 +1,13 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { SlackClient } from '../lib/client';
-import { missingRequiredFieldError } from '../lib/errors';
+import { missingRequiredAlternativeError, missingRequiredFieldError } from '../lib/errors';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
+
+const hasMessageContent = (text?: string, blocks?: unknown[]) =>
+  (typeof text === 'string' && text.trim().length > 0) ||
+  (Array.isArray(blocks) && blocks.length > 0);
 
 export let sendMessage = SlateTool.create(spec, {
   name: 'Send Message',
@@ -56,6 +60,12 @@ export let sendMessage = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new SlackClient(ctx.auth.token);
+
+    if (!hasMessageContent(ctx.input.text, ctx.input.blocks)) {
+      throw missingRequiredAlternativeError(
+        'Either text or at least one Block Kit block must be provided'
+      );
+    }
 
     if (ctx.input.ephemeral) {
       if (!ctx.input.targetUserId) {

@@ -1,8 +1,15 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { SlackClient } from '../lib/client';
+import { missingRequiredAlternativeError, slackServiceError } from '../lib/errors';
 import { slackActionScopes } from '../lib/scopes';
 import { spec } from '../spec';
+
+const MAX_SCHEDULED_MESSAGE_SECONDS = 120 * 24 * 60 * 60;
+
+const hasMessageContent = (text?: string, blocks?: unknown[]) =>
+  (typeof text === 'string' && text.trim().length > 0) ||
+  (Array.isArray(blocks) && blocks.length > 0);
 
 export let scheduleMessage = SlateTool.create(spec, {
   name: 'Schedule Message',
@@ -36,6 +43,20 @@ export let scheduleMessage = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let client = new SlackClient(ctx.auth.token);
+
+    if (!hasMessageContent(ctx.input.text, ctx.input.blocks)) {
+      throw missingRequiredAlternativeError(
+        'Either text or at least one Block Kit block must be provided'
+      );
+    }
+
+    let now = Math.floor(Date.now() / 1000);
+    if (ctx.input.postAt <= now) {
+      throw slackServiceError('postAt must be a Unix timestamp in the future');
+    }
+    if (ctx.input.postAt > now + MAX_SCHEDULED_MESSAGE_SECONDS) {
+      throw slackServiceError('postAt must be within 120 days');
+    }
 
     let result = await client.scheduleMessage({
       channel: ctx.input.channelId,

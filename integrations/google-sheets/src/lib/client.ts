@@ -93,11 +93,22 @@ export class SheetsClient {
       dateTimeRenderOption?: 'SERIAL_NUMBER' | 'FORMATTED_STRING';
     }
   ) {
+    let params = new URLSearchParams();
+    for (let range of ranges) {
+      params.append('ranges', range);
+    }
+    if (options?.majorDimension !== undefined) {
+      params.set('majorDimension', options.majorDimension);
+    }
+    if (options?.valueRenderOption !== undefined) {
+      params.set('valueRenderOption', options.valueRenderOption);
+    }
+    if (options?.dateTimeRenderOption !== undefined) {
+      params.set('dateTimeRenderOption', options.dateTimeRenderOption);
+    }
+
     let response = await this.axios.get(`/spreadsheets/${spreadsheetId}/values:batchGet`, {
-      params: {
-        ranges,
-        ...options
-      }
+      params
     });
     return response.data;
   }
