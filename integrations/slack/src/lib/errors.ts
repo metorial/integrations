@@ -1,4 +1,5 @@
-import { badRequestError, forbiddenError, ServiceError } from '@lowerdeck/error';
+import { forbiddenError, ServiceError } from '@lowerdeck/error';
+import { createApiServiceError } from 'slates';
 
 type SlackServiceErrorOptions = {
   reason?: string;
@@ -6,21 +7,8 @@ type SlackServiceErrorOptions = {
   upstreamStatus?: number;
 };
 
-export let slackServiceError = (message: string, options: SlackServiceErrorOptions = {}) => {
-  let error = new ServiceError(badRequestError({ message }));
-
-  if (options.reason !== undefined) {
-    error.data.reason = options.reason;
-  }
-  if (options.upstreamCode !== undefined) {
-    error.data.upstreamCode = options.upstreamCode;
-  }
-  if (options.upstreamStatus !== undefined) {
-    error.data.upstreamStatus = options.upstreamStatus;
-  }
-
-  return error;
-};
+export let slackServiceError = (message: string, options: SlackServiceErrorOptions = {}) =>
+  createApiServiceError(message, options);
 
 export let slackApiError = (method: string, error?: string | null) =>
   slackServiceError(`Slack API error (${method}): ${error || 'Unknown error'}`, {
