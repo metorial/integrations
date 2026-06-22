@@ -41,19 +41,12 @@ export let gmailActionScopes = {
   getMessage: gmailReadBody,
   getAttachment: gmailReadBody,
   modifyMessage: anyOf(gmailScopes.gmailModify, gmailScopes.fullMail),
-  manageDraft: anyOf(
-    gmailScopes.gmailCompose,
-    gmailScopes.gmailModify,
-    gmailScopes.gmailInsert,
-    gmailScopes.fullMail
-  ),
+  manageDraft: anyOf(gmailScopes.gmailCompose, gmailScopes.gmailModify, gmailScopes.fullMail),
   manageLabels: anyOf(gmailScopes.gmailLabels, gmailScopes.gmailModify, gmailScopes.fullMail),
   manageThread: anyOf(gmailScopes.gmailModify, gmailScopes.fullMail),
-  manageSettings: anyOf(
-    gmailScopes.gmailSettingsBasic,
-    gmailScopes.gmailSettingsSharing,
-    gmailScopes.fullMail
-  ),
+  manageSettings: anyOf(gmailScopes.gmailSettingsBasic),
+  deleteMessagesPermanently: anyOf(gmailScopes.fullMail),
+  deleteThreadPermanently: anyOf(gmailScopes.fullMail),
   listGoogleContacts: anyOf(gmailScopes.contactsReadonly),
   searchGoogleContacts: anyOf(gmailScopes.contactsReadonly),
   getGoogleContact: anyOf(gmailScopes.contactsReadonly),
