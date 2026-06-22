@@ -20,8 +20,6 @@ export let gmailScopes = {
 let gmailReadBody = anyOf(
   gmailScopes.gmailReadonly,
   gmailScopes.gmailModify,
-  gmailScopes.gmailCompose,
-  gmailScopes.gmailInsert,
   gmailScopes.fullMail
 );
 

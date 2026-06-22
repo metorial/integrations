@@ -100,4 +100,18 @@ describe('gmail provider contract', () => {
       defaultChecked: false
     });
   });
+
+  it('requires body-readable Gmail scopes for message body and attachment tools', () => {
+    let expectedReadBodyScopes = {
+      AND: [
+        {
+          OR: [gmailScopes.gmailReadonly, gmailScopes.gmailModify, gmailScopes.fullMail]
+        }
+      ]
+    };
+
+    expect(gmailActionScopes.searchMessages).toEqual(expectedReadBodyScopes);
+    expect(gmailActionScopes.getMessage).toEqual(expectedReadBodyScopes);
+    expect(gmailActionScopes.getAttachment).toEqual(expectedReadBodyScopes);
+  });
 });
