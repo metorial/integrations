@@ -74,13 +74,15 @@ describe('gmail provider contract', () => {
       list_google_contacts: gmailActionScopes.listGoogleContacts,
       search_google_contacts: gmailActionScopes.searchGoogleContacts,
       get_google_contact: gmailActionScopes.getGoogleContact,
-      mailbox_changes: gmailActionScopes.mailboxChanges,
-      inbound_webhook: gmailActionScopes.inboundWebhook
+      mailbox_changes: gmailActionScopes.mailboxChanges
     };
 
     for (let [actionId, scopes] of Object.entries(expectedScopes)) {
       expect(contract.actions.find(action => action.id === actionId)?.scopes).toEqual(scopes);
     }
+    expect(
+      contract.actions.find(action => action.id === 'inbound_webhook')?.scopes
+    ).toBeUndefined();
 
     let oauth = await client.getAuthMethod('google_oauth');
     expect(oauth.authenticationMethod.type).toBe('auth.oauth');
@@ -99,7 +101,7 @@ describe('gmail provider contract', () => {
     );
     expect(contactScope).toMatchObject({
       title: 'Google Contacts (Read-only)',
-      defaultChecked: false
+      defaultChecked: true
     });
 
     let otherContactScope = (oauth.authenticationMethod.scopes ?? []).find(

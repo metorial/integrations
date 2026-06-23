@@ -7,7 +7,6 @@ export let gmailScopes = {
   gmailModify: 'https://www.googleapis.com/auth/gmail.modify',
   gmailLabels: 'https://www.googleapis.com/auth/gmail.labels',
   gmailInsert: 'https://www.googleapis.com/auth/gmail.insert',
-  gmailMetadata: 'https://www.googleapis.com/auth/gmail.metadata',
   gmailSettingsBasic: 'https://www.googleapis.com/auth/gmail.settings.basic',
   gmailSettingsSharing: 'https://www.googleapis.com/auth/gmail.settings.sharing',
   contactsReadonly: 'https://www.googleapis.com/auth/contacts.readonly',
@@ -23,9 +22,8 @@ let gmailReadBody = anyOf(
   gmailScopes.fullMail
 );
 
-let gmailHistoryOrWebhook = anyOf(
+let gmailHistory = anyOf(
   gmailScopes.gmailReadonly,
-  gmailScopes.gmailMetadata,
   gmailScopes.gmailModify,
   gmailScopes.fullMail
 );
@@ -50,6 +48,5 @@ export let gmailActionScopes = {
   listGoogleContacts: anyOf(gmailScopes.contactsReadonly),
   searchGoogleContacts: anyOf(gmailScopes.contactsReadonly),
   getGoogleContact: anyOf(gmailScopes.contactsReadonly),
-  mailboxChanges: gmailHistoryOrWebhook,
-  inboundWebhook: gmailHistoryOrWebhook
+  mailboxChanges: gmailHistory
 } as const;
