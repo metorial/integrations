@@ -1,4 +1,5 @@
 import { createAxios } from 'slates';
+import { normalizeA1Range } from './a1-range';
 
 export class SheetsClient {
   private axios: ReturnType<typeof createAxios>;
@@ -77,8 +78,9 @@ export class SheetsClient {
       dateTimeRenderOption?: 'SERIAL_NUMBER' | 'FORMATTED_STRING';
     }
   ) {
+    let normalizedRange = normalizeA1Range(range);
     let response = await this.axios.get(
-      `/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}`,
+      `/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(normalizedRange)}`,
       { params: options }
     );
     return response.data;
@@ -95,7 +97,7 @@ export class SheetsClient {
   ) {
     let params = new URLSearchParams();
     for (let range of ranges) {
-      params.append('ranges', range);
+      params.append('ranges', normalizeA1Range(range));
     }
     if (options?.majorDimension !== undefined) {
       params.set('majorDimension', options.majorDimension);
@@ -126,10 +128,11 @@ export class SheetsClient {
     }
   ) {
     let valueInputOption = options?.valueInputOption ?? 'USER_ENTERED';
+    let normalizedRange = normalizeA1Range(range);
     let response = await this.axios.put(
-      `/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}`,
+      `/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(normalizedRange)}`,
       {
-        range,
+        range: normalizedRange,
         majorDimension: options?.majorDimension ?? 'ROWS',
         values
       },
@@ -155,7 +158,7 @@ export class SheetsClient {
     let response = await this.axios.post(`/spreadsheets/${spreadsheetId}/values:batchUpdate`, {
       valueInputOption,
       data: data.map(d => ({
-        range: d.range,
+        range: normalizeA1Range(d.range),
         majorDimension: 'ROWS',
         values: d.values
       })),
@@ -175,10 +178,11 @@ export class SheetsClient {
     }
   ) {
     let valueInputOption = options?.valueInputOption ?? 'USER_ENTERED';
+    let normalizedRange = normalizeA1Range(range);
     let response = await this.axios.post(
-      `/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:append`,
+      `/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(normalizedRange)}:append`,
       {
-        range,
+        range: normalizedRange,
         majorDimension: 'ROWS',
         values
       },
@@ -194,8 +198,9 @@ export class SheetsClient {
   }
 
   async clearValues(spreadsheetId: string, range: string) {
+    let normalizedRange = normalizeA1Range(range);
     let response = await this.axios.post(
-      `/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:clear`
+      `/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(normalizedRange)}:clear`
     );
     return response.data;
   }

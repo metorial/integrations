@@ -5689,7 +5689,7 @@
     },
     "integrations/google-sheets": {
       "name": "@slates-integrations/google-sheets",
-      "version": "0.2.0-rc.9",
+      "version": "0.2.0-rc.10",
       "dependencies": {
         "@types/node": "^20",
         "slates": "1.0.0-rc.15",
@@ -11482,7 +11482,7 @@
     },
     "integrations/slack": {
       "name": "@slates-integrations/slack",
-      "version": "0.2.0-rc.26",
+      "version": "0.2.0-rc.27",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@slates/slack-tools": "1.0.0-rc.8",

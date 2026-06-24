@@ -19,12 +19,20 @@ export let scheduleMessage = SlateTool.create(spec, {
   tags: {
     destructive: false,
     readOnly: false
-  }
+  },
+  instructions: [
+    'Use the Slack conversation ID, such as C..., G..., or D...; do not pass a channel name like #general.',
+    'Provide either text or at least one Block Kit block.'
+  ]
 })
   .scopes(slackActionScopes.chatWrite)
   .input(
     z.object({
-      channelId: z.string().describe('Channel ID to send the scheduled message to'),
+      channelId: z
+        .string()
+        .describe(
+          'Slack conversation ID to send the scheduled message to, such as C..., G..., or D...; do not pass a channel name like #general'
+        ),
       postAt: z.number().describe('Unix timestamp (in seconds) for when to send the message'),
       text: z.string().optional().describe('Message text (supports Slack mrkdwn formatting)'),
       blocks: z.array(z.any()).optional().describe('Array of Block Kit block objects'),
