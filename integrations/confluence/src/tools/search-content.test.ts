@@ -1,5 +1,6 @@
 import { ServiceError } from '@lowerdeck/error';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
 
 let confluenceClientMocks = vi.hoisted(() => ({
   search: vi.fn()
@@ -71,6 +72,19 @@ describe('Confluence search content', () => {
     expect(resolveSearchContentQuery({ query: 'docs "docdb" \\ setup' }).cql).toBe(
       'text ~ "docs \\"docdb\\" \\\\ setup"'
     );
+  });
+
+  it('exports an MCP-compatible input schema for query and CQL searches', () => {
+    let jsonSchema = z.toJSONSchema(searchContent.inputSchema) as Record<string, any>;
+
+    expect(jsonSchema.type).toBe('object');
+    expect(jsonSchema.properties.query.type).toBe('string');
+    expect(jsonSchema.properties.cql.type).toBe('string');
+    expect(jsonSchema.required ?? []).not.toContain('query');
+    expect(jsonSchema.required ?? []).not.toContain('cql');
+    expect(jsonSchema.oneOf).toBeUndefined();
+    expect(jsonSchema.anyOf).toBeUndefined();
+    expect(jsonSchema.allOf).toBeUndefined();
   });
 
   it('rejects missing and conflicting search inputs with ServiceError', () => {

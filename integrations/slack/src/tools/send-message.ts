@@ -26,7 +26,11 @@ export let sendMessage = SlateTool.create(spec, {
   .scopes(slackActionScopes.chatWrite)
   .input(
     z.object({
-      channelId: z.string().describe('Channel, DM, or group DM ID to send the message to'),
+      channelId: z
+        .string()
+        .describe(
+          'Slack conversation ID to send the message to, such as C..., G..., or D...; do not pass a channel name like #general'
+        ),
       text: z.string().optional().describe('Message text (supports Slack mrkdwn formatting)'),
       blocks: z
         .array(z.any())

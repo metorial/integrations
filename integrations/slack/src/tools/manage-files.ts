@@ -54,7 +54,9 @@ export let manageFiles = SlateTool.create(spec, {
       channelIds: z
         .string()
         .optional()
-        .describe('Comma-separated channel IDs to share the file to'),
+        .describe(
+          'Comma-separated Slack conversation IDs to share the file to, such as C..., G..., or D...; do not pass channel names like #general'
+        ),
       initialComment: z.string().optional().describe('Comment to add when sharing the file'),
       threadTs: z
         .string()
