@@ -12782,7 +12782,7 @@
     },
     "integrations/tripletex": {
       "name": "@slates-integrations/tripletex",
-      "version": "0.1.0-rc.6",
+      "version": "0.1.0-rc.7",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
