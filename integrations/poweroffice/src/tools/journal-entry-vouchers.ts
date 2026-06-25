@@ -220,7 +220,7 @@ export let powerofficeCreateSupplierInvoiceVoucherDraft = SlateTool.create(spec,
     'Direct voucher posting is intentionally not exposed by this tool.'
   ],
   tags: {
-    destructive: true,
+    destructive: false,
     readOnly: false
   }
 })
@@ -302,7 +302,7 @@ export let powerofficeUploadJournalEntryVoucherPage = SlateTool.create(spec, {
   description:
     'Upload a document page to an existing PowerOffice journal entry voucher draft using multipart form upload.',
   tags: {
-    destructive: true,
+    destructive: false,
     readOnly: false
   }
 })
@@ -349,7 +349,7 @@ export let powerofficeSubmitJournalEntryVoucherForApproval = SlateTool.create(sp
   description:
     'Submit an existing PowerOffice journal entry voucher draft into the approval workflow.',
   tags: {
-    destructive: true,
+    destructive: false,
     readOnly: false
   }
 })

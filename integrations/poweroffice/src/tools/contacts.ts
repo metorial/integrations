@@ -584,7 +584,7 @@ export let powerofficeUpsertCustomer = SlateTool.create(spec, {
     'Use operation "upsert" with externalImportReference, lookupCustomerNo, or lookupExternalNumber to update the match or create a new customer.'
   ],
   tags: {
-    destructive: true,
+    destructive: false,
     readOnly: false
   }
 })
@@ -722,7 +722,7 @@ export let powerofficeUpsertSupplier = SlateTool.create(spec, {
     'Use operation "upsert" with externalImportReference, lookupSupplierNo, or lookupExternalNumber to update the match or create a new supplier.'
   ],
   tags: {
-    destructive: true,
+    destructive: false,
     readOnly: false
   }
 })

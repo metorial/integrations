@@ -286,7 +286,7 @@ export let powerofficeUpsertProduct = SlateTool.create(spec, {
     'Use operation "upsert" with productId or code to update the match or create a new product.'
   ],
   tags: {
-    destructive: true,
+    destructive: false,
     readOnly: false
   }
 })

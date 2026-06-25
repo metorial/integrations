@@ -332,7 +332,7 @@ export let powerofficeCreateSalesOrder = SlateTool.create(spec, {
     'Provide either customerId or customerNo so PowerOffice can resolve the customer.'
   ],
   tags: {
-    destructive: true,
+    destructive: false,
     readOnly: false
   }
 })
