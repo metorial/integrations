@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@metorial/integrations-root",
@@ -4618,6 +4619,21 @@
       },
       "devDependencies": {
         "typescript": "^5",
+      },
+    },
+    "integrations/finago": {
+      "name": "@slates-integrations/finago",
+      "version": "0.1.0-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/findymail": {
@@ -9793,6 +9809,21 @@
         "typescript": "^5",
       },
     },
+    "integrations/poweroffice": {
+      "name": "@slates-integrations/poweroffice",
+      "version": "0.1.0-rc.5",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
     "integrations/powerpoint-online": {
       "name": "@slates-integrations/powerpoint-online",
       "version": "0.2.0-rc.5",
@@ -12749,6 +12780,21 @@
         "typescript": "^5",
       },
     },
+    "integrations/tripletex": {
+      "name": "@slates-integrations/tripletex",
+      "version": "0.1.0-rc.6",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
     "integrations/truvera": {
       "name": "@slates-integrations/truvera",
       "version": "0.2.0-rc.5",
@@ -13162,6 +13208,36 @@
       },
       "devDependencies": {
         "typescript": "^5",
+      },
+    },
+    "integrations/visma-business-nxt": {
+      "name": "@slates-integrations/visma-business-nxt",
+      "version": "0.1.0-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/visma-net": {
+      "name": "@slates-integrations/visma-net",
+      "version": "0.1.0-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/vonage": {
@@ -15505,6 +15581,8 @@
 
     "@slates-integrations/finage": ["@slates-integrations/finage@workspace:integrations/finage"],
 
+    "@slates-integrations/finago": ["@slates-integrations/finago@workspace:integrations/finago"],
+
     "@slates-integrations/findymail": ["@slates-integrations/findymail@workspace:integrations/findymail"],
 
     "@slates-integrations/finerworks": ["@slates-integrations/finerworks@workspace:integrations/finerworks"],
@@ -16329,6 +16407,8 @@
 
     "@slates-integrations/power-bi": ["@slates-integrations/power-bi@workspace:integrations/power-bi"],
 
+    "@slates-integrations/poweroffice": ["@slates-integrations/poweroffice@workspace:integrations/poweroffice"],
+
     "@slates-integrations/powerpoint-online": ["@slates-integrations/powerpoint-online@workspace:integrations/powerpoint-online"],
 
     "@slates-integrations/prerender": ["@slates-integrations/prerender@workspace:integrations/prerender"],
@@ -16825,6 +16905,8 @@
 
     "@slates-integrations/tripadvisor": ["@slates-integrations/tripadvisor@workspace:integrations/tripadvisor"],
 
+    "@slates-integrations/tripletex": ["@slates-integrations/tripletex@workspace:integrations/tripletex"],
+
     "@slates-integrations/truvera": ["@slates-integrations/truvera@workspace:integrations/truvera"],
 
     "@slates-integrations/turbot-pipes": ["@slates-integrations/turbot-pipes@workspace:integrations/turbot-pipes"],
@@ -16892,6 +16974,10 @@
     "@slates-integrations/vimeo": ["@slates-integrations/vimeo@workspace:integrations/vimeo"],
 
     "@slates-integrations/virustotal": ["@slates-integrations/virustotal@workspace:integrations/virustotal"],
+
+    "@slates-integrations/visma-business-nxt": ["@slates-integrations/visma-business-nxt@workspace:integrations/visma-business-nxt"],
+
+    "@slates-integrations/visma-net": ["@slates-integrations/visma-net@workspace:integrations/visma-net"],
 
     "@slates-integrations/vonage": ["@slates-integrations/vonage@workspace:integrations/vonage"],
 

@@ -1,0 +1,53 @@
+# <img src="https://finago.no/hubfs/2025%20-%20Finago%20theme/Logos/logo-black.svg" height="20"> Finago (24SevenOffice)
+
+Manage Finago Office accounting and ERP workflows through the 24SevenOffice REST API. The integration supports organization/profile context, chart of accounts, reference data, customers, products, sales orders, transaction lines, account balances, and accounting document upload/download metadata.
+
+## Authentication
+
+Use Client Credentials auth with a Finago OAuth2 Application ID / Client ID, Client Secret, and Organization ID. Finago issues access tokens per organization using `POST https://login.24sevenoffice.com/oauth/token` with the `login_organization` field.
+
+## Tools
+
+### Get Profile
+
+Reads `/me` and organization context, with optional identifiers, licenses, license organization, and organization people.
+
+### List Accounts
+
+Lists chart-of-accounts records and can search by account name or number.
+
+### List Reference Data
+
+Reads supporting data such as tax codes, currencies, payment methods, transaction types, fiscal periods, product categories, product units, price lists, sales types, and dimensions.
+
+### List Customers / Upsert Customer
+
+Lists, creates, and updates company or person customers, including supplier flags, addresses, contact email fields, phone numbers, and external references.
+
+### List Products / Upsert Product
+
+Lists, creates, and updates products with category, unit, supplier, pricing, stock, and article-number fields.
+
+### List Sales Orders / Get Sales Order / Create Sales Order
+
+Reads sales orders, optionally includes lines and attachment metadata, and creates draft sales orders with lines.
+
+### List Transaction Lines / Get Account Balances
+
+Reads ledger transaction lines and account balances for reporting workflows.
+
+### Upload Transaction File / Get File Upload Status / Get Document
+
+Uploads transaction files through Finago presigned upload URLs, checks processing status, reads document metadata, and returns downloaded document content only as Slate attachments.
+
+## Deferred Write Tools
+
+Invoice conversion and direct ledger posting are intentionally not exposed until they have live validation against an approved non-production Finago organization.
+
+## License
+
+This integration is licensed under the [FSL-1.1](https://github.com/metorial/metorial-platform/blob/dev/LICENSE).
+
+<div align="center">
+  <sub>Built with ❤️ by <a href="https://metorial.com">Metorial</a></sub>
+</div>
