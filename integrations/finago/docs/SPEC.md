@@ -37,6 +37,7 @@ Each token is tied to one organization. Multi-organization access requires separ
 
 - SOAP is intentionally not implemented in the first release.
 - Webhooks are not implemented because no public Finago REST webhook surface was found.
+- File uploads use `POST /fileUpload` with only `contentType`, then upload bytes to the returned HTTPS presigned URL with the returned upload method. Tool output intentionally omits the presigned URL after the upload completes.
 - The document tool returns downloaded content through Slate attachments only.
 - Direct transaction posting and invoice conversion are deferred until live validation is available against an approved non-production organization.
 - Live E2E requires approved Finago Developer Admin credentials and a non-production organization.

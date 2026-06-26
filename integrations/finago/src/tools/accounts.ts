@@ -1,24 +1,31 @@
 import { SlateTool } from 'slates';
 import { z } from 'zod';
+import { finagoServiceError } from '../lib/errors';
 import { createClientFromContext } from '../lib/helpers';
 import { getNumber, getString } from '../lib/records';
 import { spec } from '../spec';
 
 let accountSchema = z.object({
-  accountId: z.number().optional().describe('Finago account ID.'),
+  id: z.number().optional().describe('Finago account ID returned by the accounts API.'),
+  accountId: z.number().optional().describe('Alias of id for downstream account inputs.'),
   number: z.number().optional().describe('Chart-of-accounts number.'),
   name: z.string().optional().describe('Account name.'),
   taxId: z.number().optional().describe('Default tax code ID for the account.'),
   record: z.unknown().describe('Raw Finago account record.')
 });
 
-let mapAccount = (record: unknown) => ({
-  accountId: getNumber(record, 'id'),
-  number: getNumber(record, 'number'),
-  name: getString(record, 'name'),
-  taxId: getNumber(record, 'taxId'),
-  record
-});
+let mapAccount = (record: unknown) => {
+  let id = getNumber(record, 'id');
+
+  return {
+    id,
+    accountId: id,
+    number: getNumber(record, 'number'),
+    name: getString(record, 'name'),
+    taxId: getNumber(record, 'taxId'),
+    record
+  };
+};
 
 export let finagoListAccounts = SlateTool.create(spec, {
   name: 'List Accounts',
@@ -48,6 +55,12 @@ export let finagoListAccounts = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    if (ctx.input.accountId !== undefined && ctx.input.query !== undefined) {
+      throw finagoServiceError(
+        'query is only supported when listing accounts; omit accountId to search accounts.'
+      );
+    }
+
     let client = createClientFromContext(ctx);
     let records =
       ctx.input.accountId !== undefined

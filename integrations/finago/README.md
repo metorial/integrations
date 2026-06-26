@@ -10,7 +10,7 @@ Use Client Credentials auth with a Finago OAuth2 Application ID / Client ID, Cli
 
 ### Get Profile
 
-Reads `/me` and organization context, with optional identifiers, licenses, license organization, and organization people.
+Reads `/me` and `/organization/information`, with optional identifiers, licenses, license organization, organization people, and documented query filters.
 
 ### List Accounts
 
@@ -22,11 +22,11 @@ Reads supporting data such as tax codes, currencies, payment methods, transactio
 
 ### List Customers / Upsert Customer
 
-Lists, creates, and updates company or person customers, including supplier flags, addresses, contact email fields, phone numbers, and external references.
+Lists, creates, and updates company or person customers, including supplier flags, addresses, contact email fields, phone numbers, and external references. Company creation requires `isCompany=true` with `name`; person creation requires `isCompany=false` with `firstName` and `lastName`. Customer updates use Finago PATCH fields and cannot change the customer type.
 
 ### List Products / Upsert Product
 
-Lists, creates, and updates products with category, unit, supplier, pricing, stock, and article-number fields.
+Lists, creates, and updates products with category, unit, supplier, pricing, stock, article-number, supplier-product, and documented nullable clear fields.
 
 ### List Sales Orders / Get Sales Order / Create Sales Order
 
@@ -38,7 +38,7 @@ Reads ledger transaction lines and account balances for reporting workflows.
 
 ### Upload Transaction File / Get File Upload Status / Get Document
 
-Uploads transaction files through Finago presigned upload URLs, checks processing status, reads document metadata, and returns downloaded document content only as Slate attachments.
+Uploads transaction files by initiating `POST /fileUpload` with the MIME `contentType`, then sending the file bytes to Finago's returned HTTPS presigned URL with the returned upload method. The upload tool returns file metadata without exposing the presigned URL; downloaded document content is returned only as Slate attachments.
 
 ## Deferred Write Tools
 
