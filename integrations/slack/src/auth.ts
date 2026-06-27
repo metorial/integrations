@@ -40,6 +40,10 @@ type SlackOAuthResponse = {
   refresh_token?: string;
   expires_in?: number;
   scope?: string;
+  token_type?: string;
+  user_id?: string;
+  team_id?: string;
+  team_name?: string;
   team?: { id?: string; name?: string };
   bot_user_id?: string;
   authed_user?: {
@@ -156,12 +160,19 @@ let mergeUserOAuthOutput = (
   opts: { requireRotationFields?: boolean } = {}
 ): SlackAuthOutput => {
   let user = data.authed_user;
-  let token = user?.access_token;
+  let hasBotMarkers = data.token_type === 'bot' || !!data.bot_user_id;
+  let useTopLevelUserFields =
+    !user?.access_token &&
+    !!data.access_token &&
+    (data.token_type === 'user' || !hasBotMarkers);
+  let token = user?.access_token ?? (useTopLevelUserFields ? data.access_token : undefined);
   if (!data.ok || !token) {
     throw slackOAuthError(data.error || 'missing user access token');
   }
 
-  let expiresAt = expiresAtFromSeconds(user?.expires_in);
+  let expiresAt = expiresAtFromSeconds(
+    user?.expires_in ?? (useTopLevelUserFields ? data.expires_in : undefined)
+  );
   if (opts.requireRotationFields && !expiresAt) {
     throw slackOAuthError(data.error || 'missing user token expiration');
   }
@@ -169,13 +180,16 @@ let mergeUserOAuthOutput = (
   return {
     ...previous,
     token,
-    refreshToken: user?.refresh_token ?? previous.refreshToken,
+    refreshToken:
+      user?.refresh_token ??
+      (useTopLevelUserFields ? data.refresh_token : undefined) ??
+      previous.refreshToken,
     expiresAt,
     actorType: 'user',
-    teamId: data.team?.id ?? previous.teamId,
-    teamName: data.team?.name ?? previous.teamName,
+    teamId: data.team?.id ?? data.team_id ?? previous.teamId,
+    teamName: data.team?.name ?? data.team_name ?? previous.teamName,
     botUserId: previous.botUserId,
-    userId: user?.id ?? previous.userId
+    userId: user?.id ?? data.user_id ?? previous.userId
   };
 };
 
@@ -327,7 +341,7 @@ export let auth = SlateAuth.create()
     handleCallback: async ctx => {
       let client = createSlackApi();
 
-      let response = await client.post('/oauth.v2.access', null, {
+      let response = await client.post('/oauth.v2.user.access', null, {
         params: {
           code: ctx.code,
           client_id: ctx.clientId,
@@ -337,7 +351,7 @@ export let auth = SlateAuth.create()
       });
 
       let data = response.data as SlackOAuthResponse;
-      let scopes = parseSlackGrantedScopes(data.authed_user?.scope);
+      let scopes = parseSlackGrantedScopes(data.authed_user?.scope ?? data.scope);
 
       return {
         output: mergeUserOAuthOutput({}, data),
