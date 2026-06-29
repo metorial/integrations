@@ -1,57 +1,119 @@
-# <img src="https://provider-logos.metorial-cdn.com/Dynamics%20365%20Icon.svg" height="20"> Dynamics 365
+# Dynamics 365 Dataverse
 
-Create, read, update, and delete CRM and ERP records across Dynamics 365 entities including accounts, contacts, leads, opportunities, and cases. Query data with advanced filtering, sorting, pagination, and FetchXML aggregation. Manage relationships between entities by associating and disassociating records. Discover and inspect metadata, schema definitions, and entity attributes. Invoke built-in and custom functions and actions (e.g., WhoAmI, InitializeFrom). Detect duplicate records using configurable rules. Search across multiple entities with full-text relevance search. Upload and download files and images attached to entity columns. Receive real-time webhook notifications on record create, update, delete, assign, and status change events.
+Generic Microsoft Dynamics 365 Dataverse connector for Dataverse-backed environments.
+The integration keeps the backward-compatible `dynamics-365` provider key while
+targeting the Dataverse Web API, not the full Dynamics 365 application suite.
+
+It supports Dataverse row CRUD, list/OData queries, FetchXML, Dataverse Search,
+relationship association/disassociation, related-row traversal, table and column
+metadata discovery, action/function invocation, file/image column upload and
+download, and Dataverse `$batch` requests.
+
+This integration does not implement Dynamics 365 Finance and Operations,
+Commerce/Retail Server, Business Central, native Dataverse webhook registration,
+or product-specific tools beyond what is exposed through Dataverse tables and
+operations.
 
 ## Tools
 
 ### Create Record
 
-Create a new record in any Dynamics 365 entity (e.g., accounts, contacts, leads, opportunities, cases, or custom entities). Supports duplicate detection when enabled. Use **@odata.bind** annotations in the record data to associate new records with existing ones during creation.
-
-### Delete Record
-
-Permanently delete a record from any Dynamics 365 entity. This action cannot be undone.
-
-### FetchXML Query
-
-Execute a FetchXML query against a Dynamics 365 entity. FetchXML is a proprietary query language that supports aggregation, grouping, and complex joins that are not possible with standard OData queries.
-
-### List Entity Definitions
-
-List all entity (table) definitions in the Dynamics 365 environment. Returns metadata about available entities including their logical names, display names, and entity set names. Useful for discovering which entities are available and their OData entity set names.
+Create a Dataverse row in any table using the OData entity set name. Supports
+duplicate detection and `@odata.bind` relationship values.
 
 ### Get Record
 
-Retrieve a single record by its ID from any Dynamics 365 entity. Supports selecting specific columns and expanding related records via navigation properties.
-
-### Invoke Function
-
-Invoke an unbound function in Dynamics 365. Functions are read-only operations that return data without side effects. Common functions include **WhoAmI**, **RetrieveCurrentOrganization**, and **RetrieveTotalRecordCount**.
-
-### List Records
-
-Query and list records from any Dynamics 365 entity with support for OData filtering, sorting, column selection, pagination, and expanding related records. Use this to retrieve multiple records based on criteria. Supports standard OData query options.
-
-### Associate Records
-
-Create an association (relationship) between two existing Dynamics 365 records using a navigation property. Used for linking records through many-to-one, one-to-many, or many-to-many relationships.
-
-### Search Records
-
-Perform a full-text relevance search across multiple Dynamics 365 entities using the Dataverse Search API. Returns results ranked by relevance, useful for finding records when you don't know the exact entity or field to query.
+Retrieve one Dataverse row by GUID or alternate key, with optional `$select` and
+`$expand`.
 
 ### Update Record
 
-Update an existing record in any Dynamics 365 entity. Only the fields included in the update data will be modified; other fields remain unchanged.
+Update one Dataverse row by GUID or alternate key. Only supplied columns are
+changed.
+
+### Delete Record
+
+Delete one Dataverse row by GUID or alternate key.
+
+### List Records
+
+List Dataverse rows with `$select`, `$filter`, `$orderby`, `$expand`, `$top`,
+page-size hints, count support, and `nextLink` continuation metadata.
+
+### FetchXML Query
+
+Run a FetchXML query against a Dataverse entity set and return rows plus
+pagination metadata.
+
+### Search Records
+
+Search Dataverse tables through the Dataverse Search API, including optional
+table-specific selected/search columns.
+
+### Associate Records
+
+Create a single-valued or collection-valued relationship between Dataverse rows.
+
+### Disassociate Records
+
+Clear a single-valued lookup or remove a row from a collection-valued
+relationship.
+
+### Get Related Records
+
+Retrieve rows through a Dataverse navigation property.
+
+### List Entity Definitions
+
+List Dataverse table definitions and stable entity-set metadata.
+
+### Get Entity Attributes
+
+Retrieve Dataverse column metadata, including type, required level, read,
+create, and update support, lookup targets, and metadata IDs.
+
+### Invoke Function
+
+Invoke unbound, entity-bound, or collection-bound Dataverse functions.
+
+### Invoke Action
+
+Invoke unbound, entity-bound, or collection-bound Dataverse actions.
+
+### Download File or Image Column
+
+Download a Dataverse file/image column. File contents are returned only as a
+Slate attachment; tool output contains metadata such as MIME type, size, and
+attachment count.
+
+### Upload File or Image Column
+
+Upload base64 content to a Dataverse file/image column using Dataverse block
+upload actions.
+
+### Execute Batch Request
+
+Submit multiple relative Dataverse Web API operations in one `$batch` request.
 
 ### Who Am I
 
-Retrieve information about the currently authenticated user, including user ID, organization ID, and business unit ID. Useful for verifying connection and getting the current user context.
+Return the current Dataverse user, organization, and business unit IDs.
+
+## Authentication
+
+The connector supports Microsoft Entra OAuth and client credentials
+server-to-server auth. OAuth first discovers the user-accessible Dataverse
+environment and then exchanges for an environment-scoped token. Client
+credentials auth requires the Dataverse environment URL and an application user
+with appropriate Dataverse security roles.
+
+## Triggers
+
+The package includes a generic inbound webhook receiver and a polling
+record-changed trigger for Dataverse rows. It does not register native Dataverse
+plugin steps or Business Central webhook subscriptions.
 
 ## License
 
-This integration is licensed under the [FSL-1.1](https://github.com/metorial/metorial-platform/blob/dev/LICENSE).
-
-<div align="center">
-  <sub>Built with ❤️ by <a href="https://metorial.com">Metorial</a></sub>
-</div>
+This integration is licensed under the
+[FSL-1.1](https://github.com/metorial/metorial-platform/blob/dev/LICENSE).

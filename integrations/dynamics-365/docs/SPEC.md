@@ -1,114 +1,118 @@
-# Slates Specification for Dynamics 365
+# Slates Specification for Dynamics 365 Dataverse
 
 ## Overview
 
-Microsoft Dynamics 365 is a suite of cloud-based CRM and ERP applications built on Microsoft Dataverse (formerly Common Data Service). Dynamics 365 unifies the capabilities of CRM business software and ERP systems by providing intelligent applications that seamlessly work together in the cloud. The Dynamics 365 Web API lets developers interact with CRM and ERP data using RESTful HTTP methods (GET, POST, PATCH, DELETE), built on OData standards.
+This package is the backward-compatible `dynamics-365` Slates integration for
+Microsoft Dynamics 365 environments backed by Microsoft Dataverse. It exposes a
+generic Dataverse Web API control surface for rows, metadata, search,
+relationships, actions/functions, file/image columns, and `$batch` requests.
+
+The package is not a full Dynamics 365 suite connector. It does not implement
+Dynamics 365 Finance and Operations `/data` APIs, Commerce/Retail Server APIs,
+Business Central APIs, product-specific modules, or native Dataverse webhook
+registration.
 
 ## Authentication
 
-Dynamics 365 uses **OAuth 2.0** exclusively for authentication to its online Web API. OAuth requires an identity provider for authentication. For Dataverse, the identity provider is Microsoft Entra ID.
+Dynamics 365 Dataverse uses Microsoft Entra ID OAuth 2.0 for online Web API
+access.
 
-### Prerequisites
+### Supported Flows
 
-When you connect using OAuth, you must first register an application in your Microsoft Entra ID tenant. This is done via the Azure portal under **Microsoft Entra ID → App registrations**.
+**Authorization Code Flow (Delegated):** The user signs in with Microsoft. The
+integration first requests a discovery-scoped token for the global Dataverse
+discovery service, resolves the first accessible environment URL, then exchanges
+the refresh token for an environment-scoped Dataverse token.
 
-You will need:
-
-- **Client ID** (Application ID): Obtained from the app registration overview page.
-- **Client Secret** or **Certificate**: Created under the app registration's "Certificates & secrets" section.
-- **Tenant ID**: The directory/tenant ID from the app registration overview.
-- **Instance URL**: Your Dynamics 365 environment URL (e.g., `https://yourorg.crm.dynamics.com`).
-
-### API Permissions
-
-Go to API permissions → Add a permission. Choose Dynamics 365 or Common Data Service. For delegated access, configure the application to have the "Access Dynamics 365 as organization users" (`user_impersonation`) delegated permission.
-
-### Supported OAuth 2.0 Flows
-
-**Authorization Code Flow (Delegated):** Used for interactive user-based access. The user signs in and the app acts on their behalf.
-
-**Client Credentials Flow (Server-to-Server):** For server-to-server scenarios, there isn't an interactive user account to authenticate. In these cases, you need to provide some means to confirm that the application is trusted. You must configure a secret for the app registration OR upload a public key certificate. An Application User must also be created in Dynamics 365 and assigned a security role.
-
-### Token Endpoints
-
-- **Authorization endpoint:** `https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize`
-- **Token endpoint:** `https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token`
+**Client Credentials Flow (Server-to-Server):** The caller supplies tenant ID,
+client ID, client secret, and Dataverse environment URL. The Microsoft Entra app
+must have an application user in Dataverse with the required security roles.
 
 ### Scopes
 
-Scope must be specified using the Scope property when retrieving the OAuth tokens. The value of the Scope property may consist of an OAuth scope or a space-separated list of OAuth scopes.
+- Delegated discovery: `https://globaldisco.crm.dynamics.com/user_impersonation`
+- Refresh support: `offline_access`
+- Environment token: `https://<environment>/.default`
+- Client credentials: `https://<environment>/.default`
 
-- For client credentials flow: `https://{yourorg}.crm.dynamics.com/.default`
-- For delegated flow: `https://{yourorg}.crm.dynamics.com/user_impersonation` (optionally with `offline_access` for refresh tokens)
+Stored auth output includes the access token, refresh token when available,
+expiry, Dataverse instance URL, and tenant ID. Refresh preserves the previous
+refresh token when Microsoft omits a rotated refresh token.
 
-### Example (Client Credentials)
+## Tool Surface
 
-```
-POST https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token
-Content-Type: application/x-www-form-urlencoded
+### Record Management
 
-client_id={client_id}
-&client_secret={client_secret}
-&scope=https://yourorg.crm.dynamics.com/.default
-&grant_type=client_credentials
-```
+The integration supports generic Dataverse row create, get, update, delete, and
+list operations. Record tools use OData entity set names such as `accounts` or
+`contacts`. Read, update, and delete support GUIDs and alternate keys.
 
-The resulting access token is passed as a Bearer token in the `Authorization` header for all API requests.
+Create and update return the raw Dataverse record body for compatibility and add
+stable metadata such as `entitySetName` and a best-effort `recordId` when it can
+be inferred from the response.
 
-## Features
+### Querying and Pagination
 
-### Record Management (CRUD Operations)
+List supports `$select`, `$filter`, `$orderby`, `$expand`, `$top`, page-size
+hints, count requests, and `nextLink` continuation. FetchXML supports the
+Dataverse `fetchXml` query parameter and returns continuation metadata.
 
-Create, Read, Update, and Delete (CRUD) operations can be easily performed through the use of the Microsoft Dynamics 365 Web API. This covers all Dataverse entities including standard entities (accounts, contacts, leads, opportunities, cases, etc.) and custom entities. Developers can use POST requests to create table rows, deep insert to create multiple related rows, and use `@odata.bind` to associate new rows to existing tables.
+### Dataverse Search
 
-### Data Querying
+Search uses the Dataverse Search API. Inputs keep the previous `searchTerm` and
+string `entities` fields and also support Dataverse Search entity descriptors
+with selected and searched columns.
 
-By using this API, raising advanced data queries becomes easier. You can allow the Microsoft Dynamics API to filter, paginate, and sort data. By using different functions and actions, performing complex operations becomes possible. Standard OData query options are supported: `$filter`, `$select`, `$orderby`, `$expand`, and `$top`. FetchXML, a proprietary query language, provides capabilities to perform aggregation.
+### Metadata Discovery
 
-### Metadata and Schema Discovery
+Metadata tools list table definitions and table attributes. Outputs expose
+stable names and identifiers such as `logicalName`, `entitySetName`,
+`primaryIdAttribute`, `primaryNameAttribute`, `metadataId`, attribute type,
+required level, read/create/update flags, and lookup targets.
 
-Interact with your metadata by using Microsoft Dynamics 365 Web API to get a grip of the Dynamics 365 schema. These different attributes interact with definitions, structures, entities, attributes, relationships, and other schema elements. By understanding the metadata, your application can adapt to the changes you would need to make in the schema.
+### Relationships
 
-### Functions and Actions
+Relationship tools associate records, disassociate records, and retrieve related
+records through navigation properties. Association and disassociation support
+single-valued lookup properties and collection-valued relationships.
 
-The Web API supports invoking bound and unbound functions (read-only operations) and actions (operations that may have side effects). These include built-in operations like `WhoAmI`, `InitializeFrom`, and the ability to invoke custom actions defined in the Dynamics 365 environment.
+### Actions and Functions
 
-### Duplicate Detection
+Action/function tools invoke unbound, entity-bound, and collection-bound
+Dataverse operations. Branching is modeled with a top-level object schema,
+optional binding fields, and runtime validation, not top-level union schemas.
 
-In Dynamics 365, there is a feature known as "Duplicate Detection Rules." When the feature was initially released, they only executed based on end user interaction. With the Dataverse Web API, Developers can set the `MSCRM.SuppressDuplicateDetection: false` header to enable duplicate detection using existing rules.
+### File and Image Columns
 
-### Relationship Management
+File/image download returns binary content as Slate attachments only. Structured
+tool output contains metadata such as file name, MIME type, byte size, and
+attachment count. Upload uses Dataverse file block upload actions and returns
+metadata plus the raw commit response when Dataverse sends one.
 
-Records can be associated and disassociated through the API. Navigation properties allow traversing relationships between entities (e.g., retrieving all contacts for an account). The `$expand` query option enables fetching related records in a single request.
+### Batch
 
-### Search
+The batch tool accepts relative Dataverse Web API operations and sends a
+multipart `$batch` request. Write operations are grouped into a changeset by the
+shared Dataverse recipe package.
 
-The Dataverse Search API provides relevance-based search capabilities across multiple entities, enabling full-text search across the Dynamics 365 environment.
+## Triggers
 
-### File and Image Management
+The package includes:
 
-The Web API supports uploading and downloading files and images stored in file-type or image-type columns on entities.
+- `inbound_webhook`: a generic Slates webhook receiver that parses posted JSON.
+- `record_changed`: a polling trigger that queries Dataverse rows modified
+  since the last poll.
 
-## Events
+The integration does not create or manage native Dataverse plugin registration
+steps.
 
-Dynamics 365 supports webhooks for real-time event-driven integrations. The webhook mechanism differs between Dynamics 365 Customer Engagement (CE) / Dataverse and Dynamics 365 Business Central.
+## Schema Requirements
 
-### Dynamics 365 CE / Dataverse Webhooks
+All tool input schemas serialize to a top-level JSON Schema object. Variant
+inputs use enum fields plus optional variant-specific fields, with invalid
+combinations rejected at runtime through `ServiceError`.
 
-Dynamics 365 supports registering webhooks through plugin steps that execute when specific messages (create, update, delete, etc.) occur. Webhooks are registered using the Plugin Registration Tool.
+## File Output Requirement
 
-- **Supported event messages:** Create, Update, Delete, Assign, and Status Change.
-- **Entity scope:** Webhooks can be registered against any entity (e.g., account, contact, opportunity, lead, case, or custom entities). You specify the entity and optionally specific attributes to filter on.
-- **Execution mode:** Webhooks enable synchronous and asynchronous steps.
-- **Payload:** Webhooks send POST requests with JSON payload and can be consumed by any programming language or web application hosted anywhere. The payload includes entity name, entity ID, message name, organization, initiating user, and execution context data.
-- **Retry behavior:** Dynamics 365 will retry failed Webhook requests up to three times before marking them as failed.
-- **Limitations:** Cannot modify CRM data directly (use plugins for that).
-
-### Dynamics 365 Business Central Webhooks
-
-In Dynamics 365 Business Central, every entity exposed as API supports webhooks natively. Subscriptions are created via the Subscriptions API.
-
-- **Supported events:** Notifications are triggered when an API-exposed entity is created, updated, or deleted.
-- **Registration:** You need to register a webhook subscription with the entities you want to be subscribed to by providing a notification URL. A handshake via validation token is required.
-- **Subscription expiry:** Webhook subscriptions expire in 3 days (default value) and must be renewed via PATCH request.
-- **Notification behavior:** Dynamics 365 Business Central will not send a notification immediately when an entity changes (normally it occurs some minutes). This is by design in order to permit to send a single notification even though the entity might have changed several times within a few seconds.
+Tools that return file bytes use Slate attachments. The output schema must not
+expose base64 or full file text fields.

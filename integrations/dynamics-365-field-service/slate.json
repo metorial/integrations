@@ -1,0 +1,17 @@
+{
+  "name": "@microsoft/dynamics-365-field-service",
+  "description": "Manage Dynamics 365 Field Service work orders, bookings, resources, customer assets, service accounts, incident types, products, and services through Microsoft Dataverse, including typed booking and work-order lifecycle workflows.",
+  "categories": ["field-service-management", "crm-and-sales-tools", "apis-and-http-requests"],
+  "skills": [
+    "manage work orders",
+    "schedule field service bookings",
+    "update bookings",
+    "manage bookable resources",
+    "inspect customer assets",
+    "manage service accounts",
+    "review incident types",
+    "manage products and services",
+    "update work order lifecycle"
+  ],
+  "logoUrl": "https://provider-logos.metorial-cdn.com/Dynamics%20365%20Icon.svg"
+}

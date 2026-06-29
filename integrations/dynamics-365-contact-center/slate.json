@@ -1,0 +1,16 @@
+{
+  "name": "@microsoft/dynamics-365-contact-center",
+  "description": "Read Dynamics 365 Contact Center conversations, sessions, transcripts, agents, queues, routing state, and linked cases through Microsoft Dataverse, with transcript exports returned as attachments.",
+  "categories": ["customer-support", "contact-center", "apis-and-http-requests"],
+  "skills": [
+    "inspect contact center conversations",
+    "inspect sessions",
+    "export transcripts",
+    "review agents",
+    "inspect queues",
+    "review routing state",
+    "inspect linked cases",
+    "query Dataverse contact center records"
+  ],
+  "logoUrl": "https://provider-logos.metorial-cdn.com/Dynamics%20365%20Icon.svg"
+}

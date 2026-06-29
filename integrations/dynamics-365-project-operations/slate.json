@@ -1,0 +1,17 @@
+{
+  "name": "@microsoft/dynamics-365-project-operations",
+  "description": "Read and maintain draft Microsoft Dynamics 365 Project Operations project data in Dataverse, including projects, tasks, resource assignments, time entries, expenses, contracts, actuals, and invoices, with Finance and Operations Data Management handoff support for export/import tracking.",
+  "categories": ["project-management", "financial-data-and-stock-market"],
+  "skills": [
+    "list project operations projects",
+    "create draft project records",
+    "manage project tasks",
+    "manage resource assignments",
+    "review time entries",
+    "review project expenses",
+    "inspect project contracts",
+    "review actuals and invoices",
+    "track finance handoff packages"
+  ],
+  "logoUrl": "logo.svg"
+}

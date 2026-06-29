@@ -1,0 +1,13 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  exportConversationTranscript,
+  getContactCenterRecord,
+  listContactCenterRecords
+} from './tools';
+
+export let provider = Slate.create({
+  spec,
+  tools: [listContactCenterRecords, getContactCenterRecord, exportConversationTranscript],
+  triggers: []
+});

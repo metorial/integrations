@@ -6,6 +6,8 @@ export let config = SlateConfig.create(
     instanceUrl: z
       .string()
       .optional()
-      .describe('Your Dynamics 365 environment URL (e.g., https://yourorg.crm.dynamics.com)')
+      .describe(
+        'Your Dynamics 365 Dataverse environment URL (for example, https://yourorg.crm.dynamics.com)'
+      )
   })
 );

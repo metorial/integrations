@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@metorial/integrations-root",
@@ -3988,10 +3987,182 @@
     },
     "integrations/dynamics-365": {
       "name": "@slates-integrations/dynamics-365",
-      "version": "0.2.0-rc.8",
+      "version": "0.2.0-rc.9",
       "dependencies": {
+        "@slates/microsoft-dataverse-recipes": "1.0.0-rc.4",
         "@types/node": "^20",
         "slates": "1.0.0-rc.14",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/dynamics-365-commerce": {
+      "name": "@slates-integrations/dynamics-365-commerce",
+      "version": "0.1.0-rc.1",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/dynamics-commerce-recipes": "1.0.0-rc.4",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/dynamics-365-contact-center": {
+      "name": "@slates-integrations/dynamics-365-contact-center",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/microsoft-dataverse-recipes": "1.0.0-rc.4",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/dynamics-365-customer-insights": {
+      "name": "@slates-integrations/dynamics-365-customer-insights",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/microsoft-dataverse-recipes": "1.0.0-rc.4",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/dynamics-365-customer-service": {
+      "name": "@slates-integrations/dynamics-365-customer-service",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/microsoft-dataverse-recipes": "1.0.0-rc.4",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/dynamics-365-field-service": {
+      "name": "@slates-integrations/dynamics-365-field-service",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/microsoft-dataverse-recipes": "1.0.0-rc.4",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/dynamics-365-finance": {
+      "name": "@slates-integrations/dynamics-365-finance",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/dynamics-finops-recipes": "1.0.0-rc.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/dynamics-365-human-resources": {
+      "name": "@slates-integrations/dynamics-365-human-resources",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/dynamics-finops-recipes": "1.0.0-rc.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/dynamics-365-project-operations": {
+      "name": "@slates-integrations/dynamics-365-project-operations",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/dynamics-finops-recipes": "1.0.0-rc.0",
+        "@slates/microsoft-dataverse-recipes": "1.0.0-rc.4",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/dynamics-365-sales": {
+      "name": "@slates-integrations/dynamics-365-sales",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/microsoft-dataverse-recipes": "1.0.0-rc.4",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
+    "integrations/dynamics-365-supply-chain-management": {
+      "name": "@slates-integrations/dynamics-365-supply-chain-management",
+      "version": "0.1.0-rc.3",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@slates/dynamics-finops-recipes": "1.0.0-rc.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
         "zod": "^4.2",
       },
       "devDependencies": {
@@ -14174,12 +14345,54 @@
         "vitest": "^3.1.2",
       },
     },
+    "packages/dynamics-commerce-recipes": {
+      "name": "@slates/dynamics-commerce-recipes",
+      "version": "1.0.0-rc.4",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/tsconfig": "1.0.0-rc.1",
+        "typescript": "5.8.2",
+        "vitest": "^3.1.2",
+      },
+    },
+    "packages/dynamics-finops-recipes": {
+      "name": "@slates/dynamics-finops-recipes",
+      "version": "1.0.0-rc.0",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/tsconfig": "1.0.0-rc.1",
+        "typescript": "5.8.2",
+        "vitest": "^3.1.2",
+      },
+    },
     "packages/google-people-recipes": {
       "name": "@slates/google-people-recipes",
       "version": "1.0.0-rc.4",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@slates/tool-recipes": "1.0.0-rc.4",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/tsconfig": "1.0.0-rc.1",
+        "typescript": "5.8.2",
+        "vitest": "^3.1.2",
+      },
+    },
+    "packages/microsoft-dataverse-recipes": {
+      "name": "@slates/microsoft-dataverse-recipes",
+      "version": "1.0.0-rc.4",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
         "slates": "1.0.0-rc.15",
         "zod": "^4.2",
       },
@@ -15567,6 +15780,26 @@
     "@slates-integrations/duo-security": ["@slates-integrations/duo-security@workspace:integrations/duo-security"],
 
     "@slates-integrations/dynamics-365": ["@slates-integrations/dynamics-365@workspace:integrations/dynamics-365"],
+
+    "@slates-integrations/dynamics-365-commerce": ["@slates-integrations/dynamics-365-commerce@workspace:integrations/dynamics-365-commerce"],
+
+    "@slates-integrations/dynamics-365-contact-center": ["@slates-integrations/dynamics-365-contact-center@workspace:integrations/dynamics-365-contact-center"],
+
+    "@slates-integrations/dynamics-365-customer-insights": ["@slates-integrations/dynamics-365-customer-insights@workspace:integrations/dynamics-365-customer-insights"],
+
+    "@slates-integrations/dynamics-365-customer-service": ["@slates-integrations/dynamics-365-customer-service@workspace:integrations/dynamics-365-customer-service"],
+
+    "@slates-integrations/dynamics-365-field-service": ["@slates-integrations/dynamics-365-field-service@workspace:integrations/dynamics-365-field-service"],
+
+    "@slates-integrations/dynamics-365-finance": ["@slates-integrations/dynamics-365-finance@workspace:integrations/dynamics-365-finance"],
+
+    "@slates-integrations/dynamics-365-human-resources": ["@slates-integrations/dynamics-365-human-resources@workspace:integrations/dynamics-365-human-resources"],
+
+    "@slates-integrations/dynamics-365-project-operations": ["@slates-integrations/dynamics-365-project-operations@workspace:integrations/dynamics-365-project-operations"],
+
+    "@slates-integrations/dynamics-365-sales": ["@slates-integrations/dynamics-365-sales@workspace:integrations/dynamics-365-sales"],
+
+    "@slates-integrations/dynamics-365-supply-chain-management": ["@slates-integrations/dynamics-365-supply-chain-management@workspace:integrations/dynamics-365-supply-chain-management"],
 
     "@slates-integrations/dynapictures": ["@slates-integrations/dynapictures@workspace:integrations/dynapictures"],
 
@@ -17212,7 +17445,13 @@
 
     "@slates/client": ["@slates/client@workspace:packages/client"],
 
+    "@slates/dynamics-commerce-recipes": ["@slates/dynamics-commerce-recipes@workspace:packages/dynamics-commerce-recipes"],
+
+    "@slates/dynamics-finops-recipes": ["@slates/dynamics-finops-recipes@workspace:packages/dynamics-finops-recipes"],
+
     "@slates/google-people-recipes": ["@slates/google-people-recipes@workspace:packages/google-people-recipes"],
+
+    "@slates/microsoft-dataverse-recipes": ["@slates/microsoft-dataverse-recipes@workspace:packages/microsoft-dataverse-recipes"],
 
     "@slates/oauth-microsoft": ["@slates/oauth-microsoft@workspace:packages/oauth-microsoft"],
 

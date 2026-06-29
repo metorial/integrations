@@ -1,18 +1,17 @@
 {
-  "name": "@microsoft/dynamics-365",
-  "description": "Create, read, update, and delete CRM and ERP records across Dynamics 365 entities including accounts, contacts, leads, opportunities, and cases. Query data with advanced filtering, sorting, pagination, and FetchXML aggregation. Manage relationships between entities by associating and disassociating records. Discover and inspect metadata, schema definitions, and entity attributes. Invoke built-in and custom functions and actions (e.g., WhoAmI, InitializeFrom). Detect duplicate records using configurable rules. Search across multiple entities with full-text relevance search. Upload and download files and images attached to entity columns. Receive real-time webhook notifications on record create, update, delete, assign, and status change events.",
-  "categories": ["crm-and-sales-tools", "financial-data-and-stock-market"],
+  "name": "@microsoft/dynamics-365-dataverse",
+  "description": "Generic Dynamics 365 Dataverse connector for Dataverse Web API records and metadata. Create, read, update, delete, list, and FetchXML-query Dataverse rows; search Dataverse tables; manage relationships; invoke Dataverse actions and functions; transfer file/image column values through Slate attachments; and execute Dataverse $batch requests. This connector targets Dataverse-backed Dynamics 365 environments and does not implement Finance and Operations, Commerce, Business Central, or native webhook registration APIs.",
+  "categories": ["crm-and-sales-tools"],
   "skills": [
-    "manage CRM records",
-    "query and filter data",
-    "manage entity relationships",
+    "manage Dataverse records",
+    "query and filter Dataverse data",
+    "manage Dataverse entity relationships",
     "detect duplicate records",
-    "search across entities",
-    "upload and download files",
-    "discover schema metadata",
-    "invoke custom actions",
-    "receive webhook notifications",
-    "manage leads and opportunities"
+    "search Dataverse tables",
+    "upload and download Dataverse file columns",
+    "discover Dataverse schema metadata",
+    "invoke Dataverse actions and functions",
+    "execute Dataverse batch requests"
   ],
   "logoUrl": "https://provider-logos.metorial-cdn.com/Dynamics%20365%20Icon.svg",
   "version": "0.1.2"

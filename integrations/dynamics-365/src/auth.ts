@@ -1,10 +1,33 @@
-import { axios, SlateAuth } from 'slates';
+import {
+  dataverseApiError,
+  dataverseValidationError,
+  normalizeDataverseInstanceUrl
+} from '@slates/microsoft-dataverse-recipes';
+import { axios, normalizeOAuthTokenResponse, requestAxiosData, SlateAuth } from 'slates';
 import { z } from 'zod';
+
+let DISCOVERY_RESOURCE = 'https://globaldisco.crm.dynamics.com';
+
+type MicrosoftTokenResponse = {
+  access_token?: unknown;
+  refresh_token?: unknown;
+  expires_in?: unknown;
+  token_type?: unknown;
+  scope?: unknown;
+};
+
+type DynamicsAuthOutput = {
+  token: string;
+  refreshToken?: string;
+  expiresAt?: string;
+  instanceUrl: string;
+  tenantId: string;
+};
 
 let scopes = [
   {
     title: 'User Impersonation',
-    description: 'Access Dynamics 365 as the signed-in user',
+    description: 'Access Dynamics 365 Dataverse as the signed-in user',
     scope: 'user_impersonation'
   },
   {
@@ -14,20 +37,70 @@ let scopes = [
   }
 ];
 
-const DISCOVERY_RESOURCE = 'https://globaldisco.crm.dynamics.com';
-
-function buildAuthScopes(ctxScopes: string[]): string {
-  let impersonation = ctxScopes.filter(s => s !== 'offline_access');
-  let scoped = impersonation.map(s => `${DISCOVERY_RESOURCE}/${s}`);
+let buildAuthScopes = (ctxScopes: string[]) => {
+  let impersonation = ctxScopes.filter(scope => scope !== 'offline_access');
+  let scoped = impersonation.map(scope => `${DISCOVERY_RESOURCE}/${scope}`);
   if (ctxScopes.includes('offline_access')) scoped.push('offline_access');
   return scoped.join(' ');
-}
+};
 
-function buildInstanceScope(instanceUrl: string, ctxScopes: string[]): string {
-  let parts = [`${instanceUrl}/.default`];
+let buildInstanceScope = (instanceUrl: string, ctxScopes: string[]) => {
+  let normalizedInstanceUrl = normalizeDataverseInstanceUrl(instanceUrl);
+  let parts = [`${normalizedInstanceUrl}/.default`];
   if (ctxScopes.includes('offline_access')) parts.push('offline_access');
   return parts.join(' ');
-}
+};
+
+let tokenEndpoint = (tenant: string) =>
+  `https://login.microsoftonline.com/${encodeURIComponent(tenant)}/oauth2/v2.0/token`;
+
+let requestMicrosoftToken = (tenant: string, operation: string, body: URLSearchParams) =>
+  requestAxiosData<MicrosoftTokenResponse>(
+    operation,
+    () =>
+      axios.post(tokenEndpoint(tenant), body.toString(), {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }),
+    error => dataverseApiError(error, operation)
+  );
+
+let normalizeMicrosoftToken = (
+  data: MicrosoftTokenResponse,
+  options: {
+    operation: string;
+    previousRefreshToken?: string;
+  }
+) =>
+  normalizeOAuthTokenResponse(data, {
+    providerLabel: 'Microsoft Dataverse',
+    operation: options.operation,
+    previousRefreshToken: options.previousRefreshToken,
+    refreshTokenFallbackMode: 'falsy',
+    accessTokenMessage: `Microsoft Dataverse OAuth ${options.operation} did not return an access token.`
+  });
+
+let discoverInstances = (token: string) =>
+  requestAxiosData<{ value?: Array<{ Url?: string; FriendlyName?: string }> }>(
+    'discover Dataverse instances',
+    () =>
+      axios.get(`${DISCOVERY_RESOURCE}/api/discovery/v2.0/Instances`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }),
+    error => dataverseApiError(error, 'discover Dataverse instances')
+  );
+
+let requestDataverseData = <T>(instanceUrl: string, token: string, path: string) =>
+  requestAxiosData<T>(
+    'get Dataverse profile',
+    () =>
+      axios.get(`${normalizeDataverseInstanceUrl(instanceUrl)}/api/data/v9.2/${path}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }),
+    error => dataverseApiError(error, 'get Dataverse profile')
+  );
 
 function createMicrosoftOauth(name: string, key: string, tenant: string) {
   return {
@@ -42,8 +115,8 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
       },
       {
         type: 'docs.auth.oauth_scopes' as const,
-        name: 'OAuth scopes',
-        url: 'https://learn.microsoft.com/en-us/graph/permissions-reference'
+        name: 'Dataverse Web API OAuth scopes',
+        url: 'https://learn.microsoft.com/en-us/power-apps/developer/data-platform/authenticate-oauth'
       }
     ],
     scopes,
@@ -63,9 +136,9 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
     },
 
     handleCallback: async (ctx: any) => {
-      // Step 1: exchange code for discovery-scoped token.
-      let discoveryTokenResp = await axios.post(
-        `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`,
+      let discoveryTokenData = await requestMicrosoftToken(
+        tenant,
+        'discovery token exchange',
         new URLSearchParams({
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
@@ -73,66 +146,50 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
           redirect_uri: ctx.redirectUri,
           grant_type: 'authorization_code',
           scope: buildAuthScopes(ctx.scopes)
-        }).toString(),
-        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+        })
       );
-
-      let discoveryData = discoveryTokenResp.data as {
-        access_token: string;
-        refresh_token?: string;
-      };
-
-      // Step 2: call global discovery to resolve instance URL.
-      let discoResp = await axios.get(`${DISCOVERY_RESOURCE}/api/discovery/v2.0/Instances`, {
-        headers: { Authorization: `Bearer ${discoveryData.access_token}` }
+      let discoveryToken = normalizeMicrosoftToken(discoveryTokenData, {
+        operation: 'discovery token exchange'
       });
 
-      let instances =
-        (discoResp.data as { value?: Array<{ Url: string; FriendlyName?: string }> }).value ||
-        [];
-      if (instances.length === 0) {
-        throw new Error(
-          'No Dynamics 365 instances found for this account. The signed-in user must have access to at least one Dynamics environment.'
+      let discovery = await discoverInstances(discoveryToken.token);
+      let instances = discovery.value ?? [];
+      let instanceUrl = instances[0]?.Url;
+      if (!instanceUrl) {
+        throw dataverseValidationError(
+          'No Dataverse environments were found for this Microsoft account. The signed-in user must have access to at least one Dynamics 365 Dataverse environment.'
         );
       }
 
-      let instanceUrl = instances[0]!.Url.replace(/\/+$/, '');
-
-      // Step 3: exchange the refresh token for an instance-scoped token.
-      if (!discoveryData.refresh_token) {
-        throw new Error(
-          'No refresh token returned from Microsoft. Ensure offline_access scope is included and your Entra app is configured to issue refresh tokens.'
+      if (!discoveryToken.refreshToken) {
+        throw dataverseValidationError(
+          'Microsoft did not return a refresh token. Ensure offline_access is selected and the Entra app can issue refresh tokens.'
         );
       }
 
-      let instanceTokenResp = await axios.post(
-        `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`,
+      let normalizedInstanceUrl = normalizeDataverseInstanceUrl(instanceUrl);
+      let instanceTokenData = await requestMicrosoftToken(
+        tenant,
+        'instance token exchange',
         new URLSearchParams({
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           grant_type: 'refresh_token',
-          refresh_token: discoveryData.refresh_token,
-          scope: buildInstanceScope(instanceUrl, ctx.scopes)
-        }).toString(),
-        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+          refresh_token: discoveryToken.refreshToken,
+          scope: buildInstanceScope(normalizedInstanceUrl, ctx.scopes)
+        })
       );
-
-      let instanceData = instanceTokenResp.data as {
-        access_token: string;
-        refresh_token?: string;
-        expires_in?: number;
-      };
-
-      let expiresAt = instanceData.expires_in
-        ? new Date(Date.now() + instanceData.expires_in * 1000).toISOString()
-        : undefined;
+      let instanceToken = normalizeMicrosoftToken(instanceTokenData, {
+        operation: 'instance token exchange',
+        previousRefreshToken: discoveryToken.refreshToken
+      });
 
       return {
         output: {
-          token: instanceData.access_token,
-          refreshToken: instanceData.refresh_token || discoveryData.refresh_token,
-          expiresAt,
-          instanceUrl,
+          token: instanceToken.token,
+          refreshToken: instanceToken.refreshToken,
+          expiresAt: instanceToken.expiresAt,
+          instanceUrl: normalizedInstanceUrl,
           tenantId: tenant
         }
       };
@@ -140,67 +197,63 @@ function createMicrosoftOauth(name: string, key: string, tenant: string) {
 
     handleTokenRefresh: async (ctx: any) => {
       if (!ctx.output.refreshToken) {
-        return { output: ctx.output };
+        throw dataverseValidationError(
+          'Cannot refresh Microsoft Dataverse OAuth without a refresh token.'
+        );
       }
 
-      let instanceUrl = ctx.output.instanceUrl.replace(/\/+$/, '');
-
-      let response = await axios.post(
-        `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`,
+      let instanceUrl = normalizeDataverseInstanceUrl(ctx.output.instanceUrl);
+      let tokenData = await requestMicrosoftToken(
+        tenant,
+        'token refresh',
         new URLSearchParams({
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           refresh_token: ctx.output.refreshToken,
           grant_type: 'refresh_token',
           scope: buildInstanceScope(instanceUrl, ctx.scopes)
-        }).toString(),
-        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+        })
       );
-
-      let data = response.data as {
-        access_token: string;
-        refresh_token?: string;
-        expires_in?: number;
-      };
-
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
+      let token = normalizeMicrosoftToken(tokenData, {
+        operation: 'token refresh',
+        previousRefreshToken: ctx.output.refreshToken
+      });
 
       return {
         output: {
-          token: data.access_token,
-          refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-          instanceUrl: ctx.output.instanceUrl,
+          token: token.token,
+          refreshToken: token.refreshToken,
+          expiresAt: token.expiresAt,
+          instanceUrl,
           tenantId: ctx.output.tenantId
         }
       };
     },
 
-    getProfile: async (ctx: any) => {
-      let instanceUrl = ctx.output.instanceUrl.replace(/\/+$/, '');
-      let response = await axios.get(`${instanceUrl}/api/data/v9.2/WhoAmI`, {
-        headers: { Authorization: `Bearer ${ctx.output.token}` }
-      });
-
-      let whoAmI = response.data as { UserId: string };
-      let userId = whoAmI.UserId;
-
-      let userResponse = await axios.get(
-        `${instanceUrl}/api/data/v9.2/systemusers(${userId})?$select=fullname,internalemailaddress,systemuserid`,
-        { headers: { Authorization: `Bearer ${ctx.output.token}` } }
+    getProfile: async (ctx: { output: DynamicsAuthOutput }) => {
+      let whoAmI = await requestDataverseData<{ UserId?: string }>(
+        ctx.output.instanceUrl,
+        ctx.output.token,
+        'WhoAmI'
       );
+      let userId = whoAmI.UserId;
+      if (!userId) {
+        throw dataverseValidationError('Dataverse WhoAmI did not return a user ID.');
+      }
 
-      let user = userResponse.data as {
+      let user = await requestDataverseData<{
         fullname?: string;
         internalemailaddress?: string;
         systemuserid?: string;
-      };
+      }>(
+        ctx.output.instanceUrl,
+        ctx.output.token,
+        `systemusers(${userId})?$select=fullname,internalemailaddress,systemuserid`
+      );
 
       return {
         profile: {
-          id: user.systemuserid,
+          id: user.systemuserid ?? userId,
           name: user.fullname,
           email: user.internalemailaddress
         }
@@ -232,62 +285,56 @@ export let auth = SlateAuth.create()
       clientSecret: z.string().describe('Client secret from the app registration'),
       instanceUrl: z
         .string()
-        .describe('Dynamics 365 instance URL (e.g., https://yourorg.crm.dynamics.com)')
+        .describe(
+          'Dynamics 365 Dataverse environment URL (for example, https://yourorg.crm.dynamics.com)'
+        )
     }),
 
     getOutput: async ctx => {
-      let instanceUrl = ctx.input.instanceUrl.replace(/\/+$/, '');
+      let tenantId = ctx.input.tenantId.trim();
+      if (!tenantId) {
+        throw dataverseValidationError('Microsoft Entra tenant ID is required.');
+      }
+      let instanceUrl = normalizeDataverseInstanceUrl(ctx.input.instanceUrl);
 
-      let response = await axios.post(
-        `https://login.microsoftonline.com/${ctx.input.tenantId}/oauth2/v2.0/token`,
+      let tokenData = await requestMicrosoftToken(
+        tenantId,
+        'client credentials token exchange',
         new URLSearchParams({
           client_id: ctx.input.clientId,
           client_secret: ctx.input.clientSecret,
           scope: `${instanceUrl}/.default`,
           grant_type: 'client_credentials'
-        }).toString(),
-        {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }
+        })
       );
-
-      let data = response.data;
-      let expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined;
+      let token = normalizeMicrosoftToken(tokenData, {
+        operation: 'client credentials token exchange'
+      });
 
       return {
         output: {
-          token: data.access_token,
+          token: token.token,
           refreshToken: undefined,
-          expiresAt,
+          expiresAt: token.expiresAt,
           instanceUrl,
-          tenantId: ctx.input.tenantId
+          tenantId
         }
       };
     },
 
     getProfile: async (ctx: {
-      output: {
-        token: string;
-        instanceUrl: string;
-        tenantId: string;
-        refreshToken?: string;
-        expiresAt?: string;
-      };
+      output: DynamicsAuthOutput;
       input: { tenantId: string; clientId: string; clientSecret: string; instanceUrl: string };
     }) => {
-      let instanceUrl = ctx.output.instanceUrl.replace(/\/+$/, '');
-      let response = await axios.get(`${instanceUrl}/api/data/v9.2/WhoAmI`, {
-        headers: { Authorization: `Bearer ${ctx.output.token}` }
-      });
-
-      let whoAmI = response.data;
+      let whoAmI = await requestDataverseData<{
+        UserId?: string;
+        OrganizationId?: string;
+      }>(ctx.output.instanceUrl, ctx.output.token, 'WhoAmI');
 
       return {
         profile: {
           id: whoAmI.UserId,
-          name: `Application User (${whoAmI.OrganizationId})`
+          name: `Application User (${whoAmI.OrganizationId ?? 'unknown organization'})`
         }
       };
     }

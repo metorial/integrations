@@ -5,6 +5,8 @@ import {
   createRecord,
   deleteRecord,
   disassociateRecords,
+  downloadFileColumn,
+  executeBatch,
   fetchXmlQuery,
   getEntityAttributes,
   getRecord,
@@ -15,6 +17,7 @@ import {
   listRecords,
   searchRecords,
   updateRecord,
+  uploadFileColumn,
   whoAmI
 } from './tools';
 import { inboundWebhook, recordChanged } from './triggers';
@@ -29,6 +32,9 @@ export let provider = Slate.create({
     listRecords,
     fetchXmlQuery,
     searchRecords,
+    downloadFileColumn,
+    uploadFileColumn,
+    executeBatch,
     associateRecords,
     disassociateRecords,
     getRelatedRecords,
