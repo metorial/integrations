@@ -1,4 +1,4 @@
-# <img src="https://developer.unimicro.no/favicon.ico" height="20"> UniMicro
+# <img src="https://provider-logos.metorial-cdn.com/unimicro.svg" height="20"> UniMicro
 
 Connect to UniMicro accounting and ERP data for Norway-focused workflows. This
 integration can list accessible companies, customers, suppliers, customer

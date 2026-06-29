@@ -1,4 +1,4 @@
-# <img src="https://finago.no/hubfs/2025%20-%20Finago%20theme/Logos/logo-black.svg" height="20"> Finago (24SevenOffice)
+# <img src="https://provider-logos.metorial-cdn.com/finago.svg" height="20"> Finago (24SevenOffice)
 
 Manage Finago Office accounting and ERP workflows through the 24SevenOffice REST API. The integration supports organization/profile context, chart of accounts, reference data, customers, products, sales orders, transaction lines, account balances, and accounting document upload/download metadata.
 
