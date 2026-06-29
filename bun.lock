@@ -2032,6 +2032,22 @@
         "typescript": "^5",
       },
     },
+    "integrations/business-central": {
+      "name": "@slates-integrations/business-central",
+      "version": "0.1.1-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "@vercel/ncc": "^0.38.4",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
     "integrations/businessmap": {
       "name": "@slates-integrations/businessmap",
       "version": "0.2.0-rc.5",
@@ -4585,6 +4601,21 @@
         "typescript": "^5",
       },
     },
+    "integrations/fiken": {
+      "name": "@slates-integrations/fiken",
+      "version": "0.1.1-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
     "integrations/files-com": {
       "name": "@slates-integrations/filescom",
       "version": "0.2.0-rc.5",
@@ -4623,7 +4654,7 @@
     },
     "integrations/finago": {
       "name": "@slates-integrations/finago",
-      "version": "0.1.0-rc.2",
+      "version": "0.1.0-rc.3",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
@@ -6447,6 +6478,21 @@
       },
       "devDependencies": {
         "typescript": "^5",
+      },
+    },
+    "integrations/ifs-applications": {
+      "name": "@slates-integrations/ifs-applications",
+      "version": "0.1.1-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/ifttt": {
@@ -9811,7 +9857,7 @@
     },
     "integrations/poweroffice": {
       "name": "@slates-integrations/poweroffice",
-      "version": "0.1.0-rc.7",
+      "version": "0.1.0-rc.8",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@types/node": "^20",
@@ -10741,6 +10787,21 @@
         "typescript": "^5",
       },
     },
+    "integrations/sap-s4hana": {
+      "name": "@slates-integrations/sap-s4hana",
+      "version": "0.1.1-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
     "integrations/sap-successfactors": {
       "name": "@slates-integrations/sap-successfactors",
       "version": "0.2.0-rc.5",
@@ -11512,7 +11573,7 @@
     },
     "integrations/slack": {
       "name": "@slates-integrations/slack",
-      "version": "0.2.0-rc.27",
+      "version": "0.2.0-rc.28",
       "dependencies": {
         "@lowerdeck/error": "^1.1.0",
         "@slates/slack-tools": "1.0.0-rc.8",
@@ -11657,6 +11718,21 @@
       },
       "devDependencies": {
         "typescript": "^5",
+      },
+    },
+    "integrations/sparebank-1-regnskap": {
+      "name": "@slates-integrations/sparebank-1-regnskap",
+      "version": "0.1.1-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/split": {
@@ -12967,6 +13043,21 @@
       },
       "devDependencies": {
         "typescript": "^5",
+      },
+    },
+    "integrations/unimicro": {
+      "name": "@slates-integrations/unimicro",
+      "version": "0.1.1-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/unione": {
@@ -15157,6 +15248,8 @@
 
     "@slates-integrations/bunnycdn": ["@slates-integrations/bunnycdn@workspace:integrations/bunnycdn"],
 
+    "@slates-integrations/business-central": ["@slates-integrations/business-central@workspace:integrations/business-central"],
+
     "@slates-integrations/businessmap": ["@slates-integrations/businessmap@workspace:integrations/businessmap"],
 
     "@slates-integrations/byteforms": ["@slates-integrations/byteforms@workspace:integrations/byteforms"],
@@ -15575,6 +15668,8 @@
 
     "@slates-integrations/figma": ["@slates-integrations/figma@workspace:integrations/figma"],
 
+    "@slates-integrations/fiken": ["@slates-integrations/fiken@workspace:integrations/fiken"],
+
     "@slates-integrations/filescom": ["@slates-integrations/filescom@workspace:integrations/files-com"],
 
     "@slates-integrations/fillout-forms": ["@slates-integrations/fillout-forms@workspace:integrations/fillout-forms"],
@@ -15868,6 +15963,8 @@
     "@slates-integrations/ibm-x-force-exchange": ["@slates-integrations/ibm-x-force-exchange@workspace:integrations/ibm-x-force-exchange"],
 
     "@slates-integrations/icypeas": ["@slates-integrations/icypeas@workspace:integrations/icypeas"],
+
+    "@slates-integrations/ifs-applications": ["@slates-integrations/ifs-applications@workspace:integrations/ifs-applications"],
 
     "@slates-integrations/ifttt": ["@slates-integrations/ifttt@workspace:integrations/ifttt"],
 
@@ -16559,6 +16656,8 @@
 
     "@slates-integrations/sanity": ["@slates-integrations/sanity@workspace:integrations/sanity"],
 
+    "@slates-integrations/sap-s4hana": ["@slates-integrations/sap-s4hana@workspace:integrations/sap-s4hana"],
+
     "@slates-integrations/sap-successfactors": ["@slates-integrations/sap-successfactors@workspace:integrations/sap-successfactors"],
 
     "@slates-integrations/satismeter": ["@slates-integrations/satismeter@workspace:integrations/satismeter"],
@@ -16708,6 +16807,8 @@
     "@slates-integrations/soundcloud": ["@slates-integrations/soundcloud@workspace:integrations/soundcloud"],
 
     "@slates-integrations/sourcegraph": ["@slates-integrations/sourcegraph@workspace:integrations/sourcegraph"],
+
+    "@slates-integrations/sparebank-1-regnskap": ["@slates-integrations/sparebank-1-regnskap@workspace:integrations/sparebank-1-regnskap"],
 
     "@slates-integrations/split": ["@slates-integrations/split@workspace:integrations/split"],
 
@@ -16934,6 +17035,8 @@
     "@slates-integrations/typless": ["@slates-integrations/typless@workspace:integrations/typless"],
 
     "@slates-integrations/u301": ["@slates-integrations/u301@workspace:integrations/u301"],
+
+    "@slates-integrations/unimicro": ["@slates-integrations/unimicro@workspace:integrations/unimicro"],
 
     "@slates-integrations/unione": ["@slates-integrations/unione@workspace:integrations/unione"],
 
