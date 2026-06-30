@@ -16,6 +16,8 @@ import {
   createDataverseClientFromContext,
   createRecordInputSchema,
   DataverseClient,
+  type DataverseHttpClient,
+  type DataverseHttpResponse,
   dataverseApiError,
   dataverseSearchInputSchema,
   deleteRecordInputSchema,
@@ -96,16 +98,18 @@ describe('microsoft dataverse URL and OData helpers', () => {
   });
 
   it('can send If-Match on record updates to prevent accidental upserts', async () => {
-    let patch = vi.fn(async () => ({
-      data: { accountid: '00000000-0000-0000-0000-000000000001' }
-    }));
+    let patch = vi.fn(
+      async <T = unknown>(): Promise<DataverseHttpResponse<T>> => ({
+        data: { accountid: '00000000-0000-0000-0000-000000000001' } as T
+      })
+    );
     let client = new DataverseClient({
       token: 'token',
       instanceUrl: 'https://org.crm.dynamics.com',
       http: {
         get: vi.fn(),
         post: vi.fn(),
-        patch,
+        patch: patch as unknown as DataverseHttpClient['patch'],
         put: vi.fn(),
         delete: vi.fn()
       }

@@ -18,6 +18,9 @@ import {
   dataManagementPackageOperationInputSchema,
   dynamicsFinOpsApiError,
   dynamicsFinOpsServiceError,
+  type FinOpsHttpClient,
+  type FinOpsHttpRequestConfig,
+  type FinOpsHttpResponse,
   finOpsODataOperationInputSchema,
   normalizeDataManagementStatus,
   normalizeFinOpsBaseUrl,
@@ -195,8 +198,11 @@ describe('dynamics finance and operations recipes', () => {
       url: string;
       config?: unknown;
     }> = [];
-    let api = {
-      get: async (url: string, config?: unknown) => {
+    let api: FinOpsHttpClient = {
+      get: async <T = unknown>(
+        url: string,
+        config?: FinOpsHttpRequestConfig
+      ): Promise<FinOpsHttpResponse<T>> => {
         calls.push({ url, config });
 
         if (url === 'data/CustomersV3') {
@@ -205,7 +211,7 @@ describe('dynamics finance and operations recipes', () => {
               value: [{ id: 1 }, { id: 2 }],
               '@odata.nextLink':
                 'https://contoso.operations.dynamics.com/data/CustomersV3?$skiptoken=2'
-            }
+            } as T
           };
         }
 
@@ -214,12 +220,14 @@ describe('dynamics finance and operations recipes', () => {
             value: [{ id: 3 }],
             '@odata.nextLink':
               'https://contoso.operations.dynamics.com/data/CustomersV3?$skiptoken=3'
-          }
+          } as T
         };
       },
-      post: async () => ({ data: {} }),
-      patch: async () => ({ data: {} }),
-      delete: async () => ({ data: {} })
+      post: async <T = unknown>(): Promise<FinOpsHttpResponse<T>> => ({ data: {} as T }),
+      patch: async <T = unknown>(): Promise<FinOpsHttpResponse<T>> => ({ data: {} as T }),
+      delete: async <T = unknown>(): Promise<FinOpsHttpResponse<T>> => ({
+        data: {} as T
+      })
     };
     let client = new DynamicsFinOpsClient({
       baseUrl: 'https://contoso.operations.dynamics.com',

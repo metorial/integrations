@@ -17,6 +17,9 @@ import {
   buildSearchOrdersRequest,
   buildSearchProductsRequest,
   buildUpdateCustomerRequest,
+  type CommerceHttpClient,
+  type CommerceHttpRequestConfig,
+  type CommerceHttpResponse,
   commerceApiError,
   commerceCartOperationInputSchema,
   commerceCatalogInputSchema,
@@ -347,12 +350,18 @@ describe('dynamics commerce recipes', () => {
   });
 
   it('executes request specs through the mockable Retail Server client', async () => {
-    let post = vi.fn(async (_path, _body) => ({ data: { ok: true } }));
+    let post = vi.fn(
+      async <T = unknown>(
+        _path: string,
+        _body?: unknown,
+        _config?: CommerceHttpRequestConfig
+      ): Promise<CommerceHttpResponse<T>> => ({ data: { ok: true } as T })
+    );
     let client = new DynamicsCommerceRetailServerClient({
       retailServerUrl: 'https://scaleunit.example.com/Commerce',
       api: {
         get: vi.fn(),
-        post,
+        post: post as unknown as CommerceHttpClient['post'],
         patch: vi.fn(),
         delete: vi.fn()
       }
