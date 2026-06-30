@@ -9,6 +9,7 @@ import {
   projectKeyFor,
   requireCloudOrganization,
   requireOneProjectStatusIdentifier,
+  requireServerDeployment,
   serializeSonarParams,
   validateAuthenticationResponse
 } from './client';
@@ -52,6 +53,18 @@ describe('SonarQube client helpers', () => {
     ).toBe('metricKeys=ncloc%2Ccoverage&page=2&resolved=false');
   });
 
+  it('serializes workflow POST parameters as form-compatible Sonar values', () => {
+    expect(
+      serializeSonarParams({
+        issue: 'ISSUE-1',
+        transition: 'accept',
+        tags: ['security', 'triaged'],
+        comment: 'Reviewed',
+        empty: undefined
+      })
+    ).toBe('issue=ISSUE-1&transition=accept&tags=security%2Ctriaged&comment=Reviewed');
+  });
+
   it('validates and caps pagination values', () => {
     expect(pageNumber(undefined)).toBe(1);
     expect(pageNumber(2.9)).toBe(2);
@@ -82,6 +95,15 @@ describe('SonarQube client helpers', () => {
       requireOneProjectStatusIdentifier({ projectKey: 'app', analysisId: 'analysis' })
     ).toThrow(/exactly one/);
     expect(() => requireOneProjectStatusIdentifier({})).toThrow(/exactly one/);
+  });
+
+  it('rejects Server-only operations for SonarQube Cloud configs', () => {
+    expect(() =>
+      requireServerDeployment({ deployment: 'server' }, 'get system status')
+    ).not.toThrow();
+    expect(() =>
+      requireServerDeployment({ deployment: 'cloud' }, 'get system status')
+    ).toThrow(/Server/);
   });
 
   it('validates authentication responses', () => {

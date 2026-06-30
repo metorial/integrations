@@ -1,5 +1,5 @@
 {
-  "name": "@sonarsource/sonarqube",
+  "name": "@metorial/sonarqube",
   "description": "Connect to SonarQube Server or SonarQube Cloud to inspect project quality, issues, branches, pull requests, measures, quality gate status, and analysis task state.",
   "categories": ["developer-tools", "apis-and-http-requests"],
   "skills": [

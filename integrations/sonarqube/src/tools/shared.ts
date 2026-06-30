@@ -88,6 +88,64 @@ export let issueSchema = z.object({
   raw: rawRecordSchema
 });
 
+export let hotspotSchema = z.object({
+  key: z.string().describe('SonarQube security hotspot key.'),
+  component: z.string().optional().describe('Component key containing the hotspot.'),
+  project: z.string().optional().describe('Project key containing the hotspot.'),
+  line: z.number().optional().describe('Line number when available.'),
+  message: z.string().optional().describe('Hotspot message.'),
+  status: z.string().optional().describe('Hotspot review status.'),
+  resolution: z.string().optional().describe('Hotspot review resolution when reviewed.'),
+  vulnerabilityProbability: z.string().optional().describe('Vulnerability probability.'),
+  ruleKey: z.string().optional().describe('Security hotspot rule key.'),
+  assignee: z.string().optional().describe('Assigned user login when available.'),
+  author: z.string().optional().describe('SCM author when available.'),
+  creationDate: z.string().optional().describe('Hotspot creation timestamp.'),
+  updateDate: z.string().optional().describe('Hotspot update timestamp.'),
+  raw: rawRecordSchema
+});
+
+export let ruleSchema = z.object({
+  key: z.string().describe('SonarQube rule key.'),
+  name: z.string().optional().describe('Rule name.'),
+  repository: z.string().optional().describe('Rule repository.'),
+  language: z.string().optional().describe('Rule language key.'),
+  languageName: z.string().optional().describe('Rule language name.'),
+  severity: z.string().optional().describe('Rule severity.'),
+  status: z.string().optional().describe('Rule status.'),
+  type: z.string().optional().describe('Rule type.'),
+  tags: z.array(z.string()).optional().describe('Rule tags.'),
+  systemTags: z.array(z.string()).optional().describe('System rule tags.'),
+  raw: rawRecordSchema
+});
+
+export let sourceLineSchema = z.object({
+  line: z.number().optional().describe('Source line number.'),
+  code: z.string().optional().describe('Source line text.'),
+  raw: z.any().describe('Raw SonarQube source-line entry.')
+});
+
+export let scmLineSchema = z.object({
+  line: z.number().optional().describe('Source line number.'),
+  author: z.string().optional().describe('SCM author.'),
+  date: z.string().optional().describe('SCM commit date.'),
+  revision: z.string().optional().describe('SCM revision or commit hash.'),
+  raw: z.any().describe('Raw SonarQube SCM entry.')
+});
+
+export let qualityGateSchema = z.object({
+  id: z.string().optional().describe('Quality gate id.'),
+  name: z.string().optional().describe('Quality gate name.'),
+  isDefault: z.boolean().optional().describe('Whether this is the default gate.'),
+  raw: rawRecordSchema
+});
+
+export let languageSchema = z.object({
+  key: z.string().describe('Language key.'),
+  name: z.string().optional().describe('Language name.'),
+  raw: rawRecordSchema
+});
+
 export let changeSchema = z.object({
   field: z.string().optional().describe('Changed field.'),
   oldValue: z.string().optional().describe('Previous value.'),
@@ -212,6 +270,55 @@ export let mapIssue = (issue: Record<string, unknown>) => ({
   raw: issue
 });
 
+export let mapHotspot = (hotspot: Record<string, unknown>) => ({
+  key: String(hotspot.key ?? ''),
+  component: optionalString(hotspot.component),
+  project: optionalString(hotspot.project),
+  line: optionalNumber(hotspot.line),
+  message: optionalString(hotspot.message),
+  status: optionalString(hotspot.status),
+  resolution: optionalString(hotspot.resolution),
+  vulnerabilityProbability: optionalString(hotspot.vulnerabilityProbability),
+  ruleKey: optionalString(hotspot.ruleKey) ?? optionalString(hotspot.rule),
+  assignee: optionalString(hotspot.assignee),
+  author: optionalString(hotspot.author),
+  creationDate: optionalString(hotspot.creationDate),
+  updateDate: optionalString(hotspot.updateDate),
+  raw: hotspot
+});
+
+export let mapRule = (rule: Record<string, unknown>) => ({
+  key: String(rule.key ?? ''),
+  name: optionalString(rule.name),
+  repository: optionalString(rule.repo) ?? optionalString(rule.repository),
+  language: optionalString(rule.lang) ?? optionalString(rule.language),
+  languageName: optionalString(rule.langName) ?? optionalString(rule.languageName),
+  severity: optionalString(rule.severity),
+  status: optionalString(rule.status),
+  type: optionalString(rule.type),
+  tags: optionalStringArray(rule.tags),
+  systemTags: optionalStringArray(rule.sysTags) ?? optionalStringArray(rule.systemTags),
+  raw: rule
+});
+
+export let mapQualityGate = (gate: Record<string, unknown>) => ({
+  id:
+    typeof gate.id === 'string'
+      ? gate.id
+      : typeof gate.id === 'number'
+        ? String(gate.id)
+        : undefined,
+  name: optionalString(gate.name),
+  isDefault: optionalBoolean(gate.isDefault) ?? optionalBoolean(gate.default),
+  raw: gate
+});
+
+export let mapLanguage = (language: Record<string, unknown>) => ({
+  key: String(language.key ?? ''),
+  name: optionalString(language.name),
+  raw: language
+});
+
 export let mapHistory = (history: Record<string, unknown>) => ({
   user: optionalString(history.user),
   userName: optionalString(history.userName),
@@ -251,11 +358,13 @@ export let paginationInputs = (defaultPageSize: number, maxPageSize: number) => 
     .describe(`Results per page. Defaults to ${defaultPageSize}; capped at ${maxPageSize}.`)
 });
 
-export let readOnlyTool = (params: {
+export let createSonarTool = (params: {
   name: string;
   key: string;
   description: string;
   instructions?: string[];
+  readOnly?: boolean;
+  destructive?: boolean;
 }) =>
   SlateTool.create(spec, {
     name: params.name,
@@ -263,10 +372,17 @@ export let readOnlyTool = (params: {
     description: params.description,
     instructions: params.instructions,
     tags: {
-      readOnly: true,
-      destructive: false
+      readOnly: params.readOnly ?? true,
+      destructive: params.destructive ?? false
     }
   });
+
+export let readOnlyTool = (params: {
+  name: string;
+  key: string;
+  description: string;
+  instructions?: string[];
+}) => createSonarTool(params);
 
 export let projectKeyFromInput = (config: SonarConfig, input: { projectKey?: string }) =>
   projectKeyFor(config, input.projectKey);

@@ -151,6 +151,12 @@ export let requireOneProjectStatusIdentifier = (input: {
   }
 };
 
+export let requireServerDeployment = (config: SonarConfig, operation: string) => {
+  if ((config.deployment ?? 'server') === 'cloud') {
+    throw sonarqubeValidationError(`${operation} is only available for SonarQube Server.`);
+  }
+};
+
 export let metricsSearchParams = (params: {
   query?: string;
   page?: number;
@@ -223,6 +229,36 @@ export class SonarQubeClient {
     let response = await requestAxios<T>(
       operation,
       () => this.http.get(path, { params }),
+      sonarqubeApiError
+    );
+    this.captureTokenExpiration(response.headers);
+    return response.data as T;
+  }
+
+  private async getText(operation: string, path: string, params?: Record<string, unknown>) {
+    let response = await requestAxios<string>(
+      operation,
+      () =>
+        this.http.get(path, {
+          params,
+          responseType: 'text',
+          transformResponse: value => value
+        }),
+      sonarqubeApiError
+    );
+    this.captureTokenExpiration(response.headers);
+    return response.data;
+  }
+
+  private async post<T>(operation: string, path: string, params?: Record<string, unknown>) {
+    let response = await requestAxios<T>(
+      operation,
+      () =>
+        this.http.post(path, serializeSonarParams(params ?? {}), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }),
       sonarqubeApiError
     );
     this.captureTokenExpiration(response.headers);
@@ -410,6 +446,7 @@ export class SonarQubeClient {
 
   async searchIssues(params: {
     organization?: string;
+    issueKeys?: string[];
     projectKeys?: string[];
     componentKeys?: string[];
     branch?: string;
@@ -426,6 +463,7 @@ export class SonarQubeClient {
     let organization = requireCloudOrganization(this.config, params.organization);
     let data = await this.get<unknown>('search issues', '/issues/search', {
       organization,
+      issues: params.issueKeys,
       projects: params.projectKeys,
       componentKeys: params.componentKeys,
       branch: params.branch,
@@ -442,6 +480,15 @@ export class SonarQubeClient {
     return normalizeArray<Record<string, unknown>>(data, 'issues');
   }
 
+  async getIssue(issueKey: string, organization?: string) {
+    let result = await this.searchIssues({ organization, issueKeys: [issueKey], pageSize: 1 });
+    let issue = result.items[0];
+    if (!issue) {
+      throw sonarqubeValidationError(`SonarQube issue ${issueKey} was not found.`);
+    }
+    return issue;
+  }
+
   async getIssueChangelog(issueKey: string) {
     return await this.get<Record<string, unknown>>(
       'get issue changelog',
@@ -450,6 +497,216 @@ export class SonarQubeClient {
         issue: issueKey
       }
     );
+  }
+
+  async transitionIssue(params: { issueKey: string; transition: string }) {
+    return await this.post<Record<string, unknown>>(
+      'transition issue',
+      '/issues/do_transition',
+      {
+        issue: params.issueKey,
+        transition: params.transition
+      }
+    );
+  }
+
+  async assignIssue(params: { issueKey: string; assignee: string }) {
+    return await this.post<Record<string, unknown>>('assign issue', '/issues/assign', {
+      issue: params.issueKey,
+      assignee: params.assignee
+    });
+  }
+
+  async addIssueComment(params: { issueKey: string; comment: string }) {
+    return await this.post<Record<string, unknown>>(
+      'add issue comment',
+      '/issues/add_comment',
+      {
+        issue: params.issueKey,
+        text: params.comment
+      }
+    );
+  }
+
+  async setIssueTags(params: { issueKey: string; tags: string[] }) {
+    return await this.post<Record<string, unknown>>('set issue tags', '/issues/set_tags', {
+      issue: params.issueKey,
+      tags: params.tags
+    });
+  }
+
+  async setIssueSeverity(params: { issueKey: string; severity: string }) {
+    return await this.post<Record<string, unknown>>(
+      'set issue severity',
+      '/issues/set_severity',
+      {
+        issue: params.issueKey,
+        severity: params.severity
+      }
+    );
+  }
+
+  async setIssueType(params: { issueKey: string; type: string }) {
+    return await this.post<Record<string, unknown>>('set issue type', '/issues/set_type', {
+      issue: params.issueKey,
+      type: params.type
+    });
+  }
+
+  async searchHotspots(params: {
+    projectKey: string;
+    branch?: string;
+    pullRequest?: string;
+    files?: string[];
+    status?: string;
+    resolution?: string;
+    onlyMine?: boolean;
+    page?: number;
+    pageSize?: number;
+  }) {
+    let data = await this.get<unknown>('search security hotspots', '/hotspots/search', {
+      projectKey: params.projectKey,
+      branch: params.branch,
+      pullRequest: params.pullRequest,
+      files: params.files,
+      status: params.status,
+      resolution: params.resolution,
+      onlyMine: params.onlyMine,
+      p: pageNumber(params.page),
+      ps: pageSize(params.pageSize, 100, 500)
+    });
+    return normalizeArray<Record<string, unknown>>(data, 'hotspots');
+  }
+
+  async getHotspot(hotspotKey: string) {
+    return await this.get<Record<string, unknown>>('get security hotspot', '/hotspots/show', {
+      hotspot: hotspotKey
+    });
+  }
+
+  async changeHotspotStatus(params: {
+    hotspotKey: string;
+    status: string;
+    resolution?: string;
+    comment?: string;
+  }) {
+    return await this.post<Record<string, unknown>>(
+      'change security hotspot status',
+      '/hotspots/change_status',
+      {
+        hotspot: params.hotspotKey,
+        status: params.status,
+        resolution: params.resolution,
+        comment: params.comment
+      }
+    );
+  }
+
+  async searchRules(params: {
+    organization?: string;
+    query?: string;
+    languages?: string[];
+    repositories?: string[];
+    tags?: string[];
+    severities?: string[];
+    types?: string[];
+    statuses?: string[];
+    page?: number;
+    pageSize?: number;
+  }) {
+    let organization = requireCloudOrganization(this.config, params.organization);
+    let data = await this.get<unknown>('search rules', '/rules/search', {
+      organization,
+      q: params.query,
+      languages: params.languages,
+      repositories: params.repositories,
+      tags: params.tags,
+      severities: params.severities,
+      types: params.types,
+      statuses: params.statuses,
+      f: 'name,repo,langName,severity,status,tags,sysTags',
+      p: pageNumber(params.page),
+      ps: pageSize(params.pageSize, 100, 500)
+    });
+    return normalizeArray<Record<string, unknown>>(data, 'rules');
+  }
+
+  async getRule(ruleKey: string, organization?: string) {
+    let resolvedOrganization = requireCloudOrganization(this.config, organization);
+    return await this.get<Record<string, unknown>>('get rule', '/rules/show', {
+      organization: resolvedOrganization,
+      key: ruleKey
+    });
+  }
+
+  async getSourceRaw(params: { component: string; branch?: string; pullRequest?: string }) {
+    return await this.getText('get raw source', '/sources/raw', {
+      key: params.component,
+      branch: params.branch,
+      pullRequest: params.pullRequest
+    });
+  }
+
+  async showSource(params: {
+    component: string;
+    branch?: string;
+    pullRequest?: string;
+    fromLine?: number;
+    toLine?: number;
+  }) {
+    return await this.get<Record<string, unknown>>('show source', '/sources/show', {
+      key: params.component,
+      branch: params.branch,
+      pullRequest: params.pullRequest,
+      from: params.fromLine,
+      to: params.toLine
+    });
+  }
+
+  async getScmInfo(params: {
+    component: string;
+    branch?: string;
+    pullRequest?: string;
+    fromLine?: number;
+    toLine?: number;
+    commitsByLine?: boolean;
+  }) {
+    return await this.get<Record<string, unknown>>('get source SCM info', '/sources/scm', {
+      key: params.component,
+      branch: params.branch,
+      pullRequest: params.pullRequest,
+      from: params.fromLine,
+      to: params.toLine,
+      commits_by_line: params.commitsByLine
+    });
+  }
+
+  async getDuplications(params: { component: string; branch?: string; pullRequest?: string }) {
+    return await this.get<Record<string, unknown>>('get duplications', '/duplications/show', {
+      key: params.component,
+      branch: params.branch,
+      pullRequest: params.pullRequest
+    });
+  }
+
+  async listQualityGates() {
+    let organization = requireCloudOrganization(this.config, undefined);
+    let data = await this.get<unknown>('list quality gates', '/qualitygates/list', {
+      organization
+    });
+    return normalizeArray<Record<string, unknown>>(data, 'qualitygates');
+  }
+
+  async listLanguages(params: { query?: string }) {
+    let data = await this.get<unknown>('list languages', '/languages/list', {
+      q: params.query
+    });
+    return normalizeArray<Record<string, unknown>>(data, 'languages');
+  }
+
+  async getSystemStatus() {
+    requireServerDeployment(this.config, 'get system status');
+    return await this.get<Record<string, unknown>>('get system status', '/system/status');
   }
 }
 

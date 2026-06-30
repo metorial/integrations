@@ -3,17 +3,30 @@ import { spec } from './spec';
 import {
   getComponentTool,
   getComputeTaskTool,
+  getDuplicationsTool,
+  getHotspotTool,
   getIssueChangelogTool,
+  getIssueTool,
   getProjectAnalysisStatusTool,
   getProjectMeasuresTool,
   getQualityGateStatusTool,
+  getRuleTool,
+  getScmInfoTool,
+  getSourceTool,
+  getSystemStatusTool,
   listComponentTreeTool,
+  listLanguagesTool,
   listMetricsTool,
   listProjectBranchesTool,
   listProjectPullRequestsTool,
+  listQualityGatesTool,
+  manageHotspotTool,
+  manageIssueTool,
+  searchHotspotsTool,
   searchIssuesTool,
   searchMeasureHistoryTool,
-  searchProjectsTool
+  searchProjectsTool,
+  searchRulesTool
 } from './tools';
 
 export let provider = Slate.create({
@@ -30,8 +43,21 @@ export let provider = Slate.create({
     getProjectMeasuresTool,
     searchMeasureHistoryTool,
     getQualityGateStatusTool,
+    listQualityGatesTool,
+    listLanguagesTool,
+    getSystemStatusTool,
     searchIssuesTool,
-    getIssueChangelogTool
+    getIssueTool,
+    getIssueChangelogTool,
+    manageIssueTool,
+    searchHotspotsTool,
+    getHotspotTool,
+    manageHotspotTool,
+    searchRulesTool,
+    getRuleTool,
+    getSourceTool,
+    getScmInfoTool,
+    getDuplicationsTool
   ],
   triggers: []
 });
