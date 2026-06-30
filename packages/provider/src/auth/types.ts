@@ -97,7 +97,7 @@ export type SlateAuthWithToken<InputType extends {}, OutputType extends { token?
 
   docs?: SlateAuthDocsReference[];
 
-  getOutput: (ctx: { input: InputType }) => Promise<{
+  getOutput: (ctx: { input: InputType; config?: SlateAuthCallbackConfig }) => Promise<{
     output: OutputType;
     scopes?: string[];
   }>;
@@ -109,7 +109,12 @@ export type SlateAuthWithToken<InputType extends {}, OutputType extends { token?
 
   getDefaultInput?: () => Promise<InputType>;
 
-  getProfile?: (ctx: { output: OutputType; input: InputType }) => Promise<{
+  getProfile?: (ctx: {
+    output: OutputType;
+    input: InputType;
+    scopes: string[];
+    config?: SlateAuthCallbackConfig;
+  }) => Promise<{
     profile: Record<string, any>;
   }>;
 };
@@ -124,7 +129,7 @@ export type SlateAuthWithServiceAccount<InputType extends {}, OutputType extends
 
   docs?: SlateAuthDocsReference[];
 
-  getOutput: (ctx: { input: InputType }) => Promise<{
+  getOutput: (ctx: { input: InputType; config?: SlateAuthCallbackConfig }) => Promise<{
     output: OutputType;
     scopes?: string[];
   }>;
@@ -136,7 +141,12 @@ export type SlateAuthWithServiceAccount<InputType extends {}, OutputType extends
 
   getDefaultInput?: () => Promise<InputType>;
 
-  getProfile?: (ctx: { output: OutputType; input: InputType }) => Promise<{
+  getProfile?: (ctx: {
+    output: OutputType;
+    input: InputType;
+    scopes: string[];
+    config?: SlateAuthCallbackConfig;
+  }) => Promise<{
     profile: Record<string, any>;
   }>;
 };
@@ -151,7 +161,7 @@ export type SlateAuthWithCustomData<InputType extends {}, OutputType extends {}>
 
   docs?: SlateAuthDocsReference[];
 
-  getOutput: (ctx: { input: InputType }) => Promise<{
+  getOutput: (ctx: { input: InputType; config?: SlateAuthCallbackConfig }) => Promise<{
     output: OutputType;
     scopes?: string[];
   }>;
@@ -162,6 +172,7 @@ export type SlateAuthWithCustomData<InputType extends {}, OutputType extends {}>
     clientId: string;
     clientSecret: string;
     scopes: string[];
+    config?: SlateAuthCallbackConfig;
   }) => Promise<{
     output: OutputType;
     input?: InputType;
@@ -174,7 +185,12 @@ export type SlateAuthWithCustomData<InputType extends {}, OutputType extends {}>
 
   getDefaultInput?: () => Promise<InputType>;
 
-  getProfile?: (ctx: { output: OutputType; input: InputType }) => Promise<{
+  getProfile?: (ctx: {
+    output: OutputType;
+    input: InputType;
+    scopes: string[];
+    config?: SlateAuthCallbackConfig;
+  }) => Promise<{
     profile: Record<string, any>;
   }>;
 };

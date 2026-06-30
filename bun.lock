@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@metorial/integrations-root",
@@ -703,14 +704,16 @@
     },
     "integrations/apify": {
       "name": "@slates-integrations/apify",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.6",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.14",
+        "slates": "1.0.0-rc.15",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/apilio": {
@@ -11697,6 +11700,21 @@
         "typescript": "^5",
       },
     },
+    "integrations/sonarqube": {
+      "name": "@slates-integrations/sonarqube",
+      "version": "0.1.0-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
+      },
+    },
     "integrations/soundcloud": {
       "name": "@slates-integrations/soundcloud",
       "version": "0.2.0-rc.5",
@@ -13684,14 +13702,16 @@
     },
     "integrations/workable": {
       "name": "@slates-integrations/workable",
-      "version": "0.2.0-rc.5",
+      "version": "0.2.0-rc.9",
       "dependencies": {
         "@types/node": "^20",
-        "slates": "1.0.0-rc.14",
+        "slates": "1.0.0-rc.15",
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/workato": {
@@ -16847,6 +16867,8 @@
 
     "@slates-integrations/solcast": ["@slates-integrations/solcast@workspace:integrations/solcast"],
 
+    "@slates-integrations/sonarqube": ["@slates-integrations/sonarqube@workspace:integrations/sonarqube"],
+
     "@slates-integrations/soundcloud": ["@slates-integrations/soundcloud@workspace:integrations/soundcloud"],
 
     "@slates-integrations/sourcegraph": ["@slates-integrations/sourcegraph@workspace:integrations/sourcegraph"],
@@ -18392,8 +18414,6 @@
     "@slates-integrations/apibible/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
 
     "@slates-integrations/apiflash/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
-
-    "@slates-integrations/apify/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
 
     "@slates-integrations/apilio/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
 
@@ -20221,8 +20241,6 @@
 
     "@slates-integrations/word-online/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
 
-    "@slates-integrations/workable/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
-
     "@slates-integrations/workato/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
 
     "@slates-integrations/workday/slates": ["slates@1.0.0-rc.14", "", { "dependencies": { "@slates/provider": "1.0.0-rc.15" } }, "sha512-TDfy7f9eJPCS5IpTwBq0jDOt5azw283YTt7vLTUPKoF4Cx6D6I7EZkV73NoUsL3qWnCQ0KY+vpH+UFGdnXzDtw=="],
@@ -20468,8 +20486,6 @@
     "@slates-integrations/apibible/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
 
     "@slates-integrations/apiflash/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
-
-    "@slates-integrations/apify/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
 
     "@slates-integrations/apilio/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
 
@@ -22228,8 +22244,6 @@
     "@slates-integrations/woodpecker-co/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
 
     "@slates-integrations/word-online/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
-
-    "@slates-integrations/workable/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
 
     "@slates-integrations/workato/slates/@slates/provider": ["@slates/provider@1.0.0-rc.15", "", { "dependencies": { "@lowerdeck/error": "^1.1.0", "@toon-format/toon": "^2.1.0", "axios": "^1.13.2", "zod": "^4.2.1" } }, "sha512-l28Ut+NsRYZ5X7Ml+ERaTFvOJe0G72SGJiHV4DNgFdeETjjDDBOKcj/OwIBQN0l0s6AxxqiXQIyZeQsRaDnDlA=="],
 
