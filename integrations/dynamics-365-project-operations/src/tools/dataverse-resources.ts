@@ -18,6 +18,9 @@ let resourceActionSchema = z
   .describe(
     'Operation variant. get/update_draft require recordId or alternateKey. create_draft/update_draft are rejected for read-only resources.'
   );
+let readOnlyResourceActionSchema = z
+  .enum(['list', 'get'])
+  .describe('Operation variant. get requires recordId or alternateKey.');
 
 let queryFields = {
   instanceUrl: z
@@ -170,32 +173,18 @@ let projectInputSchema = z.object({
     .describe('Currency lookup navigation property. Defaults to transactioncurrencyid.')
 });
 
-let taskInputSchema = z.object({
-  action: resourceActionSchema,
+let taskReadInputSchema = z.object({
+  action: readOnlyResourceActionSchema,
   ...queryFields,
-  ...projectLookupFields,
-  taskName: z.string().optional().describe('Project task name / subject.'),
-  description: z.string().optional().describe('Task description.'),
-  scheduledStart: z.string().optional().describe('Scheduled task start date/time.'),
-  scheduledEnd: z.string().optional().describe('Scheduled task finish date/time.'),
-  effortHours: z.number().optional().describe('Planned task effort in hours.'),
-  parentTaskId: z.string().optional().describe('Parent project task GUID to bind.'),
-  parentTaskBindColumn: z
-    .string()
-    .optional()
-    .describe('Parent task lookup navigation property. Defaults to msdyn_parenttask.')
+  ...projectLookupFields
 });
 
-let assignmentInputSchema = z.object({
-  action: resourceActionSchema,
+let assignmentReadInputSchema = z.object({
+  action: readOnlyResourceActionSchema,
   ...queryFields,
   ...projectLookupFields,
   ...taskLookupFields,
-  ...resourceLookupFields,
-  assignmentName: z.string().optional().describe('Optional assignment display name.'),
-  effortHours: z.number().optional().describe('Assigned effort in hours.'),
-  scheduledStart: z.string().optional().describe('Assignment start date/time.'),
-  scheduledEnd: z.string().optional().describe('Assignment finish date/time.')
+  ...resourceLookupFields
 });
 
 let timeEntryInputSchema = z.object({
@@ -235,7 +224,7 @@ let expenseInputSchema = z.object({
 });
 
 let readOnlyProjectDataInputSchema = z.object({
-  action: resourceActionSchema,
+  action: readOnlyResourceActionSchema,
   ...queryFields,
   ...projectLookupFields,
   accountId: z
@@ -334,8 +323,9 @@ let combineFilters = (filters: Array<string | undefined>) =>
 let compactFilters = (filters: Array<string | undefined>) =>
   filters.filter((filter): filter is string => Boolean(filter));
 
-let recordIdFrom = (record: DataverseRecord, idField: string) => {
-  let value = record[idField];
+let recordIdFrom = (record: unknown, idField: string) => {
+  if (!record || typeof record !== 'object') return undefined;
+  let value = (record as DataverseRecord)[idField];
   return typeof value === 'string' ? value : undefined;
 };
 
@@ -403,49 +393,6 @@ let addResourceBinding = (data: DataverseRecord, input: Record<string, unknown>)
     'bookableresources',
     input.resourceId
   );
-};
-
-let buildTaskRecord = (input: Record<string, unknown>) => {
-  let data = pickDefined({
-    msdyn_subject: input.taskName,
-    msdyn_description: input.description,
-    msdyn_start: input.scheduledStart,
-    msdyn_finish: input.scheduledEnd,
-    msdyn_effort: input.effortHours
-  }) as DataverseRecord;
-
-  addBind(
-    data,
-    input.projectBindColumn,
-    'msdyn_project',
-    input.projectsEntitySetName,
-    'msdyn_projects',
-    input.projectId
-  );
-  addBind(
-    data,
-    input.parentTaskBindColumn,
-    'msdyn_parenttask',
-    input.tasksEntitySetName,
-    'msdyn_projecttasks',
-    input.parentTaskId
-  );
-
-  return mergeAdditionalFields(data, input);
-};
-
-let buildAssignmentRecord = (input: Record<string, unknown>) => {
-  let data = pickDefined({
-    msdyn_name: input.assignmentName,
-    msdyn_effort: input.effortHours,
-    msdyn_start: input.scheduledStart,
-    msdyn_finish: input.scheduledEnd
-  }) as DataverseRecord;
-
-  addProjectTaskBindings(data, input);
-  addResourceBinding(data, input);
-
-  return mergeAdditionalFields(data, input);
 };
 
 let buildTimeEntryRecord = (input: Record<string, unknown>) => {
@@ -550,14 +497,19 @@ let createResourceTool = (definition: ResourceDefinition) =>
           typeof input.filter === 'string' ? input.filter : undefined,
           ...(definition.buildListFilters?.(input) ?? [])
         ]);
+        let top = typeof input.top === 'number' ? input.top : undefined;
         let result = await client.listRecords(entitySetName, {
           select: (input.select as string[] | undefined) ?? definition.defaultSelect,
           filter: filter || undefined,
           orderBy: typeof input.orderBy === 'string' ? input.orderBy : undefined,
           expand: typeof input.expand === 'string' ? input.expand : undefined,
-          top: typeof input.top === 'number' ? input.top : undefined,
+          top,
           pageSize:
-            typeof input.pageSize === 'number' ? input.pageSize : ctx.config.defaultPageSize,
+            top === undefined
+              ? typeof input.pageSize === 'number'
+                ? input.pageSize
+                : ctx.config.defaultPageSize
+              : undefined,
           nextLink: typeof input.nextLink === 'string' ? input.nextLink : undefined,
           includeCount:
             typeof input.includeCount === 'boolean' ? input.includeCount : undefined
@@ -625,26 +577,33 @@ let createResourceTool = (definition: ResourceDefinition) =>
         };
       }
 
-      let record = await client.updateRecord(
-        entitySetName,
-        dataverseRecordKeyFromInput({
-          recordId: typeof input.recordId === 'string' ? input.recordId : undefined,
-          alternateKey: input.alternateKey as
-            | Record<string, DataversePrimitiveKeyValue>
-            | undefined
-        }),
-        data,
-        {
-          returnRepresentation: input.returnRepresentation !== false
-        }
-      );
+      let recordKey = dataverseRecordKeyFromInput({
+        recordId: typeof input.recordId === 'string' ? input.recordId : undefined,
+        alternateKey: input.alternateKey as
+          | Record<string, DataversePrimitiveKeyValue>
+          | undefined
+      });
+      let existingRecord = await client.getRecord(entitySetName, recordKey, {
+        select: [definition.idField]
+      });
+      let updateKey = recordIdFrom(existingRecord, definition.idField);
+      if (!updateKey) {
+        throw projectOperationsValidationError(
+          `Could not resolve ${definition.displayName} primary ID before update_draft.`
+        );
+      }
+
+      let record = await client.updateRecord(entitySetName, updateKey, data, {
+        preventCreate: true,
+        returnRepresentation: input.returnRepresentation !== false
+      });
 
       return {
         output: {
           action,
           entitySetName,
           record,
-          recordId: recordIdFrom(record, definition.idField)
+          recordId: recordIdFrom(record, definition.idField) ?? updateKey
         },
         message: `Updated draft ${definition.displayName} record.`
       };
@@ -674,12 +633,12 @@ export let manageProjectTasks = createResourceTool({
   key: 'manage_project_tasks',
   name: 'Manage Project Tasks',
   description:
-    'List, get, create, and update draft project task records for Dynamics 365 Project Operations work breakdown structures.',
+    'List and get project task records for Dynamics 365 Project Operations work breakdown structures. Use Manage Project Schedule for task create, update, and delete through Microsoft Project schedule APIs.',
   defaultEntitySetName: 'msdyn_projecttasks',
   idField: 'msdyn_projecttaskid',
   displayName: 'project task',
-  inputSchema: taskInputSchema,
-  writable: true,
+  inputSchema: taskReadInputSchema,
+  writable: false,
   defaultSelect: [
     'msdyn_projecttaskid',
     'msdyn_subject',
@@ -687,7 +646,6 @@ export let manageProjectTasks = createResourceTool({
     'msdyn_finish',
     'msdyn_effort'
   ],
-  buildRecord: buildTaskRecord,
   buildListFilters: input => projectRelatedFilters(input)
 });
 
@@ -695,12 +653,12 @@ export let manageResourceAssignments = createResourceTool({
   key: 'manage_resource_assignments',
   name: 'Manage Resource Assignments',
   description:
-    'List, get, create, and update draft Project Operations resource assignment records for planned project work.',
+    'List and get Project Operations resource assignment records for planned project work. Use Manage Project Schedule for assignment create, contour update, and delete through Microsoft Project schedule APIs.',
   defaultEntitySetName: 'msdyn_resourceassignments',
   idField: 'msdyn_resourceassignmentid',
   displayName: 'resource assignment',
-  inputSchema: assignmentInputSchema,
-  writable: true,
+  inputSchema: assignmentReadInputSchema,
+  writable: false,
   defaultSelect: [
     'msdyn_resourceassignmentid',
     'msdyn_name',
@@ -708,7 +666,6 @@ export let manageResourceAssignments = createResourceTool({
     'msdyn_start',
     'msdyn_finish'
   ],
-  buildRecord: buildAssignmentRecord,
   buildListFilters: input => assignmentFilters(input)
 });
 

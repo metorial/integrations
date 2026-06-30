@@ -11,14 +11,19 @@ let expectedToolIds = [
   'manage_project_contracts',
   'manage_project_actuals',
   'manage_project_invoices',
+  'manage_project_schedule',
   'manage_finance_handoff'
 ];
 
 let readOnlyToolIds = new Set([
+  'manage_project_tasks',
+  'manage_resource_assignments',
   'manage_project_contracts',
   'manage_project_actuals',
   'manage_project_invoices'
 ]);
+
+let destructiveToolIds = new Set(['manage_project_schedule']);
 
 describe('Dynamics 365 Project Operations provider contract', () => {
   it('registers the expected P0 product tool surface', () => {
@@ -28,7 +33,7 @@ describe('Dynamics 365 Project Operations provider contract', () => {
     expect((provider as { triggers?: unknown[] }).triggers ?? []).toEqual([]);
   });
 
-  it('marks read-only finance facts as read-only and keeps draft tools non-destructive', () => {
+  it('marks read-only and destructive tools accurately', () => {
     for (let action of provider.actions) {
       let shouldBeReadOnly = readOnlyToolIds.has(action.key);
 
@@ -36,7 +41,7 @@ describe('Dynamics 365 Project Operations provider contract', () => {
         shouldBeReadOnly
       );
       expect(action.parameters.tags?.destructive ?? false, `${action.key} destructive`).toBe(
-        false
+        destructiveToolIds.has(action.key)
       );
     }
   });

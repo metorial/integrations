@@ -6,6 +6,7 @@ import {
   getCustomerServiceRecord,
   listCustomerServiceRecords,
   manageCaseWorkflow,
+  manageQueueItemWorkflow,
   updateCustomerServiceRecord
 } from './tools';
 
@@ -17,6 +18,7 @@ export let provider = Slate.create({
     createCustomerServiceRecord,
     updateCustomerServiceRecord,
     manageCaseWorkflow,
+    manageQueueItemWorkflow,
     downloadNoteAttachment
   ],
   triggers: []

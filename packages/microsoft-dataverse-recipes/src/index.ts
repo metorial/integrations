@@ -1145,11 +1145,17 @@ export class DataverseClient {
     entitySetName: string,
     recordKey: DataverseRecordKey,
     data: DataverseRecord,
-    options: { returnRepresentation?: boolean } = {}
+    options: { returnRepresentation?: boolean; preventCreate?: boolean } = {}
   ) {
-    let headers = preferHeaders(
-      options.returnRepresentation === false ? [] : ['return=representation']
-    );
+    let headers: Record<string, string> = {
+      ...(preferHeaders(
+        options.returnRepresentation === false ? [] : ['return=representation']
+      ) ?? {})
+    };
+    if (options.preventCreate === true) {
+      headers['If-Match'] = '*';
+    }
+
     return this.data<T>('update record', () =>
       this.http.patch(buildDataverseRecordPath(entitySetName, recordKey), data, { headers })
     );

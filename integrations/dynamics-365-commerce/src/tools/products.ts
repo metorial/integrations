@@ -3,26 +3,39 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import {
+  buildDocumentedGetActivePricesRequest,
+  buildDocumentedGetEstimatedAvailabilityRequest,
+  buildDocumentedGetProductAvailabilitiesRequest,
+  buildDocumentedGetProductRequest,
+  buildDocumentedGetProductsByIdsRequest,
+  buildDocumentedSearchProductsRequest
+} from './retail-server-requests';
+import {
   buildCommerceToolOutput,
   commerceMessage,
   commerceResultOutputSchema,
   createCommerceClient,
-  withCommerceDefaults
+  withCommerceDefaults,
+  withCommercePaginationDefaults
 } from './shared';
 
 let productInputSchema = commerceProductInputSchema.extend({
-  includeAttributes: z
-    .boolean()
-    .optional()
-    .describe('For search_products, ask Retail Server to include product attributes.'),
   refiners: z
     .array(z.unknown())
     .optional()
-    .describe('For search_products, Retail Server refiner payloads to apply.'),
+    .describe(
+      'For search_products, Retail Server refinementCriteria payloads to apply through RefineSearchByText or RefineSearchByCategory.'
+    ),
   affiliationLoyaltyTiers: z
     .array(z.unknown())
     .optional()
-    .describe('For get_active_prices, customer affiliation/loyalty tier payloads.')
+    .describe('For get_active_prices, customer affiliation/loyalty tier payloads.'),
+  includeSimpleDiscountsInContextualPrice: z
+    .boolean()
+    .optional()
+    .describe(
+      'For get_active_prices, include simple discounts in contextual prices when the Commerce API supports that flag.'
+    )
 });
 
 export let lookupProductsPricesInventory = SlateTool.create(spec, {
@@ -45,26 +58,36 @@ export let lookupProductsPricesInventory = SlateTool.create(spec, {
 
     switch (input.action) {
       case 'search_products':
-        result = await client.searchProducts(input);
+        result = await client.execute(
+          buildDocumentedSearchProductsRequest(withCommercePaginationDefaults(ctx, input))
+        );
         break;
       case 'get_product':
-        result = await client.getProduct(input as any);
+        result = await client.execute(buildDocumentedGetProductRequest(input as any));
         collection = false;
         break;
       case 'get_products_by_ids':
-        result = await client.getProductsByIds(input as any);
+        result = await client.execute(
+          buildDocumentedGetProductsByIdsRequest(withCommercePaginationDefaults(ctx, input))
+        );
         break;
       case 'get_active_prices':
-        result = await client.getActivePrices(input as any);
+        result = await client.execute(
+          buildDocumentedGetActivePricesRequest(withCommercePaginationDefaults(ctx, input))
+        );
         break;
       case 'get_product_promotions':
         result = await client.getProductPromotions(input as any);
         break;
       case 'get_product_availabilities':
-        result = await client.getProductAvailabilities(input as any);
+        result = await client.execute(
+          buildDocumentedGetProductAvailabilitiesRequest(
+            withCommercePaginationDefaults(ctx, input)
+          )
+        );
         break;
       case 'get_estimated_availability':
-        result = await client.getEstimatedAvailability(input as any);
+        result = await client.execute(buildDocumentedGetEstimatedAvailabilityRequest(input));
         break;
     }
 

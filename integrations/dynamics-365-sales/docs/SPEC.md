@@ -14,9 +14,10 @@ The integration supports Microsoft Entra delegated OAuth and client credentials.
 - `get_sales_record`
 - `create_sales_record`
 - `update_sales_record`
+- `delete_sales_record`
 - `qualify_lead`
 - `close_opportunity`
 
 ## Notes
 
-The first release focuses on practical Sales P0 workflows. Destructive deletes, quote/order fulfillment transitions, and custom sales-process automation are intentionally excluded until product-specific live E2E coverage is available.
+The first release focuses on practical Sales P0 workflows. Quote/order fulfillment transitions and custom sales-process automation are intentionally excluded until product-specific live E2E coverage is available.

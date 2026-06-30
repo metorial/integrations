@@ -20,6 +20,7 @@ describe('dynamics-365-sales provider contract', () => {
         'get_sales_record',
         'create_sales_record',
         'update_sales_record',
+        'delete_sales_record',
         'qualify_lead',
         'close_opportunity'
       ],
@@ -30,6 +31,7 @@ describe('dynamics-365-sales provider contract', () => {
         { id: 'get_sales_record', readOnly: true, destructive: false },
         { id: 'create_sales_record', readOnly: false, destructive: false },
         { id: 'update_sales_record', readOnly: false, destructive: false },
+        { id: 'delete_sales_record', readOnly: false, destructive: true },
         { id: 'qualify_lead', readOnly: false, destructive: false },
         { id: 'close_opportunity', readOnly: false, destructive: false }
       ]

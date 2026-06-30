@@ -51,7 +51,7 @@ let salesResources: Record<
       'fullname',
       'emailaddress1',
       'telephone1',
-      'parentcustomerid',
+      '_parentcustomerid_value',
       'statecode',
       'statuscode',
       'createdon',
@@ -79,7 +79,7 @@ let salesResources: Record<
     defaultSelect: [
       'opportunityid',
       'name',
-      'customerid',
+      '_customerid_value',
       'estimatedvalue',
       'estimatedclosedate',
       'statecode',
@@ -149,7 +149,7 @@ let salesResources: Record<
       'quoteid',
       'name',
       'quotenumber',
-      'customerid',
+      '_customerid_value',
       'totalamount',
       'statecode',
       'statuscode',
@@ -164,7 +164,7 @@ let salesResources: Record<
       'salesorderid',
       'name',
       'ordernumber',
-      'customerid',
+      '_customerid_value',
       'totalamount',
       'statecode',
       'statuscode',
@@ -186,6 +186,8 @@ let requireText = (value: string | undefined, label: string) => {
 
   return value.trim();
 };
+
+let hasKeys = (value: Record<string, unknown>) => Object.keys(value).length > 0;
 
 let listInputSchema = z.object({
   resourceType: salesResourceTypeSchema.describe('Sales record type to query'),
@@ -242,6 +244,16 @@ export let listSalesRecords = SlateTool.create(spec, {
       ctx.input.resourceType,
       ctx.input.entitySetNameOverride
     );
+    if (
+      ctx.input.top !== undefined &&
+      ctx.input.pageSize !== undefined &&
+      !ctx.input.nextLink
+    ) {
+      throw dataverseValidationError(
+        'Use either top or pageSize for list_sales_records. Dataverse ignores $top when pageSize sends the odata.maxpagesize preference.'
+      );
+    }
+
     let page = await createDataverseClientFromContext(ctx).listRecords(
       resource.entitySetName,
       {
@@ -340,7 +352,7 @@ export let createSalesRecord = SlateTool.create(spec, {
     z.object({
       resourceType: salesResourceTypeSchema,
       entitySetName: z.string(),
-      record: recordSchema
+      record: recordSchema.optional()
     })
   )
   .handleInvocation(async ctx => {
@@ -396,7 +408,7 @@ export let updateSalesRecord = SlateTool.create(spec, {
     z.object({
       resourceType: salesResourceTypeSchema,
       entitySetName: z.string(),
-      record: recordSchema
+      record: recordSchema.optional()
     })
   )
   .handleInvocation(async ctx => {
@@ -404,12 +416,19 @@ export let updateSalesRecord = SlateTool.create(spec, {
       ctx.input.resourceType,
       ctx.input.entitySetNameOverride
     );
+    if (!hasKeys(ctx.input.recordData)) {
+      throw dataverseValidationError(
+        'recordData must include at least one column for update_sales_record.'
+      );
+    }
+
     let record = await createDataverseClientFromContext(ctx).updateRecord(
       resource.entitySetName,
       ctx.input.recordId,
       ctx.input.recordData,
       {
-        returnRepresentation: ctx.input.returnRepresentation
+        returnRepresentation: ctx.input.returnRepresentation,
+        preventCreate: true
       }
     );
 
@@ -420,6 +439,52 @@ export let updateSalesRecord = SlateTool.create(spec, {
         record
       },
       message: `Updated Dynamics 365 Sales ${resource.displayName} record **${ctx.input.recordId}**.`
+    };
+  })
+  .build();
+
+export let deleteSalesRecord = SlateTool.create(spec, {
+  key: 'delete_sales_record',
+  name: 'Delete Sales Record',
+  description:
+    'Permanently delete a Dynamics 365 Sales account, contact, lead, opportunity, activity, quote, or order record by Dataverse GUID.',
+  tags: { readOnly: false, destructive: true }
+})
+  .input(
+    z.object({
+      resourceType: salesResourceTypeSchema.describe('Sales record type to delete'),
+      entitySetNameOverride: z
+        .string()
+        .optional()
+        .describe('Override the default Dataverse entity set name.'),
+      recordId: z.string().describe('Dataverse record GUID')
+    })
+  )
+  .output(
+    z.object({
+      resourceType: salesResourceTypeSchema,
+      entitySetName: z.string(),
+      recordId: z.string(),
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
+    let resource = resolveSalesResource(
+      ctx.input.resourceType,
+      ctx.input.entitySetNameOverride
+    );
+    let recordId = requireText(ctx.input.recordId, 'recordId');
+
+    await createDataverseClientFromContext(ctx).deleteRecord(resource.entitySetName, recordId);
+
+    return {
+      output: {
+        resourceType: ctx.input.resourceType,
+        entitySetName: resource.entitySetName,
+        recordId,
+        deleted: true
+      },
+      message: `Deleted Dynamics 365 Sales ${resource.displayName} record **${recordId}**.`
     };
   })
   .build();
@@ -469,10 +534,10 @@ export let qualifyLead = SlateTool.create(spec, {
   )
   .handleInvocation(async ctx => {
     let body: Record<string, unknown> = { ...(ctx.input.additionalParameters ?? {}) };
-    setIfDefined(body, 'CreateAccount', ctx.input.createAccount);
-    setIfDefined(body, 'CreateContact', ctx.input.createContact);
-    setIfDefined(body, 'CreateOpportunity', ctx.input.createOpportunity);
-    setIfDefined(body, 'Status', ctx.input.statusCode);
+    body.CreateAccount = ctx.input.createAccount ?? false;
+    body.CreateContact = ctx.input.createContact ?? false;
+    body.CreateOpportunity = ctx.input.createOpportunity ?? false;
+    body.Status = ctx.input.statusCode;
     setIfDefined(body, 'SuppressDuplicateDetection', ctx.input.suppressDuplicateDetection);
 
     let result = await createDataverseClientFromContext(ctx).invokeOperation({
@@ -534,6 +599,7 @@ export let closeOpportunity = SlateTool.create(spec, {
     let opportunityId = requireText(ctx.input.opportunityId, 'opportunityId');
     let opportunityClose: Record<string, unknown> = {
       ...(ctx.input.closeRecordData ?? {}),
+      '@odata.type': 'Microsoft.Dynamics.CRM.opportunityclose',
       'opportunityid@odata.bind': `/opportunities(${opportunityId})`
     };
     setIfDefined(opportunityClose, 'subject', ctx.input.subject);

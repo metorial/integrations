@@ -1,15 +1,32 @@
-import { createDataverseClientFromContext } from '@slates/microsoft-dataverse-recipes';
+import {
+  createDataverseClientFromContext,
+  dataverseValidationError,
+  formatDataverseODataString,
+  normalizeDataverseGuid
+} from '@slates/microsoft-dataverse-recipes';
 import { createTextAttachment, SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 
 let recordSchema = z.record(z.string(), z.any());
+let DEFAULT_LIST_TOP = 50;
+let DEFAULT_METADATA_SEARCH = 'msdynci';
+let DEFAULT_METADATA_LIMIT = 25;
+let MAX_METADATA_LIMIT = 100;
+let SEGMENT_MEMBERSHIP_ENTITY_SET_NAME = 'msdynci_segmentmemberships';
+let SEGMENT_MEMBERSHIP_SEGMENTS_COLUMN = 'msdynci_segments';
 
 let customerInsightsResourceTypes = [
   'customer_profile',
+  'alternate_key',
   'segment',
   'measure',
-  'activity'
+  'customer_measure',
+  'activity',
+  'unified_activity',
+  'enrichment',
+  'prediction',
+  'segment_membership'
 ] as const;
 
 let customerInsightsResourceTypeSchema = z.enum(customerInsightsResourceTypes);
@@ -17,12 +34,15 @@ type CustomerInsightsResourceType = z.infer<typeof customerInsightsResourceTypeS
 
 let customerInsightsResources: Record<
   CustomerInsightsResourceType,
-  { entitySetName: string; displayName: string; defaultSelect: string[] }
+  { entitySetName: string; displayName: string; defaultSelect?: string[] }
 > = {
   customer_profile: {
     entitySetName: 'msdynci_customerprofiles',
-    displayName: 'customer profiles',
-    defaultSelect: ['msdynci_customerprofileid', 'msdynci_name', 'createdon', 'modifiedon']
+    displayName: 'customer profiles'
+  },
+  alternate_key: {
+    entitySetName: 'msdynci_alternatekeys',
+    displayName: 'alternate keys'
   },
   segment: {
     entitySetName: 'msdynci_segments',
@@ -38,13 +58,31 @@ let customerInsightsResources: Record<
   },
   measure: {
     entitySetName: 'msdynci_measures',
-    displayName: 'measures',
-    defaultSelect: ['msdynci_measureid', 'msdynci_name', 'createdon', 'modifiedon']
+    displayName: 'measures'
+  },
+  customer_measure: {
+    entitySetName: 'msdynci_customermeasures',
+    displayName: 'customer measures'
   },
   activity: {
-    entitySetName: 'msdynci_activities',
-    displayName: 'activities',
-    defaultSelect: ['msdynci_activityid', 'msdynci_name', 'createdon', 'modifiedon']
+    entitySetName: 'msdynci_unifiedactivities',
+    displayName: 'activities'
+  },
+  unified_activity: {
+    entitySetName: 'msdynci_unifiedactivities',
+    displayName: 'unified activities'
+  },
+  enrichment: {
+    entitySetName: 'msdynci_enrichments',
+    displayName: 'enrichments'
+  },
+  prediction: {
+    entitySetName: 'msdynci_predictions',
+    displayName: 'predictions'
+  },
+  segment_membership: {
+    entitySetName: SEGMENT_MEMBERSHIP_ENTITY_SET_NAME,
+    displayName: 'segment memberships'
   }
 };
 
@@ -53,10 +91,18 @@ let resolveResource = (resourceType: CustomerInsightsResourceType, override?: st
   entitySetName: override?.trim() || customerInsightsResources[resourceType].entitySetName
 });
 
-let stripGuidBraces = (value: string) => value.trim().replace(/[{}]/g, '');
-
 let combineFilters = (...filters: Array<string | undefined>) =>
-  filters.filter((filter): filter is string => Boolean(filter?.trim())).join(' and ');
+  filters
+    .map(filter => filter?.trim())
+    .filter((filter): filter is string => Boolean(filter))
+    .map(filter => `(${filter})`)
+    .join(' and ');
+
+let containsFilter = (column: string, value: string) =>
+  `contains(${column},'${formatDataverseODataString(value)}')`;
+
+let buildSegmentNameFilter = (column: string, value: string) =>
+  containsFilter(column, column === SEGMENT_MEMBERSHIP_SEGMENTS_COLUMN ? `"${value}"` : value);
 
 let csvEscape = (value: unknown) => {
   if (value === null || value === undefined) return '';
@@ -82,6 +128,72 @@ let toCsv = (records: Record<string, unknown>[], columns: string[]) =>
     ...records.map(record => columns.map(column => csvEscape(record[column])).join(','))
   ].join('\n');
 
+let metadataAttributeSchema = z.object({
+  logicalName: z.string().optional(),
+  schemaName: z.string().optional(),
+  type: z.string().optional(),
+  displayName: z.string().optional(),
+  description: z.string().optional(),
+  requiredLevel: z.string().optional(),
+  isValidForCreate: z.boolean().optional(),
+  isValidForUpdate: z.boolean().optional(),
+  isValidForRead: z.boolean().optional(),
+  targets: z.array(z.string()).optional(),
+  attributeOf: z.string().optional(),
+  metadataId: z.string().optional()
+});
+
+let metadataTableSchema = z.object({
+  logicalName: z.string().optional(),
+  entitySetName: z.string().optional(),
+  schemaName: z.string().optional(),
+  displayName: z.string().optional(),
+  description: z.string().optional(),
+  primaryIdAttribute: z.string().optional(),
+  primaryNameAttribute: z.string().optional(),
+  ownershipType: z.string().optional(),
+  isActivity: z.boolean().optional(),
+  metadataId: z.string().optional(),
+  attributes: z.array(metadataAttributeSchema).optional()
+});
+
+let entityMetadataSelect = [
+  'LogicalName',
+  'EntitySetName',
+  'SchemaName',
+  'DisplayName',
+  'Description',
+  'PrimaryIdAttribute',
+  'PrimaryNameAttribute',
+  'OwnershipType',
+  'IsActivity',
+  'MetadataId'
+];
+
+let normalizeMetadataLimit = (maxTables: number | undefined) => {
+  let limit = maxTables ?? DEFAULT_METADATA_LIMIT;
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw dataverseValidationError('maxTables must be a positive integer.');
+  }
+  if (limit > MAX_METADATA_LIMIT) {
+    throw dataverseValidationError(`maxTables cannot exceed ${MAX_METADATA_LIMIT}.`);
+  }
+
+  return limit;
+};
+
+let buildMetadataFilter = (input: { search?: string; filter?: string }) => {
+  if (input.filter?.trim()) return input.filter.trim();
+
+  let search = input.search?.trim() || DEFAULT_METADATA_SEARCH;
+  let escaped = formatDataverseODataString(search);
+  return [
+    `contains(LogicalName,'${escaped}')`,
+    `contains(EntitySetName,'${escaped}')`,
+    `contains(SchemaName,'${escaped}')`
+  ].join(' or ');
+};
+
 let listInputSchema = z.object({
   resourceType: customerInsightsResourceTypeSchema.describe(
     'Customer Insights record type to query'
@@ -99,20 +211,142 @@ let listInputSchema = z.object({
   filter: z.string().optional().describe('OData $filter expression'),
   orderBy: z.string().optional().describe('OData $orderby expression'),
   expand: z.string().optional().describe('OData $expand expression'),
-  top: z.number().int().positive().optional().describe('OData $top value'),
+  top: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe('OData $top value. Defaults to 50 when omitted.'),
   pageSize: z.number().int().positive().optional().describe('Preferred Dataverse page size'),
   nextLink: z
     .string()
     .optional()
-    .describe('Dataverse @odata.nextLink from a previous response'),
+    .describe(
+      'Dataverse @odata.nextLink from a previous response. Use it unchanged without select, filter, orderBy, expand, top, or includeCount.'
+    ),
   includeCount: z.boolean().optional().describe('Whether to request @odata.count')
 });
+
+let validateListInput = (input: z.infer<typeof listInputSchema>) => {
+  if (input.top !== undefined && input.pageSize !== undefined) {
+    throw dataverseValidationError(
+      'Use either top for a single limited Dataverse page or pageSize for Dataverse paging, not both. Dataverse ignores $top when odata.maxpagesize is used.'
+    );
+  }
+
+  if (input.nextLink === undefined) return undefined;
+
+  let nextLink = input.nextLink.trim();
+  if (!nextLink) {
+    throw dataverseValidationError('nextLink is required when provided.');
+  }
+
+  let incompatibleOptions = [
+    input.select !== undefined ? 'select' : undefined,
+    input.filter !== undefined ? 'filter' : undefined,
+    input.orderBy !== undefined ? 'orderBy' : undefined,
+    input.expand !== undefined ? 'expand' : undefined,
+    input.top !== undefined ? 'top' : undefined,
+    input.includeCount === true ? 'includeCount' : undefined
+  ].filter((option): option is string => Boolean(option));
+
+  if (incompatibleOptions.length > 0) {
+    throw dataverseValidationError(
+      `Do not combine nextLink with ${incompatibleOptions.join(', ')}. Dataverse nextLink values already contain the query state for the next page.`
+    );
+  }
+
+  return nextLink;
+};
+
+export let listCustomerInsightsTables = SlateTool.create(spec, {
+  key: 'list_customer_insights_tables',
+  name: 'List Customer Insights Tables',
+  description:
+    'Discover Dynamics 365 Customer Insights Dataverse table metadata, entity set names, primary columns, and optionally readable attributes.',
+  tags: { readOnly: true, destructive: false }
+})
+  .input(
+    z.object({
+      search: z
+        .string()
+        .optional()
+        .describe(
+          'Substring to match against Dataverse logical, entity set, or schema names. Defaults to msdynci.'
+        ),
+      filter: z
+        .string()
+        .optional()
+        .describe(
+          'Advanced EntityDefinitions OData $filter expression. Overrides search when provided.'
+        ),
+      includeAttributes: z
+        .boolean()
+        .optional()
+        .describe('Whether to include table attribute metadata. Defaults to false.'),
+      readableAttributesOnly: z
+        .boolean()
+        .optional()
+        .describe(
+          'When includeAttributes is true, omit attributes not valid for read. Defaults to true.'
+        ),
+      maxTables: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe('Maximum metadata tables to return. Defaults to 25 and cannot exceed 100.')
+    })
+  )
+  .output(
+    z.object({
+      search: z.string().optional(),
+      filter: z.string(),
+      tables: z.array(metadataTableSchema),
+      tableCount: z.number(),
+      complete: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
+    let maxTables = normalizeMetadataLimit(ctx.input.maxTables);
+    let filter = buildMetadataFilter(ctx.input);
+    let client = createDataverseClientFromContext(ctx);
+    let tables = await client.getEntityDefinitions({
+      select: entityMetadataSelect,
+      filter
+    });
+    let limitedTables = tables.slice(0, maxTables);
+    let readableAttributesOnly = ctx.input.readableAttributesOnly ?? true;
+
+    if (ctx.input.includeAttributes) {
+      for (let table of limitedTables) {
+        if (!table.logicalName) continue;
+
+        let attributes = await client.getEntityAttributes(table.logicalName);
+        table.attributes = readableAttributesOnly
+          ? attributes.filter(attribute => attribute.isValidForRead !== false)
+          : attributes;
+      }
+    }
+
+    return {
+      output: {
+        search: ctx.input.search,
+        filter,
+        tables: limitedTables,
+        tableCount: limitedTables.length,
+        complete: tables.length <= maxTables
+      },
+      message: `Retrieved **${limitedTables.length}** Dynamics 365 Customer Insights Dataverse table definitions.`
+    };
+  })
+  .build();
 
 export let listCustomerInsightsRecords = SlateTool.create(spec, {
   key: 'list_customer_insights_records',
   name: 'List Customer Insights Records',
   description:
-    'List Dynamics 365 Customer Insights customer profiles, segments, measures, and activities with Dataverse OData query options.',
+    'List Dynamics 365 Customer Insights customer profiles, alternate keys, segments, measures, activities, enrichments, predictions, and segment memberships with Dataverse OData query options.',
   tags: { readOnly: true, destructive: false }
 })
   .input(listInputSchema)
@@ -126,6 +360,7 @@ export let listCustomerInsightsRecords = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
+    let nextLink = validateListInput(ctx.input);
     let resource = resolveResource(ctx.input.resourceType, ctx.input.entitySetNameOverride);
     let page = await createDataverseClientFromContext(ctx).listRecords(
       resource.entitySetName,
@@ -134,9 +369,10 @@ export let listCustomerInsightsRecords = SlateTool.create(spec, {
         filter: ctx.input.filter,
         orderBy: ctx.input.orderBy,
         expand: ctx.input.expand,
-        top: ctx.input.top,
+        top:
+          nextLink || ctx.input.pageSize ? ctx.input.top : (ctx.input.top ?? DEFAULT_LIST_TOP),
         pageSize: ctx.input.pageSize,
-        nextLink: ctx.input.nextLink,
+        nextLink,
         includeCount: ctx.input.includeCount
       }
     );
@@ -158,7 +394,7 @@ export let getCustomerInsightsRecord = SlateTool.create(spec, {
   key: 'get_customer_insights_record',
   name: 'Get Customer Insights Record',
   description:
-    'Retrieve one Dynamics 365 Customer Insights customer profile, segment, measure, or activity by Dataverse GUID.',
+    'Retrieve one Dynamics 365 Customer Insights customer profile, alternate key, segment, measure, activity, enrichment, prediction, or segment membership by Dataverse GUID.',
   tags: { readOnly: true, destructive: false }
 })
   .input(
@@ -216,16 +452,32 @@ export let exportSegmentMembers = SlateTool.create(spec, {
       entitySetNameOverride: z
         .string()
         .optional()
-        .describe('Segment member entity set name. Defaults to msdynci_segmentmembers.'),
+        .describe(
+          `Segment membership entity set name. Defaults to ${SEGMENT_MEMBERSHIP_ENTITY_SET_NAME}.`
+        ),
       segmentId: z
         .string()
         .optional()
-        .describe('Optional segment GUID used to build a default filter.'),
+        .describe(
+          'Optional segment GUID for tenant-specific segment lookup columns. Requires segmentFilterColumn; the documented Customer Insights table uses segmentName with msdynci_segments.'
+        ),
       segmentFilterColumn: z
         .string()
         .optional()
         .describe(
-          'Lookup/value column used with segmentId. Defaults to _msdynci_segmentid_value.'
+          'Tenant-specific lookup/value column used with segmentId, such as _msdynci_segmentid_value.'
+        ),
+      segmentName: z
+        .string()
+        .optional()
+        .describe(
+          'Optional segment name used to filter the documented segment membership table.'
+        ),
+      segmentNameColumn: z
+        .string()
+        .optional()
+        .describe(
+          `Text column used with segmentName. Defaults to ${SEGMENT_MEMBERSHIP_SEGMENTS_COLUMN}.`
         ),
       filter: z
         .string()
@@ -274,11 +526,24 @@ export let exportSegmentMembers = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let entitySetName = ctx.input.entitySetNameOverride?.trim() || 'msdynci_segmentmembers';
+    let entitySetName =
+      ctx.input.entitySetNameOverride?.trim() || SEGMENT_MEMBERSHIP_ENTITY_SET_NAME;
+    if (ctx.input.segmentId && !ctx.input.segmentFilterColumn?.trim()) {
+      throw dataverseValidationError(
+        `segmentFilterColumn is required when segmentId is provided. The documented Customer Insights segment membership table filters segment names with ${SEGMENT_MEMBERSHIP_SEGMENTS_COLUMN}.`
+      );
+    }
+
     let segmentFilter = ctx.input.segmentId
-      ? `${ctx.input.segmentFilterColumn ?? '_msdynci_segmentid_value'} eq ${stripGuidBraces(ctx.input.segmentId)}`
+      ? `${ctx.input.segmentFilterColumn?.trim()} eq ${normalizeDataverseGuid(ctx.input.segmentId)}`
       : undefined;
-    let filter = combineFilters(segmentFilter, ctx.input.filter) || undefined;
+    let segmentNameColumn =
+      ctx.input.segmentNameColumn?.trim() || SEGMENT_MEMBERSHIP_SEGMENTS_COLUMN;
+    let segmentNameFilter = ctx.input.segmentName
+      ? buildSegmentNameFilter(segmentNameColumn, ctx.input.segmentName)
+      : undefined;
+    let filter =
+      combineFilters(segmentFilter, segmentNameFilter, ctx.input.filter) || undefined;
     let result = await createDataverseClientFromContext(ctx).listAllRecords(entitySetName, {
       select: ctx.input.select,
       filter,

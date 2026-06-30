@@ -1,6 +1,6 @@
 {
   "name": "@microsoft/dynamics-365-supply-chain-management",
-  "description": "Read Microsoft Dynamics 365 Supply Chain Management products, released products, inventory, warehouses, purchase orders, sales orders, shipments, and receipts through Finance and Operations APIs.",
+  "description": "Read Microsoft Dynamics 365 Supply Chain Management products, released products, inventory, warehouses, purchase orders and lines, sales orders and lines, shipments, and receipts through Finance and Operations APIs.",
   "categories": ["inventory-and-erp", "apis-and-http-requests", "productivity-and-office"],
   "skills": [
     "list supply chain products",
@@ -8,7 +8,9 @@
     "review inventory on-hand data",
     "discover warehouses",
     "inspect purchase orders",
+    "inspect purchase order lines",
     "inspect sales orders",
+    "inspect sales order lines",
     "review shipment headers",
     "review receipt headers",
     "query Finance and Operations OData data entities"

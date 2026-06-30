@@ -1,5 +1,5 @@
 import { ServiceError } from '@lowerdeck/error';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import {
   batchInputSchema,
@@ -15,6 +15,7 @@ import {
   buildInitializeFileBlocksUploadBody,
   createDataverseClientFromContext,
   createRecordInputSchema,
+  DataverseClient,
   dataverseApiError,
   dataverseSearchInputSchema,
   deleteRecordInputSchema,
@@ -91,6 +92,40 @@ describe('microsoft dataverse URL and OData helpers', () => {
     ).toBe("contacts(emailaddress1='ada%2Bcrm%2Fo''neill%40example.com')");
     expect(formatDataverseRecordKey({ accountnumber: 'A 100', statecode: 0 })).toBe(
       "accountnumber='A%20100',statecode=0"
+    );
+  });
+
+  it('can send If-Match on record updates to prevent accidental upserts', async () => {
+    let patch = vi.fn(async () => ({
+      data: { accountid: '00000000-0000-0000-0000-000000000001' }
+    }));
+    let client = new DataverseClient({
+      token: 'token',
+      instanceUrl: 'https://org.crm.dynamics.com',
+      http: {
+        get: vi.fn(),
+        post: vi.fn(),
+        patch,
+        put: vi.fn(),
+        delete: vi.fn()
+      }
+    });
+
+    await client.updateRecord(
+      'accounts',
+      '00000000-0000-0000-0000-000000000001',
+      { name: 'Contoso' },
+      { preventCreate: true, returnRepresentation: false }
+    );
+
+    expect(patch).toHaveBeenCalledWith(
+      'accounts(00000000-0000-0000-0000-000000000001)',
+      { name: 'Contoso' },
+      {
+        headers: {
+          'If-Match': '*'
+        }
+      }
     );
   });
 

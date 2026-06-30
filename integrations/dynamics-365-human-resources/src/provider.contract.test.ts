@@ -15,13 +15,21 @@ describe('dynamics-365-human-resources provider contract', () => {
         'list_workers',
         'get_worker',
         'list_employees',
+        'get_employee',
         'list_positions',
+        'get_position',
         'list_jobs',
+        'get_job',
         'list_departments',
+        'get_department',
         'list_leave_balances',
+        'get_leave_balance',
         'list_leave_requests',
+        'get_leave_request',
         'list_compensation_plans',
-        'list_benefit_enrollments'
+        'get_compensation_plan',
+        'list_benefit_enrollments',
+        'get_benefit_enrollment'
       ],
       triggerIds: [],
       authMethodIds: ['oauth_organizations', 'client_credentials'],
@@ -29,18 +37,26 @@ describe('dynamics-365-human-resources provider contract', () => {
         { id: 'list_workers', readOnly: true, destructive: false },
         { id: 'get_worker', readOnly: true, destructive: false },
         { id: 'list_employees', readOnly: true, destructive: false },
+        { id: 'get_employee', readOnly: true, destructive: false },
         { id: 'list_positions', readOnly: true, destructive: false },
+        { id: 'get_position', readOnly: true, destructive: false },
         { id: 'list_jobs', readOnly: true, destructive: false },
+        { id: 'get_job', readOnly: true, destructive: false },
         { id: 'list_departments', readOnly: true, destructive: false },
+        { id: 'get_department', readOnly: true, destructive: false },
         { id: 'list_leave_balances', readOnly: true, destructive: false },
+        { id: 'get_leave_balance', readOnly: true, destructive: false },
         { id: 'list_leave_requests', readOnly: true, destructive: false },
+        { id: 'get_leave_request', readOnly: true, destructive: false },
         { id: 'list_compensation_plans', readOnly: true, destructive: false },
-        { id: 'list_benefit_enrollments', readOnly: true, destructive: false }
+        { id: 'get_compensation_plan', readOnly: true, destructive: false },
+        { id: 'list_benefit_enrollments', readOnly: true, destructive: false },
+        { id: 'get_benefit_enrollment', readOnly: true, destructive: false }
       ],
       triggers: []
     });
 
-    expect(contract.actions).toHaveLength(10);
+    expect(contract.actions).toHaveLength(18);
     expect(Object.keys(contract.configSchema.properties ?? {})).toEqual([
       'baseUrl',
       'environmentUrl',

@@ -41,12 +41,32 @@ The package also includes a bearer-token auth method for sandbox and diagnostic 
 The tools consume `@slates/dynamics-commerce-recipes` methods for:
 
 - Channels and stores: list channels, get channel configuration, get store, search stores.
-- Catalogs: list catalogs and get catalog.
+- Catalogs: list catalogs and get a catalog by selecting from the documented
+  `Catalogs/GetCatalogs` response page. Public Microsoft Commerce consumer API
+  docs do not document a separate `Catalogs/GetCatalog` action.
 - Products, prices, promotions, and inventory: product search, product get by id, product get by ids, active prices, product promotions, product availability, and estimated availability.
 - Customers: create, update, search, get by account numbers, and order history.
 - Carts: create, get, add/update/remove lines, add/remove discount codes, checkout, and promotions.
 - Orders: search, get by transaction id, get by sales id, and create sales order.
 - Metadata: Retail Server `$metadata` download as an attachment.
+
+## API Fidelity Notes
+
+- Product `GetByIds`, `GetActivePrices`, and `GetProductAvailabilities` send
+  `QueryResultSettings` because Microsoft documents those actions as returning
+  paged results.
+- Product `GetById` sends only `recordId` and `channelId`; `catalogId` is not a
+  documented parameter for that action.
+- Product `GetActivePrices` maps the user-facing `customerAccountNumber` input
+  to the documented `customerId` parameter.
+- Customer `GetByAccountNumbers` requires `searchLocationValue` and sends
+  `QueryResultSettings`; customer `GetOrderHistory` sends `accountNumber` plus
+  `QueryResultSettings`.
+- Cart line update actions pass optional `cartVersion`; cart checkout passes
+  optional `receiptNumberSequence` and `cartVersion`.
+- Order detail lookups call `SalesOrders/GetSalesOrderDetailsByTransactionId`
+  and `SalesOrders/GetSalesOrderDetailsBySalesId`, matching the Microsoft
+  sales-order controller names.
 
 ## Write Safety
 
@@ -69,4 +89,5 @@ Package auth and tool validation failures throw `ServiceError` through shared Sl
 ## Primary References
 
 - Commerce Retail Server API consumption: https://learn.microsoft.com/en-us/dynamics365/commerce/dev-itpro/consume-retail-server-api
+- Commerce Scale Unit customer and consumer APIs: https://learn.microsoft.com/en-us/dynamics365/commerce/dev-itpro/retail-server-customer-consumer-api
 - Microsoft identity platform client credentials flow: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow

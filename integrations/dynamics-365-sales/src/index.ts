@@ -3,6 +3,7 @@ import { spec } from './spec';
 import {
   closeOpportunity,
   createSalesRecord,
+  deleteSalesRecord,
   getSalesRecord,
   listSalesRecords,
   qualifyLead,
@@ -16,6 +17,7 @@ export let provider = Slate.create({
     getSalesRecord,
     createSalesRecord,
     updateSalesRecord,
+    deleteSalesRecord,
     qualifyLead,
     closeOpportunity
   ],

@@ -3,7 +3,9 @@ import { spec } from './spec';
 import {
   createJournalDraftRecord,
   getCustomer,
+  getJournal,
   getVendor,
+  getVendorInvoice,
   listChartOfAccounts,
   listCustomers,
   listJournals,
@@ -21,12 +23,14 @@ export let provider = Slate.create({
     listChartOfAccounts,
     listLedgerEntries,
     listJournals,
+    getJournal,
     createJournalDraftRecord,
     listCustomers,
     getCustomer,
     listVendors,
     getVendor,
     listVendorInvoices,
+    getVendorInvoice,
     runDataManagementPackageOperation
   ],
   triggers: []

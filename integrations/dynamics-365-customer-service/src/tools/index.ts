@@ -20,6 +20,12 @@ let customerServiceResourceTypes = [
 let customerServiceResourceTypeSchema = z.enum(customerServiceResourceTypes);
 type CustomerServiceResourceType = z.infer<typeof customerServiceResourceTypeSchema>;
 
+let queueWorkflowActionSchema = z.enum(['add', 'pick', 'release', 'remove', 'route']);
+type QueueWorkflowAction = z.infer<typeof queueWorkflowActionSchema>;
+
+let queueRouteTargetTypeSchema = z.enum(['queue', 'systemuser', 'team']);
+type QueueRouteTargetType = z.infer<typeof queueRouteTargetTypeSchema>;
+
 let customerServiceResources: Record<
   CustomerServiceResourceType,
   { entitySetName: string; displayName: string; defaultSelect: string[] }
@@ -31,8 +37,8 @@ let customerServiceResources: Record<
       'incidentid',
       'ticketnumber',
       'title',
-      'customerid',
-      'ownerid',
+      '_customerid_value',
+      '_ownerid_value',
       'statecode',
       'statuscode',
       'createdon',
@@ -49,9 +55,9 @@ let customerServiceResources: Record<
     displayName: 'queue items',
     defaultSelect: [
       'queueitemid',
-      'queueid',
-      'objectid',
-      'workerid',
+      '_queueid_value',
+      '_objectid_value',
+      '_workerid_value',
       'enteredon',
       'statecode',
       'statuscode',
@@ -81,7 +87,7 @@ let customerServiceResources: Record<
       'filename',
       'mimetype',
       'filesize',
-      'objectid',
+      '_objectid_value',
       'createdon',
       'modifiedon'
     ]
@@ -94,7 +100,7 @@ let customerServiceResources: Record<
       'filename',
       'mimetype',
       'filesize',
-      'objectid',
+      '_objectid_value',
       'createdon',
       'modifiedon'
     ]
@@ -121,6 +127,118 @@ let requireNumber = (value: number | undefined, label: string) => {
 
   return value;
 };
+
+let isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+let stringValue = (value: unknown) => (typeof value === 'string' ? value : undefined);
+
+let hasKeys = (value: Record<string, unknown>) => Object.keys(value).length > 0;
+
+let defaultPrimaryIdAttributes: Record<string, string> = {
+  incident: 'incidentid',
+  knowledgearticle: 'knowledgearticleid',
+  queue: 'queueid',
+  queueitem: 'queueitemid',
+  systemuser: 'systemuserid',
+  team: 'teamid'
+};
+
+let buildEntityReference = (
+  logicalName: string | undefined,
+  recordId: string | undefined,
+  options: { primaryIdAttribute?: string; idLabel?: string } = {}
+) => {
+  let resolvedLogicalName = requireText(logicalName, 'entity logical name');
+  let primaryIdAttribute =
+    options.primaryIdAttribute?.trim() ??
+    defaultPrimaryIdAttributes[resolvedLogicalName] ??
+    `${resolvedLogicalName}id`;
+
+  return {
+    '@odata.type': `Microsoft.Dynamics.CRM.${resolvedLogicalName}`,
+    [primaryIdAttribute]: requireText(recordId, options.idLabel ?? 'recordId')
+  };
+};
+
+let queueTargetPrimaryIdAttributes: Record<QueueRouteTargetType, string> = {
+  queue: 'queueid',
+  systemuser: 'systemuserid',
+  team: 'teamid'
+};
+
+let ownerEntitySetNames: Record<'systemuser' | 'team', string> = {
+  systemuser: 'systemusers',
+  team: 'teams'
+};
+
+let buildQueueTargetReference = (
+  targetType: QueueRouteTargetType | undefined,
+  targetId: string | undefined
+) => {
+  let resolvedTargetType = targetType ?? 'queue';
+  return buildEntityReference(resolvedTargetType, targetId, {
+    primaryIdAttribute: queueTargetPrimaryIdAttributes[resolvedTargetType],
+    idLabel: 'targetId'
+  });
+};
+
+let queueWorkflowInputSchema = z.object({
+  queueAction: queueWorkflowActionSchema.describe(
+    'Queue workflow operation. add places a record in a queue, pick assigns a queue item to a user, release returns a picked item to the queue, remove removes a queue item, and route sends a queue item to a queue, user, or team.'
+  ),
+  queueItemId: z
+    .string()
+    .optional()
+    .describe('Queue item GUID. Required for pick, release, remove, and route.'),
+  queueId: z
+    .string()
+    .optional()
+    .describe('Destination queue GUID for add, or optional context queue GUID.'),
+  sourceQueueId: z
+    .string()
+    .optional()
+    .describe('Optional source queue GUID for add when moving an item between queues.'),
+  targetEntityLogicalName: z
+    .string()
+    .optional()
+    .describe(
+      'Dataverse logical name of the record to add to a queue, such as incident, knowledgearticle, email, phonecall, or task. Required for add.'
+    ),
+  targetRecordId: z
+    .string()
+    .optional()
+    .describe('Dataverse GUID of the record to add to a queue. Required for add.'),
+  targetPrimaryIdAttribute: z
+    .string()
+    .optional()
+    .describe(
+      'Primary ID attribute for targetEntityLogicalName when it does not follow the default <logicalName>id pattern.'
+    ),
+  assigneeUserId: z
+    .string()
+    .optional()
+    .describe('System user GUID that should pick the queue item. Required for pick.'),
+  removeQueueItem: z
+    .boolean()
+    .optional()
+    .describe('For pick, whether Dataverse should remove the queue item after assigning it.'),
+  targetType: queueRouteTargetTypeSchema
+    .optional()
+    .describe('Route target type for route. Defaults to queue.'),
+  targetId: z
+    .string()
+    .optional()
+    .describe('Queue, system user, or team GUID for route. Required for route.'),
+  queueItemProperties: recordSchema
+    .optional()
+    .describe(
+      'Optional QueueItemProperties object for add, for tenant-specific queue item fields.'
+    ),
+  additionalFields: recordSchema
+    .optional()
+    .describe('Additional action body fields for tenant-specific Dataverse parameters.')
+});
 
 let listInputSchema = z.object({
   resourceType: customerServiceResourceTypeSchema.describe(
@@ -269,7 +387,7 @@ export let createCustomerServiceRecord = SlateTool.create(spec, {
     z.object({
       resourceType: customerServiceResourceTypeSchema,
       entitySetName: z.string(),
-      record: recordSchema
+      record: recordSchema.optional()
     })
   )
   .handleInvocation(async ctx => {
@@ -323,17 +441,24 @@ export let updateCustomerServiceRecord = SlateTool.create(spec, {
     z.object({
       resourceType: customerServiceResourceTypeSchema,
       entitySetName: z.string(),
-      record: recordSchema
+      record: recordSchema.optional()
     })
   )
   .handleInvocation(async ctx => {
     let resource = resolveResource(ctx.input.resourceType, ctx.input.entitySetNameOverride);
+    if (!hasKeys(ctx.input.recordData)) {
+      throw dataverseValidationError(
+        'recordData must include at least one column for update_customer_service_record.'
+      );
+    }
+
     let record = await createDataverseClientFromContext(ctx).updateRecord(
       resource.entitySetName,
       ctx.input.recordId,
       ctx.input.recordData,
       {
-        returnRepresentation: ctx.input.returnRepresentation
+        returnRepresentation: ctx.input.returnRepresentation,
+        preventCreate: true
       }
     );
 
@@ -424,24 +549,18 @@ export let manageCaseWorkflow = SlateTool.create(spec, {
     if (ctx.input.workflowAction === 'assign') {
       let assigneeType = ctx.input.assigneeType ?? 'systemuser';
       let assigneeId = requireText(ctx.input.assigneeId, 'assigneeId');
-      let result = await client.invokeOperation({
-        operationType: 'action',
-        operationName: 'Assign',
-        requestBody: {
+      let record = await client.updateRecord(
+        'incidents',
+        caseId,
+        {
           ...(ctx.input.additionalFields ?? {}),
-          Target: {
-            '@odata.type': 'Microsoft.Dynamics.CRM.incident',
-            incidentid: caseId
-          },
-          Assignee: {
-            '@odata.type': `Microsoft.Dynamics.CRM.${assigneeType}`,
-            [assigneeType === 'team' ? 'teamid' : 'systemuserid']: assigneeId
-          }
-        }
-      });
+          'ownerid@odata.bind': `/${ownerEntitySetNames[assigneeType]}(${assigneeId})`
+        },
+        { returnRepresentation: true, preventCreate: true }
+      );
 
       return {
-        output: { workflowAction: ctx.input.workflowAction, caseId, result: result ?? {} },
+        output: { workflowAction: ctx.input.workflowAction, caseId, result: record },
         message: `Assigned case **${caseId}**.`
       };
     }
@@ -455,12 +574,138 @@ export let manageCaseWorkflow = SlateTool.create(spec, {
         statecode,
         statuscode: requireNumber(ctx.input.statusCode, 'statusCode')
       },
-      { returnRepresentation: true }
+      { returnRepresentation: true, preventCreate: true }
     );
 
     return {
       output: { workflowAction: ctx.input.workflowAction, caseId, result: record },
       message: `${ctx.input.workflowAction === 'reopen' ? 'Reopened' : 'Canceled'} case **${caseId}**.`
+    };
+  })
+  .build();
+
+export let manageQueueItemWorkflow = SlateTool.create(spec, {
+  key: 'manage_queue_item_workflow',
+  name: 'Manage Queue Item Workflow',
+  description:
+    'Add Customer Service records to queues, pick queue items for a user, release picked items, remove queue items, or route queue items to a queue, user, or team.',
+  tags: { readOnly: false, destructive: false }
+})
+  .input(queueWorkflowInputSchema)
+  .output(
+    z.object({
+      queueAction: queueWorkflowActionSchema,
+      queueItemId: z.string().optional(),
+      result: z.any()
+    })
+  )
+  .handleInvocation(async ctx => {
+    let action: QueueWorkflowAction = ctx.input.queueAction;
+    let client = createDataverseClientFromContext(ctx);
+
+    if (action === 'add') {
+      let queueId = requireText(ctx.input.queueId, 'queueId');
+      let requestBody: Record<string, unknown> = {
+        ...(ctx.input.additionalFields ?? {}),
+        Target: buildEntityReference(
+          ctx.input.targetEntityLogicalName,
+          ctx.input.targetRecordId,
+          {
+            primaryIdAttribute: ctx.input.targetPrimaryIdAttribute,
+            idLabel: 'targetRecordId'
+          }
+        )
+      };
+
+      if (ctx.input.sourceQueueId) {
+        requestBody.SourceQueue = buildEntityReference('queue', ctx.input.sourceQueueId, {
+          primaryIdAttribute: 'queueid',
+          idLabel: 'sourceQueueId'
+        });
+      }
+      if (ctx.input.queueItemProperties) {
+        requestBody.QueueItemProperties = {
+          '@odata.type': 'Microsoft.Dynamics.CRM.queueitem',
+          ...ctx.input.queueItemProperties
+        };
+      }
+
+      let result = await client.invokeOperation({
+        operationType: 'action',
+        bindingType: 'entity',
+        entitySetName: 'queues',
+        recordKey: queueId,
+        operationName: 'AddToQueue',
+        requestBody
+      });
+      let queueItemId = isRecord(result) ? stringValue(result.QueueItemId) : undefined;
+
+      return {
+        output: { queueAction: action, queueItemId, result: result ?? {} },
+        message: queueItemId
+          ? `Added record to queue **${queueId}** as queue item **${queueItemId}**.`
+          : `Added record to queue **${queueId}**.`
+      };
+    }
+
+    let queueItemId = requireText(ctx.input.queueItemId, 'queueItemId');
+
+    if (action === 'pick') {
+      let result = await client.invokeOperation({
+        operationType: 'action',
+        bindingType: 'entity',
+        entitySetName: 'queueitems',
+        recordKey: queueItemId,
+        operationName: 'PickFromQueue',
+        requestBody: {
+          ...(ctx.input.additionalFields ?? {}),
+          SystemUser: buildEntityReference('systemuser', ctx.input.assigneeUserId, {
+            primaryIdAttribute: 'systemuserid',
+            idLabel: 'assigneeUserId'
+          }),
+          RemoveQueueItem: ctx.input.removeQueueItem ?? false
+        }
+      });
+
+      return {
+        output: { queueAction: action, queueItemId, result: result ?? {} },
+        message: `Picked queue item **${queueItemId}**.`
+      };
+    }
+
+    if (action === 'route') {
+      let result = await client.invokeOperation({
+        operationType: 'action',
+        operationName: 'RouteTo',
+        requestBody: {
+          ...(ctx.input.additionalFields ?? {}),
+          Target: buildQueueTargetReference(ctx.input.targetType, ctx.input.targetId),
+          QueueItem: buildEntityReference('queueitem', queueItemId, {
+            primaryIdAttribute: 'queueitemid',
+            idLabel: 'queueItemId'
+          })
+        }
+      });
+
+      return {
+        output: { queueAction: action, queueItemId, result: result ?? {} },
+        message: `Routed queue item **${queueItemId}**.`
+      };
+    }
+
+    let operationName = action === 'release' ? 'ReleaseToQueue' : 'RemoveFromQueue';
+    let result = await client.invokeOperation({
+      operationType: 'action',
+      bindingType: 'entity',
+      entitySetName: 'queueitems',
+      recordKey: queueItemId,
+      operationName,
+      requestBody: ctx.input.additionalFields
+    });
+
+    return {
+      output: { queueAction: action, queueItemId, result: result ?? {} },
+      message: `${action === 'release' ? 'Released' : 'Removed'} queue item **${queueItemId}**.`
     };
   })
   .build();

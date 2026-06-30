@@ -1,12 +1,14 @@
 import { commerceCatalogInputSchema } from '@slates/dynamics-commerce-recipes';
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
+import { findCatalogById } from './retail-server-requests';
 import {
   buildCommerceToolOutput,
   commerceMessage,
   commerceResultOutputSchema,
   createCommerceClient,
-  withCommerceDefaults
+  withCommerceDefaults,
+  withCommercePaginationDefaults
 } from './shared';
 
 export let lookupCatalogs = SlateTool.create(spec, {
@@ -33,7 +35,10 @@ export let lookupCatalogs = SlateTool.create(spec, {
         collection = true;
         break;
       case 'get_catalog':
-        result = await client.getCatalog(input as any);
+        result = findCatalogById(
+          await client.listCatalogs(withCommercePaginationDefaults(ctx, input)),
+          input.catalogId!
+        );
         break;
     }
 

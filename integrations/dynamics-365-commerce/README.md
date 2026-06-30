@@ -33,23 +33,28 @@ List channels, get channel configuration, retrieve a store, or search stores by 
 
 ### Lookup Commerce Catalogs
 
-List Commerce catalogs for a channel or retrieve a specific catalog.
+List Commerce catalogs for a channel or retrieve a specific catalog from the documented
+`GetCatalogs` response page.
 
 ### Lookup Commerce Products, Prices, Promotions, And Inventory
 
 Search products, get products by id, retrieve active prices, inspect product promotions, and check availability through Retail Server product APIs.
+Paged product, price, and availability actions send Retail Server `QueryResultSettings`.
 
 ### Manage Commerce Customers
 
 Search customers, get customers by account number, get customer order history, create customers, or update customer records. Create and update actions require `confirmWrite: true`.
+Getting customers by account number requires the Commerce `searchLocationValue` enum value.
 
 ### Manage Commerce Carts
 
 Create carts, get carts, add/update/remove cart lines, apply/remove discount codes, get cart promotions, and checkout carts. Any cart mutation or checkout requires `confirmWrite: true`.
+Line updates and checkout accept optional Commerce `cartVersion`; checkout also accepts `receiptNumberSequence`.
 
 ### Manage Commerce Orders
 
 Search orders, get orders by transaction id or sales id, and create sales orders. Creating a sales order requires `confirmWrite: true`.
+Getting an order by transaction id requires the Commerce `searchLocationValue` enum value.
 
 ### Download Retail Server Metadata
 

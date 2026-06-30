@@ -3,21 +3,34 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import {
+  buildDocumentedGetCustomerOrderHistoryRequest,
+  buildDocumentedGetCustomersByAccountNumbersRequest
+} from './retail-server-requests';
+import {
   assertPrimitiveAdditionalFields,
   buildCommerceToolOutput,
   commerceMessage,
   commerceResultOutputSchema,
   createCommerceClient,
+  requireAnyNonEmptyRecord,
   requireConfirmedWrite,
   requireNonEmptyRecord,
-  withCommerceDefaults
+  withCommerceDefaults,
+  withCommercePaginationDefaults
 } from './shared';
 
 let customerInputSchema = commerceCustomerOperationInputSchema.extend({
   confirmWrite: z
     .boolean()
     .optional()
-    .describe('Must be true for create or update actions because they write customer data.')
+    .describe('Must be true for create or update actions because they write customer data.'),
+  searchLocationValue: z
+    .number()
+    .int()
+    .optional()
+    .describe(
+      'Required for get_by_account_numbers. Commerce SearchLocation enum value that scopes where customer records are searched.'
+    )
 });
 
 let writeActions = new Set(['create', 'update']);
@@ -55,9 +68,10 @@ export let manageCustomers = SlateTool.create(spec, {
         result = await client.createCustomer(input as any);
         break;
       case 'update':
-        if (!input.customer && !input.additionalFields) {
-          requireNonEmptyRecord(input.customer, 'customer or additionalFields');
-        }
+        requireAnyNonEmptyRecord(
+          [input.customer, input.additionalFields],
+          'customer or additionalFields'
+        );
         result = await client.updateCustomer(input as any);
         break;
       case 'search':
@@ -65,11 +79,19 @@ export let manageCustomers = SlateTool.create(spec, {
         collection = true;
         break;
       case 'get_by_account_numbers':
-        result = await client.getCustomersByAccountNumbers(input as any);
+        result = await client.execute(
+          buildDocumentedGetCustomersByAccountNumbersRequest(
+            withCommercePaginationDefaults(ctx, input)
+          )
+        );
         collection = true;
         break;
       case 'get_order_history':
-        result = await client.getCustomerOrderHistory(input as any);
+        result = await client.execute(
+          buildDocumentedGetCustomerOrderHistoryRequest(
+            withCommercePaginationDefaults(ctx, input)
+          )
+        );
         collection = true;
         break;
     }

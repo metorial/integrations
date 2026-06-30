@@ -21,6 +21,7 @@ describe('dynamics-365-customer-service provider contract', () => {
         'create_customer_service_record',
         'update_customer_service_record',
         'manage_case_workflow',
+        'manage_queue_item_workflow',
         'download_note_attachment'
       ],
       triggerIds: [],
@@ -31,6 +32,7 @@ describe('dynamics-365-customer-service provider contract', () => {
         { id: 'create_customer_service_record', readOnly: false, destructive: false },
         { id: 'update_customer_service_record', readOnly: false, destructive: false },
         { id: 'manage_case_workflow', readOnly: false, destructive: false },
+        { id: 'manage_queue_item_workflow', readOnly: false, destructive: false },
         { id: 'download_note_attachment', readOnly: true, destructive: false }
       ]
     });

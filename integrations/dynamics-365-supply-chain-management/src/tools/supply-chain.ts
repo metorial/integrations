@@ -87,6 +87,28 @@ export let listPurchaseOrders = createListRecordsTool({
   currencyFields: ['CurrencyCode']
 });
 
+export let listPurchaseOrderLines = createListRecordsTool({
+  key: 'list_purchase_order_lines',
+  name: 'List Supply Chain Purchase Order Lines',
+  description:
+    'List purchase order line records for item, quantity, delivery, and receiving review by legal entity and OData filters.',
+  outputKey: 'purchaseOrderLines',
+  entitySetName: 'PurchaseOrderLinesV2',
+  companyScoped: true,
+  idFields: [
+    'PurchaseOrderNumber',
+    'LineNumber',
+    'LineCreationSequenceNumber',
+    'InventTransId'
+  ],
+  numberFields: ['PurchaseOrderNumber', 'LineNumber', 'ItemNumber'],
+  nameFields: ['LineDescription', 'ProductName', 'ItemName'],
+  statusFields: ['PurchaseOrderLineStatus', 'LineStatus'],
+  dateFields: ['RequestedDeliveryDate', 'ConfirmedDeliveryDate'],
+  amountFields: ['LineAmount', 'OrderedPurchaseQuantity', 'ReceivedPurchaseQuantity'],
+  currencyFields: ['CurrencyCode']
+});
+
 export let getPurchaseOrder = createGetRecordTool({
   key: 'get_purchase_order',
   name: 'Get Supply Chain Purchase Order',
@@ -118,6 +140,23 @@ export let listSalesOrders = createListRecordsTool({
   statusFields: ['SalesOrderStatus', 'DocumentStatus'],
   dateFields: ['OrderCreationDateTime', 'RequestedReceiptDate', 'RequestedShippingDate'],
   amountFields: ['TotalOrderAmount'],
+  currencyFields: ['CurrencyCode']
+});
+
+export let listSalesOrderLines = createListRecordsTool({
+  key: 'list_sales_order_lines',
+  name: 'List Supply Chain Sales Order Lines',
+  description:
+    'List sales order line records for item, quantity, delivery, shipping, and fulfillment review by legal entity and OData filters.',
+  outputKey: 'salesOrderLines',
+  entitySetName: 'SalesOrderLines',
+  companyScoped: true,
+  idFields: ['SalesOrderNumber', 'LineNumber', 'InventTransId'],
+  numberFields: ['SalesOrderNumber', 'LineNumber', 'ItemNumber'],
+  nameFields: ['LineDescription', 'ProductName', 'ItemName'],
+  statusFields: ['SalesOrderLineStatus', 'LineStatus'],
+  dateFields: ['RequestedShippingDate', 'RequestedReceiptDate', 'ConfirmedShippingDate'],
+  amountFields: ['LineAmount', 'OrderedSalesQuantity', 'DeliveredQuantity'],
   currencyFields: ['CurrencyCode']
 });
 

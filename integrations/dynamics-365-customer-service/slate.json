@@ -1,6 +1,6 @@
 {
   "name": "@microsoft/dynamics-365-customer-service",
-  "description": "Manage Dynamics 365 Customer Service cases, queues, queue items, knowledge articles, notes, and attachments through Microsoft Dataverse, including typed case resolve, reopen, cancel, and assign workflows.",
+  "description": "Manage Dynamics 365 Customer Service cases, queues, queue items, knowledge articles, notes, and attachments through Microsoft Dataverse, including typed case resolve, reopen, cancel, assign, and queue routing workflows.",
   "categories": ["customer-support", "crm-and-sales-tools", "apis-and-http-requests"],
   "skills": [
     "manage Dynamics 365 cases",
@@ -8,6 +8,8 @@
     "reopen and cancel cases",
     "assign cases",
     "inspect queues and queue items",
+    "route queue items",
+    "pick and release queue items",
     "read knowledge articles",
     "manage notes",
     "download note attachments"

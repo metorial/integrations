@@ -1,8 +1,10 @@
 {
   "name": "@microsoft/dynamics-365-customer-insights",
-  "description": "Read Dynamics 365 Customer Insights customer profiles, segments, measures, and activities through Microsoft Dataverse, and export segment members as Slate attachments.",
+  "description": "Discover and read Dynamics 365 Customer Insights Dataverse tables, customer profiles, segments, measures, activities, enrichments, predictions, and segment memberships, and export segment members as Slate attachments.",
   "categories": ["customer-data-platforms", "crm-and-sales-tools", "apis-and-http-requests"],
   "skills": [
+    "discover Customer Insights Dataverse tables",
+    "inspect Customer Insights columns",
     "inspect customer profiles",
     "list customer segments",
     "review measures",

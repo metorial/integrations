@@ -2,7 +2,7 @@ import {
   createDataverseClientFromContext,
   dataverseValidationError
 } from '@slates/microsoft-dataverse-recipes';
-import { createTextAttachment, SlateTool } from 'slates';
+import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 
@@ -20,6 +20,10 @@ let contactCenterResourceTypes = [
 
 let contactCenterResourceTypeSchema = z.enum(contactCenterResourceTypes);
 type ContactCenterResourceType = z.infer<typeof contactCenterResourceTypeSchema>;
+
+let representativeAvailabilityModes = ['for_conversation', 'before_conversation'] as const;
+let representativeAvailabilityModeSchema = z.enum(representativeAvailabilityModes);
+type RepresentativeAvailabilityMode = z.infer<typeof representativeAvailabilityModeSchema>;
 
 let contactCenterResources: Record<
   ContactCenterResourceType,
@@ -43,9 +47,10 @@ let contactCenterResources: Record<
     entitySetName: 'msdyn_ocsessions',
     displayName: 'sessions',
     defaultSelect: [
-      'msdyn_ocsessionid',
-      'msdyn_name',
+      'activityid',
+      'subject',
       'msdyn_liveworkitemid',
+      'msdyn_sessionid',
       'statecode',
       'statuscode',
       'createdon',
@@ -58,7 +63,11 @@ let contactCenterResources: Record<
     defaultSelect: [
       'msdyn_transcriptid',
       'msdyn_name',
-      'msdyn_transcript',
+      'msdyn_transcripturi',
+      'msdyn_voicetranscript',
+      'msdyn_voicetranscript_name',
+      'msdyn_voicetranscript_formatted',
+      'msdyn_voicetranscript_formatted_name',
       'createdon',
       'modifiedon'
     ]
@@ -85,7 +94,7 @@ let contactCenterResources: Record<
     displayName: 'routing state records',
     defaultSelect: [
       'msdyn_routingrequestid',
-      'msdyn_name',
+      'msdyn_entitylogicalname',
       'statecode',
       'statuscode',
       'createdon',
@@ -108,15 +117,90 @@ let contactCenterResources: Record<
   }
 };
 
-let resolveResource = (resourceType: ContactCenterResourceType, override?: string) => ({
+export let resolveResource = (resourceType: ContactCenterResourceType, override?: string) => ({
   ...contactCenterResources[resourceType],
   entitySetName: override?.trim() || contactCenterResources[resourceType].entitySetName
 });
 
-let textFromValue = (value: unknown) => {
-  if (typeof value === 'string') return value;
-  if (value === undefined || value === null) return undefined;
-  return JSON.stringify(value, null, 2);
+let isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+let requireText = (value: string | undefined, label: string) => {
+  if (!value?.trim()) {
+    throw dataverseValidationError(`${label} is required.`);
+  }
+
+  return value.trim();
+};
+
+let optionalText = (value: string | undefined) => {
+  let trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+};
+
+let DEFAULT_TRANSCRIPT_ENTITY_SET_NAME = 'msdyn_transcripts';
+let DEFAULT_TRANSCRIPT_FILE_COLUMN = 'msdyn_voicetranscript_formatted';
+let DEFAULT_TRANSCRIPT_MIME_TYPE = 'text/plain';
+
+let transcriptFileColumnSchema = z
+  .string()
+  .describe(
+    'Transcript file column to download. Official values include msdyn_voicetranscript_formatted, msdyn_voicetranscript, msdyn_rawvoicetranscript, and msdyn_englishtranslatedtranscriptformatted.'
+  );
+
+let validateJsonString = (value: string, label: string) => {
+  let text = requireText(value, label);
+
+  try {
+    JSON.parse(text);
+  } catch {
+    throw dataverseValidationError(`${label} must be valid JSON.`);
+  }
+
+  return text;
+};
+
+let jsonStringFromObjectOrText = (
+  objectValue: Record<string, unknown> | undefined,
+  textValue: string | undefined,
+  label: string
+) => {
+  if (objectValue !== undefined && textValue !== undefined) {
+    throw dataverseValidationError(`Use either ${label} or ${label}Json, not both.`);
+  }
+
+  if (textValue !== undefined) {
+    return validateJsonString(textValue, `${label}Json`);
+  }
+
+  if (objectValue !== undefined) {
+    return JSON.stringify(objectValue);
+  }
+
+  return undefined;
+};
+
+let firstRecordValue = (record: Record<string, unknown>, names: string[]) => {
+  for (let name of names) {
+    if (name in record) return record[name];
+  }
+
+  return undefined;
+};
+
+let stringRecordValue = (record: Record<string, unknown>, names: string[]) => {
+  let value = firstRecordValue(record, names);
+  return typeof value === 'string' ? value : undefined;
+};
+
+let booleanRecordValue = (record: Record<string, unknown>, names: string[]) => {
+  let value = firstRecordValue(record, names);
+  return typeof value === 'boolean' ? value : undefined;
+};
+
+let numberRecordValue = (record: Record<string, unknown>, names: string[]) => {
+  let value = firstRecordValue(record, names);
+  return typeof value === 'number' ? value : undefined;
 };
 
 let listInputSchema = z.object({
@@ -143,6 +227,177 @@ let listInputSchema = z.object({
     .optional()
     .describe('Dataverse @odata.nextLink from a previous response'),
   includeCount: z.boolean().optional().describe('Whether to request @odata.count')
+});
+
+let representativeAvailabilityInputSchema = z.object({
+  availabilityMode: representativeAvailabilityModeSchema.describe(
+    'Use for_conversation when a Contact Center conversation already exists, or before_conversation to check availability for a workstream before starting a conversation.'
+  ),
+  conversationId: z
+    .string()
+    .optional()
+    .describe('Active conversation GUID. Required when availabilityMode is for_conversation.'),
+  liveWorkStreamId: z
+    .string()
+    .optional()
+    .describe('Live workstream GUID. Required when availabilityMode is before_conversation.'),
+  apiVersion: z
+    .string()
+    .optional()
+    .describe('Representative availability API version. Defaults to 1.0.'),
+  customContextItems: recordSchema
+    .optional()
+    .describe(
+      'Context items used by route-to-queue rules. The object is serialized to the CustomContextItems JSON string expected by Dynamics 365 Contact Center.'
+    ),
+  customContextItemsJson: z
+    .string()
+    .optional()
+    .describe(
+      'Pre-serialized JSON string for CustomContextItems. Do not use together with customContextItems.'
+    ),
+  channelEngagementContext: recordSchema
+    .optional()
+    .describe(
+      'Before-conversation channel engagement context object. The object is serialized to the ChannelEngagementContext JSON string expected by Dynamics 365 Contact Center.'
+    ),
+  channelEngagementContextJson: z
+    .string()
+    .optional()
+    .describe(
+      'Pre-serialized JSON string for ChannelEngagementContext. Only valid when availabilityMode is before_conversation.'
+    )
+});
+
+let operationNameForAvailabilityMode = (mode: RepresentativeAvailabilityMode) =>
+  mode === 'for_conversation'
+    ? 'CCaaS_GetRepresentativeAvailabilityForConversation'
+    : 'CCaaS_GetRepresentativeAvailabilityBeforeConversation';
+
+export let buildRepresentativeAvailabilityRequest = (
+  input: z.infer<typeof representativeAvailabilityInputSchema>
+) => {
+  let requestBody: Record<string, unknown> = {
+    ApiVersion: optionalText(input.apiVersion) ?? '1.0'
+  };
+  let request: {
+    apiVersion: string;
+    conversationId?: string;
+    liveWorkStreamId?: string;
+  } = {
+    apiVersion: requestBody.ApiVersion as string
+  };
+
+  if (input.availabilityMode === 'for_conversation') {
+    if (optionalText(input.liveWorkStreamId)) {
+      throw dataverseValidationError(
+        'liveWorkStreamId is only valid when availabilityMode is before_conversation.'
+      );
+    }
+    if (
+      input.channelEngagementContext !== undefined ||
+      input.channelEngagementContextJson !== undefined
+    ) {
+      throw dataverseValidationError(
+        'channelEngagementContext is only valid when availabilityMode is before_conversation.'
+      );
+    }
+
+    let conversationId = requireText(input.conversationId, 'conversationId');
+    requestBody.ConversationId = conversationId;
+    request.conversationId = conversationId;
+  } else {
+    if (optionalText(input.conversationId)) {
+      throw dataverseValidationError(
+        'conversationId is only valid when availabilityMode is for_conversation.'
+      );
+    }
+
+    let liveWorkStreamId = requireText(input.liveWorkStreamId, 'liveWorkStreamId');
+    requestBody.LiveWorkStreamId = liveWorkStreamId;
+    request.liveWorkStreamId = liveWorkStreamId;
+  }
+
+  let customContextItems = jsonStringFromObjectOrText(
+    input.customContextItems,
+    input.customContextItemsJson,
+    'customContextItems'
+  );
+  if (customContextItems !== undefined) {
+    requestBody.CustomContextItems = customContextItems;
+  }
+
+  let channelEngagementContext = jsonStringFromObjectOrText(
+    input.channelEngagementContext,
+    input.channelEngagementContextJson,
+    'channelEngagementContext'
+  );
+  if (channelEngagementContext !== undefined) {
+    requestBody.ChannelEngagementContext = channelEngagementContext;
+  }
+
+  return {
+    operationName: operationNameForAvailabilityMode(input.availabilityMode),
+    requestBody,
+    request
+  };
+};
+
+type TranscriptExportInput = {
+  transcriptId: string;
+  entitySetNameOverride?: string;
+  fileColumn?: z.infer<typeof transcriptFileColumnSchema>;
+  contentColumn?: string;
+  fileName?: string;
+  mimeType?: string;
+};
+
+export let buildTranscriptExportRequest = (input: TranscriptExportInput) => {
+  let transcriptId = requireText(input.transcriptId, 'transcriptId');
+  let fileColumnFromInput = optionalText(input.fileColumn);
+  let fileColumnFromAlias = optionalText(input.contentColumn);
+
+  if (fileColumnFromInput !== undefined && fileColumnFromAlias !== undefined) {
+    throw dataverseValidationError('Use either fileColumn or contentColumn, not both.');
+  }
+
+  return {
+    transcriptId,
+    entitySetName:
+      optionalText(input.entitySetNameOverride) ?? DEFAULT_TRANSCRIPT_ENTITY_SET_NAME,
+    fileColumn: fileColumnFromInput ?? fileColumnFromAlias ?? DEFAULT_TRANSCRIPT_FILE_COLUMN,
+    fileName: optionalText(input.fileName) ?? `transcript-${transcriptId}.txt`,
+    mimeType: optionalText(input.mimeType) ?? DEFAULT_TRANSCRIPT_MIME_TYPE
+  };
+};
+
+let normalizeRepresentativeAvailabilityResponse = (record: Record<string, unknown>) => ({
+  queueId: stringRecordValue(record, ['QueueId', 'queueId']),
+  isQueueAvailable: booleanRecordValue(record, ['IsQueueAvailable', 'isQueueAvailable']),
+  isAgentAvailable: booleanRecordValue(record, ['IsAgentAvailable', 'isAgentAvailable']),
+  averageWaitTime: numberRecordValue(record, ['AverageWaitTime', 'averageWaitTime']),
+  averageWaitTimeInSeconds: numberRecordValue(record, [
+    'AverageWaitTimeInSeconds',
+    'averageWaitTimeInSeconds'
+  ]),
+  numberOfExpertsAvailableInQueue: numberRecordValue(record, [
+    'NumberOfExpertsAvailableInQueue',
+    'numberOfExpertsAvailableInQueue'
+  ]),
+  positionInQueue: numberRecordValue(record, ['PositionInQueue', 'positionInQueue']),
+  nextTransitionTime: stringRecordValue(record, [
+    'NextTransitionTime',
+    'nextTransitionTime',
+    'nexttransitiontime'
+  ]),
+  startTimeOfNextOperatingHour: stringRecordValue(record, [
+    'StartTimeOfNextOperatingHour',
+    'startTimeOfNextOperatingHour'
+  ]),
+  endTimeOfNextOperatingHour: stringRecordValue(record, [
+    'EndTimeOfNextOperatingHour',
+    'endTimeOfNextOperatingHour'
+  ])
 });
 
 export let listContactCenterRecords = SlateTool.create(spec, {
@@ -243,7 +498,7 @@ export let exportConversationTranscript = SlateTool.create(spec, {
   key: 'export_conversation_transcript',
   name: 'Export Conversation Transcript',
   description:
-    'Export transcript text from a Dynamics 365 Contact Center transcript Dataverse record as a Slate text attachment.',
+    'Download a Dynamics 365 Contact Center transcript Dataverse file column as a Slate attachment.',
   tags: { readOnly: true, destructive: false }
 })
   .input(
@@ -253,10 +508,17 @@ export let exportConversationTranscript = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Transcript entity set name. Defaults to msdyn_transcripts.'),
+      fileColumn: transcriptFileColumnSchema
+        .optional()
+        .describe(
+          'Transcript file column to download. Defaults to msdyn_voicetranscript_formatted.'
+        ),
       contentColumn: z
         .string()
         .optional()
-        .describe('Transcript content column. Defaults to msdyn_transcript.'),
+        .describe(
+          'Deprecated alias for fileColumn. Use only for tenant-specific transcript file columns.'
+        ),
       fileName: z
         .string()
         .optional()
@@ -264,16 +526,20 @@ export let exportConversationTranscript = SlateTool.create(spec, {
       mimeType: z
         .string()
         .optional()
-        .describe('Attachment MIME type. Defaults to text/plain.'),
+        .describe('Attachment MIME type fallback. Defaults to text/plain.'),
       select: z
         .array(z.string())
         .optional()
-        .describe('Extra columns to retrieve with the content column.')
+        .describe(
+          'Deprecated and ignored. Transcript export downloads the file column through Dataverse $value.'
+        )
     })
   )
   .output(
     z.object({
       transcriptId: z.string(),
+      entitySetName: z.string(),
+      fileColumn: z.string(),
       fileName: z.string(),
       mimeType: z.string(),
       sizeBytes: z.number(),
@@ -281,34 +547,89 @@ export let exportConversationTranscript = SlateTool.create(spec, {
     })
   )
   .handleInvocation(async ctx => {
-    let entitySetName = ctx.input.entitySetNameOverride?.trim() || 'msdyn_transcripts';
-    let contentColumn = ctx.input.contentColumn?.trim() || 'msdyn_transcript';
-    let select = [...new Set([contentColumn, ...(ctx.input.select ?? [])])];
-    let record = await createDataverseClientFromContext(ctx).getRecord(
-      entitySetName,
-      ctx.input.transcriptId,
-      { select }
-    );
-    let content = textFromValue(record[contentColumn]);
-    if (!content) {
-      throw dataverseValidationError(
-        `Transcript column ${contentColumn} did not contain exportable content.`
-      );
-    }
-
-    let fileName = ctx.input.fileName ?? `transcript-${ctx.input.transcriptId}.txt`;
-    let mimeType = ctx.input.mimeType ?? 'text/plain';
+    let request = buildTranscriptExportRequest(ctx.input);
+    let download = await createDataverseClientFromContext(ctx).downloadFileColumn({
+      entitySetName: request.entitySetName,
+      recordId: request.transcriptId,
+      columnName: request.fileColumn,
+      fileName: request.fileName,
+      mimeType: request.mimeType
+    });
 
     return {
       output: {
-        transcriptId: ctx.input.transcriptId,
-        fileName,
-        mimeType,
-        sizeBytes: Buffer.byteLength(content, 'utf8'),
-        attachmentCount: 1
+        transcriptId: request.transcriptId,
+        entitySetName: request.entitySetName,
+        fileColumn: request.fileColumn,
+        fileName: download.metadata.fileName ?? request.fileName,
+        mimeType: download.metadata.mimeType ?? request.mimeType,
+        sizeBytes: download.metadata.sizeBytes,
+        attachmentCount: download.metadata.attachmentCount
       },
-      message: `Exported transcript **${ctx.input.transcriptId}**.`,
-      attachments: [createTextAttachment(content, mimeType)]
+      message: `Exported transcript **${request.transcriptId}** from **${request.fileColumn}**.`,
+      attachments: [download.attachment]
+    };
+  })
+  .build();
+
+export let getRepresentativeAvailability = SlateTool.create(spec, {
+  key: 'get_representative_availability',
+  name: 'Get Representative Availability',
+  description:
+    'Check Dynamics 365 Contact Center queue and service representative availability for an active conversation or before starting a conversation for a live workstream.',
+  tags: { readOnly: true, destructive: false }
+})
+  .input(representativeAvailabilityInputSchema)
+  .output(
+    z.object({
+      availabilityMode: representativeAvailabilityModeSchema,
+      operationName: z.string(),
+      request: z.object({
+        apiVersion: z.string(),
+        conversationId: z.string().optional(),
+        liveWorkStreamId: z.string().optional()
+      }),
+      availability: recordSchema,
+      queueId: z.string().optional(),
+      isQueueAvailable: z.boolean().optional(),
+      isAgentAvailable: z.boolean().optional(),
+      averageWaitTime: z.number().optional(),
+      averageWaitTimeInSeconds: z.number().optional(),
+      numberOfExpertsAvailableInQueue: z.number().optional(),
+      positionInQueue: z.number().optional(),
+      nextTransitionTime: z.string().optional(),
+      startTimeOfNextOperatingHour: z.string().optional(),
+      endTimeOfNextOperatingHour: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
+    let { operationName, requestBody, request } = buildRepresentativeAvailabilityRequest(
+      ctx.input
+    );
+    let response = await createDataverseClientFromContext(ctx).invokeOperation({
+      operationType: 'action',
+      bindingType: 'unbound',
+      operationName,
+      requestBody
+    });
+
+    if (!isRecord(response)) {
+      throw dataverseValidationError(
+        'Representative availability API returned an unsupported response.'
+      );
+    }
+
+    let availability = normalizeRepresentativeAvailabilityResponse(response);
+
+    return {
+      output: {
+        availabilityMode: ctx.input.availabilityMode,
+        operationName,
+        request,
+        availability: response,
+        ...availability
+      },
+      message: `Retrieved Dynamics 365 Contact Center representative availability with **${operationName}**.`
     };
   })
   .build();

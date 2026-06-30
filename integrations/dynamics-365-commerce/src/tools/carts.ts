@@ -3,6 +3,11 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import {
+  buildDocumentedAddCartLinesRequest,
+  buildDocumentedCheckoutCartRequest,
+  buildDocumentedUpdateCartLinesRequest
+} from './retail-server-requests';
+import {
   assertPrimitiveAdditionalFields,
   buildCommerceToolOutput,
   commerceMessage,
@@ -16,7 +21,18 @@ let cartInputSchema = commerceCartOperationInputSchema.extend({
   confirmWrite: z
     .boolean()
     .optional()
-    .describe('Must be true for cart create, line, discount, or checkout actions.')
+    .describe('Must be true for cart create, line, discount, or checkout actions.'),
+  cartVersion: z
+    .number()
+    .int()
+    .optional()
+    .describe(
+      'For add_lines, update_lines, or checkout, optional Commerce cart version concurrency value.'
+    ),
+  receiptNumberSequence: z
+    .string()
+    .optional()
+    .describe('For checkout, optional Commerce receipt number sequence.')
 });
 
 let readActions = new Set(['get', 'get_promotions']);
@@ -56,10 +72,10 @@ export let manageCarts = SlateTool.create(spec, {
         result = await client.getCart(input as any);
         break;
       case 'add_lines':
-        result = await client.addCartLines(input as any);
+        result = await client.execute(buildDocumentedAddCartLinesRequest(input as any));
         break;
       case 'update_lines':
-        result = await client.updateCartLines(input as any);
+        result = await client.execute(buildDocumentedUpdateCartLinesRequest(input as any));
         break;
       case 'remove_lines':
         result = await client.removeCartLines(input as any);
@@ -71,7 +87,7 @@ export let manageCarts = SlateTool.create(spec, {
         result = await client.removeCartDiscountCodes(input as any);
         break;
       case 'checkout':
-        result = await client.checkoutCart(input as any);
+        result = await client.execute(buildDocumentedCheckoutCartRequest(input as any));
         break;
       case 'get_promotions':
         result = await client.getCartPromotions(input as any);

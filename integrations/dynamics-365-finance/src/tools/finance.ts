@@ -58,6 +58,21 @@ export let listJournals = createListRecordsTool({
   dateFields: ['PostedDateTime', 'CreatedDateTime']
 });
 
+export let getJournal = createGetRecordTool({
+  key: 'get_journal',
+  name: 'Get Finance Journal',
+  description:
+    'Retrieve one Dynamics 365 Finance journal header record by OData key values. Include dataAreaId when required by metadata.',
+  outputKey: 'journal',
+  entitySetName: 'LedgerJournalHeaders',
+  companyScoped: true,
+  idFields: ['JournalBatchNumber', 'JournalNumber'],
+  numberFields: ['JournalBatchNumber', 'JournalNumber'],
+  nameFields: ['Description', 'JournalName'],
+  statusFields: ['JournalWorkflowApprovalStatus', 'ApprovalStatus'],
+  dateFields: ['PostedDateTime', 'CreatedDateTime']
+});
+
 export let createJournalDraftRecord = createDraftRecordTool({
   key: 'create_journal_draft_record',
   name: 'Create Finance Journal Draft Record',
@@ -137,6 +152,23 @@ export let listVendorInvoices = createListRecordsTool({
   description:
     'List Dynamics 365 Finance vendor invoice header records for review, matching, and import status workflows.',
   outputKey: 'vendorInvoices',
+  entitySetName: 'VendorInvoiceHeaders',
+  companyScoped: true,
+  idFields: ['InvoiceId', 'VendorInvoiceNumber', 'RecId'],
+  numberFields: ['InvoiceId', 'VendorInvoiceNumber', 'InvoiceNumber'],
+  nameFields: ['Description', 'InvoiceDescription'],
+  statusFields: ['InvoiceStatus', 'DocumentStatus', 'ApprovalStatus'],
+  dateFields: ['InvoiceDate', 'DocumentDate'],
+  amountFields: ['InvoiceAmount', 'TotalInvoiceAmount'],
+  currencyFields: ['CurrencyCode']
+});
+
+export let getVendorInvoice = createGetRecordTool({
+  key: 'get_vendor_invoice',
+  name: 'Get Finance Vendor Invoice',
+  description:
+    'Retrieve one Dynamics 365 Finance vendor invoice header record by OData key values. Include dataAreaId when required by metadata.',
+  outputKey: 'vendorInvoice',
   entitySetName: 'VendorInvoiceHeaders',
   companyScoped: true,
   idFields: ['InvoiceId', 'VendorInvoiceNumber', 'RecId'],

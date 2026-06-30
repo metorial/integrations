@@ -16,12 +16,14 @@ describe('dynamics-365-finance provider contract', () => {
         'list_chart_of_accounts',
         'list_ledger_entries',
         'list_journals',
+        'get_journal',
         'create_journal_draft_record',
         'list_customers',
         'get_customer',
         'list_vendors',
         'get_vendor',
         'list_vendor_invoices',
+        'get_vendor_invoice',
         'run_data_management_package_operation'
       ],
       triggerIds: [],
@@ -31,12 +33,14 @@ describe('dynamics-365-finance provider contract', () => {
         { id: 'list_chart_of_accounts', readOnly: true, destructive: false },
         { id: 'list_ledger_entries', readOnly: true, destructive: false },
         { id: 'list_journals', readOnly: true, destructive: false },
+        { id: 'get_journal', readOnly: true, destructive: false },
         { id: 'create_journal_draft_record', readOnly: false, destructive: false },
         { id: 'list_customers', readOnly: true, destructive: false },
         { id: 'get_customer', readOnly: true, destructive: false },
         { id: 'list_vendors', readOnly: true, destructive: false },
         { id: 'get_vendor', readOnly: true, destructive: false },
         { id: 'list_vendor_invoices', readOnly: true, destructive: false },
+        { id: 'get_vendor_invoice', readOnly: true, destructive: false },
         {
           id: 'run_data_management_package_operation',
           readOnly: false,
@@ -46,7 +50,7 @@ describe('dynamics-365-finance provider contract', () => {
       triggers: []
     });
 
-    expect(contract.actions).toHaveLength(11);
+    expect(contract.actions).toHaveLength(13);
     expect(Object.keys(contract.configSchema.properties ?? {})).toEqual([
       'baseUrl',
       'environmentUrl',

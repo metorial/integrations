@@ -197,18 +197,36 @@ let resolveEntitySetName = (
   return entitySetName;
 };
 
-let buildQuery = (ctx: FinOpsToolContext): FinOpsODataQuery => ({
-  select: ctx.input.select,
-  filter: ctx.input.filter,
-  orderBy: ctx.input.orderBy,
-  expand: ctx.input.expand,
-  top: ctx.input.limit ?? ctx.config?.defaultPageSize,
-  skip: ctx.input.skip,
-  count: ctx.input.count,
-  crossCompany: ctx.input.crossCompany,
-  legalEntity: ctx.input.legalEntity,
-  dataAreaId: ctx.input.dataAreaId
-});
+let buildQuery = (
+  ctx: FinOpsToolContext,
+  definition: FinOpsResourceDefinition
+): FinOpsODataQuery => {
+  let explicitLegalEntity = ctx.input.legalEntity ?? ctx.input.dataAreaId;
+  let defaultLegalEntity =
+    definition.companyScoped && ctx.input.crossCompany !== true
+      ? ctx.config?.defaultLegalEntity
+      : undefined;
+  let legalEntity = definition.companyScoped
+    ? (explicitLegalEntity ?? defaultLegalEntity)
+    : ctx.input.legalEntity;
+  let crossCompany =
+    definition.companyScoped && legalEntity
+      ? (ctx.input.crossCompany ?? true)
+      : ctx.input.crossCompany;
+
+  return {
+    select: ctx.input.select,
+    filter: ctx.input.filter,
+    orderBy: ctx.input.orderBy,
+    expand: ctx.input.expand,
+    top: ctx.input.limit ?? ctx.config?.defaultPageSize,
+    skip: ctx.input.skip,
+    count: ctx.input.count,
+    crossCompany,
+    legalEntity,
+    dataAreaId: definition.companyScoped && legalEntity ? undefined : ctx.input.dataAreaId
+  };
+};
 
 let firstString = (record: Record<string, unknown>, fields: string[]) => {
   for (let field of fields) {
@@ -332,10 +350,11 @@ export let createListRecordsTool = (definition: FinOpsResourceDefinition) =>
         ctx.input.limit ?? ctx.config?.defaultPageSize ?? FINOPS_DEFAULT_PAGE_SIZE;
       let result = await client.listDataEntityAll<Record<string, unknown>>(
         entitySetName,
-        buildQuery(ctx),
+        buildQuery(ctx, definition),
         {
           maxPages: ctx.input.maxPages ?? ctx.config?.defaultMaxPages,
           pageSize: requestedLimit,
+          maxItems: ctx.input.limit,
           dataAreaIdField: definition.companyScoped ? undefined : false
         }
       );

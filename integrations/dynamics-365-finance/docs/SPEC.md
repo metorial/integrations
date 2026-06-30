@@ -10,10 +10,12 @@ The initial package implements:
 - chart of accounts
 - general ledger entries
 - journals
+- journal detail lookup
 - draft journal record creation
 - customers
 - vendors
 - vendor invoices
+- vendor invoice detail lookup
 - Data Management export/import/status workflows
 
 ## Authentication
@@ -37,7 +39,7 @@ The OAuth input asks for the F&O environment URL so the integration can request 
 
 ## OData Behavior
 
-List tools call recipe-backed bounded pagination with `$select`, `$filter`, `$orderby`, `$expand`, `$skip`, `$top`, `$count`, `cross-company`, and legal-entity filtering. Tools expose a stable summarized record shape plus the raw OData record for custom fields. Each tool provides a default public collection name and accepts `entitySetName` when a tenant uses a different public data entity name.
+List tools call recipe-backed bounded pagination with `$select`, `$filter`, `$orderby`, `$expand`, `$skip`, `$top`, `$count`, `cross-company`, and legal-entity filtering. For company-scoped lists, an explicit `legalEntity` / `dataAreaId` or configured `defaultLegalEntity` is sent with `cross-company=true` by default unless the caller explicitly sets `crossCompany=false`, matching Microsoft guidance that cross-company is required to access companies outside the user's default company. Tools expose a stable summarized record shape plus the raw OData record for custom fields. Each tool provides a default public collection name and accepts `entitySetName` when a tenant uses a different public data entity name.
 
 ## Implemented Tools
 
@@ -45,12 +47,14 @@ List tools call recipe-backed bounded pagination with `$select`, `$filter`, `$or
 - `list_chart_of_accounts`
 - `list_ledger_entries`
 - `list_journals`
+- `get_journal`
 - `create_journal_draft_record`
 - `list_customers`
 - `get_customer`
 - `list_vendors`
 - `get_vendor`
 - `list_vendor_invoices`
+- `get_vendor_invoice`
 - `run_data_management_package_operation`
 
 ## Error Handling
@@ -59,7 +63,9 @@ Validation and upstream failures are normalized to `ServiceError` through shared
 
 ## File Outputs
 
-This package does not download Data Management package bytes. Export/import tools return execution identifiers, status values, and package/status URLs only. Any future package download tool must return file bytes through Slate attachments rather than JSON output fields.
+This package does not download Data Management package bytes. Export/import tools return execution identifiers, status values, and exported package URLs only. Imports require `confirmImport=true` and default to `execute=false` so packages are staged unless the caller explicitly asks to run target processing. Any future package download tool must return file bytes through Slate attachments rather than JSON output fields.
+
+`get_import_staging_error_file_url` is intentionally not exposed by the Finance wrapper yet. Microsoft requires an `entityName` value for that action, and the current shared F&O recipe input/client does not pass it through. `get_execution_summary_page_url` is also not exposed because it is not listed in Microsoft's documented Data Management package API actions.
 
 ## Deferred Scope
 

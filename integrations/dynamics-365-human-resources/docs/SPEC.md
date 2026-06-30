@@ -37,20 +37,28 @@ The OAuth input asks for the F&O environment URL so the integration can request 
 
 ## OData Behavior
 
-List tools call recipe-backed bounded pagination with `$select`, `$filter`, `$orderby`, `$expand`, `$skip`, `$top`, `$count`, `cross-company`, and legal-entity filtering. Tools expose a stable summarized record shape plus the raw OData record for custom fields. Each tool provides a default public collection name and accepts `entitySetName` when a tenant uses a different public data entity name.
+List tools call recipe-backed bounded pagination with `$select`, `$filter`, `$orderby`, `$expand`, `$skip`, `$top`, `$count`, `cross-company`, and legal-entity filtering. Company-scoped tools apply the explicit or default legal entity as a `dataAreaId` filter and request `cross-company=true` when a company filter is present. Tools expose a stable summarized record shape plus the raw OData record for custom fields. Each tool provides a default public collection name and accepts `entitySetName` when a tenant uses a different public data entity name.
 
 ## Implemented Tools
 
 - `list_workers`
 - `get_worker`
 - `list_employees`
+- `get_employee`
 - `list_positions`
+- `get_position`
 - `list_jobs`
+- `get_job`
 - `list_departments`
+- `get_department`
 - `list_leave_balances`
+- `get_leave_balance`
 - `list_leave_requests`
+- `get_leave_request`
 - `list_compensation_plans`
+- `get_compensation_plan`
 - `list_benefit_enrollments`
+- `get_benefit_enrollment`
 
 ## Error Handling
 
@@ -67,4 +75,8 @@ Submitting, approving, canceling, or editing leave requests and HR master data i
 ## Primary References
 
 - F&O OData: https://learn.microsoft.com/en-us/dynamics365/fin-ops-core/dev-itpro/data-entities/odata
+- Human Resources Dataverse tables: https://learn.microsoft.com/en-us/dynamics365/human-resources/hr-developer-entities
+- Human Resources Dataverse integration entity mapping: https://learn.microsoft.com/en-us/dynamics365/human-resources/hr-dataverse-integration
+- Human Resources HCM compensation fixed plan entity: https://learn.microsoft.com/en-us/dynamics365/human-resources/hr-hcm-comp-fix
 - Microsoft identity platform OAuth: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow
+- Microsoft identity platform client credentials: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow

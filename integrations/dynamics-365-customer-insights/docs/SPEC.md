@@ -2,7 +2,7 @@
 
 ## Overview
 
-Dynamics 365 Customer Insights data can be surfaced in Dataverse-backed environments for downstream CRM use. This package provides a conservative product adapter over `@slates/microsoft-dataverse-recipes` for customer profile, segment, measure, activity, and segment-member export workflows.
+Dynamics 365 Customer Insights data can be surfaced in Dataverse-backed environments for downstream CRM use. This package provides a conservative product adapter over `@slates/microsoft-dataverse-recipes` for Customer Insights table discovery, customer profile, alternate key, segment, measure, activity, enrichment, prediction, segment membership, and segment-member export workflows.
 
 ## Authentication
 
@@ -10,10 +10,11 @@ The integration supports Microsoft Entra delegated OAuth and client credentials.
 
 ## Tools
 
+- `list_customer_insights_tables`
 - `list_customer_insights_records`
 - `get_customer_insights_record`
 - `export_segment_members`
 
 ## Notes
 
-Customer Insights environments can differ in table names and segment-member materialization. The export tool includes entity-set, filter-column, and custom-filter inputs so tenants can adapt it without changing the public tool contract. Export content is returned only through Slate attachments.
+Customer Insights environments can differ in table names and segment-member materialization. The metadata tool exposes Dataverse entity-set names and readable columns. The export tool uses the documented `msdynci_segments` segment-name filter by default and still accepts tenant-specific segment lookup filters when the caller provides the lookup column. Export content is returned only through Slate attachments.

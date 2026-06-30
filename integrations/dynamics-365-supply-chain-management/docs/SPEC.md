@@ -10,8 +10,8 @@ The initial package implements:
 - released products
 - inventory on-hand
 - warehouses
-- purchase orders
-- sales orders
+- purchase orders and lines
+- sales orders and lines
 - shipments
 - receipts
 
@@ -46,8 +46,10 @@ List tools call recipe-backed bounded pagination with `$select`, `$filter`, `$or
 - `list_inventory_on_hand`
 - `list_warehouses`
 - `list_purchase_orders`
+- `list_purchase_order_lines`
 - `get_purchase_order`
 - `list_sales_orders`
+- `list_sales_order_lines`
 - `get_sales_order`
 - `list_shipments`
 - `list_receipts`

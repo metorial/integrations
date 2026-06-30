@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/Dynamics%20365%20Icon.svg" height="20"> Dynamics 365 Contact Center
 
-Read Dynamics 365 Contact Center and Omnichannel records through Microsoft Dataverse. The initial surface covers conversations, sessions, transcripts, agents, queues, routing state, linked cases, and transcript export as a Slate attachment.
+Read Dynamics 365 Contact Center and Omnichannel records through Microsoft Dataverse. The initial surface covers conversations, sessions, transcripts, agents, queues, routing state, linked cases, transcript file export as a Slate attachment, and representative availability checks.
 
 ## Authentication
 
@@ -23,11 +23,15 @@ Retrieve one Contact Center record by GUID.
 
 ### Export Conversation Transcript
 
-Read a transcript record column and return the transcript as a Slate text attachment. Transcript text is not returned inline in JSON output.
+Download a transcript file column, defaulting to `msdyn_voicetranscript_formatted`, and return it as a Slate attachment. Transcript file content is not returned inline in JSON output.
+
+### Get Representative Availability
+
+Check Contact Center queue and service representative availability for an active conversation or before starting a conversation for a live workstream.
 
 ## Notes
 
-This package is intentionally read-only. Contact Center write workflows are deferred until stable supported Microsoft documentation and live E2E coverage are available for those operations.
+This package is intentionally read-only. Representative availability calls use Microsoft-supported unbound Dataverse actions and don't mutate Contact Center records. Other Contact Center write workflows are deferred until stable supported Microsoft documentation and live E2E coverage are available for those operations.
 
 ## License
 

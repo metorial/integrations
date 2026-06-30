@@ -6,9 +6,11 @@ import {
   getSalesOrder,
   listInventoryOnHand,
   listProducts,
+  listPurchaseOrderLines,
   listPurchaseOrders,
   listReceipts,
   listReleasedProducts,
+  listSalesOrderLines,
   listSalesOrders,
   listShipments,
   listWarehouses
@@ -23,8 +25,10 @@ export let provider = Slate.create({
     listInventoryOnHand,
     listWarehouses,
     listPurchaseOrders,
+    listPurchaseOrderLines,
     getPurchaseOrder,
     listSalesOrders,
+    listSalesOrderLines,
     getSalesOrder,
     listShipments,
     listReceipts

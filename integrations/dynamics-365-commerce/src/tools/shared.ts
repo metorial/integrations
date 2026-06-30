@@ -153,6 +153,15 @@ export let withCommerceDefaults = <T extends Record<string, unknown>>(
     locale: ctx.config?.locale ?? ctx.auth.locale
   });
 
+export let withCommercePaginationDefaults = <T extends Record<string, unknown>>(
+  ctx: CommerceToolContext,
+  input: T
+) => ({
+  defaultPageSize: ctx.config?.defaultPageSize,
+  maxPageSize: ctx.config?.maxPageSize,
+  ...input
+});
+
 export let buildCommerceToolOutput = (
   action: string,
   result: unknown,
@@ -205,8 +214,17 @@ export let requireConfirmedWrite = (
   }
 };
 
+export let hasRecordFields = (value: unknown) =>
+  isRecord(value) && Object.keys(value).length > 0;
+
 export let requireNonEmptyRecord = (value: unknown, label: string) => {
-  if (!isRecord(value) || Object.keys(value).length === 0) {
+  if (!hasRecordFields(value)) {
+    throw commerceServiceError(`${label} must include at least one field.`);
+  }
+};
+
+export let requireAnyNonEmptyRecord = (values: unknown[], label: string) => {
+  if (!values.some(hasRecordFields)) {
     throw commerceServiceError(`${label} must include at least one field.`);
   }
 };

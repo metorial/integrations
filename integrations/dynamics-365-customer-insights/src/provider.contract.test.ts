@@ -16,6 +16,7 @@ describe('dynamics-365-customer-insights provider contract', () => {
         name: 'Dynamics 365 Customer Insights'
       },
       toolIds: [
+        'list_customer_insights_tables',
         'list_customer_insights_records',
         'get_customer_insights_record',
         'export_segment_members'
@@ -23,6 +24,7 @@ describe('dynamics-365-customer-insights provider contract', () => {
       triggerIds: [],
       authMethodIds: ['oauth_organizations', 'client_credentials'],
       tools: [
+        { id: 'list_customer_insights_tables', readOnly: true, destructive: false },
         { id: 'list_customer_insights_records', readOnly: true, destructive: false },
         { id: 'get_customer_insights_record', readOnly: true, destructive: false },
         { id: 'export_segment_members', readOnly: true, destructive: false }

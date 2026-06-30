@@ -1,10 +1,10 @@
 # <img src="logo.svg" height="20"> Dynamics 365 Project Operations
 
-Read and maintain draft Microsoft Dynamics 365 Project Operations data in Dataverse, including projects, tasks, resource assignments, time entries, expenses, project contracts, actuals, and invoices. Finance handoff uses Dynamics 365 Finance and Operations Data Management recipes for package export/import status and related links.
+Read and maintain Microsoft Dynamics 365 Project Operations data in Dataverse, including projects, tasks, resource assignments, time entries, expenses, project contracts, actuals, and invoices. Project scheduling changes use Microsoft Project schedule APIs and OperationSets. Finance handoff uses Dynamics 365 Finance and Operations Data Management recipes for package export/import status and related links.
 
 ## Authentication
 
-Use Microsoft Entra OAuth or client credentials. OAuth can discover the first accessible Dataverse environment or use a configured Dataverse URL. Finance handoff tools need a Finance and Operations URL during authentication so a Finance and Operations access token can be issued for that resource.
+Use Microsoft Entra OAuth or client credentials. OAuth can discover the first accessible Dataverse environment or use a configured Dataverse URL. Project schedule API actions require delegated OAuth for a user with a Microsoft Project license; Microsoft does not support application/client-credentials users for those actions. Finance handoff tools need a Finance and Operations URL during authentication so a Finance and Operations access token can be issued for that resource.
 
 ## Configuration
 
@@ -22,11 +22,11 @@ List, get, create, and update draft project records in Dataverse. Create and upd
 
 ### Manage Project Tasks
 
-List, get, create, and update draft project task records. Use project/task lookup fields or `additionalFields` when your Dataverse metadata uses customized navigation property names.
+List and get project task records. Create, update, and delete project tasks with `manage_project_schedule` so Microsoft Project schedule APIs and OperationSets maintain the schedule engine state.
 
 ### Manage Resource Assignments
 
-List, get, create, and update draft resource assignment records for project work planning. Posting, scheduling optimization, and capacity booking automation are not performed.
+List and get resource assignment records for project work planning. Create assignments and update assignment contours with `manage_project_schedule` so Microsoft Project schedule APIs and OperationSets maintain the schedule engine state.
 
 ### Manage Time Entries
 
@@ -48,13 +48,17 @@ Read project actual records for cost, billing, and revenue reconciliation. Actua
 
 Read project invoice records from Dataverse invoice tables. Invoice creation, confirmation, and posting are deferred to avoid irreversible finance side effects.
 
+### Manage Project Schedule
+
+Run Microsoft Project schedule APIs for scheduling entities such as project tasks, dependencies, resource assignments, buckets, team members, sprints, labels, and OperationSets. Scheduling mutations require delegated Work Only OAuth for a user with a Microsoft Project license; Microsoft does not support application/client-credentials users for these APIs.
+
 ### Manage Finance Handoff
 
 Start and inspect Finance and Operations Data Management export/import package executions. Import is explicit and defaults to staging without execution.
 
 ## Limitations
 
-Project Operations table availability, lookup navigation property names, and required fields vary by tenant, solution version, and customization. Each tool exposes an `entitySetName` override and `additionalFields` escape hatch for environments whose metadata differs from the defaults.
+Project Operations table availability, lookup navigation property names, and required fields vary by tenant, solution version, and customization. Dataverse read/write tools expose an `entitySetName` override and `additionalFields` escape hatch for environments whose metadata differs from the defaults. Schedule API actions require Project Operations scheduling privileges, delegated Work Only OAuth, and a Microsoft Project license.
 
 ## License
 

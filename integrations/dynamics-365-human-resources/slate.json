@@ -12,6 +12,7 @@
     "read leave requests",
     "review compensation plans",
     "review benefit enrollments",
+    "get individual Human Resources records",
     "query Finance and Operations OData data entities"
   ],
   "logoUrl": "https://provider-logos.metorial-cdn.com/Dynamics%20365%20Icon.svg"

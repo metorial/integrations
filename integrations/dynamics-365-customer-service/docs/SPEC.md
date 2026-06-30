@@ -15,8 +15,10 @@ The integration supports Microsoft Entra delegated OAuth and client credentials.
 - `create_customer_service_record`
 - `update_customer_service_record`
 - `manage_case_workflow`
+- `manage_queue_item_workflow`
 - `download_note_attachment`
 
 ## Notes
 
 Case workflow inputs intentionally use a top-level object with `workflowAction` and optional action-specific fields so the generated tool schema remains MCP-compatible. Private live E2E coverage should be added before broad destructive or SLA/entitlement workflows are introduced.
+Queue item workflow inputs follow the same top-level object pattern with `queueAction` and optional action-specific fields. The tool wraps Dataverse queue actions for add, pick, release, remove, and route while keeping generic record CRUD available for tenant-specific tables.

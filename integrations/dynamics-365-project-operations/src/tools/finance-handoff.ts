@@ -1,4 +1,11 @@
-import { SlateTool } from 'slates';
+import {
+  buildFinOpsDataPath,
+  createDynamicsFinOpsHttpClient,
+  DATA_MANAGEMENT_ACTION_PATHS,
+  dynamicsFinOpsApiError,
+  normalizeDataManagementResponseValue
+} from '@slates/dynamics-finops-recipes';
+import { requestAxiosData, SlateTool } from 'slates';
 import { z } from 'zod';
 import { projectOperationsValidationError } from '../errors';
 import { createProjectOperationsFinOpsClient } from '../shared';
@@ -33,6 +40,10 @@ let inputSchema = z.object({
     .string()
     .optional()
     .describe('Data Management execution ID. Required for status and URL lookup actions.'),
+  entityName: z
+    .string()
+    .optional()
+    .describe('Data Management entity name. Required for get_import_staging_error_file_url.'),
   reExecute: z
     .boolean()
     .optional()
@@ -87,6 +98,37 @@ let normalizeUrlResult = (value: unknown) => {
     return typeof nested === 'string' ? nested : undefined;
   }
   return undefined;
+};
+
+export let buildImportStagingErrorFileUrlRequest = (input: {
+  executionId?: string;
+  entityName?: string;
+}) => ({
+  path: buildFinOpsDataPath(DATA_MANAGEMENT_ACTION_PATHS.getImportStagingErrorFileUrl),
+  body: {
+    executionId: requireExecutionId(input.executionId),
+    entityName: requireText(input.entityName, 'entityName')
+  }
+});
+
+let getImportStagingErrorFileUrl = async (params: {
+  baseUrl: string;
+  token: string;
+  executionId: string;
+  entityName: string;
+}) => {
+  let request = buildImportStagingErrorFileUrlRequest(params);
+  let api = createDynamicsFinOpsHttpClient({
+    baseUrl: params.baseUrl,
+    token: params.token
+  });
+  let response = await requestAxiosData<unknown>(
+    'get import staging error file URL',
+    () => api.post(request.path, request.body) as Promise<any>,
+    dynamicsFinOpsApiError
+  );
+
+  return normalizeDataManagementResponseValue(response);
 };
 
 export let manageFinanceHandoff = SlateTool.create(spec, {
@@ -206,7 +248,18 @@ export let manageFinanceHandoff = SlateTool.create(spec, {
       };
     }
 
-    let result = await client.getImportStagingErrorFileUrl({ executionId });
+    if (!ctx.auth.finOpsToken) {
+      throw projectOperationsValidationError(
+        'Finance handoff requires a Finance and Operations token.'
+      );
+    }
+
+    let result = await getImportStagingErrorFileUrl({
+      baseUrl: client.getBaseUrl(),
+      token: ctx.auth.finOpsToken,
+      executionId,
+      entityName: requireText(ctx.input.entityName, 'entityName')
+    });
     let url = normalizeUrlResult(result);
 
     return {

@@ -1,6 +1,6 @@
 # <img src="https://provider-logos.metorial-cdn.com/Dynamics%20365%20Icon.svg" height="20"> Dynamics 365 Supply Chain Management
 
-Read Microsoft Dynamics 365 Supply Chain Management data through Finance and Operations OData APIs. This first package focuses on practical supply chain workflows: products, released products, inventory on-hand, warehouses, purchase orders, sales orders, shipments, and receipts.
+Read Microsoft Dynamics 365 Supply Chain Management data through Finance and Operations OData APIs. This first package focuses on practical supply chain workflows: products, released products, inventory on-hand, warehouses, purchase orders and lines, sales orders and lines, shipments, and receipts.
 
 ## Authentication
 
@@ -21,8 +21,10 @@ Dynamics 365 Supply Chain Management uses Microsoft Entra ID OAuth 2.0 or client
 - List inventory on hand
 - List warehouses
 - List purchase orders
+- List purchase order lines
 - Get purchase order
 - List sales orders
+- List sales order lines
 - Get sales order
 - List shipments
 - List receipts

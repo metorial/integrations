@@ -18,8 +18,10 @@ describe('dynamics-365-supply-chain-management provider contract', () => {
         'list_inventory_on_hand',
         'list_warehouses',
         'list_purchase_orders',
+        'list_purchase_order_lines',
         'get_purchase_order',
         'list_sales_orders',
+        'list_sales_order_lines',
         'get_sales_order',
         'list_shipments',
         'list_receipts'
@@ -33,8 +35,10 @@ describe('dynamics-365-supply-chain-management provider contract', () => {
         { id: 'list_inventory_on_hand', readOnly: true, destructive: false },
         { id: 'list_warehouses', readOnly: true, destructive: false },
         { id: 'list_purchase_orders', readOnly: true, destructive: false },
+        { id: 'list_purchase_order_lines', readOnly: true, destructive: false },
         { id: 'get_purchase_order', readOnly: true, destructive: false },
         { id: 'list_sales_orders', readOnly: true, destructive: false },
+        { id: 'list_sales_order_lines', readOnly: true, destructive: false },
         { id: 'get_sales_order', readOnly: true, destructive: false },
         { id: 'list_shipments', readOnly: true, destructive: false },
         { id: 'list_receipts', readOnly: true, destructive: false }
@@ -42,7 +46,7 @@ describe('dynamics-365-supply-chain-management provider contract', () => {
       triggers: []
     });
 
-    expect(contract.actions).toHaveLength(11);
+    expect(contract.actions).toHaveLength(13);
     expect(Object.keys(contract.configSchema.properties ?? {})).toEqual([
       'baseUrl',
       'environmentUrl',

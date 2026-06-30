@@ -1,6 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
 import {
+  getBenefitEnrollment,
+  getCompensationPlan,
+  getDepartment,
+  getEmployee,
+  getJob,
+  getLeaveBalance,
+  getLeaveRequest,
+  getPosition,
   getWorker,
   listBenefitEnrollments,
   listCompensationPlans,
@@ -19,13 +27,21 @@ export let provider = Slate.create({
     listWorkers,
     getWorker,
     listEmployees,
+    getEmployee,
     listPositions,
+    getPosition,
     listJobs,
+    getJob,
     listDepartments,
+    getDepartment,
     listLeaveBalances,
+    getLeaveBalance,
     listLeaveRequests,
+    getLeaveRequest,
     listCompensationPlans,
-    listBenefitEnrollments
+    getCompensationPlan,
+    listBenefitEnrollments,
+    getBenefitEnrollment
   ],
   triggers: []
 });

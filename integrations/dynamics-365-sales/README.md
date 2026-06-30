@@ -29,6 +29,10 @@ Create a sales record for supported Sales table types, including custom columns 
 
 Patch a supported Sales record by GUID and return the updated representation by default.
 
+### Delete Sales Record
+
+Permanently delete a supported Sales record by GUID.
+
 ### Qualify Lead
 
 Invoke the Dataverse `QualifyLead` action with typed create-account/contact/opportunity controls and optional additional action parameters.

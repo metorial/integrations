@@ -3,11 +3,17 @@ import { spec } from './spec';
 import {
   exportSegmentMembers,
   getCustomerInsightsRecord,
-  listCustomerInsightsRecords
+  listCustomerInsightsRecords,
+  listCustomerInsightsTables
 } from './tools';
 
 export let provider = Slate.create({
   spec,
-  tools: [listCustomerInsightsRecords, getCustomerInsightsRecord, exportSegmentMembers],
+  tools: [
+    listCustomerInsightsTables,
+    listCustomerInsightsRecords,
+    getCustomerInsightsRecord,
+    exportSegmentMembers
+  ],
   triggers: []
 });

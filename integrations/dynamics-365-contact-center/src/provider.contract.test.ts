@@ -18,14 +18,16 @@ describe('dynamics-365-contact-center provider contract', () => {
       toolIds: [
         'list_contact_center_records',
         'get_contact_center_record',
-        'export_conversation_transcript'
+        'export_conversation_transcript',
+        'get_representative_availability'
       ],
       triggerIds: [],
       authMethodIds: ['oauth_organizations', 'client_credentials'],
       tools: [
         { id: 'list_contact_center_records', readOnly: true, destructive: false },
         { id: 'get_contact_center_record', readOnly: true, destructive: false },
-        { id: 'export_conversation_transcript', readOnly: true, destructive: false }
+        { id: 'export_conversation_transcript', readOnly: true, destructive: false },
+        { id: 'get_representative_availability', readOnly: true, destructive: false }
       ]
     });
 

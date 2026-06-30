@@ -2,7 +2,8 @@ import {
   createDynamicsFinOpsClient,
   dynamicsFinOpsServiceError,
   FINOPS_DEFAULT_PAGE_SIZE,
-  type FinOpsODataQuery
+  type FinOpsODataQuery,
+  normalizeFinOpsLegalEntity
 } from '@slates/dynamics-finops-recipes';
 import { pickDefined, SlateTool } from 'slates';
 import { z } from 'zod';
@@ -197,18 +198,67 @@ let resolveEntitySetName = (
   return entitySetName;
 };
 
-let buildQuery = (ctx: FinOpsToolContext): FinOpsODataQuery => ({
-  select: ctx.input.select,
-  filter: ctx.input.filter,
-  orderBy: ctx.input.orderBy,
-  expand: ctx.input.expand,
-  top: ctx.input.limit ?? ctx.config?.defaultPageSize,
-  skip: ctx.input.skip,
-  count: ctx.input.count,
-  crossCompany: ctx.input.crossCompany,
-  legalEntity: ctx.input.legalEntity,
-  dataAreaId: ctx.input.dataAreaId
-});
+let resolveInputLegalEntity = (
+  input: FinOpsInputContext,
+  definition: FinOpsResourceDefinition
+) => {
+  let legalEntity = input.legalEntity;
+  let dataAreaId = input.dataAreaId;
+
+  if (legalEntity && dataAreaId) {
+    let normalizedLegalEntity = normalizeFinOpsLegalEntity(legalEntity);
+    let normalizedDataAreaId = normalizeFinOpsLegalEntity(dataAreaId);
+
+    if (normalizedLegalEntity !== normalizedDataAreaId) {
+      throw dynamicsFinOpsServiceError(
+        'legalEntity and dataAreaId are aliases and must match when both are provided.'
+      );
+    }
+
+    return legalEntity;
+  }
+
+  let explicitLegalEntity = legalEntity ?? dataAreaId;
+
+  if (!definition.companyScoped && explicitLegalEntity) {
+    throw dynamicsFinOpsServiceError(
+      `${definition.name} is not legal-entity scoped. Omit legalEntity/dataAreaId or use released-product tools for legal-entity product data.`
+    );
+  }
+
+  return explicitLegalEntity;
+};
+
+let buildQuery = (
+  ctx: FinOpsToolContext,
+  definition: FinOpsResourceDefinition
+): FinOpsODataQuery => {
+  let explicitLegalEntity = resolveInputLegalEntity(ctx.input, definition);
+  let defaultLegalEntity =
+    definition.companyScoped && ctx.input.crossCompany !== true
+      ? ctx.config?.defaultLegalEntity
+      : undefined;
+  let legalEntity = definition.companyScoped
+    ? (explicitLegalEntity ?? defaultLegalEntity)
+    : ctx.input.legalEntity;
+  let crossCompany =
+    definition.companyScoped && legalEntity
+      ? (ctx.input.crossCompany ?? true)
+      : ctx.input.crossCompany;
+
+  return {
+    select: ctx.input.select,
+    filter: ctx.input.filter,
+    orderBy: ctx.input.orderBy,
+    expand: ctx.input.expand,
+    top: ctx.input.limit ?? ctx.config?.defaultPageSize,
+    skip: ctx.input.skip,
+    count: ctx.input.count,
+    crossCompany,
+    legalEntity,
+    dataAreaId: definition.companyScoped && legalEntity ? undefined : ctx.input.dataAreaId
+  };
+};
 
 let firstString = (record: Record<string, unknown>, fields: string[]) => {
   for (let field of fields) {
@@ -332,10 +382,11 @@ export let createListRecordsTool = (definition: FinOpsResourceDefinition) =>
         ctx.input.limit ?? ctx.config?.defaultPageSize ?? FINOPS_DEFAULT_PAGE_SIZE;
       let result = await client.listDataEntityAll<Record<string, unknown>>(
         entitySetName,
-        buildQuery(ctx),
+        buildQuery(ctx, definition),
         {
           maxPages: ctx.input.maxPages ?? ctx.config?.defaultMaxPages,
           pageSize: requestedLimit,
+          maxItems: ctx.input.limit,
           dataAreaIdField: definition.companyScoped ? undefined : false
         }
       );

@@ -49,6 +49,56 @@ describe('dynamics-365-field-service provider contract', () => {
     );
     expect(oauth.authenticationMethod.capabilities.handleTokenRefresh?.enabled).toBe(true);
     expect(oauth.authenticationMethod.capabilities.getProfile?.enabled).toBe(true);
+
+    let listSchema = contract.tools.find(tool => tool.id === 'list_field_service_records')
+      ?.inputSchema as { properties?: { resourceType?: { enum?: string[] } } } | undefined;
+    expect(listSchema?.properties?.resourceType?.enum).toEqual([
+      'work_order',
+      'booking',
+      'resource',
+      'customer_asset',
+      'service_account',
+      'incident_type',
+      'work_order_incident',
+      'work_order_product',
+      'work_order_service',
+      'work_order_service_task',
+      'resource_requirement',
+      'booking_status',
+      'work_order_type',
+      'priority',
+      'product',
+      'service'
+    ]);
+
+    let scheduleSchema = contract.tools.find(tool => tool.id === 'schedule_booking')
+      ?.inputSchema as
+      | {
+          required?: string[];
+          properties?: { workOrderNavigationProperty?: { description?: string } };
+        }
+      | undefined;
+    expect(scheduleSchema?.required).toEqual([
+      'workOrderId',
+      'resourceId',
+      'startTime',
+      'endTime',
+      'bookingStatusId'
+    ]);
+    expect(scheduleSchema?.properties?.workOrderNavigationProperty?.description).toContain(
+      'msdyn_workorder'
+    );
+
+    let lifecycleSchema = contract.tools.find(
+      tool => tool.id === 'manage_work_order_lifecycle'
+    )?.inputSchema as { properties?: { lifecycleAction?: { enum?: string[] } } } | undefined;
+    expect(lifecycleSchema?.properties?.lifecycleAction?.enum).toEqual([
+      'set_system_status',
+      'mark_unscheduled',
+      'mark_scheduled',
+      'mark_in_progress',
+      'mark_completed'
+    ]);
   });
 });
 

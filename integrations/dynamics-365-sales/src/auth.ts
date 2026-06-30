@@ -306,7 +306,7 @@ export let auth = SlateAuth.create()
 
       let instances = await discoverInstances(initial.token);
       let first = instances[0];
-      let discoveredUrl = first?.Url ?? first?.ApiUrl;
+      let discoveredUrl = first?.ApiUrl ?? first?.Url;
       if (!discoveredUrl) {
         throw dataverseValidationError(
           'No Dataverse environments were found for this Microsoft account.'

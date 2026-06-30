@@ -3,6 +3,10 @@ import { SlateTool } from 'slates';
 import { z } from 'zod';
 import { spec } from '../spec';
 import {
+  buildDocumentedGetOrderBySalesIdRequest,
+  buildDocumentedGetOrderByTransactionIdRequest
+} from './retail-server-requests';
+import {
   assertPrimitiveAdditionalFields,
   buildCommerceToolOutput,
   commerceMessage,
@@ -16,7 +20,14 @@ let orderInputSchema = commerceOrderOperationInputSchema.extend({
   confirmWrite: z
     .boolean()
     .optional()
-    .describe('Must be true for create because it writes a Commerce sales order.')
+    .describe('Must be true for create because it writes a Commerce sales order.'),
+  searchLocationValue: z
+    .number()
+    .int()
+    .optional()
+    .describe(
+      'Required for get_by_transaction_id. Commerce SearchLocation enum value that scopes where sales orders are searched.'
+    )
 });
 
 export let manageOrders = SlateTool.create(spec, {
@@ -52,10 +63,12 @@ export let manageOrders = SlateTool.create(spec, {
         collection = true;
         break;
       case 'get_by_transaction_id':
-        result = await client.getOrderByTransactionId(ctx.input as any);
+        result = await client.execute(
+          buildDocumentedGetOrderByTransactionIdRequest(ctx.input)
+        );
         break;
       case 'get_by_sales_id':
-        result = await client.getOrderBySalesId(ctx.input as any);
+        result = await client.execute(buildDocumentedGetOrderBySalesIdRequest(ctx.input));
         break;
       case 'create':
         result = await client.createSalesOrder(ctx.input as any);

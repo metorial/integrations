@@ -1,8 +1,8 @@
 import {
   createDynamicsFinOpsClient,
   createFinOpsExecutionId,
-  dataManagementPackageOperationInputSchema,
   dynamicsFinOpsServiceError,
+  dataManagementPackageOperationInputSchema as recipeDataManagementPackageOperationInputSchema,
   validateDataManagementPackageOperationInput
 } from '@slates/dynamics-finops-recipes';
 import { SlateTool } from 'slates';
@@ -17,6 +17,29 @@ let connectionInputFields = {
     .describe('Override Finance and Operations environment URL for this request.'),
   environmentUrl: z.string().optional().describe('Alias for baseUrl.')
 };
+
+let financeDataManagementActionSchema = z
+  .enum([
+    'export_to_package',
+    'import_from_package',
+    'get_execution_summary_status',
+    'get_exported_package_url'
+  ])
+  .describe(
+    'Data Management package action variant. Import staging error file URL lookup is deferred until entityName is supported.'
+  );
+
+export let financeDataManagementPackageOperationInputSchema =
+  recipeDataManagementPackageOperationInputSchema.extend({
+    ...connectionInputFields,
+    action: financeDataManagementActionSchema,
+    confirmImport: z
+      .boolean()
+      .optional()
+      .describe(
+        'Required as true for import_from_package because imports write to Finance and Operations staging or target workflows.'
+      )
+  });
 
 let resolveBaseUrl = (ctx: FinOpsToolContext) => {
   let baseUrl =
@@ -48,20 +71,36 @@ let createClient = (ctx: FinOpsToolContext) =>
 
 let stringResult = (value: unknown) => (typeof value === 'string' ? value : undefined);
 
+let optionalNonEmptyString = (value: string | undefined) => {
+  let trimmed = value?.trim();
+  return trimmed || undefined;
+};
+
+let resolveExecutionId = (executionId: string | undefined, prefix: string) =>
+  optionalNonEmptyString(executionId) ?? createFinOpsExecutionId(prefix);
+
+let normalizeStatusIsTerminal = (status: { status: string; isTerminal: boolean }) =>
+  status.status === 'unknown' ? false : status.isTerminal;
+
 export let runDataManagementPackageOperation = SlateTool.create(spec, {
   name: 'Run Finance Data Management Package Operation',
   key: 'run_data_management_package_operation',
   description:
     'Start or inspect Dynamics 365 Finance Data Management package export/import workflows. File bytes are not returned in JSON output.',
   instructions: [
-    'Use export_to_package or import_from_package to start package workflows, then poll get_execution_summary_status with the returned executionId.'
+    'Use export_to_package or import_from_package to start package workflows, then poll get_execution_summary_status with the returned executionId.',
+    'For import_from_package, set confirmImport=true. If execute is omitted, the package is staged with execute=false; set execute=true only when ready to run target processing.'
+  ],
+  constraints: [
+    'This tool does not download package files or import error files.',
+    'Import staging error file URL lookup is deferred until entityName is supported.'
   ],
   tags: {
     destructive: false,
     readOnly: false
   }
 })
-  .input(dataManagementPackageOperationInputSchema.extend(connectionInputFields))
+  .input(financeDataManagementPackageOperationInputSchema)
   .output(
     z.object({
       action: z.string(),
@@ -76,13 +115,20 @@ export let runDataManagementPackageOperation = SlateTool.create(spec, {
   .handleInvocation(async rawCtx => {
     let ctx = rawCtx as FinOpsToolContext & {
       input: FinOpsToolContext['input'] &
-        z.infer<typeof dataManagementPackageOperationInputSchema>;
+        z.infer<typeof financeDataManagementPackageOperationInputSchema>;
     };
-    let input = validateDataManagementPackageOperationInput(ctx.input);
+    let input = validateDataManagementPackageOperationInput(ctx.input) as z.infer<
+      typeof financeDataManagementPackageOperationInputSchema
+    >;
+
+    if (input.action === 'import_from_package' && ctx.input.confirmImport !== true) {
+      throw dynamicsFinOpsServiceError('import_from_package requires confirmImport=true.');
+    }
+
     let client = createClient(ctx);
 
     if (input.action === 'export_to_package') {
-      let executionId = input.executionId ?? createFinOpsExecutionId('finance-export');
+      let executionId = resolveExecutionId(input.executionId, 'finance-export');
       let result = await client.exportToPackage({
         definitionGroupId: input.definitionGroupId ?? '',
         packageName: input.packageName ?? '',
@@ -90,35 +136,37 @@ export let runDataManagementPackageOperation = SlateTool.create(spec, {
         reExecute: input.reExecute,
         legalEntityId: input.legalEntityId
       });
+      let returnedExecutionId = stringResult(result) ?? executionId;
 
       return {
         output: {
           action: input.action,
-          executionId,
+          executionId: returnedExecutionId,
           result
         },
-        message: `Started Finance Data Management export **${executionId}**.`
+        message: `Started Finance Data Management export **${returnedExecutionId}**.`
       };
     }
 
     if (input.action === 'import_from_package') {
-      let executionId = input.executionId ?? createFinOpsExecutionId('finance-import');
+      let executionId = resolveExecutionId(input.executionId, 'finance-import');
       let result = await client.importFromPackage({
         definitionGroupId: input.definitionGroupId ?? '',
         packageUrl: input.packageUrl ?? '',
         executionId,
-        execute: input.execute,
+        execute: input.execute ?? false,
         overwrite: input.overwrite,
         legalEntityId: input.legalEntityId
       });
+      let returnedExecutionId = stringResult(result) ?? executionId;
 
       return {
         output: {
           action: input.action,
-          executionId,
+          executionId: returnedExecutionId,
           result
         },
-        message: `Started Finance Data Management import **${executionId}**.`
+        message: `Started Finance Data Management import **${returnedExecutionId}**.`
       };
     }
 
@@ -132,7 +180,7 @@ export let runDataManagementPackageOperation = SlateTool.create(spec, {
           action: input.action,
           executionId: input.executionId,
           status: status.status,
-          isTerminal: status.isTerminal,
+          isTerminal: normalizeStatusIsTerminal(status),
           isSuccess: status.isSuccess,
           result: status.rawStatus
         },
@@ -140,14 +188,7 @@ export let runDataManagementPackageOperation = SlateTool.create(spec, {
       };
     }
 
-    let result =
-      input.action === 'get_execution_summary_page_url'
-        ? await client.getExecutionSummaryPageUrl({ executionId: input.executionId ?? '' })
-        : input.action === 'get_exported_package_url'
-          ? await client.getExportedPackageUrl({ executionId: input.executionId ?? '' })
-          : await client.getImportStagingErrorFileUrl({
-              executionId: input.executionId ?? ''
-            });
+    let result = await client.getExportedPackageUrl({ executionId: input.executionId ?? '' });
 
     return {
       output: {

@@ -6,6 +6,7 @@ import {
   manageProjectActuals,
   manageProjectContracts,
   manageProjectInvoices,
+  manageProjectSchedule,
   manageProjects,
   manageProjectTasks,
   manageResourceAssignments,
@@ -23,6 +24,7 @@ export let provider = Slate.create({
     manageProjectContracts,
     manageProjectActuals,
     manageProjectInvoices,
+    manageProjectSchedule,
     manageFinanceHandoff
   ],
   triggers: []

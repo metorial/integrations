@@ -2,7 +2,7 @@
 
 ## Overview
 
-Dynamics 365 Field Service stores work orders, resource bookings, assets, resources, incident types, products, and services in Microsoft Dataverse. This package is a product-specific adapter over `@slates/microsoft-dataverse-recipes`, which owns Dataverse client behavior, OData construction, pagination, action helpers, and ServiceError normalization.
+Dynamics 365 Field Service stores work orders, resource bookings, assets, resources, incident types, work-order incidents, products, services, service tasks, resource requirements, booking statuses, priorities, and work-order types in Microsoft Dataverse. This package is a product-specific adapter over `@slates/microsoft-dataverse-recipes`, which owns Dataverse client behavior, OData construction, pagination, action helpers, and ServiceError normalization.
 
 ## Authentication
 
@@ -20,4 +20,4 @@ The integration supports Microsoft Entra delegated OAuth and client credentials.
 
 ## Notes
 
-Booking relationship field names are tenant-sensitive in Field Service customizations, so the typed booking tools expose navigation-property overrides while defaulting to common Dataverse names. Posting, invoicing, and destructive work-order transitions are intentionally deferred until live E2E coverage exists.
+Booking relationship field names are tenant-sensitive in Field Service customizations, so the typed booking tools expose navigation-property overrides while defaulting to common Dataverse names. List pagination follows Dataverse next-link semantics: callers pass returned `@odata.nextLink` values back unchanged instead of combining them with new OData options. Update tools set Dataverse update-only semantics to avoid accidental upserts. Posting, invoicing, and destructive work-order transitions are intentionally deferred until live E2E coverage exists.

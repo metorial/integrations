@@ -61,10 +61,12 @@ type MicrosoftTokenResponse = {
 
 type DataverseDiscoveryResponse = {
   value?: Array<{
+    ApiUrl?: string;
     Url?: string;
     FriendlyName?: string;
   }>;
 };
+type DataverseDiscoveryInstance = NonNullable<DataverseDiscoveryResponse['value']>[number];
 
 let oauthInputSchema = z.object({
   dataverseInstanceUrl: z
@@ -193,6 +195,28 @@ let normalizeMicrosoftToken = (
   };
 };
 
+export let normalizeDiscoveredDataverseInstanceUrl = (
+  instance: DataverseDiscoveryInstance
+) => {
+  let apiUrl = typeof instance.ApiUrl === 'string' ? instance.ApiUrl.trim() : '';
+  if (apiUrl) {
+    return normalizeDataverseInstanceUrl(apiUrl);
+  }
+
+  let appUrl = typeof instance.Url === 'string' ? instance.Url.trim() : '';
+  if (!appUrl) return undefined;
+
+  try {
+    let url = new URL(appUrl);
+    url.pathname = '';
+    url.search = '';
+    url.hash = '';
+    return normalizeDataverseInstanceUrl(url.toString());
+  } catch {
+    return normalizeDataverseInstanceUrl(appUrl);
+  }
+};
+
 let discoverDataverseInstanceUrl = async (token: string) => {
   let data = await requestAxiosData<DataverseDiscoveryResponse>(
     'Dataverse environment discovery',
@@ -205,15 +229,17 @@ let discoverDataverseInstanceUrl = async (token: string) => {
     microsoftAuthApiError
   );
   let instances = data.value ?? [];
-  let instance = instances.find(item => typeof item.Url === 'string' && item.Url.trim());
+  let instanceUrl = instances
+    .map(instance => normalizeDiscoveredDataverseInstanceUrl(instance))
+    .find((url): url is string => typeof url === 'string' && url.trim() !== '');
 
-  if (!instance?.Url) {
+  if (!instanceUrl) {
     throw projectOperationsValidationError(
       'No Dynamics 365 Dataverse environments were found for this account.'
     );
   }
 
-  return normalizeDataverseInstanceUrl(instance.Url);
+  return instanceUrl;
 };
 
 let exchangeRefreshTokenForResource = async (params: {
