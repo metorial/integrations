@@ -3,18 +3,19 @@ import {
   type DataversePrimitiveKeyValue,
   type DataverseRecord,
   type DataverseRecordKey,
-  dataverseRecordKeyFromInput
+  dataverseRecordKeyFromInput,
+  dataverseValidationError
 } from '@slates/microsoft-dataverse-recipes';
 import { z } from 'zod';
 
 type DynamicsDataverseContext = {
   auth?: {
-    token?: string;
-    instanceUrl?: string;
+    dataverseToken?: string;
+    dataverseInstanceUrl?: string;
   };
   config?: {
-    instanceUrl?: string;
-    apiVersion?: string;
+    dataverseInstanceUrl?: string;
+    dataverseApiVersion?: string;
   };
 };
 
@@ -25,8 +26,49 @@ export let dataverseAlternateKeySchema = z.record(
   z.union([z.string(), z.number(), z.boolean(), z.null()])
 );
 
-export let createDynamicsClient = (ctx: DynamicsDataverseContext) =>
-  createDataverseClientFromContext(ctx);
+let requireDataverseToken = (ctx: DynamicsDataverseContext) => {
+  let token = ctx.auth?.dataverseToken;
+  if (!token?.trim()) {
+    throw dataverseValidationError(
+      'Dynamics 365 Dataverse tools require dataverseToken from oauth_common, oauth_organizations, or microsoft_client_credentials auth.'
+    );
+  }
+
+  return token;
+};
+
+let resolveDataverseInstanceUrl = (
+  ctx: DynamicsDataverseContext,
+  options: { dataverseInstanceUrl?: string } = {}
+) => {
+  let instanceUrl =
+    options.dataverseInstanceUrl ??
+    ctx.auth?.dataverseInstanceUrl ??
+    ctx.config?.dataverseInstanceUrl;
+
+  if (!instanceUrl?.trim()) {
+    throw dataverseValidationError(
+      'Dynamics 365 Dataverse tools require dataverseInstanceUrl in auth, config, or tool input.'
+    );
+  }
+
+  return instanceUrl;
+};
+
+export let createDynamicsClient = (
+  ctx: DynamicsDataverseContext,
+  options: { dataverseInstanceUrl?: string } = {}
+) =>
+  createDataverseClientFromContext({
+    auth: {
+      token: requireDataverseToken(ctx),
+      instanceUrl: resolveDataverseInstanceUrl(ctx, options)
+    },
+    config: {
+      instanceUrl: ctx.config?.dataverseInstanceUrl,
+      apiVersion: ctx.config?.dataverseApiVersion
+    }
+  });
 
 export let recordKeyFromInput = (input: {
   recordId?: string;

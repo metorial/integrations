@@ -4,12 +4,12 @@ import { config } from './config';
 
 export let spec = SlateSpecification.create({
   key: 'dynamics-365',
-  name: 'Dynamics 365 Dataverse',
+  name: 'Dynamics 365',
   description:
-    'Generic Microsoft Dynamics 365 Dataverse connector for Dataverse Web API records, metadata, search, relationships, actions/functions, file columns, and batch requests.',
+    'Unified Microsoft Dynamics 365 connector for Dataverse, Sales, Customer Service, Field Service, Contact Center, Customer Insights, Finance, Supply Chain, Project Operations, Commerce, Human Resources, and Business Central.',
   metadata: {
-    product: 'Microsoft Dynamics 365 Dataverse',
-    api: 'Dataverse Web API'
+    product: 'Microsoft Dynamics 365',
+    api: 'Dataverse Web API, Finance and Operations OData, Commerce Retail Server, and Business Central API v2.0'
   },
   config,
   auth

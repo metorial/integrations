@@ -1,11 +1,11 @@
 import { resolveDataverseInstanceUrl } from '@slates/microsoft-dataverse-recipes';
 
 export let resolveDynamicsInstanceUrl = (ctx: {
-  auth?: { instanceUrl?: unknown } | null;
-  config?: { instanceUrl?: unknown } | null;
+  auth?: { dataverseInstanceUrl?: unknown } | null;
+  config?: { dataverseInstanceUrl?: unknown } | null;
 }) => {
-  let authInstanceUrl = ctx.auth?.instanceUrl;
-  let configInstanceUrl = ctx.config?.instanceUrl;
+  let authInstanceUrl = ctx.auth?.dataverseInstanceUrl;
+  let configInstanceUrl = ctx.config?.dataverseInstanceUrl;
 
   return resolveDataverseInstanceUrl({
     auth: {

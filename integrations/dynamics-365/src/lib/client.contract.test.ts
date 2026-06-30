@@ -18,7 +18,7 @@ describe('Dynamics 365 Dataverse adapter helpers', () => {
     ).toBe('00000000-0000-0000-0000-000000000002');
   });
 
-  it('infers Dataverse operation binding variants from backward-compatible inputs', () => {
+  it('infers Dataverse operation binding variants from explicit operation inputs', () => {
     expect(inferBindingType({})).toBe('unbound');
     expect(inferBindingType({ entitySetName: 'accounts' })).toBe('collection');
     expect(inferBindingType({ entitySetName: 'accounts', recordId: 'record-id' })).toBe(
