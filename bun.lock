@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@metorial/integrations-root",
@@ -3972,7 +3971,7 @@
     },
     "integrations/dynamics-365": {
       "name": "@slates-integrations/dynamics-365",
-      "version": "0.3.0-rc.0",
+      "version": "0.3.0-rc.6",
       "dependencies": {
         "@slates/dynamics-commerce-recipes": "1.0.0-rc.4",
         "@slates/dynamics-finops-recipes": "1.0.0-rc.0",
@@ -8430,6 +8429,21 @@
       },
       "devDependencies": {
         "typescript": "^5",
+      },
+    },
+    "integrations/natural": {
+      "name": "@slates-integrations/natural",
+      "version": "0.1.0-rc.2",
+      "dependencies": {
+        "@lowerdeck/error": "^1.1.0",
+        "@types/node": "^20",
+        "slates": "1.0.0-rc.15",
+        "zod": "^4.2",
+      },
+      "devDependencies": {
+        "@slates/test": "1.0.0-rc.9",
+        "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/needle": {
@@ -16306,6 +16320,8 @@
     "@slates-integrations/nasa": ["@slates-integrations/nasa@workspace:integrations/nasa"],
 
     "@slates-integrations/nasdaq": ["@slates-integrations/nasdaq@workspace:integrations/nasdaq"],
+
+    "@slates-integrations/natural": ["@slates-integrations/natural@workspace:integrations/natural"],
 
     "@slates-integrations/needle": ["@slates-integrations/needle@workspace:integrations/needle"],
 
