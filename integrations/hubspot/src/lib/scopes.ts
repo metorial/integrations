@@ -134,6 +134,18 @@ export let hubSpotOptionalOAuthScopes: HubSpotScopeDefinition[] = [
     description: 'Create and update order pipelines',
     scope: 'crm.pipelines.orders.write',
     defaultChecked: true
+  },
+  {
+    title: 'Sequences Read',
+    description: 'Read HubSpot sales and service sequences',
+    scope: 'automation.sequences.read',
+    defaultChecked: true
+  },
+  {
+    title: 'Sequences Enrollments Write',
+    description: 'Enroll contacts in HubSpot sales and service sequences',
+    scope: 'automation.sequences.enrollments.write',
+    defaultChecked: true
   }
 ];
 
@@ -193,6 +205,8 @@ let pipelineRead = anyOf(dealRead, ticketAccess, 'crm.pipelines.orders.read');
 let pipelineWrite = anyOf(dealWrite, ticketAccess, 'crm.pipelines.orders.write');
 let engagementRead = anyOf('timeline', 'sales-email-read');
 let engagementWrite = anyOf('timeline');
+let sequenceRead = allOf('automation.sequences.read');
+let sequenceEnrollmentWrite = allOf('automation.sequences.enrollments.write');
 
 export let hubSpotActionScopes = {
   createContact: allOf(contactWrite),
@@ -236,6 +250,10 @@ export let hubSpotActionScopes = {
   getEngagement: engagementRead,
   updateEngagement: engagementWrite,
   deleteEngagement: engagementWrite,
+  listSequences: sequenceRead,
+  getSequence: sequenceRead,
+  enrollContactInSequence: sequenceEnrollmentWrite,
+  getSequenceEnrollmentStatus: sequenceRead,
   crmObjectChanges: standardObjectRead,
   crmObjectWebhook: standardObjectRead
 };
