@@ -440,6 +440,16 @@ let getRequiredTokenConfig = (ctx: { config?: Record<string, unknown> }): TokenC
   return ctx.config as TokenConfig;
 };
 
+type TokenAuthOutputContext = {
+  input: { token: string };
+  config?: Record<string, unknown>;
+};
+
+type TokenAuthProfileContext = {
+  output: { token: string };
+  config?: Record<string, unknown>;
+};
+
 let createTokenConfigSlate = (seenConfig: SeenTokenConfig) => {
   let config = SlateConfig.create(
     z.object({
@@ -460,7 +470,7 @@ let createTokenConfigSlate = (seenConfig: SeenTokenConfig) => {
       inputSchema: z.object({
         token: z.string()
       }),
-      getOutput: async ctx => {
+      getOutput: async (ctx: TokenAuthOutputContext) => {
         let currentConfig = getRequiredTokenConfig(ctx);
         seenConfig.output = currentConfig;
         return {
@@ -469,7 +479,7 @@ let createTokenConfigSlate = (seenConfig: SeenTokenConfig) => {
           }
         };
       },
-      getProfile: async ctx => {
+      getProfile: async (ctx: TokenAuthProfileContext) => {
         let currentConfig = getRequiredTokenConfig(ctx);
         seenConfig.profile = currentConfig;
         return {
