@@ -1,0 +1,11 @@
+{
+  "name": "test-fhqjk4",
+  "owner": {
+    "name": "rgerwg"
+  },
+  "metadata": {
+    "description": "Official WorkOS skills for AI coding agents",
+    "version": "0.0.1"
+  },
+  "plugins": []
+}
